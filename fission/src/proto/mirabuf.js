@@ -1,23 +1,23 @@
 /*eslint-disable block-scoped-var, id-length, no-control-regex, no-magic-numbers, no-prototype-builtins, no-redeclare, no-shadow, no-var, sort-vars*/
-import * as $protobuf from "protobufjs/minimal";
+import * as $protobuf from "protobufjs/minimal"
 
 // Common aliases
-const $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.util;
+const $Reader = $protobuf.Reader,
+    $Writer = $protobuf.Writer,
+    $util = $protobuf.util
 
 // Exported root namespace
-const $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
+const $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {})
 
-export const mirabuf = $root.mirabuf = (() => {
-
+export const mirabuf = ($root.mirabuf = (() => {
     /**
      * Namespace mirabuf.
      * @exports mirabuf
      * @namespace
      */
-    const mirabuf = {};
+    const mirabuf = {}
 
-    mirabuf.Assembly = (function() {
-
+    mirabuf.Assembly = (function () {
         /**
          * Properties of an Assembly.
          * @memberof mirabuf
@@ -45,8 +45,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function Assembly(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -55,7 +54,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Assembly
          * @instance
          */
-        Assembly.prototype.info = null;
+        Assembly.prototype.info = null
 
         /**
          * All of the data in the assembly
@@ -63,7 +62,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Assembly
          * @instance
          */
-        Assembly.prototype.data = null;
+        Assembly.prototype.data = null
 
         /**
          * Can it be effected by the simulation dynamically
@@ -71,7 +70,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Assembly
          * @instance
          */
-        Assembly.prototype.dynamic = false;
+        Assembly.prototype.dynamic = false
 
         /**
          * Overall physical data of the assembly
@@ -79,7 +78,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Assembly
          * @instance
          */
-        Assembly.prototype.physicalData = null;
+        Assembly.prototype.physicalData = null
 
         /**
          * The Design hierarchy represented by Part Refs - The first object is a root container for all top level items
@@ -87,7 +86,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Assembly
          * @instance
          */
-        Assembly.prototype.designHierarchy = null;
+        Assembly.prototype.designHierarchy = null
 
         /**
          * The Joint hierarchy for compound shapes
@@ -95,7 +94,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Assembly
          * @instance
          */
-        Assembly.prototype.jointHierarchy = null;
+        Assembly.prototype.jointHierarchy = null
 
         /**
          * The Transform in space currently
@@ -103,7 +102,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Assembly
          * @instance
          */
-        Assembly.prototype.transform = null;
+        Assembly.prototype.transform = null
 
         /**
          * Optional thumbnail saved from Fusion 360 or scraped from previous configuration
@@ -111,7 +110,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Assembly
          * @instance
          */
-        Assembly.prototype.thumbnail = null;
+        Assembly.prototype.thumbnail = null
 
         /**
          * Creates a new Assembly instance using the specified properties.
@@ -122,8 +121,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Assembly} Assembly instance
          */
         Assembly.create = function create(properties) {
-            return new Assembly(properties);
-        };
+            return new Assembly(properties)
+        }
 
         /**
          * Encodes the specified Assembly message. Does not implicitly {@link mirabuf.Assembly.verify|verify} messages.
@@ -135,26 +134,43 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Assembly.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                $root.mirabuf.AssemblyData.encode(message.data, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.mirabuf.AssemblyData.encode(
+                    message.data,
+                    writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                ).ldelim()
             if (message.dynamic != null && Object.hasOwnProperty.call(message, "dynamic"))
-                writer.uint32(/* id 3, wireType 0 =*/24).bool(message.dynamic);
+                writer.uint32(/* id 3, wireType 0 =*/ 24).bool(message.dynamic)
             if (message.physicalData != null && Object.hasOwnProperty.call(message, "physicalData"))
-                $root.mirabuf.PhysicalProperties.encode(message.physicalData, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.mirabuf.PhysicalProperties.encode(
+                    message.physicalData,
+                    writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                ).ldelim()
             if (message.designHierarchy != null && Object.hasOwnProperty.call(message, "designHierarchy"))
-                $root.mirabuf.GraphContainer.encode(message.designHierarchy, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                $root.mirabuf.GraphContainer.encode(
+                    message.designHierarchy,
+                    writer.uint32(/* id 5, wireType 2 =*/ 42).fork()
+                ).ldelim()
             if (message.jointHierarchy != null && Object.hasOwnProperty.call(message, "jointHierarchy"))
-                $root.mirabuf.GraphContainer.encode(message.jointHierarchy, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                $root.mirabuf.GraphContainer.encode(
+                    message.jointHierarchy,
+                    writer.uint32(/* id 6, wireType 2 =*/ 50).fork()
+                ).ldelim()
             if (message.transform != null && Object.hasOwnProperty.call(message, "transform"))
-                $root.mirabuf.Transform.encode(message.transform, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                $root.mirabuf.Transform.encode(
+                    message.transform,
+                    writer.uint32(/* id 7, wireType 2 =*/ 58).fork()
+                ).ldelim()
             if (message.thumbnail != null && Object.hasOwnProperty.call(message, "thumbnail"))
-                $root.mirabuf.Thumbnail.encode(message.thumbnail, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
-            return writer;
-        };
+                $root.mirabuf.Thumbnail.encode(
+                    message.thumbnail,
+                    writer.uint32(/* id 8, wireType 2 =*/ 66).fork()
+                ).ldelim()
+            return writer
+        }
 
         /**
          * Encodes the specified Assembly message, length delimited. Does not implicitly {@link mirabuf.Assembly.verify|verify} messages.
@@ -166,8 +182,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Assembly.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes an Assembly message from the specified reader or buffer.
@@ -181,51 +197,51 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Assembly.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Assembly();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Assembly()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                        break;
+                    case 1: {
+                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                        break
                     }
-                case 2: {
-                        message.data = $root.mirabuf.AssemblyData.decode(reader, reader.uint32());
-                        break;
+                    case 2: {
+                        message.data = $root.mirabuf.AssemblyData.decode(reader, reader.uint32())
+                        break
                     }
-                case 3: {
-                        message.dynamic = reader.bool();
-                        break;
+                    case 3: {
+                        message.dynamic = reader.bool()
+                        break
                     }
-                case 4: {
-                        message.physicalData = $root.mirabuf.PhysicalProperties.decode(reader, reader.uint32());
-                        break;
+                    case 4: {
+                        message.physicalData = $root.mirabuf.PhysicalProperties.decode(reader, reader.uint32())
+                        break
                     }
-                case 5: {
-                        message.designHierarchy = $root.mirabuf.GraphContainer.decode(reader, reader.uint32());
-                        break;
+                    case 5: {
+                        message.designHierarchy = $root.mirabuf.GraphContainer.decode(reader, reader.uint32())
+                        break
                     }
-                case 6: {
-                        message.jointHierarchy = $root.mirabuf.GraphContainer.decode(reader, reader.uint32());
-                        break;
+                    case 6: {
+                        message.jointHierarchy = $root.mirabuf.GraphContainer.decode(reader, reader.uint32())
+                        break
                     }
-                case 7: {
-                        message.transform = $root.mirabuf.Transform.decode(reader, reader.uint32());
-                        break;
+                    case 7: {
+                        message.transform = $root.mirabuf.Transform.decode(reader, reader.uint32())
+                        break
                     }
-                case 8: {
-                        message.thumbnail = $root.mirabuf.Thumbnail.decode(reader, reader.uint32());
-                        break;
+                    case 8: {
+                        message.thumbnail = $root.mirabuf.Thumbnail.decode(reader, reader.uint32())
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes an Assembly message from the specified reader or buffer, length delimited.
@@ -238,10 +254,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Assembly.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies an Assembly message.
@@ -252,48 +267,39 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Assembly.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.info != null && message.hasOwnProperty("info")) {
-                let error = $root.mirabuf.Info.verify(message.info);
-                if (error)
-                    return "info." + error;
+                let error = $root.mirabuf.Info.verify(message.info)
+                if (error) return "info." + error
             }
             if (message.data != null && message.hasOwnProperty("data")) {
-                let error = $root.mirabuf.AssemblyData.verify(message.data);
-                if (error)
-                    return "data." + error;
+                let error = $root.mirabuf.AssemblyData.verify(message.data)
+                if (error) return "data." + error
             }
             if (message.dynamic != null && message.hasOwnProperty("dynamic"))
-                if (typeof message.dynamic !== "boolean")
-                    return "dynamic: boolean expected";
+                if (typeof message.dynamic !== "boolean") return "dynamic: boolean expected"
             if (message.physicalData != null && message.hasOwnProperty("physicalData")) {
-                let error = $root.mirabuf.PhysicalProperties.verify(message.physicalData);
-                if (error)
-                    return "physicalData." + error;
+                let error = $root.mirabuf.PhysicalProperties.verify(message.physicalData)
+                if (error) return "physicalData." + error
             }
             if (message.designHierarchy != null && message.hasOwnProperty("designHierarchy")) {
-                let error = $root.mirabuf.GraphContainer.verify(message.designHierarchy);
-                if (error)
-                    return "designHierarchy." + error;
+                let error = $root.mirabuf.GraphContainer.verify(message.designHierarchy)
+                if (error) return "designHierarchy." + error
             }
             if (message.jointHierarchy != null && message.hasOwnProperty("jointHierarchy")) {
-                let error = $root.mirabuf.GraphContainer.verify(message.jointHierarchy);
-                if (error)
-                    return "jointHierarchy." + error;
+                let error = $root.mirabuf.GraphContainer.verify(message.jointHierarchy)
+                if (error) return "jointHierarchy." + error
             }
             if (message.transform != null && message.hasOwnProperty("transform")) {
-                let error = $root.mirabuf.Transform.verify(message.transform);
-                if (error)
-                    return "transform." + error;
+                let error = $root.mirabuf.Transform.verify(message.transform)
+                if (error) return "transform." + error
             }
             if (message.thumbnail != null && message.hasOwnProperty("thumbnail")) {
-                let error = $root.mirabuf.Thumbnail.verify(message.thumbnail);
-                if (error)
-                    return "thumbnail." + error;
+                let error = $root.mirabuf.Thumbnail.verify(message.thumbnail)
+                if (error) return "thumbnail." + error
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates an Assembly message from a plain object. Also converts values to their respective internal types.
@@ -304,48 +310,44 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Assembly} Assembly
          */
         Assembly.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Assembly)
-                return object;
-            let message = new $root.mirabuf.Assembly();
+            if (object instanceof $root.mirabuf.Assembly) return object
+            let message = new $root.mirabuf.Assembly()
             if (object.info != null) {
-                if (typeof object.info !== "object")
-                    throw TypeError(".mirabuf.Assembly.info: object expected");
-                message.info = $root.mirabuf.Info.fromObject(object.info);
+                if (typeof object.info !== "object") throw TypeError(".mirabuf.Assembly.info: object expected")
+                message.info = $root.mirabuf.Info.fromObject(object.info)
             }
             if (object.data != null) {
-                if (typeof object.data !== "object")
-                    throw TypeError(".mirabuf.Assembly.data: object expected");
-                message.data = $root.mirabuf.AssemblyData.fromObject(object.data);
+                if (typeof object.data !== "object") throw TypeError(".mirabuf.Assembly.data: object expected")
+                message.data = $root.mirabuf.AssemblyData.fromObject(object.data)
             }
-            if (object.dynamic != null)
-                message.dynamic = Boolean(object.dynamic);
+            if (object.dynamic != null) message.dynamic = Boolean(object.dynamic)
             if (object.physicalData != null) {
                 if (typeof object.physicalData !== "object")
-                    throw TypeError(".mirabuf.Assembly.physicalData: object expected");
-                message.physicalData = $root.mirabuf.PhysicalProperties.fromObject(object.physicalData);
+                    throw TypeError(".mirabuf.Assembly.physicalData: object expected")
+                message.physicalData = $root.mirabuf.PhysicalProperties.fromObject(object.physicalData)
             }
             if (object.designHierarchy != null) {
                 if (typeof object.designHierarchy !== "object")
-                    throw TypeError(".mirabuf.Assembly.designHierarchy: object expected");
-                message.designHierarchy = $root.mirabuf.GraphContainer.fromObject(object.designHierarchy);
+                    throw TypeError(".mirabuf.Assembly.designHierarchy: object expected")
+                message.designHierarchy = $root.mirabuf.GraphContainer.fromObject(object.designHierarchy)
             }
             if (object.jointHierarchy != null) {
                 if (typeof object.jointHierarchy !== "object")
-                    throw TypeError(".mirabuf.Assembly.jointHierarchy: object expected");
-                message.jointHierarchy = $root.mirabuf.GraphContainer.fromObject(object.jointHierarchy);
+                    throw TypeError(".mirabuf.Assembly.jointHierarchy: object expected")
+                message.jointHierarchy = $root.mirabuf.GraphContainer.fromObject(object.jointHierarchy)
             }
             if (object.transform != null) {
                 if (typeof object.transform !== "object")
-                    throw TypeError(".mirabuf.Assembly.transform: object expected");
-                message.transform = $root.mirabuf.Transform.fromObject(object.transform);
+                    throw TypeError(".mirabuf.Assembly.transform: object expected")
+                message.transform = $root.mirabuf.Transform.fromObject(object.transform)
             }
             if (object.thumbnail != null) {
                 if (typeof object.thumbnail !== "object")
-                    throw TypeError(".mirabuf.Assembly.thumbnail: object expected");
-                message.thumbnail = $root.mirabuf.Thumbnail.fromObject(object.thumbnail);
+                    throw TypeError(".mirabuf.Assembly.thumbnail: object expected")
+                message.thumbnail = $root.mirabuf.Thumbnail.fromObject(object.thumbnail)
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from an Assembly message. Also converts values to other types if specified.
@@ -357,37 +359,35 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Assembly.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.info = null;
-                object.data = null;
-                object.dynamic = false;
-                object.physicalData = null;
-                object.designHierarchy = null;
-                object.jointHierarchy = null;
-                object.transform = null;
-                object.thumbnail = null;
+                object.info = null
+                object.data = null
+                object.dynamic = false
+                object.physicalData = null
+                object.designHierarchy = null
+                object.jointHierarchy = null
+                object.transform = null
+                object.thumbnail = null
             }
             if (message.info != null && message.hasOwnProperty("info"))
-                object.info = $root.mirabuf.Info.toObject(message.info, options);
+                object.info = $root.mirabuf.Info.toObject(message.info, options)
             if (message.data != null && message.hasOwnProperty("data"))
-                object.data = $root.mirabuf.AssemblyData.toObject(message.data, options);
-            if (message.dynamic != null && message.hasOwnProperty("dynamic"))
-                object.dynamic = message.dynamic;
+                object.data = $root.mirabuf.AssemblyData.toObject(message.data, options)
+            if (message.dynamic != null && message.hasOwnProperty("dynamic")) object.dynamic = message.dynamic
             if (message.physicalData != null && message.hasOwnProperty("physicalData"))
-                object.physicalData = $root.mirabuf.PhysicalProperties.toObject(message.physicalData, options);
+                object.physicalData = $root.mirabuf.PhysicalProperties.toObject(message.physicalData, options)
             if (message.designHierarchy != null && message.hasOwnProperty("designHierarchy"))
-                object.designHierarchy = $root.mirabuf.GraphContainer.toObject(message.designHierarchy, options);
+                object.designHierarchy = $root.mirabuf.GraphContainer.toObject(message.designHierarchy, options)
             if (message.jointHierarchy != null && message.hasOwnProperty("jointHierarchy"))
-                object.jointHierarchy = $root.mirabuf.GraphContainer.toObject(message.jointHierarchy, options);
+                object.jointHierarchy = $root.mirabuf.GraphContainer.toObject(message.jointHierarchy, options)
             if (message.transform != null && message.hasOwnProperty("transform"))
-                object.transform = $root.mirabuf.Transform.toObject(message.transform, options);
+                object.transform = $root.mirabuf.Transform.toObject(message.transform, options)
             if (message.thumbnail != null && message.hasOwnProperty("thumbnail"))
-                object.thumbnail = $root.mirabuf.Thumbnail.toObject(message.thumbnail, options);
-            return object;
-        };
+                object.thumbnail = $root.mirabuf.Thumbnail.toObject(message.thumbnail, options)
+            return object
+        }
 
         /**
          * Converts this Assembly to JSON.
@@ -397,8 +397,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Assembly.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Assembly
@@ -410,16 +410,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Assembly.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Assembly";
-        };
+            return typeUrlPrefix + "/mirabuf.Assembly"
+        }
 
-        return Assembly;
-    })();
+        return Assembly
+    })()
 
-    mirabuf.AssemblyData = (function() {
-
+    mirabuf.AssemblyData = (function () {
         /**
          * Properties of an AssemblyData.
          * @memberof mirabuf
@@ -441,8 +440,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function AssemblyData(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -451,7 +449,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.AssemblyData
          * @instance
          */
-        AssemblyData.prototype.parts = null;
+        AssemblyData.prototype.parts = null
 
         /**
          * Joint Definition Set
@@ -459,7 +457,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.AssemblyData
          * @instance
          */
-        AssemblyData.prototype.joints = null;
+        AssemblyData.prototype.joints = null
 
         /**
          * Appearance and Physical Material Set
@@ -467,7 +465,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.AssemblyData
          * @instance
          */
-        AssemblyData.prototype.materials = null;
+        AssemblyData.prototype.materials = null
 
         /**
          * AssemblyData signals.
@@ -475,7 +473,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.AssemblyData
          * @instance
          */
-        AssemblyData.prototype.signals = null;
+        AssemblyData.prototype.signals = null
 
         /**
          * Creates a new AssemblyData instance using the specified properties.
@@ -486,8 +484,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.AssemblyData} AssemblyData instance
          */
         AssemblyData.create = function create(properties) {
-            return new AssemblyData(properties);
-        };
+            return new AssemblyData(properties)
+        }
 
         /**
          * Encodes the specified AssemblyData message. Does not implicitly {@link mirabuf.AssemblyData.verify|verify} messages.
@@ -499,18 +497,26 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         AssemblyData.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.parts != null && Object.hasOwnProperty.call(message, "parts"))
-                $root.mirabuf.Parts.encode(message.parts, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.mirabuf.Parts.encode(message.parts, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
             if (message.joints != null && Object.hasOwnProperty.call(message, "joints"))
-                $root.mirabuf.joint.Joints.encode(message.joints, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.mirabuf.joint.Joints.encode(
+                    message.joints,
+                    writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                ).ldelim()
             if (message.materials != null && Object.hasOwnProperty.call(message, "materials"))
-                $root.mirabuf.material.Materials.encode(message.materials, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.mirabuf.material.Materials.encode(
+                    message.materials,
+                    writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                ).ldelim()
             if (message.signals != null && Object.hasOwnProperty.call(message, "signals"))
-                $root.mirabuf.signal.Signals.encode(message.signals, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-            return writer;
-        };
+                $root.mirabuf.signal.Signals.encode(
+                    message.signals,
+                    writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                ).ldelim()
+            return writer
+        }
 
         /**
          * Encodes the specified AssemblyData message, length delimited. Does not implicitly {@link mirabuf.AssemblyData.verify|verify} messages.
@@ -522,8 +528,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         AssemblyData.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes an AssemblyData message from the specified reader or buffer.
@@ -537,35 +543,35 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         AssemblyData.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.AssemblyData();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.AssemblyData()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.parts = $root.mirabuf.Parts.decode(reader, reader.uint32());
-                        break;
+                    case 1: {
+                        message.parts = $root.mirabuf.Parts.decode(reader, reader.uint32())
+                        break
                     }
-                case 2: {
-                        message.joints = $root.mirabuf.joint.Joints.decode(reader, reader.uint32());
-                        break;
+                    case 2: {
+                        message.joints = $root.mirabuf.joint.Joints.decode(reader, reader.uint32())
+                        break
                     }
-                case 3: {
-                        message.materials = $root.mirabuf.material.Materials.decode(reader, reader.uint32());
-                        break;
+                    case 3: {
+                        message.materials = $root.mirabuf.material.Materials.decode(reader, reader.uint32())
+                        break
                     }
-                case 4: {
-                        message.signals = $root.mirabuf.signal.Signals.decode(reader, reader.uint32());
-                        break;
+                    case 4: {
+                        message.signals = $root.mirabuf.signal.Signals.decode(reader, reader.uint32())
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes an AssemblyData message from the specified reader or buffer, length delimited.
@@ -578,10 +584,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         AssemblyData.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies an AssemblyData message.
@@ -592,30 +597,25 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         AssemblyData.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.parts != null && message.hasOwnProperty("parts")) {
-                let error = $root.mirabuf.Parts.verify(message.parts);
-                if (error)
-                    return "parts." + error;
+                let error = $root.mirabuf.Parts.verify(message.parts)
+                if (error) return "parts." + error
             }
             if (message.joints != null && message.hasOwnProperty("joints")) {
-                let error = $root.mirabuf.joint.Joints.verify(message.joints);
-                if (error)
-                    return "joints." + error;
+                let error = $root.mirabuf.joint.Joints.verify(message.joints)
+                if (error) return "joints." + error
             }
             if (message.materials != null && message.hasOwnProperty("materials")) {
-                let error = $root.mirabuf.material.Materials.verify(message.materials);
-                if (error)
-                    return "materials." + error;
+                let error = $root.mirabuf.material.Materials.verify(message.materials)
+                if (error) return "materials." + error
             }
             if (message.signals != null && message.hasOwnProperty("signals")) {
-                let error = $root.mirabuf.signal.Signals.verify(message.signals);
-                if (error)
-                    return "signals." + error;
+                let error = $root.mirabuf.signal.Signals.verify(message.signals)
+                if (error) return "signals." + error
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates an AssemblyData message from a plain object. Also converts values to their respective internal types.
@@ -626,31 +626,28 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.AssemblyData} AssemblyData
          */
         AssemblyData.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.AssemblyData)
-                return object;
-            let message = new $root.mirabuf.AssemblyData();
+            if (object instanceof $root.mirabuf.AssemblyData) return object
+            let message = new $root.mirabuf.AssemblyData()
             if (object.parts != null) {
-                if (typeof object.parts !== "object")
-                    throw TypeError(".mirabuf.AssemblyData.parts: object expected");
-                message.parts = $root.mirabuf.Parts.fromObject(object.parts);
+                if (typeof object.parts !== "object") throw TypeError(".mirabuf.AssemblyData.parts: object expected")
+                message.parts = $root.mirabuf.Parts.fromObject(object.parts)
             }
             if (object.joints != null) {
-                if (typeof object.joints !== "object")
-                    throw TypeError(".mirabuf.AssemblyData.joints: object expected");
-                message.joints = $root.mirabuf.joint.Joints.fromObject(object.joints);
+                if (typeof object.joints !== "object") throw TypeError(".mirabuf.AssemblyData.joints: object expected")
+                message.joints = $root.mirabuf.joint.Joints.fromObject(object.joints)
             }
             if (object.materials != null) {
                 if (typeof object.materials !== "object")
-                    throw TypeError(".mirabuf.AssemblyData.materials: object expected");
-                message.materials = $root.mirabuf.material.Materials.fromObject(object.materials);
+                    throw TypeError(".mirabuf.AssemblyData.materials: object expected")
+                message.materials = $root.mirabuf.material.Materials.fromObject(object.materials)
             }
             if (object.signals != null) {
                 if (typeof object.signals !== "object")
-                    throw TypeError(".mirabuf.AssemblyData.signals: object expected");
-                message.signals = $root.mirabuf.signal.Signals.fromObject(object.signals);
+                    throw TypeError(".mirabuf.AssemblyData.signals: object expected")
+                message.signals = $root.mirabuf.signal.Signals.fromObject(object.signals)
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from an AssemblyData message. Also converts values to other types if specified.
@@ -662,25 +659,24 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         AssemblyData.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.parts = null;
-                object.joints = null;
-                object.materials = null;
-                object.signals = null;
+                object.parts = null
+                object.joints = null
+                object.materials = null
+                object.signals = null
             }
             if (message.parts != null && message.hasOwnProperty("parts"))
-                object.parts = $root.mirabuf.Parts.toObject(message.parts, options);
+                object.parts = $root.mirabuf.Parts.toObject(message.parts, options)
             if (message.joints != null && message.hasOwnProperty("joints"))
-                object.joints = $root.mirabuf.joint.Joints.toObject(message.joints, options);
+                object.joints = $root.mirabuf.joint.Joints.toObject(message.joints, options)
             if (message.materials != null && message.hasOwnProperty("materials"))
-                object.materials = $root.mirabuf.material.Materials.toObject(message.materials, options);
+                object.materials = $root.mirabuf.material.Materials.toObject(message.materials, options)
             if (message.signals != null && message.hasOwnProperty("signals"))
-                object.signals = $root.mirabuf.signal.Signals.toObject(message.signals, options);
-            return object;
-        };
+                object.signals = $root.mirabuf.signal.Signals.toObject(message.signals, options)
+            return object
+        }
 
         /**
          * Converts this AssemblyData to JSON.
@@ -690,8 +686,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         AssemblyData.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for AssemblyData
@@ -703,16 +699,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         AssemblyData.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.AssemblyData";
-        };
+            return typeUrlPrefix + "/mirabuf.AssemblyData"
+        }
 
-        return AssemblyData;
-    })();
+        return AssemblyData
+    })()
 
-    mirabuf.Parts = (function() {
-
+    mirabuf.Parts = (function () {
         /**
          * Properties of a Parts.
          * @memberof mirabuf
@@ -732,12 +727,11 @@ export const mirabuf = $root.mirabuf = (() => {
          * @param {mirabuf.IParts=} [properties] Properties to set
          */
         function Parts(properties) {
-            this.partDefinitions = {};
-            this.partInstances = {};
+            this.partDefinitions = {}
+            this.partInstances = {}
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -746,7 +740,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Parts
          * @instance
          */
-        Parts.prototype.info = null;
+        Parts.prototype.info = null
 
         /**
          * Map of the Exported Part Definitions
@@ -754,7 +748,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Parts
          * @instance
          */
-        Parts.prototype.partDefinitions = $util.emptyObject;
+        Parts.prototype.partDefinitions = $util.emptyObject
 
         /**
          * Map of the Exported Parts that make up the object
@@ -762,7 +756,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Parts
          * @instance
          */
-        Parts.prototype.partInstances = $util.emptyObject;
+        Parts.prototype.partInstances = $util.emptyObject
 
         /**
          * other associated data that can be used
@@ -770,7 +764,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Parts
          * @instance
          */
-        Parts.prototype.userData = null;
+        Parts.prototype.userData = null
 
         /**
          * Creates a new Parts instance using the specified properties.
@@ -781,8 +775,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Parts} Parts instance
          */
         Parts.create = function create(properties) {
-            return new Parts(properties);
-        };
+            return new Parts(properties)
+        }
 
         /**
          * Encodes the specified Parts message. Does not implicitly {@link mirabuf.Parts.verify|verify} messages.
@@ -794,24 +788,36 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Parts.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
             if (message.partDefinitions != null && Object.hasOwnProperty.call(message, "partDefinitions"))
                 for (let keys = Object.keys(message.partDefinitions), i = 0; i < keys.length; ++i) {
-                    writer.uint32(/* id 2, wireType 2 =*/18).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                    $root.mirabuf.PartDefinition.encode(message.partDefinitions[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                    writer.uint32(/* id 2, wireType 2 =*/ 18).fork().uint32(/* id 1, wireType 2 =*/ 10).string(keys[i])
+                    $root.mirabuf.PartDefinition.encode(
+                        message.partDefinitions[keys[i]],
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                    )
+                        .ldelim()
+                        .ldelim()
                 }
             if (message.partInstances != null && Object.hasOwnProperty.call(message, "partInstances"))
                 for (let keys = Object.keys(message.partInstances), i = 0; i < keys.length; ++i) {
-                    writer.uint32(/* id 3, wireType 2 =*/26).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                    $root.mirabuf.PartInstance.encode(message.partInstances[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                    writer.uint32(/* id 3, wireType 2 =*/ 26).fork().uint32(/* id 1, wireType 2 =*/ 10).string(keys[i])
+                    $root.mirabuf.PartInstance.encode(
+                        message.partInstances[keys[i]],
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                    )
+                        .ldelim()
+                        .ldelim()
                 }
             if (message.userData != null && Object.hasOwnProperty.call(message, "userData"))
-                $root.mirabuf.UserData.encode(message.userData, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
-            return writer;
-        };
+                $root.mirabuf.UserData.encode(
+                    message.userData,
+                    writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                ).ldelim()
+            return writer
+        }
 
         /**
          * Encodes the specified Parts message, length delimited. Does not implicitly {@link mirabuf.Parts.verify|verify} messages.
@@ -823,8 +829,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Parts.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a Parts message from the specified reader or buffer.
@@ -838,73 +844,73 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Parts.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Parts(), key, value;
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Parts(),
+                key,
+                value
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                        break;
+                    case 1: {
+                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                        break
                     }
-                case 2: {
-                        if (message.partDefinitions === $util.emptyObject)
-                            message.partDefinitions = {};
-                        let end2 = reader.uint32() + reader.pos;
-                        key = "";
-                        value = null;
+                    case 2: {
+                        if (message.partDefinitions === $util.emptyObject) message.partDefinitions = {}
+                        let end2 = reader.uint32() + reader.pos
+                        key = ""
+                        value = null
                         while (reader.pos < end2) {
-                            let tag2 = reader.uint32();
+                            let tag2 = reader.uint32()
                             switch (tag2 >>> 3) {
-                            case 1:
-                                key = reader.string();
-                                break;
-                            case 2:
-                                value = $root.mirabuf.PartDefinition.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag2 & 7);
-                                break;
+                                case 1:
+                                    key = reader.string()
+                                    break
+                                case 2:
+                                    value = $root.mirabuf.PartDefinition.decode(reader, reader.uint32())
+                                    break
+                                default:
+                                    reader.skipType(tag2 & 7)
+                                    break
                             }
                         }
-                        message.partDefinitions[key] = value;
-                        break;
+                        message.partDefinitions[key] = value
+                        break
                     }
-                case 3: {
-                        if (message.partInstances === $util.emptyObject)
-                            message.partInstances = {};
-                        let end2 = reader.uint32() + reader.pos;
-                        key = "";
-                        value = null;
+                    case 3: {
+                        if (message.partInstances === $util.emptyObject) message.partInstances = {}
+                        let end2 = reader.uint32() + reader.pos
+                        key = ""
+                        value = null
                         while (reader.pos < end2) {
-                            let tag2 = reader.uint32();
+                            let tag2 = reader.uint32()
                             switch (tag2 >>> 3) {
-                            case 1:
-                                key = reader.string();
-                                break;
-                            case 2:
-                                value = $root.mirabuf.PartInstance.decode(reader, reader.uint32());
-                                break;
-                            default:
-                                reader.skipType(tag2 & 7);
-                                break;
+                                case 1:
+                                    key = reader.string()
+                                    break
+                                case 2:
+                                    value = $root.mirabuf.PartInstance.decode(reader, reader.uint32())
+                                    break
+                                default:
+                                    reader.skipType(tag2 & 7)
+                                    break
                             }
                         }
-                        message.partInstances[key] = value;
-                        break;
+                        message.partInstances[key] = value
+                        break
                     }
-                case 4: {
-                        message.userData = $root.mirabuf.UserData.decode(reader, reader.uint32());
-                        break;
+                    case 4: {
+                        message.userData = $root.mirabuf.UserData.decode(reader, reader.uint32())
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a Parts message from the specified reader or buffer, length delimited.
@@ -917,10 +923,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Parts.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a Parts message.
@@ -931,40 +936,33 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Parts.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.info != null && message.hasOwnProperty("info")) {
-                let error = $root.mirabuf.Info.verify(message.info);
-                if (error)
-                    return "info." + error;
+                let error = $root.mirabuf.Info.verify(message.info)
+                if (error) return "info." + error
             }
             if (message.partDefinitions != null && message.hasOwnProperty("partDefinitions")) {
-                if (!$util.isObject(message.partDefinitions))
-                    return "partDefinitions: object expected";
-                let key = Object.keys(message.partDefinitions);
+                if (!$util.isObject(message.partDefinitions)) return "partDefinitions: object expected"
+                let key = Object.keys(message.partDefinitions)
                 for (let i = 0; i < key.length; ++i) {
-                    let error = $root.mirabuf.PartDefinition.verify(message.partDefinitions[key[i]]);
-                    if (error)
-                        return "partDefinitions." + error;
+                    let error = $root.mirabuf.PartDefinition.verify(message.partDefinitions[key[i]])
+                    if (error) return "partDefinitions." + error
                 }
             }
             if (message.partInstances != null && message.hasOwnProperty("partInstances")) {
-                if (!$util.isObject(message.partInstances))
-                    return "partInstances: object expected";
-                let key = Object.keys(message.partInstances);
+                if (!$util.isObject(message.partInstances)) return "partInstances: object expected"
+                let key = Object.keys(message.partInstances)
                 for (let i = 0; i < key.length; ++i) {
-                    let error = $root.mirabuf.PartInstance.verify(message.partInstances[key[i]]);
-                    if (error)
-                        return "partInstances." + error;
+                    let error = $root.mirabuf.PartInstance.verify(message.partInstances[key[i]])
+                    if (error) return "partInstances." + error
                 }
             }
             if (message.userData != null && message.hasOwnProperty("userData")) {
-                let error = $root.mirabuf.UserData.verify(message.userData);
-                if (error)
-                    return "userData." + error;
+                let error = $root.mirabuf.UserData.verify(message.userData)
+                if (error) return "userData." + error
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates a Parts message from a plain object. Also converts values to their respective internal types.
@@ -975,41 +973,42 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Parts} Parts
          */
         Parts.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Parts)
-                return object;
-            let message = new $root.mirabuf.Parts();
+            if (object instanceof $root.mirabuf.Parts) return object
+            let message = new $root.mirabuf.Parts()
             if (object.info != null) {
-                if (typeof object.info !== "object")
-                    throw TypeError(".mirabuf.Parts.info: object expected");
-                message.info = $root.mirabuf.Info.fromObject(object.info);
+                if (typeof object.info !== "object") throw TypeError(".mirabuf.Parts.info: object expected")
+                message.info = $root.mirabuf.Info.fromObject(object.info)
             }
             if (object.partDefinitions) {
                 if (typeof object.partDefinitions !== "object")
-                    throw TypeError(".mirabuf.Parts.partDefinitions: object expected");
-                message.partDefinitions = {};
+                    throw TypeError(".mirabuf.Parts.partDefinitions: object expected")
+                message.partDefinitions = {}
                 for (let keys = Object.keys(object.partDefinitions), i = 0; i < keys.length; ++i) {
                     if (typeof object.partDefinitions[keys[i]] !== "object")
-                        throw TypeError(".mirabuf.Parts.partDefinitions: object expected");
-                    message.partDefinitions[keys[i]] = $root.mirabuf.PartDefinition.fromObject(object.partDefinitions[keys[i]]);
+                        throw TypeError(".mirabuf.Parts.partDefinitions: object expected")
+                    message.partDefinitions[keys[i]] = $root.mirabuf.PartDefinition.fromObject(
+                        object.partDefinitions[keys[i]]
+                    )
                 }
             }
             if (object.partInstances) {
                 if (typeof object.partInstances !== "object")
-                    throw TypeError(".mirabuf.Parts.partInstances: object expected");
-                message.partInstances = {};
+                    throw TypeError(".mirabuf.Parts.partInstances: object expected")
+                message.partInstances = {}
                 for (let keys = Object.keys(object.partInstances), i = 0; i < keys.length; ++i) {
                     if (typeof object.partInstances[keys[i]] !== "object")
-                        throw TypeError(".mirabuf.Parts.partInstances: object expected");
-                    message.partInstances[keys[i]] = $root.mirabuf.PartInstance.fromObject(object.partInstances[keys[i]]);
+                        throw TypeError(".mirabuf.Parts.partInstances: object expected")
+                    message.partInstances[keys[i]] = $root.mirabuf.PartInstance.fromObject(
+                        object.partInstances[keys[i]]
+                    )
                 }
             }
             if (object.userData != null) {
-                if (typeof object.userData !== "object")
-                    throw TypeError(".mirabuf.Parts.userData: object expected");
-                message.userData = $root.mirabuf.UserData.fromObject(object.userData);
+                if (typeof object.userData !== "object") throw TypeError(".mirabuf.Parts.userData: object expected")
+                message.userData = $root.mirabuf.UserData.fromObject(object.userData)
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from a Parts message. Also converts values to other types if specified.
@@ -1021,34 +1020,39 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Parts.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.objects || options.defaults) {
-                object.partDefinitions = {};
-                object.partInstances = {};
+                object.partDefinitions = {}
+                object.partInstances = {}
             }
             if (options.defaults) {
-                object.info = null;
-                object.userData = null;
+                object.info = null
+                object.userData = null
             }
             if (message.info != null && message.hasOwnProperty("info"))
-                object.info = $root.mirabuf.Info.toObject(message.info, options);
-            let keys2;
+                object.info = $root.mirabuf.Info.toObject(message.info, options)
+            let keys2
             if (message.partDefinitions && (keys2 = Object.keys(message.partDefinitions)).length) {
-                object.partDefinitions = {};
+                object.partDefinitions = {}
                 for (let j = 0; j < keys2.length; ++j)
-                    object.partDefinitions[keys2[j]] = $root.mirabuf.PartDefinition.toObject(message.partDefinitions[keys2[j]], options);
+                    object.partDefinitions[keys2[j]] = $root.mirabuf.PartDefinition.toObject(
+                        message.partDefinitions[keys2[j]],
+                        options
+                    )
             }
             if (message.partInstances && (keys2 = Object.keys(message.partInstances)).length) {
-                object.partInstances = {};
+                object.partInstances = {}
                 for (let j = 0; j < keys2.length; ++j)
-                    object.partInstances[keys2[j]] = $root.mirabuf.PartInstance.toObject(message.partInstances[keys2[j]], options);
+                    object.partInstances[keys2[j]] = $root.mirabuf.PartInstance.toObject(
+                        message.partInstances[keys2[j]],
+                        options
+                    )
             }
             if (message.userData != null && message.hasOwnProperty("userData"))
-                object.userData = $root.mirabuf.UserData.toObject(message.userData, options);
-            return object;
-        };
+                object.userData = $root.mirabuf.UserData.toObject(message.userData, options)
+            return object
+        }
 
         /**
          * Converts this Parts to JSON.
@@ -1058,8 +1062,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Parts.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Parts
@@ -1071,16 +1075,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Parts.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Parts";
-        };
+            return typeUrlPrefix + "/mirabuf.Parts"
+        }
 
-        return Parts;
-    })();
+        return Parts
+    })()
 
-    mirabuf.PartDefinition = (function() {
-
+    mirabuf.PartDefinition = (function () {
         /**
          * Properties of a PartDefinition.
          * @memberof mirabuf
@@ -1105,11 +1108,10 @@ export const mirabuf = $root.mirabuf = (() => {
          * @param {mirabuf.IPartDefinition=} [properties] Properties to set
          */
         function PartDefinition(properties) {
-            this.bodies = [];
+            this.bodies = []
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -1118,7 +1120,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartDefinition
          * @instance
          */
-        PartDefinition.prototype.info = null;
+        PartDefinition.prototype.info = null
 
         /**
          * Physical data associated with Part
@@ -1126,7 +1128,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartDefinition
          * @instance
          */
-        PartDefinition.prototype.physicalData = null;
+        PartDefinition.prototype.physicalData = null
 
         /**
          * Base Transform applied - Most Likely Identity Matrix
@@ -1134,7 +1136,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartDefinition
          * @instance
          */
-        PartDefinition.prototype.baseTransform = null;
+        PartDefinition.prototype.baseTransform = null
 
         /**
          * Mesh Bodies to populate part
@@ -1142,7 +1144,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartDefinition
          * @instance
          */
-        PartDefinition.prototype.bodies = $util.emptyArray;
+        PartDefinition.prototype.bodies = $util.emptyArray
 
         /**
          * Optional value to state whether an object is a dynamic object in a static assembly - all children are also considered overriden
@@ -1150,7 +1152,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartDefinition
          * @instance
          */
-        PartDefinition.prototype.dynamic = false;
+        PartDefinition.prototype.dynamic = false
 
         /**
          * Optional value for overriding the friction value 0-1
@@ -1158,7 +1160,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartDefinition
          * @instance
          */
-        PartDefinition.prototype.frictionOverride = 0;
+        PartDefinition.prototype.frictionOverride = 0
 
         /**
          * Optional value for overriding an indiviaul object's mass
@@ -1166,7 +1168,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartDefinition
          * @instance
          */
-        PartDefinition.prototype.massOverride = 0;
+        PartDefinition.prototype.massOverride = 0
 
         /**
          * Creates a new PartDefinition instance using the specified properties.
@@ -1177,8 +1179,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.PartDefinition} PartDefinition instance
          */
         PartDefinition.create = function create(properties) {
-            return new PartDefinition(properties);
-        };
+            return new PartDefinition(properties)
+        }
 
         /**
          * Encodes the specified PartDefinition message. Does not implicitly {@link mirabuf.PartDefinition.verify|verify} messages.
@@ -1190,25 +1192,33 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         PartDefinition.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
             if (message.physicalData != null && Object.hasOwnProperty.call(message, "physicalData"))
-                $root.mirabuf.PhysicalProperties.encode(message.physicalData, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                $root.mirabuf.PhysicalProperties.encode(
+                    message.physicalData,
+                    writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                ).ldelim()
             if (message.baseTransform != null && Object.hasOwnProperty.call(message, "baseTransform"))
-                $root.mirabuf.Transform.encode(message.baseTransform, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.mirabuf.Transform.encode(
+                    message.baseTransform,
+                    writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                ).ldelim()
             if (message.bodies != null && message.bodies.length)
                 for (let i = 0; i < message.bodies.length; ++i)
-                    $root.mirabuf.Body.encode(message.bodies[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                    $root.mirabuf.Body.encode(
+                        message.bodies[i],
+                        writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                    ).ldelim()
             if (message.dynamic != null && Object.hasOwnProperty.call(message, "dynamic"))
-                writer.uint32(/* id 5, wireType 0 =*/40).bool(message.dynamic);
+                writer.uint32(/* id 5, wireType 0 =*/ 40).bool(message.dynamic)
             if (message.frictionOverride != null && Object.hasOwnProperty.call(message, "frictionOverride"))
-                writer.uint32(/* id 6, wireType 5 =*/53).float(message.frictionOverride);
+                writer.uint32(/* id 6, wireType 5 =*/ 53).float(message.frictionOverride)
             if (message.massOverride != null && Object.hasOwnProperty.call(message, "massOverride"))
-                writer.uint32(/* id 7, wireType 5 =*/61).float(message.massOverride);
-            return writer;
-        };
+                writer.uint32(/* id 7, wireType 5 =*/ 61).float(message.massOverride)
+            return writer
+        }
 
         /**
          * Encodes the specified PartDefinition message, length delimited. Does not implicitly {@link mirabuf.PartDefinition.verify|verify} messages.
@@ -1220,8 +1230,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         PartDefinition.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a PartDefinition message from the specified reader or buffer.
@@ -1235,49 +1245,48 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         PartDefinition.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.PartDefinition();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.PartDefinition()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                        break;
+                    case 1: {
+                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                        break
                     }
-                case 2: {
-                        message.physicalData = $root.mirabuf.PhysicalProperties.decode(reader, reader.uint32());
-                        break;
+                    case 2: {
+                        message.physicalData = $root.mirabuf.PhysicalProperties.decode(reader, reader.uint32())
+                        break
                     }
-                case 3: {
-                        message.baseTransform = $root.mirabuf.Transform.decode(reader, reader.uint32());
-                        break;
+                    case 3: {
+                        message.baseTransform = $root.mirabuf.Transform.decode(reader, reader.uint32())
+                        break
                     }
-                case 4: {
-                        if (!(message.bodies && message.bodies.length))
-                            message.bodies = [];
-                        message.bodies.push($root.mirabuf.Body.decode(reader, reader.uint32()));
-                        break;
+                    case 4: {
+                        if (!(message.bodies && message.bodies.length)) message.bodies = []
+                        message.bodies.push($root.mirabuf.Body.decode(reader, reader.uint32()))
+                        break
                     }
-                case 5: {
-                        message.dynamic = reader.bool();
-                        break;
+                    case 5: {
+                        message.dynamic = reader.bool()
+                        break
                     }
-                case 6: {
-                        message.frictionOverride = reader.float();
-                        break;
+                    case 6: {
+                        message.frictionOverride = reader.float()
+                        break
                     }
-                case 7: {
-                        message.massOverride = reader.float();
-                        break;
+                    case 7: {
+                        message.massOverride = reader.float()
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a PartDefinition message from the specified reader or buffer, length delimited.
@@ -1290,10 +1299,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         PartDefinition.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a PartDefinition message.
@@ -1304,43 +1312,34 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         PartDefinition.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.info != null && message.hasOwnProperty("info")) {
-                let error = $root.mirabuf.Info.verify(message.info);
-                if (error)
-                    return "info." + error;
+                let error = $root.mirabuf.Info.verify(message.info)
+                if (error) return "info." + error
             }
             if (message.physicalData != null && message.hasOwnProperty("physicalData")) {
-                let error = $root.mirabuf.PhysicalProperties.verify(message.physicalData);
-                if (error)
-                    return "physicalData." + error;
+                let error = $root.mirabuf.PhysicalProperties.verify(message.physicalData)
+                if (error) return "physicalData." + error
             }
             if (message.baseTransform != null && message.hasOwnProperty("baseTransform")) {
-                let error = $root.mirabuf.Transform.verify(message.baseTransform);
-                if (error)
-                    return "baseTransform." + error;
+                let error = $root.mirabuf.Transform.verify(message.baseTransform)
+                if (error) return "baseTransform." + error
             }
             if (message.bodies != null && message.hasOwnProperty("bodies")) {
-                if (!Array.isArray(message.bodies))
-                    return "bodies: array expected";
+                if (!Array.isArray(message.bodies)) return "bodies: array expected"
                 for (let i = 0; i < message.bodies.length; ++i) {
-                    let error = $root.mirabuf.Body.verify(message.bodies[i]);
-                    if (error)
-                        return "bodies." + error;
+                    let error = $root.mirabuf.Body.verify(message.bodies[i])
+                    if (error) return "bodies." + error
                 }
             }
             if (message.dynamic != null && message.hasOwnProperty("dynamic"))
-                if (typeof message.dynamic !== "boolean")
-                    return "dynamic: boolean expected";
+                if (typeof message.dynamic !== "boolean") return "dynamic: boolean expected"
             if (message.frictionOverride != null && message.hasOwnProperty("frictionOverride"))
-                if (typeof message.frictionOverride !== "number")
-                    return "frictionOverride: number expected";
+                if (typeof message.frictionOverride !== "number") return "frictionOverride: number expected"
             if (message.massOverride != null && message.hasOwnProperty("massOverride"))
-                if (typeof message.massOverride !== "number")
-                    return "massOverride: number expected";
-            return null;
-        };
+                if (typeof message.massOverride !== "number") return "massOverride: number expected"
+            return null
+        }
 
         /**
          * Creates a PartDefinition message from a plain object. Also converts values to their respective internal types.
@@ -1351,42 +1350,36 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.PartDefinition} PartDefinition
          */
         PartDefinition.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.PartDefinition)
-                return object;
-            let message = new $root.mirabuf.PartDefinition();
+            if (object instanceof $root.mirabuf.PartDefinition) return object
+            let message = new $root.mirabuf.PartDefinition()
             if (object.info != null) {
-                if (typeof object.info !== "object")
-                    throw TypeError(".mirabuf.PartDefinition.info: object expected");
-                message.info = $root.mirabuf.Info.fromObject(object.info);
+                if (typeof object.info !== "object") throw TypeError(".mirabuf.PartDefinition.info: object expected")
+                message.info = $root.mirabuf.Info.fromObject(object.info)
             }
             if (object.physicalData != null) {
                 if (typeof object.physicalData !== "object")
-                    throw TypeError(".mirabuf.PartDefinition.physicalData: object expected");
-                message.physicalData = $root.mirabuf.PhysicalProperties.fromObject(object.physicalData);
+                    throw TypeError(".mirabuf.PartDefinition.physicalData: object expected")
+                message.physicalData = $root.mirabuf.PhysicalProperties.fromObject(object.physicalData)
             }
             if (object.baseTransform != null) {
                 if (typeof object.baseTransform !== "object")
-                    throw TypeError(".mirabuf.PartDefinition.baseTransform: object expected");
-                message.baseTransform = $root.mirabuf.Transform.fromObject(object.baseTransform);
+                    throw TypeError(".mirabuf.PartDefinition.baseTransform: object expected")
+                message.baseTransform = $root.mirabuf.Transform.fromObject(object.baseTransform)
             }
             if (object.bodies) {
-                if (!Array.isArray(object.bodies))
-                    throw TypeError(".mirabuf.PartDefinition.bodies: array expected");
-                message.bodies = [];
+                if (!Array.isArray(object.bodies)) throw TypeError(".mirabuf.PartDefinition.bodies: array expected")
+                message.bodies = []
                 for (let i = 0; i < object.bodies.length; ++i) {
                     if (typeof object.bodies[i] !== "object")
-                        throw TypeError(".mirabuf.PartDefinition.bodies: object expected");
-                    message.bodies[i] = $root.mirabuf.Body.fromObject(object.bodies[i]);
+                        throw TypeError(".mirabuf.PartDefinition.bodies: object expected")
+                    message.bodies[i] = $root.mirabuf.Body.fromObject(object.bodies[i])
                 }
             }
-            if (object.dynamic != null)
-                message.dynamic = Boolean(object.dynamic);
-            if (object.frictionOverride != null)
-                message.frictionOverride = Number(object.frictionOverride);
-            if (object.massOverride != null)
-                message.massOverride = Number(object.massOverride);
-            return message;
-        };
+            if (object.dynamic != null) message.dynamic = Boolean(object.dynamic)
+            if (object.frictionOverride != null) message.frictionOverride = Number(object.frictionOverride)
+            if (object.massOverride != null) message.massOverride = Number(object.massOverride)
+            return message
+        }
 
         /**
          * Creates a plain object from a PartDefinition message. Also converts values to other types if specified.
@@ -1398,38 +1391,41 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         PartDefinition.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.arrays || options.defaults)
-                object.bodies = [];
+            if (!options) options = {}
+            let object = {}
+            if (options.arrays || options.defaults) object.bodies = []
             if (options.defaults) {
-                object.info = null;
-                object.physicalData = null;
-                object.baseTransform = null;
-                object.dynamic = false;
-                object.frictionOverride = 0;
-                object.massOverride = 0;
+                object.info = null
+                object.physicalData = null
+                object.baseTransform = null
+                object.dynamic = false
+                object.frictionOverride = 0
+                object.massOverride = 0
             }
             if (message.info != null && message.hasOwnProperty("info"))
-                object.info = $root.mirabuf.Info.toObject(message.info, options);
+                object.info = $root.mirabuf.Info.toObject(message.info, options)
             if (message.physicalData != null && message.hasOwnProperty("physicalData"))
-                object.physicalData = $root.mirabuf.PhysicalProperties.toObject(message.physicalData, options);
+                object.physicalData = $root.mirabuf.PhysicalProperties.toObject(message.physicalData, options)
             if (message.baseTransform != null && message.hasOwnProperty("baseTransform"))
-                object.baseTransform = $root.mirabuf.Transform.toObject(message.baseTransform, options);
+                object.baseTransform = $root.mirabuf.Transform.toObject(message.baseTransform, options)
             if (message.bodies && message.bodies.length) {
-                object.bodies = [];
+                object.bodies = []
                 for (let j = 0; j < message.bodies.length; ++j)
-                    object.bodies[j] = $root.mirabuf.Body.toObject(message.bodies[j], options);
+                    object.bodies[j] = $root.mirabuf.Body.toObject(message.bodies[j], options)
             }
-            if (message.dynamic != null && message.hasOwnProperty("dynamic"))
-                object.dynamic = message.dynamic;
+            if (message.dynamic != null && message.hasOwnProperty("dynamic")) object.dynamic = message.dynamic
             if (message.frictionOverride != null && message.hasOwnProperty("frictionOverride"))
-                object.frictionOverride = options.json && !isFinite(message.frictionOverride) ? String(message.frictionOverride) : message.frictionOverride;
+                object.frictionOverride =
+                    options.json && !isFinite(message.frictionOverride)
+                        ? String(message.frictionOverride)
+                        : message.frictionOverride
             if (message.massOverride != null && message.hasOwnProperty("massOverride"))
-                object.massOverride = options.json && !isFinite(message.massOverride) ? String(message.massOverride) : message.massOverride;
-            return object;
-        };
+                object.massOverride =
+                    options.json && !isFinite(message.massOverride)
+                        ? String(message.massOverride)
+                        : message.massOverride
+            return object
+        }
 
         /**
          * Converts this PartDefinition to JSON.
@@ -1439,8 +1435,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         PartDefinition.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for PartDefinition
@@ -1452,16 +1448,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         PartDefinition.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.PartDefinition";
-        };
+            return typeUrlPrefix + "/mirabuf.PartDefinition"
+        }
 
-        return PartDefinition;
-    })();
+        return PartDefinition
+    })()
 
-    mirabuf.PartInstance = (function() {
-
+    mirabuf.PartInstance = (function () {
         /**
          * Properties of a PartInstance.
          * @memberof mirabuf
@@ -1485,11 +1480,10 @@ export const mirabuf = $root.mirabuf = (() => {
          * @param {mirabuf.IPartInstance=} [properties] Properties to set
          */
         function PartInstance(properties) {
-            this.joints = [];
+            this.joints = []
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -1498,7 +1492,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartInstance
          * @instance
          */
-        PartInstance.prototype.info = null;
+        PartInstance.prototype.info = null
 
         /**
          * Reference to the Part Definition defined in Assembly Data
@@ -1506,7 +1500,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartInstance
          * @instance
          */
-        PartInstance.prototype.partDefinitionReference = "";
+        PartInstance.prototype.partDefinitionReference = ""
 
         /**
          * Overriding the object transform (moves the part from the def) - in design hierarchy context
@@ -1514,7 +1508,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartInstance
          * @instance
          */
-        PartInstance.prototype.transform = null;
+        PartInstance.prototype.transform = null
 
         /**
          * Position transform from a global scope
@@ -1522,7 +1516,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartInstance
          * @instance
          */
-        PartInstance.prototype.globalTransform = null;
+        PartInstance.prototype.globalTransform = null
 
         /**
          * Joints that interact with this element
@@ -1530,7 +1524,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartInstance
          * @instance
          */
-        PartInstance.prototype.joints = $util.emptyArray;
+        PartInstance.prototype.joints = $util.emptyArray
 
         /**
          * PartInstance appearance.
@@ -1538,7 +1532,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartInstance
          * @instance
          */
-        PartInstance.prototype.appearance = "";
+        PartInstance.prototype.appearance = ""
 
         /**
          * Physical Material Reference to link to `Materials->PhysicalMaterial->Info->id`
@@ -1546,7 +1540,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartInstance
          * @instance
          */
-        PartInstance.prototype.physicalMaterial = "";
+        PartInstance.prototype.physicalMaterial = ""
 
         /**
          * Flag that if enabled indicates we should skip generating a collider, defaults to FALSE or undefined
@@ -1554,7 +1548,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PartInstance
          * @instance
          */
-        PartInstance.prototype.skipCollider = false;
+        PartInstance.prototype.skipCollider = false
 
         /**
          * Creates a new PartInstance instance using the specified properties.
@@ -1565,8 +1559,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.PartInstance} PartInstance instance
          */
         PartInstance.create = function create(properties) {
-            return new PartInstance(properties);
-        };
+            return new PartInstance(properties)
+        }
 
         /**
          * Encodes the specified PartInstance message. Does not implicitly {@link mirabuf.PartInstance.verify|verify} messages.
@@ -1578,27 +1572,35 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         PartInstance.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            if (message.partDefinitionReference != null && Object.hasOwnProperty.call(message, "partDefinitionReference"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.partDefinitionReference);
+                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
+            if (
+                message.partDefinitionReference != null &&
+                Object.hasOwnProperty.call(message, "partDefinitionReference")
+            )
+                writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.partDefinitionReference)
             if (message.transform != null && Object.hasOwnProperty.call(message, "transform"))
-                $root.mirabuf.Transform.encode(message.transform, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.mirabuf.Transform.encode(
+                    message.transform,
+                    writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                ).ldelim()
             if (message.globalTransform != null && Object.hasOwnProperty.call(message, "globalTransform"))
-                $root.mirabuf.Transform.encode(message.globalTransform, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.mirabuf.Transform.encode(
+                    message.globalTransform,
+                    writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                ).ldelim()
             if (message.joints != null && message.joints.length)
                 for (let i = 0; i < message.joints.length; ++i)
-                    writer.uint32(/* id 5, wireType 2 =*/42).string(message.joints[i]);
+                    writer.uint32(/* id 5, wireType 2 =*/ 42).string(message.joints[i])
             if (message.appearance != null && Object.hasOwnProperty.call(message, "appearance"))
-                writer.uint32(/* id 6, wireType 2 =*/50).string(message.appearance);
+                writer.uint32(/* id 6, wireType 2 =*/ 50).string(message.appearance)
             if (message.physicalMaterial != null && Object.hasOwnProperty.call(message, "physicalMaterial"))
-                writer.uint32(/* id 7, wireType 2 =*/58).string(message.physicalMaterial);
+                writer.uint32(/* id 7, wireType 2 =*/ 58).string(message.physicalMaterial)
             if (message.skipCollider != null && Object.hasOwnProperty.call(message, "skipCollider"))
-                writer.uint32(/* id 8, wireType 0 =*/64).bool(message.skipCollider);
-            return writer;
-        };
+                writer.uint32(/* id 8, wireType 0 =*/ 64).bool(message.skipCollider)
+            return writer
+        }
 
         /**
          * Encodes the specified PartInstance message, length delimited. Does not implicitly {@link mirabuf.PartInstance.verify|verify} messages.
@@ -1610,8 +1612,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         PartInstance.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a PartInstance message from the specified reader or buffer.
@@ -1625,53 +1627,52 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         PartInstance.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.PartInstance();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.PartInstance()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                        break;
+                    case 1: {
+                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                        break
                     }
-                case 2: {
-                        message.partDefinitionReference = reader.string();
-                        break;
+                    case 2: {
+                        message.partDefinitionReference = reader.string()
+                        break
                     }
-                case 3: {
-                        message.transform = $root.mirabuf.Transform.decode(reader, reader.uint32());
-                        break;
+                    case 3: {
+                        message.transform = $root.mirabuf.Transform.decode(reader, reader.uint32())
+                        break
                     }
-                case 4: {
-                        message.globalTransform = $root.mirabuf.Transform.decode(reader, reader.uint32());
-                        break;
+                    case 4: {
+                        message.globalTransform = $root.mirabuf.Transform.decode(reader, reader.uint32())
+                        break
                     }
-                case 5: {
-                        if (!(message.joints && message.joints.length))
-                            message.joints = [];
-                        message.joints.push(reader.string());
-                        break;
+                    case 5: {
+                        if (!(message.joints && message.joints.length)) message.joints = []
+                        message.joints.push(reader.string())
+                        break
                     }
-                case 6: {
-                        message.appearance = reader.string();
-                        break;
+                    case 6: {
+                        message.appearance = reader.string()
+                        break
                     }
-                case 7: {
-                        message.physicalMaterial = reader.string();
-                        break;
+                    case 7: {
+                        message.physicalMaterial = reader.string()
+                        break
                     }
-                case 8: {
-                        message.skipCollider = reader.bool();
-                        break;
+                    case 8: {
+                        message.skipCollider = reader.bool()
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a PartInstance message from the specified reader or buffer, length delimited.
@@ -1684,10 +1685,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         PartInstance.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a PartInstance message.
@@ -1698,44 +1698,34 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         PartInstance.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.info != null && message.hasOwnProperty("info")) {
-                let error = $root.mirabuf.Info.verify(message.info);
-                if (error)
-                    return "info." + error;
+                let error = $root.mirabuf.Info.verify(message.info)
+                if (error) return "info." + error
             }
             if (message.partDefinitionReference != null && message.hasOwnProperty("partDefinitionReference"))
-                if (!$util.isString(message.partDefinitionReference))
-                    return "partDefinitionReference: string expected";
+                if (!$util.isString(message.partDefinitionReference)) return "partDefinitionReference: string expected"
             if (message.transform != null && message.hasOwnProperty("transform")) {
-                let error = $root.mirabuf.Transform.verify(message.transform);
-                if (error)
-                    return "transform." + error;
+                let error = $root.mirabuf.Transform.verify(message.transform)
+                if (error) return "transform." + error
             }
             if (message.globalTransform != null && message.hasOwnProperty("globalTransform")) {
-                let error = $root.mirabuf.Transform.verify(message.globalTransform);
-                if (error)
-                    return "globalTransform." + error;
+                let error = $root.mirabuf.Transform.verify(message.globalTransform)
+                if (error) return "globalTransform." + error
             }
             if (message.joints != null && message.hasOwnProperty("joints")) {
-                if (!Array.isArray(message.joints))
-                    return "joints: array expected";
+                if (!Array.isArray(message.joints)) return "joints: array expected"
                 for (let i = 0; i < message.joints.length; ++i)
-                    if (!$util.isString(message.joints[i]))
-                        return "joints: string[] expected";
+                    if (!$util.isString(message.joints[i])) return "joints: string[] expected"
             }
             if (message.appearance != null && message.hasOwnProperty("appearance"))
-                if (!$util.isString(message.appearance))
-                    return "appearance: string expected";
+                if (!$util.isString(message.appearance)) return "appearance: string expected"
             if (message.physicalMaterial != null && message.hasOwnProperty("physicalMaterial"))
-                if (!$util.isString(message.physicalMaterial))
-                    return "physicalMaterial: string expected";
+                if (!$util.isString(message.physicalMaterial)) return "physicalMaterial: string expected"
             if (message.skipCollider != null && message.hasOwnProperty("skipCollider"))
-                if (typeof message.skipCollider !== "boolean")
-                    return "skipCollider: boolean expected";
-            return null;
-        };
+                if (typeof message.skipCollider !== "boolean") return "skipCollider: boolean expected"
+            return null
+        }
 
         /**
          * Creates a PartInstance message from a plain object. Also converts values to their respective internal types.
@@ -1746,41 +1736,34 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.PartInstance} PartInstance
          */
         PartInstance.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.PartInstance)
-                return object;
-            let message = new $root.mirabuf.PartInstance();
+            if (object instanceof $root.mirabuf.PartInstance) return object
+            let message = new $root.mirabuf.PartInstance()
             if (object.info != null) {
-                if (typeof object.info !== "object")
-                    throw TypeError(".mirabuf.PartInstance.info: object expected");
-                message.info = $root.mirabuf.Info.fromObject(object.info);
+                if (typeof object.info !== "object") throw TypeError(".mirabuf.PartInstance.info: object expected")
+                message.info = $root.mirabuf.Info.fromObject(object.info)
             }
             if (object.partDefinitionReference != null)
-                message.partDefinitionReference = String(object.partDefinitionReference);
+                message.partDefinitionReference = String(object.partDefinitionReference)
             if (object.transform != null) {
                 if (typeof object.transform !== "object")
-                    throw TypeError(".mirabuf.PartInstance.transform: object expected");
-                message.transform = $root.mirabuf.Transform.fromObject(object.transform);
+                    throw TypeError(".mirabuf.PartInstance.transform: object expected")
+                message.transform = $root.mirabuf.Transform.fromObject(object.transform)
             }
             if (object.globalTransform != null) {
                 if (typeof object.globalTransform !== "object")
-                    throw TypeError(".mirabuf.PartInstance.globalTransform: object expected");
-                message.globalTransform = $root.mirabuf.Transform.fromObject(object.globalTransform);
+                    throw TypeError(".mirabuf.PartInstance.globalTransform: object expected")
+                message.globalTransform = $root.mirabuf.Transform.fromObject(object.globalTransform)
             }
             if (object.joints) {
-                if (!Array.isArray(object.joints))
-                    throw TypeError(".mirabuf.PartInstance.joints: array expected");
-                message.joints = [];
-                for (let i = 0; i < object.joints.length; ++i)
-                    message.joints[i] = String(object.joints[i]);
+                if (!Array.isArray(object.joints)) throw TypeError(".mirabuf.PartInstance.joints: array expected")
+                message.joints = []
+                for (let i = 0; i < object.joints.length; ++i) message.joints[i] = String(object.joints[i])
             }
-            if (object.appearance != null)
-                message.appearance = String(object.appearance);
-            if (object.physicalMaterial != null)
-                message.physicalMaterial = String(object.physicalMaterial);
-            if (object.skipCollider != null)
-                message.skipCollider = Boolean(object.skipCollider);
-            return message;
-        };
+            if (object.appearance != null) message.appearance = String(object.appearance)
+            if (object.physicalMaterial != null) message.physicalMaterial = String(object.physicalMaterial)
+            if (object.skipCollider != null) message.skipCollider = Boolean(object.skipCollider)
+            return message
+        }
 
         /**
          * Creates a plain object from a PartInstance message. Also converts values to other types if specified.
@@ -1792,41 +1775,38 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         PartInstance.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.arrays || options.defaults)
-                object.joints = [];
+            if (!options) options = {}
+            let object = {}
+            if (options.arrays || options.defaults) object.joints = []
             if (options.defaults) {
-                object.info = null;
-                object.partDefinitionReference = "";
-                object.transform = null;
-                object.globalTransform = null;
-                object.appearance = "";
-                object.physicalMaterial = "";
-                object.skipCollider = false;
+                object.info = null
+                object.partDefinitionReference = ""
+                object.transform = null
+                object.globalTransform = null
+                object.appearance = ""
+                object.physicalMaterial = ""
+                object.skipCollider = false
             }
             if (message.info != null && message.hasOwnProperty("info"))
-                object.info = $root.mirabuf.Info.toObject(message.info, options);
+                object.info = $root.mirabuf.Info.toObject(message.info, options)
             if (message.partDefinitionReference != null && message.hasOwnProperty("partDefinitionReference"))
-                object.partDefinitionReference = message.partDefinitionReference;
+                object.partDefinitionReference = message.partDefinitionReference
             if (message.transform != null && message.hasOwnProperty("transform"))
-                object.transform = $root.mirabuf.Transform.toObject(message.transform, options);
+                object.transform = $root.mirabuf.Transform.toObject(message.transform, options)
             if (message.globalTransform != null && message.hasOwnProperty("globalTransform"))
-                object.globalTransform = $root.mirabuf.Transform.toObject(message.globalTransform, options);
+                object.globalTransform = $root.mirabuf.Transform.toObject(message.globalTransform, options)
             if (message.joints && message.joints.length) {
-                object.joints = [];
-                for (let j = 0; j < message.joints.length; ++j)
-                    object.joints[j] = message.joints[j];
+                object.joints = []
+                for (let j = 0; j < message.joints.length; ++j) object.joints[j] = message.joints[j]
             }
             if (message.appearance != null && message.hasOwnProperty("appearance"))
-                object.appearance = message.appearance;
+                object.appearance = message.appearance
             if (message.physicalMaterial != null && message.hasOwnProperty("physicalMaterial"))
-                object.physicalMaterial = message.physicalMaterial;
+                object.physicalMaterial = message.physicalMaterial
             if (message.skipCollider != null && message.hasOwnProperty("skipCollider"))
-                object.skipCollider = message.skipCollider;
-            return object;
-        };
+                object.skipCollider = message.skipCollider
+            return object
+        }
 
         /**
          * Converts this PartInstance to JSON.
@@ -1836,8 +1816,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         PartInstance.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for PartInstance
@@ -1849,16 +1829,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         PartInstance.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.PartInstance";
-        };
+            return typeUrlPrefix + "/mirabuf.PartInstance"
+        }
 
-        return PartInstance;
-    })();
+        return PartInstance
+    })()
 
-    mirabuf.Body = (function() {
-
+    mirabuf.Body = (function () {
         /**
          * Properties of a Body.
          * @memberof mirabuf
@@ -1880,8 +1859,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function Body(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -1890,7 +1868,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Body
          * @instance
          */
-        Body.prototype.info = null;
+        Body.prototype.info = null
 
         /**
          * Reference to Part Definition
@@ -1898,7 +1876,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Body
          * @instance
          */
-        Body.prototype.part = "";
+        Body.prototype.part = ""
 
         /**
          * Triangle Mesh for rendering
@@ -1906,7 +1884,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Body
          * @instance
          */
-        Body.prototype.triangleMesh = null;
+        Body.prototype.triangleMesh = null
 
         /**
          * Override Visual Appearance for the body
@@ -1914,7 +1892,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Body
          * @instance
          */
-        Body.prototype.appearanceOverride = "";
+        Body.prototype.appearanceOverride = ""
 
         /**
          * Creates a new Body instance using the specified properties.
@@ -1925,8 +1903,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Body} Body instance
          */
         Body.create = function create(properties) {
-            return new Body(properties);
-        };
+            return new Body(properties)
+        }
 
         /**
          * Encodes the specified Body message. Does not implicitly {@link mirabuf.Body.verify|verify} messages.
@@ -1938,18 +1916,20 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Body.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
             if (message.part != null && Object.hasOwnProperty.call(message, "part"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.part);
+                writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.part)
             if (message.triangleMesh != null && Object.hasOwnProperty.call(message, "triangleMesh"))
-                $root.mirabuf.TriangleMesh.encode(message.triangleMesh, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                $root.mirabuf.TriangleMesh.encode(
+                    message.triangleMesh,
+                    writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                ).ldelim()
             if (message.appearanceOverride != null && Object.hasOwnProperty.call(message, "appearanceOverride"))
-                writer.uint32(/* id 4, wireType 2 =*/34).string(message.appearanceOverride);
-            return writer;
-        };
+                writer.uint32(/* id 4, wireType 2 =*/ 34).string(message.appearanceOverride)
+            return writer
+        }
 
         /**
          * Encodes the specified Body message, length delimited. Does not implicitly {@link mirabuf.Body.verify|verify} messages.
@@ -1961,8 +1941,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Body.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a Body message from the specified reader or buffer.
@@ -1976,35 +1956,35 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Body.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Body();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Body()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                        break;
+                    case 1: {
+                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                        break
                     }
-                case 2: {
-                        message.part = reader.string();
-                        break;
+                    case 2: {
+                        message.part = reader.string()
+                        break
                     }
-                case 3: {
-                        message.triangleMesh = $root.mirabuf.TriangleMesh.decode(reader, reader.uint32());
-                        break;
+                    case 3: {
+                        message.triangleMesh = $root.mirabuf.TriangleMesh.decode(reader, reader.uint32())
+                        break
                     }
-                case 4: {
-                        message.appearanceOverride = reader.string();
-                        break;
+                    case 4: {
+                        message.appearanceOverride = reader.string()
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a Body message from the specified reader or buffer, length delimited.
@@ -2017,10 +1997,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Body.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a Body message.
@@ -2031,26 +2010,21 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Body.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.info != null && message.hasOwnProperty("info")) {
-                let error = $root.mirabuf.Info.verify(message.info);
-                if (error)
-                    return "info." + error;
+                let error = $root.mirabuf.Info.verify(message.info)
+                if (error) return "info." + error
             }
             if (message.part != null && message.hasOwnProperty("part"))
-                if (!$util.isString(message.part))
-                    return "part: string expected";
+                if (!$util.isString(message.part)) return "part: string expected"
             if (message.triangleMesh != null && message.hasOwnProperty("triangleMesh")) {
-                let error = $root.mirabuf.TriangleMesh.verify(message.triangleMesh);
-                if (error)
-                    return "triangleMesh." + error;
+                let error = $root.mirabuf.TriangleMesh.verify(message.triangleMesh)
+                if (error) return "triangleMesh." + error
             }
             if (message.appearanceOverride != null && message.hasOwnProperty("appearanceOverride"))
-                if (!$util.isString(message.appearanceOverride))
-                    return "appearanceOverride: string expected";
-            return null;
-        };
+                if (!$util.isString(message.appearanceOverride)) return "appearanceOverride: string expected"
+            return null
+        }
 
         /**
          * Creates a Body message from a plain object. Also converts values to their respective internal types.
@@ -2061,25 +2035,21 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Body} Body
          */
         Body.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Body)
-                return object;
-            let message = new $root.mirabuf.Body();
+            if (object instanceof $root.mirabuf.Body) return object
+            let message = new $root.mirabuf.Body()
             if (object.info != null) {
-                if (typeof object.info !== "object")
-                    throw TypeError(".mirabuf.Body.info: object expected");
-                message.info = $root.mirabuf.Info.fromObject(object.info);
+                if (typeof object.info !== "object") throw TypeError(".mirabuf.Body.info: object expected")
+                message.info = $root.mirabuf.Info.fromObject(object.info)
             }
-            if (object.part != null)
-                message.part = String(object.part);
+            if (object.part != null) message.part = String(object.part)
             if (object.triangleMesh != null) {
                 if (typeof object.triangleMesh !== "object")
-                    throw TypeError(".mirabuf.Body.triangleMesh: object expected");
-                message.triangleMesh = $root.mirabuf.TriangleMesh.fromObject(object.triangleMesh);
+                    throw TypeError(".mirabuf.Body.triangleMesh: object expected")
+                message.triangleMesh = $root.mirabuf.TriangleMesh.fromObject(object.triangleMesh)
             }
-            if (object.appearanceOverride != null)
-                message.appearanceOverride = String(object.appearanceOverride);
-            return message;
-        };
+            if (object.appearanceOverride != null) message.appearanceOverride = String(object.appearanceOverride)
+            return message
+        }
 
         /**
          * Creates a plain object from a Body message. Also converts values to other types if specified.
@@ -2091,25 +2061,23 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Body.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.info = null;
-                object.part = "";
-                object.triangleMesh = null;
-                object.appearanceOverride = "";
+                object.info = null
+                object.part = ""
+                object.triangleMesh = null
+                object.appearanceOverride = ""
             }
             if (message.info != null && message.hasOwnProperty("info"))
-                object.info = $root.mirabuf.Info.toObject(message.info, options);
-            if (message.part != null && message.hasOwnProperty("part"))
-                object.part = message.part;
+                object.info = $root.mirabuf.Info.toObject(message.info, options)
+            if (message.part != null && message.hasOwnProperty("part")) object.part = message.part
             if (message.triangleMesh != null && message.hasOwnProperty("triangleMesh"))
-                object.triangleMesh = $root.mirabuf.TriangleMesh.toObject(message.triangleMesh, options);
+                object.triangleMesh = $root.mirabuf.TriangleMesh.toObject(message.triangleMesh, options)
             if (message.appearanceOverride != null && message.hasOwnProperty("appearanceOverride"))
-                object.appearanceOverride = message.appearanceOverride;
-            return object;
-        };
+                object.appearanceOverride = message.appearanceOverride
+            return object
+        }
 
         /**
          * Converts this Body to JSON.
@@ -2119,8 +2087,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Body.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Body
@@ -2132,16 +2100,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Body.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Body";
-        };
+            return typeUrlPrefix + "/mirabuf.Body"
+        }
 
-        return Body;
-    })();
+        return Body
+    })()
 
-    mirabuf.TriangleMesh = (function() {
-
+    mirabuf.TriangleMesh = (function () {
         /**
          * Properties of a TriangleMesh.
          * @memberof mirabuf
@@ -2164,8 +2131,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function TriangleMesh(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -2174,7 +2140,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.TriangleMesh
          * @instance
          */
-        TriangleMesh.prototype.info = null;
+        TriangleMesh.prototype.info = null
 
         /**
          * Is this object a Plane ? (Does it have volume)
@@ -2182,7 +2148,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.TriangleMesh
          * @instance
          */
-        TriangleMesh.prototype.hasVolume = false;
+        TriangleMesh.prototype.hasVolume = false
 
         /**
          * Rendered Appearance properties referenced from Assembly Data
@@ -2190,7 +2156,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.TriangleMesh
          * @instance
          */
-        TriangleMesh.prototype.materialReference = "";
+        TriangleMesh.prototype.materialReference = ""
 
         /**
          * Stored as true types, inidicies, verts, uv
@@ -2198,7 +2164,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.TriangleMesh
          * @instance
          */
-        TriangleMesh.prototype.mesh = null;
+        TriangleMesh.prototype.mesh = null
 
         /**
          * Stored as binary data in bytes
@@ -2206,10 +2172,10 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.TriangleMesh
          * @instance
          */
-        TriangleMesh.prototype.bmesh = null;
+        TriangleMesh.prototype.bmesh = null
 
         // OneOf field names bound to virtual getters and setters
-        let $oneOfFields;
+        let $oneOfFields
 
         /**
          * What kind of Mesh Data exists in this Triangle Mesh
@@ -2218,9 +2184,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @instance
          */
         Object.defineProperty(TriangleMesh.prototype, "meshType", {
-            get: $util.oneOfGetter($oneOfFields = ["mesh", "bmesh"]),
-            set: $util.oneOfSetter($oneOfFields)
-        });
+            get: $util.oneOfGetter(($oneOfFields = ["mesh", "bmesh"])),
+            set: $util.oneOfSetter($oneOfFields),
+        })
 
         /**
          * Creates a new TriangleMesh instance using the specified properties.
@@ -2231,8 +2197,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.TriangleMesh} TriangleMesh instance
          */
         TriangleMesh.create = function create(properties) {
-            return new TriangleMesh(properties);
-        };
+            return new TriangleMesh(properties)
+        }
 
         /**
          * Encodes the specified TriangleMesh message. Does not implicitly {@link mirabuf.TriangleMesh.verify|verify} messages.
@@ -2244,20 +2210,22 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         TriangleMesh.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
             if (message.hasVolume != null && Object.hasOwnProperty.call(message, "hasVolume"))
-                writer.uint32(/* id 2, wireType 0 =*/16).bool(message.hasVolume);
+                writer.uint32(/* id 2, wireType 0 =*/ 16).bool(message.hasVolume)
             if (message.materialReference != null && Object.hasOwnProperty.call(message, "materialReference"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.materialReference);
+                writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.materialReference)
             if (message.mesh != null && Object.hasOwnProperty.call(message, "mesh"))
-                $root.mirabuf.Mesh.encode(message.mesh, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                $root.mirabuf.Mesh.encode(message.mesh, writer.uint32(/* id 4, wireType 2 =*/ 34).fork()).ldelim()
             if (message.bmesh != null && Object.hasOwnProperty.call(message, "bmesh"))
-                $root.mirabuf.BinaryMesh.encode(message.bmesh, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-            return writer;
-        };
+                $root.mirabuf.BinaryMesh.encode(
+                    message.bmesh,
+                    writer.uint32(/* id 5, wireType 2 =*/ 42).fork()
+                ).ldelim()
+            return writer
+        }
 
         /**
          * Encodes the specified TriangleMesh message, length delimited. Does not implicitly {@link mirabuf.TriangleMesh.verify|verify} messages.
@@ -2269,8 +2237,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         TriangleMesh.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a TriangleMesh message from the specified reader or buffer.
@@ -2284,39 +2252,39 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         TriangleMesh.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.TriangleMesh();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.TriangleMesh()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                        break;
+                    case 1: {
+                        message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                        break
                     }
-                case 2: {
-                        message.hasVolume = reader.bool();
-                        break;
+                    case 2: {
+                        message.hasVolume = reader.bool()
+                        break
                     }
-                case 3: {
-                        message.materialReference = reader.string();
-                        break;
+                    case 3: {
+                        message.materialReference = reader.string()
+                        break
                     }
-                case 4: {
-                        message.mesh = $root.mirabuf.Mesh.decode(reader, reader.uint32());
-                        break;
+                    case 4: {
+                        message.mesh = $root.mirabuf.Mesh.decode(reader, reader.uint32())
+                        break
                     }
-                case 5: {
-                        message.bmesh = $root.mirabuf.BinaryMesh.decode(reader, reader.uint32());
-                        break;
+                    case 5: {
+                        message.bmesh = $root.mirabuf.BinaryMesh.decode(reader, reader.uint32())
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a TriangleMesh message from the specified reader or buffer, length delimited.
@@ -2329,10 +2297,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         TriangleMesh.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a TriangleMesh message.
@@ -2343,40 +2310,33 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         TriangleMesh.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
-            let properties = {};
+            if (typeof message !== "object" || message === null) return "object expected"
+            let properties = {}
             if (message.info != null && message.hasOwnProperty("info")) {
-                let error = $root.mirabuf.Info.verify(message.info);
-                if (error)
-                    return "info." + error;
+                let error = $root.mirabuf.Info.verify(message.info)
+                if (error) return "info." + error
             }
             if (message.hasVolume != null && message.hasOwnProperty("hasVolume"))
-                if (typeof message.hasVolume !== "boolean")
-                    return "hasVolume: boolean expected";
+                if (typeof message.hasVolume !== "boolean") return "hasVolume: boolean expected"
             if (message.materialReference != null && message.hasOwnProperty("materialReference"))
-                if (!$util.isString(message.materialReference))
-                    return "materialReference: string expected";
+                if (!$util.isString(message.materialReference)) return "materialReference: string expected"
             if (message.mesh != null && message.hasOwnProperty("mesh")) {
-                properties.meshType = 1;
+                properties.meshType = 1
                 {
-                    let error = $root.mirabuf.Mesh.verify(message.mesh);
-                    if (error)
-                        return "mesh." + error;
+                    let error = $root.mirabuf.Mesh.verify(message.mesh)
+                    if (error) return "mesh." + error
                 }
             }
             if (message.bmesh != null && message.hasOwnProperty("bmesh")) {
-                if (properties.meshType === 1)
-                    return "meshType: multiple values";
-                properties.meshType = 1;
+                if (properties.meshType === 1) return "meshType: multiple values"
+                properties.meshType = 1
                 {
-                    let error = $root.mirabuf.BinaryMesh.verify(message.bmesh);
-                    if (error)
-                        return "bmesh." + error;
+                    let error = $root.mirabuf.BinaryMesh.verify(message.bmesh)
+                    if (error) return "bmesh." + error
                 }
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates a TriangleMesh message from a plain object. Also converts values to their respective internal types.
@@ -2387,30 +2347,24 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.TriangleMesh} TriangleMesh
          */
         TriangleMesh.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.TriangleMesh)
-                return object;
-            let message = new $root.mirabuf.TriangleMesh();
+            if (object instanceof $root.mirabuf.TriangleMesh) return object
+            let message = new $root.mirabuf.TriangleMesh()
             if (object.info != null) {
-                if (typeof object.info !== "object")
-                    throw TypeError(".mirabuf.TriangleMesh.info: object expected");
-                message.info = $root.mirabuf.Info.fromObject(object.info);
+                if (typeof object.info !== "object") throw TypeError(".mirabuf.TriangleMesh.info: object expected")
+                message.info = $root.mirabuf.Info.fromObject(object.info)
             }
-            if (object.hasVolume != null)
-                message.hasVolume = Boolean(object.hasVolume);
-            if (object.materialReference != null)
-                message.materialReference = String(object.materialReference);
+            if (object.hasVolume != null) message.hasVolume = Boolean(object.hasVolume)
+            if (object.materialReference != null) message.materialReference = String(object.materialReference)
             if (object.mesh != null) {
-                if (typeof object.mesh !== "object")
-                    throw TypeError(".mirabuf.TriangleMesh.mesh: object expected");
-                message.mesh = $root.mirabuf.Mesh.fromObject(object.mesh);
+                if (typeof object.mesh !== "object") throw TypeError(".mirabuf.TriangleMesh.mesh: object expected")
+                message.mesh = $root.mirabuf.Mesh.fromObject(object.mesh)
             }
             if (object.bmesh != null) {
-                if (typeof object.bmesh !== "object")
-                    throw TypeError(".mirabuf.TriangleMesh.bmesh: object expected");
-                message.bmesh = $root.mirabuf.BinaryMesh.fromObject(object.bmesh);
+                if (typeof object.bmesh !== "object") throw TypeError(".mirabuf.TriangleMesh.bmesh: object expected")
+                message.bmesh = $root.mirabuf.BinaryMesh.fromObject(object.bmesh)
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from a TriangleMesh message. Also converts values to other types if specified.
@@ -2422,32 +2376,28 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         TriangleMesh.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.info = null;
-                object.hasVolume = false;
-                object.materialReference = "";
+                object.info = null
+                object.hasVolume = false
+                object.materialReference = ""
             }
             if (message.info != null && message.hasOwnProperty("info"))
-                object.info = $root.mirabuf.Info.toObject(message.info, options);
-            if (message.hasVolume != null && message.hasOwnProperty("hasVolume"))
-                object.hasVolume = message.hasVolume;
+                object.info = $root.mirabuf.Info.toObject(message.info, options)
+            if (message.hasVolume != null && message.hasOwnProperty("hasVolume")) object.hasVolume = message.hasVolume
             if (message.materialReference != null && message.hasOwnProperty("materialReference"))
-                object.materialReference = message.materialReference;
+                object.materialReference = message.materialReference
             if (message.mesh != null && message.hasOwnProperty("mesh")) {
-                object.mesh = $root.mirabuf.Mesh.toObject(message.mesh, options);
-                if (options.oneofs)
-                    object.meshType = "mesh";
+                object.mesh = $root.mirabuf.Mesh.toObject(message.mesh, options)
+                if (options.oneofs) object.meshType = "mesh"
             }
             if (message.bmesh != null && message.hasOwnProperty("bmesh")) {
-                object.bmesh = $root.mirabuf.BinaryMesh.toObject(message.bmesh, options);
-                if (options.oneofs)
-                    object.meshType = "bmesh";
+                object.bmesh = $root.mirabuf.BinaryMesh.toObject(message.bmesh, options)
+                if (options.oneofs) object.meshType = "bmesh"
             }
-            return object;
-        };
+            return object
+        }
 
         /**
          * Converts this TriangleMesh to JSON.
@@ -2457,8 +2407,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         TriangleMesh.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for TriangleMesh
@@ -2470,16 +2420,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         TriangleMesh.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.TriangleMesh";
-        };
+            return typeUrlPrefix + "/mirabuf.TriangleMesh"
+        }
 
-        return TriangleMesh;
-    })();
+        return TriangleMesh
+    })()
 
-    mirabuf.Mesh = (function() {
-
+    mirabuf.Mesh = (function () {
         /**
          * Properties of a Mesh.
          * @memberof mirabuf
@@ -2499,14 +2448,13 @@ export const mirabuf = $root.mirabuf = (() => {
          * @param {mirabuf.IMesh=} [properties] Properties to set
          */
         function Mesh(properties) {
-            this.verts = [];
-            this.normals = [];
-            this.uv = [];
-            this.indices = [];
+            this.verts = []
+            this.normals = []
+            this.uv = []
+            this.indices = []
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -2515,7 +2463,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Mesh
          * @instance
          */
-        Mesh.prototype.verts = $util.emptyArray;
+        Mesh.prototype.verts = $util.emptyArray
 
         /**
          * Tri Mesh Normals vec3
@@ -2523,7 +2471,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Mesh
          * @instance
          */
-        Mesh.prototype.normals = $util.emptyArray;
+        Mesh.prototype.normals = $util.emptyArray
 
         /**
          * Tri Mesh uv Mapping vec2
@@ -2531,7 +2479,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Mesh
          * @instance
          */
-        Mesh.prototype.uv = $util.emptyArray;
+        Mesh.prototype.uv = $util.emptyArray
 
         /**
          * Tri Mesh indicies (Vert Map)
@@ -2539,7 +2487,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Mesh
          * @instance
          */
-        Mesh.prototype.indices = $util.emptyArray;
+        Mesh.prototype.indices = $util.emptyArray
 
         /**
          * Creates a new Mesh instance using the specified properties.
@@ -2550,8 +2498,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Mesh} Mesh instance
          */
         Mesh.create = function create(properties) {
-            return new Mesh(properties);
-        };
+            return new Mesh(properties)
+        }
 
         /**
          * Encodes the specified Mesh message. Does not implicitly {@link mirabuf.Mesh.verify|verify} messages.
@@ -2563,34 +2511,29 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Mesh.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.verts != null && message.verts.length) {
-                writer.uint32(/* id 1, wireType 2 =*/10).fork();
-                for (let i = 0; i < message.verts.length; ++i)
-                    writer.float(message.verts[i]);
-                writer.ldelim();
+                writer.uint32(/* id 1, wireType 2 =*/ 10).fork()
+                for (let i = 0; i < message.verts.length; ++i) writer.float(message.verts[i])
+                writer.ldelim()
             }
             if (message.normals != null && message.normals.length) {
-                writer.uint32(/* id 2, wireType 2 =*/18).fork();
-                for (let i = 0; i < message.normals.length; ++i)
-                    writer.float(message.normals[i]);
-                writer.ldelim();
+                writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                for (let i = 0; i < message.normals.length; ++i) writer.float(message.normals[i])
+                writer.ldelim()
             }
             if (message.uv != null && message.uv.length) {
-                writer.uint32(/* id 3, wireType 2 =*/26).fork();
-                for (let i = 0; i < message.uv.length; ++i)
-                    writer.float(message.uv[i]);
-                writer.ldelim();
+                writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                for (let i = 0; i < message.uv.length; ++i) writer.float(message.uv[i])
+                writer.ldelim()
             }
             if (message.indices != null && message.indices.length) {
-                writer.uint32(/* id 4, wireType 2 =*/34).fork();
-                for (let i = 0; i < message.indices.length; ++i)
-                    writer.int32(message.indices[i]);
-                writer.ldelim();
+                writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                for (let i = 0; i < message.indices.length; ++i) writer.int32(message.indices[i])
+                writer.ldelim()
             }
-            return writer;
-        };
+            return writer
+        }
 
         /**
          * Encodes the specified Mesh message, length delimited. Does not implicitly {@link mirabuf.Mesh.verify|verify} messages.
@@ -2602,8 +2545,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Mesh.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a Mesh message from the specified reader or buffer.
@@ -2617,63 +2560,51 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Mesh.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Mesh();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Mesh()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        if (!(message.verts && message.verts.length))
-                            message.verts = [];
+                    case 1: {
+                        if (!(message.verts && message.verts.length)) message.verts = []
                         if ((tag & 7) === 2) {
-                            let end2 = reader.uint32() + reader.pos;
-                            while (reader.pos < end2)
-                                message.verts.push(reader.float());
-                        } else
-                            message.verts.push(reader.float());
-                        break;
+                            let end2 = reader.uint32() + reader.pos
+                            while (reader.pos < end2) message.verts.push(reader.float())
+                        } else message.verts.push(reader.float())
+                        break
                     }
-                case 2: {
-                        if (!(message.normals && message.normals.length))
-                            message.normals = [];
+                    case 2: {
+                        if (!(message.normals && message.normals.length)) message.normals = []
                         if ((tag & 7) === 2) {
-                            let end2 = reader.uint32() + reader.pos;
-                            while (reader.pos < end2)
-                                message.normals.push(reader.float());
-                        } else
-                            message.normals.push(reader.float());
-                        break;
+                            let end2 = reader.uint32() + reader.pos
+                            while (reader.pos < end2) message.normals.push(reader.float())
+                        } else message.normals.push(reader.float())
+                        break
                     }
-                case 3: {
-                        if (!(message.uv && message.uv.length))
-                            message.uv = [];
+                    case 3: {
+                        if (!(message.uv && message.uv.length)) message.uv = []
                         if ((tag & 7) === 2) {
-                            let end2 = reader.uint32() + reader.pos;
-                            while (reader.pos < end2)
-                                message.uv.push(reader.float());
-                        } else
-                            message.uv.push(reader.float());
-                        break;
+                            let end2 = reader.uint32() + reader.pos
+                            while (reader.pos < end2) message.uv.push(reader.float())
+                        } else message.uv.push(reader.float())
+                        break
                     }
-                case 4: {
-                        if (!(message.indices && message.indices.length))
-                            message.indices = [];
+                    case 4: {
+                        if (!(message.indices && message.indices.length)) message.indices = []
                         if ((tag & 7) === 2) {
-                            let end2 = reader.uint32() + reader.pos;
-                            while (reader.pos < end2)
-                                message.indices.push(reader.int32());
-                        } else
-                            message.indices.push(reader.int32());
-                        break;
+                            let end2 = reader.uint32() + reader.pos
+                            while (reader.pos < end2) message.indices.push(reader.int32())
+                        } else message.indices.push(reader.int32())
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a Mesh message from the specified reader or buffer, length delimited.
@@ -2686,10 +2617,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Mesh.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a Mesh message.
@@ -2700,38 +2630,29 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Mesh.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.verts != null && message.hasOwnProperty("verts")) {
-                if (!Array.isArray(message.verts))
-                    return "verts: array expected";
+                if (!Array.isArray(message.verts)) return "verts: array expected"
                 for (let i = 0; i < message.verts.length; ++i)
-                    if (typeof message.verts[i] !== "number")
-                        return "verts: number[] expected";
+                    if (typeof message.verts[i] !== "number") return "verts: number[] expected"
             }
             if (message.normals != null && message.hasOwnProperty("normals")) {
-                if (!Array.isArray(message.normals))
-                    return "normals: array expected";
+                if (!Array.isArray(message.normals)) return "normals: array expected"
                 for (let i = 0; i < message.normals.length; ++i)
-                    if (typeof message.normals[i] !== "number")
-                        return "normals: number[] expected";
+                    if (typeof message.normals[i] !== "number") return "normals: number[] expected"
             }
             if (message.uv != null && message.hasOwnProperty("uv")) {
-                if (!Array.isArray(message.uv))
-                    return "uv: array expected";
+                if (!Array.isArray(message.uv)) return "uv: array expected"
                 for (let i = 0; i < message.uv.length; ++i)
-                    if (typeof message.uv[i] !== "number")
-                        return "uv: number[] expected";
+                    if (typeof message.uv[i] !== "number") return "uv: number[] expected"
             }
             if (message.indices != null && message.hasOwnProperty("indices")) {
-                if (!Array.isArray(message.indices))
-                    return "indices: array expected";
+                if (!Array.isArray(message.indices)) return "indices: array expected"
                 for (let i = 0; i < message.indices.length; ++i)
-                    if (!$util.isInteger(message.indices[i]))
-                        return "indices: integer[] expected";
+                    if (!$util.isInteger(message.indices[i])) return "indices: integer[] expected"
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates a Mesh message from a plain object. Also converts values to their respective internal types.
@@ -2742,39 +2663,30 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Mesh} Mesh
          */
         Mesh.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Mesh)
-                return object;
-            let message = new $root.mirabuf.Mesh();
+            if (object instanceof $root.mirabuf.Mesh) return object
+            let message = new $root.mirabuf.Mesh()
             if (object.verts) {
-                if (!Array.isArray(object.verts))
-                    throw TypeError(".mirabuf.Mesh.verts: array expected");
-                message.verts = [];
-                for (let i = 0; i < object.verts.length; ++i)
-                    message.verts[i] = Number(object.verts[i]);
+                if (!Array.isArray(object.verts)) throw TypeError(".mirabuf.Mesh.verts: array expected")
+                message.verts = []
+                for (let i = 0; i < object.verts.length; ++i) message.verts[i] = Number(object.verts[i])
             }
             if (object.normals) {
-                if (!Array.isArray(object.normals))
-                    throw TypeError(".mirabuf.Mesh.normals: array expected");
-                message.normals = [];
-                for (let i = 0; i < object.normals.length; ++i)
-                    message.normals[i] = Number(object.normals[i]);
+                if (!Array.isArray(object.normals)) throw TypeError(".mirabuf.Mesh.normals: array expected")
+                message.normals = []
+                for (let i = 0; i < object.normals.length; ++i) message.normals[i] = Number(object.normals[i])
             }
             if (object.uv) {
-                if (!Array.isArray(object.uv))
-                    throw TypeError(".mirabuf.Mesh.uv: array expected");
-                message.uv = [];
-                for (let i = 0; i < object.uv.length; ++i)
-                    message.uv[i] = Number(object.uv[i]);
+                if (!Array.isArray(object.uv)) throw TypeError(".mirabuf.Mesh.uv: array expected")
+                message.uv = []
+                for (let i = 0; i < object.uv.length; ++i) message.uv[i] = Number(object.uv[i])
             }
             if (object.indices) {
-                if (!Array.isArray(object.indices))
-                    throw TypeError(".mirabuf.Mesh.indices: array expected");
-                message.indices = [];
-                for (let i = 0; i < object.indices.length; ++i)
-                    message.indices[i] = object.indices[i] | 0;
+                if (!Array.isArray(object.indices)) throw TypeError(".mirabuf.Mesh.indices: array expected")
+                message.indices = []
+                for (let i = 0; i < object.indices.length; ++i) message.indices[i] = object.indices[i] | 0
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from a Mesh message. Also converts values to other types if specified.
@@ -2786,37 +2698,37 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Mesh.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.arrays || options.defaults) {
-                object.verts = [];
-                object.normals = [];
-                object.uv = [];
-                object.indices = [];
+                object.verts = []
+                object.normals = []
+                object.uv = []
+                object.indices = []
             }
             if (message.verts && message.verts.length) {
-                object.verts = [];
+                object.verts = []
                 for (let j = 0; j < message.verts.length; ++j)
-                    object.verts[j] = options.json && !isFinite(message.verts[j]) ? String(message.verts[j]) : message.verts[j];
+                    object.verts[j] =
+                        options.json && !isFinite(message.verts[j]) ? String(message.verts[j]) : message.verts[j]
             }
             if (message.normals && message.normals.length) {
-                object.normals = [];
+                object.normals = []
                 for (let j = 0; j < message.normals.length; ++j)
-                    object.normals[j] = options.json && !isFinite(message.normals[j]) ? String(message.normals[j]) : message.normals[j];
+                    object.normals[j] =
+                        options.json && !isFinite(message.normals[j]) ? String(message.normals[j]) : message.normals[j]
             }
             if (message.uv && message.uv.length) {
-                object.uv = [];
+                object.uv = []
                 for (let j = 0; j < message.uv.length; ++j)
-                    object.uv[j] = options.json && !isFinite(message.uv[j]) ? String(message.uv[j]) : message.uv[j];
+                    object.uv[j] = options.json && !isFinite(message.uv[j]) ? String(message.uv[j]) : message.uv[j]
             }
             if (message.indices && message.indices.length) {
-                object.indices = [];
-                for (let j = 0; j < message.indices.length; ++j)
-                    object.indices[j] = message.indices[j];
+                object.indices = []
+                for (let j = 0; j < message.indices.length; ++j) object.indices[j] = message.indices[j]
             }
-            return object;
-        };
+            return object
+        }
 
         /**
          * Converts this Mesh to JSON.
@@ -2826,8 +2738,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Mesh.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Mesh
@@ -2839,16 +2751,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Mesh.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Mesh";
-        };
+            return typeUrlPrefix + "/mirabuf.Mesh"
+        }
 
-        return Mesh;
-    })();
+        return Mesh
+    })()
 
-    mirabuf.BinaryMesh = (function() {
-
+    mirabuf.BinaryMesh = (function () {
         /**
          * Properties of a BinaryMesh.
          * @memberof mirabuf
@@ -2867,8 +2778,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function BinaryMesh(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -2877,7 +2787,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.BinaryMesh
          * @instance
          */
-        BinaryMesh.prototype.data = $util.newBuffer([]);
+        BinaryMesh.prototype.data = $util.newBuffer([])
 
         /**
          * Creates a new BinaryMesh instance using the specified properties.
@@ -2888,8 +2798,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.BinaryMesh} BinaryMesh instance
          */
         BinaryMesh.create = function create(properties) {
-            return new BinaryMesh(properties);
-        };
+            return new BinaryMesh(properties)
+        }
 
         /**
          * Encodes the specified BinaryMesh message. Does not implicitly {@link mirabuf.BinaryMesh.verify|verify} messages.
@@ -2901,12 +2811,11 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         BinaryMesh.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 1, wireType 2 =*/10).bytes(message.data);
-            return writer;
-        };
+                writer.uint32(/* id 1, wireType 2 =*/ 10).bytes(message.data)
+            return writer
+        }
 
         /**
          * Encodes the specified BinaryMesh message, length delimited. Does not implicitly {@link mirabuf.BinaryMesh.verify|verify} messages.
@@ -2918,8 +2827,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         BinaryMesh.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a BinaryMesh message from the specified reader or buffer.
@@ -2933,23 +2842,23 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         BinaryMesh.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.BinaryMesh();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.BinaryMesh()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.data = reader.bytes();
-                        break;
+                    case 1: {
+                        message.data = reader.bytes()
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a BinaryMesh message from the specified reader or buffer, length delimited.
@@ -2962,10 +2871,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         BinaryMesh.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a BinaryMesh message.
@@ -2976,13 +2884,12 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         BinaryMesh.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.data != null && message.hasOwnProperty("data"))
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-            return null;
-        };
+                if (!((message.data && typeof message.data.length === "number") || $util.isString(message.data)))
+                    return "data: buffer expected"
+            return null
+        }
 
         /**
          * Creates a BinaryMesh message from a plain object. Also converts values to their respective internal types.
@@ -2993,16 +2900,18 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.BinaryMesh} BinaryMesh
          */
         BinaryMesh.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.BinaryMesh)
-                return object;
-            let message = new $root.mirabuf.BinaryMesh();
+            if (object instanceof $root.mirabuf.BinaryMesh) return object
+            let message = new $root.mirabuf.BinaryMesh()
             if (object.data != null)
                 if (typeof object.data === "string")
-                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                else if (object.data.length >= 0)
-                    message.data = object.data;
-            return message;
-        };
+                    $util.base64.decode(
+                        object.data,
+                        (message.data = $util.newBuffer($util.base64.length(object.data))),
+                        0
+                    )
+                else if (object.data.length >= 0) message.data = object.data
+            return message
+        }
 
         /**
          * Creates a plain object from a BinaryMesh message. Also converts values to other types if specified.
@@ -3014,21 +2923,23 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         BinaryMesh.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults)
-                if (options.bytes === String)
-                    object.data = "";
+                if (options.bytes === String) object.data = ""
                 else {
-                    object.data = [];
-                    if (options.bytes !== Array)
-                        object.data = $util.newBuffer(object.data);
+                    object.data = []
+                    if (options.bytes !== Array) object.data = $util.newBuffer(object.data)
                 }
             if (message.data != null && message.hasOwnProperty("data"))
-                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-            return object;
-        };
+                object.data =
+                    options.bytes === String
+                        ? $util.base64.encode(message.data, 0, message.data.length)
+                        : options.bytes === Array
+                          ? Array.prototype.slice.call(message.data)
+                          : message.data
+            return object
+        }
 
         /**
          * Converts this BinaryMesh to JSON.
@@ -3038,8 +2949,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         BinaryMesh.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for BinaryMesh
@@ -3051,16 +2962,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         BinaryMesh.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.BinaryMesh";
-        };
+            return typeUrlPrefix + "/mirabuf.BinaryMesh"
+        }
 
-        return BinaryMesh;
-    })();
+        return BinaryMesh
+    })()
 
-    mirabuf.Node = (function() {
-
+    mirabuf.Node = (function () {
         /**
          * Properties of a Node.
          * @memberof mirabuf
@@ -3079,11 +2989,10 @@ export const mirabuf = $root.mirabuf = (() => {
          * @param {mirabuf.INode=} [properties] Properties to set
          */
         function Node(properties) {
-            this.children = [];
+            this.children = []
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -3092,7 +3001,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Node
          * @instance
          */
-        Node.prototype.value = "";
+        Node.prototype.value = ""
 
         /**
          * the children for the given leaf
@@ -3100,7 +3009,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Node
          * @instance
          */
-        Node.prototype.children = $util.emptyArray;
+        Node.prototype.children = $util.emptyArray
 
         /**
          * other associated data that can be used
@@ -3108,7 +3017,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Node
          * @instance
          */
-        Node.prototype.userData = null;
+        Node.prototype.userData = null
 
         /**
          * Creates a new Node instance using the specified properties.
@@ -3119,8 +3028,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Node} Node instance
          */
         Node.create = function create(properties) {
-            return new Node(properties);
-        };
+            return new Node(properties)
+        }
 
         /**
          * Encodes the specified Node message. Does not implicitly {@link mirabuf.Node.verify|verify} messages.
@@ -3132,17 +3041,22 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Node.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.value != null && Object.hasOwnProperty.call(message, "value"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.value);
+                writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.value)
             if (message.children != null && message.children.length)
                 for (let i = 0; i < message.children.length; ++i)
-                    $root.mirabuf.Node.encode(message.children[i], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.mirabuf.Node.encode(
+                        message.children[i],
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                    ).ldelim()
             if (message.userData != null && Object.hasOwnProperty.call(message, "userData"))
-                $root.mirabuf.UserData.encode(message.userData, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-            return writer;
-        };
+                $root.mirabuf.UserData.encode(
+                    message.userData,
+                    writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                ).ldelim()
+            return writer
+        }
 
         /**
          * Encodes the specified Node message, length delimited. Does not implicitly {@link mirabuf.Node.verify|verify} messages.
@@ -3154,8 +3068,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Node.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a Node message from the specified reader or buffer.
@@ -3169,33 +3083,32 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Node.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Node();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Node()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.value = reader.string();
-                        break;
+                    case 1: {
+                        message.value = reader.string()
+                        break
                     }
-                case 2: {
-                        if (!(message.children && message.children.length))
-                            message.children = [];
-                        message.children.push($root.mirabuf.Node.decode(reader, reader.uint32()));
-                        break;
+                    case 2: {
+                        if (!(message.children && message.children.length)) message.children = []
+                        message.children.push($root.mirabuf.Node.decode(reader, reader.uint32()))
+                        break
                     }
-                case 3: {
-                        message.userData = $root.mirabuf.UserData.decode(reader, reader.uint32());
-                        break;
+                    case 3: {
+                        message.userData = $root.mirabuf.UserData.decode(reader, reader.uint32())
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a Node message from the specified reader or buffer, length delimited.
@@ -3208,10 +3121,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Node.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a Node message.
@@ -3222,27 +3134,22 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Node.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.value != null && message.hasOwnProperty("value"))
-                if (!$util.isString(message.value))
-                    return "value: string expected";
+                if (!$util.isString(message.value)) return "value: string expected"
             if (message.children != null && message.hasOwnProperty("children")) {
-                if (!Array.isArray(message.children))
-                    return "children: array expected";
+                if (!Array.isArray(message.children)) return "children: array expected"
                 for (let i = 0; i < message.children.length; ++i) {
-                    let error = $root.mirabuf.Node.verify(message.children[i]);
-                    if (error)
-                        return "children." + error;
+                    let error = $root.mirabuf.Node.verify(message.children[i])
+                    if (error) return "children." + error
                 }
             }
             if (message.userData != null && message.hasOwnProperty("userData")) {
-                let error = $root.mirabuf.UserData.verify(message.userData);
-                if (error)
-                    return "userData." + error;
+                let error = $root.mirabuf.UserData.verify(message.userData)
+                if (error) return "userData." + error
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates a Node message from a plain object. Also converts values to their respective internal types.
@@ -3253,28 +3160,24 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Node} Node
          */
         Node.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Node)
-                return object;
-            let message = new $root.mirabuf.Node();
-            if (object.value != null)
-                message.value = String(object.value);
+            if (object instanceof $root.mirabuf.Node) return object
+            let message = new $root.mirabuf.Node()
+            if (object.value != null) message.value = String(object.value)
             if (object.children) {
-                if (!Array.isArray(object.children))
-                    throw TypeError(".mirabuf.Node.children: array expected");
-                message.children = [];
+                if (!Array.isArray(object.children)) throw TypeError(".mirabuf.Node.children: array expected")
+                message.children = []
                 for (let i = 0; i < object.children.length; ++i) {
                     if (typeof object.children[i] !== "object")
-                        throw TypeError(".mirabuf.Node.children: object expected");
-                    message.children[i] = $root.mirabuf.Node.fromObject(object.children[i]);
+                        throw TypeError(".mirabuf.Node.children: object expected")
+                    message.children[i] = $root.mirabuf.Node.fromObject(object.children[i])
                 }
             }
             if (object.userData != null) {
-                if (typeof object.userData !== "object")
-                    throw TypeError(".mirabuf.Node.userData: object expected");
-                message.userData = $root.mirabuf.UserData.fromObject(object.userData);
+                if (typeof object.userData !== "object") throw TypeError(".mirabuf.Node.userData: object expected")
+                message.userData = $root.mirabuf.UserData.fromObject(object.userData)
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from a Node message. Also converts values to other types if specified.
@@ -3286,26 +3189,23 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Node.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.arrays || options.defaults)
-                object.children = [];
+            if (!options) options = {}
+            let object = {}
+            if (options.arrays || options.defaults) object.children = []
             if (options.defaults) {
-                object.value = "";
-                object.userData = null;
+                object.value = ""
+                object.userData = null
             }
-            if (message.value != null && message.hasOwnProperty("value"))
-                object.value = message.value;
+            if (message.value != null && message.hasOwnProperty("value")) object.value = message.value
             if (message.children && message.children.length) {
-                object.children = [];
+                object.children = []
                 for (let j = 0; j < message.children.length; ++j)
-                    object.children[j] = $root.mirabuf.Node.toObject(message.children[j], options);
+                    object.children[j] = $root.mirabuf.Node.toObject(message.children[j], options)
             }
             if (message.userData != null && message.hasOwnProperty("userData"))
-                object.userData = $root.mirabuf.UserData.toObject(message.userData, options);
-            return object;
-        };
+                object.userData = $root.mirabuf.UserData.toObject(message.userData, options)
+            return object
+        }
 
         /**
          * Converts this Node to JSON.
@@ -3315,8 +3215,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Node.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Node
@@ -3328,16 +3228,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Node.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Node";
-        };
+            return typeUrlPrefix + "/mirabuf.Node"
+        }
 
-        return Node;
-    })();
+        return Node
+    })()
 
-    mirabuf.GraphContainer = (function() {
-
+    mirabuf.GraphContainer = (function () {
         /**
          * Properties of a GraphContainer.
          * @memberof mirabuf
@@ -3354,11 +3253,10 @@ export const mirabuf = $root.mirabuf = (() => {
          * @param {mirabuf.IGraphContainer=} [properties] Properties to set
          */
         function GraphContainer(properties) {
-            this.nodes = [];
+            this.nodes = []
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -3367,7 +3265,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.GraphContainer
          * @instance
          */
-        GraphContainer.prototype.nodes = $util.emptyArray;
+        GraphContainer.prototype.nodes = $util.emptyArray
 
         /**
          * Creates a new GraphContainer instance using the specified properties.
@@ -3378,8 +3276,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.GraphContainer} GraphContainer instance
          */
         GraphContainer.create = function create(properties) {
-            return new GraphContainer(properties);
-        };
+            return new GraphContainer(properties)
+        }
 
         /**
          * Encodes the specified GraphContainer message. Does not implicitly {@link mirabuf.GraphContainer.verify|verify} messages.
@@ -3391,13 +3289,15 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         GraphContainer.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.nodes != null && message.nodes.length)
                 for (let i = 0; i < message.nodes.length; ++i)
-                    $root.mirabuf.Node.encode(message.nodes[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-            return writer;
-        };
+                    $root.mirabuf.Node.encode(
+                        message.nodes[i],
+                        writer.uint32(/* id 1, wireType 2 =*/ 10).fork()
+                    ).ldelim()
+            return writer
+        }
 
         /**
          * Encodes the specified GraphContainer message, length delimited. Does not implicitly {@link mirabuf.GraphContainer.verify|verify} messages.
@@ -3409,8 +3309,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         GraphContainer.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a GraphContainer message from the specified reader or buffer.
@@ -3424,25 +3324,24 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         GraphContainer.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.GraphContainer();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.GraphContainer()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        if (!(message.nodes && message.nodes.length))
-                            message.nodes = [];
-                        message.nodes.push($root.mirabuf.Node.decode(reader, reader.uint32()));
-                        break;
+                    case 1: {
+                        if (!(message.nodes && message.nodes.length)) message.nodes = []
+                        message.nodes.push($root.mirabuf.Node.decode(reader, reader.uint32()))
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a GraphContainer message from the specified reader or buffer, length delimited.
@@ -3455,10 +3354,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         GraphContainer.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a GraphContainer message.
@@ -3469,19 +3367,16 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         GraphContainer.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.nodes != null && message.hasOwnProperty("nodes")) {
-                if (!Array.isArray(message.nodes))
-                    return "nodes: array expected";
+                if (!Array.isArray(message.nodes)) return "nodes: array expected"
                 for (let i = 0; i < message.nodes.length; ++i) {
-                    let error = $root.mirabuf.Node.verify(message.nodes[i]);
-                    if (error)
-                        return "nodes." + error;
+                    let error = $root.mirabuf.Node.verify(message.nodes[i])
+                    if (error) return "nodes." + error
                 }
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates a GraphContainer message from a plain object. Also converts values to their respective internal types.
@@ -3492,21 +3387,19 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.GraphContainer} GraphContainer
          */
         GraphContainer.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.GraphContainer)
-                return object;
-            let message = new $root.mirabuf.GraphContainer();
+            if (object instanceof $root.mirabuf.GraphContainer) return object
+            let message = new $root.mirabuf.GraphContainer()
             if (object.nodes) {
-                if (!Array.isArray(object.nodes))
-                    throw TypeError(".mirabuf.GraphContainer.nodes: array expected");
-                message.nodes = [];
+                if (!Array.isArray(object.nodes)) throw TypeError(".mirabuf.GraphContainer.nodes: array expected")
+                message.nodes = []
                 for (let i = 0; i < object.nodes.length; ++i) {
                     if (typeof object.nodes[i] !== "object")
-                        throw TypeError(".mirabuf.GraphContainer.nodes: object expected");
-                    message.nodes[i] = $root.mirabuf.Node.fromObject(object.nodes[i]);
+                        throw TypeError(".mirabuf.GraphContainer.nodes: object expected")
+                    message.nodes[i] = $root.mirabuf.Node.fromObject(object.nodes[i])
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from a GraphContainer message. Also converts values to other types if specified.
@@ -3518,18 +3411,16 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         GraphContainer.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.arrays || options.defaults)
-                object.nodes = [];
+            if (!options) options = {}
+            let object = {}
+            if (options.arrays || options.defaults) object.nodes = []
             if (message.nodes && message.nodes.length) {
-                object.nodes = [];
+                object.nodes = []
                 for (let j = 0; j < message.nodes.length; ++j)
-                    object.nodes[j] = $root.mirabuf.Node.toObject(message.nodes[j], options);
+                    object.nodes[j] = $root.mirabuf.Node.toObject(message.nodes[j], options)
             }
-            return object;
-        };
+            return object
+        }
 
         /**
          * Converts this GraphContainer to JSON.
@@ -3539,8 +3430,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         GraphContainer.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for GraphContainer
@@ -3552,16 +3443,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         GraphContainer.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.GraphContainer";
-        };
+            return typeUrlPrefix + "/mirabuf.GraphContainer"
+        }
 
-        return GraphContainer;
-    })();
+        return GraphContainer
+    })()
 
-    mirabuf.UserData = (function() {
-
+    mirabuf.UserData = (function () {
         /**
          * Properties of a UserData.
          * @memberof mirabuf
@@ -3573,18 +3463,17 @@ export const mirabuf = $root.mirabuf = (() => {
          * Constructs a new UserData.
          * @memberof mirabuf
          * @classdesc UserData
-         * 
+         *
          * Arbitrary data to append to a given message in map form
          * @implements IUserData
          * @constructor
          * @param {mirabuf.IUserData=} [properties] Properties to set
          */
         function UserData(properties) {
-            this.data = {};
+            this.data = {}
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -3593,7 +3482,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.UserData
          * @instance
          */
-        UserData.prototype.data = $util.emptyObject;
+        UserData.prototype.data = $util.emptyObject
 
         /**
          * Creates a new UserData instance using the specified properties.
@@ -3604,8 +3493,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.UserData} UserData instance
          */
         UserData.create = function create(properties) {
-            return new UserData(properties);
-        };
+            return new UserData(properties)
+        }
 
         /**
          * Encodes the specified UserData message. Does not implicitly {@link mirabuf.UserData.verify|verify} messages.
@@ -3617,13 +3506,19 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         UserData.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
                 for (let keys = Object.keys(message.data), i = 0; i < keys.length; ++i)
-                    writer.uint32(/* id 1, wireType 2 =*/10).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]).uint32(/* id 2, wireType 2 =*/18).string(message.data[keys[i]]).ldelim();
-            return writer;
-        };
+                    writer
+                        .uint32(/* id 1, wireType 2 =*/ 10)
+                        .fork()
+                        .uint32(/* id 1, wireType 2 =*/ 10)
+                        .string(keys[i])
+                        .uint32(/* id 2, wireType 2 =*/ 18)
+                        .string(message.data[keys[i]])
+                        .ldelim()
+            return writer
+        }
 
         /**
          * Encodes the specified UserData message, length delimited. Does not implicitly {@link mirabuf.UserData.verify|verify} messages.
@@ -3635,8 +3530,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         UserData.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a UserData message from the specified reader or buffer.
@@ -3650,42 +3545,43 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         UserData.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.UserData(), key, value;
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.UserData(),
+                key,
+                value
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        if (message.data === $util.emptyObject)
-                            message.data = {};
-                        let end2 = reader.uint32() + reader.pos;
-                        key = "";
-                        value = "";
+                    case 1: {
+                        if (message.data === $util.emptyObject) message.data = {}
+                        let end2 = reader.uint32() + reader.pos
+                        key = ""
+                        value = ""
                         while (reader.pos < end2) {
-                            let tag2 = reader.uint32();
+                            let tag2 = reader.uint32()
                             switch (tag2 >>> 3) {
-                            case 1:
-                                key = reader.string();
-                                break;
-                            case 2:
-                                value = reader.string();
-                                break;
-                            default:
-                                reader.skipType(tag2 & 7);
-                                break;
+                                case 1:
+                                    key = reader.string()
+                                    break
+                                case 2:
+                                    value = reader.string()
+                                    break
+                                default:
+                                    reader.skipType(tag2 & 7)
+                                    break
                             }
                         }
-                        message.data[key] = value;
-                        break;
+                        message.data[key] = value
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a UserData message from the specified reader or buffer, length delimited.
@@ -3698,10 +3594,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         UserData.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a UserData message.
@@ -3712,18 +3607,15 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         UserData.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.data != null && message.hasOwnProperty("data")) {
-                if (!$util.isObject(message.data))
-                    return "data: object expected";
-                let key = Object.keys(message.data);
+                if (!$util.isObject(message.data)) return "data: object expected"
+                let key = Object.keys(message.data)
                 for (let i = 0; i < key.length; ++i)
-                    if (!$util.isString(message.data[key[i]]))
-                        return "data: string{k:string} expected";
+                    if (!$util.isString(message.data[key[i]])) return "data: string{k:string} expected"
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates a UserData message from a plain object. Also converts values to their respective internal types.
@@ -3734,18 +3626,16 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.UserData} UserData
          */
         UserData.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.UserData)
-                return object;
-            let message = new $root.mirabuf.UserData();
+            if (object instanceof $root.mirabuf.UserData) return object
+            let message = new $root.mirabuf.UserData()
             if (object.data) {
-                if (typeof object.data !== "object")
-                    throw TypeError(".mirabuf.UserData.data: object expected");
-                message.data = {};
+                if (typeof object.data !== "object") throw TypeError(".mirabuf.UserData.data: object expected")
+                message.data = {}
                 for (let keys = Object.keys(object.data), i = 0; i < keys.length; ++i)
-                    message.data[keys[i]] = String(object.data[keys[i]]);
+                    message.data[keys[i]] = String(object.data[keys[i]])
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from a UserData message. Also converts values to other types if specified.
@@ -3757,19 +3647,16 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         UserData.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.objects || options.defaults)
-                object.data = {};
-            let keys2;
+            if (!options) options = {}
+            let object = {}
+            if (options.objects || options.defaults) object.data = {}
+            let keys2
             if (message.data && (keys2 = Object.keys(message.data)).length) {
-                object.data = {};
-                for (let j = 0; j < keys2.length; ++j)
-                    object.data[keys2[j]] = message.data[keys2[j]];
+                object.data = {}
+                for (let j = 0; j < keys2.length; ++j) object.data[keys2[j]] = message.data[keys2[j]]
             }
-            return object;
-        };
+            return object
+        }
 
         /**
          * Converts this UserData to JSON.
@@ -3779,8 +3666,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         UserData.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for UserData
@@ -3792,16 +3679,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         UserData.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.UserData";
-        };
+            return typeUrlPrefix + "/mirabuf.UserData"
+        }
 
-        return UserData;
-    })();
+        return UserData
+    })()
 
-    mirabuf.Vector3 = (function() {
-
+    mirabuf.Vector3 = (function () {
         /**
          * Properties of a Vector3.
          * @memberof mirabuf
@@ -3822,8 +3708,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function Vector3(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -3832,7 +3717,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Vector3
          * @instance
          */
-        Vector3.prototype.x = 0;
+        Vector3.prototype.x = 0
 
         /**
          * Vector3 y.
@@ -3840,7 +3725,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Vector3
          * @instance
          */
-        Vector3.prototype.y = 0;
+        Vector3.prototype.y = 0
 
         /**
          * Vector3 z.
@@ -3848,7 +3733,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Vector3
          * @instance
          */
-        Vector3.prototype.z = 0;
+        Vector3.prototype.z = 0
 
         /**
          * Creates a new Vector3 instance using the specified properties.
@@ -3859,8 +3744,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Vector3} Vector3 instance
          */
         Vector3.create = function create(properties) {
-            return new Vector3(properties);
-        };
+            return new Vector3(properties)
+        }
 
         /**
          * Encodes the specified Vector3 message. Does not implicitly {@link mirabuf.Vector3.verify|verify} messages.
@@ -3872,16 +3757,15 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Vector3.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.x != null && Object.hasOwnProperty.call(message, "x"))
-                writer.uint32(/* id 1, wireType 5 =*/13).float(message.x);
+                writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.x)
             if (message.y != null && Object.hasOwnProperty.call(message, "y"))
-                writer.uint32(/* id 2, wireType 5 =*/21).float(message.y);
+                writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.y)
             if (message.z != null && Object.hasOwnProperty.call(message, "z"))
-                writer.uint32(/* id 3, wireType 5 =*/29).float(message.z);
-            return writer;
-        };
+                writer.uint32(/* id 3, wireType 5 =*/ 29).float(message.z)
+            return writer
+        }
 
         /**
          * Encodes the specified Vector3 message, length delimited. Does not implicitly {@link mirabuf.Vector3.verify|verify} messages.
@@ -3893,8 +3777,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Vector3.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a Vector3 message from the specified reader or buffer.
@@ -3908,31 +3792,31 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Vector3.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Vector3();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Vector3()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.x = reader.float();
-                        break;
+                    case 1: {
+                        message.x = reader.float()
+                        break
                     }
-                case 2: {
-                        message.y = reader.float();
-                        break;
+                    case 2: {
+                        message.y = reader.float()
+                        break
                     }
-                case 3: {
-                        message.z = reader.float();
-                        break;
+                    case 3: {
+                        message.z = reader.float()
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a Vector3 message from the specified reader or buffer, length delimited.
@@ -3945,10 +3829,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Vector3.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a Vector3 message.
@@ -3959,19 +3842,15 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Vector3.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.x != null && message.hasOwnProperty("x"))
-                if (typeof message.x !== "number")
-                    return "x: number expected";
+                if (typeof message.x !== "number") return "x: number expected"
             if (message.y != null && message.hasOwnProperty("y"))
-                if (typeof message.y !== "number")
-                    return "y: number expected";
+                if (typeof message.y !== "number") return "y: number expected"
             if (message.z != null && message.hasOwnProperty("z"))
-                if (typeof message.z !== "number")
-                    return "z: number expected";
-            return null;
-        };
+                if (typeof message.z !== "number") return "z: number expected"
+            return null
+        }
 
         /**
          * Creates a Vector3 message from a plain object. Also converts values to their respective internal types.
@@ -3982,17 +3861,13 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Vector3} Vector3
          */
         Vector3.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Vector3)
-                return object;
-            let message = new $root.mirabuf.Vector3();
-            if (object.x != null)
-                message.x = Number(object.x);
-            if (object.y != null)
-                message.y = Number(object.y);
-            if (object.z != null)
-                message.z = Number(object.z);
-            return message;
-        };
+            if (object instanceof $root.mirabuf.Vector3) return object
+            let message = new $root.mirabuf.Vector3()
+            if (object.x != null) message.x = Number(object.x)
+            if (object.y != null) message.y = Number(object.y)
+            if (object.z != null) message.z = Number(object.z)
+            return message
+        }
 
         /**
          * Creates a plain object from a Vector3 message. Also converts values to other types if specified.
@@ -4004,22 +3879,21 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Vector3.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.x = 0;
-                object.y = 0;
-                object.z = 0;
+                object.x = 0
+                object.y = 0
+                object.z = 0
             }
             if (message.x != null && message.hasOwnProperty("x"))
-                object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x;
+                object.x = options.json && !isFinite(message.x) ? String(message.x) : message.x
             if (message.y != null && message.hasOwnProperty("y"))
-                object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y;
+                object.y = options.json && !isFinite(message.y) ? String(message.y) : message.y
             if (message.z != null && message.hasOwnProperty("z"))
-                object.z = options.json && !isFinite(message.z) ? String(message.z) : message.z;
-            return object;
-        };
+                object.z = options.json && !isFinite(message.z) ? String(message.z) : message.z
+            return object
+        }
 
         /**
          * Converts this Vector3 to JSON.
@@ -4029,8 +3903,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Vector3.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Vector3
@@ -4042,16 +3916,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Vector3.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Vector3";
-        };
+            return typeUrlPrefix + "/mirabuf.Vector3"
+        }
 
-        return Vector3;
-    })();
+        return Vector3
+    })()
 
-    mirabuf.PhysicalProperties = (function() {
-
+    mirabuf.PhysicalProperties = (function () {
         /**
          * Properties of a PhysicalProperties.
          * @memberof mirabuf
@@ -4074,8 +3947,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function PhysicalProperties(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -4084,7 +3956,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PhysicalProperties
          * @instance
          */
-        PhysicalProperties.prototype.density = 0;
+        PhysicalProperties.prototype.density = 0
 
         /**
          * kg
@@ -4092,7 +3964,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PhysicalProperties
          * @instance
          */
-        PhysicalProperties.prototype.mass = 0;
+        PhysicalProperties.prototype.mass = 0
 
         /**
          * cm^3
@@ -4100,7 +3972,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PhysicalProperties
          * @instance
          */
-        PhysicalProperties.prototype.volume = 0;
+        PhysicalProperties.prototype.volume = 0
 
         /**
          * cm^2
@@ -4108,7 +3980,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PhysicalProperties
          * @instance
          */
-        PhysicalProperties.prototype.area = 0;
+        PhysicalProperties.prototype.area = 0
 
         /**
          * non-negative? Vec3
@@ -4116,7 +3988,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.PhysicalProperties
          * @instance
          */
-        PhysicalProperties.prototype.com = null;
+        PhysicalProperties.prototype.com = null
 
         /**
          * Creates a new PhysicalProperties instance using the specified properties.
@@ -4127,8 +3999,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.PhysicalProperties} PhysicalProperties instance
          */
         PhysicalProperties.create = function create(properties) {
-            return new PhysicalProperties(properties);
-        };
+            return new PhysicalProperties(properties)
+        }
 
         /**
          * Encodes the specified PhysicalProperties message. Does not implicitly {@link mirabuf.PhysicalProperties.verify|verify} messages.
@@ -4140,20 +4012,19 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         PhysicalProperties.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.density != null && Object.hasOwnProperty.call(message, "density"))
-                writer.uint32(/* id 1, wireType 1 =*/9).double(message.density);
+                writer.uint32(/* id 1, wireType 1 =*/ 9).double(message.density)
             if (message.mass != null && Object.hasOwnProperty.call(message, "mass"))
-                writer.uint32(/* id 2, wireType 1 =*/17).double(message.mass);
+                writer.uint32(/* id 2, wireType 1 =*/ 17).double(message.mass)
             if (message.volume != null && Object.hasOwnProperty.call(message, "volume"))
-                writer.uint32(/* id 3, wireType 1 =*/25).double(message.volume);
+                writer.uint32(/* id 3, wireType 1 =*/ 25).double(message.volume)
             if (message.area != null && Object.hasOwnProperty.call(message, "area"))
-                writer.uint32(/* id 4, wireType 1 =*/33).double(message.area);
+                writer.uint32(/* id 4, wireType 1 =*/ 33).double(message.area)
             if (message.com != null && Object.hasOwnProperty.call(message, "com"))
-                $root.mirabuf.Vector3.encode(message.com, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
-            return writer;
-        };
+                $root.mirabuf.Vector3.encode(message.com, writer.uint32(/* id 5, wireType 2 =*/ 42).fork()).ldelim()
+            return writer
+        }
 
         /**
          * Encodes the specified PhysicalProperties message, length delimited. Does not implicitly {@link mirabuf.PhysicalProperties.verify|verify} messages.
@@ -4165,8 +4036,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         PhysicalProperties.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a PhysicalProperties message from the specified reader or buffer.
@@ -4180,39 +4051,39 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         PhysicalProperties.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.PhysicalProperties();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.PhysicalProperties()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.density = reader.double();
-                        break;
+                    case 1: {
+                        message.density = reader.double()
+                        break
                     }
-                case 2: {
-                        message.mass = reader.double();
-                        break;
+                    case 2: {
+                        message.mass = reader.double()
+                        break
                     }
-                case 3: {
-                        message.volume = reader.double();
-                        break;
+                    case 3: {
+                        message.volume = reader.double()
+                        break
                     }
-                case 4: {
-                        message.area = reader.double();
-                        break;
+                    case 4: {
+                        message.area = reader.double()
+                        break
                     }
-                case 5: {
-                        message.com = $root.mirabuf.Vector3.decode(reader, reader.uint32());
-                        break;
+                    case 5: {
+                        message.com = $root.mirabuf.Vector3.decode(reader, reader.uint32())
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a PhysicalProperties message from the specified reader or buffer, length delimited.
@@ -4225,10 +4096,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         PhysicalProperties.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a PhysicalProperties message.
@@ -4239,27 +4109,21 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         PhysicalProperties.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.density != null && message.hasOwnProperty("density"))
-                if (typeof message.density !== "number")
-                    return "density: number expected";
+                if (typeof message.density !== "number") return "density: number expected"
             if (message.mass != null && message.hasOwnProperty("mass"))
-                if (typeof message.mass !== "number")
-                    return "mass: number expected";
+                if (typeof message.mass !== "number") return "mass: number expected"
             if (message.volume != null && message.hasOwnProperty("volume"))
-                if (typeof message.volume !== "number")
-                    return "volume: number expected";
+                if (typeof message.volume !== "number") return "volume: number expected"
             if (message.area != null && message.hasOwnProperty("area"))
-                if (typeof message.area !== "number")
-                    return "area: number expected";
+                if (typeof message.area !== "number") return "area: number expected"
             if (message.com != null && message.hasOwnProperty("com")) {
-                let error = $root.mirabuf.Vector3.verify(message.com);
-                if (error)
-                    return "com." + error;
+                let error = $root.mirabuf.Vector3.verify(message.com)
+                if (error) return "com." + error
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates a PhysicalProperties message from a plain object. Also converts values to their respective internal types.
@@ -4270,24 +4134,18 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.PhysicalProperties} PhysicalProperties
          */
         PhysicalProperties.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.PhysicalProperties)
-                return object;
-            let message = new $root.mirabuf.PhysicalProperties();
-            if (object.density != null)
-                message.density = Number(object.density);
-            if (object.mass != null)
-                message.mass = Number(object.mass);
-            if (object.volume != null)
-                message.volume = Number(object.volume);
-            if (object.area != null)
-                message.area = Number(object.area);
+            if (object instanceof $root.mirabuf.PhysicalProperties) return object
+            let message = new $root.mirabuf.PhysicalProperties()
+            if (object.density != null) message.density = Number(object.density)
+            if (object.mass != null) message.mass = Number(object.mass)
+            if (object.volume != null) message.volume = Number(object.volume)
+            if (object.area != null) message.area = Number(object.area)
             if (object.com != null) {
-                if (typeof object.com !== "object")
-                    throw TypeError(".mirabuf.PhysicalProperties.com: object expected");
-                message.com = $root.mirabuf.Vector3.fromObject(object.com);
+                if (typeof object.com !== "object") throw TypeError(".mirabuf.PhysicalProperties.com: object expected")
+                message.com = $root.mirabuf.Vector3.fromObject(object.com)
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from a PhysicalProperties message. Also converts values to other types if specified.
@@ -4299,28 +4157,27 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         PhysicalProperties.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.density = 0;
-                object.mass = 0;
-                object.volume = 0;
-                object.area = 0;
-                object.com = null;
+                object.density = 0
+                object.mass = 0
+                object.volume = 0
+                object.area = 0
+                object.com = null
             }
             if (message.density != null && message.hasOwnProperty("density"))
-                object.density = options.json && !isFinite(message.density) ? String(message.density) : message.density;
+                object.density = options.json && !isFinite(message.density) ? String(message.density) : message.density
             if (message.mass != null && message.hasOwnProperty("mass"))
-                object.mass = options.json && !isFinite(message.mass) ? String(message.mass) : message.mass;
+                object.mass = options.json && !isFinite(message.mass) ? String(message.mass) : message.mass
             if (message.volume != null && message.hasOwnProperty("volume"))
-                object.volume = options.json && !isFinite(message.volume) ? String(message.volume) : message.volume;
+                object.volume = options.json && !isFinite(message.volume) ? String(message.volume) : message.volume
             if (message.area != null && message.hasOwnProperty("area"))
-                object.area = options.json && !isFinite(message.area) ? String(message.area) : message.area;
+                object.area = options.json && !isFinite(message.area) ? String(message.area) : message.area
             if (message.com != null && message.hasOwnProperty("com"))
-                object.com = $root.mirabuf.Vector3.toObject(message.com, options);
-            return object;
-        };
+                object.com = $root.mirabuf.Vector3.toObject(message.com, options)
+            return object
+        }
 
         /**
          * Converts this PhysicalProperties to JSON.
@@ -4330,8 +4187,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         PhysicalProperties.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for PhysicalProperties
@@ -4343,16 +4200,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         PhysicalProperties.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.PhysicalProperties";
-        };
+            return typeUrlPrefix + "/mirabuf.PhysicalProperties"
+        }
 
-        return PhysicalProperties;
-    })();
+        return PhysicalProperties
+    })()
 
-    mirabuf.Transform = (function() {
-
+    mirabuf.Transform = (function () {
         /**
          * Properties of a Transform.
          * @memberof mirabuf
@@ -4364,18 +4220,17 @@ export const mirabuf = $root.mirabuf = (() => {
          * Constructs a new Transform.
          * @memberof mirabuf
          * @classdesc Transform
-         * 
+         *
          * Data needed to apply scale, position, and rotational changes
          * @implements ITransform
          * @constructor
          * @param {mirabuf.ITransform=} [properties] Properties to set
          */
         function Transform(properties) {
-            this.spatialMatrix = [];
+            this.spatialMatrix = []
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -4384,7 +4239,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Transform
          * @instance
          */
-        Transform.prototype.spatialMatrix = $util.emptyArray;
+        Transform.prototype.spatialMatrix = $util.emptyArray
 
         /**
          * Creates a new Transform instance using the specified properties.
@@ -4395,8 +4250,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Transform} Transform instance
          */
         Transform.create = function create(properties) {
-            return new Transform(properties);
-        };
+            return new Transform(properties)
+        }
 
         /**
          * Encodes the specified Transform message. Does not implicitly {@link mirabuf.Transform.verify|verify} messages.
@@ -4408,16 +4263,14 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Transform.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.spatialMatrix != null && message.spatialMatrix.length) {
-                writer.uint32(/* id 1, wireType 2 =*/10).fork();
-                for (let i = 0; i < message.spatialMatrix.length; ++i)
-                    writer.float(message.spatialMatrix[i]);
-                writer.ldelim();
+                writer.uint32(/* id 1, wireType 2 =*/ 10).fork()
+                for (let i = 0; i < message.spatialMatrix.length; ++i) writer.float(message.spatialMatrix[i])
+                writer.ldelim()
             }
-            return writer;
-        };
+            return writer
+        }
 
         /**
          * Encodes the specified Transform message, length delimited. Does not implicitly {@link mirabuf.Transform.verify|verify} messages.
@@ -4429,8 +4282,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Transform.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a Transform message from the specified reader or buffer.
@@ -4444,30 +4297,27 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Transform.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Transform();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Transform()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        if (!(message.spatialMatrix && message.spatialMatrix.length))
-                            message.spatialMatrix = [];
+                    case 1: {
+                        if (!(message.spatialMatrix && message.spatialMatrix.length)) message.spatialMatrix = []
                         if ((tag & 7) === 2) {
-                            let end2 = reader.uint32() + reader.pos;
-                            while (reader.pos < end2)
-                                message.spatialMatrix.push(reader.float());
-                        } else
-                            message.spatialMatrix.push(reader.float());
-                        break;
+                            let end2 = reader.uint32() + reader.pos
+                            while (reader.pos < end2) message.spatialMatrix.push(reader.float())
+                        } else message.spatialMatrix.push(reader.float())
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a Transform message from the specified reader or buffer, length delimited.
@@ -4480,10 +4330,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Transform.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a Transform message.
@@ -4494,17 +4343,14 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Transform.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.spatialMatrix != null && message.hasOwnProperty("spatialMatrix")) {
-                if (!Array.isArray(message.spatialMatrix))
-                    return "spatialMatrix: array expected";
+                if (!Array.isArray(message.spatialMatrix)) return "spatialMatrix: array expected"
                 for (let i = 0; i < message.spatialMatrix.length; ++i)
-                    if (typeof message.spatialMatrix[i] !== "number")
-                        return "spatialMatrix: number[] expected";
+                    if (typeof message.spatialMatrix[i] !== "number") return "spatialMatrix: number[] expected"
             }
-            return null;
-        };
+            return null
+        }
 
         /**
          * Creates a Transform message from a plain object. Also converts values to their respective internal types.
@@ -4515,18 +4361,17 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Transform} Transform
          */
         Transform.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Transform)
-                return object;
-            let message = new $root.mirabuf.Transform();
+            if (object instanceof $root.mirabuf.Transform) return object
+            let message = new $root.mirabuf.Transform()
             if (object.spatialMatrix) {
                 if (!Array.isArray(object.spatialMatrix))
-                    throw TypeError(".mirabuf.Transform.spatialMatrix: array expected");
-                message.spatialMatrix = [];
+                    throw TypeError(".mirabuf.Transform.spatialMatrix: array expected")
+                message.spatialMatrix = []
                 for (let i = 0; i < object.spatialMatrix.length; ++i)
-                    message.spatialMatrix[i] = Number(object.spatialMatrix[i]);
+                    message.spatialMatrix[i] = Number(object.spatialMatrix[i])
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Creates a plain object from a Transform message. Also converts values to other types if specified.
@@ -4538,18 +4383,19 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Transform.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
-            if (options.arrays || options.defaults)
-                object.spatialMatrix = [];
+            if (!options) options = {}
+            let object = {}
+            if (options.arrays || options.defaults) object.spatialMatrix = []
             if (message.spatialMatrix && message.spatialMatrix.length) {
-                object.spatialMatrix = [];
+                object.spatialMatrix = []
                 for (let j = 0; j < message.spatialMatrix.length; ++j)
-                    object.spatialMatrix[j] = options.json && !isFinite(message.spatialMatrix[j]) ? String(message.spatialMatrix[j]) : message.spatialMatrix[j];
+                    object.spatialMatrix[j] =
+                        options.json && !isFinite(message.spatialMatrix[j])
+                            ? String(message.spatialMatrix[j])
+                            : message.spatialMatrix[j]
             }
-            return object;
-        };
+            return object
+        }
 
         /**
          * Converts this Transform to JSON.
@@ -4559,8 +4405,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Transform.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Transform
@@ -4572,16 +4418,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Transform.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Transform";
-        };
+            return typeUrlPrefix + "/mirabuf.Transform"
+        }
 
-        return Transform;
-    })();
+        return Transform
+    })()
 
-    mirabuf.Color = (function() {
-
+    mirabuf.Color = (function () {
         /**
          * Properties of a Color.
          * @memberof mirabuf
@@ -4603,8 +4448,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function Color(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -4613,7 +4457,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Color
          * @instance
          */
-        Color.prototype.R = 0;
+        Color.prototype.R = 0
 
         /**
          * Color G.
@@ -4621,7 +4465,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Color
          * @instance
          */
-        Color.prototype.G = 0;
+        Color.prototype.G = 0
 
         /**
          * Color B.
@@ -4629,7 +4473,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Color
          * @instance
          */
-        Color.prototype.B = 0;
+        Color.prototype.B = 0
 
         /**
          * Color A.
@@ -4637,7 +4481,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Color
          * @instance
          */
-        Color.prototype.A = 0;
+        Color.prototype.A = 0
 
         /**
          * Creates a new Color instance using the specified properties.
@@ -4648,8 +4492,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Color} Color instance
          */
         Color.create = function create(properties) {
-            return new Color(properties);
-        };
+            return new Color(properties)
+        }
 
         /**
          * Encodes the specified Color message. Does not implicitly {@link mirabuf.Color.verify|verify} messages.
@@ -4661,18 +4505,17 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Color.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.R != null && Object.hasOwnProperty.call(message, "R"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.R);
+                writer.uint32(/* id 1, wireType 0 =*/ 8).int32(message.R)
             if (message.G != null && Object.hasOwnProperty.call(message, "G"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.G);
+                writer.uint32(/* id 2, wireType 0 =*/ 16).int32(message.G)
             if (message.B != null && Object.hasOwnProperty.call(message, "B"))
-                writer.uint32(/* id 3, wireType 0 =*/24).int32(message.B);
+                writer.uint32(/* id 3, wireType 0 =*/ 24).int32(message.B)
             if (message.A != null && Object.hasOwnProperty.call(message, "A"))
-                writer.uint32(/* id 4, wireType 0 =*/32).int32(message.A);
-            return writer;
-        };
+                writer.uint32(/* id 4, wireType 0 =*/ 32).int32(message.A)
+            return writer
+        }
 
         /**
          * Encodes the specified Color message, length delimited. Does not implicitly {@link mirabuf.Color.verify|verify} messages.
@@ -4684,8 +4527,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Color.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a Color message from the specified reader or buffer.
@@ -4699,35 +4542,35 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Color.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Color();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Color()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.R = reader.int32();
-                        break;
+                    case 1: {
+                        message.R = reader.int32()
+                        break
                     }
-                case 2: {
-                        message.G = reader.int32();
-                        break;
+                    case 2: {
+                        message.G = reader.int32()
+                        break
                     }
-                case 3: {
-                        message.B = reader.int32();
-                        break;
+                    case 3: {
+                        message.B = reader.int32()
+                        break
                     }
-                case 4: {
-                        message.A = reader.int32();
-                        break;
+                    case 4: {
+                        message.A = reader.int32()
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a Color message from the specified reader or buffer, length delimited.
@@ -4740,10 +4583,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Color.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a Color message.
@@ -4754,22 +4596,17 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Color.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.R != null && message.hasOwnProperty("R"))
-                if (!$util.isInteger(message.R))
-                    return "R: integer expected";
+                if (!$util.isInteger(message.R)) return "R: integer expected"
             if (message.G != null && message.hasOwnProperty("G"))
-                if (!$util.isInteger(message.G))
-                    return "G: integer expected";
+                if (!$util.isInteger(message.G)) return "G: integer expected"
             if (message.B != null && message.hasOwnProperty("B"))
-                if (!$util.isInteger(message.B))
-                    return "B: integer expected";
+                if (!$util.isInteger(message.B)) return "B: integer expected"
             if (message.A != null && message.hasOwnProperty("A"))
-                if (!$util.isInteger(message.A))
-                    return "A: integer expected";
-            return null;
-        };
+                if (!$util.isInteger(message.A)) return "A: integer expected"
+            return null
+        }
 
         /**
          * Creates a Color message from a plain object. Also converts values to their respective internal types.
@@ -4780,19 +4617,14 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Color} Color
          */
         Color.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Color)
-                return object;
-            let message = new $root.mirabuf.Color();
-            if (object.R != null)
-                message.R = object.R | 0;
-            if (object.G != null)
-                message.G = object.G | 0;
-            if (object.B != null)
-                message.B = object.B | 0;
-            if (object.A != null)
-                message.A = object.A | 0;
-            return message;
-        };
+            if (object instanceof $root.mirabuf.Color) return object
+            let message = new $root.mirabuf.Color()
+            if (object.R != null) message.R = object.R | 0
+            if (object.G != null) message.G = object.G | 0
+            if (object.B != null) message.B = object.B | 0
+            if (object.A != null) message.A = object.A | 0
+            return message
+        }
 
         /**
          * Creates a plain object from a Color message. Also converts values to other types if specified.
@@ -4804,25 +4636,20 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Color.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.R = 0;
-                object.G = 0;
-                object.B = 0;
-                object.A = 0;
+                object.R = 0
+                object.G = 0
+                object.B = 0
+                object.A = 0
             }
-            if (message.R != null && message.hasOwnProperty("R"))
-                object.R = message.R;
-            if (message.G != null && message.hasOwnProperty("G"))
-                object.G = message.G;
-            if (message.B != null && message.hasOwnProperty("B"))
-                object.B = message.B;
-            if (message.A != null && message.hasOwnProperty("A"))
-                object.A = message.A;
-            return object;
-        };
+            if (message.R != null && message.hasOwnProperty("R")) object.R = message.R
+            if (message.G != null && message.hasOwnProperty("G")) object.G = message.G
+            if (message.B != null && message.hasOwnProperty("B")) object.B = message.B
+            if (message.A != null && message.hasOwnProperty("A")) object.A = message.A
+            return object
+        }
 
         /**
          * Converts this Color to JSON.
@@ -4832,8 +4659,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Color.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Color
@@ -4845,13 +4672,13 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Color.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Color";
-        };
+            return typeUrlPrefix + "/mirabuf.Color"
+        }
 
-        return Color;
-    })();
+        return Color
+    })()
 
     /**
      * Axis enum.
@@ -4861,16 +4688,16 @@ export const mirabuf = $root.mirabuf = (() => {
      * @property {number} Y=1 Y value
      * @property {number} Z=2 Z value
      */
-    mirabuf.Axis = (function() {
-        const valuesById = {}, values = Object.create(valuesById);
-        values[valuesById[0] = "X"] = 0;
-        values[valuesById[1] = "Y"] = 1;
-        values[valuesById[2] = "Z"] = 2;
-        return values;
-    })();
+    mirabuf.Axis = (function () {
+        const valuesById = {},
+            values = Object.create(valuesById)
+        values[(valuesById[0] = "X")] = 0
+        values[(valuesById[1] = "Y")] = 1
+        values[(valuesById[2] = "Z")] = 2
+        return values
+    })()
 
-    mirabuf.Info = (function() {
-
+    mirabuf.Info = (function () {
         /**
          * Properties of an Info.
          * @memberof mirabuf
@@ -4892,8 +4719,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function Info(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -4902,7 +4728,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Info
          * @instance
          */
-        Info.prototype.GUID = "";
+        Info.prototype.GUID = ""
 
         /**
          * Info name.
@@ -4910,7 +4736,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Info
          * @instance
          */
-        Info.prototype.name = "";
+        Info.prototype.name = ""
 
         /**
          * Info version.
@@ -4918,7 +4744,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Info
          * @instance
          */
-        Info.prototype.version = 0;
+        Info.prototype.version = 0
 
         /**
          * Creates a new Info instance using the specified properties.
@@ -4929,8 +4755,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Info} Info instance
          */
         Info.create = function create(properties) {
-            return new Info(properties);
-        };
+            return new Info(properties)
+        }
 
         /**
          * Encodes the specified Info message. Does not implicitly {@link mirabuf.Info.verify|verify} messages.
@@ -4942,16 +4768,15 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Info.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.GUID != null && Object.hasOwnProperty.call(message, "GUID"))
-                writer.uint32(/* id 1, wireType 2 =*/10).string(message.GUID);
+                writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.GUID)
             if (message.name != null && Object.hasOwnProperty.call(message, "name"))
-                writer.uint32(/* id 2, wireType 2 =*/18).string(message.name);
+                writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.name)
             if (message.version != null && Object.hasOwnProperty.call(message, "version"))
-                writer.uint32(/* id 3, wireType 0 =*/24).uint32(message.version);
-            return writer;
-        };
+                writer.uint32(/* id 3, wireType 0 =*/ 24).uint32(message.version)
+            return writer
+        }
 
         /**
          * Encodes the specified Info message, length delimited. Does not implicitly {@link mirabuf.Info.verify|verify} messages.
@@ -4963,8 +4788,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Info.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes an Info message from the specified reader or buffer.
@@ -4978,31 +4803,31 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Info.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Info();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Info()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.GUID = reader.string();
-                        break;
+                    case 1: {
+                        message.GUID = reader.string()
+                        break
                     }
-                case 2: {
-                        message.name = reader.string();
-                        break;
+                    case 2: {
+                        message.name = reader.string()
+                        break
                     }
-                case 3: {
-                        message.version = reader.uint32();
-                        break;
+                    case 3: {
+                        message.version = reader.uint32()
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes an Info message from the specified reader or buffer, length delimited.
@@ -5015,10 +4840,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Info.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies an Info message.
@@ -5029,19 +4853,15 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Info.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.GUID != null && message.hasOwnProperty("GUID"))
-                if (!$util.isString(message.GUID))
-                    return "GUID: string expected";
+                if (!$util.isString(message.GUID)) return "GUID: string expected"
             if (message.name != null && message.hasOwnProperty("name"))
-                if (!$util.isString(message.name))
-                    return "name: string expected";
+                if (!$util.isString(message.name)) return "name: string expected"
             if (message.version != null && message.hasOwnProperty("version"))
-                if (!$util.isInteger(message.version))
-                    return "version: integer expected";
-            return null;
-        };
+                if (!$util.isInteger(message.version)) return "version: integer expected"
+            return null
+        }
 
         /**
          * Creates an Info message from a plain object. Also converts values to their respective internal types.
@@ -5052,17 +4872,13 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Info} Info
          */
         Info.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Info)
-                return object;
-            let message = new $root.mirabuf.Info();
-            if (object.GUID != null)
-                message.GUID = String(object.GUID);
-            if (object.name != null)
-                message.name = String(object.name);
-            if (object.version != null)
-                message.version = object.version >>> 0;
-            return message;
-        };
+            if (object instanceof $root.mirabuf.Info) return object
+            let message = new $root.mirabuf.Info()
+            if (object.GUID != null) message.GUID = String(object.GUID)
+            if (object.name != null) message.name = String(object.name)
+            if (object.version != null) message.version = object.version >>> 0
+            return message
+        }
 
         /**
          * Creates a plain object from an Info message. Also converts values to other types if specified.
@@ -5074,22 +4890,18 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Info.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.GUID = "";
-                object.name = "";
-                object.version = 0;
+                object.GUID = ""
+                object.name = ""
+                object.version = 0
             }
-            if (message.GUID != null && message.hasOwnProperty("GUID"))
-                object.GUID = message.GUID;
-            if (message.name != null && message.hasOwnProperty("name"))
-                object.name = message.name;
-            if (message.version != null && message.hasOwnProperty("version"))
-                object.version = message.version;
-            return object;
-        };
+            if (message.GUID != null && message.hasOwnProperty("GUID")) object.GUID = message.GUID
+            if (message.name != null && message.hasOwnProperty("name")) object.name = message.name
+            if (message.version != null && message.hasOwnProperty("version")) object.version = message.version
+            return object
+        }
 
         /**
          * Converts this Info to JSON.
@@ -5099,8 +4911,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Info.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Info
@@ -5112,16 +4924,15 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Info.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Info";
-        };
+            return typeUrlPrefix + "/mirabuf.Info"
+        }
 
-        return Info;
-    })();
+        return Info
+    })()
 
-    mirabuf.Thumbnail = (function() {
-
+    mirabuf.Thumbnail = (function () {
         /**
          * Properties of a Thumbnail.
          * @memberof mirabuf
@@ -5145,8 +4956,7 @@ export const mirabuf = $root.mirabuf = (() => {
         function Thumbnail(properties) {
             if (properties)
                 for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                    if (properties[keys[i]] != null)
-                        this[keys[i]] = properties[keys[i]];
+                    if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
         }
 
         /**
@@ -5155,7 +4965,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Thumbnail
          * @instance
          */
-        Thumbnail.prototype.width = 0;
+        Thumbnail.prototype.width = 0
 
         /**
          * Image Height
@@ -5163,7 +4973,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Thumbnail
          * @instance
          */
-        Thumbnail.prototype.height = 0;
+        Thumbnail.prototype.height = 0
 
         /**
          * Image Extension - ex. (.png, .bitmap, .jpeg)
@@ -5171,7 +4981,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Thumbnail
          * @instance
          */
-        Thumbnail.prototype.extension = "";
+        Thumbnail.prototype.extension = ""
 
         /**
          * Transparency - true from fusion when correctly configured
@@ -5179,7 +4989,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Thumbnail
          * @instance
          */
-        Thumbnail.prototype.transparent = false;
+        Thumbnail.prototype.transparent = false
 
         /**
          * Data as read from the file in bytes[] form
@@ -5187,7 +4997,7 @@ export const mirabuf = $root.mirabuf = (() => {
          * @memberof mirabuf.Thumbnail
          * @instance
          */
-        Thumbnail.prototype.data = $util.newBuffer([]);
+        Thumbnail.prototype.data = $util.newBuffer([])
 
         /**
          * Creates a new Thumbnail instance using the specified properties.
@@ -5198,8 +5008,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Thumbnail} Thumbnail instance
          */
         Thumbnail.create = function create(properties) {
-            return new Thumbnail(properties);
-        };
+            return new Thumbnail(properties)
+        }
 
         /**
          * Encodes the specified Thumbnail message. Does not implicitly {@link mirabuf.Thumbnail.verify|verify} messages.
@@ -5211,20 +5021,19 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Thumbnail.encode = function encode(message, writer) {
-            if (!writer)
-                writer = $Writer.create();
+            if (!writer) writer = $Writer.create()
             if (message.width != null && Object.hasOwnProperty.call(message, "width"))
-                writer.uint32(/* id 1, wireType 0 =*/8).int32(message.width);
+                writer.uint32(/* id 1, wireType 0 =*/ 8).int32(message.width)
             if (message.height != null && Object.hasOwnProperty.call(message, "height"))
-                writer.uint32(/* id 2, wireType 0 =*/16).int32(message.height);
+                writer.uint32(/* id 2, wireType 0 =*/ 16).int32(message.height)
             if (message.extension != null && Object.hasOwnProperty.call(message, "extension"))
-                writer.uint32(/* id 3, wireType 2 =*/26).string(message.extension);
+                writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.extension)
             if (message.transparent != null && Object.hasOwnProperty.call(message, "transparent"))
-                writer.uint32(/* id 4, wireType 0 =*/32).bool(message.transparent);
+                writer.uint32(/* id 4, wireType 0 =*/ 32).bool(message.transparent)
             if (message.data != null && Object.hasOwnProperty.call(message, "data"))
-                writer.uint32(/* id 5, wireType 2 =*/42).bytes(message.data);
-            return writer;
-        };
+                writer.uint32(/* id 5, wireType 2 =*/ 42).bytes(message.data)
+            return writer
+        }
 
         /**
          * Encodes the specified Thumbnail message, length delimited. Does not implicitly {@link mirabuf.Thumbnail.verify|verify} messages.
@@ -5236,8 +5045,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {$protobuf.Writer} Writer
          */
         Thumbnail.encodeDelimited = function encodeDelimited(message, writer) {
-            return this.encode(message, writer).ldelim();
-        };
+            return this.encode(message, writer).ldelim()
+        }
 
         /**
          * Decodes a Thumbnail message from the specified reader or buffer.
@@ -5251,39 +5060,39 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Thumbnail.decode = function decode(reader, length) {
-            if (!(reader instanceof $Reader))
-                reader = $Reader.create(reader);
-            let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.Thumbnail();
+            if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+            let end = length === undefined ? reader.len : reader.pos + length,
+                message = new $root.mirabuf.Thumbnail()
             while (reader.pos < end) {
-                let tag = reader.uint32();
+                let tag = reader.uint32()
                 switch (tag >>> 3) {
-                case 1: {
-                        message.width = reader.int32();
-                        break;
+                    case 1: {
+                        message.width = reader.int32()
+                        break
                     }
-                case 2: {
-                        message.height = reader.int32();
-                        break;
+                    case 2: {
+                        message.height = reader.int32()
+                        break
                     }
-                case 3: {
-                        message.extension = reader.string();
-                        break;
+                    case 3: {
+                        message.extension = reader.string()
+                        break
                     }
-                case 4: {
-                        message.transparent = reader.bool();
-                        break;
+                    case 4: {
+                        message.transparent = reader.bool()
+                        break
                     }
-                case 5: {
-                        message.data = reader.bytes();
-                        break;
+                    case 5: {
+                        message.data = reader.bytes()
+                        break
                     }
-                default:
-                    reader.skipType(tag & 7);
-                    break;
+                    default:
+                        reader.skipType(tag & 7)
+                        break
                 }
             }
-            return message;
-        };
+            return message
+        }
 
         /**
          * Decodes a Thumbnail message from the specified reader or buffer, length delimited.
@@ -5296,10 +5105,9 @@ export const mirabuf = $root.mirabuf = (() => {
          * @throws {$protobuf.util.ProtocolError} If required fields are missing
          */
         Thumbnail.decodeDelimited = function decodeDelimited(reader) {
-            if (!(reader instanceof $Reader))
-                reader = new $Reader(reader);
-            return this.decode(reader, reader.uint32());
-        };
+            if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+            return this.decode(reader, reader.uint32())
+        }
 
         /**
          * Verifies a Thumbnail message.
@@ -5310,25 +5118,20 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {string|null} `null` if valid, otherwise the reason why it is not
          */
         Thumbnail.verify = function verify(message) {
-            if (typeof message !== "object" || message === null)
-                return "object expected";
+            if (typeof message !== "object" || message === null) return "object expected"
             if (message.width != null && message.hasOwnProperty("width"))
-                if (!$util.isInteger(message.width))
-                    return "width: integer expected";
+                if (!$util.isInteger(message.width)) return "width: integer expected"
             if (message.height != null && message.hasOwnProperty("height"))
-                if (!$util.isInteger(message.height))
-                    return "height: integer expected";
+                if (!$util.isInteger(message.height)) return "height: integer expected"
             if (message.extension != null && message.hasOwnProperty("extension"))
-                if (!$util.isString(message.extension))
-                    return "extension: string expected";
+                if (!$util.isString(message.extension)) return "extension: string expected"
             if (message.transparent != null && message.hasOwnProperty("transparent"))
-                if (typeof message.transparent !== "boolean")
-                    return "transparent: boolean expected";
+                if (typeof message.transparent !== "boolean") return "transparent: boolean expected"
             if (message.data != null && message.hasOwnProperty("data"))
-                if (!(message.data && typeof message.data.length === "number" || $util.isString(message.data)))
-                    return "data: buffer expected";
-            return null;
-        };
+                if (!((message.data && typeof message.data.length === "number") || $util.isString(message.data)))
+                    return "data: buffer expected"
+            return null
+        }
 
         /**
          * Creates a Thumbnail message from a plain object. Also converts values to their respective internal types.
@@ -5339,24 +5142,22 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {mirabuf.Thumbnail} Thumbnail
          */
         Thumbnail.fromObject = function fromObject(object) {
-            if (object instanceof $root.mirabuf.Thumbnail)
-                return object;
-            let message = new $root.mirabuf.Thumbnail();
-            if (object.width != null)
-                message.width = object.width | 0;
-            if (object.height != null)
-                message.height = object.height | 0;
-            if (object.extension != null)
-                message.extension = String(object.extension);
-            if (object.transparent != null)
-                message.transparent = Boolean(object.transparent);
+            if (object instanceof $root.mirabuf.Thumbnail) return object
+            let message = new $root.mirabuf.Thumbnail()
+            if (object.width != null) message.width = object.width | 0
+            if (object.height != null) message.height = object.height | 0
+            if (object.extension != null) message.extension = String(object.extension)
+            if (object.transparent != null) message.transparent = Boolean(object.transparent)
             if (object.data != null)
                 if (typeof object.data === "string")
-                    $util.base64.decode(object.data, message.data = $util.newBuffer($util.base64.length(object.data)), 0);
-                else if (object.data.length >= 0)
-                    message.data = object.data;
-            return message;
-        };
+                    $util.base64.decode(
+                        object.data,
+                        (message.data = $util.newBuffer($util.base64.length(object.data))),
+                        0
+                    )
+                else if (object.data.length >= 0) message.data = object.data
+            return message
+        }
 
         /**
          * Creates a plain object from a Thumbnail message. Also converts values to other types if specified.
@@ -5368,34 +5169,33 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} Plain object
          */
         Thumbnail.toObject = function toObject(message, options) {
-            if (!options)
-                options = {};
-            let object = {};
+            if (!options) options = {}
+            let object = {}
             if (options.defaults) {
-                object.width = 0;
-                object.height = 0;
-                object.extension = "";
-                object.transparent = false;
-                if (options.bytes === String)
-                    object.data = "";
+                object.width = 0
+                object.height = 0
+                object.extension = ""
+                object.transparent = false
+                if (options.bytes === String) object.data = ""
                 else {
-                    object.data = [];
-                    if (options.bytes !== Array)
-                        object.data = $util.newBuffer(object.data);
+                    object.data = []
+                    if (options.bytes !== Array) object.data = $util.newBuffer(object.data)
                 }
             }
-            if (message.width != null && message.hasOwnProperty("width"))
-                object.width = message.width;
-            if (message.height != null && message.hasOwnProperty("height"))
-                object.height = message.height;
-            if (message.extension != null && message.hasOwnProperty("extension"))
-                object.extension = message.extension;
+            if (message.width != null && message.hasOwnProperty("width")) object.width = message.width
+            if (message.height != null && message.hasOwnProperty("height")) object.height = message.height
+            if (message.extension != null && message.hasOwnProperty("extension")) object.extension = message.extension
             if (message.transparent != null && message.hasOwnProperty("transparent"))
-                object.transparent = message.transparent;
+                object.transparent = message.transparent
             if (message.data != null && message.hasOwnProperty("data"))
-                object.data = options.bytes === String ? $util.base64.encode(message.data, 0, message.data.length) : options.bytes === Array ? Array.prototype.slice.call(message.data) : message.data;
-            return object;
-        };
+                object.data =
+                    options.bytes === String
+                        ? $util.base64.encode(message.data, 0, message.data.length)
+                        : options.bytes === Array
+                          ? Array.prototype.slice.call(message.data)
+                          : message.data
+            return object
+        }
 
         /**
          * Converts this Thumbnail to JSON.
@@ -5405,8 +5205,8 @@ export const mirabuf = $root.mirabuf = (() => {
          * @returns {Object.<string,*>} JSON object
          */
         Thumbnail.prototype.toJSON = function toJSON() {
-            return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-        };
+            return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+        }
 
         /**
          * Gets the default type url for Thumbnail
@@ -5418,25 +5218,23 @@ export const mirabuf = $root.mirabuf = (() => {
          */
         Thumbnail.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
             if (typeUrlPrefix === undefined) {
-                typeUrlPrefix = "type.googleapis.com";
+                typeUrlPrefix = "type.googleapis.com"
             }
-            return typeUrlPrefix + "/mirabuf.Thumbnail";
-        };
+            return typeUrlPrefix + "/mirabuf.Thumbnail"
+        }
 
-        return Thumbnail;
-    })();
+        return Thumbnail
+    })()
 
-    mirabuf.joint = (function() {
-
+    mirabuf.joint = (function () {
         /**
          * Namespace joint.
          * @memberof mirabuf
          * @namespace
          */
-        const joint = {};
+        const joint = {}
 
-        joint.Joints = (function() {
-
+        joint.Joints = (function () {
             /**
              * Properties of a Joints.
              * @memberof mirabuf.joint
@@ -5458,14 +5256,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @param {mirabuf.joint.IJoints=} [properties] Properties to set
              */
             function Joints(properties) {
-                this.jointDefinitions = {};
-                this.jointInstances = {};
-                this.rigidGroups = [];
-                this.motorDefinitions = {};
+                this.jointDefinitions = {}
+                this.jointInstances = {}
+                this.rigidGroups = []
+                this.motorDefinitions = {}
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -5474,7 +5271,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joints
              * @instance
              */
-            Joints.prototype.info = null;
+            Joints.prototype.info = null
 
             /**
              * Unique Joint Implementations
@@ -5482,7 +5279,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joints
              * @instance
              */
-            Joints.prototype.jointDefinitions = $util.emptyObject;
+            Joints.prototype.jointDefinitions = $util.emptyObject
 
             /**
              * Instances of the Joint Implementations
@@ -5490,7 +5287,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joints
              * @instance
              */
-            Joints.prototype.jointInstances = $util.emptyObject;
+            Joints.prototype.jointInstances = $util.emptyObject
 
             /**
              * Rigidgroups ?
@@ -5498,7 +5295,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joints
              * @instance
              */
-            Joints.prototype.rigidGroups = $util.emptyArray;
+            Joints.prototype.rigidGroups = $util.emptyArray
 
             /**
              * Collection of all Motors exported
@@ -5506,7 +5303,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joints
              * @instance
              */
-            Joints.prototype.motorDefinitions = $util.emptyObject;
+            Joints.prototype.motorDefinitions = $util.emptyObject
 
             /**
              * Creates a new Joints instance using the specified properties.
@@ -5517,8 +5314,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Joints} Joints instance
              */
             Joints.create = function create(properties) {
-                return new Joints(properties);
-            };
+                return new Joints(properties)
+            }
 
             /**
              * Encodes the specified Joints message. Does not implicitly {@link mirabuf.joint.Joints.verify|verify} messages.
@@ -5530,30 +5327,59 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Joints.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.jointDefinitions != null && Object.hasOwnProperty.call(message, "jointDefinitions"))
                     for (let keys = Object.keys(message.jointDefinitions), i = 0; i < keys.length; ++i) {
-                        writer.uint32(/* id 2, wireType 2 =*/18).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                        $root.mirabuf.joint.Joint.encode(message.jointDefinitions[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                        writer
+                            .uint32(/* id 2, wireType 2 =*/ 18)
+                            .fork()
+                            .uint32(/* id 1, wireType 2 =*/ 10)
+                            .string(keys[i])
+                        $root.mirabuf.joint.Joint.encode(
+                            message.jointDefinitions[keys[i]],
+                            writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                        )
+                            .ldelim()
+                            .ldelim()
                     }
                 if (message.jointInstances != null && Object.hasOwnProperty.call(message, "jointInstances"))
                     for (let keys = Object.keys(message.jointInstances), i = 0; i < keys.length; ++i) {
-                        writer.uint32(/* id 3, wireType 2 =*/26).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                        $root.mirabuf.joint.JointInstance.encode(message.jointInstances[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                        writer
+                            .uint32(/* id 3, wireType 2 =*/ 26)
+                            .fork()
+                            .uint32(/* id 1, wireType 2 =*/ 10)
+                            .string(keys[i])
+                        $root.mirabuf.joint.JointInstance.encode(
+                            message.jointInstances[keys[i]],
+                            writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                        )
+                            .ldelim()
+                            .ldelim()
                     }
                 if (message.rigidGroups != null && message.rigidGroups.length)
                     for (let i = 0; i < message.rigidGroups.length; ++i)
-                        $root.mirabuf.joint.RigidGroup.encode(message.rigidGroups[i], writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                        $root.mirabuf.joint.RigidGroup.encode(
+                            message.rigidGroups[i],
+                            writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                        ).ldelim()
                 if (message.motorDefinitions != null && Object.hasOwnProperty.call(message, "motorDefinitions"))
                     for (let keys = Object.keys(message.motorDefinitions), i = 0; i < keys.length; ++i) {
-                        writer.uint32(/* id 5, wireType 2 =*/42).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                        $root.mirabuf.motor.Motor.encode(message.motorDefinitions[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                        writer
+                            .uint32(/* id 5, wireType 2 =*/ 42)
+                            .fork()
+                            .uint32(/* id 1, wireType 2 =*/ 10)
+                            .string(keys[i])
+                        $root.mirabuf.motor.Motor.encode(
+                            message.motorDefinitions[keys[i]],
+                            writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                        )
+                            .ldelim()
+                            .ldelim()
                     }
-                return writer;
-            };
+                return writer
+            }
 
             /**
              * Encodes the specified Joints message, length delimited. Does not implicitly {@link mirabuf.joint.Joints.verify|verify} messages.
@@ -5565,8 +5391,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Joints.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Joints message from the specified reader or buffer.
@@ -5580,98 +5406,96 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Joints.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.Joints(), key, value;
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.Joints(),
+                    key,
+                    value
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            if (message.jointDefinitions === $util.emptyObject)
-                                message.jointDefinitions = {};
-                            let end2 = reader.uint32() + reader.pos;
-                            key = "";
-                            value = null;
+                        case 2: {
+                            if (message.jointDefinitions === $util.emptyObject) message.jointDefinitions = {}
+                            let end2 = reader.uint32() + reader.pos
+                            key = ""
+                            value = null
                             while (reader.pos < end2) {
-                                let tag2 = reader.uint32();
+                                let tag2 = reader.uint32()
                                 switch (tag2 >>> 3) {
-                                case 1:
-                                    key = reader.string();
-                                    break;
-                                case 2:
-                                    value = $root.mirabuf.joint.Joint.decode(reader, reader.uint32());
-                                    break;
-                                default:
-                                    reader.skipType(tag2 & 7);
-                                    break;
+                                    case 1:
+                                        key = reader.string()
+                                        break
+                                    case 2:
+                                        value = $root.mirabuf.joint.Joint.decode(reader, reader.uint32())
+                                        break
+                                    default:
+                                        reader.skipType(tag2 & 7)
+                                        break
                                 }
                             }
-                            message.jointDefinitions[key] = value;
-                            break;
+                            message.jointDefinitions[key] = value
+                            break
                         }
-                    case 3: {
-                            if (message.jointInstances === $util.emptyObject)
-                                message.jointInstances = {};
-                            let end2 = reader.uint32() + reader.pos;
-                            key = "";
-                            value = null;
+                        case 3: {
+                            if (message.jointInstances === $util.emptyObject) message.jointInstances = {}
+                            let end2 = reader.uint32() + reader.pos
+                            key = ""
+                            value = null
                             while (reader.pos < end2) {
-                                let tag2 = reader.uint32();
+                                let tag2 = reader.uint32()
                                 switch (tag2 >>> 3) {
-                                case 1:
-                                    key = reader.string();
-                                    break;
-                                case 2:
-                                    value = $root.mirabuf.joint.JointInstance.decode(reader, reader.uint32());
-                                    break;
-                                default:
-                                    reader.skipType(tag2 & 7);
-                                    break;
+                                    case 1:
+                                        key = reader.string()
+                                        break
+                                    case 2:
+                                        value = $root.mirabuf.joint.JointInstance.decode(reader, reader.uint32())
+                                        break
+                                    default:
+                                        reader.skipType(tag2 & 7)
+                                        break
                                 }
                             }
-                            message.jointInstances[key] = value;
-                            break;
+                            message.jointInstances[key] = value
+                            break
                         }
-                    case 4: {
-                            if (!(message.rigidGroups && message.rigidGroups.length))
-                                message.rigidGroups = [];
-                            message.rigidGroups.push($root.mirabuf.joint.RigidGroup.decode(reader, reader.uint32()));
-                            break;
+                        case 4: {
+                            if (!(message.rigidGroups && message.rigidGroups.length)) message.rigidGroups = []
+                            message.rigidGroups.push($root.mirabuf.joint.RigidGroup.decode(reader, reader.uint32()))
+                            break
                         }
-                    case 5: {
-                            if (message.motorDefinitions === $util.emptyObject)
-                                message.motorDefinitions = {};
-                            let end2 = reader.uint32() + reader.pos;
-                            key = "";
-                            value = null;
+                        case 5: {
+                            if (message.motorDefinitions === $util.emptyObject) message.motorDefinitions = {}
+                            let end2 = reader.uint32() + reader.pos
+                            key = ""
+                            value = null
                             while (reader.pos < end2) {
-                                let tag2 = reader.uint32();
+                                let tag2 = reader.uint32()
                                 switch (tag2 >>> 3) {
-                                case 1:
-                                    key = reader.string();
-                                    break;
-                                case 2:
-                                    value = $root.mirabuf.motor.Motor.decode(reader, reader.uint32());
-                                    break;
-                                default:
-                                    reader.skipType(tag2 & 7);
-                                    break;
+                                    case 1:
+                                        key = reader.string()
+                                        break
+                                    case 2:
+                                        value = $root.mirabuf.motor.Motor.decode(reader, reader.uint32())
+                                        break
+                                    default:
+                                        reader.skipType(tag2 & 7)
+                                        break
                                 }
                             }
-                            message.motorDefinitions[key] = value;
-                            break;
+                            message.motorDefinitions[key] = value
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Joints message from the specified reader or buffer, length delimited.
@@ -5684,10 +5508,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Joints.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Joints message.
@@ -5698,54 +5521,44 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Joints.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.jointDefinitions != null && message.hasOwnProperty("jointDefinitions")) {
-                    if (!$util.isObject(message.jointDefinitions))
-                        return "jointDefinitions: object expected";
-                    let key = Object.keys(message.jointDefinitions);
+                    if (!$util.isObject(message.jointDefinitions)) return "jointDefinitions: object expected"
+                    let key = Object.keys(message.jointDefinitions)
                     for (let i = 0; i < key.length; ++i) {
-                        let error = $root.mirabuf.joint.Joint.verify(message.jointDefinitions[key[i]]);
-                        if (error)
-                            return "jointDefinitions." + error;
+                        let error = $root.mirabuf.joint.Joint.verify(message.jointDefinitions[key[i]])
+                        if (error) return "jointDefinitions." + error
                     }
                 }
                 if (message.jointInstances != null && message.hasOwnProperty("jointInstances")) {
-                    if (!$util.isObject(message.jointInstances))
-                        return "jointInstances: object expected";
-                    let key = Object.keys(message.jointInstances);
+                    if (!$util.isObject(message.jointInstances)) return "jointInstances: object expected"
+                    let key = Object.keys(message.jointInstances)
                     for (let i = 0; i < key.length; ++i) {
-                        let error = $root.mirabuf.joint.JointInstance.verify(message.jointInstances[key[i]]);
-                        if (error)
-                            return "jointInstances." + error;
+                        let error = $root.mirabuf.joint.JointInstance.verify(message.jointInstances[key[i]])
+                        if (error) return "jointInstances." + error
                     }
                 }
                 if (message.rigidGroups != null && message.hasOwnProperty("rigidGroups")) {
-                    if (!Array.isArray(message.rigidGroups))
-                        return "rigidGroups: array expected";
+                    if (!Array.isArray(message.rigidGroups)) return "rigidGroups: array expected"
                     for (let i = 0; i < message.rigidGroups.length; ++i) {
-                        let error = $root.mirabuf.joint.RigidGroup.verify(message.rigidGroups[i]);
-                        if (error)
-                            return "rigidGroups." + error;
+                        let error = $root.mirabuf.joint.RigidGroup.verify(message.rigidGroups[i])
+                        if (error) return "rigidGroups." + error
                     }
                 }
                 if (message.motorDefinitions != null && message.hasOwnProperty("motorDefinitions")) {
-                    if (!$util.isObject(message.motorDefinitions))
-                        return "motorDefinitions: object expected";
-                    let key = Object.keys(message.motorDefinitions);
+                    if (!$util.isObject(message.motorDefinitions)) return "motorDefinitions: object expected"
+                    let key = Object.keys(message.motorDefinitions)
                     for (let i = 0; i < key.length; ++i) {
-                        let error = $root.mirabuf.motor.Motor.verify(message.motorDefinitions[key[i]]);
-                        if (error)
-                            return "motorDefinitions." + error;
+                        let error = $root.mirabuf.motor.Motor.verify(message.motorDefinitions[key[i]])
+                        if (error) return "motorDefinitions." + error
                     }
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a Joints message from a plain object. Also converts values to their respective internal types.
@@ -5756,56 +5569,60 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Joints} Joints
              */
             Joints.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.Joints)
-                    return object;
-                let message = new $root.mirabuf.joint.Joints();
+                if (object instanceof $root.mirabuf.joint.Joints) return object
+                let message = new $root.mirabuf.joint.Joints()
                 if (object.info != null) {
-                    if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.joint.Joints.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                    if (typeof object.info !== "object") throw TypeError(".mirabuf.joint.Joints.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
                 if (object.jointDefinitions) {
                     if (typeof object.jointDefinitions !== "object")
-                        throw TypeError(".mirabuf.joint.Joints.jointDefinitions: object expected");
-                    message.jointDefinitions = {};
+                        throw TypeError(".mirabuf.joint.Joints.jointDefinitions: object expected")
+                    message.jointDefinitions = {}
                     for (let keys = Object.keys(object.jointDefinitions), i = 0; i < keys.length; ++i) {
                         if (typeof object.jointDefinitions[keys[i]] !== "object")
-                            throw TypeError(".mirabuf.joint.Joints.jointDefinitions: object expected");
-                        message.jointDefinitions[keys[i]] = $root.mirabuf.joint.Joint.fromObject(object.jointDefinitions[keys[i]]);
+                            throw TypeError(".mirabuf.joint.Joints.jointDefinitions: object expected")
+                        message.jointDefinitions[keys[i]] = $root.mirabuf.joint.Joint.fromObject(
+                            object.jointDefinitions[keys[i]]
+                        )
                     }
                 }
                 if (object.jointInstances) {
                     if (typeof object.jointInstances !== "object")
-                        throw TypeError(".mirabuf.joint.Joints.jointInstances: object expected");
-                    message.jointInstances = {};
+                        throw TypeError(".mirabuf.joint.Joints.jointInstances: object expected")
+                    message.jointInstances = {}
                     for (let keys = Object.keys(object.jointInstances), i = 0; i < keys.length; ++i) {
                         if (typeof object.jointInstances[keys[i]] !== "object")
-                            throw TypeError(".mirabuf.joint.Joints.jointInstances: object expected");
-                        message.jointInstances[keys[i]] = $root.mirabuf.joint.JointInstance.fromObject(object.jointInstances[keys[i]]);
+                            throw TypeError(".mirabuf.joint.Joints.jointInstances: object expected")
+                        message.jointInstances[keys[i]] = $root.mirabuf.joint.JointInstance.fromObject(
+                            object.jointInstances[keys[i]]
+                        )
                     }
                 }
                 if (object.rigidGroups) {
                     if (!Array.isArray(object.rigidGroups))
-                        throw TypeError(".mirabuf.joint.Joints.rigidGroups: array expected");
-                    message.rigidGroups = [];
+                        throw TypeError(".mirabuf.joint.Joints.rigidGroups: array expected")
+                    message.rigidGroups = []
                     for (let i = 0; i < object.rigidGroups.length; ++i) {
                         if (typeof object.rigidGroups[i] !== "object")
-                            throw TypeError(".mirabuf.joint.Joints.rigidGroups: object expected");
-                        message.rigidGroups[i] = $root.mirabuf.joint.RigidGroup.fromObject(object.rigidGroups[i]);
+                            throw TypeError(".mirabuf.joint.Joints.rigidGroups: object expected")
+                        message.rigidGroups[i] = $root.mirabuf.joint.RigidGroup.fromObject(object.rigidGroups[i])
                     }
                 }
                 if (object.motorDefinitions) {
                     if (typeof object.motorDefinitions !== "object")
-                        throw TypeError(".mirabuf.joint.Joints.motorDefinitions: object expected");
-                    message.motorDefinitions = {};
+                        throw TypeError(".mirabuf.joint.Joints.motorDefinitions: object expected")
+                    message.motorDefinitions = {}
                     for (let keys = Object.keys(object.motorDefinitions), i = 0; i < keys.length; ++i) {
                         if (typeof object.motorDefinitions[keys[i]] !== "object")
-                            throw TypeError(".mirabuf.joint.Joints.motorDefinitions: object expected");
-                        message.motorDefinitions[keys[i]] = $root.mirabuf.motor.Motor.fromObject(object.motorDefinitions[keys[i]]);
+                            throw TypeError(".mirabuf.joint.Joints.motorDefinitions: object expected")
+                        message.motorDefinitions[keys[i]] = $root.mirabuf.motor.Motor.fromObject(
+                            object.motorDefinitions[keys[i]]
+                        )
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a Joints message. Also converts values to other types if specified.
@@ -5817,43 +5634,49 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Joints.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.arrays || options.defaults)
-                    object.rigidGroups = [];
+                if (!options) options = {}
+                let object = {}
+                if (options.arrays || options.defaults) object.rigidGroups = []
                 if (options.objects || options.defaults) {
-                    object.jointDefinitions = {};
-                    object.jointInstances = {};
-                    object.motorDefinitions = {};
+                    object.jointDefinitions = {}
+                    object.jointInstances = {}
+                    object.motorDefinitions = {}
                 }
-                if (options.defaults)
-                    object.info = null;
+                if (options.defaults) object.info = null
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
-                let keys2;
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
+                let keys2
                 if (message.jointDefinitions && (keys2 = Object.keys(message.jointDefinitions)).length) {
-                    object.jointDefinitions = {};
+                    object.jointDefinitions = {}
                     for (let j = 0; j < keys2.length; ++j)
-                        object.jointDefinitions[keys2[j]] = $root.mirabuf.joint.Joint.toObject(message.jointDefinitions[keys2[j]], options);
+                        object.jointDefinitions[keys2[j]] = $root.mirabuf.joint.Joint.toObject(
+                            message.jointDefinitions[keys2[j]],
+                            options
+                        )
                 }
                 if (message.jointInstances && (keys2 = Object.keys(message.jointInstances)).length) {
-                    object.jointInstances = {};
+                    object.jointInstances = {}
                     for (let j = 0; j < keys2.length; ++j)
-                        object.jointInstances[keys2[j]] = $root.mirabuf.joint.JointInstance.toObject(message.jointInstances[keys2[j]], options);
+                        object.jointInstances[keys2[j]] = $root.mirabuf.joint.JointInstance.toObject(
+                            message.jointInstances[keys2[j]],
+                            options
+                        )
                 }
                 if (message.rigidGroups && message.rigidGroups.length) {
-                    object.rigidGroups = [];
+                    object.rigidGroups = []
                     for (let j = 0; j < message.rigidGroups.length; ++j)
-                        object.rigidGroups[j] = $root.mirabuf.joint.RigidGroup.toObject(message.rigidGroups[j], options);
+                        object.rigidGroups[j] = $root.mirabuf.joint.RigidGroup.toObject(message.rigidGroups[j], options)
                 }
                 if (message.motorDefinitions && (keys2 = Object.keys(message.motorDefinitions)).length) {
-                    object.motorDefinitions = {};
+                    object.motorDefinitions = {}
                     for (let j = 0; j < keys2.length; ++j)
-                        object.motorDefinitions[keys2[j]] = $root.mirabuf.motor.Motor.toObject(message.motorDefinitions[keys2[j]], options);
+                        object.motorDefinitions[keys2[j]] = $root.mirabuf.motor.Motor.toObject(
+                            message.motorDefinitions[keys2[j]],
+                            options
+                        )
                 }
-                return object;
-            };
+                return object
+            }
 
             /**
              * Converts this Joints to JSON.
@@ -5863,8 +5686,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Joints.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Joints
@@ -5876,13 +5699,13 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Joints.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.Joints";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.Joints"
+            }
 
-            return Joints;
-        })();
+            return Joints
+        })()
 
         /**
          * JointMotion enum.
@@ -5897,21 +5720,21 @@ export const mirabuf = $root.mirabuf = (() => {
          * @property {number} BALL=6 BALL value
          * @property {number} CUSTOM=7 CUSTOM value
          */
-        joint.JointMotion = (function() {
-            const valuesById = {}, values = Object.create(valuesById);
-            values[valuesById[0] = "RIGID"] = 0;
-            values[valuesById[1] = "REVOLUTE"] = 1;
-            values[valuesById[2] = "SLIDER"] = 2;
-            values[valuesById[3] = "CYLINDRICAL"] = 3;
-            values[valuesById[4] = "PINSLOT"] = 4;
-            values[valuesById[5] = "PLANAR"] = 5;
-            values[valuesById[6] = "BALL"] = 6;
-            values[valuesById[7] = "CUSTOM"] = 7;
-            return values;
-        })();
+        joint.JointMotion = (function () {
+            const valuesById = {},
+                values = Object.create(valuesById)
+            values[(valuesById[0] = "RIGID")] = 0
+            values[(valuesById[1] = "REVOLUTE")] = 1
+            values[(valuesById[2] = "SLIDER")] = 2
+            values[(valuesById[3] = "CYLINDRICAL")] = 3
+            values[(valuesById[4] = "PINSLOT")] = 4
+            values[(valuesById[5] = "PLANAR")] = 5
+            values[(valuesById[6] = "BALL")] = 6
+            values[(valuesById[7] = "CUSTOM")] = 7
+            return values
+        })()
 
-        joint.JointInstance = (function() {
-
+        joint.JointInstance = (function () {
             /**
              * Properties of a JointInstance.
              * @memberof mirabuf.joint
@@ -5937,11 +5760,10 @@ export const mirabuf = $root.mirabuf = (() => {
              * @param {mirabuf.joint.IJointInstance=} [properties] Properties to set
              */
             function JointInstance(properties) {
-                this.motionLink = [];
+                this.motionLink = []
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -5950,7 +5772,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.info = null;
+            JointInstance.prototype.info = null
 
             /**
              * JointInstance isEndEffector.
@@ -5958,7 +5780,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.isEndEffector = false;
+            JointInstance.prototype.isEndEffector = false
 
             /**
              * JointInstance parentPart.
@@ -5966,7 +5788,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.parentPart = "";
+            JointInstance.prototype.parentPart = ""
 
             /**
              * JointInstance childPart.
@@ -5974,7 +5796,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.childPart = "";
+            JointInstance.prototype.childPart = ""
 
             /**
              * JointInstance jointReference.
@@ -5982,7 +5804,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.jointReference = "";
+            JointInstance.prototype.jointReference = ""
 
             /**
              * JointInstance offset.
@@ -5990,7 +5812,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.offset = null;
+            JointInstance.prototype.offset = null
 
             /**
              * JointInstance parts.
@@ -5998,7 +5820,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.parts = null;
+            JointInstance.prototype.parts = null
 
             /**
              * JointInstance signalReference.
@@ -6006,7 +5828,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.signalReference = "";
+            JointInstance.prototype.signalReference = ""
 
             /**
              * JointInstance motionLink.
@@ -6014,7 +5836,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.JointInstance
              * @instance
              */
-            JointInstance.prototype.motionLink = $util.emptyArray;
+            JointInstance.prototype.motionLink = $util.emptyArray
 
             /**
              * Creates a new JointInstance instance using the specified properties.
@@ -6025,8 +5847,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.JointInstance} JointInstance instance
              */
             JointInstance.create = function create(properties) {
-                return new JointInstance(properties);
-            };
+                return new JointInstance(properties)
+            }
 
             /**
              * Encodes the specified JointInstance message. Does not implicitly {@link mirabuf.joint.JointInstance.verify|verify} messages.
@@ -6038,29 +5860,37 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             JointInstance.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.isEndEffector != null && Object.hasOwnProperty.call(message, "isEndEffector"))
-                    writer.uint32(/* id 2, wireType 0 =*/16).bool(message.isEndEffector);
+                    writer.uint32(/* id 2, wireType 0 =*/ 16).bool(message.isEndEffector)
                 if (message.parentPart != null && Object.hasOwnProperty.call(message, "parentPart"))
-                    writer.uint32(/* id 3, wireType 2 =*/26).string(message.parentPart);
+                    writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.parentPart)
                 if (message.childPart != null && Object.hasOwnProperty.call(message, "childPart"))
-                    writer.uint32(/* id 4, wireType 2 =*/34).string(message.childPart);
+                    writer.uint32(/* id 4, wireType 2 =*/ 34).string(message.childPart)
                 if (message.jointReference != null && Object.hasOwnProperty.call(message, "jointReference"))
-                    writer.uint32(/* id 5, wireType 2 =*/42).string(message.jointReference);
+                    writer.uint32(/* id 5, wireType 2 =*/ 42).string(message.jointReference)
                 if (message.offset != null && Object.hasOwnProperty.call(message, "offset"))
-                    $root.mirabuf.Vector3.encode(message.offset, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                    $root.mirabuf.Vector3.encode(
+                        message.offset,
+                        writer.uint32(/* id 6, wireType 2 =*/ 50).fork()
+                    ).ldelim()
                 if (message.parts != null && Object.hasOwnProperty.call(message, "parts"))
-                    $root.mirabuf.GraphContainer.encode(message.parts, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                    $root.mirabuf.GraphContainer.encode(
+                        message.parts,
+                        writer.uint32(/* id 7, wireType 2 =*/ 58).fork()
+                    ).ldelim()
                 if (message.signalReference != null && Object.hasOwnProperty.call(message, "signalReference"))
-                    writer.uint32(/* id 8, wireType 2 =*/66).string(message.signalReference);
+                    writer.uint32(/* id 8, wireType 2 =*/ 66).string(message.signalReference)
                 if (message.motionLink != null && message.motionLink.length)
                     for (let i = 0; i < message.motionLink.length; ++i)
-                        $root.mirabuf.joint.MotionLink.encode(message.motionLink[i], writer.uint32(/* id 9, wireType 2 =*/74).fork()).ldelim();
-                return writer;
-            };
+                        $root.mirabuf.joint.MotionLink.encode(
+                            message.motionLink[i],
+                            writer.uint32(/* id 9, wireType 2 =*/ 74).fork()
+                        ).ldelim()
+                return writer
+            }
 
             /**
              * Encodes the specified JointInstance message, length delimited. Does not implicitly {@link mirabuf.joint.JointInstance.verify|verify} messages.
@@ -6072,8 +5902,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             JointInstance.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a JointInstance message from the specified reader or buffer.
@@ -6087,57 +5917,56 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             JointInstance.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.JointInstance();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.JointInstance()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            message.isEndEffector = reader.bool();
-                            break;
+                        case 2: {
+                            message.isEndEffector = reader.bool()
+                            break
                         }
-                    case 3: {
-                            message.parentPart = reader.string();
-                            break;
+                        case 3: {
+                            message.parentPart = reader.string()
+                            break
                         }
-                    case 4: {
-                            message.childPart = reader.string();
-                            break;
+                        case 4: {
+                            message.childPart = reader.string()
+                            break
                         }
-                    case 5: {
-                            message.jointReference = reader.string();
-                            break;
+                        case 5: {
+                            message.jointReference = reader.string()
+                            break
                         }
-                    case 6: {
-                            message.offset = $root.mirabuf.Vector3.decode(reader, reader.uint32());
-                            break;
+                        case 6: {
+                            message.offset = $root.mirabuf.Vector3.decode(reader, reader.uint32())
+                            break
                         }
-                    case 7: {
-                            message.parts = $root.mirabuf.GraphContainer.decode(reader, reader.uint32());
-                            break;
+                        case 7: {
+                            message.parts = $root.mirabuf.GraphContainer.decode(reader, reader.uint32())
+                            break
                         }
-                    case 8: {
-                            message.signalReference = reader.string();
-                            break;
+                        case 8: {
+                            message.signalReference = reader.string()
+                            break
                         }
-                    case 9: {
-                            if (!(message.motionLink && message.motionLink.length))
-                                message.motionLink = [];
-                            message.motionLink.push($root.mirabuf.joint.MotionLink.decode(reader, reader.uint32()));
-                            break;
+                        case 9: {
+                            if (!(message.motionLink && message.motionLink.length)) message.motionLink = []
+                            message.motionLink.push($root.mirabuf.joint.MotionLink.decode(reader, reader.uint32()))
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a JointInstance message from the specified reader or buffer, length delimited.
@@ -6150,10 +5979,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             JointInstance.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a JointInstance message.
@@ -6164,49 +5992,38 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             JointInstance.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.isEndEffector != null && message.hasOwnProperty("isEndEffector"))
-                    if (typeof message.isEndEffector !== "boolean")
-                        return "isEndEffector: boolean expected";
+                    if (typeof message.isEndEffector !== "boolean") return "isEndEffector: boolean expected"
                 if (message.parentPart != null && message.hasOwnProperty("parentPart"))
-                    if (!$util.isString(message.parentPart))
-                        return "parentPart: string expected";
+                    if (!$util.isString(message.parentPart)) return "parentPart: string expected"
                 if (message.childPart != null && message.hasOwnProperty("childPart"))
-                    if (!$util.isString(message.childPart))
-                        return "childPart: string expected";
+                    if (!$util.isString(message.childPart)) return "childPart: string expected"
                 if (message.jointReference != null && message.hasOwnProperty("jointReference"))
-                    if (!$util.isString(message.jointReference))
-                        return "jointReference: string expected";
+                    if (!$util.isString(message.jointReference)) return "jointReference: string expected"
                 if (message.offset != null && message.hasOwnProperty("offset")) {
-                    let error = $root.mirabuf.Vector3.verify(message.offset);
-                    if (error)
-                        return "offset." + error;
+                    let error = $root.mirabuf.Vector3.verify(message.offset)
+                    if (error) return "offset." + error
                 }
                 if (message.parts != null && message.hasOwnProperty("parts")) {
-                    let error = $root.mirabuf.GraphContainer.verify(message.parts);
-                    if (error)
-                        return "parts." + error;
+                    let error = $root.mirabuf.GraphContainer.verify(message.parts)
+                    if (error) return "parts." + error
                 }
                 if (message.signalReference != null && message.hasOwnProperty("signalReference"))
-                    if (!$util.isString(message.signalReference))
-                        return "signalReference: string expected";
+                    if (!$util.isString(message.signalReference)) return "signalReference: string expected"
                 if (message.motionLink != null && message.hasOwnProperty("motionLink")) {
-                    if (!Array.isArray(message.motionLink))
-                        return "motionLink: array expected";
+                    if (!Array.isArray(message.motionLink)) return "motionLink: array expected"
                     for (let i = 0; i < message.motionLink.length; ++i) {
-                        let error = $root.mirabuf.joint.MotionLink.verify(message.motionLink[i]);
-                        if (error)
-                            return "motionLink." + error;
+                        let error = $root.mirabuf.joint.MotionLink.verify(message.motionLink[i])
+                        if (error) return "motionLink." + error
                     }
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a JointInstance message from a plain object. Also converts values to their respective internal types.
@@ -6217,46 +6034,40 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.JointInstance} JointInstance
              */
             JointInstance.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.JointInstance)
-                    return object;
-                let message = new $root.mirabuf.joint.JointInstance();
+                if (object instanceof $root.mirabuf.joint.JointInstance) return object
+                let message = new $root.mirabuf.joint.JointInstance()
                 if (object.info != null) {
                     if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.joint.JointInstance.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                        throw TypeError(".mirabuf.joint.JointInstance.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
-                if (object.isEndEffector != null)
-                    message.isEndEffector = Boolean(object.isEndEffector);
-                if (object.parentPart != null)
-                    message.parentPart = String(object.parentPart);
-                if (object.childPart != null)
-                    message.childPart = String(object.childPart);
-                if (object.jointReference != null)
-                    message.jointReference = String(object.jointReference);
+                if (object.isEndEffector != null) message.isEndEffector = Boolean(object.isEndEffector)
+                if (object.parentPart != null) message.parentPart = String(object.parentPart)
+                if (object.childPart != null) message.childPart = String(object.childPart)
+                if (object.jointReference != null) message.jointReference = String(object.jointReference)
                 if (object.offset != null) {
                     if (typeof object.offset !== "object")
-                        throw TypeError(".mirabuf.joint.JointInstance.offset: object expected");
-                    message.offset = $root.mirabuf.Vector3.fromObject(object.offset);
+                        throw TypeError(".mirabuf.joint.JointInstance.offset: object expected")
+                    message.offset = $root.mirabuf.Vector3.fromObject(object.offset)
                 }
                 if (object.parts != null) {
                     if (typeof object.parts !== "object")
-                        throw TypeError(".mirabuf.joint.JointInstance.parts: object expected");
-                    message.parts = $root.mirabuf.GraphContainer.fromObject(object.parts);
+                        throw TypeError(".mirabuf.joint.JointInstance.parts: object expected")
+                    message.parts = $root.mirabuf.GraphContainer.fromObject(object.parts)
                 }
-                if (object.signalReference != null)
-                    message.signalReference = String(object.signalReference);
+                if (object.signalReference != null) message.signalReference = String(object.signalReference)
                 if (object.motionLink) {
                     if (!Array.isArray(object.motionLink))
-                        throw TypeError(".mirabuf.joint.JointInstance.motionLink: array expected");
-                    message.motionLink = [];
+                        throw TypeError(".mirabuf.joint.JointInstance.motionLink: array expected")
+                    message.motionLink = []
                     for (let i = 0; i < object.motionLink.length; ++i) {
                         if (typeof object.motionLink[i] !== "object")
-                            throw TypeError(".mirabuf.joint.JointInstance.motionLink: object expected");
-                        message.motionLink[i] = $root.mirabuf.joint.MotionLink.fromObject(object.motionLink[i]);
+                            throw TypeError(".mirabuf.joint.JointInstance.motionLink: object expected")
+                        message.motionLink[i] = $root.mirabuf.joint.MotionLink.fromObject(object.motionLink[i])
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a JointInstance message. Also converts values to other types if specified.
@@ -6268,44 +6079,42 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             JointInstance.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.arrays || options.defaults)
-                    object.motionLink = [];
+                if (!options) options = {}
+                let object = {}
+                if (options.arrays || options.defaults) object.motionLink = []
                 if (options.defaults) {
-                    object.info = null;
-                    object.isEndEffector = false;
-                    object.parentPart = "";
-                    object.childPart = "";
-                    object.jointReference = "";
-                    object.offset = null;
-                    object.parts = null;
-                    object.signalReference = "";
+                    object.info = null
+                    object.isEndEffector = false
+                    object.parentPart = ""
+                    object.childPart = ""
+                    object.jointReference = ""
+                    object.offset = null
+                    object.parts = null
+                    object.signalReference = ""
                 }
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
                 if (message.isEndEffector != null && message.hasOwnProperty("isEndEffector"))
-                    object.isEndEffector = message.isEndEffector;
+                    object.isEndEffector = message.isEndEffector
                 if (message.parentPart != null && message.hasOwnProperty("parentPart"))
-                    object.parentPart = message.parentPart;
+                    object.parentPart = message.parentPart
                 if (message.childPart != null && message.hasOwnProperty("childPart"))
-                    object.childPart = message.childPart;
+                    object.childPart = message.childPart
                 if (message.jointReference != null && message.hasOwnProperty("jointReference"))
-                    object.jointReference = message.jointReference;
+                    object.jointReference = message.jointReference
                 if (message.offset != null && message.hasOwnProperty("offset"))
-                    object.offset = $root.mirabuf.Vector3.toObject(message.offset, options);
+                    object.offset = $root.mirabuf.Vector3.toObject(message.offset, options)
                 if (message.parts != null && message.hasOwnProperty("parts"))
-                    object.parts = $root.mirabuf.GraphContainer.toObject(message.parts, options);
+                    object.parts = $root.mirabuf.GraphContainer.toObject(message.parts, options)
                 if (message.signalReference != null && message.hasOwnProperty("signalReference"))
-                    object.signalReference = message.signalReference;
+                    object.signalReference = message.signalReference
                 if (message.motionLink && message.motionLink.length) {
-                    object.motionLink = [];
+                    object.motionLink = []
                     for (let j = 0; j < message.motionLink.length; ++j)
-                        object.motionLink[j] = $root.mirabuf.joint.MotionLink.toObject(message.motionLink[j], options);
+                        object.motionLink[j] = $root.mirabuf.joint.MotionLink.toObject(message.motionLink[j], options)
                 }
-                return object;
-            };
+                return object
+            }
 
             /**
              * Converts this JointInstance to JSON.
@@ -6315,8 +6124,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             JointInstance.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for JointInstance
@@ -6328,16 +6137,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             JointInstance.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.JointInstance";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.JointInstance"
+            }
 
-            return JointInstance;
-        })();
+            return JointInstance
+        })()
 
-        joint.MotionLink = (function() {
-
+        joint.MotionLink = (function () {
             /**
              * Properties of a MotionLink.
              * @memberof mirabuf.joint
@@ -6360,8 +6168,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function MotionLink(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -6370,7 +6177,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.MotionLink
              * @instance
              */
-            MotionLink.prototype.jointInstance = "";
+            MotionLink.prototype.jointInstance = ""
 
             /**
              * MotionLink ratio.
@@ -6378,7 +6185,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.MotionLink
              * @instance
              */
-            MotionLink.prototype.ratio = 0;
+            MotionLink.prototype.ratio = 0
 
             /**
              * MotionLink reversed.
@@ -6386,7 +6193,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.MotionLink
              * @instance
              */
-            MotionLink.prototype.reversed = false;
+            MotionLink.prototype.reversed = false
 
             /**
              * Creates a new MotionLink instance using the specified properties.
@@ -6397,8 +6204,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.MotionLink} MotionLink instance
              */
             MotionLink.create = function create(properties) {
-                return new MotionLink(properties);
-            };
+                return new MotionLink(properties)
+            }
 
             /**
              * Encodes the specified MotionLink message. Does not implicitly {@link mirabuf.joint.MotionLink.verify|verify} messages.
@@ -6410,16 +6217,15 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             MotionLink.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.jointInstance != null && Object.hasOwnProperty.call(message, "jointInstance"))
-                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.jointInstance);
+                    writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.jointInstance)
                 if (message.ratio != null && Object.hasOwnProperty.call(message, "ratio"))
-                    writer.uint32(/* id 2, wireType 5 =*/21).float(message.ratio);
+                    writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.ratio)
                 if (message.reversed != null && Object.hasOwnProperty.call(message, "reversed"))
-                    writer.uint32(/* id 3, wireType 0 =*/24).bool(message.reversed);
-                return writer;
-            };
+                    writer.uint32(/* id 3, wireType 0 =*/ 24).bool(message.reversed)
+                return writer
+            }
 
             /**
              * Encodes the specified MotionLink message, length delimited. Does not implicitly {@link mirabuf.joint.MotionLink.verify|verify} messages.
@@ -6431,8 +6237,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             MotionLink.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a MotionLink message from the specified reader or buffer.
@@ -6446,31 +6252,31 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             MotionLink.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.MotionLink();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.MotionLink()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.jointInstance = reader.string();
-                            break;
+                        case 1: {
+                            message.jointInstance = reader.string()
+                            break
                         }
-                    case 2: {
-                            message.ratio = reader.float();
-                            break;
+                        case 2: {
+                            message.ratio = reader.float()
+                            break
                         }
-                    case 3: {
-                            message.reversed = reader.bool();
-                            break;
+                        case 3: {
+                            message.reversed = reader.bool()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a MotionLink message from the specified reader or buffer, length delimited.
@@ -6483,10 +6289,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             MotionLink.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a MotionLink message.
@@ -6497,19 +6302,15 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             MotionLink.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.jointInstance != null && message.hasOwnProperty("jointInstance"))
-                    if (!$util.isString(message.jointInstance))
-                        return "jointInstance: string expected";
+                    if (!$util.isString(message.jointInstance)) return "jointInstance: string expected"
                 if (message.ratio != null && message.hasOwnProperty("ratio"))
-                    if (typeof message.ratio !== "number")
-                        return "ratio: number expected";
+                    if (typeof message.ratio !== "number") return "ratio: number expected"
                 if (message.reversed != null && message.hasOwnProperty("reversed"))
-                    if (typeof message.reversed !== "boolean")
-                        return "reversed: boolean expected";
-                return null;
-            };
+                    if (typeof message.reversed !== "boolean") return "reversed: boolean expected"
+                return null
+            }
 
             /**
              * Creates a MotionLink message from a plain object. Also converts values to their respective internal types.
@@ -6520,17 +6321,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.MotionLink} MotionLink
              */
             MotionLink.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.MotionLink)
-                    return object;
-                let message = new $root.mirabuf.joint.MotionLink();
-                if (object.jointInstance != null)
-                    message.jointInstance = String(object.jointInstance);
-                if (object.ratio != null)
-                    message.ratio = Number(object.ratio);
-                if (object.reversed != null)
-                    message.reversed = Boolean(object.reversed);
-                return message;
-            };
+                if (object instanceof $root.mirabuf.joint.MotionLink) return object
+                let message = new $root.mirabuf.joint.MotionLink()
+                if (object.jointInstance != null) message.jointInstance = String(object.jointInstance)
+                if (object.ratio != null) message.ratio = Number(object.ratio)
+                if (object.reversed != null) message.reversed = Boolean(object.reversed)
+                return message
+            }
 
             /**
              * Creates a plain object from a MotionLink message. Also converts values to other types if specified.
@@ -6542,22 +6339,20 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             MotionLink.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.jointInstance = "";
-                    object.ratio = 0;
-                    object.reversed = false;
+                    object.jointInstance = ""
+                    object.ratio = 0
+                    object.reversed = false
                 }
                 if (message.jointInstance != null && message.hasOwnProperty("jointInstance"))
-                    object.jointInstance = message.jointInstance;
+                    object.jointInstance = message.jointInstance
                 if (message.ratio != null && message.hasOwnProperty("ratio"))
-                    object.ratio = options.json && !isFinite(message.ratio) ? String(message.ratio) : message.ratio;
-                if (message.reversed != null && message.hasOwnProperty("reversed"))
-                    object.reversed = message.reversed;
-                return object;
-            };
+                    object.ratio = options.json && !isFinite(message.ratio) ? String(message.ratio) : message.ratio
+                if (message.reversed != null && message.hasOwnProperty("reversed")) object.reversed = message.reversed
+                return object
+            }
 
             /**
              * Converts this MotionLink to JSON.
@@ -6567,8 +6362,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             MotionLink.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for MotionLink
@@ -6580,16 +6375,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             MotionLink.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.MotionLink";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.MotionLink"
+            }
 
-            return MotionLink;
-        })();
+            return MotionLink
+        })()
 
-        joint.Joint = (function() {
-
+        joint.Joint = (function () {
             /**
              * Properties of a Joint.
              * @memberof mirabuf.joint
@@ -6618,8 +6412,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function Joint(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -6628,7 +6421,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.info = null;
+            Joint.prototype.info = null
 
             /**
              * Joint origin.
@@ -6636,7 +6429,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.origin = null;
+            Joint.prototype.origin = null
 
             /**
              * Joint jointMotionType.
@@ -6644,7 +6437,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.jointMotionType = 0;
+            Joint.prototype.jointMotionType = 0
 
             /**
              * Joint breakMagnitude.
@@ -6652,7 +6445,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.breakMagnitude = 0;
+            Joint.prototype.breakMagnitude = 0
 
             /**
              * ONEOF rotational joint
@@ -6660,7 +6453,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.rotational = null;
+            Joint.prototype.rotational = null
 
             /**
              * ONEOF prismatic joint
@@ -6668,7 +6461,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.prismatic = null;
+            Joint.prototype.prismatic = null
 
             /**
              * ONEOF custom joint
@@ -6676,7 +6469,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.custom = null;
+            Joint.prototype.custom = null
 
             /**
              * Additional information someone can query or store relative to your joint.
@@ -6684,7 +6477,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.userData = null;
+            Joint.prototype.userData = null
 
             /**
              * Motor definition reference to lookup in joints collection
@@ -6692,10 +6485,10 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Joint
              * @instance
              */
-            Joint.prototype.motorReference = "";
+            Joint.prototype.motorReference = ""
 
             // OneOf field names bound to virtual getters and setters
-            let $oneOfFields;
+            let $oneOfFields
 
             /**
              * Joint JointMotion.
@@ -6704,9 +6497,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @instance
              */
             Object.defineProperty(Joint.prototype, "JointMotion", {
-                get: $util.oneOfGetter($oneOfFields = ["rotational", "prismatic", "custom"]),
-                set: $util.oneOfSetter($oneOfFields)
-            });
+                get: $util.oneOfGetter(($oneOfFields = ["rotational", "prismatic", "custom"])),
+                set: $util.oneOfSetter($oneOfFields),
+            })
 
             /**
              * Creates a new Joint instance using the specified properties.
@@ -6717,8 +6510,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Joint} Joint instance
              */
             Joint.create = function create(properties) {
-                return new Joint(properties);
-            };
+                return new Joint(properties)
+            }
 
             /**
              * Encodes the specified Joint message. Does not implicitly {@link mirabuf.joint.Joint.verify|verify} messages.
@@ -6730,28 +6523,42 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Joint.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.origin != null && Object.hasOwnProperty.call(message, "origin"))
-                    $root.mirabuf.Vector3.encode(message.origin, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.mirabuf.Vector3.encode(
+                        message.origin,
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                    ).ldelim()
                 if (message.jointMotionType != null && Object.hasOwnProperty.call(message, "jointMotionType"))
-                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.jointMotionType);
+                    writer.uint32(/* id 3, wireType 0 =*/ 24).int32(message.jointMotionType)
                 if (message.breakMagnitude != null && Object.hasOwnProperty.call(message, "breakMagnitude"))
-                    writer.uint32(/* id 4, wireType 5 =*/37).float(message.breakMagnitude);
+                    writer.uint32(/* id 4, wireType 5 =*/ 37).float(message.breakMagnitude)
                 if (message.rotational != null && Object.hasOwnProperty.call(message, "rotational"))
-                    $root.mirabuf.joint.RotationalJoint.encode(message.rotational, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                    $root.mirabuf.joint.RotationalJoint.encode(
+                        message.rotational,
+                        writer.uint32(/* id 5, wireType 2 =*/ 42).fork()
+                    ).ldelim()
                 if (message.prismatic != null && Object.hasOwnProperty.call(message, "prismatic"))
-                    $root.mirabuf.joint.PrismaticJoint.encode(message.prismatic, writer.uint32(/* id 6, wireType 2 =*/50).fork()).ldelim();
+                    $root.mirabuf.joint.PrismaticJoint.encode(
+                        message.prismatic,
+                        writer.uint32(/* id 6, wireType 2 =*/ 50).fork()
+                    ).ldelim()
                 if (message.custom != null && Object.hasOwnProperty.call(message, "custom"))
-                    $root.mirabuf.joint.CustomJoint.encode(message.custom, writer.uint32(/* id 7, wireType 2 =*/58).fork()).ldelim();
+                    $root.mirabuf.joint.CustomJoint.encode(
+                        message.custom,
+                        writer.uint32(/* id 7, wireType 2 =*/ 58).fork()
+                    ).ldelim()
                 if (message.userData != null && Object.hasOwnProperty.call(message, "userData"))
-                    $root.mirabuf.UserData.encode(message.userData, writer.uint32(/* id 8, wireType 2 =*/66).fork()).ldelim();
+                    $root.mirabuf.UserData.encode(
+                        message.userData,
+                        writer.uint32(/* id 8, wireType 2 =*/ 66).fork()
+                    ).ldelim()
                 if (message.motorReference != null && Object.hasOwnProperty.call(message, "motorReference"))
-                    writer.uint32(/* id 9, wireType 2 =*/74).string(message.motorReference);
-                return writer;
-            };
+                    writer.uint32(/* id 9, wireType 2 =*/ 74).string(message.motorReference)
+                return writer
+            }
 
             /**
              * Encodes the specified Joint message, length delimited. Does not implicitly {@link mirabuf.joint.Joint.verify|verify} messages.
@@ -6763,8 +6570,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Joint.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Joint message from the specified reader or buffer.
@@ -6778,55 +6585,55 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Joint.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.Joint();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.Joint()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            message.origin = $root.mirabuf.Vector3.decode(reader, reader.uint32());
-                            break;
+                        case 2: {
+                            message.origin = $root.mirabuf.Vector3.decode(reader, reader.uint32())
+                            break
                         }
-                    case 3: {
-                            message.jointMotionType = reader.int32();
-                            break;
+                        case 3: {
+                            message.jointMotionType = reader.int32()
+                            break
                         }
-                    case 4: {
-                            message.breakMagnitude = reader.float();
-                            break;
+                        case 4: {
+                            message.breakMagnitude = reader.float()
+                            break
                         }
-                    case 5: {
-                            message.rotational = $root.mirabuf.joint.RotationalJoint.decode(reader, reader.uint32());
-                            break;
+                        case 5: {
+                            message.rotational = $root.mirabuf.joint.RotationalJoint.decode(reader, reader.uint32())
+                            break
                         }
-                    case 6: {
-                            message.prismatic = $root.mirabuf.joint.PrismaticJoint.decode(reader, reader.uint32());
-                            break;
+                        case 6: {
+                            message.prismatic = $root.mirabuf.joint.PrismaticJoint.decode(reader, reader.uint32())
+                            break
                         }
-                    case 7: {
-                            message.custom = $root.mirabuf.joint.CustomJoint.decode(reader, reader.uint32());
-                            break;
+                        case 7: {
+                            message.custom = $root.mirabuf.joint.CustomJoint.decode(reader, reader.uint32())
+                            break
                         }
-                    case 8: {
-                            message.userData = $root.mirabuf.UserData.decode(reader, reader.uint32());
-                            break;
+                        case 8: {
+                            message.userData = $root.mirabuf.UserData.decode(reader, reader.uint32())
+                            break
                         }
-                    case 9: {
-                            message.motorReference = reader.string();
-                            break;
+                        case 9: {
+                            message.motorReference = reader.string()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Joint message from the specified reader or buffer, length delimited.
@@ -6839,10 +6646,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Joint.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Joint message.
@@ -6853,74 +6659,63 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Joint.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                let properties = {};
+                if (typeof message !== "object" || message === null) return "object expected"
+                let properties = {}
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.origin != null && message.hasOwnProperty("origin")) {
-                    let error = $root.mirabuf.Vector3.verify(message.origin);
-                    if (error)
-                        return "origin." + error;
+                    let error = $root.mirabuf.Vector3.verify(message.origin)
+                    if (error) return "origin." + error
                 }
                 if (message.jointMotionType != null && message.hasOwnProperty("jointMotionType"))
                     switch (message.jointMotionType) {
-                    default:
-                        return "jointMotionType: enum value expected";
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                    case 6:
-                    case 7:
-                        break;
+                        default:
+                            return "jointMotionType: enum value expected"
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                        case 6:
+                        case 7:
+                            break
                     }
                 if (message.breakMagnitude != null && message.hasOwnProperty("breakMagnitude"))
-                    if (typeof message.breakMagnitude !== "number")
-                        return "breakMagnitude: number expected";
+                    if (typeof message.breakMagnitude !== "number") return "breakMagnitude: number expected"
                 if (message.rotational != null && message.hasOwnProperty("rotational")) {
-                    properties.JointMotion = 1;
+                    properties.JointMotion = 1
                     {
-                        let error = $root.mirabuf.joint.RotationalJoint.verify(message.rotational);
-                        if (error)
-                            return "rotational." + error;
+                        let error = $root.mirabuf.joint.RotationalJoint.verify(message.rotational)
+                        if (error) return "rotational." + error
                     }
                 }
                 if (message.prismatic != null && message.hasOwnProperty("prismatic")) {
-                    if (properties.JointMotion === 1)
-                        return "JointMotion: multiple values";
-                    properties.JointMotion = 1;
+                    if (properties.JointMotion === 1) return "JointMotion: multiple values"
+                    properties.JointMotion = 1
                     {
-                        let error = $root.mirabuf.joint.PrismaticJoint.verify(message.prismatic);
-                        if (error)
-                            return "prismatic." + error;
+                        let error = $root.mirabuf.joint.PrismaticJoint.verify(message.prismatic)
+                        if (error) return "prismatic." + error
                     }
                 }
                 if (message.custom != null && message.hasOwnProperty("custom")) {
-                    if (properties.JointMotion === 1)
-                        return "JointMotion: multiple values";
-                    properties.JointMotion = 1;
+                    if (properties.JointMotion === 1) return "JointMotion: multiple values"
+                    properties.JointMotion = 1
                     {
-                        let error = $root.mirabuf.joint.CustomJoint.verify(message.custom);
-                        if (error)
-                            return "custom." + error;
+                        let error = $root.mirabuf.joint.CustomJoint.verify(message.custom)
+                        if (error) return "custom." + error
                     }
                 }
                 if (message.userData != null && message.hasOwnProperty("userData")) {
-                    let error = $root.mirabuf.UserData.verify(message.userData);
-                    if (error)
-                        return "userData." + error;
+                    let error = $root.mirabuf.UserData.verify(message.userData)
+                    if (error) return "userData." + error
                 }
                 if (message.motorReference != null && message.hasOwnProperty("motorReference"))
-                    if (!$util.isString(message.motorReference))
-                        return "motorReference: string expected";
-                return null;
-            };
+                    if (!$util.isString(message.motorReference)) return "motorReference: string expected"
+                return null
+            }
 
             /**
              * Creates a Joint message from a plain object. Also converts values to their respective internal types.
@@ -6931,85 +6726,81 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Joint} Joint
              */
             Joint.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.Joint)
-                    return object;
-                let message = new $root.mirabuf.joint.Joint();
+                if (object instanceof $root.mirabuf.joint.Joint) return object
+                let message = new $root.mirabuf.joint.Joint()
                 if (object.info != null) {
-                    if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.joint.Joint.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                    if (typeof object.info !== "object") throw TypeError(".mirabuf.joint.Joint.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
                 if (object.origin != null) {
                     if (typeof object.origin !== "object")
-                        throw TypeError(".mirabuf.joint.Joint.origin: object expected");
-                    message.origin = $root.mirabuf.Vector3.fromObject(object.origin);
+                        throw TypeError(".mirabuf.joint.Joint.origin: object expected")
+                    message.origin = $root.mirabuf.Vector3.fromObject(object.origin)
                 }
                 switch (object.jointMotionType) {
-                default:
-                    if (typeof object.jointMotionType === "number") {
-                        message.jointMotionType = object.jointMotionType;
-                        break;
-                    }
-                    break;
-                case "RIGID":
-                case 0:
-                    message.jointMotionType = 0;
-                    break;
-                case "REVOLUTE":
-                case 1:
-                    message.jointMotionType = 1;
-                    break;
-                case "SLIDER":
-                case 2:
-                    message.jointMotionType = 2;
-                    break;
-                case "CYLINDRICAL":
-                case 3:
-                    message.jointMotionType = 3;
-                    break;
-                case "PINSLOT":
-                case 4:
-                    message.jointMotionType = 4;
-                    break;
-                case "PLANAR":
-                case 5:
-                    message.jointMotionType = 5;
-                    break;
-                case "BALL":
-                case 6:
-                    message.jointMotionType = 6;
-                    break;
-                case "CUSTOM":
-                case 7:
-                    message.jointMotionType = 7;
-                    break;
+                    default:
+                        if (typeof object.jointMotionType === "number") {
+                            message.jointMotionType = object.jointMotionType
+                            break
+                        }
+                        break
+                    case "RIGID":
+                    case 0:
+                        message.jointMotionType = 0
+                        break
+                    case "REVOLUTE":
+                    case 1:
+                        message.jointMotionType = 1
+                        break
+                    case "SLIDER":
+                    case 2:
+                        message.jointMotionType = 2
+                        break
+                    case "CYLINDRICAL":
+                    case 3:
+                        message.jointMotionType = 3
+                        break
+                    case "PINSLOT":
+                    case 4:
+                        message.jointMotionType = 4
+                        break
+                    case "PLANAR":
+                    case 5:
+                        message.jointMotionType = 5
+                        break
+                    case "BALL":
+                    case 6:
+                        message.jointMotionType = 6
+                        break
+                    case "CUSTOM":
+                    case 7:
+                        message.jointMotionType = 7
+                        break
                 }
-                if (object.breakMagnitude != null)
-                    message.breakMagnitude = Number(object.breakMagnitude);
+                if (object.breakMagnitude != null) message.breakMagnitude = Number(object.breakMagnitude)
                 if (object.rotational != null) {
                     if (typeof object.rotational !== "object")
-                        throw TypeError(".mirabuf.joint.Joint.rotational: object expected");
-                    message.rotational = $root.mirabuf.joint.RotationalJoint.fromObject(object.rotational);
+                        throw TypeError(".mirabuf.joint.Joint.rotational: object expected")
+                    message.rotational = $root.mirabuf.joint.RotationalJoint.fromObject(object.rotational)
                 }
                 if (object.prismatic != null) {
                     if (typeof object.prismatic !== "object")
-                        throw TypeError(".mirabuf.joint.Joint.prismatic: object expected");
-                    message.prismatic = $root.mirabuf.joint.PrismaticJoint.fromObject(object.prismatic);
+                        throw TypeError(".mirabuf.joint.Joint.prismatic: object expected")
+                    message.prismatic = $root.mirabuf.joint.PrismaticJoint.fromObject(object.prismatic)
                 }
                 if (object.custom != null) {
                     if (typeof object.custom !== "object")
-                        throw TypeError(".mirabuf.joint.Joint.custom: object expected");
-                    message.custom = $root.mirabuf.joint.CustomJoint.fromObject(object.custom);
+                        throw TypeError(".mirabuf.joint.Joint.custom: object expected")
+                    message.custom = $root.mirabuf.joint.CustomJoint.fromObject(object.custom)
                 }
                 if (object.userData != null) {
                     if (typeof object.userData !== "object")
-                        throw TypeError(".mirabuf.joint.Joint.userData: object expected");
-                    message.userData = $root.mirabuf.UserData.fromObject(object.userData);
+                        throw TypeError(".mirabuf.joint.Joint.userData: object expected")
+                    message.userData = $root.mirabuf.UserData.fromObject(object.userData)
                 }
-                if (object.motorReference != null)
-                    message.motorReference = String(object.motorReference);
-                return message;
-            };
+                if (object.motorReference != null) message.motorReference = String(object.motorReference)
+                return message
+            }
 
             /**
              * Creates a plain object from a Joint message. Also converts values to other types if specified.
@@ -7021,46 +6812,50 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Joint.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.info = null;
-                    object.origin = null;
-                    object.jointMotionType = options.enums === String ? "RIGID" : 0;
-                    object.breakMagnitude = 0;
-                    object.userData = null;
-                    object.motorReference = "";
+                    object.info = null
+                    object.origin = null
+                    object.jointMotionType = options.enums === String ? "RIGID" : 0
+                    object.breakMagnitude = 0
+                    object.userData = null
+                    object.motorReference = ""
                 }
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
                 if (message.origin != null && message.hasOwnProperty("origin"))
-                    object.origin = $root.mirabuf.Vector3.toObject(message.origin, options);
+                    object.origin = $root.mirabuf.Vector3.toObject(message.origin, options)
                 if (message.jointMotionType != null && message.hasOwnProperty("jointMotionType"))
-                    object.jointMotionType = options.enums === String ? $root.mirabuf.joint.JointMotion[message.jointMotionType] === undefined ? message.jointMotionType : $root.mirabuf.joint.JointMotion[message.jointMotionType] : message.jointMotionType;
+                    object.jointMotionType =
+                        options.enums === String
+                            ? $root.mirabuf.joint.JointMotion[message.jointMotionType] === undefined
+                                ? message.jointMotionType
+                                : $root.mirabuf.joint.JointMotion[message.jointMotionType]
+                            : message.jointMotionType
                 if (message.breakMagnitude != null && message.hasOwnProperty("breakMagnitude"))
-                    object.breakMagnitude = options.json && !isFinite(message.breakMagnitude) ? String(message.breakMagnitude) : message.breakMagnitude;
+                    object.breakMagnitude =
+                        options.json && !isFinite(message.breakMagnitude)
+                            ? String(message.breakMagnitude)
+                            : message.breakMagnitude
                 if (message.rotational != null && message.hasOwnProperty("rotational")) {
-                    object.rotational = $root.mirabuf.joint.RotationalJoint.toObject(message.rotational, options);
-                    if (options.oneofs)
-                        object.JointMotion = "rotational";
+                    object.rotational = $root.mirabuf.joint.RotationalJoint.toObject(message.rotational, options)
+                    if (options.oneofs) object.JointMotion = "rotational"
                 }
                 if (message.prismatic != null && message.hasOwnProperty("prismatic")) {
-                    object.prismatic = $root.mirabuf.joint.PrismaticJoint.toObject(message.prismatic, options);
-                    if (options.oneofs)
-                        object.JointMotion = "prismatic";
+                    object.prismatic = $root.mirabuf.joint.PrismaticJoint.toObject(message.prismatic, options)
+                    if (options.oneofs) object.JointMotion = "prismatic"
                 }
                 if (message.custom != null && message.hasOwnProperty("custom")) {
-                    object.custom = $root.mirabuf.joint.CustomJoint.toObject(message.custom, options);
-                    if (options.oneofs)
-                        object.JointMotion = "custom";
+                    object.custom = $root.mirabuf.joint.CustomJoint.toObject(message.custom, options)
+                    if (options.oneofs) object.JointMotion = "custom"
                 }
                 if (message.userData != null && message.hasOwnProperty("userData"))
-                    object.userData = $root.mirabuf.UserData.toObject(message.userData, options);
+                    object.userData = $root.mirabuf.UserData.toObject(message.userData, options)
                 if (message.motorReference != null && message.hasOwnProperty("motorReference"))
-                    object.motorReference = message.motorReference;
-                return object;
-            };
+                    object.motorReference = message.motorReference
+                return object
+            }
 
             /**
              * Converts this Joint to JSON.
@@ -7070,8 +6865,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Joint.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Joint
@@ -7083,16 +6878,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Joint.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.Joint";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.Joint"
+            }
 
-            return Joint;
-        })();
+            return Joint
+        })()
 
-        joint.Dynamics = (function() {
-
+        joint.Dynamics = (function () {
             /**
              * Properties of a Dynamics.
              * @memberof mirabuf.joint
@@ -7112,8 +6906,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function Dynamics(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -7122,7 +6915,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Dynamics
              * @instance
              */
-            Dynamics.prototype.damping = 0;
+            Dynamics.prototype.damping = 0
 
             /**
              * Friction effect on a given joint motion
@@ -7130,7 +6923,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Dynamics
              * @instance
              */
-            Dynamics.prototype.friction = 0;
+            Dynamics.prototype.friction = 0
 
             /**
              * Creates a new Dynamics instance using the specified properties.
@@ -7141,8 +6934,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Dynamics} Dynamics instance
              */
             Dynamics.create = function create(properties) {
-                return new Dynamics(properties);
-            };
+                return new Dynamics(properties)
+            }
 
             /**
              * Encodes the specified Dynamics message. Does not implicitly {@link mirabuf.joint.Dynamics.verify|verify} messages.
@@ -7154,14 +6947,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Dynamics.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.damping != null && Object.hasOwnProperty.call(message, "damping"))
-                    writer.uint32(/* id 1, wireType 5 =*/13).float(message.damping);
+                    writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.damping)
                 if (message.friction != null && Object.hasOwnProperty.call(message, "friction"))
-                    writer.uint32(/* id 2, wireType 5 =*/21).float(message.friction);
-                return writer;
-            };
+                    writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.friction)
+                return writer
+            }
 
             /**
              * Encodes the specified Dynamics message, length delimited. Does not implicitly {@link mirabuf.joint.Dynamics.verify|verify} messages.
@@ -7173,8 +6965,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Dynamics.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Dynamics message from the specified reader or buffer.
@@ -7188,27 +6980,27 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Dynamics.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.Dynamics();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.Dynamics()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.damping = reader.float();
-                            break;
+                        case 1: {
+                            message.damping = reader.float()
+                            break
                         }
-                    case 2: {
-                            message.friction = reader.float();
-                            break;
+                        case 2: {
+                            message.friction = reader.float()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Dynamics message from the specified reader or buffer, length delimited.
@@ -7221,10 +7013,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Dynamics.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Dynamics message.
@@ -7235,16 +7026,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Dynamics.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.damping != null && message.hasOwnProperty("damping"))
-                    if (typeof message.damping !== "number")
-                        return "damping: number expected";
+                    if (typeof message.damping !== "number") return "damping: number expected"
                 if (message.friction != null && message.hasOwnProperty("friction"))
-                    if (typeof message.friction !== "number")
-                        return "friction: number expected";
-                return null;
-            };
+                    if (typeof message.friction !== "number") return "friction: number expected"
+                return null
+            }
 
             /**
              * Creates a Dynamics message from a plain object. Also converts values to their respective internal types.
@@ -7255,15 +7043,12 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Dynamics} Dynamics
              */
             Dynamics.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.Dynamics)
-                    return object;
-                let message = new $root.mirabuf.joint.Dynamics();
-                if (object.damping != null)
-                    message.damping = Number(object.damping);
-                if (object.friction != null)
-                    message.friction = Number(object.friction);
-                return message;
-            };
+                if (object instanceof $root.mirabuf.joint.Dynamics) return object
+                let message = new $root.mirabuf.joint.Dynamics()
+                if (object.damping != null) message.damping = Number(object.damping)
+                if (object.friction != null) message.friction = Number(object.friction)
+                return message
+            }
 
             /**
              * Creates a plain object from a Dynamics message. Also converts values to other types if specified.
@@ -7275,19 +7060,20 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Dynamics.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.damping = 0;
-                    object.friction = 0;
+                    object.damping = 0
+                    object.friction = 0
                 }
                 if (message.damping != null && message.hasOwnProperty("damping"))
-                    object.damping = options.json && !isFinite(message.damping) ? String(message.damping) : message.damping;
+                    object.damping =
+                        options.json && !isFinite(message.damping) ? String(message.damping) : message.damping
                 if (message.friction != null && message.hasOwnProperty("friction"))
-                    object.friction = options.json && !isFinite(message.friction) ? String(message.friction) : message.friction;
-                return object;
-            };
+                    object.friction =
+                        options.json && !isFinite(message.friction) ? String(message.friction) : message.friction
+                return object
+            }
 
             /**
              * Converts this Dynamics to JSON.
@@ -7297,8 +7083,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Dynamics.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Dynamics
@@ -7310,16 +7096,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Dynamics.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.Dynamics";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.Dynamics"
+            }
 
-            return Dynamics;
-        })();
+            return Dynamics
+        })()
 
-        joint.Limits = (function() {
-
+        joint.Limits = (function () {
             /**
              * Properties of a Limits.
              * @memberof mirabuf.joint
@@ -7334,7 +7119,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * Constructs a new Limits.
              * @memberof mirabuf.joint
              * @classdesc Limits specify the mechanical range of a given joint.
-             * 
+             *
              * TODO: Add units
              * @implements ILimits
              * @constructor
@@ -7343,8 +7128,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function Limits(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -7353,7 +7137,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Limits
              * @instance
              */
-            Limits.prototype.lower = 0;
+            Limits.prototype.lower = 0
 
             /**
              * Upper Limit is the joint extent
@@ -7361,7 +7145,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Limits
              * @instance
              */
-            Limits.prototype.upper = 0;
+            Limits.prototype.upper = 0
 
             /**
              * Velocity Max in m/s^2 (angular for rotational)
@@ -7369,7 +7153,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Limits
              * @instance
              */
-            Limits.prototype.velocity = 0;
+            Limits.prototype.velocity = 0
 
             /**
              * Effort is the absolute force a joint can apply for a given instant - ROS has a great article on it http://wiki.ros.org/pr2_controller_manager/safety_limits
@@ -7377,7 +7161,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Limits
              * @instance
              */
-            Limits.prototype.effort = 0;
+            Limits.prototype.effort = 0
 
             /**
              * Creates a new Limits instance using the specified properties.
@@ -7388,8 +7172,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Limits} Limits instance
              */
             Limits.create = function create(properties) {
-                return new Limits(properties);
-            };
+                return new Limits(properties)
+            }
 
             /**
              * Encodes the specified Limits message. Does not implicitly {@link mirabuf.joint.Limits.verify|verify} messages.
@@ -7401,18 +7185,17 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Limits.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.lower != null && Object.hasOwnProperty.call(message, "lower"))
-                    writer.uint32(/* id 1, wireType 5 =*/13).float(message.lower);
+                    writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.lower)
                 if (message.upper != null && Object.hasOwnProperty.call(message, "upper"))
-                    writer.uint32(/* id 2, wireType 5 =*/21).float(message.upper);
+                    writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.upper)
                 if (message.velocity != null && Object.hasOwnProperty.call(message, "velocity"))
-                    writer.uint32(/* id 3, wireType 5 =*/29).float(message.velocity);
+                    writer.uint32(/* id 3, wireType 5 =*/ 29).float(message.velocity)
                 if (message.effort != null && Object.hasOwnProperty.call(message, "effort"))
-                    writer.uint32(/* id 4, wireType 5 =*/37).float(message.effort);
-                return writer;
-            };
+                    writer.uint32(/* id 4, wireType 5 =*/ 37).float(message.effort)
+                return writer
+            }
 
             /**
              * Encodes the specified Limits message, length delimited. Does not implicitly {@link mirabuf.joint.Limits.verify|verify} messages.
@@ -7424,8 +7207,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Limits.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Limits message from the specified reader or buffer.
@@ -7439,35 +7222,35 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Limits.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.Limits();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.Limits()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.lower = reader.float();
-                            break;
+                        case 1: {
+                            message.lower = reader.float()
+                            break
                         }
-                    case 2: {
-                            message.upper = reader.float();
-                            break;
+                        case 2: {
+                            message.upper = reader.float()
+                            break
                         }
-                    case 3: {
-                            message.velocity = reader.float();
-                            break;
+                        case 3: {
+                            message.velocity = reader.float()
+                            break
                         }
-                    case 4: {
-                            message.effort = reader.float();
-                            break;
+                        case 4: {
+                            message.effort = reader.float()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Limits message from the specified reader or buffer, length delimited.
@@ -7480,10 +7263,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Limits.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Limits message.
@@ -7494,22 +7276,17 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Limits.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.lower != null && message.hasOwnProperty("lower"))
-                    if (typeof message.lower !== "number")
-                        return "lower: number expected";
+                    if (typeof message.lower !== "number") return "lower: number expected"
                 if (message.upper != null && message.hasOwnProperty("upper"))
-                    if (typeof message.upper !== "number")
-                        return "upper: number expected";
+                    if (typeof message.upper !== "number") return "upper: number expected"
                 if (message.velocity != null && message.hasOwnProperty("velocity"))
-                    if (typeof message.velocity !== "number")
-                        return "velocity: number expected";
+                    if (typeof message.velocity !== "number") return "velocity: number expected"
                 if (message.effort != null && message.hasOwnProperty("effort"))
-                    if (typeof message.effort !== "number")
-                        return "effort: number expected";
-                return null;
-            };
+                    if (typeof message.effort !== "number") return "effort: number expected"
+                return null
+            }
 
             /**
              * Creates a Limits message from a plain object. Also converts values to their respective internal types.
@@ -7520,19 +7297,14 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Limits} Limits
              */
             Limits.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.Limits)
-                    return object;
-                let message = new $root.mirabuf.joint.Limits();
-                if (object.lower != null)
-                    message.lower = Number(object.lower);
-                if (object.upper != null)
-                    message.upper = Number(object.upper);
-                if (object.velocity != null)
-                    message.velocity = Number(object.velocity);
-                if (object.effort != null)
-                    message.effort = Number(object.effort);
-                return message;
-            };
+                if (object instanceof $root.mirabuf.joint.Limits) return object
+                let message = new $root.mirabuf.joint.Limits()
+                if (object.lower != null) message.lower = Number(object.lower)
+                if (object.upper != null) message.upper = Number(object.upper)
+                if (object.velocity != null) message.velocity = Number(object.velocity)
+                if (object.effort != null) message.effort = Number(object.effort)
+                return message
+            }
 
             /**
              * Creates a plain object from a Limits message. Also converts values to other types if specified.
@@ -7544,25 +7316,25 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Limits.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.lower = 0;
-                    object.upper = 0;
-                    object.velocity = 0;
-                    object.effort = 0;
+                    object.lower = 0
+                    object.upper = 0
+                    object.velocity = 0
+                    object.effort = 0
                 }
                 if (message.lower != null && message.hasOwnProperty("lower"))
-                    object.lower = options.json && !isFinite(message.lower) ? String(message.lower) : message.lower;
+                    object.lower = options.json && !isFinite(message.lower) ? String(message.lower) : message.lower
                 if (message.upper != null && message.hasOwnProperty("upper"))
-                    object.upper = options.json && !isFinite(message.upper) ? String(message.upper) : message.upper;
+                    object.upper = options.json && !isFinite(message.upper) ? String(message.upper) : message.upper
                 if (message.velocity != null && message.hasOwnProperty("velocity"))
-                    object.velocity = options.json && !isFinite(message.velocity) ? String(message.velocity) : message.velocity;
+                    object.velocity =
+                        options.json && !isFinite(message.velocity) ? String(message.velocity) : message.velocity
                 if (message.effort != null && message.hasOwnProperty("effort"))
-                    object.effort = options.json && !isFinite(message.effort) ? String(message.effort) : message.effort;
-                return object;
-            };
+                    object.effort = options.json && !isFinite(message.effort) ? String(message.effort) : message.effort
+                return object
+            }
 
             /**
              * Converts this Limits to JSON.
@@ -7572,8 +7344,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Limits.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Limits
@@ -7585,16 +7357,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Limits.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.Limits";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.Limits"
+            }
 
-            return Limits;
-        })();
+            return Limits
+        })()
 
-        joint.Safety = (function() {
-
+        joint.Safety = (function () {
             /**
              * Properties of a Safety.
              * @memberof mirabuf.joint
@@ -7611,7 +7382,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @classdesc Safety switch configuration for a given joint.
              * Can usefully indicate a bounds issue.
              * Inspired by the URDF implementation.
-             * 
+             *
              * This should really just be created by the controller.
              * http://wiki.ros.org/pr2_controller_manager/safety_limits
              * @implements ISafety
@@ -7621,8 +7392,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function Safety(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -7631,7 +7401,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Safety
              * @instance
              */
-            Safety.prototype.lowerLimit = 0;
+            Safety.prototype.lowerLimit = 0
 
             /**
              * Upper Software limit
@@ -7639,7 +7409,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Safety
              * @instance
              */
-            Safety.prototype.upperLimit = 0;
+            Safety.prototype.upperLimit = 0
 
             /**
              * Relation between position and velocity limit
@@ -7647,7 +7417,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Safety
              * @instance
              */
-            Safety.prototype.kPosition = 0;
+            Safety.prototype.kPosition = 0
 
             /**
              * Relation between effort and velocity limit
@@ -7655,7 +7425,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.Safety
              * @instance
              */
-            Safety.prototype.kVelocity = 0;
+            Safety.prototype.kVelocity = 0
 
             /**
              * Creates a new Safety instance using the specified properties.
@@ -7666,8 +7436,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Safety} Safety instance
              */
             Safety.create = function create(properties) {
-                return new Safety(properties);
-            };
+                return new Safety(properties)
+            }
 
             /**
              * Encodes the specified Safety message. Does not implicitly {@link mirabuf.joint.Safety.verify|verify} messages.
@@ -7679,18 +7449,17 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Safety.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.lowerLimit != null && Object.hasOwnProperty.call(message, "lowerLimit"))
-                    writer.uint32(/* id 1, wireType 5 =*/13).float(message.lowerLimit);
+                    writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.lowerLimit)
                 if (message.upperLimit != null && Object.hasOwnProperty.call(message, "upperLimit"))
-                    writer.uint32(/* id 2, wireType 5 =*/21).float(message.upperLimit);
+                    writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.upperLimit)
                 if (message.kPosition != null && Object.hasOwnProperty.call(message, "kPosition"))
-                    writer.uint32(/* id 3, wireType 5 =*/29).float(message.kPosition);
+                    writer.uint32(/* id 3, wireType 5 =*/ 29).float(message.kPosition)
                 if (message.kVelocity != null && Object.hasOwnProperty.call(message, "kVelocity"))
-                    writer.uint32(/* id 4, wireType 5 =*/37).float(message.kVelocity);
-                return writer;
-            };
+                    writer.uint32(/* id 4, wireType 5 =*/ 37).float(message.kVelocity)
+                return writer
+            }
 
             /**
              * Encodes the specified Safety message, length delimited. Does not implicitly {@link mirabuf.joint.Safety.verify|verify} messages.
@@ -7702,8 +7471,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Safety.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Safety message from the specified reader or buffer.
@@ -7717,35 +7486,35 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Safety.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.Safety();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.Safety()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.lowerLimit = reader.float();
-                            break;
+                        case 1: {
+                            message.lowerLimit = reader.float()
+                            break
                         }
-                    case 2: {
-                            message.upperLimit = reader.float();
-                            break;
+                        case 2: {
+                            message.upperLimit = reader.float()
+                            break
                         }
-                    case 3: {
-                            message.kPosition = reader.float();
-                            break;
+                        case 3: {
+                            message.kPosition = reader.float()
+                            break
                         }
-                    case 4: {
-                            message.kVelocity = reader.float();
-                            break;
+                        case 4: {
+                            message.kVelocity = reader.float()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Safety message from the specified reader or buffer, length delimited.
@@ -7758,10 +7527,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Safety.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Safety message.
@@ -7772,22 +7540,17 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Safety.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.lowerLimit != null && message.hasOwnProperty("lowerLimit"))
-                    if (typeof message.lowerLimit !== "number")
-                        return "lowerLimit: number expected";
+                    if (typeof message.lowerLimit !== "number") return "lowerLimit: number expected"
                 if (message.upperLimit != null && message.hasOwnProperty("upperLimit"))
-                    if (typeof message.upperLimit !== "number")
-                        return "upperLimit: number expected";
+                    if (typeof message.upperLimit !== "number") return "upperLimit: number expected"
                 if (message.kPosition != null && message.hasOwnProperty("kPosition"))
-                    if (typeof message.kPosition !== "number")
-                        return "kPosition: number expected";
+                    if (typeof message.kPosition !== "number") return "kPosition: number expected"
                 if (message.kVelocity != null && message.hasOwnProperty("kVelocity"))
-                    if (typeof message.kVelocity !== "number")
-                        return "kVelocity: number expected";
-                return null;
-            };
+                    if (typeof message.kVelocity !== "number") return "kVelocity: number expected"
+                return null
+            }
 
             /**
              * Creates a Safety message from a plain object. Also converts values to their respective internal types.
@@ -7798,19 +7561,14 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.Safety} Safety
              */
             Safety.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.Safety)
-                    return object;
-                let message = new $root.mirabuf.joint.Safety();
-                if (object.lowerLimit != null)
-                    message.lowerLimit = Number(object.lowerLimit);
-                if (object.upperLimit != null)
-                    message.upperLimit = Number(object.upperLimit);
-                if (object.kPosition != null)
-                    message.kPosition = Number(object.kPosition);
-                if (object.kVelocity != null)
-                    message.kVelocity = Number(object.kVelocity);
-                return message;
-            };
+                if (object instanceof $root.mirabuf.joint.Safety) return object
+                let message = new $root.mirabuf.joint.Safety()
+                if (object.lowerLimit != null) message.lowerLimit = Number(object.lowerLimit)
+                if (object.upperLimit != null) message.upperLimit = Number(object.upperLimit)
+                if (object.kPosition != null) message.kPosition = Number(object.kPosition)
+                if (object.kVelocity != null) message.kVelocity = Number(object.kVelocity)
+                return message
+            }
 
             /**
              * Creates a plain object from a Safety message. Also converts values to other types if specified.
@@ -7822,25 +7580,28 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Safety.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.lowerLimit = 0;
-                    object.upperLimit = 0;
-                    object.kPosition = 0;
-                    object.kVelocity = 0;
+                    object.lowerLimit = 0
+                    object.upperLimit = 0
+                    object.kPosition = 0
+                    object.kVelocity = 0
                 }
                 if (message.lowerLimit != null && message.hasOwnProperty("lowerLimit"))
-                    object.lowerLimit = options.json && !isFinite(message.lowerLimit) ? String(message.lowerLimit) : message.lowerLimit;
+                    object.lowerLimit =
+                        options.json && !isFinite(message.lowerLimit) ? String(message.lowerLimit) : message.lowerLimit
                 if (message.upperLimit != null && message.hasOwnProperty("upperLimit"))
-                    object.upperLimit = options.json && !isFinite(message.upperLimit) ? String(message.upperLimit) : message.upperLimit;
+                    object.upperLimit =
+                        options.json && !isFinite(message.upperLimit) ? String(message.upperLimit) : message.upperLimit
                 if (message.kPosition != null && message.hasOwnProperty("kPosition"))
-                    object.kPosition = options.json && !isFinite(message.kPosition) ? String(message.kPosition) : message.kPosition;
+                    object.kPosition =
+                        options.json && !isFinite(message.kPosition) ? String(message.kPosition) : message.kPosition
                 if (message.kVelocity != null && message.hasOwnProperty("kVelocity"))
-                    object.kVelocity = options.json && !isFinite(message.kVelocity) ? String(message.kVelocity) : message.kVelocity;
-                return object;
-            };
+                    object.kVelocity =
+                        options.json && !isFinite(message.kVelocity) ? String(message.kVelocity) : message.kVelocity
+                return object
+            }
 
             /**
              * Converts this Safety to JSON.
@@ -7850,8 +7611,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Safety.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Safety
@@ -7863,16 +7624,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Safety.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.Safety";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.Safety"
+            }
 
-            return Safety;
-        })();
+            return Safety
+        })()
 
-        joint.DOF = (function() {
-
+        joint.DOF = (function () {
             /**
              * Properties of a DOF.
              * @memberof mirabuf.joint
@@ -7896,8 +7656,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function DOF(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -7906,7 +7665,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.DOF
              * @instance
              */
-            DOF.prototype.name = "";
+            DOF.prototype.name = ""
 
             /**
              * Axis the degree of freedom is pivoting by
@@ -7914,7 +7673,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.DOF
              * @instance
              */
-            DOF.prototype.axis = null;
+            DOF.prototype.axis = null
 
             /**
              * Direction the axis vector is offset from - this has an incorrect naming scheme
@@ -7922,7 +7681,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.DOF
              * @instance
              */
-            DOF.prototype.pivotDirection = 0;
+            DOF.prototype.pivotDirection = 0
 
             /**
              * Dynamic properties of this joint pivot
@@ -7930,7 +7689,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.DOF
              * @instance
              */
-            DOF.prototype.dynamics = null;
+            DOF.prototype.dynamics = null
 
             /**
              * Limits of this freedom
@@ -7938,7 +7697,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.DOF
              * @instance
              */
-            DOF.prototype.limits = null;
+            DOF.prototype.limits = null
 
             /**
              * Current value of the DOF
@@ -7946,7 +7705,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.DOF
              * @instance
              */
-            DOF.prototype.value = 0;
+            DOF.prototype.value = 0
 
             /**
              * Creates a new DOF instance using the specified properties.
@@ -7957,8 +7716,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.DOF} DOF instance
              */
             DOF.create = function create(properties) {
-                return new DOF(properties);
-            };
+                return new DOF(properties)
+            }
 
             /**
              * Encodes the specified DOF message. Does not implicitly {@link mirabuf.joint.DOF.verify|verify} messages.
@@ -7970,22 +7729,30 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             DOF.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.name != null && Object.hasOwnProperty.call(message, "name"))
-                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                    writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.name)
                 if (message.axis != null && Object.hasOwnProperty.call(message, "axis"))
-                    $root.mirabuf.Vector3.encode(message.axis, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.mirabuf.Vector3.encode(
+                        message.axis,
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                    ).ldelim()
                 if (message.pivotDirection != null && Object.hasOwnProperty.call(message, "pivotDirection"))
-                    writer.uint32(/* id 3, wireType 0 =*/24).int32(message.pivotDirection);
+                    writer.uint32(/* id 3, wireType 0 =*/ 24).int32(message.pivotDirection)
                 if (message.dynamics != null && Object.hasOwnProperty.call(message, "dynamics"))
-                    $root.mirabuf.joint.Dynamics.encode(message.dynamics, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                    $root.mirabuf.joint.Dynamics.encode(
+                        message.dynamics,
+                        writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                    ).ldelim()
                 if (message.limits != null && Object.hasOwnProperty.call(message, "limits"))
-                    $root.mirabuf.joint.Limits.encode(message.limits, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                    $root.mirabuf.joint.Limits.encode(
+                        message.limits,
+                        writer.uint32(/* id 5, wireType 2 =*/ 42).fork()
+                    ).ldelim()
                 if (message.value != null && Object.hasOwnProperty.call(message, "value"))
-                    writer.uint32(/* id 6, wireType 5 =*/53).float(message.value);
-                return writer;
-            };
+                    writer.uint32(/* id 6, wireType 5 =*/ 53).float(message.value)
+                return writer
+            }
 
             /**
              * Encodes the specified DOF message, length delimited. Does not implicitly {@link mirabuf.joint.DOF.verify|verify} messages.
@@ -7997,8 +7764,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             DOF.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a DOF message from the specified reader or buffer.
@@ -8012,43 +7779,43 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             DOF.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.DOF();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.DOF()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.name = reader.string();
-                            break;
+                        case 1: {
+                            message.name = reader.string()
+                            break
                         }
-                    case 2: {
-                            message.axis = $root.mirabuf.Vector3.decode(reader, reader.uint32());
-                            break;
+                        case 2: {
+                            message.axis = $root.mirabuf.Vector3.decode(reader, reader.uint32())
+                            break
                         }
-                    case 3: {
-                            message.pivotDirection = reader.int32();
-                            break;
+                        case 3: {
+                            message.pivotDirection = reader.int32()
+                            break
                         }
-                    case 4: {
-                            message.dynamics = $root.mirabuf.joint.Dynamics.decode(reader, reader.uint32());
-                            break;
+                        case 4: {
+                            message.dynamics = $root.mirabuf.joint.Dynamics.decode(reader, reader.uint32())
+                            break
                         }
-                    case 5: {
-                            message.limits = $root.mirabuf.joint.Limits.decode(reader, reader.uint32());
-                            break;
+                        case 5: {
+                            message.limits = $root.mirabuf.joint.Limits.decode(reader, reader.uint32())
+                            break
                         }
-                    case 6: {
-                            message.value = reader.float();
-                            break;
+                        case 6: {
+                            message.value = reader.float()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a DOF message from the specified reader or buffer, length delimited.
@@ -8061,10 +7828,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             DOF.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a DOF message.
@@ -8075,40 +7841,34 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             DOF.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.name != null && message.hasOwnProperty("name"))
-                    if (!$util.isString(message.name))
-                        return "name: string expected";
+                    if (!$util.isString(message.name)) return "name: string expected"
                 if (message.axis != null && message.hasOwnProperty("axis")) {
-                    let error = $root.mirabuf.Vector3.verify(message.axis);
-                    if (error)
-                        return "axis." + error;
+                    let error = $root.mirabuf.Vector3.verify(message.axis)
+                    if (error) return "axis." + error
                 }
                 if (message.pivotDirection != null && message.hasOwnProperty("pivotDirection"))
                     switch (message.pivotDirection) {
-                    default:
-                        return "pivotDirection: enum value expected";
-                    case 0:
-                    case 1:
-                    case 2:
-                        break;
+                        default:
+                            return "pivotDirection: enum value expected"
+                        case 0:
+                        case 1:
+                        case 2:
+                            break
                     }
                 if (message.dynamics != null && message.hasOwnProperty("dynamics")) {
-                    let error = $root.mirabuf.joint.Dynamics.verify(message.dynamics);
-                    if (error)
-                        return "dynamics." + error;
+                    let error = $root.mirabuf.joint.Dynamics.verify(message.dynamics)
+                    if (error) return "dynamics." + error
                 }
                 if (message.limits != null && message.hasOwnProperty("limits")) {
-                    let error = $root.mirabuf.joint.Limits.verify(message.limits);
-                    if (error)
-                        return "limits." + error;
+                    let error = $root.mirabuf.joint.Limits.verify(message.limits)
+                    if (error) return "limits." + error
                 }
                 if (message.value != null && message.hasOwnProperty("value"))
-                    if (typeof message.value !== "number")
-                        return "value: number expected";
-                return null;
-            };
+                    if (typeof message.value !== "number") return "value: number expected"
+                return null
+            }
 
             /**
              * Creates a DOF message from a plain object. Also converts values to their respective internal types.
@@ -8119,50 +7879,45 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.DOF} DOF
              */
             DOF.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.DOF)
-                    return object;
-                let message = new $root.mirabuf.joint.DOF();
-                if (object.name != null)
-                    message.name = String(object.name);
+                if (object instanceof $root.mirabuf.joint.DOF) return object
+                let message = new $root.mirabuf.joint.DOF()
+                if (object.name != null) message.name = String(object.name)
                 if (object.axis != null) {
-                    if (typeof object.axis !== "object")
-                        throw TypeError(".mirabuf.joint.DOF.axis: object expected");
-                    message.axis = $root.mirabuf.Vector3.fromObject(object.axis);
+                    if (typeof object.axis !== "object") throw TypeError(".mirabuf.joint.DOF.axis: object expected")
+                    message.axis = $root.mirabuf.Vector3.fromObject(object.axis)
                 }
                 switch (object.pivotDirection) {
-                default:
-                    if (typeof object.pivotDirection === "number") {
-                        message.pivotDirection = object.pivotDirection;
-                        break;
-                    }
-                    break;
-                case "X":
-                case 0:
-                    message.pivotDirection = 0;
-                    break;
-                case "Y":
-                case 1:
-                    message.pivotDirection = 1;
-                    break;
-                case "Z":
-                case 2:
-                    message.pivotDirection = 2;
-                    break;
+                    default:
+                        if (typeof object.pivotDirection === "number") {
+                            message.pivotDirection = object.pivotDirection
+                            break
+                        }
+                        break
+                    case "X":
+                    case 0:
+                        message.pivotDirection = 0
+                        break
+                    case "Y":
+                    case 1:
+                        message.pivotDirection = 1
+                        break
+                    case "Z":
+                    case 2:
+                        message.pivotDirection = 2
+                        break
                 }
                 if (object.dynamics != null) {
                     if (typeof object.dynamics !== "object")
-                        throw TypeError(".mirabuf.joint.DOF.dynamics: object expected");
-                    message.dynamics = $root.mirabuf.joint.Dynamics.fromObject(object.dynamics);
+                        throw TypeError(".mirabuf.joint.DOF.dynamics: object expected")
+                    message.dynamics = $root.mirabuf.joint.Dynamics.fromObject(object.dynamics)
                 }
                 if (object.limits != null) {
-                    if (typeof object.limits !== "object")
-                        throw TypeError(".mirabuf.joint.DOF.limits: object expected");
-                    message.limits = $root.mirabuf.joint.Limits.fromObject(object.limits);
+                    if (typeof object.limits !== "object") throw TypeError(".mirabuf.joint.DOF.limits: object expected")
+                    message.limits = $root.mirabuf.joint.Limits.fromObject(object.limits)
                 }
-                if (object.value != null)
-                    message.value = Number(object.value);
-                return message;
-            };
+                if (object.value != null) message.value = Number(object.value)
+                return message
+            }
 
             /**
              * Creates a plain object from a DOF message. Also converts values to other types if specified.
@@ -8174,31 +7929,34 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             DOF.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.name = "";
-                    object.axis = null;
-                    object.pivotDirection = options.enums === String ? "X" : 0;
-                    object.dynamics = null;
-                    object.limits = null;
-                    object.value = 0;
+                    object.name = ""
+                    object.axis = null
+                    object.pivotDirection = options.enums === String ? "X" : 0
+                    object.dynamics = null
+                    object.limits = null
+                    object.value = 0
                 }
-                if (message.name != null && message.hasOwnProperty("name"))
-                    object.name = message.name;
+                if (message.name != null && message.hasOwnProperty("name")) object.name = message.name
                 if (message.axis != null && message.hasOwnProperty("axis"))
-                    object.axis = $root.mirabuf.Vector3.toObject(message.axis, options);
+                    object.axis = $root.mirabuf.Vector3.toObject(message.axis, options)
                 if (message.pivotDirection != null && message.hasOwnProperty("pivotDirection"))
-                    object.pivotDirection = options.enums === String ? $root.mirabuf.Axis[message.pivotDirection] === undefined ? message.pivotDirection : $root.mirabuf.Axis[message.pivotDirection] : message.pivotDirection;
+                    object.pivotDirection =
+                        options.enums === String
+                            ? $root.mirabuf.Axis[message.pivotDirection] === undefined
+                                ? message.pivotDirection
+                                : $root.mirabuf.Axis[message.pivotDirection]
+                            : message.pivotDirection
                 if (message.dynamics != null && message.hasOwnProperty("dynamics"))
-                    object.dynamics = $root.mirabuf.joint.Dynamics.toObject(message.dynamics, options);
+                    object.dynamics = $root.mirabuf.joint.Dynamics.toObject(message.dynamics, options)
                 if (message.limits != null && message.hasOwnProperty("limits"))
-                    object.limits = $root.mirabuf.joint.Limits.toObject(message.limits, options);
+                    object.limits = $root.mirabuf.joint.Limits.toObject(message.limits, options)
                 if (message.value != null && message.hasOwnProperty("value"))
-                    object.value = options.json && !isFinite(message.value) ? String(message.value) : message.value;
-                return object;
-            };
+                    object.value = options.json && !isFinite(message.value) ? String(message.value) : message.value
+                return object
+            }
 
             /**
              * Converts this DOF to JSON.
@@ -8208,8 +7966,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             DOF.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for DOF
@@ -8221,16 +7979,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             DOF.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.DOF";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.DOF"
+            }
 
-            return DOF;
-        })();
+            return DOF
+        })()
 
-        joint.CustomJoint = (function() {
-
+        joint.CustomJoint = (function () {
             /**
              * Properties of a CustomJoint.
              * @memberof mirabuf.joint
@@ -8248,11 +8005,10 @@ export const mirabuf = $root.mirabuf = (() => {
              * @param {mirabuf.joint.ICustomJoint=} [properties] Properties to set
              */
             function CustomJoint(properties) {
-                this.dofs = [];
+                this.dofs = []
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -8261,7 +8017,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.CustomJoint
              * @instance
              */
-            CustomJoint.prototype.dofs = $util.emptyArray;
+            CustomJoint.prototype.dofs = $util.emptyArray
 
             /**
              * Creates a new CustomJoint instance using the specified properties.
@@ -8272,8 +8028,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.CustomJoint} CustomJoint instance
              */
             CustomJoint.create = function create(properties) {
-                return new CustomJoint(properties);
-            };
+                return new CustomJoint(properties)
+            }
 
             /**
              * Encodes the specified CustomJoint message. Does not implicitly {@link mirabuf.joint.CustomJoint.verify|verify} messages.
@@ -8285,13 +8041,15 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             CustomJoint.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.dofs != null && message.dofs.length)
                     for (let i = 0; i < message.dofs.length; ++i)
-                        $root.mirabuf.joint.DOF.encode(message.dofs[i], writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                return writer;
-            };
+                        $root.mirabuf.joint.DOF.encode(
+                            message.dofs[i],
+                            writer.uint32(/* id 1, wireType 2 =*/ 10).fork()
+                        ).ldelim()
+                return writer
+            }
 
             /**
              * Encodes the specified CustomJoint message, length delimited. Does not implicitly {@link mirabuf.joint.CustomJoint.verify|verify} messages.
@@ -8303,8 +8061,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             CustomJoint.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a CustomJoint message from the specified reader or buffer.
@@ -8318,25 +8076,24 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             CustomJoint.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.CustomJoint();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.CustomJoint()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            if (!(message.dofs && message.dofs.length))
-                                message.dofs = [];
-                            message.dofs.push($root.mirabuf.joint.DOF.decode(reader, reader.uint32()));
-                            break;
+                        case 1: {
+                            if (!(message.dofs && message.dofs.length)) message.dofs = []
+                            message.dofs.push($root.mirabuf.joint.DOF.decode(reader, reader.uint32()))
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a CustomJoint message from the specified reader or buffer, length delimited.
@@ -8349,10 +8106,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             CustomJoint.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a CustomJoint message.
@@ -8363,19 +8119,16 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             CustomJoint.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.dofs != null && message.hasOwnProperty("dofs")) {
-                    if (!Array.isArray(message.dofs))
-                        return "dofs: array expected";
+                    if (!Array.isArray(message.dofs)) return "dofs: array expected"
                     for (let i = 0; i < message.dofs.length; ++i) {
-                        let error = $root.mirabuf.joint.DOF.verify(message.dofs[i]);
-                        if (error)
-                            return "dofs." + error;
+                        let error = $root.mirabuf.joint.DOF.verify(message.dofs[i])
+                        if (error) return "dofs." + error
                     }
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a CustomJoint message from a plain object. Also converts values to their respective internal types.
@@ -8386,21 +8139,19 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.CustomJoint} CustomJoint
              */
             CustomJoint.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.CustomJoint)
-                    return object;
-                let message = new $root.mirabuf.joint.CustomJoint();
+                if (object instanceof $root.mirabuf.joint.CustomJoint) return object
+                let message = new $root.mirabuf.joint.CustomJoint()
                 if (object.dofs) {
-                    if (!Array.isArray(object.dofs))
-                        throw TypeError(".mirabuf.joint.CustomJoint.dofs: array expected");
-                    message.dofs = [];
+                    if (!Array.isArray(object.dofs)) throw TypeError(".mirabuf.joint.CustomJoint.dofs: array expected")
+                    message.dofs = []
                     for (let i = 0; i < object.dofs.length; ++i) {
                         if (typeof object.dofs[i] !== "object")
-                            throw TypeError(".mirabuf.joint.CustomJoint.dofs: object expected");
-                        message.dofs[i] = $root.mirabuf.joint.DOF.fromObject(object.dofs[i]);
+                            throw TypeError(".mirabuf.joint.CustomJoint.dofs: object expected")
+                        message.dofs[i] = $root.mirabuf.joint.DOF.fromObject(object.dofs[i])
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a CustomJoint message. Also converts values to other types if specified.
@@ -8412,18 +8163,16 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             CustomJoint.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.arrays || options.defaults)
-                    object.dofs = [];
+                if (!options) options = {}
+                let object = {}
+                if (options.arrays || options.defaults) object.dofs = []
                 if (message.dofs && message.dofs.length) {
-                    object.dofs = [];
+                    object.dofs = []
                     for (let j = 0; j < message.dofs.length; ++j)
-                        object.dofs[j] = $root.mirabuf.joint.DOF.toObject(message.dofs[j], options);
+                        object.dofs[j] = $root.mirabuf.joint.DOF.toObject(message.dofs[j], options)
                 }
-                return object;
-            };
+                return object
+            }
 
             /**
              * Converts this CustomJoint to JSON.
@@ -8433,8 +8182,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             CustomJoint.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for CustomJoint
@@ -8446,16 +8195,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             CustomJoint.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.CustomJoint";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.CustomJoint"
+            }
 
-            return CustomJoint;
-        })();
+            return CustomJoint
+        })()
 
-        joint.RotationalJoint = (function() {
-
+        joint.RotationalJoint = (function () {
             /**
              * Properties of a RotationalJoint.
              * @memberof mirabuf.joint
@@ -8475,8 +8223,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function RotationalJoint(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -8485,7 +8232,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.RotationalJoint
              * @instance
              */
-            RotationalJoint.prototype.rotationalFreedom = null;
+            RotationalJoint.prototype.rotationalFreedom = null
 
             /**
              * Creates a new RotationalJoint instance using the specified properties.
@@ -8496,8 +8243,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.RotationalJoint} RotationalJoint instance
              */
             RotationalJoint.create = function create(properties) {
-                return new RotationalJoint(properties);
-            };
+                return new RotationalJoint(properties)
+            }
 
             /**
              * Encodes the specified RotationalJoint message. Does not implicitly {@link mirabuf.joint.RotationalJoint.verify|verify} messages.
@@ -8509,12 +8256,14 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             RotationalJoint.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.rotationalFreedom != null && Object.hasOwnProperty.call(message, "rotationalFreedom"))
-                    $root.mirabuf.joint.DOF.encode(message.rotationalFreedom, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                return writer;
-            };
+                    $root.mirabuf.joint.DOF.encode(
+                        message.rotationalFreedom,
+                        writer.uint32(/* id 1, wireType 2 =*/ 10).fork()
+                    ).ldelim()
+                return writer
+            }
 
             /**
              * Encodes the specified RotationalJoint message, length delimited. Does not implicitly {@link mirabuf.joint.RotationalJoint.verify|verify} messages.
@@ -8526,8 +8275,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             RotationalJoint.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a RotationalJoint message from the specified reader or buffer.
@@ -8541,23 +8290,23 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             RotationalJoint.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.RotationalJoint();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.RotationalJoint()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.rotationalFreedom = $root.mirabuf.joint.DOF.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.rotationalFreedom = $root.mirabuf.joint.DOF.decode(reader, reader.uint32())
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a RotationalJoint message from the specified reader or buffer, length delimited.
@@ -8570,10 +8319,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             RotationalJoint.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a RotationalJoint message.
@@ -8584,15 +8332,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             RotationalJoint.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.rotationalFreedom != null && message.hasOwnProperty("rotationalFreedom")) {
-                    let error = $root.mirabuf.joint.DOF.verify(message.rotationalFreedom);
-                    if (error)
-                        return "rotationalFreedom." + error;
+                    let error = $root.mirabuf.joint.DOF.verify(message.rotationalFreedom)
+                    if (error) return "rotationalFreedom." + error
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a RotationalJoint message from a plain object. Also converts values to their respective internal types.
@@ -8603,16 +8349,15 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.RotationalJoint} RotationalJoint
              */
             RotationalJoint.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.RotationalJoint)
-                    return object;
-                let message = new $root.mirabuf.joint.RotationalJoint();
+                if (object instanceof $root.mirabuf.joint.RotationalJoint) return object
+                let message = new $root.mirabuf.joint.RotationalJoint()
                 if (object.rotationalFreedom != null) {
                     if (typeof object.rotationalFreedom !== "object")
-                        throw TypeError(".mirabuf.joint.RotationalJoint.rotationalFreedom: object expected");
-                    message.rotationalFreedom = $root.mirabuf.joint.DOF.fromObject(object.rotationalFreedom);
+                        throw TypeError(".mirabuf.joint.RotationalJoint.rotationalFreedom: object expected")
+                    message.rotationalFreedom = $root.mirabuf.joint.DOF.fromObject(object.rotationalFreedom)
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a RotationalJoint message. Also converts values to other types if specified.
@@ -8624,15 +8369,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             RotationalJoint.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.defaults)
-                    object.rotationalFreedom = null;
+                if (!options) options = {}
+                let object = {}
+                if (options.defaults) object.rotationalFreedom = null
                 if (message.rotationalFreedom != null && message.hasOwnProperty("rotationalFreedom"))
-                    object.rotationalFreedom = $root.mirabuf.joint.DOF.toObject(message.rotationalFreedom, options);
-                return object;
-            };
+                    object.rotationalFreedom = $root.mirabuf.joint.DOF.toObject(message.rotationalFreedom, options)
+                return object
+            }
 
             /**
              * Converts this RotationalJoint to JSON.
@@ -8642,8 +8385,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             RotationalJoint.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for RotationalJoint
@@ -8655,16 +8398,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             RotationalJoint.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.RotationalJoint";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.RotationalJoint"
+            }
 
-            return RotationalJoint;
-        })();
+            return RotationalJoint
+        })()
 
-        joint.BallJoint = (function() {
-
+        joint.BallJoint = (function () {
             /**
              * Properties of a BallJoint.
              * @memberof mirabuf.joint
@@ -8685,8 +8427,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function BallJoint(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -8695,7 +8436,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.BallJoint
              * @instance
              */
-            BallJoint.prototype.yaw = null;
+            BallJoint.prototype.yaw = null
 
             /**
              * BallJoint pitch.
@@ -8703,7 +8444,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.BallJoint
              * @instance
              */
-            BallJoint.prototype.pitch = null;
+            BallJoint.prototype.pitch = null
 
             /**
              * BallJoint rotation.
@@ -8711,7 +8452,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.BallJoint
              * @instance
              */
-            BallJoint.prototype.rotation = null;
+            BallJoint.prototype.rotation = null
 
             /**
              * Creates a new BallJoint instance using the specified properties.
@@ -8722,8 +8463,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.BallJoint} BallJoint instance
              */
             BallJoint.create = function create(properties) {
-                return new BallJoint(properties);
-            };
+                return new BallJoint(properties)
+            }
 
             /**
              * Encodes the specified BallJoint message. Does not implicitly {@link mirabuf.joint.BallJoint.verify|verify} messages.
@@ -8735,16 +8476,24 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             BallJoint.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.yaw != null && Object.hasOwnProperty.call(message, "yaw"))
-                    $root.mirabuf.joint.DOF.encode(message.yaw, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.joint.DOF.encode(
+                        message.yaw,
+                        writer.uint32(/* id 1, wireType 2 =*/ 10).fork()
+                    ).ldelim()
                 if (message.pitch != null && Object.hasOwnProperty.call(message, "pitch"))
-                    $root.mirabuf.joint.DOF.encode(message.pitch, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.mirabuf.joint.DOF.encode(
+                        message.pitch,
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                    ).ldelim()
                 if (message.rotation != null && Object.hasOwnProperty.call(message, "rotation"))
-                    $root.mirabuf.joint.DOF.encode(message.rotation, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-                return writer;
-            };
+                    $root.mirabuf.joint.DOF.encode(
+                        message.rotation,
+                        writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                    ).ldelim()
+                return writer
+            }
 
             /**
              * Encodes the specified BallJoint message, length delimited. Does not implicitly {@link mirabuf.joint.BallJoint.verify|verify} messages.
@@ -8756,8 +8505,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             BallJoint.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a BallJoint message from the specified reader or buffer.
@@ -8771,31 +8520,31 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             BallJoint.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.BallJoint();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.BallJoint()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.yaw = $root.mirabuf.joint.DOF.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.yaw = $root.mirabuf.joint.DOF.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            message.pitch = $root.mirabuf.joint.DOF.decode(reader, reader.uint32());
-                            break;
+                        case 2: {
+                            message.pitch = $root.mirabuf.joint.DOF.decode(reader, reader.uint32())
+                            break
                         }
-                    case 3: {
-                            message.rotation = $root.mirabuf.joint.DOF.decode(reader, reader.uint32());
-                            break;
+                        case 3: {
+                            message.rotation = $root.mirabuf.joint.DOF.decode(reader, reader.uint32())
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a BallJoint message from the specified reader or buffer, length delimited.
@@ -8808,10 +8557,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             BallJoint.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a BallJoint message.
@@ -8822,25 +8570,21 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             BallJoint.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.yaw != null && message.hasOwnProperty("yaw")) {
-                    let error = $root.mirabuf.joint.DOF.verify(message.yaw);
-                    if (error)
-                        return "yaw." + error;
+                    let error = $root.mirabuf.joint.DOF.verify(message.yaw)
+                    if (error) return "yaw." + error
                 }
                 if (message.pitch != null && message.hasOwnProperty("pitch")) {
-                    let error = $root.mirabuf.joint.DOF.verify(message.pitch);
-                    if (error)
-                        return "pitch." + error;
+                    let error = $root.mirabuf.joint.DOF.verify(message.pitch)
+                    if (error) return "pitch." + error
                 }
                 if (message.rotation != null && message.hasOwnProperty("rotation")) {
-                    let error = $root.mirabuf.joint.DOF.verify(message.rotation);
-                    if (error)
-                        return "rotation." + error;
+                    let error = $root.mirabuf.joint.DOF.verify(message.rotation)
+                    if (error) return "rotation." + error
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a BallJoint message from a plain object. Also converts values to their respective internal types.
@@ -8851,26 +8595,24 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.BallJoint} BallJoint
              */
             BallJoint.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.BallJoint)
-                    return object;
-                let message = new $root.mirabuf.joint.BallJoint();
+                if (object instanceof $root.mirabuf.joint.BallJoint) return object
+                let message = new $root.mirabuf.joint.BallJoint()
                 if (object.yaw != null) {
-                    if (typeof object.yaw !== "object")
-                        throw TypeError(".mirabuf.joint.BallJoint.yaw: object expected");
-                    message.yaw = $root.mirabuf.joint.DOF.fromObject(object.yaw);
+                    if (typeof object.yaw !== "object") throw TypeError(".mirabuf.joint.BallJoint.yaw: object expected")
+                    message.yaw = $root.mirabuf.joint.DOF.fromObject(object.yaw)
                 }
                 if (object.pitch != null) {
                     if (typeof object.pitch !== "object")
-                        throw TypeError(".mirabuf.joint.BallJoint.pitch: object expected");
-                    message.pitch = $root.mirabuf.joint.DOF.fromObject(object.pitch);
+                        throw TypeError(".mirabuf.joint.BallJoint.pitch: object expected")
+                    message.pitch = $root.mirabuf.joint.DOF.fromObject(object.pitch)
                 }
                 if (object.rotation != null) {
                     if (typeof object.rotation !== "object")
-                        throw TypeError(".mirabuf.joint.BallJoint.rotation: object expected");
-                    message.rotation = $root.mirabuf.joint.DOF.fromObject(object.rotation);
+                        throw TypeError(".mirabuf.joint.BallJoint.rotation: object expected")
+                    message.rotation = $root.mirabuf.joint.DOF.fromObject(object.rotation)
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a BallJoint message. Also converts values to other types if specified.
@@ -8882,22 +8624,21 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             BallJoint.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.yaw = null;
-                    object.pitch = null;
-                    object.rotation = null;
+                    object.yaw = null
+                    object.pitch = null
+                    object.rotation = null
                 }
                 if (message.yaw != null && message.hasOwnProperty("yaw"))
-                    object.yaw = $root.mirabuf.joint.DOF.toObject(message.yaw, options);
+                    object.yaw = $root.mirabuf.joint.DOF.toObject(message.yaw, options)
                 if (message.pitch != null && message.hasOwnProperty("pitch"))
-                    object.pitch = $root.mirabuf.joint.DOF.toObject(message.pitch, options);
+                    object.pitch = $root.mirabuf.joint.DOF.toObject(message.pitch, options)
                 if (message.rotation != null && message.hasOwnProperty("rotation"))
-                    object.rotation = $root.mirabuf.joint.DOF.toObject(message.rotation, options);
-                return object;
-            };
+                    object.rotation = $root.mirabuf.joint.DOF.toObject(message.rotation, options)
+                return object
+            }
 
             /**
              * Converts this BallJoint to JSON.
@@ -8907,8 +8648,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             BallJoint.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for BallJoint
@@ -8920,16 +8661,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             BallJoint.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.BallJoint";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.BallJoint"
+            }
 
-            return BallJoint;
-        })();
+            return BallJoint
+        })()
 
-        joint.PrismaticJoint = (function() {
-
+        joint.PrismaticJoint = (function () {
             /**
              * Properties of a PrismaticJoint.
              * @memberof mirabuf.joint
@@ -8948,8 +8688,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function PrismaticJoint(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -8958,7 +8697,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.PrismaticJoint
              * @instance
              */
-            PrismaticJoint.prototype.prismaticFreedom = null;
+            PrismaticJoint.prototype.prismaticFreedom = null
 
             /**
              * Creates a new PrismaticJoint instance using the specified properties.
@@ -8969,8 +8708,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.PrismaticJoint} PrismaticJoint instance
              */
             PrismaticJoint.create = function create(properties) {
-                return new PrismaticJoint(properties);
-            };
+                return new PrismaticJoint(properties)
+            }
 
             /**
              * Encodes the specified PrismaticJoint message. Does not implicitly {@link mirabuf.joint.PrismaticJoint.verify|verify} messages.
@@ -8982,12 +8721,14 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             PrismaticJoint.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.prismaticFreedom != null && Object.hasOwnProperty.call(message, "prismaticFreedom"))
-                    $root.mirabuf.joint.DOF.encode(message.prismaticFreedom, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
-                return writer;
-            };
+                    $root.mirabuf.joint.DOF.encode(
+                        message.prismaticFreedom,
+                        writer.uint32(/* id 1, wireType 2 =*/ 10).fork()
+                    ).ldelim()
+                return writer
+            }
 
             /**
              * Encodes the specified PrismaticJoint message, length delimited. Does not implicitly {@link mirabuf.joint.PrismaticJoint.verify|verify} messages.
@@ -8999,8 +8740,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             PrismaticJoint.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a PrismaticJoint message from the specified reader or buffer.
@@ -9014,23 +8755,23 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             PrismaticJoint.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.PrismaticJoint();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.PrismaticJoint()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.prismaticFreedom = $root.mirabuf.joint.DOF.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.prismaticFreedom = $root.mirabuf.joint.DOF.decode(reader, reader.uint32())
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a PrismaticJoint message from the specified reader or buffer, length delimited.
@@ -9043,10 +8784,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             PrismaticJoint.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a PrismaticJoint message.
@@ -9057,15 +8797,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             PrismaticJoint.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.prismaticFreedom != null && message.hasOwnProperty("prismaticFreedom")) {
-                    let error = $root.mirabuf.joint.DOF.verify(message.prismaticFreedom);
-                    if (error)
-                        return "prismaticFreedom." + error;
+                    let error = $root.mirabuf.joint.DOF.verify(message.prismaticFreedom)
+                    if (error) return "prismaticFreedom." + error
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a PrismaticJoint message from a plain object. Also converts values to their respective internal types.
@@ -9076,16 +8814,15 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.PrismaticJoint} PrismaticJoint
              */
             PrismaticJoint.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.PrismaticJoint)
-                    return object;
-                let message = new $root.mirabuf.joint.PrismaticJoint();
+                if (object instanceof $root.mirabuf.joint.PrismaticJoint) return object
+                let message = new $root.mirabuf.joint.PrismaticJoint()
                 if (object.prismaticFreedom != null) {
                     if (typeof object.prismaticFreedom !== "object")
-                        throw TypeError(".mirabuf.joint.PrismaticJoint.prismaticFreedom: object expected");
-                    message.prismaticFreedom = $root.mirabuf.joint.DOF.fromObject(object.prismaticFreedom);
+                        throw TypeError(".mirabuf.joint.PrismaticJoint.prismaticFreedom: object expected")
+                    message.prismaticFreedom = $root.mirabuf.joint.DOF.fromObject(object.prismaticFreedom)
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a PrismaticJoint message. Also converts values to other types if specified.
@@ -9097,15 +8834,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             PrismaticJoint.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.defaults)
-                    object.prismaticFreedom = null;
+                if (!options) options = {}
+                let object = {}
+                if (options.defaults) object.prismaticFreedom = null
                 if (message.prismaticFreedom != null && message.hasOwnProperty("prismaticFreedom"))
-                    object.prismaticFreedom = $root.mirabuf.joint.DOF.toObject(message.prismaticFreedom, options);
-                return object;
-            };
+                    object.prismaticFreedom = $root.mirabuf.joint.DOF.toObject(message.prismaticFreedom, options)
+                return object
+            }
 
             /**
              * Converts this PrismaticJoint to JSON.
@@ -9115,8 +8850,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             PrismaticJoint.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for PrismaticJoint
@@ -9128,16 +8863,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             PrismaticJoint.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.PrismaticJoint";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.PrismaticJoint"
+            }
 
-            return PrismaticJoint;
-        })();
+            return PrismaticJoint
+        })()
 
-        joint.RigidGroup = (function() {
-
+        joint.RigidGroup = (function () {
             /**
              * Properties of a RigidGroup.
              * @memberof mirabuf.joint
@@ -9155,11 +8889,10 @@ export const mirabuf = $root.mirabuf = (() => {
              * @param {mirabuf.joint.IRigidGroup=} [properties] Properties to set
              */
             function RigidGroup(properties) {
-                this.occurrences = [];
+                this.occurrences = []
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -9168,7 +8901,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.RigidGroup
              * @instance
              */
-            RigidGroup.prototype.name = "";
+            RigidGroup.prototype.name = ""
 
             /**
              * RigidGroup occurrences.
@@ -9176,7 +8909,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.joint.RigidGroup
              * @instance
              */
-            RigidGroup.prototype.occurrences = $util.emptyArray;
+            RigidGroup.prototype.occurrences = $util.emptyArray
 
             /**
              * Creates a new RigidGroup instance using the specified properties.
@@ -9187,8 +8920,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.RigidGroup} RigidGroup instance
              */
             RigidGroup.create = function create(properties) {
-                return new RigidGroup(properties);
-            };
+                return new RigidGroup(properties)
+            }
 
             /**
              * Encodes the specified RigidGroup message. Does not implicitly {@link mirabuf.joint.RigidGroup.verify|verify} messages.
@@ -9200,15 +8933,14 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             RigidGroup.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.name != null && Object.hasOwnProperty.call(message, "name"))
-                    writer.uint32(/* id 1, wireType 2 =*/10).string(message.name);
+                    writer.uint32(/* id 1, wireType 2 =*/ 10).string(message.name)
                 if (message.occurrences != null && message.occurrences.length)
                     for (let i = 0; i < message.occurrences.length; ++i)
-                        writer.uint32(/* id 2, wireType 2 =*/18).string(message.occurrences[i]);
-                return writer;
-            };
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.occurrences[i])
+                return writer
+            }
 
             /**
              * Encodes the specified RigidGroup message, length delimited. Does not implicitly {@link mirabuf.joint.RigidGroup.verify|verify} messages.
@@ -9220,8 +8952,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             RigidGroup.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a RigidGroup message from the specified reader or buffer.
@@ -9235,29 +8967,28 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             RigidGroup.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.joint.RigidGroup();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.joint.RigidGroup()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.name = reader.string();
-                            break;
+                        case 1: {
+                            message.name = reader.string()
+                            break
                         }
-                    case 2: {
-                            if (!(message.occurrences && message.occurrences.length))
-                                message.occurrences = [];
-                            message.occurrences.push(reader.string());
-                            break;
+                        case 2: {
+                            if (!(message.occurrences && message.occurrences.length)) message.occurrences = []
+                            message.occurrences.push(reader.string())
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a RigidGroup message from the specified reader or buffer, length delimited.
@@ -9270,10 +9001,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             RigidGroup.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a RigidGroup message.
@@ -9284,20 +9014,16 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             RigidGroup.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.name != null && message.hasOwnProperty("name"))
-                    if (!$util.isString(message.name))
-                        return "name: string expected";
+                    if (!$util.isString(message.name)) return "name: string expected"
                 if (message.occurrences != null && message.hasOwnProperty("occurrences")) {
-                    if (!Array.isArray(message.occurrences))
-                        return "occurrences: array expected";
+                    if (!Array.isArray(message.occurrences)) return "occurrences: array expected"
                     for (let i = 0; i < message.occurrences.length; ++i)
-                        if (!$util.isString(message.occurrences[i]))
-                            return "occurrences: string[] expected";
+                        if (!$util.isString(message.occurrences[i])) return "occurrences: string[] expected"
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a RigidGroup message from a plain object. Also converts values to their respective internal types.
@@ -9308,20 +9034,18 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.joint.RigidGroup} RigidGroup
              */
             RigidGroup.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.joint.RigidGroup)
-                    return object;
-                let message = new $root.mirabuf.joint.RigidGroup();
-                if (object.name != null)
-                    message.name = String(object.name);
+                if (object instanceof $root.mirabuf.joint.RigidGroup) return object
+                let message = new $root.mirabuf.joint.RigidGroup()
+                if (object.name != null) message.name = String(object.name)
                 if (object.occurrences) {
                     if (!Array.isArray(object.occurrences))
-                        throw TypeError(".mirabuf.joint.RigidGroup.occurrences: array expected");
-                    message.occurrences = [];
+                        throw TypeError(".mirabuf.joint.RigidGroup.occurrences: array expected")
+                    message.occurrences = []
                     for (let i = 0; i < object.occurrences.length; ++i)
-                        message.occurrences[i] = String(object.occurrences[i]);
+                        message.occurrences[i] = String(object.occurrences[i])
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a RigidGroup message. Also converts values to other types if specified.
@@ -9333,22 +9057,17 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             RigidGroup.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.arrays || options.defaults)
-                    object.occurrences = [];
-                if (options.defaults)
-                    object.name = "";
-                if (message.name != null && message.hasOwnProperty("name"))
-                    object.name = message.name;
+                if (!options) options = {}
+                let object = {}
+                if (options.arrays || options.defaults) object.occurrences = []
+                if (options.defaults) object.name = ""
+                if (message.name != null && message.hasOwnProperty("name")) object.name = message.name
                 if (message.occurrences && message.occurrences.length) {
-                    object.occurrences = [];
-                    for (let j = 0; j < message.occurrences.length; ++j)
-                        object.occurrences[j] = message.occurrences[j];
+                    object.occurrences = []
+                    for (let j = 0; j < message.occurrences.length; ++j) object.occurrences[j] = message.occurrences[j]
                 }
-                return object;
-            };
+                return object
+            }
 
             /**
              * Converts this RigidGroup to JSON.
@@ -9358,8 +9077,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             RigidGroup.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for RigidGroup
@@ -9371,25 +9090,24 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             RigidGroup.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.joint.RigidGroup";
-            };
+                return typeUrlPrefix + "/mirabuf.joint.RigidGroup"
+            }
 
-            return RigidGroup;
-        })();
+            return RigidGroup
+        })()
 
-        return joint;
-    })();
+        return joint
+    })()
 
-    mirabuf.motor = (function() {
-
+    mirabuf.motor = (function () {
         /**
          * Namespace motor.
          * @memberof mirabuf
          * @namespace
          */
-        const motor = {};
+        const motor = {}
 
         /**
          * Duty Cycles for electric motors
@@ -9403,17 +9121,17 @@ export const mirabuf = $root.mirabuf = (() => {
          * @property {number} INTERMITTENT_PERIODIC=2 S3
          * @property {number} CONTINUOUS_PERIODIC=3 S6 Continuous Operation with Periodic Duty
          */
-        motor.DutyCycles = (function() {
-            const valuesById = {}, values = Object.create(valuesById);
-            values[valuesById[0] = "CONTINUOUS_RUNNING"] = 0;
-            values[valuesById[1] = "SHORT_TIME"] = 1;
-            values[valuesById[2] = "INTERMITTENT_PERIODIC"] = 2;
-            values[valuesById[3] = "CONTINUOUS_PERIODIC"] = 3;
-            return values;
-        })();
+        motor.DutyCycles = (function () {
+            const valuesById = {},
+                values = Object.create(valuesById)
+            values[(valuesById[0] = "CONTINUOUS_RUNNING")] = 0
+            values[(valuesById[1] = "SHORT_TIME")] = 1
+            values[(valuesById[2] = "INTERMITTENT_PERIODIC")] = 2
+            values[(valuesById[3] = "CONTINUOUS_PERIODIC")] = 3
+            return values
+        })()
 
-        motor.Motor = (function() {
-
+        motor.Motor = (function () {
             /**
              * Properties of a Motor.
              * @memberof mirabuf.motor
@@ -9435,8 +9153,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function Motor(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -9445,7 +9162,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.Motor
              * @instance
              */
-            Motor.prototype.info = null;
+            Motor.prototype.info = null
 
             /**
              * Motor dcMotor.
@@ -9453,7 +9170,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.Motor
              * @instance
              */
-            Motor.prototype.dcMotor = null;
+            Motor.prototype.dcMotor = null
 
             /**
              * Motor simpleMotor.
@@ -9461,10 +9178,10 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.Motor
              * @instance
              */
-            Motor.prototype.simpleMotor = null;
+            Motor.prototype.simpleMotor = null
 
             // OneOf field names bound to virtual getters and setters
-            let $oneOfFields;
+            let $oneOfFields
 
             /**
              * Motor motorType.
@@ -9473,9 +9190,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @instance
              */
             Object.defineProperty(Motor.prototype, "motorType", {
-                get: $util.oneOfGetter($oneOfFields = ["dcMotor", "simpleMotor"]),
-                set: $util.oneOfSetter($oneOfFields)
-            });
+                get: $util.oneOfGetter(($oneOfFields = ["dcMotor", "simpleMotor"])),
+                set: $util.oneOfSetter($oneOfFields),
+            })
 
             /**
              * Creates a new Motor instance using the specified properties.
@@ -9486,8 +9203,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.motor.Motor} Motor instance
              */
             Motor.create = function create(properties) {
-                return new Motor(properties);
-            };
+                return new Motor(properties)
+            }
 
             /**
              * Encodes the specified Motor message. Does not implicitly {@link mirabuf.motor.Motor.verify|verify} messages.
@@ -9499,16 +9216,21 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Motor.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.dcMotor != null && Object.hasOwnProperty.call(message, "dcMotor"))
-                    $root.mirabuf.motor.DCMotor.encode(message.dcMotor, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.mirabuf.motor.DCMotor.encode(
+                        message.dcMotor,
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                    ).ldelim()
                 if (message.simpleMotor != null && Object.hasOwnProperty.call(message, "simpleMotor"))
-                    $root.mirabuf.motor.SimpleMotor.encode(message.simpleMotor, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
-                return writer;
-            };
+                    $root.mirabuf.motor.SimpleMotor.encode(
+                        message.simpleMotor,
+                        writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                    ).ldelim()
+                return writer
+            }
 
             /**
              * Encodes the specified Motor message, length delimited. Does not implicitly {@link mirabuf.motor.Motor.verify|verify} messages.
@@ -9520,8 +9242,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Motor.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Motor message from the specified reader or buffer.
@@ -9535,31 +9257,31 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Motor.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.motor.Motor();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.motor.Motor()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            message.dcMotor = $root.mirabuf.motor.DCMotor.decode(reader, reader.uint32());
-                            break;
+                        case 2: {
+                            message.dcMotor = $root.mirabuf.motor.DCMotor.decode(reader, reader.uint32())
+                            break
                         }
-                    case 3: {
-                            message.simpleMotor = $root.mirabuf.motor.SimpleMotor.decode(reader, reader.uint32());
-                            break;
+                        case 3: {
+                            message.simpleMotor = $root.mirabuf.motor.SimpleMotor.decode(reader, reader.uint32())
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Motor message from the specified reader or buffer, length delimited.
@@ -9572,10 +9294,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Motor.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Motor message.
@@ -9586,34 +9307,29 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Motor.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
-                let properties = {};
+                if (typeof message !== "object" || message === null) return "object expected"
+                let properties = {}
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.dcMotor != null && message.hasOwnProperty("dcMotor")) {
-                    properties.motorType = 1;
+                    properties.motorType = 1
                     {
-                        let error = $root.mirabuf.motor.DCMotor.verify(message.dcMotor);
-                        if (error)
-                            return "dcMotor." + error;
+                        let error = $root.mirabuf.motor.DCMotor.verify(message.dcMotor)
+                        if (error) return "dcMotor." + error
                     }
                 }
                 if (message.simpleMotor != null && message.hasOwnProperty("simpleMotor")) {
-                    if (properties.motorType === 1)
-                        return "motorType: multiple values";
-                    properties.motorType = 1;
+                    if (properties.motorType === 1) return "motorType: multiple values"
+                    properties.motorType = 1
                     {
-                        let error = $root.mirabuf.motor.SimpleMotor.verify(message.simpleMotor);
-                        if (error)
-                            return "simpleMotor." + error;
+                        let error = $root.mirabuf.motor.SimpleMotor.verify(message.simpleMotor)
+                        if (error) return "simpleMotor." + error
                     }
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a Motor message from a plain object. Also converts values to their respective internal types.
@@ -9624,26 +9340,24 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.motor.Motor} Motor
              */
             Motor.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.motor.Motor)
-                    return object;
-                let message = new $root.mirabuf.motor.Motor();
+                if (object instanceof $root.mirabuf.motor.Motor) return object
+                let message = new $root.mirabuf.motor.Motor()
                 if (object.info != null) {
-                    if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.motor.Motor.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                    if (typeof object.info !== "object") throw TypeError(".mirabuf.motor.Motor.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
                 if (object.dcMotor != null) {
                     if (typeof object.dcMotor !== "object")
-                        throw TypeError(".mirabuf.motor.Motor.dcMotor: object expected");
-                    message.dcMotor = $root.mirabuf.motor.DCMotor.fromObject(object.dcMotor);
+                        throw TypeError(".mirabuf.motor.Motor.dcMotor: object expected")
+                    message.dcMotor = $root.mirabuf.motor.DCMotor.fromObject(object.dcMotor)
                 }
                 if (object.simpleMotor != null) {
                     if (typeof object.simpleMotor !== "object")
-                        throw TypeError(".mirabuf.motor.Motor.simpleMotor: object expected");
-                    message.simpleMotor = $root.mirabuf.motor.SimpleMotor.fromObject(object.simpleMotor);
+                        throw TypeError(".mirabuf.motor.Motor.simpleMotor: object expected")
+                    message.simpleMotor = $root.mirabuf.motor.SimpleMotor.fromObject(object.simpleMotor)
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a Motor message. Also converts values to other types if specified.
@@ -9655,25 +9369,21 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Motor.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.defaults)
-                    object.info = null;
+                if (!options) options = {}
+                let object = {}
+                if (options.defaults) object.info = null
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
                 if (message.dcMotor != null && message.hasOwnProperty("dcMotor")) {
-                    object.dcMotor = $root.mirabuf.motor.DCMotor.toObject(message.dcMotor, options);
-                    if (options.oneofs)
-                        object.motorType = "dcMotor";
+                    object.dcMotor = $root.mirabuf.motor.DCMotor.toObject(message.dcMotor, options)
+                    if (options.oneofs) object.motorType = "dcMotor"
                 }
                 if (message.simpleMotor != null && message.hasOwnProperty("simpleMotor")) {
-                    object.simpleMotor = $root.mirabuf.motor.SimpleMotor.toObject(message.simpleMotor, options);
-                    if (options.oneofs)
-                        object.motorType = "simpleMotor";
+                    object.simpleMotor = $root.mirabuf.motor.SimpleMotor.toObject(message.simpleMotor, options)
+                    if (options.oneofs) object.motorType = "simpleMotor"
                 }
-                return object;
-            };
+                return object
+            }
 
             /**
              * Converts this Motor to JSON.
@@ -9683,8 +9393,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Motor.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Motor
@@ -9696,16 +9406,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Motor.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.motor.Motor";
-            };
+                return typeUrlPrefix + "/mirabuf.motor.Motor"
+            }
 
-            return Motor;
-        })();
+            return Motor
+        })()
 
-        motor.SimpleMotor = (function() {
-
+        motor.SimpleMotor = (function () {
             /**
              * Properties of a SimpleMotor.
              * @memberof mirabuf.motor
@@ -9729,8 +9438,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function SimpleMotor(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -9739,7 +9447,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.SimpleMotor
              * @instance
              */
-            SimpleMotor.prototype.stallTorque = 0;
+            SimpleMotor.prototype.stallTorque = 0
 
             /**
              * The target velocity in RPM, will use stall_torque relationship to reach each step
@@ -9747,7 +9455,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.SimpleMotor
              * @instance
              */
-            SimpleMotor.prototype.maxVelocity = 0;
+            SimpleMotor.prototype.maxVelocity = 0
 
             /**
              * (Optional) 0 - 1, the relationship of stall_torque used to perserve the position of this motor
@@ -9755,7 +9463,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.SimpleMotor
              * @instance
              */
-            SimpleMotor.prototype.brakingConstant = 0;
+            SimpleMotor.prototype.brakingConstant = 0
 
             /**
              * Creates a new SimpleMotor instance using the specified properties.
@@ -9766,8 +9474,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.motor.SimpleMotor} SimpleMotor instance
              */
             SimpleMotor.create = function create(properties) {
-                return new SimpleMotor(properties);
-            };
+                return new SimpleMotor(properties)
+            }
 
             /**
              * Encodes the specified SimpleMotor message. Does not implicitly {@link mirabuf.motor.SimpleMotor.verify|verify} messages.
@@ -9779,16 +9487,15 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             SimpleMotor.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.stallTorque != null && Object.hasOwnProperty.call(message, "stallTorque"))
-                    writer.uint32(/* id 1, wireType 5 =*/13).float(message.stallTorque);
+                    writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.stallTorque)
                 if (message.maxVelocity != null && Object.hasOwnProperty.call(message, "maxVelocity"))
-                    writer.uint32(/* id 2, wireType 5 =*/21).float(message.maxVelocity);
+                    writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.maxVelocity)
                 if (message.brakingConstant != null && Object.hasOwnProperty.call(message, "brakingConstant"))
-                    writer.uint32(/* id 3, wireType 5 =*/29).float(message.brakingConstant);
-                return writer;
-            };
+                    writer.uint32(/* id 3, wireType 5 =*/ 29).float(message.brakingConstant)
+                return writer
+            }
 
             /**
              * Encodes the specified SimpleMotor message, length delimited. Does not implicitly {@link mirabuf.motor.SimpleMotor.verify|verify} messages.
@@ -9800,8 +9507,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             SimpleMotor.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a SimpleMotor message from the specified reader or buffer.
@@ -9815,31 +9522,31 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             SimpleMotor.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.motor.SimpleMotor();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.motor.SimpleMotor()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.stallTorque = reader.float();
-                            break;
+                        case 1: {
+                            message.stallTorque = reader.float()
+                            break
                         }
-                    case 2: {
-                            message.maxVelocity = reader.float();
-                            break;
+                        case 2: {
+                            message.maxVelocity = reader.float()
+                            break
                         }
-                    case 3: {
-                            message.brakingConstant = reader.float();
-                            break;
+                        case 3: {
+                            message.brakingConstant = reader.float()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a SimpleMotor message from the specified reader or buffer, length delimited.
@@ -9852,10 +9559,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             SimpleMotor.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a SimpleMotor message.
@@ -9866,19 +9572,15 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             SimpleMotor.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.stallTorque != null && message.hasOwnProperty("stallTorque"))
-                    if (typeof message.stallTorque !== "number")
-                        return "stallTorque: number expected";
+                    if (typeof message.stallTorque !== "number") return "stallTorque: number expected"
                 if (message.maxVelocity != null && message.hasOwnProperty("maxVelocity"))
-                    if (typeof message.maxVelocity !== "number")
-                        return "maxVelocity: number expected";
+                    if (typeof message.maxVelocity !== "number") return "maxVelocity: number expected"
                 if (message.brakingConstant != null && message.hasOwnProperty("brakingConstant"))
-                    if (typeof message.brakingConstant !== "number")
-                        return "brakingConstant: number expected";
-                return null;
-            };
+                    if (typeof message.brakingConstant !== "number") return "brakingConstant: number expected"
+                return null
+            }
 
             /**
              * Creates a SimpleMotor message from a plain object. Also converts values to their respective internal types.
@@ -9889,17 +9591,13 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.motor.SimpleMotor} SimpleMotor
              */
             SimpleMotor.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.motor.SimpleMotor)
-                    return object;
-                let message = new $root.mirabuf.motor.SimpleMotor();
-                if (object.stallTorque != null)
-                    message.stallTorque = Number(object.stallTorque);
-                if (object.maxVelocity != null)
-                    message.maxVelocity = Number(object.maxVelocity);
-                if (object.brakingConstant != null)
-                    message.brakingConstant = Number(object.brakingConstant);
-                return message;
-            };
+                if (object instanceof $root.mirabuf.motor.SimpleMotor) return object
+                let message = new $root.mirabuf.motor.SimpleMotor()
+                if (object.stallTorque != null) message.stallTorque = Number(object.stallTorque)
+                if (object.maxVelocity != null) message.maxVelocity = Number(object.maxVelocity)
+                if (object.brakingConstant != null) message.brakingConstant = Number(object.brakingConstant)
+                return message
+            }
 
             /**
              * Creates a plain object from a SimpleMotor message. Also converts values to other types if specified.
@@ -9911,22 +9609,30 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             SimpleMotor.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.stallTorque = 0;
-                    object.maxVelocity = 0;
-                    object.brakingConstant = 0;
+                    object.stallTorque = 0
+                    object.maxVelocity = 0
+                    object.brakingConstant = 0
                 }
                 if (message.stallTorque != null && message.hasOwnProperty("stallTorque"))
-                    object.stallTorque = options.json && !isFinite(message.stallTorque) ? String(message.stallTorque) : message.stallTorque;
+                    object.stallTorque =
+                        options.json && !isFinite(message.stallTorque)
+                            ? String(message.stallTorque)
+                            : message.stallTorque
                 if (message.maxVelocity != null && message.hasOwnProperty("maxVelocity"))
-                    object.maxVelocity = options.json && !isFinite(message.maxVelocity) ? String(message.maxVelocity) : message.maxVelocity;
+                    object.maxVelocity =
+                        options.json && !isFinite(message.maxVelocity)
+                            ? String(message.maxVelocity)
+                            : message.maxVelocity
                 if (message.brakingConstant != null && message.hasOwnProperty("brakingConstant"))
-                    object.brakingConstant = options.json && !isFinite(message.brakingConstant) ? String(message.brakingConstant) : message.brakingConstant;
-                return object;
-            };
+                    object.brakingConstant =
+                        options.json && !isFinite(message.brakingConstant)
+                            ? String(message.brakingConstant)
+                            : message.brakingConstant
+                return object
+            }
 
             /**
              * Converts this SimpleMotor to JSON.
@@ -9936,8 +9642,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             SimpleMotor.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for SimpleMotor
@@ -9949,16 +9655,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             SimpleMotor.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.motor.SimpleMotor";
-            };
+                return typeUrlPrefix + "/mirabuf.motor.SimpleMotor"
+            }
 
-            return SimpleMotor;
-        })();
+            return SimpleMotor
+        })()
 
-        motor.DCMotor = (function() {
-
+        motor.DCMotor = (function () {
             /**
              * Properties of a DCMotor.
              * @memberof mirabuf.motor
@@ -9986,8 +9691,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function DCMotor(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -9996,7 +9700,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.DCMotor
              * @instance
              */
-            DCMotor.prototype.referenceUrl = "";
+            DCMotor.prototype.referenceUrl = ""
 
             /**
              * m-Nm/Amp
@@ -10004,7 +9708,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.DCMotor
              * @instance
              */
-            DCMotor.prototype.torqueConstant = 0;
+            DCMotor.prototype.torqueConstant = 0
 
             /**
              * mV/rad/sec
@@ -10012,7 +9716,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.DCMotor
              * @instance
              */
-            DCMotor.prototype.emfConstant = 0;
+            DCMotor.prototype.emfConstant = 0
 
             /**
              * Resistance of Motor - Optional if other values are known
@@ -10020,7 +9724,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.DCMotor
              * @instance
              */
-            DCMotor.prototype.resistance = 0;
+            DCMotor.prototype.resistance = 0
 
             /**
              * measure in percentage of 100 - generally around 60 - measured under optimal load
@@ -10028,7 +9732,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.DCMotor
              * @instance
              */
-            DCMotor.prototype.maximumEffeciency = 0;
+            DCMotor.prototype.maximumEffeciency = 0
 
             /**
              * measured in Watts
@@ -10036,7 +9740,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.DCMotor
              * @instance
              */
-            DCMotor.prototype.maximumPower = 0;
+            DCMotor.prototype.maximumPower = 0
 
             /**
              * Stated Duty Cycle of motor
@@ -10044,7 +9748,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.DCMotor
              * @instance
              */
-            DCMotor.prototype.dutyCycle = 0;
+            DCMotor.prototype.dutyCycle = 0
 
             /**
              * Optional data that can give a better relationship to the simulation
@@ -10052,7 +9756,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.motor.DCMotor
              * @instance
              */
-            DCMotor.prototype.advanced = null;
+            DCMotor.prototype.advanced = null
 
             /**
              * Creates a new DCMotor instance using the specified properties.
@@ -10063,8 +9767,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.motor.DCMotor} DCMotor instance
              */
             DCMotor.create = function create(properties) {
-                return new DCMotor(properties);
-            };
+                return new DCMotor(properties)
+            }
 
             /**
              * Encodes the specified DCMotor message. Does not implicitly {@link mirabuf.motor.DCMotor.verify|verify} messages.
@@ -10076,26 +9780,28 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             DCMotor.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.referenceUrl != null && Object.hasOwnProperty.call(message, "referenceUrl"))
-                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.referenceUrl);
+                    writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.referenceUrl)
                 if (message.torqueConstant != null && Object.hasOwnProperty.call(message, "torqueConstant"))
-                    writer.uint32(/* id 3, wireType 5 =*/29).float(message.torqueConstant);
+                    writer.uint32(/* id 3, wireType 5 =*/ 29).float(message.torqueConstant)
                 if (message.emfConstant != null && Object.hasOwnProperty.call(message, "emfConstant"))
-                    writer.uint32(/* id 4, wireType 5 =*/37).float(message.emfConstant);
+                    writer.uint32(/* id 4, wireType 5 =*/ 37).float(message.emfConstant)
                 if (message.resistance != null && Object.hasOwnProperty.call(message, "resistance"))
-                    writer.uint32(/* id 5, wireType 5 =*/45).float(message.resistance);
+                    writer.uint32(/* id 5, wireType 5 =*/ 45).float(message.resistance)
                 if (message.maximumEffeciency != null && Object.hasOwnProperty.call(message, "maximumEffeciency"))
-                    writer.uint32(/* id 6, wireType 0 =*/48).uint32(message.maximumEffeciency);
+                    writer.uint32(/* id 6, wireType 0 =*/ 48).uint32(message.maximumEffeciency)
                 if (message.maximumPower != null && Object.hasOwnProperty.call(message, "maximumPower"))
-                    writer.uint32(/* id 7, wireType 0 =*/56).uint32(message.maximumPower);
+                    writer.uint32(/* id 7, wireType 0 =*/ 56).uint32(message.maximumPower)
                 if (message.dutyCycle != null && Object.hasOwnProperty.call(message, "dutyCycle"))
-                    writer.uint32(/* id 8, wireType 0 =*/64).int32(message.dutyCycle);
+                    writer.uint32(/* id 8, wireType 0 =*/ 64).int32(message.dutyCycle)
                 if (message.advanced != null && Object.hasOwnProperty.call(message, "advanced"))
-                    $root.mirabuf.motor.DCMotor.Advanced.encode(message.advanced, writer.uint32(/* id 16, wireType 2 =*/130).fork()).ldelim();
-                return writer;
-            };
+                    $root.mirabuf.motor.DCMotor.Advanced.encode(
+                        message.advanced,
+                        writer.uint32(/* id 16, wireType 2 =*/ 130).fork()
+                    ).ldelim()
+                return writer
+            }
 
             /**
              * Encodes the specified DCMotor message, length delimited. Does not implicitly {@link mirabuf.motor.DCMotor.verify|verify} messages.
@@ -10107,8 +9813,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             DCMotor.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a DCMotor message from the specified reader or buffer.
@@ -10122,51 +9828,51 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             DCMotor.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.motor.DCMotor();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.motor.DCMotor()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 2: {
-                            message.referenceUrl = reader.string();
-                            break;
+                        case 2: {
+                            message.referenceUrl = reader.string()
+                            break
                         }
-                    case 3: {
-                            message.torqueConstant = reader.float();
-                            break;
+                        case 3: {
+                            message.torqueConstant = reader.float()
+                            break
                         }
-                    case 4: {
-                            message.emfConstant = reader.float();
-                            break;
+                        case 4: {
+                            message.emfConstant = reader.float()
+                            break
                         }
-                    case 5: {
-                            message.resistance = reader.float();
-                            break;
+                        case 5: {
+                            message.resistance = reader.float()
+                            break
                         }
-                    case 6: {
-                            message.maximumEffeciency = reader.uint32();
-                            break;
+                        case 6: {
+                            message.maximumEffeciency = reader.uint32()
+                            break
                         }
-                    case 7: {
-                            message.maximumPower = reader.uint32();
-                            break;
+                        case 7: {
+                            message.maximumPower = reader.uint32()
+                            break
                         }
-                    case 8: {
-                            message.dutyCycle = reader.int32();
-                            break;
+                        case 8: {
+                            message.dutyCycle = reader.int32()
+                            break
                         }
-                    case 16: {
-                            message.advanced = $root.mirabuf.motor.DCMotor.Advanced.decode(reader, reader.uint32());
-                            break;
+                        case 16: {
+                            message.advanced = $root.mirabuf.motor.DCMotor.Advanced.decode(reader, reader.uint32())
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a DCMotor message from the specified reader or buffer, length delimited.
@@ -10179,10 +9885,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             DCMotor.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a DCMotor message.
@@ -10193,43 +9898,35 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             DCMotor.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.referenceUrl != null && message.hasOwnProperty("referenceUrl"))
-                    if (!$util.isString(message.referenceUrl))
-                        return "referenceUrl: string expected";
+                    if (!$util.isString(message.referenceUrl)) return "referenceUrl: string expected"
                 if (message.torqueConstant != null && message.hasOwnProperty("torqueConstant"))
-                    if (typeof message.torqueConstant !== "number")
-                        return "torqueConstant: number expected";
+                    if (typeof message.torqueConstant !== "number") return "torqueConstant: number expected"
                 if (message.emfConstant != null && message.hasOwnProperty("emfConstant"))
-                    if (typeof message.emfConstant !== "number")
-                        return "emfConstant: number expected";
+                    if (typeof message.emfConstant !== "number") return "emfConstant: number expected"
                 if (message.resistance != null && message.hasOwnProperty("resistance"))
-                    if (typeof message.resistance !== "number")
-                        return "resistance: number expected";
+                    if (typeof message.resistance !== "number") return "resistance: number expected"
                 if (message.maximumEffeciency != null && message.hasOwnProperty("maximumEffeciency"))
-                    if (!$util.isInteger(message.maximumEffeciency))
-                        return "maximumEffeciency: integer expected";
+                    if (!$util.isInteger(message.maximumEffeciency)) return "maximumEffeciency: integer expected"
                 if (message.maximumPower != null && message.hasOwnProperty("maximumPower"))
-                    if (!$util.isInteger(message.maximumPower))
-                        return "maximumPower: integer expected";
+                    if (!$util.isInteger(message.maximumPower)) return "maximumPower: integer expected"
                 if (message.dutyCycle != null && message.hasOwnProperty("dutyCycle"))
                     switch (message.dutyCycle) {
-                    default:
-                        return "dutyCycle: enum value expected";
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                        break;
+                        default:
+                            return "dutyCycle: enum value expected"
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                            break
                     }
                 if (message.advanced != null && message.hasOwnProperty("advanced")) {
-                    let error = $root.mirabuf.motor.DCMotor.Advanced.verify(message.advanced);
-                    if (error)
-                        return "advanced." + error;
+                    let error = $root.mirabuf.motor.DCMotor.Advanced.verify(message.advanced)
+                    if (error) return "advanced." + error
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a DCMotor message from a plain object. Also converts values to their respective internal types.
@@ -10240,52 +9937,45 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.motor.DCMotor} DCMotor
              */
             DCMotor.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.motor.DCMotor)
-                    return object;
-                let message = new $root.mirabuf.motor.DCMotor();
-                if (object.referenceUrl != null)
-                    message.referenceUrl = String(object.referenceUrl);
-                if (object.torqueConstant != null)
-                    message.torqueConstant = Number(object.torqueConstant);
-                if (object.emfConstant != null)
-                    message.emfConstant = Number(object.emfConstant);
-                if (object.resistance != null)
-                    message.resistance = Number(object.resistance);
-                if (object.maximumEffeciency != null)
-                    message.maximumEffeciency = object.maximumEffeciency >>> 0;
-                if (object.maximumPower != null)
-                    message.maximumPower = object.maximumPower >>> 0;
+                if (object instanceof $root.mirabuf.motor.DCMotor) return object
+                let message = new $root.mirabuf.motor.DCMotor()
+                if (object.referenceUrl != null) message.referenceUrl = String(object.referenceUrl)
+                if (object.torqueConstant != null) message.torqueConstant = Number(object.torqueConstant)
+                if (object.emfConstant != null) message.emfConstant = Number(object.emfConstant)
+                if (object.resistance != null) message.resistance = Number(object.resistance)
+                if (object.maximumEffeciency != null) message.maximumEffeciency = object.maximumEffeciency >>> 0
+                if (object.maximumPower != null) message.maximumPower = object.maximumPower >>> 0
                 switch (object.dutyCycle) {
-                default:
-                    if (typeof object.dutyCycle === "number") {
-                        message.dutyCycle = object.dutyCycle;
-                        break;
-                    }
-                    break;
-                case "CONTINUOUS_RUNNING":
-                case 0:
-                    message.dutyCycle = 0;
-                    break;
-                case "SHORT_TIME":
-                case 1:
-                    message.dutyCycle = 1;
-                    break;
-                case "INTERMITTENT_PERIODIC":
-                case 2:
-                    message.dutyCycle = 2;
-                    break;
-                case "CONTINUOUS_PERIODIC":
-                case 3:
-                    message.dutyCycle = 3;
-                    break;
+                    default:
+                        if (typeof object.dutyCycle === "number") {
+                            message.dutyCycle = object.dutyCycle
+                            break
+                        }
+                        break
+                    case "CONTINUOUS_RUNNING":
+                    case 0:
+                        message.dutyCycle = 0
+                        break
+                    case "SHORT_TIME":
+                    case 1:
+                        message.dutyCycle = 1
+                        break
+                    case "INTERMITTENT_PERIODIC":
+                    case 2:
+                        message.dutyCycle = 2
+                        break
+                    case "CONTINUOUS_PERIODIC":
+                    case 3:
+                        message.dutyCycle = 3
+                        break
                 }
                 if (object.advanced != null) {
                     if (typeof object.advanced !== "object")
-                        throw TypeError(".mirabuf.motor.DCMotor.advanced: object expected");
-                    message.advanced = $root.mirabuf.motor.DCMotor.Advanced.fromObject(object.advanced);
+                        throw TypeError(".mirabuf.motor.DCMotor.advanced: object expected")
+                    message.advanced = $root.mirabuf.motor.DCMotor.Advanced.fromObject(object.advanced)
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a DCMotor message. Also converts values to other types if specified.
@@ -10297,37 +9987,48 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             DCMotor.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.referenceUrl = "";
-                    object.torqueConstant = 0;
-                    object.emfConstant = 0;
-                    object.resistance = 0;
-                    object.maximumEffeciency = 0;
-                    object.maximumPower = 0;
-                    object.dutyCycle = options.enums === String ? "CONTINUOUS_RUNNING" : 0;
-                    object.advanced = null;
+                    object.referenceUrl = ""
+                    object.torqueConstant = 0
+                    object.emfConstant = 0
+                    object.resistance = 0
+                    object.maximumEffeciency = 0
+                    object.maximumPower = 0
+                    object.dutyCycle = options.enums === String ? "CONTINUOUS_RUNNING" : 0
+                    object.advanced = null
                 }
                 if (message.referenceUrl != null && message.hasOwnProperty("referenceUrl"))
-                    object.referenceUrl = message.referenceUrl;
+                    object.referenceUrl = message.referenceUrl
                 if (message.torqueConstant != null && message.hasOwnProperty("torqueConstant"))
-                    object.torqueConstant = options.json && !isFinite(message.torqueConstant) ? String(message.torqueConstant) : message.torqueConstant;
+                    object.torqueConstant =
+                        options.json && !isFinite(message.torqueConstant)
+                            ? String(message.torqueConstant)
+                            : message.torqueConstant
                 if (message.emfConstant != null && message.hasOwnProperty("emfConstant"))
-                    object.emfConstant = options.json && !isFinite(message.emfConstant) ? String(message.emfConstant) : message.emfConstant;
+                    object.emfConstant =
+                        options.json && !isFinite(message.emfConstant)
+                            ? String(message.emfConstant)
+                            : message.emfConstant
                 if (message.resistance != null && message.hasOwnProperty("resistance"))
-                    object.resistance = options.json && !isFinite(message.resistance) ? String(message.resistance) : message.resistance;
+                    object.resistance =
+                        options.json && !isFinite(message.resistance) ? String(message.resistance) : message.resistance
                 if (message.maximumEffeciency != null && message.hasOwnProperty("maximumEffeciency"))
-                    object.maximumEffeciency = message.maximumEffeciency;
+                    object.maximumEffeciency = message.maximumEffeciency
                 if (message.maximumPower != null && message.hasOwnProperty("maximumPower"))
-                    object.maximumPower = message.maximumPower;
+                    object.maximumPower = message.maximumPower
                 if (message.dutyCycle != null && message.hasOwnProperty("dutyCycle"))
-                    object.dutyCycle = options.enums === String ? $root.mirabuf.motor.DutyCycles[message.dutyCycle] === undefined ? message.dutyCycle : $root.mirabuf.motor.DutyCycles[message.dutyCycle] : message.dutyCycle;
+                    object.dutyCycle =
+                        options.enums === String
+                            ? $root.mirabuf.motor.DutyCycles[message.dutyCycle] === undefined
+                                ? message.dutyCycle
+                                : $root.mirabuf.motor.DutyCycles[message.dutyCycle]
+                            : message.dutyCycle
                 if (message.advanced != null && message.hasOwnProperty("advanced"))
-                    object.advanced = $root.mirabuf.motor.DCMotor.Advanced.toObject(message.advanced, options);
-                return object;
-            };
+                    object.advanced = $root.mirabuf.motor.DCMotor.Advanced.toObject(message.advanced, options)
+                return object
+            }
 
             /**
              * Converts this DCMotor to JSON.
@@ -10337,8 +10038,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             DCMotor.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for DCMotor
@@ -10350,13 +10051,12 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             DCMotor.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.motor.DCMotor";
-            };
+                return typeUrlPrefix + "/mirabuf.motor.DCMotor"
+            }
 
-            DCMotor.Advanced = (function() {
-
+            DCMotor.Advanced = (function () {
                 /**
                  * Properties of an Advanced.
                  * @memberof mirabuf.motor.DCMotor
@@ -10380,8 +10080,7 @@ export const mirabuf = $root.mirabuf = (() => {
                 function Advanced(properties) {
                     if (properties)
                         for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
+                            if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
                 }
 
                 /**
@@ -10390,7 +10089,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.motor.DCMotor.Advanced
                  * @instance
                  */
-                Advanced.prototype.freeCurrent = 0;
+                Advanced.prototype.freeCurrent = 0
 
                 /**
                  * measured in RPM
@@ -10398,7 +10097,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.motor.DCMotor.Advanced
                  * @instance
                  */
-                Advanced.prototype.freeSpeed = 0;
+                Advanced.prototype.freeSpeed = 0
 
                 /**
                  * measure in AMPs
@@ -10406,7 +10105,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.motor.DCMotor.Advanced
                  * @instance
                  */
-                Advanced.prototype.stallCurrent = 0;
+                Advanced.prototype.stallCurrent = 0
 
                 /**
                  * measured in Nm
@@ -10414,7 +10113,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.motor.DCMotor.Advanced
                  * @instance
                  */
-                Advanced.prototype.stallTorque = 0;
+                Advanced.prototype.stallTorque = 0
 
                 /**
                  * measured in Volts DC
@@ -10422,7 +10121,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.motor.DCMotor.Advanced
                  * @instance
                  */
-                Advanced.prototype.inputVoltage = 0;
+                Advanced.prototype.inputVoltage = 0
 
                 /**
                  * between (K * (N / 4)) and (K * ((N-2) / 4)) where N is number of poles - leave at 0 if unknown
@@ -10430,7 +10129,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.motor.DCMotor.Advanced
                  * @instance
                  */
-                Advanced.prototype.resistanceVariation = 0;
+                Advanced.prototype.resistanceVariation = 0
 
                 /**
                  * Creates a new Advanced instance using the specified properties.
@@ -10441,8 +10140,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {mirabuf.motor.DCMotor.Advanced} Advanced instance
                  */
                 Advanced.create = function create(properties) {
-                    return new Advanced(properties);
-                };
+                    return new Advanced(properties)
+                }
 
                 /**
                  * Encodes the specified Advanced message. Does not implicitly {@link mirabuf.motor.DCMotor.Advanced.verify|verify} messages.
@@ -10454,22 +10153,24 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {$protobuf.Writer} Writer
                  */
                 Advanced.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
+                    if (!writer) writer = $Writer.create()
                     if (message.freeCurrent != null && Object.hasOwnProperty.call(message, "freeCurrent"))
-                        writer.uint32(/* id 1, wireType 5 =*/13).float(message.freeCurrent);
+                        writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.freeCurrent)
                     if (message.freeSpeed != null && Object.hasOwnProperty.call(message, "freeSpeed"))
-                        writer.uint32(/* id 2, wireType 0 =*/16).uint32(message.freeSpeed);
+                        writer.uint32(/* id 2, wireType 0 =*/ 16).uint32(message.freeSpeed)
                     if (message.stallCurrent != null && Object.hasOwnProperty.call(message, "stallCurrent"))
-                        writer.uint32(/* id 3, wireType 5 =*/29).float(message.stallCurrent);
+                        writer.uint32(/* id 3, wireType 5 =*/ 29).float(message.stallCurrent)
                     if (message.stallTorque != null && Object.hasOwnProperty.call(message, "stallTorque"))
-                        writer.uint32(/* id 4, wireType 5 =*/37).float(message.stallTorque);
+                        writer.uint32(/* id 4, wireType 5 =*/ 37).float(message.stallTorque)
                     if (message.inputVoltage != null && Object.hasOwnProperty.call(message, "inputVoltage"))
-                        writer.uint32(/* id 5, wireType 0 =*/40).uint32(message.inputVoltage);
-                    if (message.resistanceVariation != null && Object.hasOwnProperty.call(message, "resistanceVariation"))
-                        writer.uint32(/* id 7, wireType 5 =*/61).float(message.resistanceVariation);
-                    return writer;
-                };
+                        writer.uint32(/* id 5, wireType 0 =*/ 40).uint32(message.inputVoltage)
+                    if (
+                        message.resistanceVariation != null &&
+                        Object.hasOwnProperty.call(message, "resistanceVariation")
+                    )
+                        writer.uint32(/* id 7, wireType 5 =*/ 61).float(message.resistanceVariation)
+                    return writer
+                }
 
                 /**
                  * Encodes the specified Advanced message, length delimited. Does not implicitly {@link mirabuf.motor.DCMotor.Advanced.verify|verify} messages.
@@ -10481,8 +10182,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {$protobuf.Writer} Writer
                  */
                 Advanced.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
+                    return this.encode(message, writer).ldelim()
+                }
 
                 /**
                  * Decodes an Advanced message from the specified reader or buffer.
@@ -10496,43 +10197,43 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
                 Advanced.decode = function decode(reader, length) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.motor.DCMotor.Advanced();
+                    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                    let end = length === undefined ? reader.len : reader.pos + length,
+                        message = new $root.mirabuf.motor.DCMotor.Advanced()
                     while (reader.pos < end) {
-                        let tag = reader.uint32();
+                        let tag = reader.uint32()
                         switch (tag >>> 3) {
-                        case 1: {
-                                message.freeCurrent = reader.float();
-                                break;
+                            case 1: {
+                                message.freeCurrent = reader.float()
+                                break
                             }
-                        case 2: {
-                                message.freeSpeed = reader.uint32();
-                                break;
+                            case 2: {
+                                message.freeSpeed = reader.uint32()
+                                break
                             }
-                        case 3: {
-                                message.stallCurrent = reader.float();
-                                break;
+                            case 3: {
+                                message.stallCurrent = reader.float()
+                                break
                             }
-                        case 4: {
-                                message.stallTorque = reader.float();
-                                break;
+                            case 4: {
+                                message.stallTorque = reader.float()
+                                break
                             }
-                        case 5: {
-                                message.inputVoltage = reader.uint32();
-                                break;
+                            case 5: {
+                                message.inputVoltage = reader.uint32()
+                                break
                             }
-                        case 7: {
-                                message.resistanceVariation = reader.float();
-                                break;
+                            case 7: {
+                                message.resistanceVariation = reader.float()
+                                break
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7)
+                                break
                         }
                     }
-                    return message;
-                };
+                    return message
+                }
 
                 /**
                  * Decodes an Advanced message from the specified reader or buffer, length delimited.
@@ -10545,10 +10246,9 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
                 Advanced.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
+                    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                    return this.decode(reader, reader.uint32())
+                }
 
                 /**
                  * Verifies an Advanced message.
@@ -10559,28 +10259,22 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {string|null} `null` if valid, otherwise the reason why it is not
                  */
                 Advanced.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
+                    if (typeof message !== "object" || message === null) return "object expected"
                     if (message.freeCurrent != null && message.hasOwnProperty("freeCurrent"))
-                        if (typeof message.freeCurrent !== "number")
-                            return "freeCurrent: number expected";
+                        if (typeof message.freeCurrent !== "number") return "freeCurrent: number expected"
                     if (message.freeSpeed != null && message.hasOwnProperty("freeSpeed"))
-                        if (!$util.isInteger(message.freeSpeed))
-                            return "freeSpeed: integer expected";
+                        if (!$util.isInteger(message.freeSpeed)) return "freeSpeed: integer expected"
                     if (message.stallCurrent != null && message.hasOwnProperty("stallCurrent"))
-                        if (typeof message.stallCurrent !== "number")
-                            return "stallCurrent: number expected";
+                        if (typeof message.stallCurrent !== "number") return "stallCurrent: number expected"
                     if (message.stallTorque != null && message.hasOwnProperty("stallTorque"))
-                        if (typeof message.stallTorque !== "number")
-                            return "stallTorque: number expected";
+                        if (typeof message.stallTorque !== "number") return "stallTorque: number expected"
                     if (message.inputVoltage != null && message.hasOwnProperty("inputVoltage"))
-                        if (!$util.isInteger(message.inputVoltage))
-                            return "inputVoltage: integer expected";
+                        if (!$util.isInteger(message.inputVoltage)) return "inputVoltage: integer expected"
                     if (message.resistanceVariation != null && message.hasOwnProperty("resistanceVariation"))
                         if (typeof message.resistanceVariation !== "number")
-                            return "resistanceVariation: number expected";
-                    return null;
-                };
+                            return "resistanceVariation: number expected"
+                    return null
+                }
 
                 /**
                  * Creates an Advanced message from a plain object. Also converts values to their respective internal types.
@@ -10591,23 +10285,17 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {mirabuf.motor.DCMotor.Advanced} Advanced
                  */
                 Advanced.fromObject = function fromObject(object) {
-                    if (object instanceof $root.mirabuf.motor.DCMotor.Advanced)
-                        return object;
-                    let message = new $root.mirabuf.motor.DCMotor.Advanced();
-                    if (object.freeCurrent != null)
-                        message.freeCurrent = Number(object.freeCurrent);
-                    if (object.freeSpeed != null)
-                        message.freeSpeed = object.freeSpeed >>> 0;
-                    if (object.stallCurrent != null)
-                        message.stallCurrent = Number(object.stallCurrent);
-                    if (object.stallTorque != null)
-                        message.stallTorque = Number(object.stallTorque);
-                    if (object.inputVoltage != null)
-                        message.inputVoltage = object.inputVoltage >>> 0;
+                    if (object instanceof $root.mirabuf.motor.DCMotor.Advanced) return object
+                    let message = new $root.mirabuf.motor.DCMotor.Advanced()
+                    if (object.freeCurrent != null) message.freeCurrent = Number(object.freeCurrent)
+                    if (object.freeSpeed != null) message.freeSpeed = object.freeSpeed >>> 0
+                    if (object.stallCurrent != null) message.stallCurrent = Number(object.stallCurrent)
+                    if (object.stallTorque != null) message.stallTorque = Number(object.stallTorque)
+                    if (object.inputVoltage != null) message.inputVoltage = object.inputVoltage >>> 0
                     if (object.resistanceVariation != null)
-                        message.resistanceVariation = Number(object.resistanceVariation);
-                    return message;
-                };
+                        message.resistanceVariation = Number(object.resistanceVariation)
+                    return message
+                }
 
                 /**
                  * Creates a plain object from an Advanced message. Also converts values to other types if specified.
@@ -10619,31 +10307,42 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {Object.<string,*>} Plain object
                  */
                 Advanced.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
+                    if (!options) options = {}
+                    let object = {}
                     if (options.defaults) {
-                        object.freeCurrent = 0;
-                        object.freeSpeed = 0;
-                        object.stallCurrent = 0;
-                        object.stallTorque = 0;
-                        object.inputVoltage = 0;
-                        object.resistanceVariation = 0;
+                        object.freeCurrent = 0
+                        object.freeSpeed = 0
+                        object.stallCurrent = 0
+                        object.stallTorque = 0
+                        object.inputVoltage = 0
+                        object.resistanceVariation = 0
                     }
                     if (message.freeCurrent != null && message.hasOwnProperty("freeCurrent"))
-                        object.freeCurrent = options.json && !isFinite(message.freeCurrent) ? String(message.freeCurrent) : message.freeCurrent;
+                        object.freeCurrent =
+                            options.json && !isFinite(message.freeCurrent)
+                                ? String(message.freeCurrent)
+                                : message.freeCurrent
                     if (message.freeSpeed != null && message.hasOwnProperty("freeSpeed"))
-                        object.freeSpeed = message.freeSpeed;
+                        object.freeSpeed = message.freeSpeed
                     if (message.stallCurrent != null && message.hasOwnProperty("stallCurrent"))
-                        object.stallCurrent = options.json && !isFinite(message.stallCurrent) ? String(message.stallCurrent) : message.stallCurrent;
+                        object.stallCurrent =
+                            options.json && !isFinite(message.stallCurrent)
+                                ? String(message.stallCurrent)
+                                : message.stallCurrent
                     if (message.stallTorque != null && message.hasOwnProperty("stallTorque"))
-                        object.stallTorque = options.json && !isFinite(message.stallTorque) ? String(message.stallTorque) : message.stallTorque;
+                        object.stallTorque =
+                            options.json && !isFinite(message.stallTorque)
+                                ? String(message.stallTorque)
+                                : message.stallTorque
                     if (message.inputVoltage != null && message.hasOwnProperty("inputVoltage"))
-                        object.inputVoltage = message.inputVoltage;
+                        object.inputVoltage = message.inputVoltage
                     if (message.resistanceVariation != null && message.hasOwnProperty("resistanceVariation"))
-                        object.resistanceVariation = options.json && !isFinite(message.resistanceVariation) ? String(message.resistanceVariation) : message.resistanceVariation;
-                    return object;
-                };
+                        object.resistanceVariation =
+                            options.json && !isFinite(message.resistanceVariation)
+                                ? String(message.resistanceVariation)
+                                : message.resistanceVariation
+                    return object
+                }
 
                 /**
                  * Converts this Advanced to JSON.
@@ -10653,8 +10352,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {Object.<string,*>} JSON object
                  */
                 Advanced.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+                }
 
                 /**
                  * Gets the default type url for Advanced
@@ -10666,31 +10365,29 @@ export const mirabuf = $root.mirabuf = (() => {
                  */
                 Advanced.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                     if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
+                        typeUrlPrefix = "type.googleapis.com"
                     }
-                    return typeUrlPrefix + "/mirabuf.motor.DCMotor.Advanced";
-                };
+                    return typeUrlPrefix + "/mirabuf.motor.DCMotor.Advanced"
+                }
 
-                return Advanced;
-            })();
+                return Advanced
+            })()
 
-            return DCMotor;
-        })();
+            return DCMotor
+        })()
 
-        return motor;
-    })();
+        return motor
+    })()
 
-    mirabuf.material = (function() {
-
+    mirabuf.material = (function () {
         /**
          * Namespace material.
          * @memberof mirabuf
          * @namespace
          */
-        const material = {};
+        const material = {}
 
-        material.Materials = (function() {
-
+        material.Materials = (function () {
             /**
              * Properties of a Materials.
              * @memberof mirabuf.material
@@ -10704,19 +10401,18 @@ export const mirabuf = $root.mirabuf = (() => {
              * Constructs a new Materials.
              * @memberof mirabuf.material
              * @classdesc Represents a File or Set of Materials with Appearances and Physical Data
-             * 
+             *
              * Can be Stored in AssemblyData
              * @implements IMaterials
              * @constructor
              * @param {mirabuf.material.IMaterials=} [properties] Properties to set
              */
             function Materials(properties) {
-                this.physicalMaterials = {};
-                this.appearances = {};
+                this.physicalMaterials = {}
+                this.appearances = {}
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -10725,7 +10421,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.Materials
              * @instance
              */
-            Materials.prototype.info = null;
+            Materials.prototype.info = null
 
             /**
              * Map of Physical Materials
@@ -10733,7 +10429,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.Materials
              * @instance
              */
-            Materials.prototype.physicalMaterials = $util.emptyObject;
+            Materials.prototype.physicalMaterials = $util.emptyObject
 
             /**
              * Map of Appearances that are purely visual
@@ -10741,7 +10437,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.Materials
              * @instance
              */
-            Materials.prototype.appearances = $util.emptyObject;
+            Materials.prototype.appearances = $util.emptyObject
 
             /**
              * Creates a new Materials instance using the specified properties.
@@ -10752,8 +10448,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.material.Materials} Materials instance
              */
             Materials.create = function create(properties) {
-                return new Materials(properties);
-            };
+                return new Materials(properties)
+            }
 
             /**
              * Encodes the specified Materials message. Does not implicitly {@link mirabuf.material.Materials.verify|verify} messages.
@@ -10765,22 +10461,39 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Materials.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.physicalMaterials != null && Object.hasOwnProperty.call(message, "physicalMaterials"))
                     for (let keys = Object.keys(message.physicalMaterials), i = 0; i < keys.length; ++i) {
-                        writer.uint32(/* id 2, wireType 2 =*/18).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                        $root.mirabuf.material.PhysicalMaterial.encode(message.physicalMaterials[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                        writer
+                            .uint32(/* id 2, wireType 2 =*/ 18)
+                            .fork()
+                            .uint32(/* id 1, wireType 2 =*/ 10)
+                            .string(keys[i])
+                        $root.mirabuf.material.PhysicalMaterial.encode(
+                            message.physicalMaterials[keys[i]],
+                            writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                        )
+                            .ldelim()
+                            .ldelim()
                     }
                 if (message.appearances != null && Object.hasOwnProperty.call(message, "appearances"))
                     for (let keys = Object.keys(message.appearances), i = 0; i < keys.length; ++i) {
-                        writer.uint32(/* id 3, wireType 2 =*/26).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                        $root.mirabuf.material.Appearance.encode(message.appearances[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                        writer
+                            .uint32(/* id 3, wireType 2 =*/ 26)
+                            .fork()
+                            .uint32(/* id 1, wireType 2 =*/ 10)
+                            .string(keys[i])
+                        $root.mirabuf.material.Appearance.encode(
+                            message.appearances[keys[i]],
+                            writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                        )
+                            .ldelim()
+                            .ldelim()
                     }
-                return writer;
-            };
+                return writer
+            }
 
             /**
              * Encodes the specified Materials message, length delimited. Does not implicitly {@link mirabuf.material.Materials.verify|verify} messages.
@@ -10792,8 +10505,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Materials.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Materials message from the specified reader or buffer.
@@ -10807,69 +10520,69 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Materials.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.material.Materials(), key, value;
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.material.Materials(),
+                    key,
+                    value
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            if (message.physicalMaterials === $util.emptyObject)
-                                message.physicalMaterials = {};
-                            let end2 = reader.uint32() + reader.pos;
-                            key = "";
-                            value = null;
+                        case 2: {
+                            if (message.physicalMaterials === $util.emptyObject) message.physicalMaterials = {}
+                            let end2 = reader.uint32() + reader.pos
+                            key = ""
+                            value = null
                             while (reader.pos < end2) {
-                                let tag2 = reader.uint32();
+                                let tag2 = reader.uint32()
                                 switch (tag2 >>> 3) {
-                                case 1:
-                                    key = reader.string();
-                                    break;
-                                case 2:
-                                    value = $root.mirabuf.material.PhysicalMaterial.decode(reader, reader.uint32());
-                                    break;
-                                default:
-                                    reader.skipType(tag2 & 7);
-                                    break;
+                                    case 1:
+                                        key = reader.string()
+                                        break
+                                    case 2:
+                                        value = $root.mirabuf.material.PhysicalMaterial.decode(reader, reader.uint32())
+                                        break
+                                    default:
+                                        reader.skipType(tag2 & 7)
+                                        break
                                 }
                             }
-                            message.physicalMaterials[key] = value;
-                            break;
+                            message.physicalMaterials[key] = value
+                            break
                         }
-                    case 3: {
-                            if (message.appearances === $util.emptyObject)
-                                message.appearances = {};
-                            let end2 = reader.uint32() + reader.pos;
-                            key = "";
-                            value = null;
+                        case 3: {
+                            if (message.appearances === $util.emptyObject) message.appearances = {}
+                            let end2 = reader.uint32() + reader.pos
+                            key = ""
+                            value = null
                             while (reader.pos < end2) {
-                                let tag2 = reader.uint32();
+                                let tag2 = reader.uint32()
                                 switch (tag2 >>> 3) {
-                                case 1:
-                                    key = reader.string();
-                                    break;
-                                case 2:
-                                    value = $root.mirabuf.material.Appearance.decode(reader, reader.uint32());
-                                    break;
-                                default:
-                                    reader.skipType(tag2 & 7);
-                                    break;
+                                    case 1:
+                                        key = reader.string()
+                                        break
+                                    case 2:
+                                        value = $root.mirabuf.material.Appearance.decode(reader, reader.uint32())
+                                        break
+                                    default:
+                                        reader.skipType(tag2 & 7)
+                                        break
                                 }
                             }
-                            message.appearances[key] = value;
-                            break;
+                            message.appearances[key] = value
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Materials message from the specified reader or buffer, length delimited.
@@ -10882,10 +10595,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Materials.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Materials message.
@@ -10896,35 +10608,29 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Materials.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.physicalMaterials != null && message.hasOwnProperty("physicalMaterials")) {
-                    if (!$util.isObject(message.physicalMaterials))
-                        return "physicalMaterials: object expected";
-                    let key = Object.keys(message.physicalMaterials);
+                    if (!$util.isObject(message.physicalMaterials)) return "physicalMaterials: object expected"
+                    let key = Object.keys(message.physicalMaterials)
                     for (let i = 0; i < key.length; ++i) {
-                        let error = $root.mirabuf.material.PhysicalMaterial.verify(message.physicalMaterials[key[i]]);
-                        if (error)
-                            return "physicalMaterials." + error;
+                        let error = $root.mirabuf.material.PhysicalMaterial.verify(message.physicalMaterials[key[i]])
+                        if (error) return "physicalMaterials." + error
                     }
                 }
                 if (message.appearances != null && message.hasOwnProperty("appearances")) {
-                    if (!$util.isObject(message.appearances))
-                        return "appearances: object expected";
-                    let key = Object.keys(message.appearances);
+                    if (!$util.isObject(message.appearances)) return "appearances: object expected"
+                    let key = Object.keys(message.appearances)
                     for (let i = 0; i < key.length; ++i) {
-                        let error = $root.mirabuf.material.Appearance.verify(message.appearances[key[i]]);
-                        if (error)
-                            return "appearances." + error;
+                        let error = $root.mirabuf.material.Appearance.verify(message.appearances[key[i]])
+                        if (error) return "appearances." + error
                     }
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a Materials message from a plain object. Also converts values to their respective internal types.
@@ -10935,36 +10641,39 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.material.Materials} Materials
              */
             Materials.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.material.Materials)
-                    return object;
-                let message = new $root.mirabuf.material.Materials();
+                if (object instanceof $root.mirabuf.material.Materials) return object
+                let message = new $root.mirabuf.material.Materials()
                 if (object.info != null) {
                     if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.material.Materials.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                        throw TypeError(".mirabuf.material.Materials.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
                 if (object.physicalMaterials) {
                     if (typeof object.physicalMaterials !== "object")
-                        throw TypeError(".mirabuf.material.Materials.physicalMaterials: object expected");
-                    message.physicalMaterials = {};
+                        throw TypeError(".mirabuf.material.Materials.physicalMaterials: object expected")
+                    message.physicalMaterials = {}
                     for (let keys = Object.keys(object.physicalMaterials), i = 0; i < keys.length; ++i) {
                         if (typeof object.physicalMaterials[keys[i]] !== "object")
-                            throw TypeError(".mirabuf.material.Materials.physicalMaterials: object expected");
-                        message.physicalMaterials[keys[i]] = $root.mirabuf.material.PhysicalMaterial.fromObject(object.physicalMaterials[keys[i]]);
+                            throw TypeError(".mirabuf.material.Materials.physicalMaterials: object expected")
+                        message.physicalMaterials[keys[i]] = $root.mirabuf.material.PhysicalMaterial.fromObject(
+                            object.physicalMaterials[keys[i]]
+                        )
                     }
                 }
                 if (object.appearances) {
                     if (typeof object.appearances !== "object")
-                        throw TypeError(".mirabuf.material.Materials.appearances: object expected");
-                    message.appearances = {};
+                        throw TypeError(".mirabuf.material.Materials.appearances: object expected")
+                    message.appearances = {}
                     for (let keys = Object.keys(object.appearances), i = 0; i < keys.length; ++i) {
                         if (typeof object.appearances[keys[i]] !== "object")
-                            throw TypeError(".mirabuf.material.Materials.appearances: object expected");
-                        message.appearances[keys[i]] = $root.mirabuf.material.Appearance.fromObject(object.appearances[keys[i]]);
+                            throw TypeError(".mirabuf.material.Materials.appearances: object expected")
+                        message.appearances[keys[i]] = $root.mirabuf.material.Appearance.fromObject(
+                            object.appearances[keys[i]]
+                        )
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a Materials message. Also converts values to other types if specified.
@@ -10976,30 +10685,34 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Materials.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.objects || options.defaults) {
-                    object.physicalMaterials = {};
-                    object.appearances = {};
+                    object.physicalMaterials = {}
+                    object.appearances = {}
                 }
-                if (options.defaults)
-                    object.info = null;
+                if (options.defaults) object.info = null
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
-                let keys2;
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
+                let keys2
                 if (message.physicalMaterials && (keys2 = Object.keys(message.physicalMaterials)).length) {
-                    object.physicalMaterials = {};
+                    object.physicalMaterials = {}
                     for (let j = 0; j < keys2.length; ++j)
-                        object.physicalMaterials[keys2[j]] = $root.mirabuf.material.PhysicalMaterial.toObject(message.physicalMaterials[keys2[j]], options);
+                        object.physicalMaterials[keys2[j]] = $root.mirabuf.material.PhysicalMaterial.toObject(
+                            message.physicalMaterials[keys2[j]],
+                            options
+                        )
                 }
                 if (message.appearances && (keys2 = Object.keys(message.appearances)).length) {
-                    object.appearances = {};
+                    object.appearances = {}
                     for (let j = 0; j < keys2.length; ++j)
-                        object.appearances[keys2[j]] = $root.mirabuf.material.Appearance.toObject(message.appearances[keys2[j]], options);
+                        object.appearances[keys2[j]] = $root.mirabuf.material.Appearance.toObject(
+                            message.appearances[keys2[j]],
+                            options
+                        )
                 }
-                return object;
-            };
+                return object
+            }
 
             /**
              * Converts this Materials to JSON.
@@ -11009,8 +10722,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Materials.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Materials
@@ -11022,16 +10735,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Materials.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.material.Materials";
-            };
+                return typeUrlPrefix + "/mirabuf.material.Materials"
+            }
 
-            return Materials;
-        })();
+            return Materials
+        })()
 
-        material.Appearance = (function() {
-
+        material.Appearance = (function () {
             /**
              * Properties of an Appearance.
              * @memberof mirabuf.material
@@ -11055,8 +10767,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function Appearance(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -11065,7 +10776,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.Appearance
              * @instance
              */
-            Appearance.prototype.info = null;
+            Appearance.prototype.info = null
 
             /**
              * albedo map RGBA 0-255
@@ -11073,7 +10784,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.Appearance
              * @instance
              */
-            Appearance.prototype.albedo = null;
+            Appearance.prototype.albedo = null
 
             /**
              * roughness value 0-1
@@ -11081,7 +10792,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.Appearance
              * @instance
              */
-            Appearance.prototype.roughness = 0;
+            Appearance.prototype.roughness = 0
 
             /**
              * metallic value 0-1
@@ -11089,7 +10800,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.Appearance
              * @instance
              */
-            Appearance.prototype.metallic = 0;
+            Appearance.prototype.metallic = 0
 
             /**
              * specular value 0-1
@@ -11097,7 +10808,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.Appearance
              * @instance
              */
-            Appearance.prototype.specular = 0;
+            Appearance.prototype.specular = 0
 
             /**
              * Creates a new Appearance instance using the specified properties.
@@ -11108,8 +10819,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.material.Appearance} Appearance instance
              */
             Appearance.create = function create(properties) {
-                return new Appearance(properties);
-            };
+                return new Appearance(properties)
+            }
 
             /**
              * Encodes the specified Appearance message. Does not implicitly {@link mirabuf.material.Appearance.verify|verify} messages.
@@ -11121,20 +10832,22 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Appearance.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.albedo != null && Object.hasOwnProperty.call(message, "albedo"))
-                    $root.mirabuf.Color.encode(message.albedo, writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim();
+                    $root.mirabuf.Color.encode(
+                        message.albedo,
+                        writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                    ).ldelim()
                 if (message.roughness != null && Object.hasOwnProperty.call(message, "roughness"))
-                    writer.uint32(/* id 3, wireType 1 =*/25).double(message.roughness);
+                    writer.uint32(/* id 3, wireType 1 =*/ 25).double(message.roughness)
                 if (message.metallic != null && Object.hasOwnProperty.call(message, "metallic"))
-                    writer.uint32(/* id 4, wireType 1 =*/33).double(message.metallic);
+                    writer.uint32(/* id 4, wireType 1 =*/ 33).double(message.metallic)
                 if (message.specular != null && Object.hasOwnProperty.call(message, "specular"))
-                    writer.uint32(/* id 5, wireType 1 =*/41).double(message.specular);
-                return writer;
-            };
+                    writer.uint32(/* id 5, wireType 1 =*/ 41).double(message.specular)
+                return writer
+            }
 
             /**
              * Encodes the specified Appearance message, length delimited. Does not implicitly {@link mirabuf.material.Appearance.verify|verify} messages.
@@ -11146,8 +10859,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Appearance.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes an Appearance message from the specified reader or buffer.
@@ -11161,39 +10874,39 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Appearance.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.material.Appearance();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.material.Appearance()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            message.albedo = $root.mirabuf.Color.decode(reader, reader.uint32());
-                            break;
+                        case 2: {
+                            message.albedo = $root.mirabuf.Color.decode(reader, reader.uint32())
+                            break
                         }
-                    case 3: {
-                            message.roughness = reader.double();
-                            break;
+                        case 3: {
+                            message.roughness = reader.double()
+                            break
                         }
-                    case 4: {
-                            message.metallic = reader.double();
-                            break;
+                        case 4: {
+                            message.metallic = reader.double()
+                            break
                         }
-                    case 5: {
-                            message.specular = reader.double();
-                            break;
+                        case 5: {
+                            message.specular = reader.double()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes an Appearance message from the specified reader or buffer, length delimited.
@@ -11206,10 +10919,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Appearance.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies an Appearance message.
@@ -11220,29 +10932,23 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Appearance.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.albedo != null && message.hasOwnProperty("albedo")) {
-                    let error = $root.mirabuf.Color.verify(message.albedo);
-                    if (error)
-                        return "albedo." + error;
+                    let error = $root.mirabuf.Color.verify(message.albedo)
+                    if (error) return "albedo." + error
                 }
                 if (message.roughness != null && message.hasOwnProperty("roughness"))
-                    if (typeof message.roughness !== "number")
-                        return "roughness: number expected";
+                    if (typeof message.roughness !== "number") return "roughness: number expected"
                 if (message.metallic != null && message.hasOwnProperty("metallic"))
-                    if (typeof message.metallic !== "number")
-                        return "metallic: number expected";
+                    if (typeof message.metallic !== "number") return "metallic: number expected"
                 if (message.specular != null && message.hasOwnProperty("specular"))
-                    if (typeof message.specular !== "number")
-                        return "specular: number expected";
-                return null;
-            };
+                    if (typeof message.specular !== "number") return "specular: number expected"
+                return null
+            }
 
             /**
              * Creates an Appearance message from a plain object. Also converts values to their respective internal types.
@@ -11253,27 +10959,23 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.material.Appearance} Appearance
              */
             Appearance.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.material.Appearance)
-                    return object;
-                let message = new $root.mirabuf.material.Appearance();
+                if (object instanceof $root.mirabuf.material.Appearance) return object
+                let message = new $root.mirabuf.material.Appearance()
                 if (object.info != null) {
                     if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.material.Appearance.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                        throw TypeError(".mirabuf.material.Appearance.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
                 if (object.albedo != null) {
                     if (typeof object.albedo !== "object")
-                        throw TypeError(".mirabuf.material.Appearance.albedo: object expected");
-                    message.albedo = $root.mirabuf.Color.fromObject(object.albedo);
+                        throw TypeError(".mirabuf.material.Appearance.albedo: object expected")
+                    message.albedo = $root.mirabuf.Color.fromObject(object.albedo)
                 }
-                if (object.roughness != null)
-                    message.roughness = Number(object.roughness);
-                if (object.metallic != null)
-                    message.metallic = Number(object.metallic);
-                if (object.specular != null)
-                    message.specular = Number(object.specular);
-                return message;
-            };
+                if (object.roughness != null) message.roughness = Number(object.roughness)
+                if (object.metallic != null) message.metallic = Number(object.metallic)
+                if (object.specular != null) message.specular = Number(object.specular)
+                return message
+            }
 
             /**
              * Creates a plain object from an Appearance message. Also converts values to other types if specified.
@@ -11285,28 +10987,30 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Appearance.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.info = null;
-                    object.albedo = null;
-                    object.roughness = 0;
-                    object.metallic = 0;
-                    object.specular = 0;
+                    object.info = null
+                    object.albedo = null
+                    object.roughness = 0
+                    object.metallic = 0
+                    object.specular = 0
                 }
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
                 if (message.albedo != null && message.hasOwnProperty("albedo"))
-                    object.albedo = $root.mirabuf.Color.toObject(message.albedo, options);
+                    object.albedo = $root.mirabuf.Color.toObject(message.albedo, options)
                 if (message.roughness != null && message.hasOwnProperty("roughness"))
-                    object.roughness = options.json && !isFinite(message.roughness) ? String(message.roughness) : message.roughness;
+                    object.roughness =
+                        options.json && !isFinite(message.roughness) ? String(message.roughness) : message.roughness
                 if (message.metallic != null && message.hasOwnProperty("metallic"))
-                    object.metallic = options.json && !isFinite(message.metallic) ? String(message.metallic) : message.metallic;
+                    object.metallic =
+                        options.json && !isFinite(message.metallic) ? String(message.metallic) : message.metallic
                 if (message.specular != null && message.hasOwnProperty("specular"))
-                    object.specular = options.json && !isFinite(message.specular) ? String(message.specular) : message.specular;
-                return object;
-            };
+                    object.specular =
+                        options.json && !isFinite(message.specular) ? String(message.specular) : message.specular
+                return object
+            }
 
             /**
              * Converts this Appearance to JSON.
@@ -11316,8 +11020,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Appearance.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Appearance
@@ -11329,16 +11033,15 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Appearance.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.material.Appearance";
-            };
+                return typeUrlPrefix + "/mirabuf.material.Appearance"
+            }
 
-            return Appearance;
-        })();
+            return Appearance
+        })()
 
-        material.PhysicalMaterial = (function() {
-
+        material.PhysicalMaterial = (function () {
             /**
              * Properties of a PhysicalMaterial.
              * @memberof mirabuf.material
@@ -11366,8 +11069,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function PhysicalMaterial(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -11376,7 +11078,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.info = null;
+            PhysicalMaterial.prototype.info = null
 
             /**
              * short description of physical material
@@ -11384,7 +11086,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.description = "";
+            PhysicalMaterial.prototype.description = ""
 
             /**
              * Thermal Physical properties of the model OPTIONAL
@@ -11392,7 +11094,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.thermal = null;
+            PhysicalMaterial.prototype.thermal = null
 
             /**
              * Mechanical properties of the model OPTIONAL
@@ -11400,7 +11102,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.mechanical = null;
+            PhysicalMaterial.prototype.mechanical = null
 
             /**
              * Physical Strength properties of the model OPTIONAL
@@ -11408,7 +11110,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.strength = null;
+            PhysicalMaterial.prototype.strength = null
 
             /**
              * Frictional force for dampening - Interpolate (0-1)
@@ -11416,7 +11118,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.dynamicFriction = 0;
+            PhysicalMaterial.prototype.dynamicFriction = 0
 
             /**
              * Frictional force override at stop - Interpolate (0-1)
@@ -11424,7 +11126,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.staticFriction = 0;
+            PhysicalMaterial.prototype.staticFriction = 0
 
             /**
              * Restitution of the object - Interpolate (0-1)
@@ -11432,7 +11134,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.restitution = 0;
+            PhysicalMaterial.prototype.restitution = 0
 
             /**
              * should this object deform when encountering large forces - TODO: This needs a proper message and equation field
@@ -11440,7 +11142,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.deformable = false;
+            PhysicalMaterial.prototype.deformable = false
 
             /**
              * generic type to assign some default params
@@ -11448,7 +11150,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.material.PhysicalMaterial
              * @instance
              */
-            PhysicalMaterial.prototype.matType = 0;
+            PhysicalMaterial.prototype.matType = 0
 
             /**
              * Creates a new PhysicalMaterial instance using the specified properties.
@@ -11459,8 +11161,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.material.PhysicalMaterial} PhysicalMaterial instance
              */
             PhysicalMaterial.create = function create(properties) {
-                return new PhysicalMaterial(properties);
-            };
+                return new PhysicalMaterial(properties)
+            }
 
             /**
              * Encodes the specified PhysicalMaterial message. Does not implicitly {@link mirabuf.material.PhysicalMaterial.verify|verify} messages.
@@ -11472,30 +11174,38 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             PhysicalMaterial.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.description != null && Object.hasOwnProperty.call(message, "description"))
-                    writer.uint32(/* id 2, wireType 2 =*/18).string(message.description);
+                    writer.uint32(/* id 2, wireType 2 =*/ 18).string(message.description)
                 if (message.thermal != null && Object.hasOwnProperty.call(message, "thermal"))
-                    $root.mirabuf.material.PhysicalMaterial.Thermal.encode(message.thermal, writer.uint32(/* id 3, wireType 2 =*/26).fork()).ldelim();
+                    $root.mirabuf.material.PhysicalMaterial.Thermal.encode(
+                        message.thermal,
+                        writer.uint32(/* id 3, wireType 2 =*/ 26).fork()
+                    ).ldelim()
                 if (message.mechanical != null && Object.hasOwnProperty.call(message, "mechanical"))
-                    $root.mirabuf.material.PhysicalMaterial.Mechanical.encode(message.mechanical, writer.uint32(/* id 4, wireType 2 =*/34).fork()).ldelim();
+                    $root.mirabuf.material.PhysicalMaterial.Mechanical.encode(
+                        message.mechanical,
+                        writer.uint32(/* id 4, wireType 2 =*/ 34).fork()
+                    ).ldelim()
                 if (message.strength != null && Object.hasOwnProperty.call(message, "strength"))
-                    $root.mirabuf.material.PhysicalMaterial.Strength.encode(message.strength, writer.uint32(/* id 5, wireType 2 =*/42).fork()).ldelim();
+                    $root.mirabuf.material.PhysicalMaterial.Strength.encode(
+                        message.strength,
+                        writer.uint32(/* id 5, wireType 2 =*/ 42).fork()
+                    ).ldelim()
                 if (message.dynamicFriction != null && Object.hasOwnProperty.call(message, "dynamicFriction"))
-                    writer.uint32(/* id 6, wireType 5 =*/53).float(message.dynamicFriction);
+                    writer.uint32(/* id 6, wireType 5 =*/ 53).float(message.dynamicFriction)
                 if (message.staticFriction != null && Object.hasOwnProperty.call(message, "staticFriction"))
-                    writer.uint32(/* id 7, wireType 5 =*/61).float(message.staticFriction);
+                    writer.uint32(/* id 7, wireType 5 =*/ 61).float(message.staticFriction)
                 if (message.restitution != null && Object.hasOwnProperty.call(message, "restitution"))
-                    writer.uint32(/* id 8, wireType 5 =*/69).float(message.restitution);
+                    writer.uint32(/* id 8, wireType 5 =*/ 69).float(message.restitution)
                 if (message.deformable != null && Object.hasOwnProperty.call(message, "deformable"))
-                    writer.uint32(/* id 9, wireType 0 =*/72).bool(message.deformable);
+                    writer.uint32(/* id 9, wireType 0 =*/ 72).bool(message.deformable)
                 if (message.matType != null && Object.hasOwnProperty.call(message, "matType"))
-                    writer.uint32(/* id 10, wireType 0 =*/80).int32(message.matType);
-                return writer;
-            };
+                    writer.uint32(/* id 10, wireType 0 =*/ 80).int32(message.matType)
+                return writer
+            }
 
             /**
              * Encodes the specified PhysicalMaterial message, length delimited. Does not implicitly {@link mirabuf.material.PhysicalMaterial.verify|verify} messages.
@@ -11507,8 +11217,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             PhysicalMaterial.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a PhysicalMaterial message from the specified reader or buffer.
@@ -11522,59 +11232,68 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             PhysicalMaterial.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.material.PhysicalMaterial();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.material.PhysicalMaterial()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            message.description = reader.string();
-                            break;
+                        case 2: {
+                            message.description = reader.string()
+                            break
                         }
-                    case 3: {
-                            message.thermal = $root.mirabuf.material.PhysicalMaterial.Thermal.decode(reader, reader.uint32());
-                            break;
+                        case 3: {
+                            message.thermal = $root.mirabuf.material.PhysicalMaterial.Thermal.decode(
+                                reader,
+                                reader.uint32()
+                            )
+                            break
                         }
-                    case 4: {
-                            message.mechanical = $root.mirabuf.material.PhysicalMaterial.Mechanical.decode(reader, reader.uint32());
-                            break;
+                        case 4: {
+                            message.mechanical = $root.mirabuf.material.PhysicalMaterial.Mechanical.decode(
+                                reader,
+                                reader.uint32()
+                            )
+                            break
                         }
-                    case 5: {
-                            message.strength = $root.mirabuf.material.PhysicalMaterial.Strength.decode(reader, reader.uint32());
-                            break;
+                        case 5: {
+                            message.strength = $root.mirabuf.material.PhysicalMaterial.Strength.decode(
+                                reader,
+                                reader.uint32()
+                            )
+                            break
                         }
-                    case 6: {
-                            message.dynamicFriction = reader.float();
-                            break;
+                        case 6: {
+                            message.dynamicFriction = reader.float()
+                            break
                         }
-                    case 7: {
-                            message.staticFriction = reader.float();
-                            break;
+                        case 7: {
+                            message.staticFriction = reader.float()
+                            break
                         }
-                    case 8: {
-                            message.restitution = reader.float();
-                            break;
+                        case 8: {
+                            message.restitution = reader.float()
+                            break
                         }
-                    case 9: {
-                            message.deformable = reader.bool();
-                            break;
+                        case 9: {
+                            message.deformable = reader.bool()
+                            break
                         }
-                    case 10: {
-                            message.matType = reader.int32();
-                            break;
+                        case 10: {
+                            message.matType = reader.int32()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a PhysicalMaterial message from the specified reader or buffer, length delimited.
@@ -11587,10 +11306,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             PhysicalMaterial.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a PhysicalMaterial message.
@@ -11601,53 +11319,43 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             PhysicalMaterial.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.description != null && message.hasOwnProperty("description"))
-                    if (!$util.isString(message.description))
-                        return "description: string expected";
+                    if (!$util.isString(message.description)) return "description: string expected"
                 if (message.thermal != null && message.hasOwnProperty("thermal")) {
-                    let error = $root.mirabuf.material.PhysicalMaterial.Thermal.verify(message.thermal);
-                    if (error)
-                        return "thermal." + error;
+                    let error = $root.mirabuf.material.PhysicalMaterial.Thermal.verify(message.thermal)
+                    if (error) return "thermal." + error
                 }
                 if (message.mechanical != null && message.hasOwnProperty("mechanical")) {
-                    let error = $root.mirabuf.material.PhysicalMaterial.Mechanical.verify(message.mechanical);
-                    if (error)
-                        return "mechanical." + error;
+                    let error = $root.mirabuf.material.PhysicalMaterial.Mechanical.verify(message.mechanical)
+                    if (error) return "mechanical." + error
                 }
                 if (message.strength != null && message.hasOwnProperty("strength")) {
-                    let error = $root.mirabuf.material.PhysicalMaterial.Strength.verify(message.strength);
-                    if (error)
-                        return "strength." + error;
+                    let error = $root.mirabuf.material.PhysicalMaterial.Strength.verify(message.strength)
+                    if (error) return "strength." + error
                 }
                 if (message.dynamicFriction != null && message.hasOwnProperty("dynamicFriction"))
-                    if (typeof message.dynamicFriction !== "number")
-                        return "dynamicFriction: number expected";
+                    if (typeof message.dynamicFriction !== "number") return "dynamicFriction: number expected"
                 if (message.staticFriction != null && message.hasOwnProperty("staticFriction"))
-                    if (typeof message.staticFriction !== "number")
-                        return "staticFriction: number expected";
+                    if (typeof message.staticFriction !== "number") return "staticFriction: number expected"
                 if (message.restitution != null && message.hasOwnProperty("restitution"))
-                    if (typeof message.restitution !== "number")
-                        return "restitution: number expected";
+                    if (typeof message.restitution !== "number") return "restitution: number expected"
                 if (message.deformable != null && message.hasOwnProperty("deformable"))
-                    if (typeof message.deformable !== "boolean")
-                        return "deformable: boolean expected";
+                    if (typeof message.deformable !== "boolean") return "deformable: boolean expected"
                 if (message.matType != null && message.hasOwnProperty("matType"))
                     switch (message.matType) {
-                    default:
-                        return "matType: enum value expected";
-                    case 0:
-                    case 1:
-                        break;
+                        default:
+                            return "matType: enum value expected"
+                        case 0:
+                        case 1:
+                            break
                     }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a PhysicalMaterial message from a plain object. Also converts values to their respective internal types.
@@ -11658,57 +11366,53 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.material.PhysicalMaterial} PhysicalMaterial
              */
             PhysicalMaterial.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.material.PhysicalMaterial)
-                    return object;
-                let message = new $root.mirabuf.material.PhysicalMaterial();
+                if (object instanceof $root.mirabuf.material.PhysicalMaterial) return object
+                let message = new $root.mirabuf.material.PhysicalMaterial()
                 if (object.info != null) {
                     if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.material.PhysicalMaterial.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                        throw TypeError(".mirabuf.material.PhysicalMaterial.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
-                if (object.description != null)
-                    message.description = String(object.description);
+                if (object.description != null) message.description = String(object.description)
                 if (object.thermal != null) {
                     if (typeof object.thermal !== "object")
-                        throw TypeError(".mirabuf.material.PhysicalMaterial.thermal: object expected");
-                    message.thermal = $root.mirabuf.material.PhysicalMaterial.Thermal.fromObject(object.thermal);
+                        throw TypeError(".mirabuf.material.PhysicalMaterial.thermal: object expected")
+                    message.thermal = $root.mirabuf.material.PhysicalMaterial.Thermal.fromObject(object.thermal)
                 }
                 if (object.mechanical != null) {
                     if (typeof object.mechanical !== "object")
-                        throw TypeError(".mirabuf.material.PhysicalMaterial.mechanical: object expected");
-                    message.mechanical = $root.mirabuf.material.PhysicalMaterial.Mechanical.fromObject(object.mechanical);
+                        throw TypeError(".mirabuf.material.PhysicalMaterial.mechanical: object expected")
+                    message.mechanical = $root.mirabuf.material.PhysicalMaterial.Mechanical.fromObject(
+                        object.mechanical
+                    )
                 }
                 if (object.strength != null) {
                     if (typeof object.strength !== "object")
-                        throw TypeError(".mirabuf.material.PhysicalMaterial.strength: object expected");
-                    message.strength = $root.mirabuf.material.PhysicalMaterial.Strength.fromObject(object.strength);
+                        throw TypeError(".mirabuf.material.PhysicalMaterial.strength: object expected")
+                    message.strength = $root.mirabuf.material.PhysicalMaterial.Strength.fromObject(object.strength)
                 }
-                if (object.dynamicFriction != null)
-                    message.dynamicFriction = Number(object.dynamicFriction);
-                if (object.staticFriction != null)
-                    message.staticFriction = Number(object.staticFriction);
-                if (object.restitution != null)
-                    message.restitution = Number(object.restitution);
-                if (object.deformable != null)
-                    message.deformable = Boolean(object.deformable);
+                if (object.dynamicFriction != null) message.dynamicFriction = Number(object.dynamicFriction)
+                if (object.staticFriction != null) message.staticFriction = Number(object.staticFriction)
+                if (object.restitution != null) message.restitution = Number(object.restitution)
+                if (object.deformable != null) message.deformable = Boolean(object.deformable)
                 switch (object.matType) {
-                default:
-                    if (typeof object.matType === "number") {
-                        message.matType = object.matType;
-                        break;
-                    }
-                    break;
-                case "METAL":
-                case 0:
-                    message.matType = 0;
-                    break;
-                case "PLASTIC":
-                case 1:
-                    message.matType = 1;
-                    break;
+                    default:
+                        if (typeof object.matType === "number") {
+                            message.matType = object.matType
+                            break
+                        }
+                        break
+                    case "METAL":
+                    case 0:
+                        message.matType = 0
+                        break
+                    case "PLASTIC":
+                    case 1:
+                        message.matType = 1
+                        break
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a PhysicalMaterial message. Also converts values to other types if specified.
@@ -11720,43 +11424,62 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             PhysicalMaterial.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.info = null;
-                    object.description = "";
-                    object.thermal = null;
-                    object.mechanical = null;
-                    object.strength = null;
-                    object.dynamicFriction = 0;
-                    object.staticFriction = 0;
-                    object.restitution = 0;
-                    object.deformable = false;
-                    object.matType = options.enums === String ? "METAL" : 0;
+                    object.info = null
+                    object.description = ""
+                    object.thermal = null
+                    object.mechanical = null
+                    object.strength = null
+                    object.dynamicFriction = 0
+                    object.staticFriction = 0
+                    object.restitution = 0
+                    object.deformable = false
+                    object.matType = options.enums === String ? "METAL" : 0
                 }
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
                 if (message.description != null && message.hasOwnProperty("description"))
-                    object.description = message.description;
+                    object.description = message.description
                 if (message.thermal != null && message.hasOwnProperty("thermal"))
-                    object.thermal = $root.mirabuf.material.PhysicalMaterial.Thermal.toObject(message.thermal, options);
+                    object.thermal = $root.mirabuf.material.PhysicalMaterial.Thermal.toObject(message.thermal, options)
                 if (message.mechanical != null && message.hasOwnProperty("mechanical"))
-                    object.mechanical = $root.mirabuf.material.PhysicalMaterial.Mechanical.toObject(message.mechanical, options);
+                    object.mechanical = $root.mirabuf.material.PhysicalMaterial.Mechanical.toObject(
+                        message.mechanical,
+                        options
+                    )
                 if (message.strength != null && message.hasOwnProperty("strength"))
-                    object.strength = $root.mirabuf.material.PhysicalMaterial.Strength.toObject(message.strength, options);
+                    object.strength = $root.mirabuf.material.PhysicalMaterial.Strength.toObject(
+                        message.strength,
+                        options
+                    )
                 if (message.dynamicFriction != null && message.hasOwnProperty("dynamicFriction"))
-                    object.dynamicFriction = options.json && !isFinite(message.dynamicFriction) ? String(message.dynamicFriction) : message.dynamicFriction;
+                    object.dynamicFriction =
+                        options.json && !isFinite(message.dynamicFriction)
+                            ? String(message.dynamicFriction)
+                            : message.dynamicFriction
                 if (message.staticFriction != null && message.hasOwnProperty("staticFriction"))
-                    object.staticFriction = options.json && !isFinite(message.staticFriction) ? String(message.staticFriction) : message.staticFriction;
+                    object.staticFriction =
+                        options.json && !isFinite(message.staticFriction)
+                            ? String(message.staticFriction)
+                            : message.staticFriction
                 if (message.restitution != null && message.hasOwnProperty("restitution"))
-                    object.restitution = options.json && !isFinite(message.restitution) ? String(message.restitution) : message.restitution;
+                    object.restitution =
+                        options.json && !isFinite(message.restitution)
+                            ? String(message.restitution)
+                            : message.restitution
                 if (message.deformable != null && message.hasOwnProperty("deformable"))
-                    object.deformable = message.deformable;
+                    object.deformable = message.deformable
                 if (message.matType != null && message.hasOwnProperty("matType"))
-                    object.matType = options.enums === String ? $root.mirabuf.material.PhysicalMaterial.MaterialType[message.matType] === undefined ? message.matType : $root.mirabuf.material.PhysicalMaterial.MaterialType[message.matType] : message.matType;
-                return object;
-            };
+                    object.matType =
+                        options.enums === String
+                            ? $root.mirabuf.material.PhysicalMaterial.MaterialType[message.matType] === undefined
+                                ? message.matType
+                                : $root.mirabuf.material.PhysicalMaterial.MaterialType[message.matType]
+                            : message.matType
+                return object
+            }
 
             /**
              * Converts this PhysicalMaterial to JSON.
@@ -11766,8 +11489,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             PhysicalMaterial.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for PhysicalMaterial
@@ -11779,10 +11502,10 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             PhysicalMaterial.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.material.PhysicalMaterial";
-            };
+                return typeUrlPrefix + "/mirabuf.material.PhysicalMaterial"
+            }
 
             /**
              * MaterialType enum.
@@ -11791,15 +11514,15 @@ export const mirabuf = $root.mirabuf = (() => {
              * @property {number} METAL=0 METAL value
              * @property {number} PLASTIC=1 PLASTIC value
              */
-            PhysicalMaterial.MaterialType = (function() {
-                const valuesById = {}, values = Object.create(valuesById);
-                values[valuesById[0] = "METAL"] = 0;
-                values[valuesById[1] = "PLASTIC"] = 1;
-                return values;
-            })();
+            PhysicalMaterial.MaterialType = (function () {
+                const valuesById = {},
+                    values = Object.create(valuesById)
+                values[(valuesById[0] = "METAL")] = 0
+                values[(valuesById[1] = "PLASTIC")] = 1
+                return values
+            })()
 
-            PhysicalMaterial.Thermal = (function() {
-
+            PhysicalMaterial.Thermal = (function () {
                 /**
                  * Properties of a Thermal.
                  * @memberof mirabuf.material.PhysicalMaterial
@@ -11820,8 +11543,7 @@ export const mirabuf = $root.mirabuf = (() => {
                 function Thermal(properties) {
                     if (properties)
                         for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
+                            if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
                 }
 
                 /**
@@ -11830,7 +11552,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Thermal
                  * @instance
                  */
-                Thermal.prototype.thermalConductivity = 0;
+                Thermal.prototype.thermalConductivity = 0
 
                 /**
                  * J/(g*C)
@@ -11838,7 +11560,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Thermal
                  * @instance
                  */
-                Thermal.prototype.specificHeat = 0;
+                Thermal.prototype.specificHeat = 0
 
                 /**
                  * um/(m*C)
@@ -11846,7 +11568,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Thermal
                  * @instance
                  */
-                Thermal.prototype.thermalExpansionCoefficient = 0;
+                Thermal.prototype.thermalExpansionCoefficient = 0
 
                 /**
                  * Creates a new Thermal instance using the specified properties.
@@ -11857,8 +11579,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {mirabuf.material.PhysicalMaterial.Thermal} Thermal instance
                  */
                 Thermal.create = function create(properties) {
-                    return new Thermal(properties);
-                };
+                    return new Thermal(properties)
+                }
 
                 /**
                  * Encodes the specified Thermal message. Does not implicitly {@link mirabuf.material.PhysicalMaterial.Thermal.verify|verify} messages.
@@ -11870,16 +11592,21 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {$protobuf.Writer} Writer
                  */
                 Thermal.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
-                    if (message.thermalConductivity != null && Object.hasOwnProperty.call(message, "thermalConductivity"))
-                        writer.uint32(/* id 1, wireType 5 =*/13).float(message.thermalConductivity);
+                    if (!writer) writer = $Writer.create()
+                    if (
+                        message.thermalConductivity != null &&
+                        Object.hasOwnProperty.call(message, "thermalConductivity")
+                    )
+                        writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.thermalConductivity)
                     if (message.specificHeat != null && Object.hasOwnProperty.call(message, "specificHeat"))
-                        writer.uint32(/* id 2, wireType 5 =*/21).float(message.specificHeat);
-                    if (message.thermalExpansionCoefficient != null && Object.hasOwnProperty.call(message, "thermalExpansionCoefficient"))
-                        writer.uint32(/* id 3, wireType 5 =*/29).float(message.thermalExpansionCoefficient);
-                    return writer;
-                };
+                        writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.specificHeat)
+                    if (
+                        message.thermalExpansionCoefficient != null &&
+                        Object.hasOwnProperty.call(message, "thermalExpansionCoefficient")
+                    )
+                        writer.uint32(/* id 3, wireType 5 =*/ 29).float(message.thermalExpansionCoefficient)
+                    return writer
+                }
 
                 /**
                  * Encodes the specified Thermal message, length delimited. Does not implicitly {@link mirabuf.material.PhysicalMaterial.Thermal.verify|verify} messages.
@@ -11891,8 +11618,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {$protobuf.Writer} Writer
                  */
                 Thermal.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
+                    return this.encode(message, writer).ldelim()
+                }
 
                 /**
                  * Decodes a Thermal message from the specified reader or buffer.
@@ -11906,31 +11633,31 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
                 Thermal.decode = function decode(reader, length) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.material.PhysicalMaterial.Thermal();
+                    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                    let end = length === undefined ? reader.len : reader.pos + length,
+                        message = new $root.mirabuf.material.PhysicalMaterial.Thermal()
                     while (reader.pos < end) {
-                        let tag = reader.uint32();
+                        let tag = reader.uint32()
                         switch (tag >>> 3) {
-                        case 1: {
-                                message.thermalConductivity = reader.float();
-                                break;
+                            case 1: {
+                                message.thermalConductivity = reader.float()
+                                break
                             }
-                        case 2: {
-                                message.specificHeat = reader.float();
-                                break;
+                            case 2: {
+                                message.specificHeat = reader.float()
+                                break
                             }
-                        case 3: {
-                                message.thermalExpansionCoefficient = reader.float();
-                                break;
+                            case 3: {
+                                message.thermalExpansionCoefficient = reader.float()
+                                break
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7)
+                                break
                         }
                     }
-                    return message;
-                };
+                    return message
+                }
 
                 /**
                  * Decodes a Thermal message from the specified reader or buffer, length delimited.
@@ -11943,10 +11670,9 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
                 Thermal.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
+                    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                    return this.decode(reader, reader.uint32())
+                }
 
                 /**
                  * Verifies a Thermal message.
@@ -11957,19 +11683,20 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {string|null} `null` if valid, otherwise the reason why it is not
                  */
                 Thermal.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
+                    if (typeof message !== "object" || message === null) return "object expected"
                     if (message.thermalConductivity != null && message.hasOwnProperty("thermalConductivity"))
                         if (typeof message.thermalConductivity !== "number")
-                            return "thermalConductivity: number expected";
+                            return "thermalConductivity: number expected"
                     if (message.specificHeat != null && message.hasOwnProperty("specificHeat"))
-                        if (typeof message.specificHeat !== "number")
-                            return "specificHeat: number expected";
-                    if (message.thermalExpansionCoefficient != null && message.hasOwnProperty("thermalExpansionCoefficient"))
+                        if (typeof message.specificHeat !== "number") return "specificHeat: number expected"
+                    if (
+                        message.thermalExpansionCoefficient != null &&
+                        message.hasOwnProperty("thermalExpansionCoefficient")
+                    )
                         if (typeof message.thermalExpansionCoefficient !== "number")
-                            return "thermalExpansionCoefficient: number expected";
-                    return null;
-                };
+                            return "thermalExpansionCoefficient: number expected"
+                    return null
+                }
 
                 /**
                  * Creates a Thermal message from a plain object. Also converts values to their respective internal types.
@@ -11980,17 +11707,15 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {mirabuf.material.PhysicalMaterial.Thermal} Thermal
                  */
                 Thermal.fromObject = function fromObject(object) {
-                    if (object instanceof $root.mirabuf.material.PhysicalMaterial.Thermal)
-                        return object;
-                    let message = new $root.mirabuf.material.PhysicalMaterial.Thermal();
+                    if (object instanceof $root.mirabuf.material.PhysicalMaterial.Thermal) return object
+                    let message = new $root.mirabuf.material.PhysicalMaterial.Thermal()
                     if (object.thermalConductivity != null)
-                        message.thermalConductivity = Number(object.thermalConductivity);
-                    if (object.specificHeat != null)
-                        message.specificHeat = Number(object.specificHeat);
+                        message.thermalConductivity = Number(object.thermalConductivity)
+                    if (object.specificHeat != null) message.specificHeat = Number(object.specificHeat)
                     if (object.thermalExpansionCoefficient != null)
-                        message.thermalExpansionCoefficient = Number(object.thermalExpansionCoefficient);
-                    return message;
-                };
+                        message.thermalExpansionCoefficient = Number(object.thermalExpansionCoefficient)
+                    return message
+                }
 
                 /**
                  * Creates a plain object from a Thermal message. Also converts values to other types if specified.
@@ -12002,22 +11727,33 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {Object.<string,*>} Plain object
                  */
                 Thermal.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
+                    if (!options) options = {}
+                    let object = {}
                     if (options.defaults) {
-                        object.thermalConductivity = 0;
-                        object.specificHeat = 0;
-                        object.thermalExpansionCoefficient = 0;
+                        object.thermalConductivity = 0
+                        object.specificHeat = 0
+                        object.thermalExpansionCoefficient = 0
                     }
                     if (message.thermalConductivity != null && message.hasOwnProperty("thermalConductivity"))
-                        object.thermalConductivity = options.json && !isFinite(message.thermalConductivity) ? String(message.thermalConductivity) : message.thermalConductivity;
+                        object.thermalConductivity =
+                            options.json && !isFinite(message.thermalConductivity)
+                                ? String(message.thermalConductivity)
+                                : message.thermalConductivity
                     if (message.specificHeat != null && message.hasOwnProperty("specificHeat"))
-                        object.specificHeat = options.json && !isFinite(message.specificHeat) ? String(message.specificHeat) : message.specificHeat;
-                    if (message.thermalExpansionCoefficient != null && message.hasOwnProperty("thermalExpansionCoefficient"))
-                        object.thermalExpansionCoefficient = options.json && !isFinite(message.thermalExpansionCoefficient) ? String(message.thermalExpansionCoefficient) : message.thermalExpansionCoefficient;
-                    return object;
-                };
+                        object.specificHeat =
+                            options.json && !isFinite(message.specificHeat)
+                                ? String(message.specificHeat)
+                                : message.specificHeat
+                    if (
+                        message.thermalExpansionCoefficient != null &&
+                        message.hasOwnProperty("thermalExpansionCoefficient")
+                    )
+                        object.thermalExpansionCoefficient =
+                            options.json && !isFinite(message.thermalExpansionCoefficient)
+                                ? String(message.thermalExpansionCoefficient)
+                                : message.thermalExpansionCoefficient
+                    return object
+                }
 
                 /**
                  * Converts this Thermal to JSON.
@@ -12027,8 +11763,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {Object.<string,*>} JSON object
                  */
                 Thermal.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+                }
 
                 /**
                  * Gets the default type url for Thermal
@@ -12040,16 +11776,15 @@ export const mirabuf = $root.mirabuf = (() => {
                  */
                 Thermal.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                     if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
+                        typeUrlPrefix = "type.googleapis.com"
                     }
-                    return typeUrlPrefix + "/mirabuf.material.PhysicalMaterial.Thermal";
-                };
+                    return typeUrlPrefix + "/mirabuf.material.PhysicalMaterial.Thermal"
+                }
 
-                return Thermal;
-            })();
+                return Thermal
+            })()
 
-            PhysicalMaterial.Mechanical = (function() {
-
+            PhysicalMaterial.Mechanical = (function () {
                 /**
                  * Properties of a Mechanical.
                  * @memberof mirabuf.material.PhysicalMaterial
@@ -12072,8 +11807,7 @@ export const mirabuf = $root.mirabuf = (() => {
                 function Mechanical(properties) {
                     if (properties)
                         for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
+                            if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
                 }
 
                 /**
@@ -12082,7 +11816,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Mechanical
                  * @instance
                  */
-                Mechanical.prototype.youngMod = 0;
+                Mechanical.prototype.youngMod = 0
 
                 /**
                  * ?
@@ -12090,7 +11824,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Mechanical
                  * @instance
                  */
-                Mechanical.prototype.poissonRatio = 0;
+                Mechanical.prototype.poissonRatio = 0
 
                 /**
                  * MPa
@@ -12098,7 +11832,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Mechanical
                  * @instance
                  */
-                Mechanical.prototype.shearMod = 0;
+                Mechanical.prototype.shearMod = 0
 
                 /**
                  * g/cm^3
@@ -12106,7 +11840,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Mechanical
                  * @instance
                  */
-                Mechanical.prototype.density = 0;
+                Mechanical.prototype.density = 0
 
                 /**
                  * ?
@@ -12114,7 +11848,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Mechanical
                  * @instance
                  */
-                Mechanical.prototype.dampingCoefficient = 0;
+                Mechanical.prototype.dampingCoefficient = 0
 
                 /**
                  * Creates a new Mechanical instance using the specified properties.
@@ -12125,8 +11859,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {mirabuf.material.PhysicalMaterial.Mechanical} Mechanical instance
                  */
                 Mechanical.create = function create(properties) {
-                    return new Mechanical(properties);
-                };
+                    return new Mechanical(properties)
+                }
 
                 /**
                  * Encodes the specified Mechanical message. Does not implicitly {@link mirabuf.material.PhysicalMaterial.Mechanical.verify|verify} messages.
@@ -12138,20 +11872,19 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {$protobuf.Writer} Writer
                  */
                 Mechanical.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
+                    if (!writer) writer = $Writer.create()
                     if (message.youngMod != null && Object.hasOwnProperty.call(message, "youngMod"))
-                        writer.uint32(/* id 1, wireType 5 =*/13).float(message.youngMod);
+                        writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.youngMod)
                     if (message.poissonRatio != null && Object.hasOwnProperty.call(message, "poissonRatio"))
-                        writer.uint32(/* id 2, wireType 5 =*/21).float(message.poissonRatio);
+                        writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.poissonRatio)
                     if (message.shearMod != null && Object.hasOwnProperty.call(message, "shearMod"))
-                        writer.uint32(/* id 3, wireType 5 =*/29).float(message.shearMod);
+                        writer.uint32(/* id 3, wireType 5 =*/ 29).float(message.shearMod)
                     if (message.density != null && Object.hasOwnProperty.call(message, "density"))
-                        writer.uint32(/* id 4, wireType 5 =*/37).float(message.density);
+                        writer.uint32(/* id 4, wireType 5 =*/ 37).float(message.density)
                     if (message.dampingCoefficient != null && Object.hasOwnProperty.call(message, "dampingCoefficient"))
-                        writer.uint32(/* id 5, wireType 5 =*/45).float(message.dampingCoefficient);
-                    return writer;
-                };
+                        writer.uint32(/* id 5, wireType 5 =*/ 45).float(message.dampingCoefficient)
+                    return writer
+                }
 
                 /**
                  * Encodes the specified Mechanical message, length delimited. Does not implicitly {@link mirabuf.material.PhysicalMaterial.Mechanical.verify|verify} messages.
@@ -12163,8 +11896,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {$protobuf.Writer} Writer
                  */
                 Mechanical.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
+                    return this.encode(message, writer).ldelim()
+                }
 
                 /**
                  * Decodes a Mechanical message from the specified reader or buffer.
@@ -12178,39 +11911,39 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
                 Mechanical.decode = function decode(reader, length) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.material.PhysicalMaterial.Mechanical();
+                    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                    let end = length === undefined ? reader.len : reader.pos + length,
+                        message = new $root.mirabuf.material.PhysicalMaterial.Mechanical()
                     while (reader.pos < end) {
-                        let tag = reader.uint32();
+                        let tag = reader.uint32()
                         switch (tag >>> 3) {
-                        case 1: {
-                                message.youngMod = reader.float();
-                                break;
+                            case 1: {
+                                message.youngMod = reader.float()
+                                break
                             }
-                        case 2: {
-                                message.poissonRatio = reader.float();
-                                break;
+                            case 2: {
+                                message.poissonRatio = reader.float()
+                                break
                             }
-                        case 3: {
-                                message.shearMod = reader.float();
-                                break;
+                            case 3: {
+                                message.shearMod = reader.float()
+                                break
                             }
-                        case 4: {
-                                message.density = reader.float();
-                                break;
+                            case 4: {
+                                message.density = reader.float()
+                                break
                             }
-                        case 5: {
-                                message.dampingCoefficient = reader.float();
-                                break;
+                            case 5: {
+                                message.dampingCoefficient = reader.float()
+                                break
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7)
+                                break
                         }
                     }
-                    return message;
-                };
+                    return message
+                }
 
                 /**
                  * Decodes a Mechanical message from the specified reader or buffer, length delimited.
@@ -12223,10 +11956,9 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
                 Mechanical.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
+                    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                    return this.decode(reader, reader.uint32())
+                }
 
                 /**
                  * Verifies a Mechanical message.
@@ -12237,25 +11969,19 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {string|null} `null` if valid, otherwise the reason why it is not
                  */
                 Mechanical.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
+                    if (typeof message !== "object" || message === null) return "object expected"
                     if (message.youngMod != null && message.hasOwnProperty("youngMod"))
-                        if (typeof message.youngMod !== "number")
-                            return "youngMod: number expected";
+                        if (typeof message.youngMod !== "number") return "youngMod: number expected"
                     if (message.poissonRatio != null && message.hasOwnProperty("poissonRatio"))
-                        if (typeof message.poissonRatio !== "number")
-                            return "poissonRatio: number expected";
+                        if (typeof message.poissonRatio !== "number") return "poissonRatio: number expected"
                     if (message.shearMod != null && message.hasOwnProperty("shearMod"))
-                        if (typeof message.shearMod !== "number")
-                            return "shearMod: number expected";
+                        if (typeof message.shearMod !== "number") return "shearMod: number expected"
                     if (message.density != null && message.hasOwnProperty("density"))
-                        if (typeof message.density !== "number")
-                            return "density: number expected";
+                        if (typeof message.density !== "number") return "density: number expected"
                     if (message.dampingCoefficient != null && message.hasOwnProperty("dampingCoefficient"))
-                        if (typeof message.dampingCoefficient !== "number")
-                            return "dampingCoefficient: number expected";
-                    return null;
-                };
+                        if (typeof message.dampingCoefficient !== "number") return "dampingCoefficient: number expected"
+                    return null
+                }
 
                 /**
                  * Creates a Mechanical message from a plain object. Also converts values to their respective internal types.
@@ -12266,21 +11992,16 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {mirabuf.material.PhysicalMaterial.Mechanical} Mechanical
                  */
                 Mechanical.fromObject = function fromObject(object) {
-                    if (object instanceof $root.mirabuf.material.PhysicalMaterial.Mechanical)
-                        return object;
-                    let message = new $root.mirabuf.material.PhysicalMaterial.Mechanical();
-                    if (object.youngMod != null)
-                        message.youngMod = Number(object.youngMod);
-                    if (object.poissonRatio != null)
-                        message.poissonRatio = Number(object.poissonRatio);
-                    if (object.shearMod != null)
-                        message.shearMod = Number(object.shearMod);
-                    if (object.density != null)
-                        message.density = Number(object.density);
+                    if (object instanceof $root.mirabuf.material.PhysicalMaterial.Mechanical) return object
+                    let message = new $root.mirabuf.material.PhysicalMaterial.Mechanical()
+                    if (object.youngMod != null) message.youngMod = Number(object.youngMod)
+                    if (object.poissonRatio != null) message.poissonRatio = Number(object.poissonRatio)
+                    if (object.shearMod != null) message.shearMod = Number(object.shearMod)
+                    if (object.density != null) message.density = Number(object.density)
                     if (object.dampingCoefficient != null)
-                        message.dampingCoefficient = Number(object.dampingCoefficient);
-                    return message;
-                };
+                        message.dampingCoefficient = Number(object.dampingCoefficient)
+                    return message
+                }
 
                 /**
                  * Creates a plain object from a Mechanical message. Also converts values to other types if specified.
@@ -12292,28 +12013,36 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {Object.<string,*>} Plain object
                  */
                 Mechanical.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
+                    if (!options) options = {}
+                    let object = {}
                     if (options.defaults) {
-                        object.youngMod = 0;
-                        object.poissonRatio = 0;
-                        object.shearMod = 0;
-                        object.density = 0;
-                        object.dampingCoefficient = 0;
+                        object.youngMod = 0
+                        object.poissonRatio = 0
+                        object.shearMod = 0
+                        object.density = 0
+                        object.dampingCoefficient = 0
                     }
                     if (message.youngMod != null && message.hasOwnProperty("youngMod"))
-                        object.youngMod = options.json && !isFinite(message.youngMod) ? String(message.youngMod) : message.youngMod;
+                        object.youngMod =
+                            options.json && !isFinite(message.youngMod) ? String(message.youngMod) : message.youngMod
                     if (message.poissonRatio != null && message.hasOwnProperty("poissonRatio"))
-                        object.poissonRatio = options.json && !isFinite(message.poissonRatio) ? String(message.poissonRatio) : message.poissonRatio;
+                        object.poissonRatio =
+                            options.json && !isFinite(message.poissonRatio)
+                                ? String(message.poissonRatio)
+                                : message.poissonRatio
                     if (message.shearMod != null && message.hasOwnProperty("shearMod"))
-                        object.shearMod = options.json && !isFinite(message.shearMod) ? String(message.shearMod) : message.shearMod;
+                        object.shearMod =
+                            options.json && !isFinite(message.shearMod) ? String(message.shearMod) : message.shearMod
                     if (message.density != null && message.hasOwnProperty("density"))
-                        object.density = options.json && !isFinite(message.density) ? String(message.density) : message.density;
+                        object.density =
+                            options.json && !isFinite(message.density) ? String(message.density) : message.density
                     if (message.dampingCoefficient != null && message.hasOwnProperty("dampingCoefficient"))
-                        object.dampingCoefficient = options.json && !isFinite(message.dampingCoefficient) ? String(message.dampingCoefficient) : message.dampingCoefficient;
-                    return object;
-                };
+                        object.dampingCoefficient =
+                            options.json && !isFinite(message.dampingCoefficient)
+                                ? String(message.dampingCoefficient)
+                                : message.dampingCoefficient
+                    return object
+                }
 
                 /**
                  * Converts this Mechanical to JSON.
@@ -12323,8 +12052,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {Object.<string,*>} JSON object
                  */
                 Mechanical.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+                }
 
                 /**
                  * Gets the default type url for Mechanical
@@ -12336,16 +12065,15 @@ export const mirabuf = $root.mirabuf = (() => {
                  */
                 Mechanical.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                     if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
+                        typeUrlPrefix = "type.googleapis.com"
                     }
-                    return typeUrlPrefix + "/mirabuf.material.PhysicalMaterial.Mechanical";
-                };
+                    return typeUrlPrefix + "/mirabuf.material.PhysicalMaterial.Mechanical"
+                }
 
-                return Mechanical;
-            })();
+                return Mechanical
+            })()
 
-            PhysicalMaterial.Strength = (function() {
-
+            PhysicalMaterial.Strength = (function () {
                 /**
                  * Properties of a Strength.
                  * @memberof mirabuf.material.PhysicalMaterial
@@ -12366,8 +12094,7 @@ export const mirabuf = $root.mirabuf = (() => {
                 function Strength(properties) {
                     if (properties)
                         for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                            if (properties[keys[i]] != null)
-                                this[keys[i]] = properties[keys[i]];
+                            if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
                 }
 
                 /**
@@ -12376,7 +12103,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Strength
                  * @instance
                  */
-                Strength.prototype.yieldStrength = 0;
+                Strength.prototype.yieldStrength = 0
 
                 /**
                  * MPa
@@ -12384,7 +12111,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Strength
                  * @instance
                  */
-                Strength.prototype.tensileStrength = 0;
+                Strength.prototype.tensileStrength = 0
 
                 /**
                  * yes / no
@@ -12392,7 +12119,7 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @memberof mirabuf.material.PhysicalMaterial.Strength
                  * @instance
                  */
-                Strength.prototype.thermalTreatment = false;
+                Strength.prototype.thermalTreatment = false
 
                 /**
                  * Creates a new Strength instance using the specified properties.
@@ -12403,8 +12130,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {mirabuf.material.PhysicalMaterial.Strength} Strength instance
                  */
                 Strength.create = function create(properties) {
-                    return new Strength(properties);
-                };
+                    return new Strength(properties)
+                }
 
                 /**
                  * Encodes the specified Strength message. Does not implicitly {@link mirabuf.material.PhysicalMaterial.Strength.verify|verify} messages.
@@ -12416,16 +12143,15 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {$protobuf.Writer} Writer
                  */
                 Strength.encode = function encode(message, writer) {
-                    if (!writer)
-                        writer = $Writer.create();
+                    if (!writer) writer = $Writer.create()
                     if (message.yieldStrength != null && Object.hasOwnProperty.call(message, "yieldStrength"))
-                        writer.uint32(/* id 1, wireType 5 =*/13).float(message.yieldStrength);
+                        writer.uint32(/* id 1, wireType 5 =*/ 13).float(message.yieldStrength)
                     if (message.tensileStrength != null && Object.hasOwnProperty.call(message, "tensileStrength"))
-                        writer.uint32(/* id 2, wireType 5 =*/21).float(message.tensileStrength);
+                        writer.uint32(/* id 2, wireType 5 =*/ 21).float(message.tensileStrength)
                     if (message.thermalTreatment != null && Object.hasOwnProperty.call(message, "thermalTreatment"))
-                        writer.uint32(/* id 3, wireType 0 =*/24).bool(message.thermalTreatment);
-                    return writer;
-                };
+                        writer.uint32(/* id 3, wireType 0 =*/ 24).bool(message.thermalTreatment)
+                    return writer
+                }
 
                 /**
                  * Encodes the specified Strength message, length delimited. Does not implicitly {@link mirabuf.material.PhysicalMaterial.Strength.verify|verify} messages.
@@ -12437,8 +12163,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {$protobuf.Writer} Writer
                  */
                 Strength.encodeDelimited = function encodeDelimited(message, writer) {
-                    return this.encode(message, writer).ldelim();
-                };
+                    return this.encode(message, writer).ldelim()
+                }
 
                 /**
                  * Decodes a Strength message from the specified reader or buffer.
@@ -12452,31 +12178,31 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
                 Strength.decode = function decode(reader, length) {
-                    if (!(reader instanceof $Reader))
-                        reader = $Reader.create(reader);
-                    let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.material.PhysicalMaterial.Strength();
+                    if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                    let end = length === undefined ? reader.len : reader.pos + length,
+                        message = new $root.mirabuf.material.PhysicalMaterial.Strength()
                     while (reader.pos < end) {
-                        let tag = reader.uint32();
+                        let tag = reader.uint32()
                         switch (tag >>> 3) {
-                        case 1: {
-                                message.yieldStrength = reader.float();
-                                break;
+                            case 1: {
+                                message.yieldStrength = reader.float()
+                                break
                             }
-                        case 2: {
-                                message.tensileStrength = reader.float();
-                                break;
+                            case 2: {
+                                message.tensileStrength = reader.float()
+                                break
                             }
-                        case 3: {
-                                message.thermalTreatment = reader.bool();
-                                break;
+                            case 3: {
+                                message.thermalTreatment = reader.bool()
+                                break
                             }
-                        default:
-                            reader.skipType(tag & 7);
-                            break;
+                            default:
+                                reader.skipType(tag & 7)
+                                break
                         }
                     }
-                    return message;
-                };
+                    return message
+                }
 
                 /**
                  * Decodes a Strength message from the specified reader or buffer, length delimited.
@@ -12489,10 +12215,9 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @throws {$protobuf.util.ProtocolError} If required fields are missing
                  */
                 Strength.decodeDelimited = function decodeDelimited(reader) {
-                    if (!(reader instanceof $Reader))
-                        reader = new $Reader(reader);
-                    return this.decode(reader, reader.uint32());
-                };
+                    if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                    return this.decode(reader, reader.uint32())
+                }
 
                 /**
                  * Verifies a Strength message.
@@ -12503,19 +12228,15 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {string|null} `null` if valid, otherwise the reason why it is not
                  */
                 Strength.verify = function verify(message) {
-                    if (typeof message !== "object" || message === null)
-                        return "object expected";
+                    if (typeof message !== "object" || message === null) return "object expected"
                     if (message.yieldStrength != null && message.hasOwnProperty("yieldStrength"))
-                        if (typeof message.yieldStrength !== "number")
-                            return "yieldStrength: number expected";
+                        if (typeof message.yieldStrength !== "number") return "yieldStrength: number expected"
                     if (message.tensileStrength != null && message.hasOwnProperty("tensileStrength"))
-                        if (typeof message.tensileStrength !== "number")
-                            return "tensileStrength: number expected";
+                        if (typeof message.tensileStrength !== "number") return "tensileStrength: number expected"
                     if (message.thermalTreatment != null && message.hasOwnProperty("thermalTreatment"))
-                        if (typeof message.thermalTreatment !== "boolean")
-                            return "thermalTreatment: boolean expected";
-                    return null;
-                };
+                        if (typeof message.thermalTreatment !== "boolean") return "thermalTreatment: boolean expected"
+                    return null
+                }
 
                 /**
                  * Creates a Strength message from a plain object. Also converts values to their respective internal types.
@@ -12526,17 +12247,13 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {mirabuf.material.PhysicalMaterial.Strength} Strength
                  */
                 Strength.fromObject = function fromObject(object) {
-                    if (object instanceof $root.mirabuf.material.PhysicalMaterial.Strength)
-                        return object;
-                    let message = new $root.mirabuf.material.PhysicalMaterial.Strength();
-                    if (object.yieldStrength != null)
-                        message.yieldStrength = Number(object.yieldStrength);
-                    if (object.tensileStrength != null)
-                        message.tensileStrength = Number(object.tensileStrength);
-                    if (object.thermalTreatment != null)
-                        message.thermalTreatment = Boolean(object.thermalTreatment);
-                    return message;
-                };
+                    if (object instanceof $root.mirabuf.material.PhysicalMaterial.Strength) return object
+                    let message = new $root.mirabuf.material.PhysicalMaterial.Strength()
+                    if (object.yieldStrength != null) message.yieldStrength = Number(object.yieldStrength)
+                    if (object.tensileStrength != null) message.tensileStrength = Number(object.tensileStrength)
+                    if (object.thermalTreatment != null) message.thermalTreatment = Boolean(object.thermalTreatment)
+                    return message
+                }
 
                 /**
                  * Creates a plain object from a Strength message. Also converts values to other types if specified.
@@ -12548,22 +12265,27 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {Object.<string,*>} Plain object
                  */
                 Strength.toObject = function toObject(message, options) {
-                    if (!options)
-                        options = {};
-                    let object = {};
+                    if (!options) options = {}
+                    let object = {}
                     if (options.defaults) {
-                        object.yieldStrength = 0;
-                        object.tensileStrength = 0;
-                        object.thermalTreatment = false;
+                        object.yieldStrength = 0
+                        object.tensileStrength = 0
+                        object.thermalTreatment = false
                     }
                     if (message.yieldStrength != null && message.hasOwnProperty("yieldStrength"))
-                        object.yieldStrength = options.json && !isFinite(message.yieldStrength) ? String(message.yieldStrength) : message.yieldStrength;
+                        object.yieldStrength =
+                            options.json && !isFinite(message.yieldStrength)
+                                ? String(message.yieldStrength)
+                                : message.yieldStrength
                     if (message.tensileStrength != null && message.hasOwnProperty("tensileStrength"))
-                        object.tensileStrength = options.json && !isFinite(message.tensileStrength) ? String(message.tensileStrength) : message.tensileStrength;
+                        object.tensileStrength =
+                            options.json && !isFinite(message.tensileStrength)
+                                ? String(message.tensileStrength)
+                                : message.tensileStrength
                     if (message.thermalTreatment != null && message.hasOwnProperty("thermalTreatment"))
-                        object.thermalTreatment = message.thermalTreatment;
-                    return object;
-                };
+                        object.thermalTreatment = message.thermalTreatment
+                    return object
+                }
 
                 /**
                  * Converts this Strength to JSON.
@@ -12573,8 +12295,8 @@ export const mirabuf = $root.mirabuf = (() => {
                  * @returns {Object.<string,*>} JSON object
                  */
                 Strength.prototype.toJSON = function toJSON() {
-                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-                };
+                    return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+                }
 
                 /**
                  * Gets the default type url for Strength
@@ -12586,31 +12308,29 @@ export const mirabuf = $root.mirabuf = (() => {
                  */
                 Strength.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                     if (typeUrlPrefix === undefined) {
-                        typeUrlPrefix = "type.googleapis.com";
+                        typeUrlPrefix = "type.googleapis.com"
                     }
-                    return typeUrlPrefix + "/mirabuf.material.PhysicalMaterial.Strength";
-                };
+                    return typeUrlPrefix + "/mirabuf.material.PhysicalMaterial.Strength"
+                }
 
-                return Strength;
-            })();
+                return Strength
+            })()
 
-            return PhysicalMaterial;
-        })();
+            return PhysicalMaterial
+        })()
 
-        return material;
-    })();
+        return material
+    })()
 
-    mirabuf.signal = (function() {
-
+    mirabuf.signal = (function () {
         /**
          * Namespace signal.
          * @memberof mirabuf
          * @namespace
          */
-        const signal = {};
+        const signal = {}
 
-        signal.Signals = (function() {
-
+        signal.Signals = (function () {
             /**
              * Properties of a Signals.
              * @memberof mirabuf.signal
@@ -12628,11 +12348,10 @@ export const mirabuf = $root.mirabuf = (() => {
              * @param {mirabuf.signal.ISignals=} [properties] Properties to set
              */
             function Signals(properties) {
-                this.signalMap = {};
+                this.signalMap = {}
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -12641,7 +12360,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.signal.Signals
              * @instance
              */
-            Signals.prototype.info = null;
+            Signals.prototype.info = null
 
             /**
              * Contains a full collection of symbols
@@ -12649,7 +12368,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.signal.Signals
              * @instance
              */
-            Signals.prototype.signalMap = $util.emptyObject;
+            Signals.prototype.signalMap = $util.emptyObject
 
             /**
              * Creates a new Signals instance using the specified properties.
@@ -12660,8 +12379,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.signal.Signals} Signals instance
              */
             Signals.create = function create(properties) {
-                return new Signals(properties);
-            };
+                return new Signals(properties)
+            }
 
             /**
              * Encodes the specified Signals message. Does not implicitly {@link mirabuf.signal.Signals.verify|verify} messages.
@@ -12673,17 +12392,25 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Signals.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.signalMap != null && Object.hasOwnProperty.call(message, "signalMap"))
                     for (let keys = Object.keys(message.signalMap), i = 0; i < keys.length; ++i) {
-                        writer.uint32(/* id 2, wireType 2 =*/18).fork().uint32(/* id 1, wireType 2 =*/10).string(keys[i]);
-                        $root.mirabuf.signal.Signal.encode(message.signalMap[keys[i]], writer.uint32(/* id 2, wireType 2 =*/18).fork()).ldelim().ldelim();
+                        writer
+                            .uint32(/* id 2, wireType 2 =*/ 18)
+                            .fork()
+                            .uint32(/* id 1, wireType 2 =*/ 10)
+                            .string(keys[i])
+                        $root.mirabuf.signal.Signal.encode(
+                            message.signalMap[keys[i]],
+                            writer.uint32(/* id 2, wireType 2 =*/ 18).fork()
+                        )
+                            .ldelim()
+                            .ldelim()
                     }
-                return writer;
-            };
+                return writer
+            }
 
             /**
              * Encodes the specified Signals message, length delimited. Does not implicitly {@link mirabuf.signal.Signals.verify|verify} messages.
@@ -12695,8 +12422,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Signals.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Signals message from the specified reader or buffer.
@@ -12710,46 +12437,47 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Signals.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.signal.Signals(), key, value;
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.signal.Signals(),
+                    key,
+                    value
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            if (message.signalMap === $util.emptyObject)
-                                message.signalMap = {};
-                            let end2 = reader.uint32() + reader.pos;
-                            key = "";
-                            value = null;
+                        case 2: {
+                            if (message.signalMap === $util.emptyObject) message.signalMap = {}
+                            let end2 = reader.uint32() + reader.pos
+                            key = ""
+                            value = null
                             while (reader.pos < end2) {
-                                let tag2 = reader.uint32();
+                                let tag2 = reader.uint32()
                                 switch (tag2 >>> 3) {
-                                case 1:
-                                    key = reader.string();
-                                    break;
-                                case 2:
-                                    value = $root.mirabuf.signal.Signal.decode(reader, reader.uint32());
-                                    break;
-                                default:
-                                    reader.skipType(tag2 & 7);
-                                    break;
+                                    case 1:
+                                        key = reader.string()
+                                        break
+                                    case 2:
+                                        value = $root.mirabuf.signal.Signal.decode(reader, reader.uint32())
+                                        break
+                                    default:
+                                        reader.skipType(tag2 & 7)
+                                        break
                                 }
                             }
-                            message.signalMap[key] = value;
-                            break;
+                            message.signalMap[key] = value
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Signals message from the specified reader or buffer, length delimited.
@@ -12762,10 +12490,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Signals.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Signals message.
@@ -12776,25 +12503,21 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Signals.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.signalMap != null && message.hasOwnProperty("signalMap")) {
-                    if (!$util.isObject(message.signalMap))
-                        return "signalMap: object expected";
-                    let key = Object.keys(message.signalMap);
+                    if (!$util.isObject(message.signalMap)) return "signalMap: object expected"
+                    let key = Object.keys(message.signalMap)
                     for (let i = 0; i < key.length; ++i) {
-                        let error = $root.mirabuf.signal.Signal.verify(message.signalMap[key[i]]);
-                        if (error)
-                            return "signalMap." + error;
+                        let error = $root.mirabuf.signal.Signal.verify(message.signalMap[key[i]])
+                        if (error) return "signalMap." + error
                     }
                 }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a Signals message from a plain object. Also converts values to their respective internal types.
@@ -12805,26 +12528,25 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.signal.Signals} Signals
              */
             Signals.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.signal.Signals)
-                    return object;
-                let message = new $root.mirabuf.signal.Signals();
+                if (object instanceof $root.mirabuf.signal.Signals) return object
+                let message = new $root.mirabuf.signal.Signals()
                 if (object.info != null) {
                     if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.signal.Signals.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                        throw TypeError(".mirabuf.signal.Signals.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
                 if (object.signalMap) {
                     if (typeof object.signalMap !== "object")
-                        throw TypeError(".mirabuf.signal.Signals.signalMap: object expected");
-                    message.signalMap = {};
+                        throw TypeError(".mirabuf.signal.Signals.signalMap: object expected")
+                    message.signalMap = {}
                     for (let keys = Object.keys(object.signalMap), i = 0; i < keys.length; ++i) {
                         if (typeof object.signalMap[keys[i]] !== "object")
-                            throw TypeError(".mirabuf.signal.Signals.signalMap: object expected");
-                        message.signalMap[keys[i]] = $root.mirabuf.signal.Signal.fromObject(object.signalMap[keys[i]]);
+                            throw TypeError(".mirabuf.signal.Signals.signalMap: object expected")
+                        message.signalMap[keys[i]] = $root.mirabuf.signal.Signal.fromObject(object.signalMap[keys[i]])
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a Signals message. Also converts values to other types if specified.
@@ -12836,23 +12558,23 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Signals.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
-                if (options.objects || options.defaults)
-                    object.signalMap = {};
-                if (options.defaults)
-                    object.info = null;
+                if (!options) options = {}
+                let object = {}
+                if (options.objects || options.defaults) object.signalMap = {}
+                if (options.defaults) object.info = null
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
-                let keys2;
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
+                let keys2
                 if (message.signalMap && (keys2 = Object.keys(message.signalMap)).length) {
-                    object.signalMap = {};
+                    object.signalMap = {}
                     for (let j = 0; j < keys2.length; ++j)
-                        object.signalMap[keys2[j]] = $root.mirabuf.signal.Signal.toObject(message.signalMap[keys2[j]], options);
+                        object.signalMap[keys2[j]] = $root.mirabuf.signal.Signal.toObject(
+                            message.signalMap[keys2[j]],
+                            options
+                        )
                 }
-                return object;
-            };
+                return object
+            }
 
             /**
              * Converts this Signals to JSON.
@@ -12862,8 +12584,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Signals.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Signals
@@ -12875,13 +12597,13 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Signals.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.signal.Signals";
-            };
+                return typeUrlPrefix + "/mirabuf.signal.Signals"
+            }
 
-            return Signals;
-        })();
+            return Signals
+        })()
 
         /**
          * IOType is a way to specify Input or Output.
@@ -12890,12 +12612,13 @@ export const mirabuf = $root.mirabuf = (() => {
          * @property {number} INPUT=0 Input Signal
          * @property {number} OUTPUT=1 Output Signal
          */
-        signal.IOType = (function() {
-            const valuesById = {}, values = Object.create(valuesById);
-            values[valuesById[0] = "INPUT"] = 0;
-            values[valuesById[1] = "OUTPUT"] = 1;
-            return values;
-        })();
+        signal.IOType = (function () {
+            const valuesById = {},
+                values = Object.create(valuesById)
+            values[(valuesById[0] = "INPUT")] = 0
+            values[(valuesById[1] = "OUTPUT")] = 1
+            return values
+        })()
 
         /**
          * DeviceType needs to be a type of device that has a supported connection
@@ -12909,19 +12632,19 @@ export const mirabuf = $root.mirabuf = (() => {
          * @property {number} CANBUS=4 CANBUS value
          * @property {number} CUSTOM=5 CUSTOM value
          */
-        signal.DeviceType = (function() {
-            const valuesById = {}, values = Object.create(valuesById);
-            values[valuesById[0] = "PWM"] = 0;
-            values[valuesById[1] = "Digital"] = 1;
-            values[valuesById[2] = "Analog"] = 2;
-            values[valuesById[3] = "I2C"] = 3;
-            values[valuesById[4] = "CANBUS"] = 4;
-            values[valuesById[5] = "CUSTOM"] = 5;
-            return values;
-        })();
+        signal.DeviceType = (function () {
+            const valuesById = {},
+                values = Object.create(valuesById)
+            values[(valuesById[0] = "PWM")] = 0
+            values[(valuesById[1] = "Digital")] = 1
+            values[(valuesById[2] = "Analog")] = 2
+            values[(valuesById[3] = "I2C")] = 3
+            values[(valuesById[4] = "CANBUS")] = 4
+            values[(valuesById[5] = "CUSTOM")] = 5
+            return values
+        })()
 
-        signal.Signal = (function() {
-
+        signal.Signal = (function () {
             /**
              * Properties of a Signal.
              * @memberof mirabuf.signal
@@ -12937,7 +12660,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * Constructs a new Signal.
              * @memberof mirabuf.signal
              * @classdesc Signal is a way to define a controlling signal.
-             * 
+             *
              * TODO: Add Origin
              * TODO: Decide how this is linked to a exported object
              * @implements ISignal
@@ -12947,8 +12670,7 @@ export const mirabuf = $root.mirabuf = (() => {
             function Signal(properties) {
                 if (properties)
                     for (let keys = Object.keys(properties), i = 0; i < keys.length; ++i)
-                        if (properties[keys[i]] != null)
-                            this[keys[i]] = properties[keys[i]];
+                        if (properties[keys[i]] != null) this[keys[i]] = properties[keys[i]]
             }
 
             /**
@@ -12957,7 +12679,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.signal.Signal
              * @instance
              */
-            Signal.prototype.info = null;
+            Signal.prototype.info = null
 
             /**
              * Is this a Input or Output
@@ -12965,7 +12687,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.signal.Signal
              * @instance
              */
-            Signal.prototype.io = 0;
+            Signal.prototype.io = 0
 
             /**
              * The name of a custom input type that is not listed as a device type
@@ -12973,7 +12695,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.signal.Signal
              * @instance
              */
-            Signal.prototype.customType = "";
+            Signal.prototype.customType = ""
 
             /**
              * ID for a given signal that exists... PWM 2, CANBUS 4
@@ -12981,7 +12703,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.signal.Signal
              * @instance
              */
-            Signal.prototype.signalId = 0;
+            Signal.prototype.signalId = 0
 
             /**
              * Enum for device type that should always be set
@@ -12989,7 +12711,7 @@ export const mirabuf = $root.mirabuf = (() => {
              * @memberof mirabuf.signal.Signal
              * @instance
              */
-            Signal.prototype.deviceType = 0;
+            Signal.prototype.deviceType = 0
 
             /**
              * Creates a new Signal instance using the specified properties.
@@ -13000,8 +12722,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.signal.Signal} Signal instance
              */
             Signal.create = function create(properties) {
-                return new Signal(properties);
-            };
+                return new Signal(properties)
+            }
 
             /**
              * Encodes the specified Signal message. Does not implicitly {@link mirabuf.signal.Signal.verify|verify} messages.
@@ -13013,20 +12735,19 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Signal.encode = function encode(message, writer) {
-                if (!writer)
-                    writer = $Writer.create();
+                if (!writer) writer = $Writer.create()
                 if (message.info != null && Object.hasOwnProperty.call(message, "info"))
-                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/10).fork()).ldelim();
+                    $root.mirabuf.Info.encode(message.info, writer.uint32(/* id 1, wireType 2 =*/ 10).fork()).ldelim()
                 if (message.io != null && Object.hasOwnProperty.call(message, "io"))
-                    writer.uint32(/* id 2, wireType 0 =*/16).int32(message.io);
+                    writer.uint32(/* id 2, wireType 0 =*/ 16).int32(message.io)
                 if (message.customType != null && Object.hasOwnProperty.call(message, "customType"))
-                    writer.uint32(/* id 3, wireType 2 =*/26).string(message.customType);
+                    writer.uint32(/* id 3, wireType 2 =*/ 26).string(message.customType)
                 if (message.signalId != null && Object.hasOwnProperty.call(message, "signalId"))
-                    writer.uint32(/* id 4, wireType 0 =*/32).uint32(message.signalId);
+                    writer.uint32(/* id 4, wireType 0 =*/ 32).uint32(message.signalId)
                 if (message.deviceType != null && Object.hasOwnProperty.call(message, "deviceType"))
-                    writer.uint32(/* id 5, wireType 0 =*/40).int32(message.deviceType);
-                return writer;
-            };
+                    writer.uint32(/* id 5, wireType 0 =*/ 40).int32(message.deviceType)
+                return writer
+            }
 
             /**
              * Encodes the specified Signal message, length delimited. Does not implicitly {@link mirabuf.signal.Signal.verify|verify} messages.
@@ -13038,8 +12759,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {$protobuf.Writer} Writer
              */
             Signal.encodeDelimited = function encodeDelimited(message, writer) {
-                return this.encode(message, writer).ldelim();
-            };
+                return this.encode(message, writer).ldelim()
+            }
 
             /**
              * Decodes a Signal message from the specified reader or buffer.
@@ -13053,39 +12774,39 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Signal.decode = function decode(reader, length) {
-                if (!(reader instanceof $Reader))
-                    reader = $Reader.create(reader);
-                let end = length === undefined ? reader.len : reader.pos + length, message = new $root.mirabuf.signal.Signal();
+                if (!(reader instanceof $Reader)) reader = $Reader.create(reader)
+                let end = length === undefined ? reader.len : reader.pos + length,
+                    message = new $root.mirabuf.signal.Signal()
                 while (reader.pos < end) {
-                    let tag = reader.uint32();
+                    let tag = reader.uint32()
                     switch (tag >>> 3) {
-                    case 1: {
-                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32());
-                            break;
+                        case 1: {
+                            message.info = $root.mirabuf.Info.decode(reader, reader.uint32())
+                            break
                         }
-                    case 2: {
-                            message.io = reader.int32();
-                            break;
+                        case 2: {
+                            message.io = reader.int32()
+                            break
                         }
-                    case 3: {
-                            message.customType = reader.string();
-                            break;
+                        case 3: {
+                            message.customType = reader.string()
+                            break
                         }
-                    case 4: {
-                            message.signalId = reader.uint32();
-                            break;
+                        case 4: {
+                            message.signalId = reader.uint32()
+                            break
                         }
-                    case 5: {
-                            message.deviceType = reader.int32();
-                            break;
+                        case 5: {
+                            message.deviceType = reader.int32()
+                            break
                         }
-                    default:
-                        reader.skipType(tag & 7);
-                        break;
+                        default:
+                            reader.skipType(tag & 7)
+                            break
                     }
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Decodes a Signal message from the specified reader or buffer, length delimited.
@@ -13098,10 +12819,9 @@ export const mirabuf = $root.mirabuf = (() => {
              * @throws {$protobuf.util.ProtocolError} If required fields are missing
              */
             Signal.decodeDelimited = function decodeDelimited(reader) {
-                if (!(reader instanceof $Reader))
-                    reader = new $Reader(reader);
-                return this.decode(reader, reader.uint32());
-            };
+                if (!(reader instanceof $Reader)) reader = new $Reader(reader)
+                return this.decode(reader, reader.uint32())
+            }
 
             /**
              * Verifies a Signal message.
@@ -13112,41 +12832,37 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {string|null} `null` if valid, otherwise the reason why it is not
              */
             Signal.verify = function verify(message) {
-                if (typeof message !== "object" || message === null)
-                    return "object expected";
+                if (typeof message !== "object" || message === null) return "object expected"
                 if (message.info != null && message.hasOwnProperty("info")) {
-                    let error = $root.mirabuf.Info.verify(message.info);
-                    if (error)
-                        return "info." + error;
+                    let error = $root.mirabuf.Info.verify(message.info)
+                    if (error) return "info." + error
                 }
                 if (message.io != null && message.hasOwnProperty("io"))
                     switch (message.io) {
-                    default:
-                        return "io: enum value expected";
-                    case 0:
-                    case 1:
-                        break;
+                        default:
+                            return "io: enum value expected"
+                        case 0:
+                        case 1:
+                            break
                     }
                 if (message.customType != null && message.hasOwnProperty("customType"))
-                    if (!$util.isString(message.customType))
-                        return "customType: string expected";
+                    if (!$util.isString(message.customType)) return "customType: string expected"
                 if (message.signalId != null && message.hasOwnProperty("signalId"))
-                    if (!$util.isInteger(message.signalId))
-                        return "signalId: integer expected";
+                    if (!$util.isInteger(message.signalId)) return "signalId: integer expected"
                 if (message.deviceType != null && message.hasOwnProperty("deviceType"))
                     switch (message.deviceType) {
-                    default:
-                        return "deviceType: enum value expected";
-                    case 0:
-                    case 1:
-                    case 2:
-                    case 3:
-                    case 4:
-                    case 5:
-                        break;
+                        default:
+                            return "deviceType: enum value expected"
+                        case 0:
+                        case 1:
+                        case 2:
+                        case 3:
+                        case 4:
+                        case 5:
+                            break
                     }
-                return null;
-            };
+                return null
+            }
 
             /**
              * Creates a Signal message from a plain object. Also converts values to their respective internal types.
@@ -13157,68 +12873,64 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {mirabuf.signal.Signal} Signal
              */
             Signal.fromObject = function fromObject(object) {
-                if (object instanceof $root.mirabuf.signal.Signal)
-                    return object;
-                let message = new $root.mirabuf.signal.Signal();
+                if (object instanceof $root.mirabuf.signal.Signal) return object
+                let message = new $root.mirabuf.signal.Signal()
                 if (object.info != null) {
-                    if (typeof object.info !== "object")
-                        throw TypeError(".mirabuf.signal.Signal.info: object expected");
-                    message.info = $root.mirabuf.Info.fromObject(object.info);
+                    if (typeof object.info !== "object") throw TypeError(".mirabuf.signal.Signal.info: object expected")
+                    message.info = $root.mirabuf.Info.fromObject(object.info)
                 }
                 switch (object.io) {
-                default:
-                    if (typeof object.io === "number") {
-                        message.io = object.io;
-                        break;
-                    }
-                    break;
-                case "INPUT":
-                case 0:
-                    message.io = 0;
-                    break;
-                case "OUTPUT":
-                case 1:
-                    message.io = 1;
-                    break;
+                    default:
+                        if (typeof object.io === "number") {
+                            message.io = object.io
+                            break
+                        }
+                        break
+                    case "INPUT":
+                    case 0:
+                        message.io = 0
+                        break
+                    case "OUTPUT":
+                    case 1:
+                        message.io = 1
+                        break
                 }
-                if (object.customType != null)
-                    message.customType = String(object.customType);
-                if (object.signalId != null)
-                    message.signalId = object.signalId >>> 0;
+                if (object.customType != null) message.customType = String(object.customType)
+                if (object.signalId != null) message.signalId = object.signalId >>> 0
                 switch (object.deviceType) {
-                default:
-                    if (typeof object.deviceType === "number") {
-                        message.deviceType = object.deviceType;
-                        break;
-                    }
-                    break;
-                case "PWM":
-                case 0:
-                    message.deviceType = 0;
-                    break;
-                case "Digital":
-                case 1:
-                    message.deviceType = 1;
-                    break;
-                case "Analog":
-                case 2:
-                    message.deviceType = 2;
-                    break;
-                case "I2C":
-                case 3:
-                    message.deviceType = 3;
-                    break;
-                case "CANBUS":
-                case 4:
-                    message.deviceType = 4;
-                    break;
-                case "CUSTOM":
-                case 5:
-                    message.deviceType = 5;
-                    break;
+                    default:
+                        if (typeof object.deviceType === "number") {
+                            message.deviceType = object.deviceType
+                            break
+                        }
+                        break
+                    case "PWM":
+                    case 0:
+                        message.deviceType = 0
+                        break
+                    case "Digital":
+                    case 1:
+                        message.deviceType = 1
+                        break
+                    case "Analog":
+                    case 2:
+                        message.deviceType = 2
+                        break
+                    case "I2C":
+                    case 3:
+                        message.deviceType = 3
+                        break
+                    case "CANBUS":
+                    case 4:
+                        message.deviceType = 4
+                        break
+                    case "CUSTOM":
+                    case 5:
+                        message.deviceType = 5
+                        break
                 }
-                return message;
-            };
+                return message
+            }
 
             /**
              * Creates a plain object from a Signal message. Also converts values to other types if specified.
@@ -13230,28 +12942,36 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} Plain object
              */
             Signal.toObject = function toObject(message, options) {
-                if (!options)
-                    options = {};
-                let object = {};
+                if (!options) options = {}
+                let object = {}
                 if (options.defaults) {
-                    object.info = null;
-                    object.io = options.enums === String ? "INPUT" : 0;
-                    object.customType = "";
-                    object.signalId = 0;
-                    object.deviceType = options.enums === String ? "PWM" : 0;
+                    object.info = null
+                    object.io = options.enums === String ? "INPUT" : 0
+                    object.customType = ""
+                    object.signalId = 0
+                    object.deviceType = options.enums === String ? "PWM" : 0
                 }
                 if (message.info != null && message.hasOwnProperty("info"))
-                    object.info = $root.mirabuf.Info.toObject(message.info, options);
+                    object.info = $root.mirabuf.Info.toObject(message.info, options)
                 if (message.io != null && message.hasOwnProperty("io"))
-                    object.io = options.enums === String ? $root.mirabuf.signal.IOType[message.io] === undefined ? message.io : $root.mirabuf.signal.IOType[message.io] : message.io;
+                    object.io =
+                        options.enums === String
+                            ? $root.mirabuf.signal.IOType[message.io] === undefined
+                                ? message.io
+                                : $root.mirabuf.signal.IOType[message.io]
+                            : message.io
                 if (message.customType != null && message.hasOwnProperty("customType"))
-                    object.customType = message.customType;
-                if (message.signalId != null && message.hasOwnProperty("signalId"))
-                    object.signalId = message.signalId;
+                    object.customType = message.customType
+                if (message.signalId != null && message.hasOwnProperty("signalId")) object.signalId = message.signalId
                 if (message.deviceType != null && message.hasOwnProperty("deviceType"))
-                    object.deviceType = options.enums === String ? $root.mirabuf.signal.DeviceType[message.deviceType] === undefined ? message.deviceType : $root.mirabuf.signal.DeviceType[message.deviceType] : message.deviceType;
-                return object;
-            };
+                    object.deviceType =
+                        options.enums === String
+                            ? $root.mirabuf.signal.DeviceType[message.deviceType] === undefined
+                                ? message.deviceType
+                                : $root.mirabuf.signal.DeviceType[message.deviceType]
+                            : message.deviceType
+                return object
+            }
 
             /**
              * Converts this Signal to JSON.
@@ -13261,8 +12981,8 @@ export const mirabuf = $root.mirabuf = (() => {
              * @returns {Object.<string,*>} JSON object
              */
             Signal.prototype.toJSON = function toJSON() {
-                return this.constructor.toObject(this, $protobuf.util.toJSONOptions);
-            };
+                return this.constructor.toObject(this, $protobuf.util.toJSONOptions)
+            }
 
             /**
              * Gets the default type url for Signal
@@ -13274,18 +12994,18 @@ export const mirabuf = $root.mirabuf = (() => {
              */
             Signal.getTypeUrl = function getTypeUrl(typeUrlPrefix) {
                 if (typeUrlPrefix === undefined) {
-                    typeUrlPrefix = "type.googleapis.com";
+                    typeUrlPrefix = "type.googleapis.com"
                 }
-                return typeUrlPrefix + "/mirabuf.signal.Signal";
-            };
+                return typeUrlPrefix + "/mirabuf.signal.Signal"
+            }
 
-            return Signal;
-        })();
+            return Signal
+        })()
 
-        return signal;
-    })();
+        return signal
+    })()
 
-    return mirabuf;
-})();
+    return mirabuf
+})())
 
-export { $root as default };
+export { $root as default }

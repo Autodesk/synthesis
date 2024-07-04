@@ -3,7 +3,7 @@
  * customizable control over when it is initialized.
  */
 
-import * as j from '@barclah/jolt-physics/wasm-compat';
+import * as j from "@barclah/jolt-physics/wasm-compat"
 
-const JOLT = await j.default();
-export default JOLT;
+const JOLT = await j.default()
+export default JOLT
