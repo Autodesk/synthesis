@@ -13,7 +13,6 @@ import { mirabuf } from "../../proto/mirabuf"
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
-import { joltVec3ToString } from "@/util/debug/DebugPrint"
 
 /**
  * Layers used for determining enabled/disabled collisions.
