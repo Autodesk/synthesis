@@ -19,6 +19,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
 import Jolt from "@barclah/jolt-physics"
+import { AiOutlineDoubleRight } from "react-icons/ai"
 
 type ButtonProps = {
     value: string
@@ -126,8 +127,8 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("import-local-mirabuf")}
                     />
                     <MainHUDButton
-                        value={"Poker"}
-                        icon={<IoPeople />}
+                        value={"The Poker"}
+                        icon={<AiOutlineDoubleRight />}
                         onClick={() => openPanel("poker")}
                     />
                     <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />

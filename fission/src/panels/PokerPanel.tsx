@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { IoPeople } from "react-icons/io5"
 import World from "@/systems/World"
 import * as THREE from 'three'
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
+import { AiOutlineDoubleRight } from "react-icons/ai"
 
 const RAY_MAX_LENGTH = 20.0
 
@@ -72,7 +72,7 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId,  }) => {
     }, [mark, markRadius, punch, punchForce])
 
     return (
-        <Panel openLocation="bottom-right" name={"The Poker"} icon={<IoPeople />} panelId={panelId}>
+        <Panel openLocation="bottom-right" name={"The Poker"} icon={<AiOutlineDoubleRight />} panelId={panelId}>
             <Checkbox label="Punch?" defaultState={PUNCH_DEFAULT} onClick={x => setPunch(x)} />
             <Slider
                 label="Punch Force"
