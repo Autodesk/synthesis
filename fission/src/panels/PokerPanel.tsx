@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import World from "@/systems/World"
-import * as THREE from 'three'
+import * as THREE from "three"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
@@ -27,27 +27,29 @@ function affect(e: MouseEvent, punch: boolean, mark: boolean, punchForce: number
     const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
     const dir = worldSpace.sub(origin).normalize().multiplyScalar(RAY_MAX_LENGTH)
 
-    const res = World.PhysicsSystem.RayCast(
-        ThreeVector3_JoltVec3(origin),
-        ThreeVector3_JoltVec3(dir)
-    )
-    
+    const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
+
     if (res) {
         if (mark) {
-            const ballMesh = World.SceneRenderer.CreateSphere(markRadius, World.SceneRenderer.CreateToonMaterial(0xd6564d))
+            const ballMesh = World.SceneRenderer.CreateSphere(
+                markRadius,
+                World.SceneRenderer.CreateToonMaterial(0xd6564d)
+            )
             World.SceneRenderer.scene.add(ballMesh)
             const hitPoint = res.point
             ballMesh.position.set(hitPoint.GetX(), hitPoint.GetY(), hitPoint.GetZ())
         }
 
         if (punch) {
-            World.PhysicsSystem.GetBody(res.data.mBodyID).AddImpulse(ThreeVector3_JoltVec3(dir.normalize().multiplyScalar(punchForce)), res.point)
+            World.PhysicsSystem.GetBody(res.data.mBodyID).AddImpulse(
+                ThreeVector3_JoltVec3(dir.normalize().multiplyScalar(punchForce)),
+                res.point
+            )
         }
     }
 }
 
-const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId,  }) => {
-
+const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [punch, setPunch] = useState(PUNCH_DEFAULT)
     const [punchForce, setPunchForce] = useState(PUNCH_FORCE_DEFAULT)
     const [mark, setMark] = useState(MARK_DEFAULT)
@@ -58,10 +60,10 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId,  }) => {
             affect(e, punch, mark, punchForce, markRadius)
         }
 
-        World.SceneRenderer.renderer.domElement.addEventListener('click', onClick)
+        World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
 
         return () => {
-            World.SceneRenderer.renderer.domElement.removeEventListener('click', onClick)
+            World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
         }
     }, [mark, markRadius, punch, punchForce])
 

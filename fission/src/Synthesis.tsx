@@ -49,12 +49,12 @@ import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
-import ManageAssembliesModal from '@/modals/spawning/ManageAssembliesModal.tsx';
-import World from '@/systems/World.ts';
-import { AddRobotsModal, AddFieldsModal, SpawningModal } from '@/modals/spawning/SpawningModals.tsx';
-import ImportMirabufModal from '@/modals/mirabuf/ImportMirabufModal.tsx';
-import Skybox from './ui/components/Skybox.tsx';
-import ImportLocalMirabufModal from '@/modals/mirabuf/ImportLocalMirabufModal.tsx';
+import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
+import World from "@/systems/World.ts"
+import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
+import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
+import Skybox from "./ui/components/Skybox.tsx"
+import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import PokerPanel from "./panels/PokerPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
@@ -83,11 +83,11 @@ function Synthesis() {
     useEffect(() => {
         World.InitWorld()
 
-        World.SceneRenderer.renderer.domElement.addEventListener('auxclick', (e: MouseEvent) => {
+        World.SceneRenderer.renderer.domElement.addEventListener("auxclick", (e: MouseEvent) => {
             console.debug(e)
         })
 
-        let mira_path = DEFAULT_MIRA_PATH;
+        let mira_path = DEFAULT_MIRA_PATH
 
         const urlParams = new URLSearchParams(document.location.search)
 
@@ -137,7 +137,7 @@ function Synthesis() {
 
     return (
         <AnimatePresence>
-            <Skybox key="123"/>
+            <Skybox key="123" />
             <TooltipControlProvider
                 showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
                     showTooltip(type, controls, duration)
