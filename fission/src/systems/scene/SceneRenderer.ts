@@ -221,15 +221,17 @@ class SceneRenderer extends WorldSystem {
             (event: { target: TransformControls; value: unknown }) => {
                 if (!event.value && !Array.from(this.transformControls.keys()).some(tc => tc.dragging)) {
                     this.orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
+                } else if (!event.value && Array.from(this.transformControls.keys()).some(tc => tc.dragging)) {
+                    this.orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
+                } else {
+                    this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
                 }
-
-                this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
 
                 if (event.target.mode === "translate") {
                     this.transformControls.forEach((_size, tc) => {
                         // disable other transform gizmos when translating
                         if (tc.object === event.target.object && tc.mode !== "translate") {
-                            tc.dragging = !event.value
+                            tc.dragging = false
                             tc.enabled = !event.value
                             return
                         }

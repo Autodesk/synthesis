@@ -1,19 +1,24 @@
-import { useEffect, useState } from "react"
+import * as THREE from "three"
+import { useEffect, useState, useRef } from "react"
 import { FaGear } from "react-icons/fa6"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
-import Slider from "@/components/Slider"
+import TransformGizmos from "@/ui/components/TransformGizmos"
 import World from "@/systems/World"
 
 const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
-    const defaultZoneSize = 0.5
     const [, setNode] = useState<string>("Click to select")
-    const [, setZoneSize] = useState<number>(defaultZoneSize)
+    const transformGizmoRef = useRef<TransformGizmos>()
 
     useEffect(() => {
         // implementing spherical placeholder for intake placement
-        const mesh = World.SceneRenderer.CreateSphere(5.0)
-    })
+        transformGizmoRef.current = new TransformGizmos(
+            World.SceneRenderer.CreateSphere(0.5, World.SceneRenderer.CreateToonMaterial(new THREE.Color(0xffffff)))
+        )
+        transformGizmoRef.current.AddMeshToScene()
+        transformGizmoRef.current.CreateGizmo("scale")
+        transformGizmoRef.current.CreateGizmo("translate")
+    }, [])
 
     return (
         <Panel
@@ -25,16 +30,11 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             onAccept={() => {
                 // send zone config
             }}
+            onCancel={() => {
+                if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
+            }}
         >
             <SelectButton onSelect={setNode} placeholder="Select pickup node" />
-            <Slider
-                min={0.1}
-                max={1}
-                defaultValue={defaultZoneSize}
-                label="Zone Size"
-                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                onChange={setZoneSize}
-            />
         </Panel>
     )
 }
