@@ -31,7 +31,7 @@ class TransformGizmos {
         return this._gizmos.some(gizmo => gizmo.dragging)
     }
 
-    /** 
+    /**
      * Adds mesh to scene
      */
     public AddMeshToScene() {
