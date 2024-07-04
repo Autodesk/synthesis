@@ -273,9 +273,9 @@ class SceneRenderer extends WorldSystem {
         })
     }
 
-    /** 
+    /**
      * Adding object to scene
-     * 
+     *
      * @param obj Object to add
      */
     public AddObject(obj: THREE.Object3D) {
