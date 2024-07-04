@@ -16,7 +16,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const fileUploadRef = useRef<HTMLInputElement>(null)
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
-    const [miraType, setSelectedType] = useState<MiraType | undefined >(undefined)
+    const [miraType, setSelectedType] = useState<MiraType | undefined>(undefined)
 
     const uploadClicked = () => {
         if (fileUploadRef.current) {
@@ -33,10 +33,12 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const typeSelected = (type: string) => {
         switch (type) {
-            case "Robot" : setSelectedType(MiraType.ROBOT);
-            break;
-            case "Field" : setSelectedType(MiraType.FIELD);
-            break;
+            case "Robot":
+                setSelectedType(MiraType.ROBOT)
+                break
+            case "Field":
+                setSelectedType(MiraType.FIELD)
+                break
         }
     }
 
@@ -46,41 +48,46 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={<FaPlus />}
             modalId={modalId}
             acceptEnabled={selectedFile !== undefined && miraType !== undefined}
-            onAccept={ async () => {
+            onAccept={async () => {
                 if (selectedFile && miraType != undefined) {
                     showTooltip("controls", [
                         { control: "WASD", description: "Drive" },
                         { control: "E", description: "Intake" },
                         { control: "Q", description: "Dispense" },
                     ])
-                    
 
                     const hashBuffer = await selectedFile.arrayBuffer()
-                    await MirabufCachingService.CacheAndGetLocal(hashBuffer, MiraType.ROBOT).then(x => CreateMirabuf(x!)).then(x => {
-                                if (x) {
-                                    World.SceneRenderer.RegisterSceneObject(x)
-                                }
-                            })
-                    }
-                } 
-            }
+                    await MirabufCachingService.CacheAndGetLocal(hashBuffer, MiraType.ROBOT)
+                        .then(x => CreateMirabuf(x!))
+                        .then(x => {
+                            if (x) {
+                                World.SceneRenderer.RegisterSceneObject(x)
+                            }
+                        })
+                }
+            }}
         >
             <div className="flex flex-col items-center gap-5">
                 <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} />
                 <Button value="Upload" size={ButtonSize.Large} onClick={uploadClicked} />
-                {
-                    selectedFile
-                        ? (<Label className="text-center" size={LabelSize.Medium}>{`Selected File: ${selectedFile.name}`}</Label>)
-                        : (<></>)
-                }
+                {selectedFile ? (
+                    <Label
+                        className="text-center"
+                        size={LabelSize.Medium}
+                    >{`Selected File: ${selectedFile.name}`}</Label>
+                ) : (
+                    <></>
+                )}
                 <Dropdown
-                    label="Type" options={["None","Robot", "Field"]} onSelect={(selected: string) => {typeSelected(selected)}}
+                    label="Type"
+                    options={["None", "Robot", "Field"]}
+                    onSelect={(selected: string) => {
+                        typeSelected(selected)
+                    }}
                 />
             </div>
         </Modal>
     )
-
 }
-
 
 export default ImportLocalMirabufModal

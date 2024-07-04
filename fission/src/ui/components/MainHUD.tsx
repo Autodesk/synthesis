@@ -149,7 +149,11 @@ const MainHUD: React.FC = () => {
                             console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
                         }}
                     />
-                    <MainHUDButton value={"Clear Mira"} icon={<GiSteeringWheel />} onClick={() => MirabufCachingService.RemoveAll()} />
+                    <MainHUDButton
+                        value={"Clear Mira"}
+                        icon={<GiSteeringWheel />}
+                        onClick={() => MirabufCachingService.RemoveAll()}
+                    />
                     <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton
                         value={"Toasts"}

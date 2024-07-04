@@ -102,9 +102,10 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 }
             })
 
-            if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, MiraType.ROBOT, assembly.info?.name ?? undefined)
+            if (!info.name)
+                MirabufCachingService.CacheInfo(info.cacheKey, MiraType.ROBOT, assembly.info?.name ?? undefined)
         } else {
-            console.error('Failed to spawn robot')
+            console.error("Failed to spawn robot")
         }
 
         closeModal()
@@ -114,7 +115,7 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         const cacheInfo = await MirabufCachingService.CacheRemote(info.src, MiraType.ROBOT)
 
         if (!cacheInfo) {
-            console.error('Failed to cache robot')
+            console.error("Failed to cache robot")
             closeModal()
         } else {
             selectCache(cacheInfo)
@@ -185,9 +186,10 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 }
             })
 
-            if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, MiraType.FIELD, assembly.info?.name ?? undefined)
+            if (!info.name)
+                MirabufCachingService.CacheInfo(info.cacheKey, MiraType.FIELD, assembly.info?.name ?? undefined)
         } else {
-            console.error('Failed to spawn field')
+            console.error("Failed to spawn field")
         }
 
         closeModal()
@@ -197,7 +199,7 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         const cacheInfo = await MirabufCachingService.CacheRemote(info.src, MiraType.FIELD)
 
         if (!cacheInfo) {
-            console.error('Failed to cache field')
+            console.error("Failed to cache field")
             closeModal()
         } else {
             selectCache(cacheInfo)

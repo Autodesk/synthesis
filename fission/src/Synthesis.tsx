@@ -92,7 +92,7 @@ function Synthesis() {
         console.log(urlParams)
 
         const setup = async () => {
-            const info = await MirabufCachingService.CacheRemote(mira_path,MiraType.ROBOT)
+            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
                 .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
 
