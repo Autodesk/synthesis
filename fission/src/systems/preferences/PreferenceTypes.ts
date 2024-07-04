@@ -1,4 +1,4 @@
-import { Vector3Tuple } from "three"
+import { Vector3Tuple, Vector4Tuple } from "three"
 import { InputScheme } from "../input/DefaultInputs"
 
 export type GlobalPreference =
@@ -14,7 +14,7 @@ export type GlobalPreference =
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
 
-export const DefaultPreferences: { [key: string]: Object } = {
+export const DefaultGlobalPreferences: { [key: string]: Object } = {
     "ScreenMode": "Windowed",
     "QualitySettings": "High",
     "ZoomSensitivity": 15,
@@ -36,22 +36,39 @@ export type EjectorPreferences = {
 }
 
 export type RobotPreferences = {
-    // TODO: after merge with advanced inputs
-    //controls: InputScheme,
-    test: boolean
-    inputsScheme: InputScheme
-    intake: IntakePreferences
+    inputsSchemes: InputScheme[],
+    intake: IntakePreferences,
     ejector: EjectorPreferences
 }
 
-export type FieldPreferences = {}
+export type Alliance = "Blue" | "Red"
+
+export type ScoringZonePreferences = {
+    name: string,
+    alliance: Alliance,
+    parent: string,
+    points: number,
+    destroyGamepiece: boolean,
+    persistentPoints: boolean,
+    localPosition: Vector3Tuple,
+    localRotation: Vector4Tuple,
+    localScale: Vector3Tuple
+}
+
+export type FieldPreferences = {
+    defaultSpawnLocation: Vector3Tuple
+    scoringZones: ScoringZonePreferences[]
+}
 
 
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
-        test: false, 
-        inputsScheme: {schemeName: "", usesGamepad: false, inputs: []},
+        inputsSchemes: [],
         intake: { location: [0, 0, 0], diameter: 1 }, 
         ejector: { location: [0, 0, 0], ejectorVelocity: 1 }
     };
+}
+
+export function DefaultFieldPreferences(): FieldPreferences {
+    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [] }
 }

@@ -241,8 +241,8 @@ class InputSystem extends WorldSystem {
     }
 
     // If an input exists, return it's value
-    public static getInput(inputName: string, assemblyName: string): number {
-        const targetScheme = PreferencesSystem.getRobotPreferences(assemblyName).inputsScheme
+    public static getInput(inputName: string, assemblyName: string, assemblyIndex: number): number {
+        const targetScheme = PreferencesSystem.getRobotPreferences(assemblyName).inputsSchemes[assemblyIndex]
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as (Input)
 

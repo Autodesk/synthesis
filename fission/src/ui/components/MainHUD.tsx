@@ -128,16 +128,6 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                     <MainHUDButton
-                        value={"Load Preferences"}
-                        icon={<IoBug />}
-                        onClick={() => PreferencesSystem.loadPreferences()}
-                    />
-                    <MainHUDButton
-                        value={"Save Preferences"}
-                        icon={<IoBug />}
-                        onClick={() => PreferencesSystem.savePreferences()}
-                    />
-                    <MainHUDButton
                         value={"Robot test -> 5"}
                         icon={<IoBug />}
                         onClick={() =>
