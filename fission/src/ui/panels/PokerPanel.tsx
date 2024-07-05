@@ -67,7 +67,14 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [mark, markRadius, punch, punchForce])
 
     return (
-        <Panel openLocation="bottom-right" name={"The Poker"} icon={<AiOutlineDoubleRight />} panelId={panelId}>
+        <Panel
+            openLocation="bottom-right"
+            name={"The Poker"}
+            icon={<AiOutlineDoubleRight/>}
+            panelId={panelId}
+            acceptBlocked={true}
+            cancelName="Close"
+        >
             <Checkbox label="Punch?" defaultState={PUNCH_DEFAULT} onClick={x => setPunch(x)} />
             <Slider
                 label="Punch Force"
