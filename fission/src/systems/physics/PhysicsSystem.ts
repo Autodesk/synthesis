@@ -191,8 +191,6 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
         const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
-        // const layer = undefined;
-        console.log(`Using layer ${layer?.layer}`)
         const bodyMap = this.CreateBodiesFromParser(parser, layer)
         const rootBody = parser.rootNode
         const mechanism = new Mechanism(rootBody, bodyMap, layer)
@@ -736,7 +734,6 @@ class PhysicsSystem extends WorldSystem {
             this._joltBodyInterface.RemoveBody(x)
             // this._joltBodyInterface.DestroyBody(x);
         })
-        console.log("Mechanism destroyed")
     }
 
     public GetBody(bodyId: Jolt.BodyID) {
@@ -751,8 +748,6 @@ class PhysicsSystem extends WorldSystem {
 
         let substeps = Math.max(1, Math.floor((lastDeltaT / STANDARD_SIMULATION_PERIOD) * STANDARD_SUB_STEPS))
         substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))
-
-        // console.log(`DeltaT: ${lastDeltaT.toFixed(5)}, Substeps: ${substeps}`)
 
         this._joltInterface.Step(lastDeltaT, substeps)
     }
