@@ -41,10 +41,9 @@ class Parser:
 
             # Physical Props here when ready
 
-            # TODO: Test exporting to mirabuf and add export location
-
             if self.exporterOptions.frictionOverride:
                 assembly_out.data.parts.parts_definitions.value.friction_override = self.exporterOptions.frictionOverrideCoeff
+            #
 
             progressDialog = app.userInterface.createProgressDialog()
             progressDialog.cancelButtonText = "Cancel"

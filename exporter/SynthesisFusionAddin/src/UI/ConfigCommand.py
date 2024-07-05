@@ -15,7 +15,6 @@ from ..Analytics.alert import showAnalyticsAlert
 from ..configure import NOTIFIED, write_configuration
 from ..general_imports import *
 from ..Parser.ExporterOptions import (
-    ExportLocation,
     ExporterOptions,
     ExportMode,
     Gamepiece,
@@ -222,17 +221,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             dropdownExportMode.tooltip = "Export Mode"
             dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
-
-            # ~~~~~~~~~~~~~~~~ EXPORT LOCATION ~~~~~~~~~~~~~~~~~~
-
-            dropdownExportLocation = inputs.addDropDownCommandInput("location", "Export Location", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle)
-
-            upload: bool = exporterOptions.exportLocation == ExportLocation.UPLOAD
-            dropdownExportLocation.listItems.add("Upload", upload)
-            dropdownExportLocation.listItems.add("Download", not upload)
-
-            dropdownExportLocation.tooltip = "Export Location"
-            dropdownExportLocation.tooltipDescription = "<hr>Do you want to upload this mirabuf file to APS, or download it to your local machine?"
 
             # ~~~~~~~~~~~~~~~~ WEIGHT CONFIGURATION ~~~~~~~~~~~~~~~~
             """
@@ -1025,9 +1013,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             _exportWheels = []  # all selected wheels, formatted for parseOptions
             _exportJoints = []  # all selected joints, formatted for parseOptions
             _exportGamepieces = []  # TODO work on the code to populate Gamepiece
-            _robotWeight: float
-            _mode: ExportLocation
-            _location: ExportLocation
+            _robotWeight = float
+            _mode = ExportMode.ROBOT
 
             """
             Loops through all rows in the wheel table to extract all the input values
@@ -1156,16 +1143,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 _mode = ExportMode.FIELD
 
-            """
-            Export Location
-            """
-
-            dropdownExportLocation = INPUTS_ROOT.itemById("location")
-            if dropdownExportLocation.select.index == 0:
-                _location = ExportLocation.UPLOAD
-            elif dropdownExportLocation.select.index == 1:
-                _location = ExportLocation.DOWNLOAD
-
             
             """
             Advanced Settings
@@ -1204,7 +1181,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 preferredUnits=selectedUnits,
                 robotWeight=_robotWeight,
                 exportMode=_mode,
-                exportLocation=_location,
                 compressOutput=compress,
                 exportAsPart=export_as_part_boolean,
                 frictionOverride=frictionOverride,

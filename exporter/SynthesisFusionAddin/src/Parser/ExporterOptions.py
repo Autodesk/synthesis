@@ -22,7 +22,6 @@ WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
 PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
-ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
 
 
 @dataclass
@@ -94,9 +93,7 @@ class ExporterOptions:
     robotWeight: float = field(default=0.0)
 
     frictionOverride: bool = field(default=False)
-    frictionOverrideCoeff: float = field(default=0.5)
-
-    exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
+    frictionOverrideCoeff: float | None = field(default=None)
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
