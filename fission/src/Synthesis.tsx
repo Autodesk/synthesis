@@ -83,10 +83,6 @@ function Synthesis() {
     useEffect(() => {
         World.InitWorld()
 
-        World.SceneRenderer.renderer.domElement.addEventListener("auxclick", (e: MouseEvent) => {
-            console.debug(e)
-        })
-
         let mira_path = DEFAULT_MIRA_PATH
 
         const urlParams = new URLSearchParams(document.location.search)

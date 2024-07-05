@@ -1,5 +1,6 @@
 import {
     JoltVec3_ThreeVector3,
+    MirabufFloatArr_JoltFloat3,
     MirabufFloatArr_JoltVec3,
     MirabufVector3_JoltVec3,
     ThreeMatrix4_JoltMat44,
@@ -551,7 +552,9 @@ class PhysicsSystem extends WorldSystem {
                     const partDefinition =
                         parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
 
-                    const partShapeResult = this.CreateShapeSettingsFromPart(partDefinition)
+                    const partShapeResult = rn.isDynamic
+                        ? this.CreateConvexShapeSettingsFromPart(partDefinition)
+                        : this.CreateConcaveShapeSettingsFromPart(partDefinition)
 
                     if (partShapeResult) {
                         const [shapeSettings, partMin, partMax] = partShapeResult
@@ -627,7 +630,7 @@ class PhysicsSystem extends WorldSystem {
      * @param   partDefinition  Definition of the part to create.
      * @returns If successful, the created convex hull shape settings from the given Part Definition.
      */
-    private CreateShapeSettingsFromPart(
+    private CreateConvexShapeSettingsFromPart(
         partDefinition: mirabuf.IPartDefinition
     ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
         const settings = new JOLT.ConvexHullShapeSettings()
@@ -654,6 +657,53 @@ class PhysicsSystem extends WorldSystem {
             JOLT.destroy(max)
             return
         } else {
+            return [settings, min, max]
+        }
+    }
+
+    /**
+     * Creates the Jolt ShapeSettings for a given part using the Part Definition of said part.
+     *
+     * @param   partDefinition  Definition of the part to create.
+     * @returns If successful, the created convex hull shape settings from the given Part Definition.
+     */
+    private CreateConcaveShapeSettingsFromPart(
+        partDefinition: mirabuf.IPartDefinition
+    ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
+        const settings = new JOLT.MeshShapeSettings()
+
+        settings.mTriangleVertices = new JOLT.VertexList()
+        settings.mIndexedTriangles = new JOLT.IndexedTriangleList()
+        settings.mMaterials = new JOLT.PhysicsMaterialList()
+
+        settings.mMaterials.push_back(new JOLT.PhysicsMaterial())
+
+        const min = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
+        const max = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
+
+        partDefinition.bodies!.forEach(body => {
+            if (body.triangleMesh && body.triangleMesh.mesh && body.triangleMesh.mesh.verts && body.triangleMesh.mesh.indices) {
+                const vertArr = body.triangleMesh.mesh.verts
+                for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
+                    const vert = MirabufFloatArr_JoltFloat3(vertArr, i)
+                    settings.mTriangleVertices.push_back(vert)
+                    this.UpdateMinMaxBounds(new JOLT.Vec3(vert), min, max)
+                    JOLT.destroy(vert)
+                }
+                const indexArr = body.triangleMesh.mesh.indices
+                for (let i = 0; i < body.triangleMesh.mesh.indices.length; i += 3) {
+                    settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0))
+                }
+            }
+        })
+
+        if (settings.mTriangleVertices.size() < 4) {
+            JOLT.destroy(settings)
+            JOLT.destroy(min)
+            JOLT.destroy(max)
+            return
+        } else {
+            settings.Sanitize()
             return [settings, min, max]
         }
     }
