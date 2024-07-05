@@ -4,7 +4,7 @@
 
 import logging
 import os
-import platform
+#import platform
 import traceback
 from enum import Enum
 
@@ -24,6 +24,7 @@ from ..Parser.ExporterOptions import (
     SignalType,
     Wheel,
     WheelType,
+    ExportLocation
 )
 from ..Parser.SynthesisParser.Parser import Parser
 from ..Parser.SynthesisParser.Utilities import guid_occurrence
@@ -221,6 +222,17 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             dropdownExportMode.tooltip = "Export Mode"
             dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
+
+            # ~~~~~~~~~~~~~~~~ EXPORT LOCATION ~~~~~~~~~~~~~~~~~~
+
+            dropdownExportLocation = inputs.addDropDownCommandInput("location", "Export Location", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle)
+
+            upload: bool = exporterOptions.exportLocation == ExportLocation.UPLOAD
+            dropdownExportLocation.listItems.add("Upload", upload)
+            dropdownExportLocation.listItems.add("Download", not upload)
+
+            dropdownExportLocation.tooltip = "Export Location"
+            dropdownExportLocation.tooltipDescription = "<hr>Do you want to upload this mirabuf file to APS, or download it to your local machine?"
 
             # ~~~~~~~~~~~~~~~~ WEIGHT CONFIGURATION ~~~~~~~~~~~~~~~~
             """
@@ -621,11 +633,11 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Creates the advanced tab, which is the parent container for internal command inputs
             """
-            advancedSettings = INPUTS_ROOT.addTabCommandInput("advanced_settings", "Advanced")
+            advancedSettings: adsk.core.TabCommandInput = INPUTS_ROOT.addTabCommandInput("advanced_settings", "Advanced")
             advancedSettings.tooltip = (
                 "Additional Advanced Settings to change how your model will be translated into Unity."
             )
-            a_input = advancedSettings.children
+            a_input: adsk.core.CommandInputs = advancedSettings.children
 
             # ~~~~~~~~~~~~~~~~ EXPORTER SETTINGS ~~~~~~~~~~~~~~~~
             """
@@ -660,55 +672,36 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Physics settings group command
             """
-            physicsSettings = a_input.addGroupCommandInput("physics_settings", "Physics Settings")
+            physicsSettings: adsk.core.GroupCommandInput = a_input.addGroupCommandInput("physics_settings", "Physics Settings")
 
-            physicsSettings.isExpanded = False
+            physicsSettings.isExpanded = True
             physicsSettings.isEnabled = True
-            physicsSettings.tooltip = "tooltip"  # TODO: update tooltip
-            physics_settings = physicsSettings.children
+            physicsSettings.tooltip = "Settings relating to the custom physics of the robot, like the wheel friction"
+            physics_settings: adsk.core.CommandInputs = physicsSettings.children
 
-            # AARD-1687
-            # Should also be commented out / removed?
-            # This would cause problems elsewhere but I can't tell i f
-            # this is even being used.
-            frictionOverrideTable = self.createTableInput(
-                "friction_override_table",
-                "",
-                physics_settings,
-                2,
-                "1:2",
-                1,
-                columnSpacing=25,
-            )
-            frictionOverrideTable.tablePresentationStyle = 2
-            # frictionOverrideTable.isFullWidth = True
-
-            frictionOverride = self.createBooleanInput(
+            frictionOverrideInput = self.createBooleanInput(
                 "friction_override",
-                "",
+                "Friction Override",
                 physics_settings,
-                checked=False,
+                checked=exporterOptions.frictionOverride, # object is missing attribute
                 tooltip="Manually override the default friction values on the bodies in the assembly.",
                 enabled=True,
                 isCheckBox=False,
             )
-            frictionOverride.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
-            frictionOverride.isFullWidth = True
+            frictionOverrideInput.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
+            frictionOverrideInput.isFullWidth = True
 
             valueList = [1]
             for i in range(20):
                 valueList.append(i / 20)
 
-            frictionCoeff = physics_settings.addFloatSliderListCommandInput(
-                "friction_coeff_override", "Friction Coefficient", "", valueList
+            frictionCoeffSlider: adsk.core.FloatSliderCommandInput = physics_settings.addFloatSliderListCommandInput(
+                "friction_override_coeff", "Friction Coefficient", "", valueList
             )
-            frictionCoeff.isVisible = False
-            frictionCoeff.valueOne = 0.5
-            frictionCoeff.tooltip = "Friction coefficient of field element."
-            frictionCoeff.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
-
-            frictionOverrideTable.addCommandInput(frictionOverride, 0, 0)
-            frictionOverrideTable.addCommandInput(frictionCoeff, 0, 1)
+            frictionCoeffSlider.isVisible = True 
+            frictionCoeffSlider.valueOne = 0.5
+            frictionCoeffSlider.tooltip = "Friction coefficient of field element."
+            frictionCoeffSlider.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
 
             # ~~~~~~~~~~~~~~~~ JOINT SETTINGS ~~~~~~~~~~~~~~~~
             """
@@ -999,12 +992,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            export_as_part_boolean = (
-                eventArgs.command.commandInputs.itemById("advanced_settings")
-                .children.itemById("exporter_settings")
-                .children.itemById("export_as_part")
-            ).value
-
+            
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if dropdownExportMode.selectedItem.index == 0:
@@ -1038,7 +1026,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             _exportJoints = []  # all selected joints, formatted for parseOptions
             _exportGamepieces = []  # TODO work on the code to populate Gamepiece
             _robotWeight = float
-            _mode = ExportMode.ROBOT
+            _mode: ExportMode
+            _location: ExportLocation
+
 
             """
             Loops through all rows in the wheel table to extract all the input values
@@ -1167,11 +1157,29 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 _mode = ExportMode.FIELD
 
+            """
+            Export Location
+            """
+            dropdownExportLocation = INPUTS_ROOT.itemById("location")
+            if dropdownExportLocation.select.index == 0:
+                _location = ExportLocation.UPLOAD
+            elif dropdownExportLocation.select.index == 1:
+                _location = ExportLocation.DOWNLOAD
+            
+            """
+            Advanced Settings
+            """
             global compress
             compress = (
                 eventArgs.command.commandInputs.itemById("advanced_settings")
                 .children.itemById("exporter_settings")
                 .children.itemById("compress")
+            ).value
+            
+            export_as_part_boolean = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("exporter_settings")
+                .children.itemById("export_as_part")
             ).value
 
             exporterOptions = ExporterOptions(
@@ -1185,11 +1193,12 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 preferredUnits=selectedUnits,
                 robotWeight=_robotWeight,
                 exportMode=_mode,
+                exportLocation=_location,
                 compressOutput=compress,
                 exportAsPart=export_as_part_boolean,
             )
 
-            Parser(exporterOptions).export()
+            _: bool = Parser(exporterOptions).export()
             exporterOptions.writeToDesign()
         except:
             if gm.ui:
@@ -1628,7 +1637,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             inputs = cmdInput.commandInputs
             onSelect = gm.handlers[3]
 
-            frictionCoeff = INPUTS_ROOT.itemById("friction_coeff_override")
+            frictionCoeff = INPUTS_ROOT.itemById("friction_override_coeff")
 
             wheelSelect = inputs.itemById("wheel_select")
             jointSelect = inputs.itemById("joint_select")

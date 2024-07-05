@@ -22,6 +22,7 @@ WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
 PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
+ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
 
 
 @dataclass
