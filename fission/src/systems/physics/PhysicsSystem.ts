@@ -682,7 +682,12 @@ class PhysicsSystem extends WorldSystem {
         const max = new JOLT.Vec3(-1000000.0, -1000000.0, -1000000.0)
 
         partDefinition.bodies!.forEach(body => {
-            if (body.triangleMesh && body.triangleMesh.mesh && body.triangleMesh.mesh.verts && body.triangleMesh.mesh.indices) {
+            if (
+                body.triangleMesh &&
+                body.triangleMesh.mesh &&
+                body.triangleMesh.mesh.verts &&
+                body.triangleMesh.mesh.indices
+            ) {
                 const vertArr = body.triangleMesh.mesh.verts
                 for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
                     const vert = MirabufFloatArr_JoltFloat3(vertArr, i)
@@ -692,7 +697,9 @@ class PhysicsSystem extends WorldSystem {
                 }
                 const indexArr = body.triangleMesh.mesh.indices
                 for (let i = 0; i < body.triangleMesh.mesh.indices.length; i += 3) {
-                    settings.mIndexedTriangles.push_back(new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0))
+                    settings.mIndexedTriangles.push_back(
+                        new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0)
+                    )
                 }
             }
         })

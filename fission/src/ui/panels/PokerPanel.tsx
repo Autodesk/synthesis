@@ -70,7 +70,7 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="bottom-right"
             name={"The Poker"}
-            icon={<AiOutlineDoubleRight/>}
+            icon={<AiOutlineDoubleRight />}
             panelId={panelId}
             acceptBlocked={true}
             cancelName="Close"
