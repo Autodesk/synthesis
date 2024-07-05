@@ -96,6 +96,8 @@ class ExporterOptions:
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
 
+    exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
+
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
     visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)

@@ -683,7 +683,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "friction_override",
                 "Friction Override",
                 physics_settings,
-                checked=exporterOptions.frictionOverride, # object is missing attribute
+                checked=True, # object is missing attribute
                 tooltip="Manually override the default friction values on the bodies in the assembly.",
                 enabled=True,
                 isCheckBox=False,
@@ -1161,9 +1161,9 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             Export Location
             """
             dropdownExportLocation = INPUTS_ROOT.itemById("location")
-            if dropdownExportLocation.select.index == 0:
+            if dropdownExportLocation.selectedItem.index == 0:
                 _location = ExportLocation.UPLOAD
-            elif dropdownExportLocation.select.index == 1:
+            elif dropdownExportLocation.selectedItem.index == 1:
                 _location = ExportLocation.DOWNLOAD
             
             """

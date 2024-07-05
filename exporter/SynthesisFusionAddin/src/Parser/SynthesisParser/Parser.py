@@ -9,9 +9,10 @@ from proto.proto_out import assembly_pb2, types_pb2
 
 from ...general_imports import *
 from ...UI.Camera import captureThumbnail, clearIconCache
-from ..ExporterOptions import ExporterOptions, ExportMode
+from ..ExporterOptions import ExporterOptions, ExportMode, ExportLocation
 from . import Components, JointHierarchy, Joints, Materials, PDMessage
 from .Utilities import *
+from ...temp_file_upload import upload_mirabuf # This line causes everything to break
 
 
 class Parser:
@@ -179,7 +180,19 @@ class Parser:
                 f.write(assembly_out.SerializeToString())
                 f.close()
 
-            progressDialog.hide()
+            # Upload Mirabuf File to APS
+            if self.exporterOptions.exportLocation == ExportLocation.UPLOAD:
+                self.logger.debug("Uploading file to APS")
+                project = app.data.dataProjects.item(0)
+                if not project.isValid:
+                    return False # add throw later
+                project_id = project.id
+                folder_id = project.rootFolder.id
+                file_location = self.exporterOptions.fileLocation
+                if upload_mirabuf(project_id, folder_id, file_location).is_err():
+                    gm.ui.messageBox("FAILED TO UPLOAD FILE TO APS", "ERROR") # add throw later
+
+            _ = progressDialog.hide()
 
             if DEBUG:
                 part_defs = assembly_out.data.parts.part_definitions
