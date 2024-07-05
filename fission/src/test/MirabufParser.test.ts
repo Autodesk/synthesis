@@ -16,7 +16,7 @@ describe("Mirabuf Parser Tests", () => {
         expect(filterNonPhysicsNodes(rn, spikeMira!).length).toBe(7)
     })
 
-    test("Generate Rigid Nodes (FRC_Field_2018_v14.mira)", async () => {
+    test("Generate Rigid Nodes (FRC_Field_2018_v13.mira)", async () => {
         const field = await MirabufCachingService.CacheRemote(
             "/api/mira/Fields/FRC Field 2018_v13.mira",
             MiraType.FIELD

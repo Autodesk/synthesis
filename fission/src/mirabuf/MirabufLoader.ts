@@ -55,7 +55,6 @@ class MirabufCachingService {
         if (map) {
             return JSON.parse(map)
         } else {
-            console.log("mirabuf JSON not found. Creating blank cache")
             window.localStorage.setItem(key, "{}")
             return {}
         }
@@ -74,11 +73,8 @@ class MirabufCachingService {
         const target = map[fetchLocation]
 
         if (target) {
-            console.log("Mira in cache")
             return target
         }
-
-        console.log("Caching new mira")
 
         // Grab file remote
         const miraBuff = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
@@ -102,7 +98,6 @@ class MirabufCachingService {
         const target = map[key]
 
         if (target) {
-            console.log("Mira in cache")
             return target
         }
 
@@ -161,10 +156,7 @@ class MirabufCachingService {
         const target = map[key]
         const assembly = this.AssemblyFromBuffer(buffer)
 
-        if (target) {
-            console.log("Mira in cache")
-        } else {
-            console.log("Caching new mira")
+        if (!target) {
             await MirabufCachingService.StoreInCache(key, buffer, miraType, assembly.info?.name ?? undefined)
         }
 
@@ -192,7 +184,6 @@ class MirabufCachingService {
             if (fileHandle) {
                 const buff = await fileHandle.getFile().then(x => x.arrayBuffer())
                 const assembly = this.AssemblyFromBuffer(buff)
-                console.log(assembly)
                 return assembly
             } else {
                 console.error(`Failed to get file handle for ID: ${id}`)
@@ -273,7 +264,7 @@ class MirabufCachingService {
 
             return info
         } catch (e) {
-            console.log("Failed to cache mira " + e)
+            console.error("Failed to cache mira " + e)
             return undefined
         }
     }
