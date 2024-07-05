@@ -1,10 +1,5 @@
-import ReactDOM from "react-dom/client"
-import { Theme, ThemeProvider } from "@/ui/ThemeContext"
-// import Synthesis from "./Synthesis"
-import "./index.css"
-import SynthesisThemed from "@/SynthesisThemed"
+import { Theme } from "@/ui/ThemeContext";
 
-const initialThemeName = "Default"
 const defaultColors: Theme = {
     InteractiveElementSolid: {
         color: { r: 250, g: 162, b: 27, a: 1 },
@@ -69,12 +64,5 @@ const defaultColors: Theme = {
     ToastWarning: { color: { r: 234, g: 179, b: 8, a: 1 }, above: [] },
     ToastError: { color: { r: 239, g: 68, b: 68, a: 1 }, above: [] },
 }
-const themes = {
-    Default: defaultColors,
-}
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-    <ThemeProvider initialThemeName={initialThemeName} themes={themes} defaultTheme={defaultColors}>
-        <SynthesisThemed />
-    </ThemeProvider>
-)
+export default defaultColors

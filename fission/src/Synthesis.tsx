@@ -55,6 +55,7 @@ import { AddRobotsModal, AddFieldsModal, SpawningModal } from '@/modals/spawning
 import ImportMirabufModal from '@/modals/mirabuf/ImportMirabufModal.tsx';
 import Skybox from './ui/components/Skybox.tsx';
 import ImportLocalMirabufModal from '@/modals/mirabuf/ImportLocalMirabufModal.tsx';
+import MuiTestPanel from "./ui/panels/MuiTestPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -112,7 +113,7 @@ function Synthesis() {
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
             })()
         }
-        setup()
+        // setup()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -207,6 +208,7 @@ const initialPanels: ReactElement[] = [
     <ConfigureShotTrajectoryPanel panelId="config-shot-trajectory" />,
     <ScoringZonesPanel panelId="scoring-zones" />,
     <ZoneConfigPanel panelId="zone-config" />,
+    <MuiTestPanel panelId="mui-test" />,
 ]
 
 export default Synthesis

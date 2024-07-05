@@ -1,5 +1,7 @@
 import React, { ReactNode } from "react"
 import { usePanelControlContext } from "@/ui/PanelContext"
+import { Button } from "@mui/material";
+import { acceptButtonColor, cancelButtonColor, interactiveBackgroundColor } from "@/MuiTheme";
 
 export type OpenLocation =
     | "top-left"
@@ -146,42 +148,59 @@ const Panel: React.FC<PanelProps> = ({
                 {(cancelEnabled || middleEnabled || acceptEnabled) && (
                     <div id="footer" className="flex justify-between mx-10 py-8 text-accept-cancel-button-text">
                         {cancelEnabled && (
-                            <input
-                                type="button"
-                                value={cancelName || "Cancel"}
+                            <Button
                                 onClick={() => {
                                     closePanel(panelId)
                                     if (!cancelBlocked && onCancel) onCancel()
                                 }}
-                                className={`${
-                                    cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
-                            />
+                                sx={{
+                                    background: "none",
+                                    backgroundColor: acceptBlocked ? interactiveBackgroundColor : cancelButtonColor,
+                                }}
+                                size="small"
+                            >
+                                { cancelName || "Cancel" }
+                            </Button>
                         )}
                         {middleEnabled && (
-                            <input
-                                type="button"
-                                value={middleName || ""}
+                            <Button
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
                                 }}
-                                className={`${
-                                    middleBlocked ? "bg-interactive-background" : "bg-accept-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
-                            />
+                                sx={{
+                                    background: "none",
+                                    backgroundColor: acceptBlocked ? interactiveBackgroundColor : acceptButtonColor,
+                                }}
+                                size="small"
+                            >
+                                { middleName || "Middle" }
+                            </Button>
                         )}
                         {acceptEnabled && (
-                            <input
-                                type="button"
-                                value={acceptName || "Accept"}
+                            <Button
                                 onClick={() => {
                                     closePanel(panelId)
                                     if (!acceptBlocked && onAccept) onAccept()
                                 }}
-                                className={`${
-                                    acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
-                            />
+                                sx={{
+                                    background: "none",
+                                    backgroundColor: acceptBlocked ? interactiveBackgroundColor : acceptButtonColor,
+                                }}
+                                size="small"
+                            >
+                                { acceptName || "Accept" }
+                            </Button>
+                            // <input
+                            //     type="button"
+                            //     value={acceptName || "Accept"}
+                            //     onClick={() => {
+                            //         closePanel(panelId)
+                            //         if (!acceptBlocked && onAccept) onAccept()
+                            //     }}
+                            //     className={`${
+                            //         acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
+                            //     } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                            // />
                         )}
                     </div>
                 )}
