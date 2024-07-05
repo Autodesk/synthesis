@@ -18,6 +18,7 @@ const config = {
             },
         },
     ],
+    endOfLine: "crlf",
 }
 
 export default config
