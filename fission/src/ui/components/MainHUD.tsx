@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
 import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
-import { GrFormClose } from "react-icons/gr"
+import { GrConnect, GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
 import { IoGameControllerOutline, IoPeople } from "react-icons/io5"
@@ -119,6 +119,11 @@ const MainHUD: React.FC = () => {
                         value={"Import Mira"}
                         icon={<IoPeople />}
                         onClick={() => openModal("import-mirabuf")}
+                    />
+                    <MainHUDButton
+                        value={"WS Viewer"}
+                        icon={<GrConnect />}
+                        onClick={() => openPanel("ws-view")}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
