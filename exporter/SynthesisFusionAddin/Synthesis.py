@@ -6,12 +6,14 @@ from shutil import rmtree
 
 import adsk.core
 
+from .proto.deps import installDependencies
+installDependencies()
+
 from .src.configure import setAnalytics, unload_config
 from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
 from .src.Types.OString import OString
 from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
 from .src.UI.Toolbar import Toolbar
-
 
 def run(_):
     """## Entry point to application from Fusion.

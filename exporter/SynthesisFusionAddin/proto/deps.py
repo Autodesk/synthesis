@@ -10,7 +10,6 @@ from src.general_imports import INTERNAL_ID
 
 system = platform.system()
 
-
 def getPythonFolder() -> str:
     """Retreives the folder that contains the Autodesk python executable
 
@@ -166,14 +165,22 @@ def _checkDeps() -> bool:
     except ImportError:
         return False
 
+"""
+Checks for, and installs if need be, the dependencies needed by the Synthesis Exporter. Will error if it cannot install the dependencies
+correctly. This should crash the exporter, since most of the exporter needs these dependencies to function in
+the first place.
+"""
+def installDependencies():
+    try:
+        import logging.handlers
 
-try:
-    import logging.handlers
+        import google.protobuf
+        import pkg_resources
 
-    import google.protobuf
-    import pkg_resources
+        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
 
-    from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
-except ImportError or ModuleNotFoundError:
-    installCross(["protobuf==4.23.3"])
-    from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
+        from requests import get, post
+        from result import Ok, Err, is_err
+    except ImportError or ModuleNotFoundError:
+        installCross(["protobuf==4.23.3", "requests==2.32.3", "result==0.17.0"])
+        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
