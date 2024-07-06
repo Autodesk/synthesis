@@ -143,7 +143,7 @@ const MainHUD: React.FC = () => {
                         value={"WS Test"}
                         icon={<FaCar />}
                         onClick={() => {
-                            worker?.postMessage({ command: 'connect' });
+                            // worker?.postMessage({ command: 'connect' });
                             const miraObjs = [...World.SceneRenderer.sceneObjects.entries()]
                                 .filter(x => x[1] instanceof MirabufSceneObject)
                             console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)

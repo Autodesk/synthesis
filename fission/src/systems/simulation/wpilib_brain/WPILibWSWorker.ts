@@ -5,21 +5,18 @@ let socket: WebSocket | undefined = undefined
 const connectMutex = new Mutex()
 
 async function tryConnect(port: number | undefined): Promise<void> {
-    if (!connectMutex.isLocked()) {
-        await connectMutex.runExclusive(() => {
-            if ((socket?.readyState ?? WebSocket.CLOSED) == WebSocket.OPEN) {
-                socket?.close()
-                socket = undefined
-            }
-            
-            socket = new WebSocket(`ws://localhost:${port ?? 3300}/wpilibws`)
+    await connectMutex.runExclusive(() => {
+        if ((socket?.readyState ?? WebSocket.CLOSED) == WebSocket.OPEN) {
+            return
+        }
 
-            socket.addEventListener('open', () => { console.log('WS Opened'); self.postMessage({ status: 'open' }); })
-            socket.addEventListener('error', () => { console.log('WS Could not open'); self.postMessage({ status: 'error' }) })
+        socket = new WebSocket(`ws://localhost:${port ?? 3300}/wpilibws`)
 
-            socket.addEventListener('message', onMessage)
-        })
-    }
+        socket.addEventListener('open', () => { console.log('WS Opened'); self.postMessage({ status: 'open' }); })
+        socket.addEventListener('error', () => { console.log('WS Could not open'); self.postMessage({ status: 'error' }) })
+
+        socket.addEventListener('message', onMessage)
+    }).then(() => console.debug('Mutex released'))
 }
 
 async function tryDisconnect(): Promise<void> {
@@ -28,7 +25,7 @@ async function tryDisconnect(): Promise<void> {
             return
         }
 
-        socket.close()
+        socket?.close()
         socket = undefined
     })
 }
