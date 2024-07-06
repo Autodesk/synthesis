@@ -25,21 +25,22 @@ class SynthesisBrain extends Brain {
     // Tracks how many joins have been made for unique controls
     private _currentJointIndex = 1
 
-    // Tracks how many robots are spawned for control identification
     private _assemblyName: string
     private _assemblyIndex: number = 0
 
-    private static _numberRobotsSpawned: { [key: string]: number } = {}
+    // Tracks the number of each specific mira file spawned
+    public static numberRobotsSpawned: { [key: string]: number } = {}
+
+    // A list of all the robots spawned including their assembly index
+    public static robotsSpawned: string[] = []
+
+    // The total number of robots spawned
     private static _currentRobotIndex: number = 0
 
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
-
-        console.log(assemblyName)
-        console.log("ROBOT PREFS: " + JSON.stringify(PreferencesSystem.getRobotPreferences(assemblyName)))
-
+        
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
-
         this._assemblyName = assemblyName
 
         if (!this._simLayer) {
@@ -49,13 +50,13 @@ class SynthesisBrain extends Brain {
 
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (mechanism.controllable) {
-            if (SynthesisBrain._numberRobotsSpawned[assemblyName] == undefined)
-               SynthesisBrain._numberRobotsSpawned[assemblyName] = 1 
+            if (SynthesisBrain.numberRobotsSpawned[assemblyName] == undefined)
+               SynthesisBrain.numberRobotsSpawned[assemblyName] = 0 
             else
-                SynthesisBrain._numberRobotsSpawned[assemblyName]++
+                SynthesisBrain.numberRobotsSpawned[assemblyName]++
 
-            this._assemblyIndex = SynthesisBrain._numberRobotsSpawned[assemblyName]++
-            
+            this._assemblyIndex = SynthesisBrain.numberRobotsSpawned[assemblyName]
+            SynthesisBrain.robotsSpawned.push(`[${this._assemblyIndex}] ${assemblyName}`)
             
             this.configureArcadeDriveBehavior()
             this.configureArmBehaviors()
@@ -80,8 +81,8 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        // TODO: something to stop controls from being editable when this robot is removed
-        // InputSystem.allInputs.delete(this._assemblyName);
+        let index = SynthesisBrain.robotsSpawned.indexOf(`[${this._assemblyIndex}] ${this._assemblyName}`);
+        SynthesisBrain.robotsSpawned.splice(index, 1);
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
@@ -174,7 +175,6 @@ class SynthesisBrain extends Brain {
         const robotConfig = PreferencesSystem.getRobotPreferences(this._assemblyName)
         if (robotConfig.inputsSchemes[this._assemblyIndex] != undefined) {
             SynthesisBrain.parseInputs(robotConfig.inputsSchemes[this._assemblyIndex])
-            console.log("inputs found")
             return
         }
 
