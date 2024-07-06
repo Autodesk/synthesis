@@ -13,7 +13,7 @@ const TypoStyled = styled(Typography)({
 function generateTableBody() {
     return (
         <TableBody>
-            {simMap.has('pwm') ? [...simMap.get('pwm')!.entries()].filter(x => x[1]["<init"] == true).map(x => {
+            {simMap.has('PWM') ? [...simMap.get('PWM')!.entries()].filter(x => x[1]["<init"] == true).map(x => {
                 return (
                     <TableRow key={x[0]}>
                         <TableCell><TypoStyled>PWM</TypoStyled></TableCell>
@@ -22,7 +22,7 @@ function generateTableBody() {
                     </TableRow>
                 )
             }) : <></>}
-            {simMap.has('simdevice') ? [...simMap.get('simdevice')!.entries()].map(x => {
+            {simMap.has('SimDevice') ? [...simMap.get('SimDevice')!.entries()].map(x => {
                 return (
                     <TableRow key={x[0]}>
                         <TableCell><TypoStyled>SimDevice</TypoStyled></TableCell>
@@ -31,7 +31,7 @@ function generateTableBody() {
                     </TableRow>
                 )
             }): <></>}
-            {simMap.has('canmotor') ? [...simMap.get('canmotor')!.entries()].map(x => {
+            {simMap.has('CANMotor') ? [...simMap.get('CANMotor')!.entries()].map(x => {
                 return (
                     <TableRow key={x[0]}>
                         <TableCell><TypoStyled>CAN Motor</TypoStyled></TableCell>
@@ -40,7 +40,7 @@ function generateTableBody() {
                     </TableRow>
                 )
             }) : <></>}
-            {simMap.has('canencoder') ? [...simMap.get('canencoder')!.entries()].map(x => {
+            {simMap.has('CANEncoder') ? [...simMap.get('CANEncoder')!.entries()].map(x => {
                 return (
                     <TableRow key={x[0]}>
                         <TableCell><TypoStyled>CAN Encoder</TypoStyled></TableCell>

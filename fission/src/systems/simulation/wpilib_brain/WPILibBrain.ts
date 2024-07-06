@@ -8,93 +8,133 @@ const worker = new WPILibWSWorker()
 
 export const SIM_MAP_UPDATE_EVENT = "ws/sim-map-update"
 
+const PWM_SPEED = "<speed"
+const PWM_POSITION = "<position"
+const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
+const CANMOTOR_SUPPLY_VOLTAGE = ">supplyVoltage"
+const CANENCODER_RAW_INPUT_POSITION = ">rawInputPosition"
+
 export type SimType =
-    | 'pwm'
-    | 'canmotor'
-    | 'solenoid'
-    | 'simdevice'
-    | 'canencoder'
+    | 'PWM'
+    | 'CANMotor'
+    | 'Solenoid'
+    | 'SimDevice'
+    | 'CANEncoder'
 
-// abstract class DeviceType {
-//     protected _device: string
-    
-//     constructor(device: string) {
-//         this._device = device
-//     }
+enum FieldType {
+    Read = 0, Write = 1, Both = 2, Unknown = -1
+}
 
-//     public abstract Update(data: any): void
-// }
+function GetFieldType(field: string): FieldType {
+    if (field.length < 2) {
+        return FieldType.Unknown
+    }
 
-// class Solenoid extends DeviceType {
-//     constructor(device: string) {
-//         super(device)
-//     }
-
-//     public Update(data: any): void {
-        
-//     }
-// }
-// const solenoids: Map<string, Solenoid> = new Map()
-
-// class SimDevice extends DeviceType {
-//     constructor(device: string) {
-//         super(device)
-//     }
-
-//     public Update(data: any): void {
-
-//     }
-// }
-// const simDevices: Map<string, SimDevice> = new Map()
-
-// class SparkMax extends SimDevice {
-
-//     private _sparkMaxId: number;
-
-//     constructor(device: string) {
-//         super(device)
-
-//         console.debug('Spark Max Constructed')
-        
-//         if (device.match(/spark max/i)?.length ?? 0 > 0) {
-//             const endPos = device.indexOf(']')
-//             const startPos = device.indexOf('[')
-//             this._sparkMaxId = parseInt(device.substring(startPos + 1, endPos))
-//         } else {
-//             throw new Error('Unrecognized Device ID')
-//         }
-//     }
-
-//     public Update(data: any): void {
-//         super.Update(data)
-
-//         Object.entries(data).forEach(x => {
-//             // if (x[0].startsWith('<')) {
-//             //     console.debug(`${x[0]} -> ${x[1]}`)
-//             // }
-
-//             switch (x[0]) {
-//                 case '':
-
-//                     break
-//                 default:
-//                     console.debug(`[${this._sparkMaxId}] ${x[0]} -> ${x[1]}`)
-//                     break
-//             }
-//         })
-//     }
-
-//     public SetPosition(val: number) {
-//         worker.postMessage(
-//             {
-//                 command: 'update',
-//                 data: { type: 'simdevice', device: this._device, data: { '>Position': val } }
-//             }
-//         )
-//     }
-// }
+    switch (field.charAt(0)) {
+        case '<':
+            return field.charAt(1) == ">" ? FieldType.Both : FieldType.Read
+        case '>':
+            return FieldType.Write
+        default:
+            return FieldType.Unknown
+    }
+}
 
 export const simMap = new Map<SimType, Map<string, any>>()
+
+class SimGeneric {
+    private constructor() { }
+
+    public static Get<T = number | string | boolean>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
+        const fieldType = GetFieldType(field)
+        if (fieldType != FieldType.Read && fieldType != FieldType.Both) {
+            console.warn(`Field '${field}' is not a read or both field type`)
+            return undefined
+        }
+        
+        const map = simMap.get(simType)
+        if (!map) {
+            console.warn(`No '${simType}' devices found`)
+            return undefined
+        }
+
+        const data = map.get(device)
+        if (!data) {
+            console.warn(`No '${simType}' device '${device}' found`)
+            return undefined
+        }
+
+        return data[field] as (T | undefined) ?? defaultValue
+    }
+
+    public static Set<T = number | string | boolean>(simType: SimType, device: string, field: string, value: T): boolean {
+        const fieldType = GetFieldType(field)
+        if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
+            console.warn(`Field '${field}' is not a write or both field type`)
+            return false
+        }
+
+        const map = simMap.get(simType)
+        if (!map) {
+            console.warn(`No '${simType}' devices found`)
+            return false
+        }
+
+        const data = map.get(device)
+        if (!data) {
+            console.warn(`No '${simType}' device '${device}' found`)
+            return false
+        }
+
+        const selectedData: any = {}
+        selectedData[field] = value
+
+        data[field] = value
+        worker.postMessage({
+            command: 'update',
+            data: {
+                type: simType,
+                device: device,
+                data: selectedData
+            }
+        })
+        return true
+    }
+}
+
+class SimPWM {
+    private constructor() { }
+
+    public static GetSpeed(device: string): number | undefined {
+        return SimGeneric.Get('PWM', device, PWM_SPEED, 0.0)
+    }
+
+    public static GetPosition(device: string): number | undefined {
+        return SimGeneric.Get('PWM', device, PWM_POSITION, 0.0)
+    }
+}
+
+class SimCANMotor {
+    private constructor() { }
+
+    public static GetDutyCycle(device: string): number | undefined {
+        return SimGeneric.Get('CANMotor', device, CANMOTOR_DUTY_CYCLE, 0.0)
+    }
+
+    public static SetSupplyVoltage(device: string, voltage: number): boolean {
+        return SimGeneric.Set('CANMotor', device, CANMOTOR_SUPPLY_VOLTAGE, voltage)
+    }
+}
+
+class SimCANEncoder {
+    private constructor() { }
+
+    public static SetRawInputPosition(device: string, rawInputPosition: number): boolean {
+        return SimGeneric.Set('CANEncoder', device, CANENCODER_RAW_INPUT_POSITION, rawInputPosition)
+    }
+}
+
+let flag = false
 
 worker.addEventListener('message', (eventData: MessageEvent) => {
     let data: any | undefined;
@@ -118,26 +158,30 @@ worker.addEventListener('message', (eventData: MessageEvent) => {
     const device = data.device
     const updateData = data.data
 
-    switch (data.type.toLowerCase()) {
-        case 'pwm':
+    switch (data.type) {
+        case 'PWM':
             console.debug('pwm')
-            UpdateSimMap('pwm', device, updateData)
+            UpdateSimMap('PWM', device, updateData)
             break
-        case 'solenoid':
+        case 'Solenoid':
             console.debug('solenoid')
-            UpdateSimMap('solenoid', device, updateData)
+            UpdateSimMap('Solenoid', device, updateData)
             break
-        case 'simdevice':
+        case 'SimDevice':
             console.debug('simdevice')
-            UpdateSimMap('simdevice', device, updateData)
+            UpdateSimMap('SimDevice', device, updateData)
+            if (!flag) {
+                flag = true
+                SimGeneric.Set('SimDevice', device, '>init', true)
+            }
             break
-        case 'canmotor':
+        case 'CANMotor':
             console.debug('canmotor')
-            UpdateSimMap('canmotor', device, updateData)
+            UpdateSimMap('CANMotor', device, updateData)
             break
-        case 'canencoder':
+        case 'CANEncoder':
             console.debug('canencoder')
-            UpdateSimMap('canencoder', device, updateData)
+            UpdateSimMap('CANEncoder', device, updateData)
             break
         default:
             // console.debug(`Unrecognized Message:\n${data}`)
