@@ -1,9 +1,8 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SIM_MAP_UPDATE_EVENT, canMotorMap, pwmMap, simDeviceMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SIM_MAP_UPDATE_EVENT, simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import { GrConnect } from "react-icons/gr"
-import { IoPeople } from "react-icons/io5"
 
 const TypoStyled = styled(Typography)({
     fontFamily: "Artifakt Legend",
@@ -14,7 +13,7 @@ const TypoStyled = styled(Typography)({
 function generateTableBody() {
     return (
         <TableBody>
-            {[...pwmMap.entries()].filter(x => x[1]["<init"] == true).map(x => {
+            {simMap.has('pwm') ? [...simMap.get('pwm')!.entries()].filter(x => x[1]["<init"] == true).map(x => {
                 return (
                     <TableRow key={x[0]}>
                         <TableCell><TypoStyled>PWM</TypoStyled></TableCell>
@@ -22,8 +21,8 @@ function generateTableBody() {
                         <TableCell><TypoStyled>{JSON.stringify(x[1])}</TypoStyled></TableCell>
                     </TableRow>
                 )
-            })}
-            {[...simDeviceMap.entries()].map(x => {
+            }) : <></>}
+            {simMap.has('simdevice') ? [...simMap.get('simdevice')!.entries()].map(x => {
                 return (
                     <TableRow key={x[0]}>
                         <TableCell><TypoStyled>SimDevice</TypoStyled></TableCell>
@@ -31,8 +30,8 @@ function generateTableBody() {
                         <TableCell><TypoStyled>{JSON.stringify(x[1])}</TypoStyled></TableCell>
                     </TableRow>
                 )
-            })}
-            {[...canMotorMap.entries()].map(x => {
+            }): <></>}
+            {simMap.has('canmotor') ? [...simMap.get('canmotor')!.entries()].map(x => {
                 return (
                     <TableRow key={x[0]}>
                         <TableCell><TypoStyled>CAN Motor</TypoStyled></TableCell>
@@ -40,7 +39,16 @@ function generateTableBody() {
                         <TableCell><TypoStyled>{JSON.stringify(x[1])}</TypoStyled></TableCell>
                     </TableRow>
                 )
-            })}
+            }) : <></>}
+            {simMap.has('canencoder') ? [...simMap.get('canencoder')!.entries()].map(x => {
+                return (
+                    <TableRow key={x[0]}>
+                        <TableCell><TypoStyled>CAN Encoder</TypoStyled></TableCell>
+                        <TableCell><TypoStyled>{x[0]}</TypoStyled></TableCell>
+                        <TableCell><TypoStyled>{JSON.stringify(x[1])}</TypoStyled></TableCell>
+                    </TableRow>
+                )
+            }) : <></>}
         </TableBody>
     )
 }

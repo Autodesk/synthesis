@@ -8,6 +8,13 @@ const worker = new WPILibWSWorker()
 
 export const SIM_MAP_UPDATE_EVENT = "ws/sim-map-update"
 
+export type SimType =
+    | 'pwm'
+    | 'canmotor'
+    | 'solenoid'
+    | 'simdevice'
+    | 'canencoder'
+
 // abstract class DeviceType {
 //     protected _device: string
     
@@ -87,9 +94,7 @@ export const SIM_MAP_UPDATE_EVENT = "ws/sim-map-update"
 //     }
 // }
 
-export const pwmMap = new Map<string, any>()
-export const simDeviceMap = new Map<string, any>()
-export const canMotorMap = new Map<string, any>()
+export const simMap = new Map<SimType, Map<string, any>>()
 
 worker.addEventListener('message', (eventData: MessageEvent) => {
     let data: any | undefined;
@@ -114,41 +119,48 @@ worker.addEventListener('message', (eventData: MessageEvent) => {
     const updateData = data.data
 
     switch (data.type.toLowerCase()) {
-        case 'pwm': { // ESLint wants curly brackets apparently. Doesn't like scoped variables with only colon?
+        case 'pwm':
             console.debug('pwm')
-            const currentData = pwmMap.get(device) ?? {}
-            Object.entries(updateData).forEach(kvp => currentData[kvp[0]] = kvp[1])
-            pwmMap.set(device, currentData)
-
-            window.dispatchEvent(new Event(SIM_MAP_UPDATE_EVENT))
+            UpdateSimMap('pwm', device, updateData)
             break
-        }
         case 'solenoid':
             console.debug('solenoid')
+            UpdateSimMap('solenoid', device, updateData)
             break
-        case 'simdevice': {
+        case 'simdevice':
             console.debug('simdevice')
-            const currentData = simDeviceMap.get(device) ?? {}
-            Object.entries(updateData).forEach(kvp => currentData[kvp[0]] = kvp[1])
-            simDeviceMap.set(device, currentData)
-
-            window.dispatchEvent(new Event(SIM_MAP_UPDATE_EVENT))
+            UpdateSimMap('simdevice', device, updateData)
             break
-        }
-        case 'canmotor': {
+        case 'canmotor':
             console.debug('canmotor')
-            const currentData = canMotorMap.get(device) ?? {}
-            Object.entries(updateData).forEach(kvp => currentData[kvp[0]] = kvp[1])
-            canMotorMap.set(device, currentData)
-
-            window.dispatchEvent(new Event(SIM_MAP_UPDATE_EVENT))
+            UpdateSimMap('canmotor', device, updateData)
             break
-        }
+        case 'canencoder':
+            console.debug('canencoder')
+            UpdateSimMap('canencoder', device, updateData)
+            break
         default:
             // console.debug(`Unrecognized Message:\n${data}`)
             break
     }
 })
+
+function UpdateSimMap(type: SimType, device: string, updateData: any) {
+    let typeMap = simMap.get(type)
+    if (!typeMap) {
+        typeMap = new Map<string, any>()
+        simMap.set(type, typeMap)
+    }
+
+    let currentData = typeMap.get(device)
+    if (!currentData) {
+        currentData = {}
+        typeMap.set(device, currentData)
+    }
+    Object.entries(updateData).forEach(kvp => currentData[kvp[0]] = kvp[1])
+
+    window.dispatchEvent(new Event(SIM_MAP_UPDATE_EVENT))
+}
 
 class WPILibBrain extends Brain {
 
