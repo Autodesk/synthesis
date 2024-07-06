@@ -125,7 +125,7 @@ const Panel: React.FC<PanelProps> = ({
     return (
         <div>
             <div
-                className={`absolute ${locationClasses.className} ${className || ""} bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
+                className={`absolute ${locationClasses.className} ${className || ""} bg-[#4287f5] text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
                 style={locationClasses.styles}
                 key={"panel-" + panelId}
             >

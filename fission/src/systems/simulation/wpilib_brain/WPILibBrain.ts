@@ -6,13 +6,11 @@ import WPILibWSWorker from './WPILibWSWorker?worker'
 
 const worker = new WPILibWSWorker()
 
-export const SIM_MAP_UPDATE_EVENT = "ws/sim-map-update"
-
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
 const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
 const CANMOTOR_SUPPLY_VOLTAGE = ">supplyVoltage"
-const CANENCODER_RAW_INPUT_POSITION = ">rawInputPosition"
+const CANENCODER_RAW_POSITION_INPUT = ">rawPositionInput"
 
 export type SimType =
     | 'PWM'
@@ -42,10 +40,10 @@ function GetFieldType(field: string): FieldType {
 
 export const simMap = new Map<SimType, Map<string, any>>()
 
-class SimGeneric {
+export class SimGeneric {
     private constructor() { }
 
-    public static Get<T = number | string | boolean>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
+    public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Read && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a read or both field type`)
@@ -67,7 +65,7 @@ class SimGeneric {
         return data[field] as (T | undefined) ?? defaultValue
     }
 
-    public static Set<T = number | string | boolean>(simType: SimType, device: string, field: string, value: T): boolean {
+    public static Set<T>(simType: SimType, device: string, field: string, value: T): boolean {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a write or both field type`)
@@ -98,11 +96,13 @@ class SimGeneric {
                 data: selectedData
             }
         })
+
+        window.dispatchEvent(new SimMapUpdateEvent(true))
         return true
     }
 }
 
-class SimPWM {
+export class SimPWM {
     private constructor() { }
 
     public static GetSpeed(device: string): number | undefined {
@@ -114,7 +114,7 @@ class SimPWM {
     }
 }
 
-class SimCANMotor {
+export class SimCANMotor {
     private constructor() { }
 
     public static GetDutyCycle(device: string): number | undefined {
@@ -126,15 +126,13 @@ class SimCANMotor {
     }
 }
 
-class SimCANEncoder {
+export class SimCANEncoder {
     private constructor() { }
 
     public static SetRawInputPosition(device: string, rawInputPosition: number): boolean {
         return SimGeneric.Set('CANEncoder', device, CANENCODER_RAW_INPUT_POSITION, rawInputPosition)
     }
 }
-
-let flag = false
 
 worker.addEventListener('message', (eventData: MessageEvent) => {
     let data: any | undefined;
@@ -170,10 +168,6 @@ worker.addEventListener('message', (eventData: MessageEvent) => {
         case 'SimDevice':
             console.debug('simdevice')
             UpdateSimMap('SimDevice', device, updateData)
-            if (!flag) {
-                flag = true
-                SimGeneric.Set('SimDevice', device, '>init', true)
-            }
             break
         case 'CANMotor':
             console.debug('canmotor')
@@ -203,7 +197,7 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
     }
     Object.entries(updateData).forEach(kvp => currentData[kvp[0]] = kvp[1])
 
-    window.dispatchEvent(new Event(SIM_MAP_UPDATE_EVENT))
+    window.dispatchEvent(new SimMapUpdateEvent(false))
 }
 
 class WPILibBrain extends Brain {
@@ -222,6 +216,23 @@ class WPILibBrain extends Brain {
         worker.postMessage({ command: 'disconnect' })
     }
 
+}
+
+export class SimMapUpdateEvent extends Event {
+
+    public static readonly TYPE: string = "ws/sim-map-update"
+
+    private _internalUpdate: boolean;
+    
+    public get internalUpdate(): boolean {
+        return this._internalUpdate
+    }
+
+    public constructor(internalUpdate: boolean) {
+        super(SimMapUpdateEvent.TYPE)
+
+        this._internalUpdate = internalUpdate
+    }
 }
 
 export default WPILibBrain

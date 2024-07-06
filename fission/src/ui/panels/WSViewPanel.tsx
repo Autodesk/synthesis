@@ -1,13 +1,15 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SIM_MAP_UPDATE_EVENT, simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
-import { useCallback, useEffect, useState } from "react"
+import { SimMapUpdateEvent, SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { Button, Dropdown } from "@mui/base"
+import { Box, MenuItem, Select, Stack, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { GrConnect } from "react-icons/gr"
+
+type ValueType = "string" | "number" | "object" | "boolean"
 
 const TypoStyled = styled(Typography)({
     fontFamily: "Artifakt Legend",
     fontWeight: 300,
-    color: "white"
 })
 
 function generateTableBody() {
@@ -53,19 +55,62 @@ function generateTableBody() {
     )
 }
 
+function setGeneric(simType: SimType, device: string, field: string, value: string, valueType: ValueType) {
+    switch (valueType) {
+        case "number":
+            SimGeneric.Set(simType, device, field, parseFloat(value))
+            break
+        case "object":
+            SimGeneric.Set(simType, device, field, JSON.parse(value))
+            break
+        case "boolean":
+            SimGeneric.Set(simType, device, field, value.toLowerCase() == "true")
+            break
+        default:
+            SimGeneric.Set(simType, device, field, value)
+            break
+    }
+}
+
 const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const [tb, setTb] = useState(generateTableBody())
+
+    const [selectedType, setSelectedType] = useState<SimType | undefined>()
+    const [selectedDevice, setSelectedDevice] = useState<string | undefined>()
+    const [field, setField] = useState<string>("")
+    const [value, setValue] = useState<string>("")
+    const [selectedValueType, setSelectedValueType] = useState<ValueType>("string")
+
+    const deviceSelect = useMemo(() => {
+        if (!selectedType || !simMap.has(selectedType)) {
+            return (<></>)
+        }
+
+        return (
+            <Select
+                onChange={x => setSelectedDevice(x.target.value as string)}
+            >{
+                [...simMap.get(selectedType)!.keys()].map(x => {
+                    return (<MenuItem value={x}>{x}</MenuItem>)
+                })
+            }</Select>
+        )
+    }, [selectedType])
+
+    useEffect(() => {
+        setSelectedDevice(undefined)
+    }, [selectedType])
 
     const onSimMapUpdate = useCallback((_: Event) => {
         setTb(generateTableBody())
     }, [])
 
     useEffect(() => {
-        window.addEventListener(SIM_MAP_UPDATE_EVENT, onSimMapUpdate)
+        window.addEventListener(SimMapUpdateEvent.TYPE, onSimMapUpdate)
 
         return () => {
-            window.removeEventListener(SIM_MAP_UPDATE_EVENT, onSimMapUpdate)
+            window.removeEventListener(SimMapUpdateEvent.TYPE, onSimMapUpdate)
         }
     }, [onSimMapUpdate])
 
@@ -94,6 +139,43 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     {tb}
                 </Table>
             </TableContainer>
+            <Stack>
+                <Select
+                    onChange={x => setSelectedType(x.target.value as SimType)}
+                >
+                    <MenuItem value="PWM">PWM</MenuItem>
+                    <MenuItem value="SimDevice">SimDevice</MenuItem>
+                    <MenuItem value="CANMotor">CAN Motor</MenuItem>
+                    <MenuItem value="CANEncoder">CAN Encoder</MenuItem>
+                </Select>
+                {deviceSelect}
+                {selectedDevice
+                    ? <Box>
+                        <TextField
+                            onChange={x => setField(x.target.value as string)}
+                        >
+                        </TextField>
+                        <TextField
+                            onChange={x => setValue(x.target.value as string)}
+                        >
+                        </TextField>
+                        <Select
+                            onChange={x => setSelectedValueType(x.target.value as ValueType)}
+                        >
+                            <MenuItem value="string">String</MenuItem>
+                            <MenuItem value="number">Number</MenuItem>
+                            <MenuItem value="object">Object</MenuItem>
+                            <MenuItem value="boolean">Boolean</MenuItem>
+                        </Select>
+                        <Button
+                            onClick={x => setGeneric(selectedType!, selectedDevice, field, value, selectedValueType)}
+                        >
+                            Set
+                        </Button>
+                    </Box>
+                    : <></>
+                }
+            </Stack>
         </Panel>
     )
 }
