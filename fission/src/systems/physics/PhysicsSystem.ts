@@ -672,6 +672,8 @@ class PhysicsSystem extends WorldSystem {
     ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
         const settings = new JOLT.MeshShapeSettings()
 
+        settings.mMaxTrianglesPerLeaf = 8
+
         settings.mTriangleVertices = new JOLT.VertexList()
         settings.mIndexedTriangles = new JOLT.IndexedTriangleList()
         settings.mMaterials = new JOLT.PhysicsMaterialList()
