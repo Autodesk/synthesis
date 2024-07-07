@@ -1,6 +1,6 @@
 plugins {
     id "java"
-    // id "edu.wpi.first.GradleRIO" version "2024.3.2"
+    id "edu.wpi.first.GradleRIO" version "2024.3.2"
 }
 
 // wpi.maven.useLocal = false
@@ -17,34 +17,34 @@ def ROBOT_MAIN_CLASS = "frc.robot.Main"
 
 // Define my targets (RoboRIO) and artifacts (deployable files)
 // This is added by GradleRIO's backing project DeployUtils.
-// deploy {
-//     targets {
-//         roborio(getTargetTypeClass('RoboRIO')) {
-//             // Team number is loaded either from the .wpilib/wpilib_preferences.json
-//             // or from command line. If not found an exception will be thrown.
-//             // You can use getTeamOrDefault(team) instead of getTeamNumber if you
-//             // want to store a team number in this file.
-//             team = project.frc.getTeamNumber()
-//             debug = project.frc.getDebugOrDefault(false)
+deploy {
+    targets {
+        roborio(getTargetTypeClass('RoboRIO')) {
+            // Team number is loaded either from the .wpilib/wpilib_preferences.json
+            // or from command line. If not found an exception will be thrown.
+            // You can use getTeamOrDefault(team) instead of getTeamNumber if you
+            // want to store a team number in this file.
+            team = project.frc.getTeamOrDefault(997)
+            debug = project.frc.getDebugOrDefault(false)
 
-//             artifacts {
-//                 // First part is artifact name, 2nd is artifact type
-//                 // getTargetTypeClass is a shortcut to get the class type using a string
+            artifacts {
+                // First part is artifact name, 2nd is artifact type
+                // getTargetTypeClass is a shortcut to get the class type using a string
 
-//                 frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
-//                 }
+                frcJava(getArtifactTypeClass('FRCJavaArtifact')) {
+                }
 
-//                 // Static files artifact
-//                 frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
-//                     files = project.fileTree('src/main/deploy')
-//                     directory = '/home/lvuser/deploy'
-//                 }
-//             }
-//         }
-//     }
-// }
+                // Static files artifact
+                frcStaticFileDeploy(getArtifactTypeClass('FileTreeArtifact')) {
+                    files = project.fileTree('src/main/deploy')
+                    directory = '/home/lvuser/deploy'
+                }
+            }
+        }
+    }
+}
 
-// def deployArtifact = deploy.targets.roborio.artifacts.frcJava
+def deployArtifact = deploy.targets.roborio.artifacts.frcJava
 
 // Set to true to use debug for JNI.
 wpi.java.debugJni = false

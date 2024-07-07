@@ -5,13 +5,16 @@
 package frc.robot;
 
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkBase.IdleMode;
+// import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import com.autodesk.synthesis.revrobotics.CANSparkMax;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
