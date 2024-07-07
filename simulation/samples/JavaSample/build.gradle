@@ -3,6 +3,10 @@ plugins {
     id "edu.wpi.first.GradleRIO" version "2024.3.2"
 }
 
+repositories {
+    mavenLocal()
+}
+
 // wpi.maven.useLocal = false
 // wpi.maven.useFrcMavenLocalDevelopment = true
 // wpi.versions.wpilibVersion = '2024.424242.+'
@@ -74,6 +78,8 @@ dependencies {
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation "com.autodesk.synthesis:SyntheSimJava:1.0.0"
 }
 
 test {
