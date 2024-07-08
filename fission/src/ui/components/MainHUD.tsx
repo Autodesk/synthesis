@@ -18,6 +18,7 @@ import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
 
 type ButtonProps = {
@@ -138,6 +139,20 @@ const MainHUD: React.FC = () => {
                         value={"Driver Station"}
                         icon={<GiSteeringWheel />}
                         onClick={() => openPanel("driver-station")}
+                    />
+                    {/* MiraMap and OPFS Temp Buttons */}
+                    <MainHUDButton
+                        value={"Print Mira Maps"}
+                        icon={<BsCodeSquare />}
+                        onClick={() => {
+                            console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
+                            console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
+                        }}
+                    />
+                    <MainHUDButton
+                        value={"Clear Mira"}
+                        icon={<GiSteeringWheel />}
+                        onClick={() => MirabufCachingService.RemoveAll()}
                     />
                     <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton

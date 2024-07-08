@@ -236,7 +236,10 @@ class SceneRenderer extends WorldSystem {
                             return
                         }
                     })
-                } else if (event.target.mode === "scale" && InputSystem.getInput("shift")) {
+                } else if (
+                    event.target.mode === "scale" &&
+                    (InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft"))
+                ) {
                     // scale uniformly if shift is pressed
                     transformControl.axis = "XYZE"
                 } else if (event.target.mode === "rotate") {
