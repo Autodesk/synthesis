@@ -84,7 +84,7 @@ class APS {
                 ["response_type", "code"],
                 ["client_id", CLIENT_ID],
                 ["redirect_uri", callbackUrl],
-                ["scope", "data:read"],
+                ["scope", "data:create"],
                 ["nonce", Date.now().toString()],
                 ["prompt", "login"],
                 ["code_challenge", codeChallenge],
