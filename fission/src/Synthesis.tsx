@@ -55,7 +55,7 @@ import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning
 import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
-import Skybox from './ui/components/Skybox.tsx';
+import Skybox from "./ui/components/Skybox.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 

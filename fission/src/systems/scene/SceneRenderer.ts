@@ -113,7 +113,6 @@ class SceneRenderer extends WorldSystem {
         const sphere = this.CreateSphere(0.5)
         this.AddObject(sphere)
         this.AddTransformGizmo(sphere, "scale", 5)
-
     }
 
     public UpdateCanvasSize() {
@@ -140,9 +139,9 @@ class SceneRenderer extends WorldSystem {
             )
         })
 
-        this._skybox.position.copy(this._mainCamera.position);
+        this._skybox.position.copy(this._mainCamera.position)
 
-        this._renderer.render(this._scene, this._mainCamera);
+        this._renderer.render(this._scene, this._mainCamera)
     }
 
     public Destroy(): void {
@@ -242,7 +241,10 @@ class SceneRenderer extends WorldSystem {
                             return
                         }
                     })
-                } else if (event.target.mode === "scale" && (InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft"))) {
+                } else if (
+                    event.target.mode === "scale" &&
+                    (InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft"))
+                ) {
                     // scale uniformly if shift is pressed
                     transformControl.axis = "XYZE"
                 } else if (event.target.mode === "rotate") {
