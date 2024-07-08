@@ -221,8 +221,8 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
     }
-
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!)
+    
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!);
 }
 
 export default MirabufSceneObject
