@@ -1,6 +1,6 @@
 import Scene from "@/components/Scene.tsx"
 import MirabufSceneObject from "./mirabuf/MirabufSceneObject.ts"
-import { LoadMirabufRemote } from "./mirabuf/MirabufLoader.ts"
+import MirabufCachingService, { MiraType } from "./mirabuf/MirabufLoader.ts"
 import { mirabuf } from "./proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from "./mirabuf/MirabufParser.ts"
 import MirabufInstance from "./mirabuf/MirabufInstance.ts"
@@ -49,11 +49,12 @@ import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
-import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
-import World from "@/systems/World.ts"
-import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
-import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
-import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
+import ManageAssembliesModal from '@/modals/spawning/ManageAssembliesModal.tsx';
+import World from '@/systems/World.ts';
+import { AddRobotsModal, AddFieldsModal, SpawningModal } from '@/modals/spawning/SpawningModals.tsx';
+import ImportMirabufModal from '@/modals/mirabuf/ImportMirabufModal.tsx';
+import Skybox from './ui/components/Skybox.tsx';
+import ImportLocalMirabufModal from '@/modals/mirabuf/ImportLocalMirabufModal.tsx';
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
@@ -93,9 +94,11 @@ function Synthesis() {
         console.log(urlParams)
 
         const setup = async () => {
-            const miraAssembly = await LoadMirabufRemote(mira_path)
-                .catch(_ => LoadMirabufRemote(DEFAULT_MIRA_PATH))
+            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
+                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
+
+            const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
 
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
@@ -133,6 +136,7 @@ function Synthesis() {
 
     return (
         <AnimatePresence>
+            <Skybox key="123"/>
             <TooltipControlProvider
                 showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
                     showTooltip(type, controls, duration)

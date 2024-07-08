@@ -4,8 +4,10 @@ import { FaPlus } from "react-icons/fa6"
 import { ChangeEvent, useRef, useState } from "react"
 import Label, { LabelSize } from "@/components/Label"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
-import { CreateMirabufFromUrl } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import Dropdown from "@/ui/components/Dropdown"
+import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
@@ -14,6 +16,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const fileUploadRef = useRef<HTMLInputElement>(null)
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
+    const [miraType, setSelectedType] = useState<MiraType | undefined>(undefined)
 
     const uploadClicked = () => {
         if (fileUploadRef.current) {
@@ -28,26 +31,39 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         }
     }
 
+    const typeSelected = (type: string) => {
+        switch (type) {
+            case "Robot":
+                setSelectedType(MiraType.ROBOT)
+                break
+            case "Field":
+                setSelectedType(MiraType.FIELD)
+                break
+        }
+    }
+
     return (
         <Modal
             name={"Import Local Assemblies"}
             icon={<FaPlus />}
             modalId={modalId}
-            acceptEnabled={selectedFile !== undefined}
-            onAccept={() => {
-                if (selectedFile) {
-                    console.log(`Mira: '${selectedFile}'`)
+            acceptEnabled={selectedFile !== undefined && miraType !== undefined}
+            onAccept={async () => {
+                if (selectedFile && miraType != undefined) {
                     showTooltip("controls", [
                         { control: "WASD", description: "Drive" },
                         { control: "E", description: "Intake" },
                         { control: "Q", description: "Dispense" },
                     ])
 
-                    CreateMirabufFromUrl(URL.createObjectURL(selectedFile)).then(x => {
-                        if (x) {
-                            World.SceneRenderer.RegisterSceneObject(x)
-                        }
-                    })
+                    const hashBuffer = await selectedFile.arrayBuffer()
+                    await MirabufCachingService.CacheAndGetLocal(hashBuffer, MiraType.ROBOT)
+                        .then(x => CreateMirabuf(x!))
+                        .then(x => {
+                            if (x) {
+                                World.SceneRenderer.RegisterSceneObject(x)
+                            }
+                        })
                 }
             }}
         >
@@ -62,6 +78,13 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 ) : (
                     <></>
                 )}
+                <Dropdown
+                    label="Type"
+                    options={["None", "Robot", "Field"]}
+                    onSelect={(selected: string) => {
+                        typeSelected(selected)
+                    }}
+                />
             </div>
         </Modal>
     )
