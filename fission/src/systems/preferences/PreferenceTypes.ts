@@ -14,15 +14,15 @@ export type GlobalPreference =
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
 
-export const DefaultGlobalPreferences: { [key: string]: Object } = {
-    "ScreenMode": "Windowed",
-    "QualitySettings": "High",
-    "ZoomSensitivity": 15,
-    "PitchSensitivity": 10,
-    "YawSensitivity": 3,
-    "ReportAnalytics": false,
-    "UseMetric": false,
-    "RenderScoringZones": true,
+export const DefaultGlobalPreferences: { [key: string]: unknown } = {
+    ScreenMode: "Windowed",
+    QualitySettings: "High",
+    ZoomSensitivity: 15,
+    PitchSensitivity: 10,
+    YawSensitivity: 3,
+    ReportAnalytics: false,
+    UseMetric: false,
+    RenderScoringZones: true,
 }
 
 export type IntakePreferences = {

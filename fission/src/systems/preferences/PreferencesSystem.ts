@@ -1,14 +1,31 @@
 import { DefaultFieldPreferences, DefaultGlobalPreferences, DefaultRobotPreferences, FieldPreferences, FieldPreferencesKey, GlobalPreference, RobotPreferences, RobotPreferencesKey } from "./PreferenceTypes"
 
+class PreferenceEvent extends Event {
+    public prefName: GlobalPreference
+    public prefValue: object
+
+    constructor(prefName: GlobalPreference, prefValue: object) {
+        super("preferenceChanged")
+        this.prefName = prefName
+        this.prefValue = prefValue
+    }
+}
+
 class PreferencesSystem {
-    private static _preferences: { [key: string]: Object }
+    private static _preferences: { [key: string]: object }
     private static _localStorageKey = "Preferences"
 
+    /** Event dispatched when any global preference is updated */
+    public static addEventListener(callback: (e: PreferenceEvent) => unknown) {
+        window.addEventListener("preferenceChanged", callback as EventListener)
+    }
+
     /** Sets a global preference to be a value of a specific type */
-    public static setGlobalPreference<T extends Object>(key: GlobalPreference, preference: T) {
+    public static setGlobalPreference<T extends object>(key: GlobalPreference, value: T) {
         if (this._preferences == undefined) this.loadPreferences()
 
-        this._preferences[key] = preference
+        window.dispatchEvent(new PreferenceEvent(key, value))
+        this._preferences[key] = value
     }
 
     /** Gets any preference from the preferences map */
@@ -118,7 +135,7 @@ class PreferencesSystem {
     public static clearPreferences() {
         window.localStorage.removeItem(this._localStorageKey)
         this._preferences = {}
-        console.log("Cleared preferences")
+        console.log("Cleared all preferences")
     }
 }
 
