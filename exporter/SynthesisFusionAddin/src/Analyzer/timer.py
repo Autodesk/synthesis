@@ -12,7 +12,13 @@ class Timer:
     def __init__(self):
         self.logger = logging.getLogger(f"{INTERNAL_ID}.Analyzer.Timer")
 
-        (self.filename, self.line_number, self.funcName, self.lines, _,) = inspect.getframeinfo(
+        (
+            self.filename,
+            self.line_number,
+            self.funcName,
+            self.lines,
+            _,
+        ) = inspect.getframeinfo(
             inspect.currentframe().f_back.f_back
         )  # func name doesn't always work here
 
