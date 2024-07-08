@@ -1,6 +1,6 @@
 import Scene from "@/components/Scene.tsx"
 import MirabufSceneObject from "./mirabuf/MirabufSceneObject.ts"
-import { LoadMirabufRemote } from "./mirabuf/MirabufLoader.ts"
+import MirabufCachingService, { MiraType } from "./mirabuf/MirabufLoader.ts"
 import { mirabuf } from "./proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from "./mirabuf/MirabufParser.ts"
 import MirabufInstance from "./mirabuf/MirabufInstance.ts"
@@ -25,7 +25,7 @@ import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
 import ViewModal from "@/modals/ViewModal"
 import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "@/modals/aether/ServerHostingModal"
-import ChangeInputsModal from "@/modals/configuring/ChangeInputsModal"
+import ChangeInputsModal from "@/ui/modals/configuring/ChangeInputsModal.tsx"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
 import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
@@ -53,8 +53,9 @@ import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
-import Skybox from "./ui/components/Skybox.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
+import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
+import Skybox from './ui/components/Skybox.tsx';
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -93,9 +94,11 @@ function Synthesis() {
         console.log(urlParams)
 
         const setup = async () => {
-            const miraAssembly = await LoadMirabufRemote(mira_path)
-                .catch(_ => LoadMirabufRemote(DEFAULT_MIRA_PATH))
+            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
+                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
+
+            const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
 
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
@@ -108,10 +111,11 @@ function Synthesis() {
                     return
                 }
 
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser))
+                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
             })()
         }
+
         setup()
 
         let mainLoopHandle = 0
@@ -181,6 +185,7 @@ const initialModals = [
     <ConnectToMultiplayerModal modalId="connect-to-multiplayer" />,
     <ServerHostingModal modalId="server-hosting" />,
     <ChangeInputsModal modalId="change-inputs" />,
+    <ResetAllInputsModal modalId="reset-inputs" />,
     <ChooseMultiplayerModeModal modalId="multiplayer-mode" />,
     <ChooseSingleplayerModeModal modalId="singleplayer-mode" />,
     <PracticeSettingsModal modalId="practice-settings" />,
