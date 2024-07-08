@@ -4,13 +4,14 @@ import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { BlendFunction, DepthCopyPass, DepthDownsamplingPass, EffectComposer, EffectPass, NormalPass, PredicationMode, RenderPass, SMAAEffect, SSAOEffect } from "postprocessing"
 
 import vertexShader from '@/shaders/vertex.glsl';
 import fragmentShader from '@/shaders/fragment.glsl';
 import { Theme } from '@/ui/ThemeContext';
 
 const CLEAR_COLOR = 0x121212
-const GROUND_COLOR = 0x73937e
+const GROUND_COLOR = 0x4066c7
 
 let nextSceneObjectId = 1
 
@@ -20,6 +21,9 @@ class SceneRenderer extends WorldSystem {
     private _scene: THREE.Scene;
     private _renderer: THREE.WebGLRenderer;
     private _skybox: THREE.Mesh;
+    private _composer: EffectComposer;
+
+    private _antiAliasPass: SMAAEffect;
 
     private _sceneObjects: Map<number, SceneObject>
 
@@ -53,7 +57,12 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
-        this._renderer = new THREE.WebGLRenderer()
+        this._renderer = new THREE.WebGLRenderer({ // Following parameters are used to optimize post-processing
+            powerPreference: "high-performance",
+            antialias: false,
+            stencil: false,
+            depth: false
+        })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
         this._renderer.shadowMap.enabled = true
@@ -119,6 +128,52 @@ class SceneRenderer extends WorldSystem {
         this._skybox.receiveShadow = false;
         this._skybox.castShadow = false;
         this.scene.add(this._skybox);
+
+        // POST PROCESSING: https://github.com/pmndrs/postprocessing
+        this._composer = new EffectComposer(this._renderer)
+        this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
+
+        const normalPass = new NormalPass(this._scene, this._mainCamera)
+        this._composer.addPass(normalPass)
+
+        let depthPass: DepthDownsamplingPass | undefined;
+        if (this._renderer.capabilities.isWebGL2) {
+            depthPass = new DepthDownsamplingPass({
+                normalBuffer: normalPass.texture,
+                resolutionScale: 0.5
+            })
+            this._composer.addPass(depthPass)
+        }
+
+        const normalDepthBuffer = this._renderer.capabilities.isWebGL2 ?
+			depthPass!.texture : undefined;
+
+        // https://github.com/pmndrs/postprocessing/blob/main/demo/src/demos/SSAODemo.js
+        const ssaoEffect = new SSAOEffect(this._mainCamera, normalPass.texture, {
+            distanceThreshold: 20 ,	// Render up to a distance of ~20 world units
+			distanceFalloff: 2.5,	// with an additional ~2.5 units of falloff.
+			rangeThreshold: 0.3,		// Occlusion proximity of ~0.3 world units
+			rangeFalloff: 0.1,
+            blendFunction: BlendFunction.MULTIPLY,
+			distanceScaling: true,
+			depthAwareUpsampling: true,
+            luminanceInfluence: 0.7,
+			minRadiusScale: 0.33,
+			radius: 0.01,
+			intensity: 2.7,
+			bias: 0.025,
+			fade: 0.01,
+            samples: 90,
+			rings: 7,
+            resolutionScale: 1.5,
+            normalDepthBuffer: normalDepthBuffer
+        })
+
+        // this._composer.addPass(new EffectPass(this._mainCamera, ssaoEffect))
+
+        this._antiAliasPass = new SMAAEffect()
+        // this._antiAliasPass.edgeDetectionMaterial.predicationMode = PredicationMode.DEPTH;
+        this._composer.addPass(new EffectPass(this._mainCamera, this._antiAliasPass))
     }
 
     public UpdateCanvasSize() {
@@ -128,7 +183,7 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
-    public Update(_: number): void {
+    public Update(deltaT: number): void {
         this._sceneObjects.forEach(obj => {
             obj.Update()
         })
@@ -148,7 +203,8 @@ class SceneRenderer extends WorldSystem {
 
         this._skybox.position.copy(this._mainCamera.position);
 
-        this._renderer.render(this._scene, this._mainCamera);
+        // this._renderer.render(this._scene, this._mainCamera);
+        this._composer.render(deltaT)
     }
 
     public Destroy(): void {

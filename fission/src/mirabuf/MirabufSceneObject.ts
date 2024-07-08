@@ -11,7 +11,7 @@ import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
-const DEBUG_BODIES = true
+const DEBUG_BODIES = false
 
 interface RnDebugMeshes {
     colliderMesh: THREE.Mesh
