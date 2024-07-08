@@ -30,8 +30,39 @@ type DropdownProps = {
     onSelect: (opt: string) => void
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
-    const [optionList, _setOptionList] = useState(options)
+const Dropdown: React.FC<DropdownProps> = ({
+    label,
+    className,
+    options,
+    onSelect,
+}) => {
+    const [expanded, setExpanded] = useState(false)
+    const [optionList, setOptionList] = useState(options)
+
+    type DropdownOptionProps = {
+        value: string
+        children?: ReactNode
+        className?: string
+    }
+
+    const DropdownOption: React.FC<DropdownOptionProps> = ({
+        children,
+        value,
+        className,
+    }) => (
+        <span
+            onClick={() => {
+                const newOptions = options.filter(item => item !== value)
+                newOptions.unshift(value)
+                setOptionList(newOptions)
+                if (onSelect) onSelect(value)
+            }}
+            className={`block relative duration-100 hover:backdrop-brightness-90 w-full h-full px-2 py-2 ${className}`}
+            style={{ maxWidth: '249px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', paddingRight: '25px'}}
+        >
+            {children}
+        </span>
+    )
 
     return (
         <>

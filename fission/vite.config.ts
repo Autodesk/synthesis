@@ -27,8 +27,8 @@ export default defineConfig({
             { find: '@/components', replacement: path.resolve(__dirname, 'src', 'ui', 'components') },
             { find: '@/modals', replacement: path.resolve(__dirname, 'src', 'ui', 'modals') },
             { find: '@/panels', replacement: path.resolve(__dirname, 'src', 'ui', 'panels') },
-            { find: '@', replacement: path.resolve(__dirname, 'src') }
-        ]
+            { find: '@', replacement: path.resolve(__dirname, 'src') },
+        ],
     },
     test: {
         globals: true,
@@ -37,8 +37,8 @@ export default defineConfig({
             enabled: true,
             name: 'chromium',
             headless: true,
-            provider: 'playwright'
-        }
+            provider: 'playwright',
+        },
     },
     server: {
         // this ensures that the browser opens upon server start
@@ -51,17 +51,17 @@ export default defineConfig({
                 target: `http://localhost:${serverPort}${basePath}`,
                 changeOrigin: true,
                 secure: false,
-                rewrite: (path) => path.replace(/^\/api\/mira/, '/Downloadables/Mira')
+                rewrite: path => path.replace(/^\/api\/mira/, '/Downloadables/Mira'),
             },
             '/api/auth': {
                 target: `http://localhost:${dockerServerPort}/`,
                 changeOrigin: true,
-                secure: false
-            }
+                secure: false,
+            },
         },
     },
     build: {
         target: 'esnext',
     },
-    base: basePath
+    base: basePath,
 })
