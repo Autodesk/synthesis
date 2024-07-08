@@ -10,19 +10,17 @@ import Slider from "@/ui/components/Slider"
 // slider constants
 const MIN_ZONE_SIZE = 0.1
 const MAX_ZONE_SIZE = 1.0
-const DEFAULT_ZONE_SIZE = 0.5 // default zone size
+const DEFAULT_ZONE_SIZE = 1.0 // default zone size
 
 const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [, setNode] = useState<string>("Click to select")
     const transformGizmoRef = useRef<TransformGizmos>()
+    // let currentSize = DEFAULT_ZONE_SIZE
 
     // creating mesh & gizmo for the pickup node
     useEffect(() => {
         transformGizmoRef.current = new TransformGizmos(
-            World.SceneRenderer.CreateSphere(
-                DEFAULT_ZONE_SIZE,
-                World.SceneRenderer.CreateToonMaterial(new THREE.Color(0xffffff))
-            )
+            World.SceneRenderer.CreateSphere(0.5, World.SceneRenderer.CreateToonMaterial(new THREE.Color(0xffffff)))
         )
         transformGizmoRef.current.AddMeshToScene()
         transformGizmoRef.current.CreateGizmo("translate")
@@ -36,6 +34,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {
+                if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
                 // send configuration information to APS + RAM
             }}
             onCancel={() => {
@@ -53,7 +52,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                 label="Zone Size"
                 format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                 onChange={(size: number) => {
-                    transformGizmoRef.current?.setMeshSize(size)
+                    transformGizmoRef.current?.mesh.scale.set(size, size, size)
                 }}
                 step={0.01}
             />

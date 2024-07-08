@@ -216,7 +216,12 @@ const initialPanels: ReactElement[] = [
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" />,
-    <ConfigureGamepiecePickupPanel key="config-gamepiece-pickup" panelId="config-gamepiece-pickup" openLocation="right" sidePadding={8} />,
+    <ConfigureGamepiecePickupPanel
+        key="config-gamepiece-pickup"
+        panelId="config-gamepiece-pickup"
+        openLocation="right"
+        sidePadding={8}
+    />,
     <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" />,
     <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
     <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
