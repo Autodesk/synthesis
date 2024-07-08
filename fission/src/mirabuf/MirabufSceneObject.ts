@@ -164,7 +164,7 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
         return
     }
     
-    return new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!);
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!);
 }
 
 export default MirabufSceneObject
