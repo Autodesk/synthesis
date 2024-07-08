@@ -49,13 +49,13 @@ import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
-import ManageAssembliesModal from '@/modals/spawning/ManageAssembliesModal.tsx';
-import World from '@/systems/World.ts';
-import { AddRobotsModal, AddFieldsModal, SpawningModal } from '@/modals/spawning/SpawningModals.tsx';
-import ImportMirabufModal from '@/modals/mirabuf/ImportMirabufModal.tsx';
-import Skybox from './ui/components/Skybox.tsx';
-import ImportLocalMirabufModal from '@/modals/mirabuf/ImportLocalMirabufModal.tsx';
+import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
+import World from "@/systems/World.ts"
+import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
+import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
+import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
+import Skybox from './ui/components/Skybox.tsx';
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 

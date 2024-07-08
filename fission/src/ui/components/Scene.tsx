@@ -1,13 +1,10 @@
 import "./Scene.css"
 import { useEffect, useRef } from "react"
 import Stats from "stats.js"
-import { OrbitControls } from "three/addons/controls/OrbitControls.js"
 import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 
 let stats: Stats | null
-
-let controls: OrbitControls
 
 class SceneProps {
     public useStats = false
@@ -40,15 +37,11 @@ function Scene({ useStats }: SceneProps) {
                 refContainer.current.appendChild(stats.dom)
             }
 
-            controls = new OrbitControls(sr.mainCamera, sr.renderer.domElement)
-            controls.update()
-
             // Bit hacky but works
             class ComponentSceneObject extends SceneObject {
                 public Setup(): void {}
                 public Update(): void {
                     stats?.update()
-                    controls?.update()
                 }
                 public Dispose(): void {}
             }
