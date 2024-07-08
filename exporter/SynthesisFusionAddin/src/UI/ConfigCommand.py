@@ -280,7 +280,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             )
 
             weight_unit.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])  # add listdropdown mass options
-            weight_unit.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])  # add listdropdown mass options
+            weight_unit.listItems.add(
+                "‎", not imperialUnits, IconPaths.massIcons["KG"]
+            )  # add listdropdown mass options
             weight_unit.tooltip = "Unit of mass"
             weight_unit.tooltipDescription = "<hr>Configure the unit of mass for the weight calculation."
 

@@ -59,7 +59,7 @@ def _res_json(res):
 
 
 def getCodeChallenge() -> str | None:
-    endpoint = 'http://localhost:3003/api/aps/challenge/'
+    endpoint = "http://localhost:3003/api/aps/challenge/"
     res = urllib.request.urlopen(endpoint)
     data = _res_json(res)
     return data["challenge"]
@@ -93,15 +93,15 @@ def convertAuthToken(code: str):
     global APS_AUTH
     authUrl = f'http://localhost:3003/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:3003/api/aps/exporter/")}'
     res = urllib.request.urlopen(authUrl)
-    data = _res_json(res)['response']
+    data = _res_json(res)["response"]
     APS_AUTH = APSAuth(
         access_token=data["access_token"],
         refresh_token=data["refresh_token"],
         expires_in=data["expires_in"],
-        expires_at=int(data["expires_in"]*1000),
-        token_type=data["token_type"]
+        expires_at=int(data["expires_in"] * 1000),
+        token_type=data["token_type"],
     )
-    with open(auth_path, 'wb') as f:
+    with open(auth_path, "wb") as f:
         pickle.dump(data, f)
         f.close()
 
