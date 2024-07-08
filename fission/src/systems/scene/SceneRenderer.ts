@@ -139,8 +139,6 @@ class SceneRenderer extends WorldSystem {
             )
         })
 
-        this._skybox.position.copy(this._mainCamera.position)
-
         this._renderer.render(this._scene, this._mainCamera)
     }
 
