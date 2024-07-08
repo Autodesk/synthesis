@@ -108,11 +108,6 @@ class SceneRenderer extends WorldSystem {
         // Orbit controls
         this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this.orbitControls.update()
-
-        // create sphere for testing
-        const sphere = this.CreateSphere(0.5)
-        this.AddObject(sphere)
-        this.AddTransformGizmo(sphere, "scale", 5)
     }
 
     public UpdateCanvasSize() {
@@ -234,8 +229,8 @@ class SceneRenderer extends WorldSystem {
         transformControl.setMode(mode)
         transformControl.attach(obj)
 
+        // allowing the transform gizmos to rotate with the object
         if (mode === "translate") {
-            // allowing the transform gizmos to rotate with the object
             transformControl.space = "local"
         }
 

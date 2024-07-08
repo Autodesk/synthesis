@@ -119,12 +119,11 @@ class MirabufSceneObject extends SceneObject {
              */
             if (this.transformGizmos.isActive) {
                 // commands to either cancel gizmo creation or confirm position
-                if (InputSystem.getInput("enter")) {
+                if (InputSystem.isKeyPressed("Enter")) {
                     this.transformGizmos.RemoveGizmos()
-                    World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-                    World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
+                    this.EnablePhysics()
                     return
-                } else if (InputSystem.getInput("escape")) {
+                } else if (InputSystem.isKeyPressed("Escape")) {
                     this.transformGizmos.RemoveGizmos()
                     World.SceneRenderer.RemoveSceneObject(this.id)
                     return
@@ -208,6 +207,12 @@ class MirabufSceneObject extends SceneObject {
 
         return mesh
     }
+
+    private EnablePhysics() {
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
+    }
 }
 
 export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<MirabufSceneObject | null | undefined> {
@@ -217,7 +222,7 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!)
 }
 
 export default MirabufSceneObject
