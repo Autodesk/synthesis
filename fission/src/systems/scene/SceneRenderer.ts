@@ -108,6 +108,11 @@ class SceneRenderer extends WorldSystem {
         // Orbit controls
         this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this.orbitControls.update()
+
+        // create sphere for testing
+        const sphere = this.CreateSphere(0.5)
+        this.AddObject(sphere)
+        this.AddTransformGizmo(sphere, "scale", 5)
     }
 
     public UpdateCanvasSize() {
@@ -133,8 +138,6 @@ class SceneRenderer extends WorldSystem {
                     1.9
             )
         })
-
-        this._skybox.position.copy(this._mainCamera.position)
 
         this._renderer.render(this._scene, this._mainCamera)
     }
@@ -213,8 +216,8 @@ class SceneRenderer extends WorldSystem {
         transformControl.setMode(mode)
         transformControl.attach(obj)
 
+        // allowing the transform gizmos to rotate with the object
         if (mode === "translate") {
-            // allowing the transform gizmos to rotate with the object
             transformControl.space = "local"
         }
 
@@ -223,15 +226,17 @@ class SceneRenderer extends WorldSystem {
             (event: { target: TransformControls; value: unknown }) => {
                 if (!event.value && !Array.from(this.transformControls.keys()).some(tc => tc.dragging)) {
                     this.orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
+                } else if (!event.value && Array.from(this.transformControls.keys()).some(tc => tc.dragging)) {
+                    this.orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
+                } else {
+                    this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
                 }
-
-                this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
 
                 if (event.target.mode === "translate") {
                     this.transformControls.forEach((_size, tc) => {
                         // disable other transform gizmos when translating
                         if (tc.object === event.target.object && tc.mode !== "translate") {
-                            tc.dragging = !event.value
+                            tc.dragging = false
                             tc.enabled = !event.value
                             return
                         }
