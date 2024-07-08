@@ -85,6 +85,10 @@ class TransformGizmos {
             })
         })
     }
+
+    public setMeshSize(size: number) {
+        this.mesh.scale.set(size, size, size)
+    }
 }
 
 export default TransformGizmos

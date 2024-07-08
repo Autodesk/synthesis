@@ -5,18 +5,26 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 import World from "@/systems/World"
+import Slider from "@/ui/components/Slider"
+
+// slider constants
+const MIN_ZONE_SIZE = 0.1
+const MAX_ZONE_SIZE = 1.0
+const DEFAULT_ZONE_SIZE = 0.5 // default zone size
 
 const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [, setNode] = useState<string>("Click to select")
     const transformGizmoRef = useRef<TransformGizmos>()
 
+    // creating mesh & gizmo for the pickup node
     useEffect(() => {
-        // implementing spherical placeholder for intake placement
         transformGizmoRef.current = new TransformGizmos(
-            World.SceneRenderer.CreateSphere(0.5, World.SceneRenderer.CreateToonMaterial(new THREE.Color(0xffffff)))
+            World.SceneRenderer.CreateSphere(
+                DEFAULT_ZONE_SIZE,
+                World.SceneRenderer.CreateToonMaterial(new THREE.Color(0xffffff))
+            )
         )
         transformGizmoRef.current.AddMeshToScene()
-        transformGizmoRef.current.CreateGizmo("scale")
         transformGizmoRef.current.CreateGizmo("translate")
     }, [])
 
@@ -28,13 +36,27 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {
-                // send zone config
+                // send configuration information to APS + RAM
             }}
             onCancel={() => {
                 if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
             }}
         >
+            {/* Button for user to select pickup node */}
             <SelectButton onSelect={setNode} placeholder="Select pickup node" />
+
+            {/* Slider for user to set size of pickup configuration */}
+            <Slider
+                min={MIN_ZONE_SIZE}
+                max={MAX_ZONE_SIZE}
+                defaultValue={DEFAULT_ZONE_SIZE}
+                label="Zone Size"
+                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={(size: number) => {
+                    transformGizmoRef.current?.setMeshSize(size)
+                }}
+                step={0.01}
+            />
         </Panel>
     )
 }
