@@ -4,7 +4,8 @@
 
 import logging
 import os
-#import platform
+
+# import platform
 import traceback
 from enum import Enum
 
@@ -621,7 +622,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Creates the advanced tab, which is the parent container for internal command inputs
             """
-            advancedSettings: adsk.core.TabCommandInput = INPUTS_ROOT.addTabCommandInput("advanced_settings", "Advanced")
+            advancedSettings: adsk.core.TabCommandInput = INPUTS_ROOT.addTabCommandInput(
+                "advanced_settings", "Advanced"
+            )
             advancedSettings.tooltip = (
                 "Additional Advanced Settings to change how your model will be translated into Unity."
             )
@@ -660,7 +663,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Physics settings group command
             """
-            physicsSettings: adsk.core.GroupCommandInput = a_input.addGroupCommandInput("physics_settings", "Physics Settings")
+            physicsSettings: adsk.core.GroupCommandInput = a_input.addGroupCommandInput(
+                "physics_settings", "Physics Settings"
+            )
 
             physicsSettings.isExpanded = True
             physicsSettings.isEnabled = True
@@ -671,7 +676,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "friction_override",
                 "Friction Override",
                 physics_settings,
-                checked=exporterOptions.frictionOverride, # object is missing attribute
+                checked=exporterOptions.frictionOverride,  # object is missing attribute
                 tooltip="Manually override the default friction values on the bodies in the assembly.",
                 enabled=True,
                 isCheckBox=False,
@@ -686,7 +691,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             frictionCoeffSlider: adsk.core.FloatSliderCommandInput = physics_settings.addFloatSliderListCommandInput(
                 "friction_override_coeff", "Friction Coefficient", "", valueList
             )
-            frictionCoeffSlider.isVisible = True 
+            frictionCoeffSlider.isVisible = True
             frictionCoeffSlider.valueOne = 0.5
             frictionCoeffSlider.tooltip = "Friction coefficient of field element."
             frictionCoeffSlider.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
@@ -980,7 +985,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if dropdownExportMode.selectedItem.index == 0:
@@ -1143,7 +1147,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 _mode = ExportMode.FIELD
 
-            
             """
             Advanced Settings
             """
@@ -1153,20 +1156,24 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 .children.itemById("exporter_settings")
                 .children.itemById("compress")
             ).value
-            
+
             export_as_part_boolean = (
                 eventArgs.command.commandInputs.itemById("advanced_settings")
                 .children.itemById("exporter_settings")
                 .children.itemById("export_as_part")
             ).value
 
-            frictionOverrideButton: adsk.core.BoolValueCommandInput = (eventArgs.command.commandInputs.itemById("advanced_settings")
+            frictionOverrideButton: adsk.core.BoolValueCommandInput = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
                 .children.itemById("physics_settings")
-                .children.itemById("friction_override"))
-            frictionSlider: adsk.core.FloatSliderCommandInput = (eventArgs.command.commandInputs.itemById("advanced_settings")
+                .children.itemById("friction_override")
+            )
+            frictionSlider: adsk.core.FloatSliderCommandInput = (
+                eventArgs.command.commandInputs.itemById("advanced_settings")
                 .children.itemById("physics_settings")
-                .children.itemById("friction_override_coeff"))
-            
+                .children.itemById("friction_override_coeff")
+            )
+
             frictionOverrideCoeff = frictionSlider.valueOne
             frictionOverride = frictionSlider.isVisible
 
@@ -1184,7 +1191,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 compressOutput=compress,
                 exportAsPart=export_as_part_boolean,
                 frictionOverride=frictionOverride,
-                frictionOverrideCoeff=frictionOverrideCoeff
+                frictionOverrideCoeff=frictionOverrideCoeff,
             )
 
             _: bool = Parser(exporterOptions).export()
