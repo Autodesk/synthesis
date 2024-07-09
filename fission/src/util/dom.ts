@@ -23,8 +23,9 @@ export const mousePosition = (x: number, y: number) => {
     el?.dispatchEvent(event)
 }
 
+// prettier-ignore
 export const addGlobalFunc = <T>(name: string, func: (...args: any[]) => T) => {
-    ;(window as any)[name] = func
+    (window as any)[name] = func
 }
 
 addGlobalFunc("click", click)

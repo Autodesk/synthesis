@@ -18,8 +18,9 @@ import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
-import { ClearMira, GetMap, LoadMirabufRemote, MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
+import TransformGizmo from "./TransformGizmo"
 
 type ButtonProps = {
     value: string
@@ -154,11 +155,15 @@ const MainHUD: React.FC = () => {
                         value={"Print Mira Maps"}
                         icon={<BsCodeSquare />}
                         onClick={() => {
-                            console.log(GetMap(MiraType.ROBOT))
-                            console.log(GetMap(MiraType.FIELD))
+                            console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
+                            console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
                         }}
                     />
-                    <MainHUDButton value={"Clear Mira"} icon={<GiSteeringWheel />} onClick={() => ClearMira()} />
+                    <MainHUDButton
+                        value={"Clear Mira"}
+                        icon={<GiSteeringWheel />}
+                        onClick={() => MirabufCachingService.RemoveAll()}
+                    />
                     <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton
                         value={"Toasts"}
@@ -166,6 +171,13 @@ const MainHUD: React.FC = () => {
                         onClick={() => {
                             const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
                             addToast(type, type, "This is a test toast to test the toast system")
+                        }}
+                    />
+                    <MainHUDButton
+                        value={"Test Gizmo"}
+                        icon={<IoGameControllerOutline />}
+                        onClick={() => {
+                            new TransformGizmo("translate").setMode = "rotate"
                         }}
                     />
                 </div>

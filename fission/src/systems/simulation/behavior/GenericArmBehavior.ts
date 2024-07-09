@@ -1,38 +1,21 @@
 import HingeDriver from "../driver/HingeDriver"
 import HingeStimulus from "../stimulus/HingeStimulus"
 import Behavior from "./Behavior"
-import InputSystem, { emptyModifierState } from "@/systems/input/InputSystem"
+import InputSystem from "@/systems/input/InputSystem"
 
 class GenericArmBehavior extends Behavior {
     private _hingeDriver: HingeDriver
-
-    private _positiveInput: string
-    private _negativeInput: string
+    private _inputName: string
+    private _assemblyName: string
 
     private _rotationalSpeed = 6
 
-    private _rotationalSpeed = 30
-
-    constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number) {
+    constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number, assemblyName: string) {
         super([hingeDriver], [hingeStimulus])
+
         this._hingeDriver = hingeDriver
-
-        this._positiveInput = "joint " + jointIndex + " Positive"
-        this._negativeInput = "joint " + jointIndex + " Negative"
-
-        // TODO: load inputs from mira
-        InputSystem.allInputs[this._positiveInput] = {
-            name: this._positiveInput,
-            keyCode: "Digit" + jointIndex.toString(),
-            isGlobal: false,
-            modifiers: emptyModifierState,
-        }
-        InputSystem.allInputs[this._negativeInput] = {
-            name: this._negativeInput,
-            keyCode: "Digit" + jointIndex.toString(),
-            isGlobal: false,
-            modifiers: { ctrl: false, alt: false, shift: true, meta: false },
-        }
+        this._inputName = "joint " + jointIndex
+        this._assemblyName = assemblyName
     }
 
     // Sets the arms target rotational velocity
@@ -41,7 +24,7 @@ class GenericArmBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.rotateArm(InputSystem.GetAxis(this._positiveInput, this._negativeInput) * this._rotationalSpeed)
+        this.rotateArm(InputSystem.getInput(this._inputName, this._assemblyName) * this._rotationalSpeed)
     }
 }
 
