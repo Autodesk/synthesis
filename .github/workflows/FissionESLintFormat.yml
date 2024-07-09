@@ -26,28 +26,12 @@ jobs:
       id: linter-validation
       run: |
         cd fission
-        npm run lint
+        npm run lint && echo "ESLint Validation Passed" || (echo "ESLint Validation Failed" && exit 1)
       continue-on-error: true
-    - name: Check EsLint
-      run: |
-        if [ ${{ steps.linter-validation.outcome }} == "success" ]; then
-          echo "EsLint Validation Passed"
-        else
-          echo "EsLint Validation Failed"
-          exit 1
-        fi
     - name: Prettier
       id: prettier-validation
       run: |
         cd fission
         npx prettier --version
-        npm run prettier
+        npm run prettier && echo "Prettier Validation Passed" || (echo "Prettier Validation Failed" && exit 1)
       continue-on-error: true
-    - name: Check Prettier
-      run: |
-        if [ ${{ steps.prettier-validation.outcome }} == "success" ]; then
-          echo "Prettier Validation Passed"
-        else
-          echo "Prettier Validation Failed"
-          exit 1
-        fi
