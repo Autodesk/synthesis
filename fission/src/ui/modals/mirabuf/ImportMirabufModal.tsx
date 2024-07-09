@@ -77,7 +77,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     if (cachedRobots.length > 0) {
         cachedRobotElements = cachedRobots.map(info =>
             ItemCard({
-                name: info.name || "Unnamed Robot",
+                name: info.name || info.cacheKey || "Unnamed Robot",
                 id: info.id,
                 buttonText: "import",
                 onClick: () => console.log(`Selecting cached robot: ${info.cacheKey}`),
@@ -93,7 +93,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     if (cachedFields.length > 0) {
         cachedFieldElements = cachedFields.map(info =>
             ItemCard({
-                name: info.name || "Unnamed Field",
+                name: info.name || info.cacheKey || "Unnamed Field",
                 id: info.id,
                 buttonText: "import",
                 onClick: () => console.log(`Selecting cached field: ${info.cacheKey}`),
