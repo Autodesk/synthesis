@@ -23,7 +23,6 @@ auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
 APS_AUTH = None
 APS_USER_INFO = None
 
-
 @dataclass
 class APSAuth:
     access_token: str
@@ -59,7 +58,7 @@ def _res_json(res):
 
 
 def getCodeChallenge() -> str | None:
-    endpoint = "http://localhost:3003/api/aps/challenge/"
+    endpoint = "http://localhost:80/api/aps/challenge/"
     res = urllib.request.urlopen(endpoint)
     data = _res_json(res)
     return data["challenge"]
@@ -91,7 +90,7 @@ def getAuth() -> APSAuth:
 
 def convertAuthToken(code: str):
     global APS_AUTH
-    authUrl = f'http://localhost:3003/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:3003/api/aps/exporter/")}'
+    authUrl = f'http://localhost:80/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:80/api/aps/exporter/")}'
     res = urllib.request.urlopen(authUrl)
     data = _res_json(res)["response"]
     APS_AUTH = APSAuth(
