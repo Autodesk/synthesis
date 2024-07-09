@@ -9,7 +9,7 @@ from .Logging import getLogger
 from .strings import INTERNAL_ID
 from .Types.OString import OString
 
-logger = getLogger(f"{INTERNAL_ID}.{__name__}")
+logger = getLogger()
 
 try:
     config = ConfigParser()

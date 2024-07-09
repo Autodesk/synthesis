@@ -37,7 +37,7 @@ from ..ExporterOptions import ExporterOptions, JointParentType, SignalType
 from .PDMessage import PDMessage
 from .Utilities import construct_info, fill_info, guid_occurrence
 
-logger = getLogger(f"{INTERNAL_ID}.{__name__}")
+logger = getLogger()
 
 
 # Need to take in a graphcontainer

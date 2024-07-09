@@ -14,7 +14,7 @@ import adsk.fusion
 from .Logging import getLogger
 from .strings import INTERNAL_ID
 
-logger = getLogger(f"{INTERNAL_ID}.{__name__}")
+logger = getLogger()
 
 # hard coded to bypass errors for now
 PROTOBUF = True

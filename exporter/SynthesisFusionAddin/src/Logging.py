@@ -1,3 +1,4 @@
+import inspect
 import functools
 import logging.handlers
 import os
@@ -47,7 +48,11 @@ def setupLogger() -> None:
     logger.addHandler(logHandler)
 
 
-def getLogger(name: str) -> SynthesisLogger:
+def getLogger(name: str | None = None) -> SynthesisLogger:
+    if not name:
+        # Inspect the caller stack to automatically get the module from which the function is being called from.
+        name = f"{INTERNAL_ID}.{'.'.join(inspect.getmodule(inspect.stack()[1][0]).__name__.split('.')[1:])}"
+
     return cast(SynthesisLogger, logging.getLogger(name))
 
 

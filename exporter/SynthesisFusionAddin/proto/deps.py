@@ -10,7 +10,7 @@ from src.general_imports import INTERNAL_ID
 from src.Logging import getLogger, logFailure
 
 system = platform.system()
-logger = getLogger(f"{INTERNAL_ID}.{__name__}")
+logger = getLogger()
 
 
 def getPythonFolder() -> str:

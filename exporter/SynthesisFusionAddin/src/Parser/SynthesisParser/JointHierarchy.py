@@ -14,7 +14,7 @@ from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
 from .Utilities import guid_component, guid_occurrence
 
-logger = getLogger(f"{INTERNAL_ID}.{__name__}")
+logger = getLogger()
 
 # ____________________________ DATA TYPES __________________
 

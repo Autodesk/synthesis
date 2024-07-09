@@ -30,7 +30,7 @@ from ..Parser.SynthesisParser.Utilities import guid_occurrence
 from . import CustomGraphics, FileDialogConfig, Helper, IconPaths, OsHelper
 from .Configuration.SerialCommand import SerialCommand
 
-logger = getLogger(f"{INTERNAL_ID}.{__name__}")
+logger = getLogger()
 
 
 # ====================================== CONFIG COMMAND ======================================

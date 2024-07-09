@@ -15,7 +15,7 @@ from ..ExporterOptions import ExporterOptions, ExportMode
 from . import Components, JointHierarchy, Joints, Materials, PDMessage
 from .Utilities import *
 
-logger = getLogger(f"{INTERNAL_ID}.{__name__}")
+logger = getLogger()
 
 
 class Parser:
@@ -220,11 +220,11 @@ class Parser:
 
         joint_hierarchy_out += "\n\n"
         debug_output = (
-            f"Appearances: {len(assembly_out.data.materials.appearances)} \n"
-            f"Materials: {len(assembly_out.data.materials.physicalMaterials)} \n"
-            f"Part-Definitions: {len(part_defs)} \n"
-            f"Parts: {len(parts)} \n"
-            f"Signals: {len(signals)} \n"
+            f"Appearances: {len(assembly_out.data.materials.appearances)}\n"
+            f"Materials: {len(assembly_out.data.materials.physicalMaterials)}\n"
+            f"Part-Definitions: {len(part_defs)}\n"
+            f"Parts: {len(parts)}\n"
+            f"Signals: {len(signals)}\n"
             f"Joints: {len(joints)}\n"
             f"{joint_hierarchy_out}"
         )
