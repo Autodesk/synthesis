@@ -4,6 +4,7 @@ import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
 import World from "@/systems/World"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import Jolt from "@barclah/jolt-physics"
 
 // raycasting constants
 const RAY_MAX_LENGTH = 20.0
@@ -18,20 +19,18 @@ function SelectNode(e: MouseEvent) {
 
     if (res) {
         console.log(res)
-        World.PhysicsSystem.GetBody(res.data.mBodyID)
+        return World.PhysicsSystem.GetBody(res.data.mBodyID)
         // TODO: check if body is a node on an assembly and not the floor
-
-        return true
     }
 
-    return false
+    return null
 }
 
 type SelectButtonProps = {
     colorClass?: string
     size?: ButtonSize
     placeholder?: string
-    onSelect?: (value: string) => void
+    onSelect?: (value: Jolt.Body) => void
     className?: string
 }
 
@@ -41,10 +40,10 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
     const timeoutRef = useRef<NodeJS.Timeout>()
 
     const onReceiveSelection = useCallback(
-        (value: string) => {
+        (value: Jolt.Body) => {
             // TODO remove this when communication works
             clearTimeout(timeoutRef.current)
-            setValue(value)
+            setValue("Node")
             setSelecting(false)
             if (onSelect) onSelect(value)
         },
@@ -54,8 +53,9 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
     useEffect(() => {
         const onClick = (e: MouseEvent) => {
             if (selecting) {
-                if (SelectNode(e)) {
-                    onReceiveSelection("node")
+                const body = SelectNode(e)
+                if (body) {
+                    onReceiveSelection(body)
                 }
             }
         }
@@ -65,7 +65,6 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
         return () => {
             World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
         }
-
     }, [selecting, onReceiveSelection])
 
     // should send selecting state when clicked and then receive string value to set selecting to false
@@ -81,7 +80,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
                     // send selecting state
                     if (selecting) {
                         // cancel selection
-                        onReceiveSelection("")
+                        clearTimeout(timeoutRef.current)
                     } else {
                         setSelecting(true)
                     }
