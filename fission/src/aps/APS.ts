@@ -8,6 +8,13 @@ export const APS_USER_INFO_UPDATE_EVENT = "aps_user_info_update"
 
 const CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 
+const ENDPOINT_SYNTHESIS_CODE = `${import.meta.env.VITE_SYNTHESIS_SERVER_PATH}api/aps/code`
+export const ENDPOINT_SYNTHESIS_CHALLENGE = `${import.meta.env.VITE_SYNTHESIS_SERVER_PATH}api/aps/challenge`
+
+const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
+const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
+const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
+
 interface APSAuth {
     access_token: string
     refresh_token: string
@@ -139,7 +146,7 @@ class APS {
                     params.append("authoptions", encodeURIComponent(JSON.stringify({ id: APS.userInfo.email })))
                 }
 
-                const url = `https://developer.api.autodesk.com/authentication/v2/authorize?${params.toString()}`
+                const url = `${ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE}?${params.toString()}`
 
                 window.open(url, "_self")
             } catch (e) {
@@ -156,7 +163,7 @@ class APS {
     static async refreshAuthToken(refresh_token: string) {
         await this.requestMutex.runExclusive(async () => {
             try {
-                const res = await fetch("https://developer.api.autodesk.com/authentication/v2/token", {
+                const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded",
@@ -196,12 +203,9 @@ class APS {
     * @param {string} code - The auth code
     */
     static async convertAuthToken(code: string) {
-        const authUrl = import.meta.env.DEV
-            ? `http://localhost:3003/api/aps/code/`
-            : `https://synthesis.autodesk.com/api/aps/code/`
         let retry_login = false
         try {
-            const res = await fetch(`${authUrl}?code=${code}`)
+            const res = await fetch(`${ENDPOINT_SYNTHESIS_CODE}?code=${code}`)
             const json = await res.json()
             if (!res.ok) {
                 MainHUD_AddToast("error", "Error signing in.", json.userMessage)
@@ -239,7 +243,7 @@ class APS {
     static async loadUserInfo(auth: APSAuth) {
         console.log("Loading user information")
         try {
-            const res = await fetch("https://api.userprofile.autodesk.com/userinfo", {
+            const res = await fetch(ENDPOINT_AUTODESK_USERINFO, {
                 method: "GET",
                 headers: {
                     Authorization: auth.access_token,
@@ -272,10 +276,7 @@ class APS {
     */
     static async codeChallenge() {
         try {
-            const endpoint = import.meta.env.DEV
-                ? "http://localhost:3003/api/aps/challenge/"
-                : "https://synthesis.autodesk.com/api/aps/challenge/"
-            const res = await fetch(endpoint)
+            const res = await fetch(ENDPOINT_SYNTHESIS_CHALLENGE)
             const json = await res.json()
             return json["challenge"]
         } catch (e) {
