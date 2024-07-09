@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useRef } from "react"
 import { FaGear } from "react-icons/fa6"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
@@ -25,20 +25,6 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         )
         transformGizmoRef.current.AddMeshToScene()
         transformGizmoRef.current.CreateGizmo("translate")
-
-        // const onClick = (e: MouseEvent) => {
-        //     if (searchingForNode.current) {
-        //         if (SelectNode(e)) {
-        //             searchingForNode.current = false
-        //         }
-        //     }
-        // }
-
-        // World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
-
-        // return () => {
-        //     World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
-        // }
     }, [])
 
     return (
@@ -51,7 +37,6 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             onAccept={() => {
                 if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
 
-                console.log(bodyAttachmentRef)
                 // send configuration information to APS + RAM
                 if (bodyAttachmentRef.current && transformGizmoRef.current) {
                     World.SimulationSystem.AddPickupConfiguration(
