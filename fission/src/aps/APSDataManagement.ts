@@ -99,7 +99,7 @@ export class Item extends Data {
 }
 
 export async function getHubs(): Promise<Hub[] | undefined> {
-    const auth = await APS.getAuth()
+    const auth = APS.getAuth()
     if (!auth) {
         return undefined
     }
@@ -136,7 +136,7 @@ export async function getHubs(): Promise<Hub[] | undefined> {
 }
 
 export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
-    const auth = await APS.getAuth()
+    const auth = APS.getAuth()
     if (!auth) {
         return undefined
     }
@@ -172,7 +172,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
 }
 
 export async function getFolderData(project: Project, folder: Folder): Promise<Data[] | undefined> {
-    const auth = await APS.getAuth()
+    const auth = APS.getAuth()
     if (!auth) {
         return undefined
     }
@@ -220,7 +220,7 @@ function filterToQuery(filters: Filter[]): string {
 }
 
 export async function searchFolder(project: Project, folder: Folder, filters?: Filter[]): Promise<Data[] | undefined> {
-    const auth = await APS.getAuth()
+    const auth = APS.getAuth()
     if (!auth) return undefined
     let endpoint = `https://developer.api.autodesk.com/data/v1/projects/${project.id}/folders/${folder.id}/search`
     if (filters && filters.length > 0) {

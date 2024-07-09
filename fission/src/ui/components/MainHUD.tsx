@@ -12,7 +12,7 @@ import { motion } from "framer-motion"
 import logo from "@/assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "@/ui/ToastContext"
 import { Random } from "@/util/Random"
-import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
+import APS, { APS_USER_INFO_UPDATE_EVENT, ENDPOINT_SYNTHESIS_CHALLENGE } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -51,8 +51,6 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-    // console.debug('Creating MainHUD');
-
     const { openModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()
@@ -127,14 +125,16 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
-                        onClick={() => APS.auth && APS.refreshAuthToken(APS.auth.refresh_token)}
+                        onClick={() => APS.isSignedIn() && APS.refreshAuthToken(APS.getAuth()!.refresh_token)}
                     />
                     <MainHUDButton
                         value={"Expire APS Token"}
                         icon={<IoTimer />}
                         onClick={() => {
-                            if (APS.auth) APS.auth.expires_at = Date.now()
-                            APS.getAuth()
+                            if (APS.isSignedIn()) {
+                                APS.setExpiresAt(Date.now())
+                                APS.getAuthOrLogin()
+                            }
                         }}
                     />
                 </div>

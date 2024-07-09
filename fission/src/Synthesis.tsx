@@ -54,7 +54,7 @@ import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
-import APS from "./aps/APS.ts"
+import APS, { ENDPOINT_SYNTHESIS_CHALLENGE } from "./aps/APS.ts"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import Skybox from './ui/components/Skybox.tsx';
 
