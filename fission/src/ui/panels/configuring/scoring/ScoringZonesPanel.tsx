@@ -5,15 +5,23 @@ import Label, { LabelSize } from "@/components/Label"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
-import { ScoringZone } from "./ZoneConfigPanel"
+import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 type ScoringZoneRowProps = {
-    zone: ScoringZone
+    zone: ScoringZonePreferences
     openPanel: (id: string) => void
+    closePanel: (paneId: string) => void
     deleteZone: () => void
+    saveZones: () => void
 }
 
-const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, deleteZone }) => {
+export class SelectedZone {
+    public static zone: ScoringZonePreferences;
+}
+
+const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, closePanel, deleteZone, saveZones }) => {
     return (
         <Stack direction={StackDirection.Horizontal} spacing={48} justify="between">
             <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
@@ -26,179 +34,43 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, delete
                 </Stack>
             </Stack>
             <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
-                <Button value="Edit" onClick={() => openPanel("zone-config")} />
-                <Button value="Delete" onClick={deleteZone} />
+                <Button
+                    value="Edit"
+                    onClick={() => {
+                        SelectedZone.zone = zone
+                        saveZones()
+                        closePanel("scoring-zones")
+                        openPanel("zone-config")
+                    }}
+                />
+                <Button
+                    value="Delete"
+                    onClick={() => {
+                        deleteZone()
+                        saveZones()
+                    }}
+                />
             </Stack>
         </Stack>
     )
 }
 
 const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
-    const { openPanel } = usePanelControlContext()
-    const [zones, setZones] = useState<ScoringZone[]>([
-        {
-            name: "Blue 1",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 2",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 3",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 4",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 5",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 6",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 7",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 8",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 9",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 10",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 11",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 12",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 13",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 14",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 15",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 16",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Blue 17",
-            alliance: "blue",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-        {
-            name: "Red 1",
-            alliance: "red",
-            parent: "node_0",
-            points: 1,
-            destroyGamepiece: false,
-            persistentPoints: false,
-            scale: [1, 1, 1],
-        },
-    ])
+    const { openPanel, closePanel } = usePanelControlContext()
+    const [zones, setZones] = useState<ScoringZonePreferences[] | undefined>(undefined)
+
+     const fieldPrefs = PreferencesSystem.getAllFieldPreferences()[SynthesisBrain.fieldsSpawned[0]]
+
+     if (zones == undefined && fieldPrefs != undefined) {
+         setZones(fieldPrefs.scoringZones)
+     }
+
+    const saveZones = () => {
+        if (fieldPrefs != undefined && zones != undefined) {
+            fieldPrefs.scoringZones = zones
+            PreferencesSystem.savePreferences()
+        }
+    }
 
     return (
         <Panel
@@ -208,20 +80,52 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
             sidePadding={sidePadding}
             cancelEnabled={false}
             acceptName="Close"
+            onAccept={() => {
+                saveZones()
+            }}
         >
-            <ScrollView className="flex flex-col gap-4">
-                {zones.map((z: ScoringZone, i: number) => (
-                    <ScoringZoneRow
-                        key={i}
-                        zone={z}
-                        openPanel={openPanel}
-                        deleteZone={() => {
-                            setZones(zones.filter((_, idx) => idx !== i))
+            {zones == undefined ? (
+                <Label>Spawn a field to configure scoring zones</Label>
+            ) : (
+                <>
+                    <ScrollView className="flex flex-col gap-4">
+                        {zones.map((z: ScoringZonePreferences, i: number) => (
+                            <ScoringZoneRow
+                                key={i}
+                                zone={z}
+                                openPanel={openPanel}
+                                closePanel={closePanel}
+                                deleteZone={() => {
+                                    setZones(zones.filter((_, idx) => idx !== i))
+                                }}
+                                saveZones={saveZones}
+                            />
+                        ))}
+                    </ScrollView>
+                    <Button
+                        value="Add Zone"
+                        onClick={() => {
+                            const newZone: ScoringZonePreferences = {
+                                name: "New Scoring Zone",
+                                alliance: "blue",
+                                parent: "",
+                                points: 0,
+                                destroyGamepiece: false,
+                                persistentPoints: false,
+                                position: [0, 0, 0],
+                                rotation: [0, 0, 0, 0],
+                                scale: [1, 1, 1],
+                            }
+                            zones.push(newZone)
+                            SelectedZone.zone = newZone
+                            saveZones()
+                            closePanel(panelId)
+                            openPanel("zone-config")
                         }}
+                        className="px-36 w-full"
                     />
-                ))}
-            </ScrollView>
-            <Button value="Add Zone" onClick={() => openPanel("zone-config")} className="px-36 w-full" />
+                </>
+            )}
         </Panel>
     )
 }

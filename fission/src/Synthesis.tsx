@@ -55,7 +55,7 @@ import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning
 import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
-import Skybox from './ui/components/Skybox.tsx';
+import Skybox from './ui/components/Skybox.tsx'
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -201,7 +201,7 @@ const initialModals = [
     <ManageAssembliesModal modalId="manage-assembles" />,
     <ImportMirabufModal modalId="import-mirabuf" />,
     <ImportLocalMirabufModal modalId="import-local-mirabuf" />,
-]
+]  
 
 const initialPanels: ReactElement[] = [
     <RobotSwitchPanel panelId="multibot" openLocation="right" sidePadding={8} />,
@@ -210,8 +210,8 @@ const initialPanels: ReactElement[] = [
     <ScoreboardPanel panelId="scoreboard" />,
     <ConfigureGamepiecePickupPanel panelId="config-gamepiece-pickup" />,
     <ConfigureShotTrajectoryPanel panelId="config-shot-trajectory" />,
-    <ScoringZonesPanel panelId="scoring-zones" />,
-    <ZoneConfigPanel panelId="zone-config" />,
+    <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
+    <ZoneConfigPanel panelId="zone-config" openLocation="right" />,
 ]
 
 export default Synthesis

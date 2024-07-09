@@ -1,4 +1,4 @@
-import { Vector3Tuple, Vector4Tuple } from "three"
+import { Vector3Tuple } from "three"
 import { InputScheme } from "../input/DefaultInputs"
 
 export type GlobalPreference =
@@ -26,12 +26,12 @@ export const DefaultGlobalPreferences: { [key: string]: Object } = {
 }
 
 export type IntakePreferences = {
-    location: Vector3Tuple,
+    location: [number, number, number],
     diameter: number
 }
 
 export type EjectorPreferences = {
-    location: Vector3Tuple, 
+    location: [number, number, number], 
     ejectorVelocity: number
 }
 
@@ -41,18 +41,17 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
 }
 
-export type Alliance = "Blue" | "Red"
 
 export type ScoringZonePreferences = {
-    name: string,
-    alliance: Alliance,
-    parent: string,
-    points: number,
-    destroyGamepiece: boolean,
-    persistentPoints: boolean,
-    localPosition: Vector3Tuple,
-    localRotation: Vector4Tuple,
-    localScale: Vector3Tuple
+    name: string
+    alliance: "red" | "blue"
+    parent: string
+    points: number
+    destroyGamepiece: boolean
+    persistentPoints: boolean
+    position: [number, number, number]
+    rotation: [number, number, number, number]
+    scale: [number, number, number]
 }
 
 export type FieldPreferences = {

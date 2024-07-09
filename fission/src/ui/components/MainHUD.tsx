@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoBug, IoGameControllerOutline, IoPeople } from "react-icons/io5"
+import { IoBasket, IoBug, IoGameControllerOutline, IoPeople } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -130,20 +130,6 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                     <MainHUDButton
-                        value={"Robot test -> 5"}
-                        icon={<IoBug />}
-                        onClick={() =>
-                            (PreferencesSystem.getRobotPreferences("Team 2471 (2018) v7").intake.diameter = 5)
-                        }
-                    />
-                    <MainHUDButton
-                        value={"Robot test -> 2"}
-                        icon={<IoBug />}
-                        onClick={() =>
-                            (PreferencesSystem.getRobotPreferences("Team 2471 (2018) v7").intake.diameter = 2)
-                        }
-                    />
-                    <MainHUDButton
                         value={"Clear Prefs"}
                         icon={<IoBug />}
                         onClick={() =>
@@ -193,7 +179,13 @@ const MainHUD: React.FC = () => {
                             new TransformGizmo("translate").setMode = "rotate"
                         }}
                     />
-                </div>
+                    <MainHUDButton
+                        value={"Edit Scoring Zones"}
+                        icon={<IoBasket />}
+                        onClick={() => {
+                            openPanel("scoring-zones")
+                        }}
+                    />               </div>
                 {userInfo ? (
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}

@@ -37,6 +37,9 @@ class SynthesisBrain extends Brain {
     // The total number of robots spawned
     private static _currentRobotIndex: number = 0
 
+    // A list of all the fields spawned
+    public static fieldsSpawned: string[] = []
+
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
         
@@ -65,6 +68,7 @@ class SynthesisBrain extends Brain {
             }
         else {
             this.configureField()
+            SynthesisBrain.fieldsSpawned.push(assemblyName)
         }
 
         SynthesisBrain._currentRobotIndex++
@@ -82,7 +86,7 @@ class SynthesisBrain extends Brain {
 
     public clearControls(): void {
         let index = SynthesisBrain.robotsSpawned.indexOf(`[${this._assemblyIndex}] ${this._assemblyName}`);
-        SynthesisBrain.robotsSpawned.splice(index, 1);
+        SynthesisBrain.robotsSpawned.splice(index, 1)
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
@@ -208,10 +212,9 @@ class SynthesisBrain extends Brain {
     }
 
     private configureField() {
-       const fieldPrefs = PreferencesSystem.getFieldPreferences(this._assemblyName)
-       console.log("Loaded field prefs " + fieldPrefs)
+       //const fieldPrefs = PreferencesSystem.getFieldPreferences(this._assemblyName)
 
-       /** Put any scoring zone or other field configuration here */
+       /** Put any field configuration here */
     }
 
     private static parseInputs(rawInputs: InputScheme) {
