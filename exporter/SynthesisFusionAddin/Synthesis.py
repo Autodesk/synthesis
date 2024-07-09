@@ -1,15 +1,23 @@
-import importlib.util
-import logging.handlers
+import logging
 import os
 import traceback
 from shutil import rmtree
 
 import adsk.core
 
+from .src.APS import APS
 from .src.configure import setAnalytics, unload_config
 from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
 from .src.Types.OString import OString
-from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
+from .src.UI import (
+    HUI,
+    Camera,
+    ConfigCommand,
+    Handlers,
+    Helper,
+    MarkingMenu,
+    ShowAPSAuthCommand,
+)
 from .src.UI.Toolbar import Toolbar
 
 
@@ -122,3 +130,14 @@ def register_ui() -> None:
     )
 
     gm.elements.append(commandButton)
+
+    apsButton = HUI.HButton(
+        "APS",
+        work_panel,
+        Helper.check_solid_open,
+        ShowAPSAuthCommand.ShowAPSAuthCommandCreatedHandler,
+        description=f"APS TEST",
+        command=True,
+    )
+
+    gm.elements.append(apsButton)
