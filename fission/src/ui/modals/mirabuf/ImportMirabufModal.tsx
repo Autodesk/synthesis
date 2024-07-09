@@ -3,7 +3,7 @@ import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaPlus } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
-import { Data, Folder, Hub, Item, Project, getFolderData, getHubs, getProjects } from "@/aps/APSDataManagement"
+import { Data, Folder, Hub, Item, Project, getFolderData, getHubs, getProjects, searchRootForMira } from "@/aps/APSDataManagement"
 import { DeleteCached, GetMap, MiraType } from "@/mirabuf/MirabufLoader"
 import APS, { APSAuth } from "@/aps/APS"
 
@@ -24,8 +24,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, buttonText, secondaryButt
         >
             <Label className="text-wrap break-all">{name}</Label>
             <Button value={buttonText} onClick={onClick} />
-            {secondaryButtonText && secondaryOnClick && <Button value={secondaryButtonText} onClick={secondaryOnClick} />}
-        </div>
+            {secondaryButtonText && secondaryOnClick && <Button value={secondaryButtonText} onClick={secondaryOnClick} />} </div>
     )
 }
 
@@ -42,15 +41,31 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedProject, setSelectedProject] = useState<Project | undefined>()
     const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>()
     const [manifest, setManifest] = useState<MiraManifest | undefined>()
-    const [auth, setAuth] = useState<APSAuth | undefined>()
+    const [files, setFiles] = useState<Data[] | undefined>()
 
     useEffect(() => {
-        APS.getAuth().then(setAuth)
+        APS.getAuth().then(auth => {
+            if (auth) {
+                getHubs().then(async (hubs) => {
+                    if (!hubs) return;
+                    const fileData = []
+                    for (const hub of hubs) {
+                        const projects = await getProjects(hub)
+                        if (!projects) continue;
+                        for (const project of projects) {
+                            const data = await searchRootForMira(project)
+                            if (data)
+                                fileData.push(...data)
+                        }
+                    }
+                    setFiles(fileData)
+                })
+            }
+        })
     }, [])
 
     const cachedRobots = Object.entries(GetMap(MiraType.ROBOT) || {})
     const cachedFields = Object.entries(GetMap(MiraType.FIELD) || {})
-    console.log(cachedRobots, cachedFields)
 
     useEffect(() => {
         fetch('/api/mira/manifest.json').then(x => x.json()).then(data => {
@@ -58,55 +73,12 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         })
     }, [])
 
-    const [hubs, setHubs] = useState<Hub[] | undefined>(undefined)
-    useEffect(() => {
-        (async () => {
-            if (auth) setHubs(await getHubs())
-        })()
-    }, [auth])
-
-    const [projects, setProjects] = useState<Project[] | undefined>(undefined)
-    useEffect(() => {
-        (async () => {
-            if (auth && selectedHub) {
-                setProjects(await getProjects(selectedHub))
-            }
-        })()
-    }, [auth, selectedHub])
-
-    const [folderData, setFolderData] = useState<Data[] | undefined>(undefined)
-    useEffect(() => {
-        (async () => {
-            if (auth && selectedProject) {
-                console.log("Project has been selected")
-                if (selectedFolder) {
-                    console.log(`Selecting folder '${selectedFolder.displayName}'`)
-
-                    setFolderData(await getFolderData(selectedProject, selectedFolder))
-                } else {
-                    console.log("Defaulting to project root folder")
-                    const data = await getFolderData(selectedProject, selectedProject.folder)
-                    console.log(`Folder Data:\n${JSON.stringify(data)}`)
-                    setFolderData(data)
-                }
-            }
-        })()
-    }, [auth, selectedProject, selectedFolder])
-
-    useEffect(() => {
-        if (auth && folderData) {
-            console.log(`${folderData.length} items in folder data`)
-        } else {
-            console.log("No folder data")
-        }
-    }, [auth, folderData])
-
     let cachedElements;
     if (cachedRobots.length > 0) {
         cachedElements = cachedRobots.map(([key, value]) =>
             ItemCard({
                 name: key,
-                id: value,
+                id: key,
                 buttonText: "import",
                 onClick: () => console.log(`Selecting cached robot: ${key}`),
                 secondaryButtonText: "delete",
@@ -121,7 +93,7 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         const fieldElements = cachedFields.map(([key, value]) =>
             ItemCard({
                 name: key,
-                id: value,
+                id: key,
                 buttonText: "import",
                 onClick: () => console.log(`Selecting cached field: ${key}`),
                 secondaryButtonText: "delete",
@@ -145,61 +117,20 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         ItemCard({
             name: path,
             id: path,
-            buttonText: "import",
+            buttonText: "download",
             onClick: () => console.log(`Selecting remote: ${path}`)
         })
     );
 
-    let hubElements;
+    const hubElements = files?.map(file => (
+        ItemCard({
+            name: file.attributes.displayName!,
+            id: file.id,
+            buttonText: "APS import",
+            onClick: () => console.log(`Selecting APS: ${file.attributes.name}`)
+        })
+    ));
 
-    if (!selectedHub) {
-        hubElements = hubs?.map(x =>
-            ItemCard({
-                name: x.name,
-                id: x.id,
-                buttonText: ">",
-                onClick: () => setSelectedHub(x),
-            })
-        )
-    } else {
-        if (!selectedProject) {
-            hubElements = projects?.map(x =>
-                ItemCard({
-                    name: x.name,
-                    id: x.id,
-                    buttonText: ">",
-                    onClick: () => setSelectedProject(x),
-                })
-            )
-        } else {
-            hubElements = folderData?.map(x =>
-                x instanceof Folder
-                    ? ItemCard({
-                        name: `DIR: ${x.displayName}`,
-                        id: x.id,
-                        buttonText: ">",
-                        onClick: () => setSelectedFolder(x),
-                    })
-                    : x instanceof Item
-                        ? ItemCard({
-                            name: `${x.displayName}`,
-                            id: x.id,
-                            buttonText: "import",
-                            onClick: () => {
-                                console.log(`Selecting ${x.displayName} (${x.id})`)
-                            },
-                        })
-                        : ItemCard({
-                            name: `${x.type}: ${x.id}`,
-                            id: x.id,
-                            buttonText: "---",
-                            onClick: () => {
-                                console.log(`Selecting (${x.id})`)
-                            },
-                        })
-            )
-        }
-    }
     console.log('HUB ELEMENTS', hubElements)
     const displayElements = (cachedElements || []).concat(hubElements, remoteElements)
     return (

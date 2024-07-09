@@ -30,6 +30,11 @@ export type APSHubError = {
     meta: object | null
 }
 
+export type Filter = {
+    fieldName: string
+    matchValue: string
+}
+
 export interface Hub {
     id: string
     name: string
@@ -41,13 +46,22 @@ export interface Project {
     folder: Folder
 }
 
+export type DataAttributes = {
+    name: string
+    displayName?: string
+    versionNumber?: number
+    fileType?: string
+}
+
 export class Data {
     id: string
     type: string
+    attributes: DataAttributes
 
     constructor(x: any) {
         this.id = x.id
         this.type = x.type
+        this.attributes = x.attributes;
     }
 }
 
@@ -199,4 +213,34 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
         }
         return undefined
     }
+}
+
+function filterToQuery(filters: Filter[]): string {
+    return filters.map(filter => encodeURIComponent(`filter[${filter.fieldName}]`) + `=${filter.matchValue}`).join('&')
+}
+
+export async function searchFolder(project: Project, folder: Folder, filters?: Filter[]): Promise<Data[] | undefined> {
+    const auth = await APS.getAuth()
+    if (!auth) return undefined
+    let endpoint = `https://developer.api.autodesk.com/data/v1/projects/${project.id}/folders/${folder.id}/search`
+    if (filters && filters.length > 0) {
+        endpoint += `?${filterToQuery(filters)}`
+    }
+
+    const res = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${auth.access_token}`,
+        },
+    })
+    if (!res.ok) {
+        MainHUD_AddToast('error', 'Error getting cloud files.', 'Please sign in again.');
+        return [];
+    }
+    const json = await res.json()
+    return json.data.map((data: any) => new Data(data));
+}
+
+export async function searchRootForMira(project: Project): Promise<Data[] | undefined> {
+    return searchFolder(project, project.folder, [{ fieldName: 'fileType', matchValue: 'mira' }])
 }

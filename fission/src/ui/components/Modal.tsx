@@ -30,6 +30,7 @@ type ModalProps = {
 const Modal: React.FC<ModalProps> = ({
     children,
     name,
+    modalId,
     icon,
     onCancel,
     onMiddle,
@@ -51,9 +52,10 @@ const Modal: React.FC<ModalProps> = ({
     const iconEl: ReactNode = typeof icon === "string" ? <img src={icon} className="w-6" alt="Icon" /> : icon
 
     return (
-        <ClickAwayListener onClickAway={_ => closeModal()}>
+        <ClickAwayListener onClickAway={_ => closeModal()} key={modalId}>
             <div
-                id={name}
+                id={modalId}
+                key={modalId}
                 className={`${className} backdrop-blur-[4px] absolute w-fit h-fit left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
             >
                 {name && (
