@@ -2,7 +2,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import Pako from "pako"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
-const MIRABUF_LOCALSTORAGE_GENERATION = "4543246";;;;
+const MIRABUF_LOCALSTORAGE_GENERATION = "4543246"
 
 export type MirabufCacheID = string
 
