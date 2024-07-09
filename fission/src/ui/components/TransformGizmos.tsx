@@ -43,8 +43,8 @@ class TransformGizmos {
      *
      * @param mode The type of gizmo to create
      */
-    public CreateGizmo(mode: "translate" | "rotate" | "scale") {
-        const gizmo = World.SceneRenderer.AddTransformGizmo(this._mesh, mode, this._gizmos.length ? 3.0 : 5.0)
+    public CreateGizmo(mode: "translate" | "rotate" | "scale", size: number = 1.5) {
+        const gizmo = World.SceneRenderer.AddTransformGizmo(this._mesh, mode, size)
         this._gizmos.push(gizmo)
     }
 

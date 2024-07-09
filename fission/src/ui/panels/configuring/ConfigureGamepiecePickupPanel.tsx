@@ -12,10 +12,10 @@ const MIN_ZONE_SIZE = 0.1
 const MAX_ZONE_SIZE = 1.0
 const DEFAULT_ZONE_SIZE = 1.0 // default zone size
 
+
 const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
-    const [, setNode] = useState<string>("Click to select")
+    // const [, setNode] = useState<string>("Click to select")
     const transformGizmoRef = useRef<TransformGizmos>()
-    // let currentSize = DEFAULT_ZONE_SIZE
 
     // creating mesh & gizmo for the pickup node
     useEffect(() => {
@@ -24,6 +24,20 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         )
         transformGizmoRef.current.AddMeshToScene()
         transformGizmoRef.current.CreateGizmo("translate")
+ 
+        // const onClick = (e: MouseEvent) => {
+        //     if (searchingForNode.current) {
+        //         if (SelectNode(e)) {
+        //             searchingForNode.current = false
+        //         }
+        //     }
+        // }
+
+        // World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
+
+        // return () => {
+        //     World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
+        // }
     }, [])
 
     return (
@@ -42,7 +56,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             }}
         >
             {/* Button for user to select pickup node */}
-            <SelectButton onSelect={setNode} placeholder="Select pickup node" />
+            <SelectButton placeholder="Select pickup node" />
 
             {/* Slider for user to set size of pickup configuration */}
             <Slider

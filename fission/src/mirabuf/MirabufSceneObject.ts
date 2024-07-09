@@ -60,7 +60,7 @@ class MirabufSceneObject extends SceneObject {
             )
         )
         this.transformGizmos.AddMeshToScene()
-        this.transformGizmos.CreateGizmo("translate")
+        this.transformGizmos.CreateGizmo("translate", 5.0)
 
         // disabling physics initially for all rigid node bodies
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {

@@ -2,7 +2,30 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import Button, { ButtonSize } from "./Button"
 import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
-import { Random } from "@/util/Random"
+import World from "@/systems/World"
+import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+
+// raycasting constants
+const RAY_MAX_LENGTH = 20.0
+
+function SelectNode(e: MouseEvent) {
+    const origin = World.SceneRenderer.mainCamera.position
+
+    const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
+    const dir = worldSpace.sub(origin).normalize().multiplyScalar(RAY_MAX_LENGTH)
+
+    const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
+
+    if (res) {
+        console.log(res)
+        World.PhysicsSystem.GetBody(res.data.mBodyID)
+        // TODO: check if body is a node on an assembly and not the floor
+
+        return true
+    }
+
+    return false
+}
 
 type SelectButtonProps = {
     colorClass?: string
@@ -29,18 +52,20 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
     )
 
     useEffect(() => {
-        // simulate receiving a selection from Synthesis
-        if (selecting) {
-            timeoutRef.current = setTimeout(
-                () => {
-                    if (selecting) {
-                        const v = `node_${Math.floor(Random() * 10).toFixed(0)}`
-                        onReceiveSelection(v)
-                    }
-                },
-                Math.floor(Random() * 2_750) + 250
-            )
+        const onClick = (e: MouseEvent) => {
+            if (selecting) {
+                if (SelectNode(e)) {
+                    onReceiveSelection("node")
+                }
+            }
         }
+
+        World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
+
+        return () => {
+            World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
+        }
+
     }, [selecting, onReceiveSelection])
 
     // should send selecting state when clicked and then receive string value to set selecting to false
