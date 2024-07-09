@@ -109,4 +109,4 @@ site-packages
 
 proto/proto_out
 
-secrets
+.aps_auth

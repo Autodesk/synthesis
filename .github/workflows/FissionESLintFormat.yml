@@ -40,6 +40,7 @@ jobs:
       id: prettier-validation
       run: |
         cd fission
+        npx prettier --version
         npm run prettier
       continue-on-error: true
     - name: Check Prettier

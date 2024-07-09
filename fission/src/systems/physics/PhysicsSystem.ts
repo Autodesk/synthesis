@@ -50,7 +50,7 @@ const SUSPENSION_MIN_FACTOR = 0.1
 const SUSPENSION_MAX_FACTOR = 0.3
 
 /**
- * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
+ * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
  * This system can create physical representations of objects such as Robots,
  * Fields, and Game pieces, and simulate them.
  */
@@ -97,7 +97,7 @@ class PhysicsSystem extends WorldSystem {
      *
      * @param   halfExtents The half extents of the Box.
      * @param   mass        Mass of the Box. Leave undefined to make Box static.
-     * @param   position    Posiition of the Box (default: 0, 0, 0)
+     * @param   position    Position of the Box (default: 0, 0, 0)
      * @param   rotation    Rotation of the Box (default 0, 0, 0, 1)
      * @returns Reference to Jolt Body
      */
@@ -191,20 +191,18 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
         const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
-        // const layer = undefined;
-        console.log(`Using layer ${layer?.layer}`)
-        const bodyMap = this.CreateBodiesFromParser(parser, layer)
-        const rootBody = parser.rootNode
-        const mechanism = new Mechanism(rootBody, bodyMap, layer)
-        this.CreateJointsFromParser(parser, mechanism)
-        return mechanism
+        const bodyMap = this.CreateBodiesFromParser(parser, layer);
+        const rootBody = parser.rootNode;
+        const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer);
+        this.CreateJointsFromParser(parser, mechanism);
+        return mechanism;
     }
 
     /**
      * Creates all the joints for a mirabuf assembly given an already compiled mapping of rigid nodes to bodies.
      *
      * @param   parser      Mirabuf parser with complete set of rigid nodes and assembly data.
-     * @param   mechainsm   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
+     * @param   mechanism   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
      */
     public CreateJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!
@@ -302,7 +300,7 @@ class PhysicsSystem extends WorldSystem {
      * @param   jointDefinition Joint definition.
      * @param   bodyA           Parent body to connect.
      * @param   bodyB           Child body to connect.
-     * @param   versionNum      Version number of the export. Used for compatability purposes.
+     * @param   versionNum      Version number of the export. Used for compatibility purposes.
      * @returns Resulting Jolt Hinge Constraint.
      */
     private CreateHingeConstraint(
@@ -341,7 +339,7 @@ class PhysicsSystem extends WorldSystem {
             hingeConstraintSettings.mHingeAxis1
         )
 
-        // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected beavior.
+        // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
         // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
         const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
 
@@ -707,7 +705,6 @@ class PhysicsSystem extends WorldSystem {
             this._joltBodyInterface.RemoveBody(x)
             // this._joltBodyInterface.DestroyBody(x);
         })
-        console.log("Mechanism destroyed")
     }
 
     public GetBody(bodyId: Jolt.BodyID) {

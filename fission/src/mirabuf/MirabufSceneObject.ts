@@ -1,7 +1,6 @@
 import { mirabuf } from "@/proto/mirabuf"
 import SceneObject from "../systems/scene/SceneObject"
 import MirabufInstance from "./MirabufInstance"
-import { LoadMirabufRemote } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
@@ -20,16 +19,19 @@ interface RnDebugMeshes {
 }
 
 class MirabufSceneObject extends SceneObject {
-    private _mirabufInstance: MirabufInstance
-    private _debugBodies: Map<string, RnDebugMeshes> | null
-    private _physicsLayerReserve: LayerReserve | undefined = undefined
+    private _assemblyName: string;
+    private _mirabufInstance: MirabufInstance;
+    private _mechanism: Mechanism;
+    private _brain: SynthesisBrain | undefined;
 
-    private _mechanism: Mechanism
+    private _debugBodies: Map<string, RnDebugMeshes> | null;
+    private _physicsLayerReserve: LayerReserve | undefined = undefined;
 
-    public constructor(mirabufInstance: MirabufInstance) {
+    public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
         super()
 
         this._mirabufInstance = mirabufInstance
+        this._assemblyName = assemblyName;
 
         this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser)
         if (this._mechanism.layerReserve) {
@@ -61,10 +63,10 @@ class MirabufSceneObject extends SceneObject {
         }
 
         // Simulation
-        World.SimulationSystem.RegisterMechanism(this._mechanism)
-        const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-        const brain = new SynthesisBrain(this._mechanism)
-        simLayer.SetBrain(brain)
+        World.SimulationSystem.RegisterMechanism(this._mechanism);
+        const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!;
+        this._brain = new SynthesisBrain(this._mechanism, this._assemblyName);
+        simLayer.SetBrain(this._brain);
     }
 
     public Update(): void {
@@ -109,18 +111,16 @@ class MirabufSceneObject extends SceneObject {
         World.PhysicsSystem.DestroyMechanism(this._mechanism)
         this._mirabufInstance.Dispose(World.SceneRenderer.scene)
         this._debugBodies?.forEach(x => {
-            World.SceneRenderer.scene.remove(x.colliderMesh, x.comMesh)
-            x.colliderMesh.geometry.dispose()
-            x.comMesh.geometry.dispose()
-            ;(x.colliderMesh.material as THREE.Material).dispose()
-            ;(x.comMesh.material as THREE.Material).dispose()
-        })
-        this._debugBodies?.clear()
-        this._physicsLayerReserve?.Release()
-    }
+            World.SceneRenderer.scene.remove(x.colliderMesh, x.comMesh);
+            x.colliderMesh.geometry.dispose();
+            x.comMesh.geometry.dispose();
+            (x.colliderMesh.material as THREE.Material).dispose();
+            (x.comMesh.material as THREE.Material).dispose();
+        });
+        this._debugBodies?.clear();
+        this._physicsLayerReserve?.Release();
 
-    public GetRootNodeId(): Jolt.BodyID | undefined {
-        return this._mechanism.nodeToBody.get(this._mechanism.rootBody)
+        this._brain?.clearControls();
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
@@ -155,22 +155,20 @@ class MirabufSceneObject extends SceneObject {
 
         return mesh
     }
+
+    public GetRootNodeId(): Jolt.BodyID | undefined {
+        return this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)
+    }
 }
 
-export async function CreateMirabufFromUrl(path: string): Promise<MirabufSceneObject | null | undefined> {
-    const miraAssembly = await LoadMirabufRemote(path).catch(console.error)
-
-    if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-        return
-    }
-
-    const parser = new MirabufParser(miraAssembly)
+export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<MirabufSceneObject | null | undefined> {
+    const parser = new MirabufParser(assembly)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-        console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+        console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
     }
-
-    return new MirabufSceneObject(new MirabufInstance(parser))
+    
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!);
 }
 
 export default MirabufSceneObject
