@@ -23,6 +23,7 @@ auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
 APS_AUTH = None
 APS_USER_INFO = None
 
+
 @dataclass
 class APSAuth:
     access_token: str
