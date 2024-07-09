@@ -22,8 +22,6 @@ const root = await navigator.storage.getDirectory()
 const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, { create: true })
 const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, { create: true })
 
-export type MiraCache = { [key: string]: string }
-
 export function UnzipMira(buff: Uint8Array): Uint8Array {
     // Check if file is gzipped via magic gzip numbers 31 139
     if (buff[0] == 31 && buff[1] == 139) {
@@ -208,7 +206,11 @@ class MirabufCachingService {
      */
     public static async Remove(key: string, id: MirabufCacheID, miraType: MiraType): Promise<boolean> {
         try {
-            window.localStorage.removeItem(key)
+            const map = this.GetCacheMap(miraType)
+            if (map) {
+                delete map[key];
+                window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
+            }
 
             const dir = miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
             await dir.removeEntry(id)

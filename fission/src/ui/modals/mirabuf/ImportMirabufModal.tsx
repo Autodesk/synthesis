@@ -3,9 +3,9 @@ import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaPlus } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
-import { Data, Folder, Hub, Item, Project, getFolderData, getHubs, getProjects, searchRootForMira } from "@/aps/APSDataManagement"
-import { DeleteCached, GetMap, MiraType } from "@/mirabuf/MirabufLoader"
-import APS, { APSAuth } from "@/aps/APS"
+import { Data, Folder, Hub, Project, getHubs, getProjects, searchRootForMira } from "@/aps/APSDataManagement"
+import MirabufCachingService, { MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import APS from "@/aps/APS"
 
 interface ItemCardProps {
     id: string
@@ -64,8 +64,8 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         })
     }, [])
 
-    const cachedRobots = Object.entries(GetMap(MiraType.ROBOT) || {})
-    const cachedFields = Object.entries(GetMap(MiraType.FIELD) || {})
+    const cachedRobots: MirabufCacheInfo[] = Object.values(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
+    const cachedFields: MirabufCacheInfo[] = Object.values(MirabufCachingService.GetCacheMap(MiraType.FIELD))
 
     useEffect(() => {
         fetch('/api/mira/manifest.json').then(x => x.json()).then(data => {
@@ -73,47 +73,57 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         })
     }, [])
 
-    let cachedElements;
+    let cachedRobotElements;
     if (cachedRobots.length > 0) {
-        cachedElements = cachedRobots.map(([key, value]) =>
+        cachedRobotElements = cachedRobots.map(info =>
             ItemCard({
-                name: key,
-                id: key,
+                name: info.name || "Unnamed Robot",
+                id: info.id,
                 buttonText: "import",
-                onClick: () => console.log(`Selecting cached robot: ${key}`),
+                onClick: () => console.log(`Selecting cached robot: ${info.cacheKey}`),
                 secondaryButtonText: "delete",
                 secondaryOnClick: () => {
-                    console.log(`Deleting cache of: ${key}, ${value}`)
-                    DeleteCached(MiraType.ROBOT, value);
+                    console.log(`Deleting cache of: ${info.cacheKey}`)
+                    MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.ROBOT)
                 }
             })
         )
     }
+    let cachedFieldElements;
     if (cachedFields.length > 0) {
-        const fieldElements = cachedFields.map(([key, value]) =>
+        cachedFieldElements = cachedFields.map(info =>
             ItemCard({
-                name: key,
-                id: key,
+                name: info.name || "Unnamed Field",
+                id: info.id,
                 buttonText: "import",
-                onClick: () => console.log(`Selecting cached field: ${key}`),
+                onClick: () => console.log(`Selecting cached field: ${info.cacheKey}`),
                 secondaryButtonText: "delete",
                 secondaryOnClick: () => {
-                    console.log(`Deleting cache of: ${key}`)
-                    DeleteCached(MiraType.FIELD, value);
+                    console.log(`Deleting cache of: ${info.cacheKey}`)
+                    MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.FIELD)
                 }
             })
         );
-        cachedElements = cachedElements ? cachedElements.concat(fieldElements) : fieldElements
     }
 
-    let remotePaths = (manifest ? manifest.robots.concat(manifest.fields) : []);
+    let remoteRobots = manifest?.robots || [];
+    let remoteFields = manifest?.fields || [];
     if (cachedRobots.length > 0) {
-        remotePaths = remotePaths.filter(path => !cachedRobots.some(([key, _value]) => key.includes(path)))
+        remoteRobots = remoteRobots.filter(path => !cachedRobots.some(info => info.cacheKey.includes(path)))
     }
     if (cachedFields.length > 0) {
-        remotePaths = remotePaths.filter(path => !cachedFields.some(([key, _value]) => key.includes(path)))
+        remoteFields = remoteFields.filter(path => !cachedFields.some(info => info.cacheKey.includes(path)))
     }
-    const remoteElements = remotePaths.map(path =>
+    const remoteRobotElements = remoteRobots.map(path =>
+        ItemCard({
+            name: path,
+            id: path,
+            buttonText: "download",
+            onClick: () => console.log(`Selecting remote: ${path}`)
+        })
+    );
+
+    const remoteFieldElements = remoteFields.map(path =>
         ItemCard({
             name: path,
             id: path,
@@ -131,8 +141,6 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         })
     ));
 
-    console.log('HUB ELEMENTS', hubElements)
-    const displayElements = (cachedElements || []).concat(hubElements, remoteElements)
     return (
         <Modal
             name={"Manage Assemblies"}
@@ -171,8 +179,26 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 )}
             </div>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
-                {displayElements && displayElements.length > 0 ?
-                    displayElements : <p>Nothing to display.</p>}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {cachedRobotElements ? `${cachedRobotElements.length} Saved Robots${cachedRobotElements.length > 1 ? 's' : ''}` : "No Saved Robots"}
+                </Label>
+                {cachedRobotElements}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {cachedFieldElements ? `${cachedFieldElements.length} Saved Fields${cachedFieldElements.length > 1 ? 's' : ''}` : "No Saved Fields"}
+                </Label>
+                {cachedFieldElements}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {hubElements ? `${hubElements.length} Remote Asset${hubElements.length > 1 ? 's' : ''}` : "No Remote Assets"}
+                </Label>
+                {hubElements}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {remoteRobotElements ? `${remoteRobotElements.length} Default Robots${remoteRobotElements.length > 1 ? 's' : ''}` : "No Default Robots"}
+                </Label>
+                {remoteRobotElements}
+                <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                    {remoteFieldElements ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length > 1 ? 's' : ''}` : "No Default Fields"}
+                </Label>
+                {remoteFieldElements}
             </div>
         </Modal>
     )
