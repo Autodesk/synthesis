@@ -685,25 +685,19 @@ class PhysicsSystem extends WorldSystem {
 
 
         partDefinition.bodies!.forEach(body => {
-            if (
-                body.triangleMesh &&
-                body.triangleMesh.mesh &&
-                body.triangleMesh.mesh.verts &&
-                body.triangleMesh.mesh.indices
-            ) {
-                const vertArr = body.triangleMesh.mesh.verts
-                for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
-                    const vert = MirabufFloatArr_JoltFloat3(vertArr, i)
-                    settings.mTriangleVertices.push_back(vert)
-                    this.UpdateMinMaxBounds(new JOLT.Vec3(vert), min, max)
-                    JOLT.destroy(vert)
-                }
-                const indexArr = body.triangleMesh.mesh.indices
-                for (let i = 0; i < body.triangleMesh.mesh.indices.length; i += 3) {
-                    settings.mIndexedTriangles.push_back(
-                        new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0)
-                    )
-                }
+            const vertArr = body.triangleMesh?.mesh?.verts
+            const indexArr = body.triangleMesh?.mesh?.indices
+            if (!vertsArr || !indexArr) return
+            for (let i = 0; i < vertArr.length; i += 3) {
+                const vert = MirabufFloatArr_JoltFloat3(vertArr, i)
+                settings.mTriangleVertices.push_back(vert)
+                this.UpdateMinMaxBounds(new JOLT.Vec3(vert), min, max)
+                JOLT.destroy(vert)
+            }
+            for (let i = 0; i < indexArr.length; i += 3) {
+                settings.mIndexedTriangles.push_back(
+                    new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0)
+                )
             }
         })
 
