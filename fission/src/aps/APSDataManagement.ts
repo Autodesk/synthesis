@@ -59,7 +59,7 @@ export class Item extends Data {
 }
 
 export async function getHubs(): Promise<Hub[] | undefined> {
-    const auth = APS.auth
+    const auth = APS.getAuth()
     if (!auth) {
         return undefined
     }
@@ -88,7 +88,7 @@ export async function getHubs(): Promise<Hub[] | undefined> {
 }
 
 export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
-    const auth = APS.auth
+    const auth = APS.getAuth()
     if (!auth) {
         return undefined
     }
@@ -121,7 +121,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
 }
 
 export async function getFolderData(project: Project, folder: Folder): Promise<Data[] | undefined> {
-    const auth = APS.auth
+    const auth = APS.getAuth()
     if (!auth) {
         return undefined
     }

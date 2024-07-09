@@ -5,7 +5,7 @@ import glsl from 'vite-plugin-glsl';
 
 const basePath = '/fission/'
 const serverPort = 3000
-const dockerServerPort = 3003
+const dockerServerPort = 80
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -53,7 +53,7 @@ export default defineConfig({
                 secure: false,
                 rewrite: path => path.replace(/^\/api\/mira/, '/Downloadables/Mira'),
             },
-            '/api/auth': {
+            '/api/aps': {
                 target: `http://localhost:${dockerServerPort}/`,
                 changeOrigin: true,
                 secure: false,
