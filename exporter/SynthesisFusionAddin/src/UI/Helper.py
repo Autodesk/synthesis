@@ -1,9 +1,10 @@
+import traceback
 from inspect import getmembers, isfunction
 
-from src.UI import HUI, Events
+import adsk.core
 
-# Transition: AARD-1737
-from ..general_imports import *
+from src import APP_NAME, APP_TITLE, INTERNAL_ID, gm
+from src.UI import HUI, Events
 
 
 def check_solid_open() -> bool:
@@ -14,7 +15,7 @@ def check_solid_open() -> bool:
     return True
 
 
-def getDocName() -> str or None:
+def getDocName() -> str | None:
     """### Gets the active Document Name
     - If it can't find one then it will return None
     """
@@ -38,7 +39,7 @@ def checkAttribute() -> bool:
         return False
 
 
-def addUnityAttribute() -> bool or None:
+def addUnityAttribute() -> bool | None:
     """#### Adds an attribute to the Fusion File
     - Initially intended to be used to add a marker for in use untiy files
     - No longer necessary

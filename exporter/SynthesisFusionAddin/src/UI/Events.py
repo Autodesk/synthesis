@@ -1,8 +1,11 @@
+import json
 import logging.handlers
 from typing import Sequence
 
-# Transition: AARD-1737
-from ..general_imports import *
+import adsk.core
+
+from src import INTERNAL_ID, gm
+from src.UI import Helper
 
 """ # This file is Special
     It links all function names to command requests that palletes can make automatically

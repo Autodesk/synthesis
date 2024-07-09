@@ -4,6 +4,8 @@ import traceback
 import adsk.core
 import adsk.fusion
 
+from src import INTERNAL_ID
+
 # Ripped all the boiler plate from the example code: https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-c90ce6a2-c282-11e6-a365-3417ebc87622
 
 # global mapping list of event handlers to keep them referenced for the duration of the command
@@ -221,6 +223,7 @@ def stopMarkingMenu(ui: adsk.core.UserInterface):
             else:
                 ui.messageBox(str(obj) + " is not a valid object")
 
+        cmdDefs.clear()
         handlers.clear()
     except:
         ui.messageBox("Failed:\n{}".format(traceback.format_exc()))

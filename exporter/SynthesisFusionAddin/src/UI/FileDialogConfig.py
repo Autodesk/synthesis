@@ -3,10 +3,8 @@ from typing import Union
 import adsk.core
 import adsk.fusion
 
+from src import gm
 from src.Types.OString import OString
-
-# Transition: AARD-1737
-from ..general_imports import *
 
 
 def SaveFileDialog(defaultPath="", defaultName="", ext="MiraBuf Package (*.mira)") -> Union[str, bool]:

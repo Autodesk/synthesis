@@ -1,5 +1,5 @@
-from ..configure import setAnalytics
-from ..general_imports import gm
+from src import gm
+from src.configure import setAnalytics
 
 
 def showAnalyticsAlert():

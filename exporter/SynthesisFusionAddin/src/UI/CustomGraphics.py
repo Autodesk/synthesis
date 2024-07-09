@@ -4,8 +4,7 @@ import traceback
 import adsk.core
 import adsk.fusion
 
-# Transition: AARD-1737
-from ..general_imports import *
+from src import gm
 
 
 def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels) -> None:

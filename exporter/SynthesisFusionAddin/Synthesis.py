@@ -6,13 +6,15 @@ import traceback
 import adsk.core
 
 # Required for absolute imports
-fileDir = os.path.dirname(os.path.abspath(__file__))
-sys.path.append(os.path.abspath(os.path.join(fileDir)))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
+from src import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
 from src.configure import unload_config
-from src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
+from src.logging import setupLogger
 from src.UI import HUI, Camera, ConfigCommand, Helper, MarkingMenu
 from src.UI.Toolbar import Toolbar
+
+root_logger: logging.Logger  # TODO: Will need to be updated after GH-1010
 
 
 def run(_):
@@ -23,8 +25,8 @@ def run(_):
     """
 
     try:
-        # Remove all items prior to start just to make sure
-        unregister_all()
+        global root_logger
+        root_logger, _ = setupLogger()  # TODO: Will need to be updated after GH-1010
 
         # creates the UI elements
         register_ui()
@@ -63,26 +65,7 @@ def stop(_):
 
         unload_config()
 
-        for file in gm.files:
-            try:
-                os.remove(file)
-            except OSError:
-                pass
-
-        # removes path so that proto files don't get confused
-
-        import sys
-
-        path = os.path.abspath(os.path.dirname(__file__))
-
-        path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out"))
-
-        if path in sys.path:
-            sys.path.remove(path)
-
-        if path_proto_files in sys.path:
-            sys.path.remove(path_proto_files)
-
+        gm.clear()
     except:
         logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
 

@@ -7,12 +7,10 @@ import adsk.core
 import adsk.fusion
 
 from proto.proto_out import joint_pb2, types_pb2
+from src import INTERNAL_ID, gm
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import guid_component, guid_occurrence
-
-# Transition: AARD-1737
-from ...general_imports import *
 
 # ____________________________ DATA TYPES __________________
 

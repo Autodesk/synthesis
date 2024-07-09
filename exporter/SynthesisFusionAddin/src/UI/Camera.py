@@ -1,12 +1,13 @@
+import logging
 import os
+import traceback
 
+import adsk.core
 from adsk.core import SaveImageFileOptions
 
+from src import A_EP
 from src.Types.OString import OString
 from src.UI import Helper
-
-# Transition: AARD-1737
-from ..general_imports import *
 
 
 def captureThumbnail(size=250):

@@ -2,10 +2,11 @@
 """
 
 import inspect
+import logging
 import os
 from time import time
 
-from ..general_imports import *
+from src import DEBUG, INTERNAL_ID
 
 
 class Timer:

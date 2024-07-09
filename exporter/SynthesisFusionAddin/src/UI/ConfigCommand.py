@@ -4,12 +4,14 @@
 
 import logging
 import os
+import pathlib
 import traceback
 from enum import Enum
 
 import adsk.core
 import adsk.fusion
 
+from src import A_EP, INTERNAL_ID, gm
 from src.Analytics.alert import showAnalyticsAlert
 from src.configure import NOTIFIED, write_configuration
 from src.Parser.ExporterOptions import (
@@ -27,9 +29,6 @@ from src.Parser.SynthesisParser.Parser import Parser
 from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.UI import CustomGraphics, FileDialogConfig, Helper, IconPaths, OsHelper
 from src.UI.Configuration.SerialCommand import SerialCommand
-
-# Transition: AARD-1737
-from ..general_imports import *
 
 # ====================================== CONFIG COMMAND ======================================
 

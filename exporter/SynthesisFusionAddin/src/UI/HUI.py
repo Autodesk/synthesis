@@ -1,7 +1,9 @@
-# Transition: AARD-1737
-from src.UI import Handlers, OsHelper
+import logging
 
-from ..general_imports import *
+import adsk.core
+
+from src import INTERNAL_ID, gm
+from src.UI import Handlers, OsHelper
 
 
 # no longer used

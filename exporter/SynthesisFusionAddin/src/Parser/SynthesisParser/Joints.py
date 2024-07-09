@@ -22,6 +22,7 @@ Each root child has a number of children that are all rigidly attached to the dy
 
 """
 
+import logging
 import traceback
 import uuid
 from typing import Union
@@ -30,6 +31,7 @@ import adsk.core
 import adsk.fusion
 
 from proto.proto_out import assembly_pb2, joint_pb2, signal_pb2, types_pb2
+from src import DEBUG, INTERNAL_ID, gm
 from src.Parser.ExporterOptions import ExporterOptions, JointParentType, SignalType
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import (
@@ -37,9 +39,6 @@ from src.Parser.SynthesisParser.Utilities import (
     fill_info,
     guid_occurrence,
 )
-
-# Transition: AARD-1737
-from ...general_imports import *
 
 # Need to take in a graphcontainer
 # Need to create a new base node for each Joint Instance

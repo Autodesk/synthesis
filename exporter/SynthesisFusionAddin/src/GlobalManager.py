@@ -3,11 +3,6 @@
 import adsk.core
 import adsk.fusion
 
-from src import INTERNAL_ID
-
-# Transition: AARD-1737
-from .general_imports import *
-
 
 class GlobalManager(object):
     """Global Manager instance"""
@@ -15,13 +10,9 @@ class GlobalManager(object):
     class __GlobalManager:
         def __init__(self):
             self.app = adsk.core.Application.get()
-            self.logger = logging.getLogger(f"{INTERNAL_ID}.{self.__class__.__name__}")
 
             if self.app:
                 self.ui = self.app.userInterface
-
-            self.connected = False
-            """ Is unity currently connected """
 
             self.uniqueIds = []
             """ Collection of unique ID values to not overlap """
@@ -43,10 +34,13 @@ class GlobalManager(object):
                 - this is the list of objects being sent
             """
 
-            self.files = []
-
         def __str__(self):
             return "GlobalManager"
+
+        def clear(self):
+            for attr, value in self.__dict__.items():
+                if isinstance(value, list):
+                    setattr(self, attr, [])
 
     instance = None
 

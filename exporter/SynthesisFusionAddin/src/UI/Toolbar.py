@@ -1,7 +1,7 @@
-# Transition: AARD-1737
-from src import INTERNAL_ID
+import logging
+import traceback
 
-from ..general_imports import *
+from src import INTERNAL_ID, gm
 
 
 class Toolbar:
@@ -40,7 +40,7 @@ class Toolbar:
                 error = traceback.format_exc()
                 self.logger.error(f"Failed at creating toolbar with {self.uid} due to {error}")
 
-    def getPanel(self, name: str, visibility: bool = True) -> str or None:
+    def getPanel(self, name: str, visibility: bool = True) -> str | None:
         """# Gets a control for a panel to the tabbed toolbar
         - optional param for visibility
         """
@@ -61,7 +61,7 @@ class Toolbar:
             return None
 
     @staticmethod
-    def getNewPanel(name: str, tab_id: str, toolbar_id: str, visibility: bool = True) -> str or None:
+    def getNewPanel(name: str, tab_id: str, toolbar_id: str, visibility: bool = True) -> str | None:
         """# Gets a control for a panel to the tabbed toolbar visibility"""
         logger = logging.getLogger(f"{INTERNAL_ID}.Toolbar.getNewPanel")
 

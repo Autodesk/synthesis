@@ -1,4 +1,6 @@
 import gzip
+import logging
+import pathlib
 import traceback
 
 import adsk.core
@@ -6,6 +8,7 @@ import adsk.fusion
 from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
+from src import DEBUG, INTERNAL_ID, gm
 from src.Parser.ExporterOptions import ExporterOptions, ExportMode
 from src.Parser.SynthesisParser import (
     Components,
@@ -16,9 +19,6 @@ from src.Parser.SynthesisParser import (
 )
 from src.Parser.SynthesisParser.Utilities import fill_info
 from src.UI.Camera import captureThumbnail, clearIconCache
-
-# Transition: AARD-1737
-from ...general_imports import *
 
 
 class Parser:
