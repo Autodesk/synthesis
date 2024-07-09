@@ -1,6 +1,6 @@
 import Jolt from "@barclah/jolt-physics"
 import Driver, { DriverControlMode } from "./Driver"
-import { SIMULATION_PERIOD } from "@/systems/physics/PhysicsSystem"
+import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
 class HingeDriver extends Driver {
@@ -21,7 +21,7 @@ class HingeDriver extends Driver {
         return this._targetAngle
     }
     public set targetAngle(rads: number) {
-        this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads));
+        this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
     }
 
     public set minTorqueLimit(nm: number) {
@@ -61,7 +61,7 @@ class HingeDriver extends Driver {
         const springSettings = motorSettings.mSpringSettings
 
         // These values were selected based on the suggestions of the documentation for stiff control.
-        springSettings.mFrequency = 20 * (1.0 / SIMULATION_PERIOD)
+        springSettings.mFrequency = 20 * (1.0 / GetLastDeltaT())
         springSettings.mDamping = 0.995
 
         motorSettings.mSpringSettings = springSettings
