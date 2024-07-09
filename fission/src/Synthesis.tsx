@@ -56,7 +56,7 @@ import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import APS, { ENDPOINT_SYNTHESIS_CHALLENGE } from "./aps/APS.ts"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
-import Skybox from './ui/components/Skybox.tsx';
+import Skybox from "./ui/components/Skybox.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -139,7 +139,7 @@ function Synthesis() {
 
     return (
         <AnimatePresence>
-            <Skybox key="123"/>
+            <Skybox key="123" />
             <TooltipControlProvider
                 showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
                     showTooltip(type, controls, duration)
