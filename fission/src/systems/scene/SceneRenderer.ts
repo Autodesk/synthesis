@@ -3,7 +3,6 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
@@ -154,7 +153,7 @@ class SceneRenderer extends WorldSystem {
         this.RemoveAllSceneObjects()
     }
 
-    public RegisterSceneObject<T extends MirabufSceneObject>(obj: T): number {
+    public RegisterSceneObject<T extends SceneObject>(obj: T): number {
         const id = nextSceneObjectId++
         obj.id = id
         this._sceneObjects.set(id, obj)

@@ -155,6 +155,10 @@ class MirabufSceneObject extends SceneObject {
 
         return mesh
     }
+
+    public GetRootNodeId(): Jolt.BodyID | undefined {
+        return this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)
+    }
 }
 
 export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<MirabufSceneObject | null | undefined> {
