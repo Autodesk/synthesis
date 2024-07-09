@@ -4,7 +4,7 @@ import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { BlendFunction, DepthCopyPass, DepthDownsamplingPass, EffectComposer, EffectPass, NormalPass, PredicationMode, RenderPass, SMAAEffect, SSAOEffect } from "postprocessing"
+import { BlendFunction, BoxBlurPass, DepthCopyPass, DepthDownsamplingPass, EdgeDetectionMode, EffectComposer, EffectPass, NormalPass, OutlineEffect, PredicationMode, RenderPass, SMAAEffect, SSAOEffect } from "postprocessing"
 
 import vertexShader from '@/shaders/vertex.glsl';
 import fragmentShader from '@/shaders/fragment.glsl';
@@ -136,42 +136,7 @@ class SceneRenderer extends WorldSystem {
         const normalPass = new NormalPass(this._scene, this._mainCamera)
         this._composer.addPass(normalPass)
 
-        let depthPass: DepthDownsamplingPass | undefined;
-        if (this._renderer.capabilities.isWebGL2) {
-            depthPass = new DepthDownsamplingPass({
-                normalBuffer: normalPass.texture,
-                resolutionScale: 0.5
-            })
-            this._composer.addPass(depthPass)
-        }
-
-        const normalDepthBuffer = this._renderer.capabilities.isWebGL2 ?
-			depthPass!.texture : undefined;
-
-        // https://github.com/pmndrs/postprocessing/blob/main/demo/src/demos/SSAODemo.js
-        const ssaoEffect = new SSAOEffect(this._mainCamera, normalPass.texture, {
-            distanceThreshold: 20 ,	// Render up to a distance of ~20 world units
-			distanceFalloff: 2.5,	// with an additional ~2.5 units of falloff.
-			rangeThreshold: 0.3,		// Occlusion proximity of ~0.3 world units
-			rangeFalloff: 0.1,
-            blendFunction: BlendFunction.MULTIPLY,
-			distanceScaling: true,
-			depthAwareUpsampling: true,
-            luminanceInfluence: 0.7,
-			minRadiusScale: 0.33,
-			radius: 0.01,
-			intensity: 2.7,
-			bias: 0.025,
-			fade: 0.01,
-            samples: 90,
-			rings: 7,
-            resolutionScale: 1.5,
-            normalDepthBuffer: normalDepthBuffer
-        })
-
-        // this._composer.addPass(new EffectPass(this._mainCamera, ssaoEffect))
-
-        this._antiAliasPass = new SMAAEffect()
+        this._antiAliasPass = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.LUMA })
         // this._antiAliasPass.edgeDetectionMaterial.predicationMode = PredicationMode.DEPTH;
         this._composer.addPass(new EffectPass(this._mainCamera, this._antiAliasPass))
     }
