@@ -42,26 +42,25 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>()
     const [manifest, setManifest] = useState<MiraManifest | undefined>()
     const [files, setFiles] = useState<Data[] | undefined>()
+    const auth = APS.getAuth();
 
     useEffect(() => {
-        APS.getAuth().then(auth => {
-            if (auth) {
-                getHubs().then(async (hubs) => {
-                    if (!hubs) return;
-                    const fileData = []
-                    for (const hub of hubs) {
-                        const projects = await getProjects(hub)
-                        if (!projects) continue;
-                        for (const project of projects) {
-                            const data = await searchRootForMira(project)
-                            if (data)
-                                fileData.push(...data)
-                        }
+        if (auth) {
+            getHubs().then(async (hubs) => {
+                if (!hubs) return;
+                const fileData = []
+                for (const hub of hubs) {
+                    const projects = await getProjects(hub)
+                    if (!projects) continue;
+                    for (const project of projects) {
+                        const data = await searchRootForMira(project)
+                        if (data)
+                            fileData.push(...data)
                     }
-                    setFiles(fileData)
-                })
-            }
-        })
+                }
+                setFiles(fileData)
+            })
+        }
     }, [])
 
     const cachedRobots: MirabufCacheInfo[] = Object.values(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
