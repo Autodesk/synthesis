@@ -19,8 +19,11 @@ function SelectNode(e: MouseEvent) {
 
     if (res) {
         console.log(res)
-        return World.PhysicsSystem.GetBody(res.data.mBodyID)
-        // TODO: check if body is a node on an assembly and not the floor
+        const body = World.PhysicsSystem.GetBody(res.data.mBodyID)
+        if (!body.IsDynamic()) {
+            return null
+        }
+        return body
     }
 
     return null

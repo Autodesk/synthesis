@@ -32,8 +32,6 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {
-                if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
-
                 // send node and speed config
                 if (bodyAttachmentRef.current && transformGizmoRef.current) {
                     World.SimulationSystem.AddPickupConfiguration(
@@ -41,10 +39,13 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                         transformGizmoRef.current.mesh.position
                     )
                 }
+
+                if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
             }}
             onCancel={() => {
-                if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
                 // cancel node and speed config
+
+                if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
             }}
         >
             <SelectButton
