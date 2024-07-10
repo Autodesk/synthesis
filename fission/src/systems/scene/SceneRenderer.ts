@@ -136,7 +136,7 @@ class SceneRenderer extends WorldSystem {
         const normalPass = new NormalPass(this._scene, this._mainCamera)
         this._composer.addPass(normalPass)
 
-        this._antiAliasPass = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.LUMA })
+        this._antiAliasPass = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
         // this._antiAliasPass.edgeDetectionMaterial.predicationMode = PredicationMode.DEPTH;
         this._composer.addPass(new EffectPass(this._mainCamera, this._antiAliasPass))
     }
