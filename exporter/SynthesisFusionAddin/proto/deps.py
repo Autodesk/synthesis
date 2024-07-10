@@ -5,7 +5,8 @@ from pathlib import Path
 
 import adsk.core
 import adsk.fusion
-from ..src.general_imports import INTERNAL_ID
+
+from src.general_imports import INTERNAL_ID
 
 system = platform.system()
 

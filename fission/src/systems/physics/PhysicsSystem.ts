@@ -720,6 +720,8 @@ class PhysicsSystem extends WorldSystem {
         let substeps = Math.max(1, Math.floor((lastDeltaT / STANDARD_SIMULATION_PERIOD) * STANDARD_SUB_STEPS))
         substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))
 
+        console.log(`DeltaT: ${lastDeltaT.toFixed(5)}, Substeps: ${substeps}`)
+
         this._joltInterface.Step(lastDeltaT, substeps)
     }
 

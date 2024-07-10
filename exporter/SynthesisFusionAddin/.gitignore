@@ -107,6 +107,5 @@ site-packages
 # env files
 **/.env
 
-proto/proto_out
-
 .aps_auth
+proto/proto_out
