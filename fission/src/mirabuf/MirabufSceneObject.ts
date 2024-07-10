@@ -30,6 +30,7 @@ class MirabufSceneObject extends SceneObject {
     private _physicsLayerReserve: LayerReserve | undefined = undefined
 
     private _transformGizmos: TransformGizmos | undefined = undefined
+    private _deleteGizmoOnEscape: boolean = true
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -112,11 +113,12 @@ class MirabufSceneObject extends SceneObject {
                     this.EnablePhysics()
                     this._transformGizmos = undefined
                     return
-                } else if (InputSystem.isKeyPressed("Escape")) {
+                } else if (InputSystem.isKeyPressed("Escape") && this._deleteGizmoOnEscape) {
                     // cancelling the creation of the mirabuf scene object
                     this._transformGizmos.RemoveGizmos()
                     World.SceneRenderer.RemoveSceneObject(this.id)
                     this._transformGizmos = undefined
+                    this._deleteGizmoOnEscape = false
                     return
                 }
 
