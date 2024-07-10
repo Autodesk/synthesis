@@ -220,7 +220,7 @@ class MirabufSceneObject extends SceneObject {
         })
     }
 
-    private DisablePhysics() { 
+    private DisablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
