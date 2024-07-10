@@ -4,7 +4,6 @@ import WorldSystem from "../WorldSystem"
 
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
@@ -24,8 +23,8 @@ class SceneRenderer extends WorldSystem {
 
     private _sceneObjects: Map<number, SceneObject>
 
-    private orbitControls: OrbitControls
-    private transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
+    private _orbitControls: OrbitControls
+    private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -47,7 +46,7 @@ class SceneRenderer extends WorldSystem {
         super()
 
         this._sceneObjects = new Map()
-        this.transformControls = new Map()
+        this._transformControls = new Map()
 
         this._mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
         this._mainCamera.position.set(-2.5, 2, 2.5)
@@ -106,8 +105,8 @@ class SceneRenderer extends WorldSystem {
         this.scene.add(this._skybox)
 
         // Orbit controls
-        this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
-        this.orbitControls.update()
+        this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
+        this._orbitControls.update()
     }
 
     public UpdateCanvasSize() {
@@ -126,7 +125,7 @@ class SceneRenderer extends WorldSystem {
         this._skybox.position.copy(this._mainCamera.position)
 
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
-        this.transformControls.forEach((size, tc) => {
+        this._transformControls.forEach((size, tc) => {
             tc.setSize(
                 (size / this._mainCamera.position.distanceTo(tc.object!.position)) *
                     Math.tan(mainCameraFovRadians) *
@@ -141,7 +140,7 @@ class SceneRenderer extends WorldSystem {
         this.RemoveAllSceneObjects()
     }
 
-    public RegisterSceneObject<T extends MirabufSceneObject>(obj: T): number {
+    public RegisterSceneObject<T extends SceneObject>(obj: T): number {
         const id = nextSceneObjectId++
         obj.id = id
         this._sceneObjects.set(id, obj)
@@ -237,16 +236,17 @@ class SceneRenderer extends WorldSystem {
         transformControl.addEventListener(
             "dragging-changed",
             (event: { target: TransformControls; value: unknown }) => {
-                if (!event.value && !Array.from(this.transformControls.keys()).some(tc => tc.dragging)) {
-                    this.orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
-                } else if (!event.value && Array.from(this.transformControls.keys()).some(tc => tc.dragging)) {
-                    this.orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
+                const isAnyGizmoDragging = Array.from(this._transformControls.keys()).some(gizmo => gizmo.dragging)
+                if (!event.value && !isAnyGizmoDragging) {
+                    this._orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
+                } else if (!event.value && isAnyGizmoDragging) {
+                    this._orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
                 } else {
-                    this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
+                    this._orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
                 }
 
                 if (event.target.mode === "translate") {
-                    this.transformControls.forEach((_size, tc) => {
+                    this._transformControls.forEach((_size, tc) => {
                         // disable other transform gizmos when translating
                         if (tc.object === event.target.object && tc.mode !== "translate") {
                             tc.dragging = false
@@ -262,7 +262,7 @@ class SceneRenderer extends WorldSystem {
                     transformControl.axis = "XYZE"
                 } else if (event.target.mode === "rotate") {
                     // scale on all axes
-                    this.transformControls.forEach((_size, tc) => {
+                    this._transformControls.forEach((_size, tc) => {
                         // disable scale transform gizmo when scaling
                         if (tc.mode === "scale" && tc !== event.target && tc.object === event.target.object) {
                             tc.dragging = false
@@ -274,7 +274,7 @@ class SceneRenderer extends WorldSystem {
             }
         )
 
-        this.transformControls.set(transformControl, size)
+        this._transformControls.set(transformControl, size)
         this._scene.add(transformControl)
 
         return transformControl
@@ -287,11 +287,11 @@ class SceneRenderer extends WorldSystem {
      * @returns void
      */
     public RemoveTransformGizmos(obj: THREE.Object3D) {
-        this.transformControls.forEach((_, tc) => {
+        this._transformControls.forEach((_, tc) => {
             if (tc.object === obj) {
                 tc.detach()
                 this._scene.remove(tc)
-                this.transformControls.delete(tc)
+                this._transformControls.delete(tc)
             }
         })
     }

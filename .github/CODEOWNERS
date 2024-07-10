@@ -1,6 +1,8 @@
 # This file is used to auto request reviews for a pull request
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
+* @autodesk/synthesis-devs hunter.barclay@autodesk.com
+
 /exporter/ @autodesk/fusion hunter.barclay@autodesk.com
 
 /fission/src/aps/ @autodesk/fusion hunter.barclay@autodesk.com
@@ -12,5 +14,3 @@
 
 /fission/ @autodesk/fission hunter.barclay@autodesk.com
 /installer/ @autodesk/fusion hunter.barclay@autodesk.com
-
-* @autodesk/synthesis-devs hunter.barclay@autodesk.com
