@@ -25,7 +25,7 @@ import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
 import ViewModal from "@/modals/ViewModal"
 import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "@/modals/aether/ServerHostingModal"
-import ChangeInputsModal from "@/modals/configuring/ChangeInputsModal"
+import ChangeInputsModal from "@/ui/modals/configuring/ChangeInputsModal.tsx"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
 import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
@@ -50,23 +50,27 @@ import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
-import PokerPanel from "@/panels/PokerPanel.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
-import Skybox from "./ui/components/Skybox.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
+import APS from "./aps/APS.ts"
+import Skybox from "./ui/components/Skybox.tsx"
+import PokerPanel from "@/panels/PokerPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
-    if (urlParams.has("code")) {
+    const has_code = urlParams.has("code")
+    if (has_code) {
         const code = urlParams.get("code")
-        window.opener?.setAuthCode(code)
-        window.close()
+        if (code) {
+            APS.convertAuthToken(code).then(() => {
+                document.location.search = ""
+            })
+        }
     }
-
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
@@ -81,17 +85,16 @@ function Synthesis() {
     const modalElement = getActiveModalElement()
 
     useEffect(() => {
+        if (has_code) return
+
         World.InitWorld()
 
         let mira_path = DEFAULT_MIRA_PATH
-
-        const urlParams = new URLSearchParams(document.location.search)
 
         if (urlParams.has("mira")) {
             mira_path = `test_mira/${urlParams.get("mira")!}`
             console.debug(`Selected Mirabuf File: ${mira_path}`)
         }
-        console.log(urlParams)
 
         const setup = async () => {
             const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
@@ -111,10 +114,11 @@ function Synthesis() {
                     return
                 }
 
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser))
+                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
             })()
         }
+
         setup()
 
         let mainLoopHandle = 0
@@ -131,6 +135,8 @@ function Synthesis() {
             World.DestroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

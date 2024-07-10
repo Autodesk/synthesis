@@ -3,7 +3,7 @@ import { mirabuf } from "../proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
 
-const WIREFRAME = true
+const WIREFRAME = false
 
 export enum MaterialStyle {
     Regular = 0,
@@ -168,8 +168,8 @@ class MirabufInstance {
                         const material: THREE.Material = WIREFRAME
                             ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
                             : appearanceOverride && this._materials.has(appearanceOverride)
-                                ? this._materials.get(appearanceOverride)!
-                                : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
+                              ? this._materials.get(appearanceOverride)!
+                              : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
 
                         const threeMesh = new THREE.Mesh(geometry, material)
                         threeMesh.receiveShadow = true
