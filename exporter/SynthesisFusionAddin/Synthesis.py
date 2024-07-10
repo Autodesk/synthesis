@@ -6,11 +6,18 @@ from shutil import rmtree
 
 import adsk.core
 
-from .src.configure import setAnalytics, unload_config
-from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
-from .src.Types.OString import OString
-from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
-from .src.UI.Toolbar import Toolbar
+from .src.Dependencies import resolveDependencies
+
+try:
+    from .src.configure import setAnalytics, unload_config
+    from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
+    from .src.Types.OString import OString
+    from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
+    from .src.UI.Toolbar import Toolbar
+except (ImportError, ModuleNotFoundError):
+    # Dependency likely has not been installed OR protobuf files were not compiled and could not be found.
+    resolveDependencies()
+    adsk.core.Application.get().userInterface.messageBox("Installed required dependencies, please restart Fusion.")
 
 
 def run(_):
