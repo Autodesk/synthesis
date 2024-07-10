@@ -211,16 +211,18 @@ class MirabufSceneObject extends SceneObject {
         this._transformGizmos.AddMeshToScene()
         this._transformGizmos.CreateGizmo("translate")
 
-        // disabling physics initially for all rigid node bodies
-        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-        })
-        World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
+        this.DisablePhysics()
     }
 
     private EnablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
+    }
+
+    private DisablePhysics() { 
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
     }
 

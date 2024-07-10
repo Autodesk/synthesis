@@ -218,9 +218,10 @@ class SceneRenderer extends WorldSystem {
         transformControl.addEventListener(
             "dragging-changed",
             (event: { target: TransformControls; value: unknown }) => {
-                if (!event.value && !Array.from(this._transformControls.keys()).some(tc => tc.dragging)) {
+                const isAnyGizmoDragging = Array.from(this._transformControls.keys()).some(gizmo => gizmo.dragging)
+                if (!event.value && !isAnyGizmoDragging) {
                     this._orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
-                } else if (!event.value && Array.from(this._transformControls.keys()).some(tc => tc.dragging)) {
+                } else if (!event.value && isAnyGizmoDragging) {
                     this._orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
                 } else {
                     this._orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
