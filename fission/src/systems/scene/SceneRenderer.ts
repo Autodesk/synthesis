@@ -23,7 +23,7 @@ class SceneRenderer extends WorldSystem {
     private _skybox: THREE.Mesh;
     private _composer: EffectComposer;
 
-    private _antiAliasPass: SMAAEffect;
+    private _antiAliasPass: EffectPass;
 
     private _sceneObjects: Map<number, SceneObject>
 
@@ -133,12 +133,9 @@ class SceneRenderer extends WorldSystem {
         this._composer = new EffectComposer(this._renderer)
         this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
 
-        const normalPass = new NormalPass(this._scene, this._mainCamera)
-        this._composer.addPass(normalPass)
-
-        this._antiAliasPass = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
-        // this._antiAliasPass.edgeDetectionMaterial.predicationMode = PredicationMode.DEPTH;
-        this._composer.addPass(new EffectPass(this._mainCamera, this._antiAliasPass))
+        const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+        this._antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
+        this._composer.addPass(this._antiAliasPass)
     }
 
     public UpdateCanvasSize() {
