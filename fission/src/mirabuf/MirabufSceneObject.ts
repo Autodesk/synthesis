@@ -207,11 +207,15 @@ class MirabufSceneObject extends SceneObject {
 
         return mesh
     }
-
+    
     private EnablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
+    }
+
+    public GetRootNodeId(): Jolt.BodyID | undefined {
+        return this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)
     }
 }
 
