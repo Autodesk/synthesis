@@ -54,14 +54,14 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
 
         selectedZone.diameter = scale.x
         selectedZone.position = [position.x, position.y, position.z]
-        
+
         selectedZone.parentBody = bodyAttachmentRef.current
 
         PreferencesSystem.savePreferences()
     }
 
     useEffect(() => {
-       setupGizmo()
+        setupGizmo()
     })
 
     return (

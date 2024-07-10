@@ -112,8 +112,10 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // If there is a robot spawned, set it as the selected robot
     if (selectedScheme == null && Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0) {
         setTimeout(() => {
-            if (!InputSystem.selectedScheme) 
-                InputSystem.selectedScheme = Object.values(PreferencesSystem.getAllRobotPreferences())[0].inputsSchemes[0]
+            if (!InputSystem.selectedScheme)
+                InputSystem.selectedScheme = Object.values(
+                    PreferencesSystem.getAllRobotPreferences()
+                )[0].inputsSchemes[0]
 
             setUseButtons({})
             setSelectedScheme(InputSystem.selectedScheme)

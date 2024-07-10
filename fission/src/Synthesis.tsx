@@ -229,7 +229,12 @@ const initialPanels: ReactElement[] = [
         openLocation="right"
         sidePadding={8}
     />,
-    <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" openLocation="right" sidePadding={8} />,
+    <ConfigureShotTrajectoryPanel
+        key="config-shot-trajectory"
+        panelId="config-shot-trajectory"
+        openLocation="right"
+        sidePadding={8}
+    />,
     <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
     <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
     <PokerPanel key="poker" panelId="poker" />,

@@ -30,7 +30,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
 
         if (transformGizmoRef.current == undefined) {
             transformGizmoRef.current = new TransformGizmos(
-                new THREE.Mesh(new THREE.BoxGeometry(0.5, 2.0), new THREE.MeshBasicMaterial({ color: 0xffffff }))
+                new THREE.Mesh(new THREE.BoxGeometry(0.25, 1.0, 0.25), new THREE.MeshBasicMaterial({ color: 0xffffff }))
             )
             transformGizmoRef.current.AddMeshToScene()
             transformGizmoRef.current.CreateGizmo("translate", 1.5)
@@ -41,7 +41,9 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
         const direction = selectedEjector.direction
 
         transformGizmoRef.current?.mesh.position.set(position[0], position[1], position[2])
-        transformGizmoRef.current?.mesh.rotation.setFromQuaternion(new THREE.Quaternion(direction[0], direction[1], direction[2], direction[3]))
+        transformGizmoRef.current?.mesh.rotation.setFromQuaternion(
+            new THREE.Quaternion(direction[0], direction[1], direction[2], direction[3])
+        )
     }
 
     // Saves zone preferences to local storage
@@ -93,7 +95,10 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                                     value={robot}
                                     onClick={() => {
                                         setSelectedEjector(PreferencesSystem.getRobotPreferences(robot)?.ejector)
-                                        setEjectorVelocity(PreferencesSystem.getRobotPreferences(robot)?.ejector.ejectorVelocity ?? MIN_VELOCITY)                                        
+                                        setEjectorVelocity(
+                                            PreferencesSystem.getRobotPreferences(robot)?.ejector.ejectorVelocity ??
+                                                MIN_VELOCITY
+                                        )
                                     }}
                                     key={robot}
                                 ></Button>
@@ -116,9 +121,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                         defaultValue={selectedEjector.ejectorVelocity}
                         label="Velocity"
                         format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                        onChange={(vel: number) => 
-                            setEjectorVelocity(vel)
-                        }
+                        onChange={(vel: number) => setEjectorVelocity(vel)}
                         step={0.01}
                     />
                 </>

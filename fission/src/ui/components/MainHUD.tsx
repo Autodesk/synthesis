@@ -131,9 +131,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Clear Prefs"}
                         icon={<IoBug />}
-                        onClick={() =>
-                            (PreferencesSystem.clearPreferences())
-                        }
+                        onClick={() => PreferencesSystem.clearPreferences()}
                     />
                     <MainHUDButton
                         value={"Refresh APS Token"}
@@ -186,11 +184,7 @@ const MainHUD: React.FC = () => {
                             addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
-                    <MainHUDButton
-                        value={"Configure"}
-                        icon={<FaGear />}
-                        onClick={() => openModal("config-robot")}
-                    />
+                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                 </div>
                 {userInfo ? (
                     <MainHUDButton

@@ -1,4 +1,13 @@
-import { DefaultFieldPreferences, DefaultGlobalPreferences, DefaultRobotPreferences, FieldPreferences, FieldPreferencesKey, GlobalPreference, RobotPreferences, RobotPreferencesKey } from "./PreferenceTypes"
+import {
+    DefaultFieldPreferences,
+    DefaultGlobalPreferences,
+    DefaultRobotPreferences,
+    FieldPreferences,
+    FieldPreferencesKey,
+    GlobalPreference,
+    RobotPreferences,
+    RobotPreferencesKey,
+} from "./PreferenceTypes"
 
 class PreferenceEvent extends Event {
     public prefName: GlobalPreference

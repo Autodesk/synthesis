@@ -25,13 +25,25 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
 
     const [screenMode, setScreenMode] = useState<string>(PreferencesSystem.getGlobalPreference<string>("ScreenMode"))
-    const [qualitySettings, setQualitySettings] = useState<string>(PreferencesSystem.getGlobalPreference<string>("QualitySettings"))
-    const [zoomSensitivity, setZoomSensitivity] = useState<number>(PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity"))
-    const [pitchSensitivity, setPitchSensitivity] = useState<number>(PreferencesSystem.getGlobalPreference<number>("PitchSensitivity"))
-    const [yawSensitivity, setYawSensitivity] = useState<number>(PreferencesSystem.getGlobalPreference<number>("YawSensitivity"))
-    const [reportAnalytics, setReportAnalytics] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics"))
+    const [qualitySettings, setQualitySettings] = useState<string>(
+        PreferencesSystem.getGlobalPreference<string>("QualitySettings")
+    )
+    const [zoomSensitivity, setZoomSensitivity] = useState<number>(
+        PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")
+    )
+    const [pitchSensitivity, setPitchSensitivity] = useState<number>(
+        PreferencesSystem.getGlobalPreference<number>("PitchSensitivity")
+    )
+    const [yawSensitivity, setYawSensitivity] = useState<number>(
+        PreferencesSystem.getGlobalPreference<number>("YawSensitivity")
+    )
+    const [reportAnalytics, setReportAnalytics] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")
+    )
     const [useMetric, setUseMetric] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("UseMetric"))
-    const [renderScoringZones, setRenderScoringZones] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones"))
+    const [renderScoringZones, setRenderScoringZones] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
+    )
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<string>("ScreenMode", screenMode)
@@ -42,7 +54,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
         PreferencesSystem.setGlobalPreference<boolean>("UseMetric", useMetric)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
-        
+
         PreferencesSystem.savePreferences()
     }
 
@@ -58,7 +70,10 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Label size={LabelSize.Medium}>Screen Settings</Label>
             <Dropdown
                 label="Screen Mode"
-                options={moveElementToTop(screenModeOptions, PreferencesSystem.getGlobalPreference<string>("ScreenMode"))}
+                options={moveElementToTop(
+                    screenModeOptions,
+                    PreferencesSystem.getGlobalPreference<string>("ScreenMode")
+                )}
                 onSelect={selected => {
                     setScreenMode(selected)
                 }}
