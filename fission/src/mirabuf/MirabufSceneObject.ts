@@ -209,7 +209,7 @@ class MirabufSceneObject extends SceneObject {
             )
         )
         this._transformGizmos.AddMeshToScene()
-        this._transformGizmos.CreateGizmo("translate")
+        this._transformGizmos.CreateGizmo("translate", 5.0)
 
         this.DisablePhysics()
     }

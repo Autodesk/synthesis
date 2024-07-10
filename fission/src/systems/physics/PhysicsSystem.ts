@@ -704,11 +704,10 @@ class PhysicsSystem extends WorldSystem {
         const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
         const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
 
-
         partDefinition.bodies!.forEach(body => {
             const vertArr = body.triangleMesh?.mesh?.verts
             const indexArr = body.triangleMesh?.mesh?.indices
-            if (!vertsArr || !indexArr) return
+            if (!vertArr || !indexArr) return
             for (let i = 0; i < vertArr.length; i += 3) {
                 const vert = MirabufFloatArr_JoltFloat3(vertArr, i)
                 settings.mTriangleVertices.push_back(vert)
