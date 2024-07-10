@@ -3,6 +3,10 @@ import { mirabuf } from "../proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
 
+type MirabufPartInstanceGUID = string
+type MirabufPartDefinitionGUID = string
+type MirabufBodyGUID = string
+
 export enum MaterialStyle {
     Regular = 0,
     Normals = 1,
@@ -81,7 +85,7 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
 class MirabufInstance {
     private _mirabufParser: MirabufParser
     private _materials: Map<string, THREE.Material>
-    private _meshes: Map<string, Array<THREE.Mesh>>
+    private _meshes: Map<MirabufPartInstanceGUID, [THREE.BatchedMesh, number]>
 
     public get parser() {
         return this._mirabufParser
@@ -143,15 +147,25 @@ class MirabufInstance {
         const assembly = this._mirabufParser.assembly
         const instances = assembly.data!.parts!.partInstances!
 
+        interface BatchCounts {
+            maxInstances: number
+            maxVertices: number
+            maxIndices: number
+        }
+
+        const batchMap = new Map<THREE.Material, Map<mirabuf.IBody, Array<mirabuf.IPartInstance>>>()
+        const countMap = new Map<THREE.Material, BatchCounts>()
+
+        // Filter all instances by first material, then body
         for (const instance of Object.values(instances) /* .filter(x => x.info!.name!.startsWith('EyeBall')) */) {
             const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]!
             const bodies = definition.bodies
-            const meshes = new Array<THREE.Mesh>()
+            // const meshes = new Array<THREE.Mesh>()
             if (bodies) {
                 for (const body of bodies) {
                     if (!body) continue
                     const mesh = body.triangleMesh
-                    const geometry = new THREE.BufferGeometry()
+                    // const geometry = new THREE.BufferGeometry()
                     if (
                         mesh &&
                         mesh.mesh &&
@@ -160,7 +174,7 @@ class MirabufInstance {
                         mesh.mesh.uv &&
                         mesh.mesh.indices
                     ) {
-                        transformGeometry(geometry, mesh.mesh!)
+                        // transformGeometry(geometry, mesh.mesh!)
 
                         const appearanceOverride = body.appearanceOverride
                         const material: THREE.Material =
@@ -168,20 +182,67 @@ class MirabufInstance {
                                 ? this._materials.get(appearanceOverride)!
                                 : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
 
-                        const threeMesh = new THREE.Mesh(geometry, material)
-                        threeMesh.receiveShadow = true
-                        threeMesh.castShadow = true
+                        // const threeMesh = new THREE.Mesh(geometry, material)
+                        // threeMesh.receiveShadow = true
+                        // threeMesh.castShadow = true
 
-                        meshes.push(threeMesh)
+                        // meshes.push(threeMesh)
+                        let materialBodyMap = batchMap.get(material)
+                        if (!materialBodyMap) {
+                            materialBodyMap = new Map<mirabuf.IBody, Array<mirabuf.IPartInstance>>();
+                            batchMap.set(material, materialBodyMap)
+                        }
 
-                        const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!
-                        threeMesh.position.setFromMatrixPosition(mat)
-                        threeMesh.rotation.setFromRotationMatrix(mat)
+                        let bodyInstances = materialBodyMap.get(body)
+                        if (!bodyInstances) {
+                            bodyInstances = new Array<mirabuf.IBody>()
+                            materialBodyMap.set(body, bodyInstances)
+                        }
+                        bodyInstances.push(instance)
+
+                        if (countMap.has(material)) {
+                            const count = countMap.get(material)!
+                            count.maxInstances += 1
+                            count.maxVertices += mesh.mesh.verts.length / 3
+                            count.maxIndices += mesh.mesh.indices.length
+                        } else {
+                            const count: BatchCounts = {
+                                maxInstances: 1,
+                                maxVertices: mesh.mesh.verts.length / 3,
+                                maxIndices: mesh.mesh.indices.length
+                            }
+                            countMap.set(material, count)
+                        }
+
+                        // const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!
+                        // threeMesh.position.setFromMatrixPosition(mat)
+                        // threeMesh.rotation.setFromRotationMatrix(mat)
                     }
                 }
             }
-            this._meshes.set(instance.info!.GUID!, meshes)
+            // this._meshes.set(instance.info!.GUID!, meshes)
         }
+
+        // Construct batched meshes
+        batchMap.forEach((materialBodyMap, material) => {
+            const count = countMap.get(material)!
+            const batchedMesh = new THREE.BatchedMesh(count.maxInstances, count.maxVertices, count.maxIndices)
+
+            materialBodyMap.forEach((instances, body) => {
+                
+                instances.forEach(instance => {
+                    const mat = this._mirabufParser.globalTransforms.get(instance.info!.GUID!)!
+
+                    const geometry = new THREE.BufferGeometry()
+                    transformGeometry(geometry, body.triangleMesh!.mesh!)
+                    const geoId = batchedMesh.addGeometry(geometry)
+
+                    batchedMesh.setMatrixAt(geoId, mat)
+
+                    this._meshes.set(instance.info!.GUID!, [ batchedMesh, geoId ])
+                })
+            })
+        })
     }
 
     /**
@@ -190,19 +251,18 @@ class MirabufInstance {
      * @param scene
      */
     public AddToScene(scene: THREE.Scene) {
-        this._meshes.forEach(x => x.forEach(y => scene.add(y)))
+        this._meshes.forEach(([mesh, _]) => scene.add(mesh))
+        // this._meshes.forEach(x => x.forEach(y => scene.add(y)))
     }
 
     /**
      * Disposes of all ThreeJs scenes and materials.
      */
     public Dispose(scene: THREE.Scene) {
-        this._meshes.forEach(x =>
-            x.forEach(y => {
-                y.geometry.dispose()
-                scene.remove(y)
-            })
-        )
+        this._meshes.forEach(([mesh, _]) => {
+            mesh.dispose()
+            scene.remove(mesh)
+        })
         this._meshes.clear()
 
         this._materials.forEach(x => x.dispose())

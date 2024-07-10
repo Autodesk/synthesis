@@ -78,10 +78,12 @@ class MirabufSceneObject extends SceneObject {
                     .get(part)!
                     .clone()
                     .premultiply(transform)
-                this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
-                    mesh.position.setFromMatrixPosition(partTransform)
-                    mesh.rotation.setFromRotationMatrix(partTransform)
-                })
+                // this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
+                //     mesh.position.setFromMatrixPosition(partTransform)
+                //     mesh.rotation.setFromRotationMatrix(partTransform)
+                // })
+                const [mesh, index] = this._mirabufInstance.meshes.get(part) ?? [undefined, 0]
+                mesh?.setMatrixAt(index, partTransform)
             })
 
             if (isNaN(body.GetPosition().GetX())) {
