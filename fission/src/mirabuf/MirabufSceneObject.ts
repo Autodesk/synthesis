@@ -29,7 +29,7 @@ class MirabufSceneObject extends SceneObject {
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined = undefined
 
-    private transformGizmos: TransformGizmos
+    private _transformGizmos: TransformGizmos | undefined = undefined
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -52,21 +52,7 @@ class MirabufSceneObject extends SceneObject {
 
         this._debugBodies = null
 
-        // creating transform gizmos in TransformGizmos handler
-        this.transformGizmos = new TransformGizmos(
-            new THREE.Mesh(
-                new THREE.SphereGeometry(3.0),
-                new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
-            )
-        )
-        this.transformGizmos.AddMeshToScene()
-        this.transformGizmos.CreateGizmo("translate")
-
-        // disabling physics initially for all rigid node bodies
-        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-        })
-        World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
+        this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
     }
 
     public Setup(): void {
@@ -115,23 +101,28 @@ class MirabufSceneObject extends SceneObject {
             })
 
             /**
-             * transform gizmo block to update the position and rotation of the body to match the gizmos's position
+             * Update the position and rotation of the body to match the position of the transform gizmo.
+             *
+             * This block of code should only be executed if the transform gizmo exists.
              */
-            if (this.transformGizmos.isActive) {
-                // commands to either cancel gizmo creation or confirm position
+            if (this._transformGizmos) {
                 if (InputSystem.isKeyPressed("Enter")) {
-                    this.transformGizmos.RemoveGizmos()
+                    // confirming placement of the mirabuf object
+                    this._transformGizmos.RemoveGizmos()
                     this.EnablePhysics()
+                    this._transformGizmos = undefined
                     return
                 } else if (InputSystem.isKeyPressed("Escape")) {
-                    this.transformGizmos.RemoveGizmos()
+                    // cancelling the creation of the mirabuf scene object
+                    this._transformGizmos.RemoveGizmos()
                     World.SceneRenderer.RemoveSceneObject(this.id)
+                    this._transformGizmos = undefined
                     return
                 }
 
                 // if the gizmo is being dragged, copy the mesh position and rotation to the Mirabuf body
-                if (this.transformGizmos.isBeingDragged()) {
-                    this.transformGizmos.UpdateMirabufPositioning(this, rn)
+                if (this._transformGizmos.isBeingDragged()) {
+                    this._transformGizmos.UpdateMirabufPositioning(this, rn)
                     World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
                 }
             }
@@ -207,7 +198,24 @@ class MirabufSceneObject extends SceneObject {
 
         return mesh
     }
-    
+
+    public EnableTransformControls(): void {
+        this._transformGizmos = new TransformGizmos(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(3.0),
+                new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
+            )
+        )
+        this._transformGizmos.AddMeshToScene()
+        this._transformGizmos.CreateGizmo("translate")
+
+        // disabling physics initially for all rigid node bodies
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
+        World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)!)
+    }
+
     private EnablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)

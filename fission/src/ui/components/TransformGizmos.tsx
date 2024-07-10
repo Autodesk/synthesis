@@ -9,14 +9,9 @@ import { RigidNodeReadOnly } from "@/mirabuf/MirabufParser"
 class TransformGizmos {
     private _mesh: THREE.Mesh
     private _gizmos: TransformControls[] = []
-    private _isActive: boolean = true
 
     get mesh() {
         return this._mesh
-    }
-
-    get isActive() {
-        return this._isActive
     }
 
     constructor(object: THREE.Mesh) {
@@ -54,7 +49,6 @@ class TransformGizmos {
     public RemoveGizmos() {
         World.SceneRenderer.RemoveTransformGizmos(this._mesh)
         World.SceneRenderer.RemoveObject(this._mesh)
-        this._isActive = false
     }
 
     /**
