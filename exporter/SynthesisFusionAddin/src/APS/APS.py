@@ -230,7 +230,7 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
 
     res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders", headers=headers, data=data)
     if not res.ok:
-        print(f"Failed to create folder: {res.text}")
+        gm.ui.messageBox("", f"Failed to create folder: {res.text}")
         return Err(None)
     json: dict[str, Any] = res.json()
     href: str = json["links"]["self"]["href"]
@@ -268,39 +268,39 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> Result[st
     todo: Change so a folder is not needed, and the entire project is checked for files
     """
 
+    # data:create
     global APS_AUTH
     if not APS_AUTH:
         gm.ui.messageBox("You must login to upload designs to APS", "USER ERROR")
     auth_write = APS_AUTH
     auth_read = APS_AUTH
-    gm.ui.messageBox("In Mirabuf")
-
+    # Get token from APS API later
     file_name = file_path_to_file_name(file_path)
 
-    """
-    Assign APS File ID
-    """
-    file_id_result = get_file_id(_auth, project_id, folder_id, file_path)
-    if file_id_result.is_err():
-        return Err(None)
-    file_id: str | None = file_id_result.ok();
-    if not file_id == None:
-        print("Mirabuf file already exists!")
-        update_file_result: Result[str, None] = update_file_version(_auth, project_id, folder_id, str(file_id), file_name, "1") # Grab real file version number
-        if update_file_result.is_err():
-            return Err(None)
-        new_version_id = str(update_file_result.ok())
-        return Ok(new_version_id)
+    #"""
+    #Assign APS File ID
+    #"""
+    #file_id_result = get_file_id(auth_read, project_id, folder_id, file_path)
+    #if file_id_result.is_err():
+    #    return Err(None)
+    #file_id: str | None = file_id_result.ok();
+    #if not file_id == None:
+    #    gm.ui.messageBox("UPLOAD ERROR","Mirabuf file already exists!")
+    #    update_file_result: Result[str, None] = update_file_version(auth_write, project_id, folder_id, str(file_id), file_name, "1") # Grab real file version number
+    #    if update_file_result.is_err():
+    #        return Err(None)
+    #    new_version_id = str(update_file_result.ok())
+    #    return Ok(new_version_id)
 
     """
     Create APS Storage Location
     """
-    object_id = create_storage_location(_auth, project_id, folder_id, file_name)
+    object_id = create_storage_location(auth_write, project_id, folder_id, file_name)
     if object_id.is_err():
         return Err(None)
     object_id = object_id.ok()
     if object_id == None:
-        print("Object id is none; check create storage location")
+        gm.ui.messageBox("UPLOAD ERROR", "Object id is none; check create storage location")
         return Err(None)
     (prefix, object_key) = str(object_id).split("/", 1)
     bucket_key = prefix.split(":", 3)[3] # gets the last element smth like: wip.dm.prod
@@ -308,21 +308,21 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> Result[st
     """
     Create Signed URL For APS Upload
     """
-    generate_signed_url_result = generate_signed_url(_auth, bucket_key, object_key)
+    generate_signed_url_result = generate_signed_url(auth_read, bucket_key, object_key)
     if generate_signed_url_result.is_err():
         return Err(None)
 
-    (upload_key, signed_url) = str(generate_signed_url_result.ok())
+    (upload_key, signed_url) = generate_signed_url_result.ok()
     if upload_file(signed_url, file_path).is_err():
         return Err(None)
 
     """
     Finish Upload and Initialize First File Version
     """
-    if complete_upload(_auth, upload_key, bucket_key).is_err():
+    if complete_upload(auth_write, upload_key, bucket_key).is_err():
         return Err(None)
     file_name = file_path_to_file_name(file_path)
-    (_lineage_id, _lineage_href) = create_first_file_version(_auth, str(object_id), project_id, str(folder_id), file_name)
+    (_lineage_id, _lineage_href) = create_first_file_version(auth_write, str(object_id), project_id, str(folder_id), file_name)
 
     return Ok(None)
 
@@ -345,7 +345,7 @@ def get_hub_id(auth: str, hub_name: str) -> Result[str | None, str]:
     }
     hub_list_res = requests.get("https://developer.api.autodesk.com/project/v1/hubs", headers=headers)
     if not hub_list_res.ok:
-        print(f"Failed to retrieve hubs: {hub_list_res.text}")
+        gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {hub_list_res.text}")
         return Err(f"Failed to retrieve hubs: {hub_list_res.text}")
     hub_list: list[dict[str, Any]] = hub_list_res.json()
     for hub in hub_list:
@@ -376,7 +376,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> Result[str | No
     }
     project_list_res = requests.get(f"https://developer.api.autodesk.com/project/v1/hubs/{hub_id}/projects", headers=headers)
     if not project_list_res.ok:
-        print(f"Failed to retrieve hubs: {project_list_res.text}")
+        gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {project_list_res.text}")
         return Err(f"Failed to retrieve hubs: {project_list_res.text}")
     project_list: list[dict[str, Any]] = project_list_res.json()
     for project in project_list:
@@ -472,9 +472,9 @@ def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str
     }
     update_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/versions", headers=headers, data=data)
     if not update_res.ok:
-        print(f"updating file to new version failed: {update_res.text}")
+        gm.ui.messageBox("UPLOAD ERROR", f"updating file to new version failed: {update_res.text}")
         return Err(None)
-    print(f"File {file_name} successfully updated to version {int(curr_file_version) + 1}")
+    gm.ui.messageBox("UPLOAD ERROR", f"File {file_name} successfully updated to version {int(curr_file_version) + 1}")
     new_id: str = update_res.json()["data"]["id"]
     return Ok(new_id)
 
@@ -499,16 +499,20 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> R
     - checking if a file exists is an intended use-case
     """
 
+    headers: dict[str, str] = {
+        "Authorization": f"Bearer {auth}"
+    }
+
     file_list_res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{folder_id}/contents")
     if not file_list_res.ok:
-        print("Failed to get file list")
+        gm.ui.messageBox(f"UPLOAD ERROR: {file_list_res.text}", "Failed to get file list")
         return Err("Failed to get file list")
     file_list_json: list[dict[str, Any]] = file_list_res.json()
     for file in file_list_json:
         name: str = file["attributes"]["name"]
         if name == file_name:
             id: str = file["id"]
-            print(f"Found file {name} with id: {id}")
+            gm.ui.messageBox("UPLOAD ERROR", f"Found file {name} with id: {id}")
             return Ok(id)
     return Ok(None)
 
@@ -544,20 +548,19 @@ def create_storage_location(auth: str, project_id: str, folder_id: str, file_nam
               "name": file_name
             },
             "relationships": {
-              "target": {
-                "data": { "type": "folders", "id": f"{folder_id}" }
+                "target": {
+                    "data": { "type": "folders", "id": f"{folder_id}" }
                 }
             }
         }
     }
     headers = {
-        "Authorization:": f"Bearer {auth}",
+        "Authorization": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json",
-        "Accept": "application/vnd.api+json"
     }
-    storage_location_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/storage", data=data, headers=headers)
+    storage_location_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/storage", json=data, headers=headers)
     if not storage_location_res.ok:
-        print(f"Failed to create storage location")
+        gm.ui.messageBox(f"UPLOAD ERROR: {storage_location_res.text}", f"Failed to create storage location")
         return Err(f"Failed to create storage location: {storage_location_res.text}")
     storage_location_json: dict[str, Any]  = storage_location_res.json()
     object_id: str = storage_location_json["data"]["id"]
@@ -582,11 +585,11 @@ def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> Result[t
     """
 
     headers = {
-        "Authorization:": f"Bearer {auth}",
+        "Authorization": f"Bearer {auth}",
     }
     signed_url_res = requests.get(f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload", headers=headers)
     if not signed_url_res.ok:
-        print("Failed to get signed url")
+        gm.ui.messageBox("UPLOAD ERROR","Failed to get signed url")
         return Err(f"Failed to get signed url: {signed_url_res.text}")
     signed_url_json: dict[str, str] = signed_url_res.json()
     return Ok((signed_url_json["uploadKey"], signed_url_json["urls"][0]))
@@ -611,7 +614,7 @@ def upload_file(signed_url: str, file_path: str) -> Result[None, str]:
         data = f.read()
     upload_response = requests.put(url=signed_url, data=data)
     if not upload_response.ok:
-        print(f"Failed to upload to signed url: {upload_response.text}")
+        gm.ui.messageBox("UPLOAD ERROR", f"Failed to upload to signed url: {upload_response.text}")
         return Err(f"Failed to upload to signed url: {upload_response.text}")
     return Ok(None)
 
@@ -630,17 +633,16 @@ def complete_upload(auth: str, upload_key: str, bucket_key: str) -> Result[None,
     """
 
     headers = {
-        "Authorization:": f"Bearer {auth}",
-        "Content-Type": "application/vnd.api+json",
-        "Accept": "application/vnd.api+json"
+        "Authorization": f"Bearer {auth}",
+        "Content-Type": "application/json",
     }
     data = {
         "uploadKey": upload_key
     }
 
-    completed_res = requests.post(f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{upload_key}/signeds3upload", data=data, headers=headers)
+    completed_res = requests.post(f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{upload_key}/signeds3upload", json=data, headers=headers)
     if not completed_res.ok:
-        print(f"Failed to complete upload: {completed_res.text}")
+        gm.ui.messageBox(f"UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}", "Failed to complete upload")
         return Err(f"Failed to complete upload: {completed_res.text}")
     return Ok(None)
 
@@ -727,7 +729,7 @@ def create_first_file_version(auth: str, project_id: str, object_id: str, folder
 
     first_version_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}L/items", data=data, headers=headers)
     if not first_version_res.ok:
-        print(f"Failed to create first file version: {first_version_res.text}")
+        gm.ui.messageBox("UPLOAD ERROR", f"Failed to create first file version: {first_version_res.text}")
         return Err(None)
     first_version_json: dict[str, Any] = first_version_res.json()
 
