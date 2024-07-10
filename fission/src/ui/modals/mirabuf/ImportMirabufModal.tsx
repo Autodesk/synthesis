@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaPlus } from "react-icons/fa6"
 import Button from "@/components/Button"
@@ -107,42 +107,44 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         })
     )
 
-    const remoteRobots = manifest?.robots.filter(path => !cachedRobots.some(info => info.cacheKey.includes(path))) ?? []
-    const remoteFields = manifest?.fields.filter(path => !cachedFields.some(info => info.cacheKey.includes(path))) ?? []
 
-    const remoteRobotElements = remoteRobots.map(path =>
-        ItemCard({
-            name: path,
-            id: path,
-            buttonText: "download",
-            onClick: () => console.log(`Selecting remote: ${path}`),
-        })
-    )
+    const remoteRobotElements = useMemo(() => {
+        const remoteRobots = manifest?.robots.filter(path => !cachedRobots.some(info => info.cacheKey.includes(path))) ?? []
+        return remoteRobots.map(path =>
+            ItemCard({
+                name: path,
+                id: path,
+                buttonText: "download",
+                onClick: () => console.log(`Selecting remote: ${path}`),
+            }))
+    }, [manifest?.robots, cachedRobots])
 
-    const remoteFieldElements = remoteFields.map(path =>
-        ItemCard({
-            name: path,
-            id: path,
-            buttonText: "download",
-            onClick: () => console.log(`Selecting remote: ${path}`),
-        })
-    )
+    const remoteFieldElements = useMemo(() => {
+        const remoteFields = manifest?.fields.filter(path => !cachedFields.some(info => info.cacheKey.includes(path))) ?? []
+        return remoteFields.map(path =>
+            ItemCard({
+                name: path,
+                id: path,
+                buttonText: "download",
+                onClick: () => console.log(`Selecting remote: ${path}`),
+            }))
+    }, [manifest?.fields, cachedFields])
 
-    const hubElements = files?.map(file =>
+    const hubElements = useMemo(() => files?.map(file =>
         ItemCard({
             name: file.attributes.displayName!,
             id: file.id,
             buttonText: "APS import",
             onClick: () => console.log(`Selecting APS: ${file.attributes.name}`),
         })
-    )
+    ), [files])
 
     return (
         <Modal
             name={"Manage Assemblies"}
             icon={<FaPlus />}
             modalId={modalId}
-            // onAccept={() => {}}
+        // onAccept={() => {}}
         >
             <div className="w-full flex flex-col items-center">
                 {selectedHub ? (
@@ -171,32 +173,32 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {cachedRobotElements
-                        ? `${cachedRobotElements.length} Saved Robots${cachedRobotElements.length > 1 ? "s" : ""}`
-                        : "No Saved Robots"}
+                        ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length == 1 ? "" : "s"}`
+                        : "Loading Saved Robots"}
                 </Label>
                 {cachedRobotElements}
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {cachedFieldElements
-                        ? `${cachedFieldElements.length} Saved Fields${cachedFieldElements.length > 1 ? "s" : ""}`
-                        : "No Saved Fields"}
+                        ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
+                        : "Loading Saved Fields"}
                 </Label>
                 {cachedFieldElements}
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {hubElements
-                        ? `${hubElements.length} Remote Asset${hubElements.length > 1 ? "s" : ""}`
-                        : "No Remote Assets"}
+                        ? `${hubElements.length} Remote Asset${hubElements.length == 1 ? "" : "s"}`
+                        : "Loading Remote Assets"}
                 </Label>
                 {hubElements}
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {remoteRobotElements
-                        ? `${remoteRobotElements.length} Default Robots${remoteRobotElements.length > 1 ? "s" : ""}`
-                        : "No Default Robots"}
+                        ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length == 1 ? "" : "s"}`
+                        : "Loading Default Robots"}
                 </Label>
                 {remoteRobotElements}
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {remoteFieldElements
-                        ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length > 1 ? "s" : ""}`
-                        : "No Default Fields"}
+                        ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length == 1 ? "" : "s"}`
+                        : "Loading Default Fields"}
                 </Label>
                 {remoteFieldElements}
             </div>
