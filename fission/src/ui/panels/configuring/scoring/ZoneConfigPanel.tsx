@@ -2,20 +2,21 @@ import { useEffect, useState } from "react"
 import Input from "@/components/Input"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Button from "@/components/Button"
-import SelectButton from "@/components/SelectButton"
 import Checkbox from "@/components/Checkbox"
 import NumberInput from "@/components/NumberInput"
 import { SelectedZone } from "./ScoringZonesPanel"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Stack, { StackDirection } from "@/ui/components/Stack"
+import SelectButton from "@/ui/components/SelectButton"
+import Jolt from "@barclah/jolt-physics"
 
 const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const { openPanel } = usePanelControlContext()
 
     const [name, setName] = useState<string>(SelectedZone.zone.name)
     const [alliance, setAlliance] = useState<"red" | "blue">(SelectedZone.zone.alliance)
-    const [parent, setParent] = useState<string>(SelectedZone.zone.parent)
+    const [parent, setParent] = useState<Jolt.Body | undefined>(SelectedZone.zone.parent)
     const [points, setPoints] = useState<number>(SelectedZone.zone.points)
     const [destroy, setDestroy] = useState<boolean>(SelectedZone.zone.destroyGamepiece)
     const [persistent, setPersistent] = useState<boolean>(SelectedZone.zone.persistentPoints)
@@ -52,7 +53,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                 onClick={() => setAlliance(alliance == "blue" ? "red" : "blue")}
                 colorOverrideClass={`bg-match-${alliance}-alliance`}
             />
-            <SelectButton placeholder="Select zone parent" onSelect={(p: string) => setParent(p)} />
+            <SelectButton placeholder="Select zone parent" onSelect={(p: Jolt.Body) => setParent(p)} />
             <NumberInput
                 label="Points"
                 placeholder="Zone points"

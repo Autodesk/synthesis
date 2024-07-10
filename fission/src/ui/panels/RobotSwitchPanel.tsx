@@ -29,6 +29,7 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             className="whitespace-nowrap"
                             onClick={() => setSelected(i)}
                             stateOverride={i == selected}
+                            key={i}
                         />
                     ))}
                 </fieldset>

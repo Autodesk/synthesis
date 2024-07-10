@@ -85,8 +85,8 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        let index = SynthesisBrain.robotsSpawned.indexOf(`[${this._assemblyIndex}] ${this._assemblyName}`);
-        SynthesisBrain.robotsSpawned.splice(index, 1)
+        const index = SynthesisBrain.robotsSpawned.indexOf(`[${this._assemblyIndex}] ${this._assemblyName}`);
+        SynthesisBrain.robotsSpawned.splice(index, 1);
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it

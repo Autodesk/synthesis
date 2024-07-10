@@ -24,7 +24,7 @@ const Slider: React.FC<SliderProps> = ({ label, min, max, defaultValue, onChange
     const [value, setValue] = useState<number>(defaultValue)
     locale ||= "en-us"
     format ||= {
-        maximumFractionDigits: 0,
+        maximumFractionDigits: (1.0 / (step == 0 ? 1 : step ?? 1)).toString().length - 1,
         prefix: "",
         suffix: "",
     }

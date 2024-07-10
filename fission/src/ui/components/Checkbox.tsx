@@ -11,8 +11,7 @@ type CheckboxProps = {
     onClick?: (checked: boolean) => void
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, stateOverride, onClick }) => {
-    const [state] = useState(defaultState)
+const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, onClick }) => {
     return (
         <Stack direction={StackDirection.Horizontal}>
             <Label size={LabelSize.Medium} className={`mr-8 ${className} whitespace-nowrap`}>
@@ -36,7 +35,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, sta
                         className: `display-none`,
                     },
                 }}
-                defaultChecked={stateOverride != null ? undefined : state}
+                defaultChecked={defaultState}
             />
         </Stack>
     )

@@ -2,13 +2,38 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import Button, { ButtonSize } from "./Button"
 import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
-import { Random } from "@/util/Random"
+import World from "@/systems/World"
+import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import Jolt from "@barclah/jolt-physics"
+
+// raycasting constants
+const RAY_MAX_LENGTH = 20.0
+
+function SelectNode(e: MouseEvent) {
+    const origin = World.SceneRenderer.mainCamera.position
+
+    const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
+    const dir = worldSpace.sub(origin).normalize().multiplyScalar(RAY_MAX_LENGTH)
+
+    const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
+
+    if (res) {
+        console.log(res)
+        const body = World.PhysicsSystem.GetBody(res.data.mBodyID)
+        if (!body.IsDynamic()) {
+            return null
+        }
+        return body
+    }
+
+    return null
+}
 
 type SelectButtonProps = {
     colorClass?: string
     size?: ButtonSize
     placeholder?: string
-    onSelect?: (value: string) => void
+    onSelect?: (value: Jolt.Body) => void
     className?: string
 }
 
@@ -18,10 +43,10 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
     const timeoutRef = useRef<NodeJS.Timeout>()
 
     const onReceiveSelection = useCallback(
-        (value: string) => {
+        (value: Jolt.Body) => {
             // TODO remove this when communication works
             clearTimeout(timeoutRef.current)
-            setValue(value)
+            setValue("Node")
             setSelecting(false)
             if (onSelect) onSelect(value)
         },
@@ -29,17 +54,19 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
     )
 
     useEffect(() => {
-        // simulate receiving a selection from Synthesis
-        if (selecting) {
-            timeoutRef.current = setTimeout(
-                () => {
-                    if (selecting) {
-                        const v = `node_${Math.floor(Random() * 10).toFixed(0)}`
-                        onReceiveSelection(v)
-                    }
-                },
-                Math.floor(Random() * 2_750) + 250
-            )
+        const onClick = (e: MouseEvent) => {
+            if (selecting) {
+                const body = SelectNode(e)
+                if (body) {
+                    onReceiveSelection(body)
+                }
+            }
+        }
+
+        World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
+
+        return () => {
+            World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
         }
     }, [selecting, onReceiveSelection])
 
@@ -56,7 +83,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
                     // send selecting state
                     if (selecting) {
                         // cancel selection
-                        onReceiveSelection("")
+                        clearTimeout(timeoutRef.current)
                     } else {
                         setSelecting(true)
                     }

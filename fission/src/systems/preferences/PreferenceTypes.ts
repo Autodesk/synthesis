@@ -1,5 +1,6 @@
 import { Vector3Tuple } from "three"
 import { InputScheme } from "../input/DefaultInputs"
+import Jolt from "@barclah/jolt-physics"
 
 export type GlobalPreference =
     | "ScreenMode"
@@ -14,25 +15,28 @@ export type GlobalPreference =
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
 
-export const DefaultGlobalPreferences: { [key: string]: Object } = {
-    "ScreenMode": "Windowed",
-    "QualitySettings": "High",
-    "ZoomSensitivity": 15,
-    "PitchSensitivity": 10,
-    "YawSensitivity": 3,
-    "ReportAnalytics": false,
-    "UseMetric": false,
-    "RenderScoringZones": true,
+export const DefaultGlobalPreferences: { [key: string]: unknown } = {
+    ScreenMode: "Windowed",
+    QualitySettings: "High",
+    ZoomSensitivity: 15,
+    PitchSensitivity: 10,
+    YawSensitivity: 3,
+    ReportAnalytics: false,
+    UseMetric: false,
+    RenderScoringZones: true,
 }
 
 export type IntakePreferences = {
-    location: [number, number, number],
+    position: [number, number, number]
     diameter: number
+    parentBody: Jolt.Body | undefined
 }
 
 export type EjectorPreferences = {
-    location: [number, number, number], 
+    position: [number, number, number]
+    direction: [number, number, number, number]
     ejectorVelocity: number
+    parentBody: Jolt.Body | undefined
 }
 
 export type RobotPreferences = {
@@ -45,7 +49,7 @@ export type RobotPreferences = {
 export type ScoringZonePreferences = {
     name: string
     alliance: "red" | "blue"
-    parent: string
+    parent: Jolt.Body | undefined
     points: number
     destroyGamepiece: boolean
     persistentPoints: boolean
@@ -63,8 +67,8 @@ export type FieldPreferences = {
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
-        intake: { location: [0, 0, 0], diameter: 1 }, 
-        ejector: { location: [0, 0, 0], ejectorVelocity: 1 }
+        intake: { position: [0, 0, 0], diameter: 1, parentBody: undefined }, 
+        ejector: { position: [0, 0, 0], direction: [0,0,0,0], ejectorVelocity: 1, parentBody: undefined }
     };
 }
 

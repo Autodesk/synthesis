@@ -108,7 +108,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                             const newZone: ScoringZonePreferences = {
                                 name: "New Scoring Zone",
                                 alliance: "blue",
-                                parent: "",
+                                parent: undefined,
                                 points: 0,
                                 destroyGamepiece: false,
                                 persistentPoints: false,
