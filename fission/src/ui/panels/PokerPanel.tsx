@@ -21,7 +21,14 @@ const MARK_RADIUS_MIN = 0.01
 
 const MARK_RADIUS_SLIDER_STEP = 0.01
 
-function affect(e: MouseEvent, punch: boolean, mark: boolean, punchForce: number, markRadius: number, markers: THREE.Mesh[]) {
+function affect(
+    e: MouseEvent,
+    punch: boolean,
+    mark: boolean,
+    punchForce: number,
+    markRadius: number,
+    markers: THREE.Mesh[]
+) {
     const origin = World.SceneRenderer.mainCamera.position
 
     const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
