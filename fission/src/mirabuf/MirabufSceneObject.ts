@@ -168,6 +168,10 @@ class MirabufSceneObject extends SceneObject {
         this._brain?.clearControls()
     }
 
+    public GetRootNodeId(): Jolt.BodyID | undefined {
+        return this._mechanism.nodeToBody.get(this._mechanism.rootBody)
+    }
+
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
         const scale = new JOLT.Vec3(1, 1, 1)
         const triangleContext = new JOLT.ShapeGetTriangles(

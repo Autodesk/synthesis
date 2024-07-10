@@ -10,9 +10,10 @@ import Checkbox from "@/ui/components/Checkbox"
 import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 // capitalize first letter
-// TODO: assumes all inputs are keyboard buttons
 const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
     let prefix = ""
     if (keyModifiers) {
@@ -109,9 +110,10 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [useButtons, setUseButtons] = useState<UseButtonsState>({})
 
     // If there is a robot spawned, set it as the selected robot
-    if (selectedScheme == null && InputSystem.allInputs.size > 0) {
+    if (selectedScheme == null && Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0) {
         setTimeout(() => {
-            if (!InputSystem.selectedScheme) InputSystem.selectedScheme = InputSystem.allInputs.values().next().value
+            if (!InputSystem.selectedScheme) 
+                InputSystem.selectedScheme = Object.values(PreferencesSystem.getAllRobotPreferences())[0].inputsSchemes[0]
 
             setUseButtons({})
             setSelectedScheme(InputSystem.selectedScheme)
@@ -334,8 +336,12 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     return (
-        <Modal name="Keybinds" icon={<FaGamepad />} modalId={modalId}>
-            {Array.from(InputSystem.allInputs.keys()).length > 0 ? (
+        <Modal name="Keybinds" icon={<FaGamepad />} modalId={modalId}
+        onAccept={() => {
+                PreferencesSystem.savePreferences()
+                InputSystem.selectedScheme = undefined
+            }}>
+            {Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0 ? (
                 <>
                     <Stack direction={StackDirection.Horizontal} spacing={25}>
                         <div>
@@ -343,13 +349,14 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 <Dropdown
                                     label={"Select Robot"}
                                     // Moves the selected option to the start of the array
-                                    options={moveElementToTop(
-                                        Array.from(InputSystem.allInputs.keys()),
-                                        InputSystem?.selectedScheme?.schemeName
-                                    )}
+                                    options={moveElementToTop(SynthesisBrain.robotsSpawned, InputSystem?.selectedScheme?.schemeName)}
                                     onSelect={value => {
-                                        const newScheme = InputSystem.allInputs.get(value)
-                                        if (newScheme == selectedScheme) return
+                                        const roboName = value.substring(4)
+                                        const controlSchemeIndex: number = +value.charAt(1)
+
+                                        const newScheme = PreferencesSystem.getAllRobotPreferences()[roboName].inputsSchemes[controlSchemeIndex]
+                                        if (newScheme == selectedScheme) 
+                                            return
 
                                         setSelectedScheme(undefined)
                                         InputSystem.selectedScheme = newScheme
