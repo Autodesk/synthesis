@@ -30,12 +30,7 @@ type DropdownProps = {
     onSelect: (opt: string) => void
 }
 
-const Dropdown: React.FC<DropdownProps> = ({
-    label,
-    options,
-    onSelect,
-}) => {
-
+const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
     const [optionList, _setOptionList] = useState(options)
 
     return (
