@@ -12,7 +12,7 @@ from ...UI.Camera import captureThumbnail, clearIconCache
 from ..ExporterOptions import ExporterOptions, ExportMode, ExportLocation
 from . import Components, JointHierarchy, Joints, Materials, PDMessage
 from .Utilities import *
-from ...temp_file_upload import upload_mirabuf # This line causes everything to break
+from ...APS.APS import upload_mirabuf # This line causes everything to break
 
 
 class Parser:
