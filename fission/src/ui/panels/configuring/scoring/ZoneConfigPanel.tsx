@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import Input from "@/components/Input"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Button from "@/components/Button"
@@ -8,6 +8,7 @@ import NumberInput from "@/components/NumberInput"
 import { SelectedZone } from "./ScoringZonesPanel"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { usePanelControlContext } from "@/ui/PanelContext"
+import Stack, { StackDirection } from "@/ui/components/Stack"
 
 const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const { openPanel } = usePanelControlContext()
@@ -18,7 +19,12 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     const [points, setPoints] = useState<number>(SelectedZone.zone.points)
     const [destroy, setDestroy] = useState<boolean>(SelectedZone.zone.destroyGamepiece)
     const [persistent, setPersistent] = useState<boolean>(SelectedZone.zone.persistentPoints)
-    const [scale, setScale] = useState<[number, number, number]>(SelectedZone.zone.scale)
+
+    const [transformMode, setTransformMode] = useState<"translate" | "rotate" | "scale">("translate")
+
+    useEffect(() => {
+        // TODO: create transform gizmo
+    })
 
     return (
         <Panel
@@ -33,12 +39,12 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                 SelectedZone.zone.points = points
                 SelectedZone.zone.destroyGamepiece = destroy
                 SelectedZone.zone.persistentPoints = persistent
-                SelectedZone.zone.scale = scale
-                
+
+                // TODO: Yoink transform info from the transform gizmo
+
                 PreferencesSystem.savePreferences()
                 openPanel("scoring-zones")
-            }
-        }
+            }}
         >
             <Input label="Name" placeholder="Enter zone name" defaultValue={SelectedZone.zone.name} onInput={setName} />
             <Button
@@ -47,52 +53,50 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                 colorOverrideClass={`bg-match-${alliance}-alliance`}
             />
             <SelectButton placeholder="Select zone parent" onSelect={(p: string) => setParent(p)} />
-            <NumberInput label="Points" placeholder="Zone points" defaultValue={SelectedZone.zone.points} onInput={v => setPoints(v || 1)} />
+            <NumberInput
+                label="Points"
+                placeholder="Zone points"
+                defaultValue={SelectedZone.zone.points}
+                onInput={v => setPoints(v || 1)}
+            />
             <Checkbox
                 label="Destroy Gamepiece"
                 defaultState={SelectedZone.zone.destroyGamepiece}
                 onClick={setDestroy}
             />
-            <Checkbox label="Persistent Points" defaultState={SelectedZone.zone.persistentPoints} onClick={setPersistent} />
-            {/* <Slider
-                label="X Scale"
-                min={0}
-                max={10}
-                defaultValue={1}
-                format={{ maximumFractionDigits: 2 }}
-                onChange={(v: number) =>
-                    setScale(s => {
-                        s[0] = v
-                        return s
-                    })
-                }
+            <Checkbox
+                label="Persistent Points"
+                defaultState={SelectedZone.zone.persistentPoints}
+                onClick={setPersistent}
             />
-            <Slider
-                label="Y Scale"
-                min={0}
-                max={10}
-                defaultValue={1}
-                format={{ maximumFractionDigits: 2 }}
-                onChange={(v: number) =>
-                    setScale(s => {
-                        s[1] = v
-                        return s
-                    })
-                }
-            />
-            <Slider
-                label="Z Scale"
-                min={0}
-                max={10}
-                defaultValue={1}
-                format={{ maximumFractionDigits: 2 }}
-                onChange={(v: number) =>
-                    setScale(s => {
-                        s[2] = v
-                        return s
-                    })
-                }
-            /> */}
+            <Stack direction={StackDirection.Horizontal} spacing={8}>
+                    <>
+                        <Button
+                            value="Move"
+                            colorOverrideClass={transformMode != "translate" ? "bg-interactive-background" : undefined}
+                            onClick={() => {
+                                setTransformMode("translate")
+                                // TODO: Switch the transform gizmo to translate mode
+                            }}
+                        />
+                        <Button
+                            value="Scale"
+                            colorOverrideClass={transformMode != "scale" ? "bg-interactive-background" : undefined}
+                            onClick={() => {
+                                setTransformMode("scale")
+                                // TODO: Switch the transform gizmo to translate mode
+                            }}
+                        />
+                        <Button
+                            value="Rotate"
+                            colorOverrideClass={transformMode != "rotate" ? "bg-interactive-background" : undefined}
+                            onClick={() => {
+                                setTransformMode("rotate")
+                                // TODO: Switch the transform gizmo to translate mode
+                            }}
+                        />
+                    </>
+            </Stack>
         </Panel>
     )
 }

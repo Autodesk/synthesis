@@ -212,7 +212,7 @@ class SynthesisBrain extends Brain {
     }
 
     private configureField() {
-       //const fieldPrefs = PreferencesSystem.getFieldPreferences(this._assemblyName)
+       PreferencesSystem.getFieldPreferences(this._assemblyName)
 
        /** Put any field configuration here */
     }
