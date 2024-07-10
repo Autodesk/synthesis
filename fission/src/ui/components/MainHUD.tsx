@@ -189,7 +189,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Configure"}
                         icon={<FaGear />}
-                        onClick={() => openPanel("config-gamepiece-pickup")}
+                        onClick={() => openModal("config-robot")}
                     />
                 </div>
                 {userInfo ? (

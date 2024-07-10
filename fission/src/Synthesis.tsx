@@ -58,6 +58,7 @@ import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.ts
 import APS from "./aps/APS.ts"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
+import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -214,6 +215,7 @@ const initialModals = [
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportMirabufModal key="import-mirabuf" modalId="import-mirabuf" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
+    <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
 ]
 
 const initialPanels: ReactElement[] = [
@@ -227,7 +229,7 @@ const initialPanels: ReactElement[] = [
         openLocation="right"
         sidePadding={8}
     />,
-    <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" />,
+    <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" openLocation="right" sidePadding={8} />,
     <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
     <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
     <PokerPanel key="poker" panelId="poker" />,

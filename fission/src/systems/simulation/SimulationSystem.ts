@@ -11,31 +11,8 @@ import HingeStimulus from "./stimulus/HingeStimulus"
 import WheelRotationStimulus from "./stimulus/WheelStimulus"
 import SliderStimulus from "./stimulus/SliderStimulus"
 import ChassisStimulus from "./stimulus/ChassisStimulus"
-import Jolt from "@barclah/jolt-physics"
 
 class SimulationSystem extends WorldSystem {
-    /**
-     * TEMPORARY - beginning of block
-     *
-     * Storing the pickup and ejector configurations
-     *
-     * Key: Body
-     * Value: Postion
-     */
-    private _pickupConfigurations: Map<Jolt.Body, THREE.Vector3> = new Map()
-    private _ejectorConfigurations: Map<Jolt.Body, THREE.Vector3> = new Map()
-
-    public AddPickupConfiguration(body: Jolt.Body, position: THREE.Vector3) {
-        this._pickupConfigurations.set(body, position)
-    }
-
-    public AddEjectorConfiguration(body: Jolt.Body, position: THREE.Vector3) {
-        this._ejectorConfigurations.set(body, position)
-    }
-    /**
-     * TEMPORARY - end of block
-     */
-
     private _simMechanisms: Map<Mechanism, SimulationLayer>
 
     constructor() {
