@@ -34,7 +34,7 @@ class ArcadeDriveBehavior extends Behavior {
         const driveInput = InputSystem.getInput("arcadeDrive", this._assemblyName, this._assemblyIndex);
         const turnInput = InputSystem.getInput("arcadeTurn", this._assemblyName, this._assemblyIndex);
 
-        this.DriveSpeeds(driveInput*this._driveSpeed, turnInput*this._turnSpeed);
+        this.DriveSpeeds(driveInput * this._driveSpeed, turnInput * this._turnSpeed)
     }
 }
 
