@@ -3,12 +3,11 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { BlendFunction, BoxBlurPass, DepthCopyPass, DepthDownsamplingPass, EdgeDetectionMode, EffectComposer, EffectPass, NormalPass, OutlineEffect, PredicationMode, RenderPass, SMAAEffect, SSAOEffect } from "postprocessing"
+import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 
-import vertexShader from '@/shaders/vertex.glsl';
-import fragmentShader from '@/shaders/fragment.glsl';
-import { Theme } from '@/ui/ThemeContext';
+import vertexShader from "@/shaders/vertex.glsl"
+import fragmentShader from "@/shaders/fragment.glsl"
+import { Theme } from "@/ui/ThemeContext"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -16,14 +15,13 @@ const GROUND_COLOR = 0x4066c7
 let nextSceneObjectId = 1
 
 class SceneRenderer extends WorldSystem {
+    private _mainCamera: THREE.PerspectiveCamera
+    private _scene: THREE.Scene
+    private _renderer: THREE.WebGLRenderer
+    private _skybox: THREE.Mesh
+    private _composer: EffectComposer
 
-    private _mainCamera: THREE.PerspectiveCamera;
-    private _scene: THREE.Scene;
-    private _renderer: THREE.WebGLRenderer;
-    private _skybox: THREE.Mesh;
-    private _composer: EffectComposer;
-
-    private _antiAliasPass: EffectPass;
+    private _antiAliasPass: EffectPass
 
     private _sceneObjects: Map<number, SceneObject>
 
@@ -57,11 +55,12 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
-        this._renderer = new THREE.WebGLRenderer({ // Following parameters are used to optimize post-processing
+        this._renderer = new THREE.WebGLRenderer({
+            // Following parameters are used to optimize post-processing
             powerPreference: "high-performance",
             antialias: false,
             stencil: false,
-            depth: false
+            depth: false,
         })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
@@ -113,7 +112,7 @@ class SceneRenderer extends WorldSystem {
         })
 
         // Adding spherical skybox mesh
-        const geometry = new THREE.SphereGeometry(1000);
+        const geometry = new THREE.SphereGeometry(1000)
         const material = new THREE.ShaderMaterial({
             vertexShader: vertexShader,
             fragmentShader: fragmentShader,
@@ -122,12 +121,13 @@ class SceneRenderer extends WorldSystem {
                 rColor: { value: 1.0 },
                 gColor: { value: 1.0 },
                 bColor: { value: 1.0 },
-            }
-        });
-        this._skybox = new THREE.Mesh(geometry, material); 
-        this._skybox.receiveShadow = false;
-        this._skybox.castShadow = false;
-        this.scene.add(this._skybox);
+            },
+        })
+
+        this._skybox = new THREE.Mesh(geometry, material)
+        this._skybox.receiveShadow = false
+        this._skybox.castShadow = false
+        this.scene.add(this._skybox)
 
         // POST PROCESSING: https://github.com/pmndrs/postprocessing
         this._composer = new EffectComposer(this._renderer)
@@ -163,9 +163,8 @@ class SceneRenderer extends WorldSystem {
             // tc.rotation.copy(tc.object!.rotation);
         })
 
-        this._skybox.position.copy(this._mainCamera.position);
+        this._skybox.position.copy(this._mainCamera.position)
 
-        // this._renderer.render(this._scene, this._mainCamera);
         this._composer.render(deltaT)
     }
 
@@ -173,7 +172,7 @@ class SceneRenderer extends WorldSystem {
         this.RemoveAllSceneObjects()
     }
 
-    public RegisterSceneObject<T extends MirabufSceneObject>(obj: T): number {
+    public RegisterSceneObject<T extends SceneObject>(obj: T): number {
         const id = nextSceneObjectId++
         obj.id = id
         this._sceneObjects.set(id, obj)
@@ -314,14 +313,13 @@ class SceneRenderer extends WorldSystem {
      * @param currentTheme: current theme from ThemeContext.useTheme()
      */
     public updateSkyboxColors(currentTheme: Theme) {
-        if (!this._skybox) return;
+        if (!this._skybox) return
         if (this._skybox.material instanceof THREE.ShaderMaterial) {
-            this._skybox.material.uniforms.rColor.value = currentTheme['Background']['color']['r'];
-            this._skybox.material.uniforms.gColor.value = currentTheme['Background']['color']['g'];
-            this._skybox.material.uniforms.bColor.value = currentTheme['Background']['color']['b'];
+            this._skybox.material.uniforms.rColor.value = currentTheme["Background"]["color"]["r"]
+            this._skybox.material.uniforms.gColor.value = currentTheme["Background"]["color"]["g"]
+            this._skybox.material.uniforms.bColor.value = currentTheme["Background"]["color"]["b"]
         }
     }
-
 }
 
-export default SceneRenderer;
+export default SceneRenderer

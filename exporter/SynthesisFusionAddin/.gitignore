@@ -108,3 +108,5 @@ site-packages
 **/.env
 
 proto/proto_out
+
+.aps_auth

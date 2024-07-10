@@ -1,4 +1,3 @@
-import MirabufInstance from "@/mirabuf/MirabufInstance"
 import World from "@/systems/World"
 import * as THREE from "three"
 
@@ -15,7 +14,7 @@ class TransformGizmo {
         World.SceneRenderer.UpdateTransformGizmoMode(value, this.mesh)
     }
 
-    constructor(TransformMode: "translate" | "rotate" | "scale", object?: MirabufInstance) {
+    constructor(TransformMode: "translate" | "rotate" | "scale") {
         this.mode = TransformMode
         ;(this.mesh = new THREE.Mesh(new THREE.SphereGeometry(5))), new THREE.MeshBasicMaterial({ color: 0xff0000 })
         // add implementation in JIRA issue #1733 to wrap Mirabuf in Mesh which translates changes
