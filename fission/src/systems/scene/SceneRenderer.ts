@@ -1,8 +1,7 @@
 import * as THREE from "three"
-import SceneObject from "./SceneObject"
-import WorldSystem from "../WorldSystem"
-
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
+import SceneObject from "@/systems/scene/SceneObject"
+import WorldSystem from "@/systems/WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 
 import vertexShader from "@/shaders/vertex.glsl"
@@ -184,6 +183,24 @@ class SceneRenderer extends WorldSystem {
     }
 
     /**
+     * Convert pixel coordinates to a world space vector
+     *
+     * @param mouseX X pixel position of the mouse (MouseEvent.clientX)
+     * @param mouseY Y pixel position of the mouse (MouseEvent.clientY)
+     * @param z Travel from the near to far plane of the camera frustum. Default is 0.5, range is [0.0, 1.0]
+     * @returns World space point within the frustum given the parameters.
+     */
+    public PixelToWorldSpace(mouseX: number, mouseY: number, z: number = 0.5): THREE.Vector3 {
+        const screenSpace = new THREE.Vector3(
+            (mouseX / window.innerWidth) * 2 - 1,
+            ((window.innerHeight - mouseY) / window.innerHeight) * 2 - 1,
+            Math.min(1.0, Math.max(0.0, z))
+        )
+
+        return screenSpace.unproject(this.mainCamera)
+    }
+
+    /*
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()

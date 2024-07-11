@@ -72,8 +72,16 @@ export function MirabufVector3_JoltVec3(v: mirabuf.Vector3): Jolt.Vec3 {
     return new JOLT.Vec3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
 }
 
+export function MirabufVector3_JoltFloat3(v: mirabuf.Vector3): Jolt.Float3 {
+    return new JOLT.Float3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
+}
+
 export function MirabufFloatArr_JoltVec3(v: number[], offsetIndex: number): Jolt.Vec3 {
     return new JOLT.Vec3(v[offsetIndex] / 100.0, v[offsetIndex + 1] / 100.0, v[offsetIndex + 2] / 100.0)
+}
+
+export function MirabufFloatArr_JoltFloat3(v: number[], offsetIndex: number): Jolt.Float3 {
+    return new JOLT.Float3(v[offsetIndex] / 100.0, v[offsetIndex + 1] / 100.0, v[offsetIndex + 2] / 100.0)
 }
 
 export function MirabufFloatArr_JoltVec3Arr(v: number[]): Jolt.Vec3[] {
