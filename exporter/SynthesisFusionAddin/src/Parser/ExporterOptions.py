@@ -18,7 +18,7 @@ from ..strings import INTERNAL_ID
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
 
-WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
+WheelType = Enum("WheelType", ["STANDARD", "OMNI", "MECANUM"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
 PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
@@ -38,6 +38,12 @@ class Joint:
     signalType: SignalType = field(default=None)
     speed: float = field(default=None)
     force: float = field(default=None)
+
+    # Transition: AARD-1865
+    # Should consider changing how the parser handles wheels and joints as there is overlap between
+    # `Joint` and `Wheel` that should be avoided
+    # This overlap also presents itself in 'ConfigCommand.py' and 'JointConfigTab.py'
+    isWheel: bool = field(default=False)
 
 
 @dataclass
@@ -100,18 +106,21 @@ class ExporterOptions:
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
     physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
 
-    def readFromDesign(self) -> None:
-        designAttributes = adsk.core.Application.get().activeProduct.attributes
-        for field in fields(self):
-            attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
-            if attribute:
-                setattr(
-                    self,
-                    field.name,
-                    self._makeObjectFromJson(field.type, json.loads(attribute.value)),
-                )
+    def readFromDesign(self) -> "ExporterOptions":
+        try:
+            designAttributes = adsk.core.Application.get().activeProduct.attributes
+            for field in fields(self):
+                attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
+                if attribute:
+                    setattr(
+                        self,
+                        field.name,
+                        self._makeObjectFromJson(field.type, json.loads(attribute.value)),
+                    )
 
-        return self
+            return self
+        except:
+            return ExporterOptions()
 
     def writeToDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
