@@ -3,6 +3,8 @@ import { mirabuf } from "../proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
 
+const WIREFRAME = false
+
 export enum MaterialStyle {
     Regular = 0,
     Normals = 1,
@@ -143,8 +145,6 @@ class MirabufInstance {
         const assembly = this._mirabufParser.assembly
         const instances = assembly.data!.parts!.partInstances!
 
-        let totalMeshCount = 0
-
         for (const instance of Object.values(instances) /* .filter(x => x.info!.name!.startsWith('EyeBall')) */) {
             const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]!
             const bodies = definition.bodies
@@ -165,14 +165,11 @@ class MirabufInstance {
                         transformGeometry(geometry, mesh.mesh!)
 
                         const appearanceOverride = body.appearanceOverride
-                        const material: THREE.Material =
-                            appearanceOverride && this._materials.has(appearanceOverride)
-                                ? this._materials.get(appearanceOverride)!
-                                : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
-
-                        // if (NORMAL_MATERIALS) {
-                        //     material = new THREE.MeshNormalMaterial();
-                        // }
+                        const material: THREE.Material = WIREFRAME
+                            ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
+                            : appearanceOverride && this._materials.has(appearanceOverride)
+                              ? this._materials.get(appearanceOverride)!
+                              : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
 
                         const threeMesh = new THREE.Mesh(geometry, material)
                         threeMesh.receiveShadow = true
@@ -186,11 +183,8 @@ class MirabufInstance {
                     }
                 }
             }
-            totalMeshCount += meshes.length
             this._meshes.set(instance.info!.GUID!, meshes)
         }
-
-        console.debug(`Created '${totalMeshCount}' meshes for mira file '${this._mirabufParser.assembly.info!.name!}'`)
     }
 
     /**
