@@ -1,5 +1,6 @@
 import {
     JoltVec3_ThreeVector3,
+    MirabufFloatArr_JoltFloat3,
     MirabufFloatArr_JoltVec3,
     MirabufVector3_JoltVec3,
     ThreeMatrix4_JoltMat44,
@@ -50,7 +51,7 @@ const SUSPENSION_MIN_FACTOR = 0.1
 const SUSPENSION_MAX_FACTOR = 0.3
 
 /**
- * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
+ * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
  * This system can create physical representations of objects such as Robots,
  * Fields, and Game pieces, and simulate them.
  */
@@ -92,12 +93,32 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Disabling physics for a single body
+     *
+     * @param bodyId
+     */
+    public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
+        this._joltBodyInterface.DeactivateBody(bodyId)
+        this.GetBody(bodyId).SetIsSensor(true)
+    }
+
+    /**
+     * Enabing physics for a single body
+     *
+     * @param bodyId
+     */
+    public EnablePhysicsForBody(bodyId: Jolt.BodyID) {
+        this._joltBodyInterface.ActivateBody(bodyId)
+        this.GetBody(bodyId).SetIsSensor(false)
+    }
+
+    /**
      * TEMPORARY
      * Create a box.
      *
      * @param   halfExtents The half extents of the Box.
      * @param   mass        Mass of the Box. Leave undefined to make Box static.
-     * @param   position    Posiition of the Box (default: 0, 0, 0)
+     * @param   position    Position of the Box (default: 0, 0, 0)
      * @param   rotation    Rotation of the Box (default 0, 0, 0, 1)
      * @returns Reference to Jolt Body
      */
@@ -191,11 +212,9 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
         const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
-        // const layer = undefined;
-        console.log(`Using layer ${layer?.layer}`)
         const bodyMap = this.CreateBodiesFromParser(parser, layer)
         const rootBody = parser.rootNode
-        const mechanism = new Mechanism(rootBody, bodyMap, layer)
+        const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)
         this.CreateJointsFromParser(parser, mechanism)
         return mechanism
     }
@@ -204,7 +223,7 @@ class PhysicsSystem extends WorldSystem {
      * Creates all the joints for a mirabuf assembly given an already compiled mapping of rigid nodes to bodies.
      *
      * @param   parser      Mirabuf parser with complete set of rigid nodes and assembly data.
-     * @param   mechainsm   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
+     * @param   mechanism   Mapping of the name of rigid groups to Jolt bodies. Retrieved from CreateBodiesFromParser.
      */
     public CreateJointsFromParser(parser: MirabufParser, mechanism: Mechanism) {
         const jointData = parser.assembly.data!.joints!
@@ -302,7 +321,7 @@ class PhysicsSystem extends WorldSystem {
      * @param   jointDefinition Joint definition.
      * @param   bodyA           Parent body to connect.
      * @param   bodyB           Child body to connect.
-     * @param   versionNum      Version number of the export. Used for compatability purposes.
+     * @param   versionNum      Version number of the export. Used for compatibility purposes.
      * @returns Resulting Jolt Hinge Constraint.
      */
     private CreateHingeConstraint(
@@ -341,7 +360,7 @@ class PhysicsSystem extends WorldSystem {
             hingeConstraintSettings.mHingeAxis1
         )
 
-        // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected beavior.
+        // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
         // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
         const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
 
@@ -553,7 +572,9 @@ class PhysicsSystem extends WorldSystem {
                     const partDefinition =
                         parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
 
-                    const partShapeResult = this.CreateShapeSettingsFromPart(partDefinition)
+                    const partShapeResult = rn.isDynamic
+                        ? this.CreateConvexShapeSettingsFromPart(partDefinition)
+                        : this.CreateConcaveShapeSettingsFromPart(partDefinition)
 
                     if (partShapeResult) {
                         const [shapeSettings, partMin, partMax] = partShapeResult
@@ -614,6 +635,7 @@ class PhysicsSystem extends WorldSystem {
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Little testing components
+                this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
             }
             // Cleanup
@@ -629,7 +651,7 @@ class PhysicsSystem extends WorldSystem {
      * @param   partDefinition  Definition of the part to create.
      * @returns If successful, the created convex hull shape settings from the given Part Definition.
      */
-    private CreateShapeSettingsFromPart(
+    private CreateConvexShapeSettingsFromPart(
         partDefinition: mirabuf.IPartDefinition
     ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
         const settings = new JOLT.ConvexHullShapeSettings()
@@ -658,6 +680,85 @@ class PhysicsSystem extends WorldSystem {
         } else {
             return [settings, min, max]
         }
+    }
+
+    /**
+     * Creates the Jolt ShapeSettings for a given part using the Part Definition of said part.
+     *
+     * @param   partDefinition  Definition of the part to create.
+     * @returns If successful, the created convex hull shape settings from the given Part Definition.
+     */
+    private CreateConcaveShapeSettingsFromPart(
+        partDefinition: mirabuf.IPartDefinition
+    ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
+        const settings = new JOLT.MeshShapeSettings()
+
+        settings.mMaxTrianglesPerLeaf = 8
+
+        settings.mTriangleVertices = new JOLT.VertexList()
+        settings.mIndexedTriangles = new JOLT.IndexedTriangleList()
+        settings.mMaterials = new JOLT.PhysicsMaterialList()
+
+        settings.mMaterials.push_back(new JOLT.PhysicsMaterial())
+
+        const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
+        const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
+
+        partDefinition.bodies!.forEach(body => {
+            const vertArr = body.triangleMesh?.mesh?.verts
+            const indexArr = body.triangleMesh?.mesh?.indices
+            if (!vertArr || !indexArr) return
+            for (let i = 0; i < vertArr.length; i += 3) {
+                const vert = MirabufFloatArr_JoltFloat3(vertArr, i)
+                settings.mTriangleVertices.push_back(vert)
+                this.UpdateMinMaxBounds(new JOLT.Vec3(vert), min, max)
+                JOLT.destroy(vert)
+            }
+            for (let i = 0; i < indexArr.length; i += 3) {
+                settings.mIndexedTriangles.push_back(
+                    new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0)
+                )
+            }
+        })
+
+        if (settings.mTriangleVertices.size() < 4) {
+            JOLT.destroy(settings)
+            JOLT.destroy(min)
+            JOLT.destroy(max)
+            return
+        } else {
+            settings.Sanitize()
+            return [settings, min, max]
+        }
+    }
+
+    /**
+     * Raycast a ray into the physics scene.
+     *
+     * @param from Originating point of the ray
+     * @param dir Direction of the ray. Note: Length of dir specifies the maximum length it will check.
+     * @returns Either the hit results of the closest object in the ray's path, or undefined if nothing was hit.
+     */
+    public RayCast(from: Jolt.Vec3, dir: Jolt.Vec3): RayCastHit | undefined {
+        const ray = new JOLT.RayCast(from, dir)
+
+        const raySettings = new JOLT.RayCastSettings()
+        const collector = new JOLT.CastRayClosestHitCollisionCollector()
+        const bp_filter = new JOLT.BroadPhaseLayerFilter()
+        const object_filter = new JOLT.ObjectLayerFilter()
+        const body_filter = new JOLT.BodyFilter() // We don't want to filter out any bodies
+        const shape_filter = new JOLT.ShapeFilter() // We don't want to filter out any shapes
+
+        this._joltPhysSystem
+            .GetNarrowPhaseQuery()
+            .CastRay(ray, raySettings, collector, bp_filter, object_filter, body_filter, shape_filter)
+
+        if (collector.HadHit()) {
+            const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
+            return { data: collector.mHit, point: hitPoint, ray: ray }
+        }
+
+        return undefined
     }
 
     /**
@@ -707,7 +808,6 @@ class PhysicsSystem extends WorldSystem {
             this._joltBodyInterface.RemoveBody(x)
             // this._joltBodyInterface.DestroyBody(x);
         })
-        console.log("Mechanism destroyed")
     }
 
     public GetBody(bodyId: Jolt.BodyID) {
@@ -722,8 +822,6 @@ class PhysicsSystem extends WorldSystem {
 
         let substeps = Math.max(1, Math.floor((lastDeltaT / STANDARD_SIMULATION_PERIOD) * STANDARD_SUB_STEPS))
         substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))
-
-        console.log(`DeltaT: ${lastDeltaT.toFixed(5)}, Substeps: ${substeps}`)
 
         this._joltInterface.Step(lastDeltaT, substeps)
     }
@@ -785,6 +883,10 @@ class PhysicsSystem extends WorldSystem {
      */
     public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
         this._joltBodyInterface.SetPosition(id, position, JOLT.EActivation_Activate)
+    }
+
+    public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat): void {
+        this._joltBodyInterface.SetRotation(id, rotation, JOLT.EActivation_Activate)
     }
 }
 
@@ -891,6 +993,12 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
         toCheck.GetY() - vec.GetY() * a,
         toCheck.GetZ() - vec.GetZ() * a
     ).Normalized()
+}
+
+export type RayCastHit = {
+    data: Jolt.RayCastResult
+    point: Jolt.Vec3
+    ray: Jolt.RayCast
 }
 
 export default PhysicsSystem

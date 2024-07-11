@@ -1,7 +1,6 @@
 import { mirabuf } from "@/proto/mirabuf"
 import SceneObject from "../systems/scene/SceneObject"
 import MirabufInstance from "./MirabufInstance"
-import { LoadMirabufRemote } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
@@ -11,6 +10,8 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import InputSystem from "@/systems/input/InputSystem"
+import TransformGizmos from "@/ui/components/TransformGizmos"
 
 const DEBUG_BODIES = true
 
@@ -20,16 +21,30 @@ interface RnDebugMeshes {
 }
 
 class MirabufSceneObject extends SceneObject {
+    private _assemblyName: string
     private _mirabufInstance: MirabufInstance
+    private _mechanism: Mechanism
+    private _brain: SynthesisBrain | undefined
+
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined = undefined
 
-    private _mechanism: Mechanism
+    private _transformGizmos: TransformGizmos | undefined = undefined
+    private _deleteGizmoOnEscape: boolean = true
 
-    public constructor(mirabufInstance: MirabufInstance) {
+    get mirabufInstance() {
+        return this._mirabufInstance
+    }
+
+    get mechanism() {
+        return this._mechanism
+    }
+
+    public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
         super()
 
         this._mirabufInstance = mirabufInstance
+        this._assemblyName = assemblyName
 
         this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser)
         if (this._mechanism.layerReserve) {
@@ -37,6 +52,8 @@ class MirabufSceneObject extends SceneObject {
         }
 
         this._debugBodies = null
+
+        this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
     }
 
     public Setup(): void {
@@ -63,12 +80,13 @@ class MirabufSceneObject extends SceneObject {
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-        const brain = new SynthesisBrain(this._mechanism)
-        simLayer.SetBrain(brain)
+        this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
+        simLayer.SetBrain(this._brain)
     }
 
     public Update(): void {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
             const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
             rn.parts.forEach(part => {
@@ -77,10 +95,39 @@ class MirabufSceneObject extends SceneObject {
                     .clone()
                     .premultiply(transform)
                 this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
+                    // iterating through each mesh and updating their position and rotation
                     mesh.position.setFromMatrixPosition(partTransform)
                     mesh.rotation.setFromRotationMatrix(partTransform)
                 })
             })
+
+            /**
+             * Update the position and rotation of the body to match the position of the transform gizmo.
+             *
+             * This block of code should only be executed if the transform gizmo exists.
+             */
+            if (this._transformGizmos) {
+                if (InputSystem.isKeyPressed("Enter")) {
+                    // confirming placement of the mirabuf object
+                    this._transformGizmos.RemoveGizmos()
+                    this.EnablePhysics()
+                    this._transformGizmos = undefined
+                    return
+                } else if (InputSystem.isKeyPressed("Escape") && this._deleteGizmoOnEscape) {
+                    // cancelling the creation of the mirabuf scene object
+                    this._transformGizmos.RemoveGizmos()
+                    World.SceneRenderer.RemoveSceneObject(this.id)
+                    this._transformGizmos = undefined
+                    this._deleteGizmoOnEscape = false
+                    return
+                }
+
+                // if the gizmo is being dragged, copy the mesh position and rotation to the Mirabuf body
+                if (this._transformGizmos.isBeingDragged()) {
+                    this._transformGizmos.UpdateMirabufPositioning(this, rn)
+                    World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+                }
+            }
 
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
@@ -117,10 +164,8 @@ class MirabufSceneObject extends SceneObject {
         })
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
-    }
 
-    public GetRootNodeId(): Jolt.BodyID | undefined {
-        return this._mechanism.nodeToBody.get(this._mechanism.rootBody)
+        this._brain?.clearControls()
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
@@ -155,22 +200,45 @@ class MirabufSceneObject extends SceneObject {
 
         return mesh
     }
+
+    public EnableTransformControls(): void {
+        this._transformGizmos = new TransformGizmos(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(3.0),
+                new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
+            )
+        )
+        this._transformGizmos.AddMeshToScene()
+        this._transformGizmos.CreateGizmo("translate")
+
+        this.DisablePhysics()
+    }
+
+    private EnablePhysics() {
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
+    }
+
+    private DisablePhysics() {
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
+    }
+
+    public GetRootNodeId(): Jolt.BodyID | undefined {
+        return this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)
+    }
 }
 
-export async function CreateMirabufFromUrl(path: string): Promise<MirabufSceneObject | null | undefined> {
-    const miraAssembly = await LoadMirabufRemote(path).catch(console.error)
-
-    if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-        return
-    }
-
-    const parser = new MirabufParser(miraAssembly)
+export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<MirabufSceneObject | null | undefined> {
+    const parser = new MirabufParser(assembly)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-        console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+        console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser))
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!)
 }
 
 export default MirabufSceneObject

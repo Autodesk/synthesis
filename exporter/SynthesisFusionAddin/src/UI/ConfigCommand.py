@@ -13,6 +13,7 @@ import adsk.core
 import adsk.fusion
 
 from ..Analytics.alert import showAnalyticsAlert
+from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
 from ..configure import NOTIFIED, write_configuration
 from ..general_imports import *
 from ..Parser.ExporterOptions import (
@@ -764,6 +765,14 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             #     tooltip="tooltip",
             #     enabled=True,
             # )
+
+            getAuth()
+            user_info = getUserInfo()
+            apsSettings = INPUTS_ROOT.addTabCommandInput(
+                "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
+            )
+            apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
+            aps_input = apsSettings.children
 
             # clear all selections before instantiating handlers.
             gm.ui.activeSelections.clear()
