@@ -75,17 +75,19 @@ def getAuth() -> APSAuth:
     try:
         with open(auth_path, "rb") as f:
             p = pickle.load(f)
+            logging.getLogger(f"{INTERNAL_ID}").info(f"Auth Path: {auth_path}\n{json.dumps(p)}")
             APS_AUTH = APSAuth(
                 access_token=p["access_token"],
                 refresh_token=p["refresh_token"],
                 expires_in=p["expires_in"],
-                expires_at=int(p["expires_in"] * 1000),
+                expires_at=p["expires_at"],
                 token_type=p["token_type"],
             )
     except:
         raise Exception("Need to sign in!")
     curr_time = int(time.time() * 1000)
     if curr_time >= APS_AUTH.expires_at:
+        logging.getLogger(f"{INTERNAL_ID}").info(f"Refreshing {curr_time}\n{json.dumps(APS_AUTH.__dict__)}")
         refreshAuthToken()
     if APS_USER_INFO is None:
         loadUserInfo()
@@ -97,15 +99,17 @@ def convertAuthToken(code: str):
     authUrl = f'http://localhost:80/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:80/api/aps/exporter/")}'
     res = urllib.request.urlopen(authUrl)
     data = _res_json(res)["response"]
+    curr_time = time.time() * 1000
     APS_AUTH = APSAuth(
         access_token=data["access_token"],
         refresh_token=data["refresh_token"],
         expires_in=data["expires_in"],
-        expires_at=int(data["expires_in"] * 1000),
+        expires_at=int(curr_time + (p["expires_in"] * 1000)),
         token_type=data["token_type"],
     )
     with open(auth_path, "wb") as f:
-        pickle.dump(data, f)
+        logging.getLogger(f"{INTERNAL_ID}").info(f"APS AUTH: {json.dumps(APS_AUTH.__dict__)}")
+        pickle.dump(APS_AUTH.__dict__, f)
         f.close()
 
     loadUserInfo()
@@ -136,11 +140,12 @@ def refreshAuthToken():
     try:
         res = urllib.request.urlopen(req)
         data = _res_json(res)
+        curr_time = time.time() * 1000
         APS_AUTH = APSAuth(
             access_token=data["access_token"],
             refresh_token=data["refresh_token"],
             expires_in=data["expires_in"],
-            expires_at=int(data["expires_in"] * 1000),
+            expires_at=int(curr_time + (data["expires_in"] * 1000)),
             token_type=data["token_type"],
         )
     except urllib.request.HTTPError as e:
