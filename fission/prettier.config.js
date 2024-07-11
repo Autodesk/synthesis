@@ -18,7 +18,7 @@ const config = {
             },
         },
     ],
-    endOfLine: "lf",
+    endOfLine: "auto",
 }
 
 export default config
