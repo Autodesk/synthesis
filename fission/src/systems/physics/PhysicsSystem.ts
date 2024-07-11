@@ -13,6 +13,7 @@ import { mirabuf } from "../../proto/mirabuf"
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
+import { M } from "node_modules/vite/dist/node/types.d-jgA8ss1A"
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -50,7 +51,7 @@ const SUSPENSION_MIN_FACTOR = 0.1
 const SUSPENSION_MAX_FACTOR = 0.3
 
 /**
- * The PhysicsSystem handles all Jolt Phyiscs interactions within Synthesis.
+ * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
  * This system can create physical representations of objects such as Robots,
  * Fields, and Game pieces, and simulate them.
  */
@@ -60,6 +61,14 @@ class PhysicsSystem extends WorldSystem {
     private _joltBodyInterface: Jolt.BodyInterface
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
+
+    public get JoltPhysicsSystem() {
+        return this._joltPhysSystem
+    }
+
+    public get JoltBodyInterface() {
+        return this._joltBodyInterface
+    }
 
     /**
      * Creates a PhysicsSystem object.
@@ -84,7 +93,7 @@ class PhysicsSystem extends WorldSystem {
         const ground = this.CreateBox(
             new THREE.Vector3(5.0, 0.5, 5.0),
             undefined,
-            new THREE.Vector3(0.0, -2.0, 0.0),
+            new THREE.Vector3(0.0, -2.05, 0.0),
             undefined
         )
         ground.SetFriction(FLOOR_FRICTION)
@@ -105,7 +114,8 @@ class PhysicsSystem extends WorldSystem {
         halfExtents: THREE.Vector3,
         mass: number | undefined,
         position: THREE.Vector3 | undefined,
-        rotation: THREE.Euler | THREE.Quaternion | undefined
+        rotation: THREE.Euler | THREE.Quaternion | undefined,
+        isSensor: boolean = false
     ) {
         const size = ThreeVector3_JoltVec3(halfExtents)
         const shape = new JOLT.BoxShape(size, 0.1)
@@ -122,6 +132,9 @@ class PhysicsSystem extends WorldSystem {
         )
         if (mass) {
             creationSettings.mMassPropertiesOverride.mMass = mass
+        }
+        if (isSensor) {
+            creationSettings.mIsSensor = isSensor
         }
         const body = this._joltBodyInterface.CreateBody(creationSettings)
         JOLT.destroy(pos)
