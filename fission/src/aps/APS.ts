@@ -1,8 +1,5 @@
 import { MainHUD_AddToast } from "@/ui/components/MainHUD"
 import { Mutex } from "async-mutex"
-import { warn } from "console"
-import { k } from "node_modules/vite/dist/node/types.d-aGj9QkWt"
-import { ByteType, KeyframeTrack } from "three"
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
@@ -126,9 +123,12 @@ class APS {
 
     /*
      * Revokes the users token
+     *
+     * The client should be public since we're an spa
+     * Endpoint documentation:
+     * https://aps.autodesk.com/en/docs/oauth/v2/reference/http/revoke-POST/
      */
     static async revoke_token_public(): Promise<boolean> {
-        //console.log(CLIENT_ID + "\n" + this.auth?.access_token)
         const headers = {
             "Content-Type": "application/x-www-form-urlencoded",
         }
