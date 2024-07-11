@@ -16,8 +16,8 @@ export const ENDPOINT_SYNTHESIS_CHALLENGE = `${import.meta.env.VITE_SYNTHESIS_SE
 
 const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
 const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
+const ENDPOINT_AUTODESK_REVOKE_TOKEN = "https://developer.api.autodesk.com/authentication/v2/revoke"
 const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
-const ENDPOINT_AUTODESK_REVOKE_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
 
 interface APSAuth {
     access_token: string
@@ -120,8 +120,7 @@ class APS {
      * Does nothing if the auth token couldn't be revoked
      */
     static async logout() {
-        //if (!(await this.revoke_token_public())) return
-        if (!(await this.revoke_token_private())) return
+        if (!(await this.revoke_token_public())) return
         this.auth = undefined
     }
 
@@ -129,6 +128,7 @@ class APS {
      * Revokes the users token
      */
     static async revoke_token_public(): Promise<boolean> {
+        //console.log(CLIENT_ID + "\n" + this.auth?.access_token)
         const headers = {
             "Content-Type": "application/x-www-form-urlencoded",
         }
@@ -144,33 +144,7 @@ class APS {
         }
         const res = await fetch(ENDPOINT_AUTODESK_REVOKE_TOKEN, opts)
         if (!res.ok) {
-            console.log("Failed to revoke auth token:\n" + (await res.json()))
-            return false
-        }
-        console.log("Revoked auth token")
-        return true
-    }
-
-    /*
-     * Revokes the users token
-     */
-    static async revoke_token_private(client_secret: string): Promise<boolean> {
-        const headers = {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Authorization": `${CLIENT_ID}:${client_secret}`,
-        }
-        const body = {
-            token: this.auth?.access_token,
-            token_type_hint: "access_token",
-        }
-        const opts = {
-            method: "POST",
-            headers: headers,
-            body: body.toString(),
-        }
-        const res = await fetch(ENDPOINT_AUTODESK_REVOKE_TOKEN, opts)
-        if (!res.ok) {
-            console.log("Failed to revoke auth token:\n" + (await res.json()))
+            console.log("Failed to revoke auth token:\n")
             return false
         }
         console.log("Revoked auth token")
@@ -193,7 +167,7 @@ class APS {
                     response_type: "code",
                     client_id: CLIENT_ID,
                     redirect_uri: callbackUrl,
-                    scope: "data:read",
+                    scope: "data:create",
                     nonce: Date.now().toString(),
                     prompt: "login",
                     code_challenge: challenge,
