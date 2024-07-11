@@ -93,6 +93,26 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Disabling physics for a single body
+     *
+     * @param bodyId
+     */
+    public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
+        this._joltBodyInterface.DeactivateBody(bodyId)
+        this.GetBody(bodyId).SetIsSensor(true)
+    }
+
+    /**
+     * Enabing physics for a single body
+     *
+     * @param bodyId
+     */
+    public EnablePhysicsForBody(bodyId: Jolt.BodyID) {
+        this._joltBodyInterface.ActivateBody(bodyId)
+        this.GetBody(bodyId).SetIsSensor(false)
+    }
+
+    /**
      * TEMPORARY
      * Create a box.
      *
@@ -615,6 +635,7 @@ class PhysicsSystem extends WorldSystem {
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Little testing components
+                this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
             }
             // Cleanup
@@ -862,6 +883,10 @@ class PhysicsSystem extends WorldSystem {
      */
     public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
         this._joltBodyInterface.SetPosition(id, position, JOLT.EActivation_Activate)
+    }
+
+    public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat): void {
+        this._joltBodyInterface.SetRotation(id, rotation, JOLT.EActivation_Activate)
     }
 }
 

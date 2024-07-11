@@ -5,7 +5,6 @@ import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
 import { AiOutlineDoubleRight } from "react-icons/ai"
-import SceneRenderer from "@/systems/scene/SceneRenderer"
 
 const RAY_MAX_LENGTH = 20.0
 

@@ -4,7 +4,7 @@ import { useTheme } from "@/ui/ThemeContext"
 const Skybox = () => {
     const { currentTheme, themes } = useTheme()
     if (World.SceneRenderer) {
-        World.SceneRenderer.UpdateSkyboxColors(themes[currentTheme])
+        World.SceneRenderer.updateSkyboxColors(themes[currentTheme])
     }
     return <></>
 }
