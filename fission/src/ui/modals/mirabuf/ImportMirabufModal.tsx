@@ -4,8 +4,12 @@ import { FaPlus } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import { Data, Folder, Hub, Project, getHubs, getProjects, searchRootForMira } from "@/aps/APSDataManagement"
-import MirabufCachingService, { MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MirabufCacheInfo, MirabufRemoteInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import APS from "@/aps/APS"
+import World from "@/systems/World"
+import { useModalControlContext } from "@/ui/ModalContext"
+import { useTooltipControlContext } from "@/ui/TooltipContext"
+import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 
 interface ItemCardProps {
     id: string
@@ -39,11 +43,14 @@ const ItemCard: React.FC<ItemCardProps> = ({
 }
 
 export type MiraManifest = {
-    robots: string[]
-    fields: string[]
+    robots: MirabufRemoteInfo[]
+    fields: MirabufRemoteInfo[]
 }
 
 const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+    const { showTooltip } = useTooltipControlContext()
+    const { closeModal } = useModalControlContext()
+
     const [selectedHub, setSelectedHub] = useState<Hub | undefined>(undefined)
     const [selectedProject, setSelectedProject] = useState<Project | undefined>()
     const [selectedFolder, setSelectedFolder] = useState<Folder | undefined>()
@@ -73,19 +80,82 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const cachedFields: MirabufCacheInfo[] = Object.values(MirabufCachingService.GetCacheMap(MiraType.FIELD))
 
     useEffect(() => {
-        fetch("/api/mira/manifest.json")
-            .then(x => x.json())
-            .then(data => {
-                setManifest(data)
-            })
+        (async () => {
+            fetch("/api/mira/manifest.json")
+                .then(x => x.json())
+                .then(x => {
+                    const map = MirabufCachingService.GetCacheMap(MiraType.ROBOT)
+                    const robots: MirabufRemoteInfo[] = []
+                    for (const src of x["robots"]) {
+                        if (typeof src == "string") {
+                            const str = `/api/mira/Robots/${src}`
+                            if (!map[str]) robots.push({ displayName: src, src: str })
+                        } else {
+                            if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
+                        }
+                    }
+                    const fields: MirabufRemoteInfo[] = []
+                    for (const src of x["fields"]) {
+                        if (typeof src == "string") {
+                            const str = `/api/mira/Fields/${src}`
+                            if (!map[str]) fields.push({ displayName: src, src: str })
+                        } else {
+                            if (!map[src["src"]]) fields.push({ displayName: src["displayName"], src: src["src"] })
+                        }
+                    }
+                    setManifest({
+                        robots,
+                        fields
+                    })
+                })
+        })()
     }, [])
+
+    const selectCache = async (info: MirabufCacheInfo, type: MiraType) => {
+        const assembly = await MirabufCachingService.Get(info.id, type)
+
+        if (assembly) {
+            showTooltip("controls", [
+                { control: "WASD", description: "Drive" },
+                { control: "E", description: "Intake" },
+                { control: "Q", description: "Dispense" },
+            ])
+
+            CreateMirabuf(assembly).then(x => {
+                if (x) {
+                    World.SceneRenderer.RegisterSceneObject(x)
+                }
+            })
+
+            if (!info.name)
+                MirabufCachingService.CacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
+        } else {
+            console.error("Failed to spawn robot")
+        }
+
+        closeModal()
+    }
+
+    const selectRemote = async (info: MirabufRemoteInfo, type: MiraType) => {
+        const cacheInfo = await MirabufCachingService.CacheRemote(info.src, type)
+
+        if (!cacheInfo) {
+            console.error("Failed to cache robot")
+            closeModal()
+        } else {
+            selectCache(cacheInfo, type)
+        }
+    }
 
     const cachedRobotElements = cachedRobots.map(info =>
         ItemCard({
             name: info.name || info.cacheKey || "Unnamed Robot",
             id: info.id,
             buttonText: "import",
-            onClick: () => console.log(`Selecting cached robot: ${info.cacheKey}`),
+            onClick: () => {
+                console.log(`Selecting cached robot: ${info.cacheKey}`)
+                selectCache(info, MiraType.ROBOT)
+            },
             secondaryButtonText: "delete",
             secondaryOnClick: () => {
                 console.log(`Deleting cache of: ${info.cacheKey}`)
@@ -98,7 +168,10 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             name: info.name || info.cacheKey || "Unnamed Field",
             id: info.id,
             buttonText: "import",
-            onClick: () => console.log(`Selecting cached field: ${info.cacheKey}`),
+            onClick: () => {
+                console.log(`Selecting cached field: ${info.cacheKey}`)
+                selectCache(info, MiraType.FIELD)
+            },
             secondaryButtonText: "delete",
             secondaryOnClick: () => {
                 console.log(`Deleting cache of: ${info.cacheKey}`)
@@ -109,24 +182,30 @@ const ImportMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
 
     const remoteRobotElements = useMemo(() => {
-        const remoteRobots = manifest?.robots.filter(path => !cachedRobots.some(info => info.cacheKey.includes(path))) ?? []
+        const remoteRobots = manifest?.robots.filter(path => !cachedRobots.some(info => info.cacheKey.includes(path.src))) ?? []
         return remoteRobots.map(path =>
             ItemCard({
-                name: path,
-                id: path,
-                buttonText: "download",
-                onClick: () => console.log(`Selecting remote: ${path}`),
+                name: path.displayName,
+                id: path.src,
+                buttonText: "import",
+                onClick: () => {
+                    console.log(`Selecting remote: ${path}`)
+                    selectRemote(path, MiraType.ROBOT)
+                },
             }))
     }, [manifest?.robots, cachedRobots])
 
     const remoteFieldElements = useMemo(() => {
-        const remoteFields = manifest?.fields.filter(path => !cachedFields.some(info => info.cacheKey.includes(path))) ?? []
+        const remoteFields = manifest?.fields.filter(path => !cachedFields.some(info => info.cacheKey.includes(path.src))) ?? []
         return remoteFields.map(path =>
             ItemCard({
-                name: path,
-                id: path,
-                buttonText: "download",
-                onClick: () => console.log(`Selecting remote: ${path}`),
+                name: path.displayName,
+                id: path.src,
+                buttonText: "import",
+                onClick: () => {
+                    console.log(`Selecting remote: ${path}`)
+                    selectRemote(path, MiraType.FIELD)
+                },
             }))
     }, [manifest?.fields, cachedFields])
 

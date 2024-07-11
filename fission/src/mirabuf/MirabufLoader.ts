@@ -14,6 +14,11 @@ export interface MirabufCacheInfo {
     thumbnailStorageID?: string
 }
 
+export interface MirabufRemoteInfo {
+    displayName: string
+    src: string
+}
+
 type MiraCache = { [id: string]: MirabufCacheInfo }
 
 const robotsDirName = "Robots"
