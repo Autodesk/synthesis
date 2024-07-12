@@ -130,7 +130,9 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
-                        onClick={async () => APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)}
+                        onClick={async () =>
+                            APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
+                        }
                     />
                     <MainHUDButton
                         value={"Expire APS Token"}

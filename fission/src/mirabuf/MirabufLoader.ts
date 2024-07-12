@@ -93,20 +93,20 @@ class MirabufCachingService {
 
     public static async CacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
         if (!data.href) {
-            console.error('Data has no href')
+            console.error("Data has no href")
             return undefined
         }
-        
+
         const map = MirabufCachingService.GetCacheMap(miraType)
         const target = map[data.id]
 
         if (target) {
-            return target;
+            return target
         }
 
         const miraBuff = await downloadData(data)
         if (!miraBuff) {
-            console.error('Failed to download file')
+            console.error("Failed to download file")
             return undefined
         }
 
@@ -238,8 +238,11 @@ class MirabufCachingService {
         try {
             const map = this.GetCacheMap(miraType)
             if (map) {
-                delete map[key];
-                window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
+                delete map[key]
+                window.localStorage.setItem(
+                    miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName,
+                    JSON.stringify(map)
+                )
             }
 
             const dir = miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
@@ -278,7 +281,7 @@ class MirabufCachingService {
         const backupID = Date.now().toString()
         try {
             if (!miraType) {
-                console.log('Double loading')
+                console.log("Double loading")
                 miraType = this.AssemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
             }
 

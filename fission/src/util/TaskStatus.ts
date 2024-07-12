@@ -1,6 +1,6 @@
 interface TaskStatus {
-    isDone: boolean,
-    message: string,
+    isDone: boolean
+    message: string
 }
 
 export default TaskStatus

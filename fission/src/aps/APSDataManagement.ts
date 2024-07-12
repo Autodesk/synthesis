@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MainHUD_AddToast } from "@/ui/components/MainHUD";
+import { MainHUD_AddToast } from "@/ui/components/MainHUD"
 import APS from "./APS"
-import TaskStatus from "@/util/TaskStatus";
-import { Mutex } from "async-mutex";
+import TaskStatus from "@/util/TaskStatus"
+import { Mutex } from "async-mutex"
 
 export const FOLDER_DATA_TYPE = "folders"
 export const ITEM_DATA_TYPE = "items"
 
-let mirabufFiles: Data[] | undefined;
-const mirabufFilesMutex: Mutex = new Mutex();
+let mirabufFiles: Data[] | undefined
+const mirabufFilesMutex: Mutex = new Mutex()
 
 export class APSDataError extends Error {
-    error_code: string;
-    title: string;
-    detail: string;
+    error_code: string
+    title: string
+    detail: string
 
     constructor(error_code: string, title: string, detail: string) {
-        super(title);
-        this.name = "APSDataError";
-        this.error_code = error_code;
-        this.title = title;
-        this.detail = detail;
+        super(title)
+        this.name = "APSDataError"
+        this.error_code = error_code
+        this.title = title
+        this.detail = detail
     }
 }
 
@@ -69,7 +69,7 @@ export class Data {
     constructor(x: any) {
         this.id = x.id
         this.type = x.type
-        this.attributes = x.attributes;
+        this.attributes = x.attributes
 
         this.raw = x
 
@@ -139,9 +139,9 @@ export async function getHubs(): Promise<Hub[] | undefined> {
         console.log(auth)
         console.log(APS.userInfo)
         if (e instanceof APSDataError) {
-            MainHUD_AddToast('error', e.title, e.detail);
+            MainHUD_AddToast("error", e.title, e.detail)
         } else if (e instanceof Error) {
-            MainHUD_AddToast('error', 'Failed to get hubs.', e.message);
+            MainHUD_AddToast("error", "Failed to get hubs.", e.message)
         }
         return undefined
     }
@@ -177,7 +177,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
     } catch (e) {
         console.error("Failed to get hubs")
         if (e instanceof Error) {
-            MainHUD_AddToast('error', 'Failed to get hubs.', e.message);
+            MainHUD_AddToast("error", "Failed to get hubs.", e.message)
         }
         return undefined
     }
@@ -221,14 +221,14 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
     } catch (e) {
         console.error("Failed to get folder data")
         if (e instanceof Error) {
-            MainHUD_AddToast('error', 'Failed to get folder data.', e.message);
+            MainHUD_AddToast("error", "Failed to get folder data.", e.message)
         }
         return undefined
     }
 }
 
 function filterToQuery(filters: Filter[]): string {
-    return filters.map(filter => encodeURIComponent(`filter[${filter.fieldName}]`) + `=${filter.matchValue}`).join('&')
+    return filters.map(filter => encodeURIComponent(`filter[${filter.fieldName}]`) + `=${filter.matchValue}`).join("&")
 }
 
 export async function searchFolder(project: Project, folder: Folder, filters?: Filter[]): Promise<Data[] | undefined> {
@@ -246,15 +246,15 @@ export async function searchFolder(project: Project, folder: Folder, filters?: F
         },
     })
     if (!res.ok) {
-        MainHUD_AddToast('error', 'Error getting cloud files.', 'Please sign in again.');
-        return [];
+        MainHUD_AddToast("error", "Error getting cloud files.", "Please sign in again.")
+        return []
     }
     const json = await res.json()
-    return json.data.map((data: any) => new Data(data));
+    return json.data.map((data: any) => new Data(data))
 }
 
 export async function searchRootForMira(project: Project): Promise<Data[] | undefined> {
-    return searchFolder(project, project.folder, [{ fieldName: 'fileType', matchValue: 'mira' }])
+    return searchFolder(project, project.folder, [{ fieldName: "fileType", matchValue: "mira" }])
 }
 
 export async function downloadData(data: Data): Promise<ArrayBuffer | undefined> {
@@ -280,7 +280,7 @@ export function HasMirabufFiles(): boolean {
 }
 
 export async function RequestMirabufFiles() {
-    console.log('Request')
+    console.log("Request")
 
     if (mirabufFilesMutex.isLocked()) {
         return
@@ -291,7 +291,9 @@ export async function RequestMirabufFiles() {
         if (auth) {
             getHubs().then(async hubs => {
                 if (!hubs) {
-                    window.dispatchEvent(new MirabufFilesStatusUpdateEvent({ isDone: true, message: 'Failed to get Hubs' }))
+                    window.dispatchEvent(
+                        new MirabufFilesStatusUpdateEvent({ isDone: true, message: "Failed to get Hubs" })
+                    )
                     return
                 }
                 const fileData: Data[] = []
@@ -299,12 +301,22 @@ export async function RequestMirabufFiles() {
                     const projects = await getProjects(hub)
                     if (!projects) continue
                     for (const project of projects) {
-                        window.dispatchEvent(new MirabufFilesStatusUpdateEvent({ isDone: false, message: `Searching Project '${project.name}'` }))
+                        window.dispatchEvent(
+                            new MirabufFilesStatusUpdateEvent({
+                                isDone: false,
+                                message: `Searching Project '${project.name}'`,
+                            })
+                        )
                         const data = await searchRootForMira(project)
                         if (data) fileData.push(...data)
                     }
                 }
-                window.dispatchEvent(new MirabufFilesStatusUpdateEvent({ isDone: true, message: `Found ${fileData.length} file${fileData.length == 1 ? '' : 's'}` }))
+                window.dispatchEvent(
+                    new MirabufFilesStatusUpdateEvent({
+                        isDone: true,
+                        message: `Found ${fileData.length} file${fileData.length == 1 ? "" : "s"}`,
+                    })
+                )
                 mirabufFiles = fileData
                 window.dispatchEvent(new MirabufFilesUpdateEvent(mirabufFiles))
             })
@@ -317,27 +329,25 @@ export function GetMirabufFiles(): Data[] | undefined {
 }
 
 export class MirabufFilesUpdateEvent extends Event {
+    public static readonly EVENT_KEY: string = "MirabufFilesUpdateEvent"
 
-    public static readonly EVENT_KEY: string = 'MirabufFilesUpdateEvent'
-
-    public data: Data[];
+    public data: Data[]
 
     public constructor(data: Data[]) {
         super(MirabufFilesUpdateEvent.EVENT_KEY)
-    
+
         this.data = data
     }
 }
 
 export class MirabufFilesStatusUpdateEvent extends Event {
-
-    public static readonly EVENT_KEY: string = 'MirabufFilesStatusUpdateEvent'
+    public static readonly EVENT_KEY: string = "MirabufFilesStatusUpdateEvent"
 
     public status: TaskStatus
 
     public constructor(status: TaskStatus) {
         super(MirabufFilesStatusUpdateEvent.EVENT_KEY)
-    
+
         this.status = status
     }
 }

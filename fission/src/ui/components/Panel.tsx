@@ -144,7 +144,10 @@ const Panel: React.FC<PanelProps> = ({
                     {children}
                 </div>
                 {(cancelEnabled || middleEnabled || acceptEnabled) && (
-                    <div id="footer" className="flex justify-between mx-[2rem] py-[1rem] text-accept-cancel-button-text">
+                    <div
+                        id="footer"
+                        className="flex justify-between mx-[2rem] py-[1rem] text-accept-cancel-button-text"
+                    >
                         {cancelEnabled && (
                             <input
                                 type="button"

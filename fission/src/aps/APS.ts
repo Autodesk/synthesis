@@ -78,7 +78,7 @@ class APS {
         if (!auth) return undefined
 
         if (Date.now() > auth.expires_at) {
-            console.debug('Expired. Refreshing...')
+            console.debug("Expired. Refreshing...")
             await this.refreshAuthToken(auth.refresh_token, false)
         }
         return this.auth
@@ -166,12 +166,12 @@ class APS {
     }
 
     /**
-    * Refreshes the access token using our refresh token.
-    * @param {string} refresh_token - The refresh token from our auth data
-    * 
-    * @returns If the promise returns true, that means the auth token is currently available. If not, it means it
-    *           is not readily available, although one may be in the works
-    */
+     * Refreshes the access token using our refresh token.
+     * @param {string} refresh_token - The refresh token from our auth data
+     *
+     * @returns If the promise returns true, that means the auth token is currently available. If not, it means it
+     *           is not readily available, although one may be in the works
+     */
     static async refreshAuthToken(refresh_token: string, shouldRelog: boolean): Promise<boolean> {
         return this.requestMutex.runExclusive(async () => {
             try {
@@ -198,7 +198,7 @@ class APS {
                         return false
                     }
                 }
-                json.expires_at = (json.expires_in * 1000) + Date.now()
+                json.expires_at = json.expires_in * 1000 + Date.now()
                 this.auth = json as APSAuth
                 if (this.auth) {
                     await this.loadUserInfo(this.auth)
@@ -231,7 +231,7 @@ class APS {
                 return
             }
             const auth_res = json.response as APSAuth
-            auth_res.expires_at = (auth_res.expires_in * 1000) + Date.now()
+            auth_res.expires_at = auth_res.expires_in * 1000 + Date.now()
             this.auth = auth_res
             console.log("Preloading user info")
             const auth = await this.getAuth()
