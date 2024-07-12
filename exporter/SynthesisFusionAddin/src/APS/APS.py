@@ -10,6 +10,7 @@ from dataclasses import dataclass
 
 from ..general_imports import (
     APP_NAME,
+    APS_AUTH,
     DESCRIPTION,
     INTERNAL_ID,
     gm,
@@ -20,7 +21,6 @@ from ..general_imports import (
 CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
 
-APS_AUTH = None
 APS_USER_INFO = None
 
 @dataclass
@@ -64,7 +64,7 @@ def getCodeChallenge() -> str | None:
     return data["challenge"]
 
 
-def getAuth() -> APSAuth:
+def getAuth() -> APSAuth | None:
     curr_time = int(time.time() * 1000)
     global APS_AUTH
     if APS_AUTH is not None:
@@ -80,7 +80,9 @@ def getAuth() -> APSAuth:
                 token_type=p["token_type"],
             )
     except:
-        raise Exception("Need to sign in!")
+        gm.ui.messageBox("Need to sign in!")
+        return None
+         
     if curr_time >= APS_AUTH.expires_at:
         refreshAuthToken()
     if APS_USER_INFO is None:
@@ -97,7 +99,7 @@ def convertAuthToken(code: str):
         access_token=data["access_token"],
         refresh_token=data["refresh_token"],
         expires_in=data["expires_in"],
-        expires_at=int(data["expires_in"] * 1000),
+        expires_at=int(curr_time + data["expires_in"] * 1000),
         token_type=data["token_type"],
     )
     with open(auth_path, "wb") as f:
@@ -136,7 +138,7 @@ def refreshAuthToken():
             access_token=data["access_token"],
             refresh_token=data["refresh_token"],
             expires_in=data["expires_in"],
-            expires_at=int(data["expires_in"] * 1000),
+            expires_at=int(curr_time + data["expires_in"] * 1000),
             token_type=data["token_type"],
         )
     except urllib.request.HTTPError as e:
