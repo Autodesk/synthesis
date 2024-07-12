@@ -14,6 +14,7 @@ import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 import { EjectorPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { MiraType } from "./MirabufLoader"
 
 const DEBUG_BODIES = true
 
@@ -55,6 +56,10 @@ class MirabufSceneObject extends SceneObject {
 
     get ejectorPreferences() {
         return this._ejectorPreferences
+    }
+
+    public get miraType(): MiraType {
+        return this._mirabufInstance.parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD
     }
 
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {

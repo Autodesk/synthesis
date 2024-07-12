@@ -18,7 +18,6 @@ function SelectNode(e: MouseEvent) {
     const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
 
     if (res) {
-        console.log(res)
         const body = World.PhysicsSystem.GetBody(res.data.mBodyID)
         if (!body.IsDynamic()) {
             return null
@@ -33,7 +32,7 @@ type SelectButtonProps = {
     colorClass?: string
     size?: ButtonSize
     placeholder?: string
-    onSelect?: (value: Jolt.Body) => void
+    onSelect?: (value: Jolt.Body) => boolean
     className?: string
 }
 
@@ -44,11 +43,15 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
 
     const onReceiveSelection = useCallback(
         (value: Jolt.Body) => {
-            // TODO remove this when communication works
-            clearTimeout(timeoutRef.current)
-            setValue("Node")
-            setSelecting(false)
-            if (onSelect) onSelect(value)
+            if (onSelect) {
+                if (onSelect(value)) {
+                    setValue("Node")
+                    clearTimeout(timeoutRef.current)
+                    setSelecting(false)
+                } else {
+                    setSelecting(true)
+                }
+            }
         },
         [setValue, setSelecting, onSelect]
     )

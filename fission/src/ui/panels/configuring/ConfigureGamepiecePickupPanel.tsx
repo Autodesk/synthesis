@@ -11,6 +11,7 @@ import Label from "@/ui/components/Label"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Button from "@/ui/components/Button"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -123,12 +124,28 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
     const listRobots = (): MirabufSceneObject[] => {
         // filtering out robots that are not dynamic and not MirabufSceneObjects
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
-            return (
-                x instanceof MirabufSceneObject &&
-                World.PhysicsSystem.GetBody((x as MirabufSceneObject).GetRootNodeId()!).IsDynamic()
-            )
+            if (x instanceof MirabufSceneObject) {
+                return x.miraType === MiraType.ROBOT
+            }
+            return false
         }) as MirabufSceneObject[]
         return assemblies
+    }
+
+    /**
+     * Checks if the body is a child of the selected MirabufSceneObject
+     *
+     * @param body The Jolt body to check if it is a child of the selected robot
+     */
+    const checkSelectedNode = (body: Jolt.Body): boolean => {
+        let returnValue = false
+        selectedRobot?.mirabufInstance?.parser.rigidNodes.forEach(rn => {
+            if (World.PhysicsSystem.GetBody(selectedRobot.mechanism.GetBodyByNodeId(rn.id)!).GetID() === body.GetID()) {
+                bodyAttachmentRef.current = body
+                returnValue = true
+            }
+        })
+        return returnValue
     }
 
     useEffect(() => {
@@ -175,7 +192,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                     {/* Button for user to select pickup node */}
                     <SelectButton
                         placeholder="Select pickup node"
-                        onSelect={(body: Jolt.Body) => (bodyAttachmentRef.current = body)}
+                        onSelect={(body: Jolt.Body) => checkSelectedNode(body)}
                     />
 
                     {/* Slider for user to set size of pickup configuration */}
