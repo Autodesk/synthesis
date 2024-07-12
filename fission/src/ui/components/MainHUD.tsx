@@ -110,11 +110,7 @@ const MainHUD: React.FC = () => {
                         icon={<IoGameControllerOutline />}
                         onClick={() => openModal("change-inputs")}
                     />
-                    <MainHUDButton
-                        value={"MultiBot"}
-                        icon={<IoPeople />}
-                        onClick={() => openPanel("multibot")}
-                    />
+                    <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
                     <MainHUDButton
                         value={"Import Local Mira"}
                         icon={<IoPeople />}
