@@ -12,6 +12,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Button from "@/ui/components/Button"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -77,15 +78,15 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         if (scale == undefined || position == undefined) return
 
         selectedRobot.intakePreferences.diameter = scale.x
-        selectedRobot.intakePreferences.rotation = calculateRobotAngle()
+        const theta = calculateRobotAngle()
 
         // resetting the position of the pickup node in relation to the robot at the default position it faces
         const calculatedX =
-            Math.cos(selectedRobot.intakePreferences.rotation) * (position.x - robotPosition.GetX()) -
-            Math.sin(selectedRobot.intakePreferences.rotation) * (position.z - robotPosition.GetZ())
+            Math.cos(theta) * (position.x - robotPosition.GetX()) -
+            Math.sin(theta) * (position.z - robotPosition.GetZ())
         const calculatedZ =
-            Math.sin(selectedRobot.intakePreferences.rotation) * (position.x - robotPosition.GetX()) +
-            Math.cos(selectedRobot.intakePreferences.rotation) * (position.z - robotPosition.GetZ())
+            Math.sin(theta) * (position.x - robotPosition.GetX()) +
+            Math.cos(theta) * (position.z - robotPosition.GetZ())
 
         selectedRobot.intakePreferences.position = [calculatedX, position.y - robotPosition.GetY(), calculatedZ]
         selectedRobot.intakePreferences.parentBody = bodyAttachmentRef.current
@@ -97,24 +98,11 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
      * @returns The angle of the robot in radians
      */
     const calculateRobotAngle = (): number => {
-        const robotRotation = World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!)
-            .GetRotation()
-            .GetEulerAngles()
-        const robotRotationY = robotRotation.GetY()
-        const robotRotationZ = Math.abs(robotRotation.GetZ())
-
-        if (robotRotationY > 0 && robotRotationZ < 2) {
-            // if the robot is between 0 - pi/2 rotation on a cartesian plane
-            return robotRotationY
-        } else if (robotRotationY > 0 && robotRotationZ > 2) {
-            // if the robot is between pi/2 - pi rotation
-            return Math.PI - robotRotationY
-        } else if (robotRotationY < 0 && robotRotationZ > 2) {
-            // if the robot is between pi - 3pi/2 rotation
-            return Math.PI - robotRotationY
+        const robotRotation = World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!).GetRotation().GetRotationAngle(new JOLT.Vec3(0, 1, 0)) // getting the rotation of the robot on the Y axis
+        if (robotRotation > 0) {
+            return robotRotation
         } else {
-            // if the robot is between 3pi/2 - 2pi rotation
-            return 2 * Math.PI + robotRotationY
+            return 2 * Math.PI + robotRotation
         }
     }
 
