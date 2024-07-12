@@ -75,7 +75,7 @@ function Synthesis() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
-    const { currentTheme, applyTheme } = useTheme()
+    const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
     useEffect(() => {
         applyTheme(currentTheme)
@@ -128,6 +128,9 @@ function Synthesis() {
             World.UpdateWorld()
         }
         mainLoop()
+
+        World.SceneRenderer.updateSkyboxColors(defaultTheme)
+
         // Cleanup
         return () => {
             // TODO: Teardown literally everything

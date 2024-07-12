@@ -13,7 +13,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 
-const DEBUG_BODIES = true
+const DEBUG_BODIES = false
 
 interface RnDebugMeshes {
     colliderMesh: THREE.Mesh
