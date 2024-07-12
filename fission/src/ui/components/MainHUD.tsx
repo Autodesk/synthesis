@@ -95,7 +95,7 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={<FaPlus />}
                     larger={true}
-                    onClick={() => openModal("spawning")}
+                    onClick={() => openPanel("import-mirabuf")}
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -110,11 +110,10 @@ const MainHUD: React.FC = () => {
                         icon={<IoGameControllerOutline />}
                         onClick={() => openModal("change-inputs")}
                     />
-                    <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
                     <MainHUDButton
-                        value={"Import Mira"}
+                        value={"MultiBot"}
                         icon={<IoPeople />}
-                        onClick={() => openPanel("import-mirabuf")}
+                        onClick={() => openPanel("multibot")}
                     />
                     <MainHUDButton
                         value={"Import Local Mira"}

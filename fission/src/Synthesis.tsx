@@ -211,7 +211,7 @@ const initialModals = [
     <MatchModeModal modalId="match-mode" />,
     <SpawningModal modalId="spawning" />,
     <ConfigMotorModal modalId="config-motor" />,
-    <ManageAssembliesModal modalId="manage-assembles" />,
+    <ManageAssembliesModal modalId="manage-assemblies" />,
     <ImportLocalMirabufModal modalId="import-local-mirabuf" />,
 ]
 
