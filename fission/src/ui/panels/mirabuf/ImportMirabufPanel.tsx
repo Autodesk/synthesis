@@ -181,7 +181,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     // Get Default Mirabuf Data, Load into manifest.
     useEffect(() => {
-        ;(async () => {
+        (async () => {
             fetch(`/api/mira/manifest.json`)
                 .then(x => x.json())
                 .then(x => {
