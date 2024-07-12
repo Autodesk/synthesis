@@ -39,7 +39,6 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
             transformGizmoRef.current.CreateGizmo("rotate", 2.0)
         }
 
-        
         const robotPosition = World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetPosition()
         const theta = calculateRobotAngle()
 
@@ -67,10 +66,10 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
 
         // setting the rotation of the mesh in relation to the robot
         // transformGizmoRef.current?.mesh.rotateY(calculateRobotAngle() - selectedRobot.ejectorPreferences.relativeRotation)
-        const rotation = ThreeQuaternion_JoltQuat(transformGizmoRef.current!.mesh.quaternion)
+        // const rotation = ThreeQuaternion_JoltQuat(transformGizmoRef.current!.mesh.quaternion)
         // rotation.SetY(calculateMeshAngle() - selectedRobot.ejectorPreferences.relativeRotation)
-        rotation.SetY(Math.PI)
-        transformGizmoRef.current?.mesh.rotation.setFromQuaternion(JoltQuat_ThreeQuaternion(rotation))
+        // rotation.SetY(Math.PI)
+        // transformGizmoRef.current?.mesh.rotation.setFromQuaternion(JoltQuat_ThreeQuaternion(rotation))
     }
 
     // Saves zone preferences to local storage
@@ -92,11 +91,9 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
             Math.sin(theta) * (position.x - robotPosition.GetX()) +
             Math.cos(theta) * (position.z - robotPosition.GetZ())
 
-
         selectedRobot.ejectorPreferences.position = [calculatedX, position.y - robotPosition.GetY(), calculatedZ]
         selectedRobot.ejectorPreferences.direction = [direction.x, direction.y, direction.z, direction.w]
         selectedRobot.ejectorPreferences.relativeRotation = theta
-        console.log(selectedRobot.ejectorPreferences.relativeRotation)
 
         selectedRobot.ejectorPreferences.parentBody = bodyAttachmentRef.current
 
@@ -107,7 +104,9 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
      * @returns The angle of the robot in radians
      */
     const calculateRobotAngle = (): number => {
-        const robotRotation = World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!).GetRotation().GetRotationAngle(new JOLT.Vec3(0, 1, 0)) // getting the rotation of the robot on the Y axis
+        const robotRotation = World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!)
+            .GetRotation()
+            .GetRotationAngle(new JOLT.Vec3(0, 1, 0)) // getting the rotation of the robot on the Y axis
         if (robotRotation > 0) {
             return robotRotation
         } else {
@@ -116,7 +115,9 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
     }
 
     const calculateMeshAngle = (): number => {
-        const meshRotation = ThreeQuaternion_JoltQuat(transformGizmoRef.current!.mesh.quaternion).GetRotationAngle(new JOLT.Vec3(0, 1, 0))
+        const meshRotation = ThreeQuaternion_JoltQuat(transformGizmoRef.current!.mesh.quaternion).GetRotationAngle(
+            new JOLT.Vec3(0, 1, 0)
+        )
         if (meshRotation > 0) {
             return meshRotation
         } else {
@@ -153,7 +154,6 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
         })
         return returnValue
     }
-
 
     useEffect(() => {
         setupGizmo()
@@ -210,9 +210,9 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                         label="Velocity"
                         format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                         onChange={(vel: number) => {
-                          if (selectedRobot.ejectorPreferences) {
-                            selectedRobot.ejectorPreferences.ejectorVelocity = vel;
-                          }
+                            if (selectedRobot.ejectorPreferences) {
+                                selectedRobot.ejectorPreferences.ejectorVelocity = vel
+                            }
                         }}
                         step={0.01}
                     />

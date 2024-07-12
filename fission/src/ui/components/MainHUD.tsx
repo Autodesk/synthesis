@@ -102,7 +102,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Manage Assemblies"}
                         icon={<FaGear />}
-                        onClick={() => openModal("manage-assembles")}
+                        onClick={() => openModal("manage-assemblies")}
                     />
                     <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
                     <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />

@@ -98,7 +98,9 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
      * @returns The angle of the robot in radians
      */
     const calculateRobotAngle = (): number => {
-        const robotRotation = World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!).GetRotation().GetRotationAngle(new JOLT.Vec3(0, 1, 0)) // getting the rotation of the robot on the Y axis
+        const robotRotation = World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!)
+            .GetRotation()
+            .GetRotationAngle(new JOLT.Vec3(0, 1, 0)) // getting the rotation of the robot on the Y axis
         if (robotRotation > 0) {
             return robotRotation
         } else {

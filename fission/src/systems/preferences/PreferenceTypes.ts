@@ -69,7 +69,13 @@ export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
         intake: { position: [0, 0, 0], diameter: 1, parentBody: undefined },
-        ejector: { position: [0, 0, 0], direction: [0, 0, 0, 0], relativeRotation: 0, ejectorVelocity: 1, parentBody: undefined },
+        ejector: {
+            position: [0, 0, 0],
+            direction: [0, 0, 0, 0],
+            relativeRotation: 0,
+            ejectorVelocity: 1,
+            parentBody: undefined,
+        },
     }
 }
 
