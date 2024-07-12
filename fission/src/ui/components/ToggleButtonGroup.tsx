@@ -8,6 +8,8 @@ import { colorNameToVar } from "../ThemeContext";
 export const ToggleButton = styled(ToggleButtonMUI)({
     // backgroundColor: "white"
     borderColor: "none",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
     color: "white",
     "&.Mui-selected": {
         color: "white",
@@ -17,5 +19,7 @@ export const ToggleButton = styled(ToggleButtonMUI)({
 
 export const ToggleButtonGroup = styled(ToggleButtonGroupMUI)({
     backgroundColor: colorNameToVar("Background"),
+    fontFamily: "Artifakt",
+    fontWeight: 700,
     width: "fit-content"
 })

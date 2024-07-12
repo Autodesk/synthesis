@@ -1,3 +1,4 @@
+import { Data, downloadData } from "@/aps/APSDataManagement"
 import { mirabuf } from "@/proto/mirabuf"
 import Pako from "pako"
 
@@ -88,6 +89,28 @@ class MirabufCachingService {
             .then(x => x.blob())
             .then(x => x.arrayBuffer())
         return await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
+    }
+
+    public static async CacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
+        if (!data.href) {
+            console.error('Data has no href')
+            return undefined
+        }
+        
+        const map = MirabufCachingService.GetCacheMap(miraType)
+        const target = map[data.id]
+
+        if (target) {
+            return target;
+        }
+
+        const miraBuff = await downloadData(data)
+        if (!miraBuff) {
+            console.error('Failed to download file')
+            return undefined
+        }
+
+        return await MirabufCachingService.StoreInCache(data.id, miraBuff, miraType)
     }
 
     /**

@@ -1,13 +1,11 @@
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react"
 import Label, { LabelSize } from "@/components/Label"
-import { Data, getHubs, getProjects, searchRootForMira } from "@/aps/APSDataManagement"
+import { Data, GetMirabufFiles, HasMirabufFiles, MirabufFilesStatusUpdateEvent, MirabufFilesUpdateEvent, RequestMirabufFiles } from "@/aps/APSDataManagement"
 import MirabufCachingService, { MirabufCacheInfo, MirabufRemoteInfo, MiraType } from "@/mirabuf/MirabufLoader"
-import APS from "@/aps/APS"
 import World from "@/systems/World"
-import { useModalControlContext } from "@/ui/ModalContext"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { Box, styled } from "@mui/material"
+import { Box, Divider, styled } from "@mui/material"
 import { HiDownload } from "react-icons/hi"
 import Button, { ButtonProps, ButtonSize } from "@/ui/components/Button"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
@@ -15,18 +13,21 @@ import { IoTrashBin } from "react-icons/io5"
 import { AiOutlinePlus } from "react-icons/ai"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { usePanelControlContext } from "@/ui/PanelContext"
+import TaskStatus from "@/util/TaskStatus"
+import { BiRefresh } from "react-icons/bi"
 
 const DownloadIcon = (<HiDownload size={"1.25rem"} />)
 const AddIcon = (<AiOutlinePlus size={"1.25rem"} />)
 const DeleteIcon = (<IoTrashBin size={"1.25rem"} />)
-
-interface TaskStatus {
-    isDone: boolean,
-    message: string,
-}
+const RefreshIcon = (<BiRefresh size={"1.25rem"} />)
 
 const LabelStyled = styled(Label)({
-    fontWeight: 700
+    fontWeight: 700,
+    margin: "0pt",
+})
+
+const DividerStyled = styled(Divider)({
+    borderColor: "white"
 })
 
 const ButtonPrimary: React.FC<ButtonProps> = ({ value, onClick }) => {
@@ -47,6 +48,17 @@ const ButtonSecondary: React.FC<ButtonProps> = ({ value, onClick }) => {
             value={value}
             onClick={onClick}
             colorOverrideClass="bg-cancel-button hover:brightness-90"
+        ></Button>
+    )
+}
+
+const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick }) => {
+    return (
+        <Button
+            value={value}
+            onClick={onClick}
+            colorOverrideClass="bg-[#00000000] hover:brightness-90"
+            sizeOverrideClass="p-[0.25rem]"
         ></Button>
     )
 }
@@ -130,39 +142,37 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(GetCacheInfo(MiraType.FIELD))
 
-
     const [manifest, setManifest] = useState<MiraManifest | undefined>()
-    const [files, setFiles] = useState<Data[] | undefined>()
-    const [apsFilesState, setApsFilesState] = useState<TaskStatus>({ isDone: false, message: 'Retrieving APS Hubs...' })
-    const auth = useMemo(async () => await APS.getAuth(), [])
-
     const [viewType, setViewType] = useState<MiraType>(MiraType.ROBOT)
 
-    // Get APS Mirabuf Data, Load into files.
+    const [filesStatus, setFilesStatus] = useState<TaskStatus>({ isDone: false, message: "Waiting on APS..." })
+    const [files, setFiles] = useState<Data[] | undefined>(undefined)
+
     useEffect(() => {
-        (async () => {
-            if (await auth) {
-                getHubs().then(async hubs => {
-                    if (!hubs) {
-                        setApsFilesState({ isDone: true, message: 'Failed to load APS Hubs' })
-                        return
-                    }
-                    const fileData: Data[] = []
-                    for (const hub of hubs) {
-                        const projects = await getProjects(hub)
-                        if (!projects) continue
-                        for (const project of projects) {
-                            setApsFilesState({ isDone: false, message: `Searching Project '${project.name}'` })
-                            const data = await searchRootForMira(project)
-                            if (data) fileData.push(...data)
-                        }
-                    }
-                    setApsFilesState({ isDone: true, message: `Found ${fileData.length} file${fileData.length == 1 ? '' : 's'}` })
-                    setFiles(fileData)
-                })
-            }
-        })()
-    }, [auth])
+        const updateFilesStatus = (e: Event) => {
+            setFilesStatus((e as MirabufFilesStatusUpdateEvent).status)
+        }
+
+        const updateFiles = (e: Event) => {
+            setFiles((e as MirabufFilesUpdateEvent).data)
+        }
+
+        window.addEventListener(MirabufFilesStatusUpdateEvent.EVENT_KEY, updateFilesStatus)
+        window.addEventListener(MirabufFilesUpdateEvent.EVENT_KEY, updateFiles)
+
+        return () => {
+            window.removeEventListener(MirabufFilesStatusUpdateEvent.EVENT_KEY, updateFilesStatus)
+            window.removeEventListener(MirabufFilesUpdateEvent.EVENT_KEY, updateFiles)
+        }
+    })
+
+    useEffect(() => {
+        if (!HasMirabufFiles()) {
+            RequestMirabufFiles()
+        } else {
+            setFiles(GetMirabufFiles())
+        }
+    }, [])
 
     // Get Default Mirabuf Data, Load into manifest.
     useEffect(() => {
@@ -213,6 +223,14 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Cache a selected remote mirabuf assembly, load from cache.
     const selectRemote = useCallback((info: MirabufRemoteInfo, type: MiraType) => {
         MirabufCachingService.CacheRemote(info.src, type).then(cacheInfo => {
+            cacheInfo && SpawnCachedMira(cacheInfo, type)
+        })
+
+        closePanel(panelId)
+    }, [closePanel, panelId])
+
+    const selectAPS = useCallback((data: Data, type: MiraType) => {
+        MirabufCachingService.CacheAPS(data, type).then(cacheInfo => {
             cacheInfo && SpawnCachedMira(cacheInfo, type)
         })
 
@@ -298,15 +316,11 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             id: file.id,
             primaryButtonNode: DownloadIcon,
             primaryOnClick: () => {
-                if (file.href) {
-                    selectRemote({ src: file.href, displayName: file.attributes.displayName ?? file.id }, viewType)
-                } else {
-                    console.error('No href for file')
-                    console.debug(file.raw)
-                }
+                console.debug(file.raw)
+                selectAPS(file, viewType)
             }
         })
-    ), [files, selectRemote, viewType])
+    ), [files, selectAPS, viewType])
 
     return (
         <Panel
@@ -317,30 +331,6 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             cancelName="Back"
             openLocation="right"
         >
-            {/* <div className="w-full flex flex-col items-center">
-                {selectedHub ? (
-                    selectedFolder ? (
-                        <>
-                            <Label size={LabelSize.Medium}>Folder: {selectedFolder.displayName}</Label>
-                            <Button value="back to project root" onClick={() => setSelectedFolder(undefined)} />
-                        </>
-                    ) : selectedProject ? (
-                        <>
-                            <Label size={LabelSize.Medium}>Project: {selectedProject.name}</Label>
-                            <Button value="back to projects" onClick={() => setSelectedProject(undefined)} />
-                        </>
-                    ) : (
-                        <>
-                            <Label size={LabelSize.Medium}>Hub: {selectedHub.name}</Label>
-                            <Button value="back to hubs" onClick={() => setSelectedHub(undefined)} />
-                        </>
-                    )
-                ) : APS.userInfo ? (
-                    <></>
-                ) : (
-                    <Button value={"Sign In to APS"} onClick={() => APS.requestAuthCode()} />
-                )}
-            </div> */}
             <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
                 <ToggleButtonGroup
                     value={viewType}
@@ -357,47 +347,69 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     viewType == MiraType.ROBOT
                         ?
                         (<>
-                            <LabelStyled size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                            <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 {cachedRobotElements
                                     ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length == 1 ? "" : "s"}`
                                     : "Loading Saved Robots"}
                             </LabelStyled>
+                            <DividerStyled />
                             {cachedRobotElements}
                         </>)
                         :
                         (<>
-                            <LabelStyled size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                            <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 {cachedFieldElements
                                     ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
                                     : "Loading Saved Fields"}
                             </LabelStyled>
+                            <DividerStyled />
                             {cachedFieldElements}
                         </>)
                 }
-                <LabelStyled size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
-                    {hubElements
-                        ? `${hubElements.length} Remote Asset${hubElements.length == 1 ? "" : "s"}`
-                        : apsFilesState.message}
-                </LabelStyled>
+               <Box
+                    component={"div"}
+                    display={"flex"}
+                    key={`remote-label-container`}
+                    flexDirection={"row"}
+                    gap={"0.25rem"}
+                    justifyContent={"center"}
+                    alignItems={"center"}
+                >
+                    <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        {hubElements
+                            ? `${hubElements.length} Remote Asset${hubElements.length == 1 ? "" : "s"}`
+                            : filesStatus.message}
+                    </LabelStyled>
+                    {
+                        hubElements && filesStatus.isDone
+                        ?
+                            (<ButtonIcon value={RefreshIcon} onClick={() => RequestMirabufFiles()} />)
+                        :
+                            (<></>)
+                    }
+                </Box>
+                <DividerStyled />
                 {hubElements}
                 {
                     viewType == MiraType.ROBOT
                         ?
                         (<>
-                            <LabelStyled size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                            <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 {remoteRobotElements
                                     ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length == 1 ? "" : "s"}`
                                     : "Loading Default Robots"}
                             </LabelStyled>
+                            <DividerStyled />
                             {remoteRobotElements}
                         </>)
                         :
                         (<>
-                            <LabelStyled size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
+                            <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 {remoteFieldElements
                                     ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length == 1 ? "" : "s"}`
                                     : "Loading Default Fields"}
                             </LabelStyled>
+                            <DividerStyled />
                             {remoteFieldElements}
                         </>)
                 }

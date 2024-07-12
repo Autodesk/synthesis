@@ -1,9 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { MainHUD_AddToast } from "@/ui/components/MainHUD";
 import APS from "./APS"
+import TaskStatus from "@/util/TaskStatus";
+import { Mutex } from "async-mutex";
 
 export const FOLDER_DATA_TYPE = "folders"
 export const ITEM_DATA_TYPE = "items"
+
+let mirabufFiles: Data[] | undefined;
+const mirabufFilesMutex: Mutex = new Mutex();
 
 export class APSDataError extends Error {
     error_code: string;
@@ -250,4 +255,89 @@ export async function searchFolder(project: Project, folder: Folder, filters?: F
 
 export async function searchRootForMira(project: Project): Promise<Data[] | undefined> {
     return searchFolder(project, project.folder, [{ fieldName: 'fileType', matchValue: 'mira' }])
+}
+
+export async function downloadData(data: Data): Promise<ArrayBuffer | undefined> {
+    if (!data.href) {
+        return undefined
+    }
+
+    const auth = await APS.getAuth()
+    if (!auth) {
+        return undefined
+    }
+
+    return await fetch(data.href, {
+        method: "GET",
+        headers: {
+            Authorization: `Bearer ${auth.access_token}`,
+        },
+    }).then(x => x.arrayBuffer())
+}
+
+export function HasMirabufFiles(): boolean {
+    return mirabufFiles != undefined
+}
+
+export async function RequestMirabufFiles() {
+    console.log('Request')
+
+    if (mirabufFilesMutex.isLocked()) {
+        return
+    }
+
+    mirabufFilesMutex.runExclusive(async () => {
+        const auth = await APS.getAuth()
+        if (auth) {
+            getHubs().then(async hubs => {
+                if (!hubs) {
+                    window.dispatchEvent(new MirabufFilesStatusUpdateEvent({ isDone: true, message: 'Failed to get Hubs' }))
+                    return
+                }
+                const fileData: Data[] = []
+                for (const hub of hubs) {
+                    const projects = await getProjects(hub)
+                    if (!projects) continue
+                    for (const project of projects) {
+                        window.dispatchEvent(new MirabufFilesStatusUpdateEvent({ isDone: false, message: `Searching Project '${project.name}'` }))
+                        const data = await searchRootForMira(project)
+                        if (data) fileData.push(...data)
+                    }
+                }
+                window.dispatchEvent(new MirabufFilesStatusUpdateEvent({ isDone: true, message: `Found ${fileData.length} file${fileData.length == 1 ? '' : 's'}` }))
+                mirabufFiles = fileData
+                window.dispatchEvent(new MirabufFilesUpdateEvent(mirabufFiles))
+            })
+        }
+    })
+}
+
+export function GetMirabufFiles(): Data[] | undefined {
+    return mirabufFiles
+}
+
+export class MirabufFilesUpdateEvent extends Event {
+
+    public static readonly EVENT_KEY: string = 'MirabufFilesUpdateEvent'
+
+    public data: Data[];
+
+    public constructor(data: Data[]) {
+        super(MirabufFilesUpdateEvent.EVENT_KEY)
+    
+        this.data = data
+    }
+}
+
+export class MirabufFilesStatusUpdateEvent extends Event {
+
+    public static readonly EVENT_KEY: string = 'MirabufFilesStatusUpdateEvent'
+
+    public status: TaskStatus
+
+    public constructor(status: TaskStatus) {
+        super(MirabufFilesStatusUpdateEvent.EVENT_KEY)
+    
+        this.status = status
+    }
 }
