@@ -21,7 +21,7 @@ def _MapAllPhysicalMaterials(
     options: ExporterOptions,
     progressDialog: PDMessage,
 ) -> None:
-    setDefaultMaterial(materials.physicalMaterials["default"])
+    setDefaultMaterial(materials.physicalMaterials["default"], options)
 
     for material in physicalMaterials:
         progressDialog.addMaterial(material.name)
