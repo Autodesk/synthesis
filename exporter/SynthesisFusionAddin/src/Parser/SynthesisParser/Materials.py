@@ -8,7 +8,7 @@ import adsk
 from proto.proto_out import material_pb2
 
 from ...general_imports import INTERNAL_ID
-from .. import ExporterOptions
+from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
 from .Utilities import *
 
@@ -33,12 +33,16 @@ def _MapAllPhysicalMaterials(
         getPhysicalMaterialData(material, newmaterial, options)
 
 
-def setDefaultMaterial(physical_material: material_pb2.PhysicalMaterial):
+def setDefaultMaterial(physical_material: material_pb2.PhysicalMaterial, options: ExporterOptions):
     construct_info("default", physical_material)
 
     physical_material.description = "A default physical material"
-    physical_material.dynamic_friction = 0.5
-    physical_material.static_friction = 0.5
+    if options.frictionOverride:
+        physical_material.dynamic_friction = options.frictionOverrideCoeff
+        physical_material.static_friction = options.frictionOverrideCoeff
+    else:
+        physical_material.dynamic_friction = 0.5
+        physical_material.static_friction = 0.5
     physical_material.restitution = 0.5
     physical_material.deformable = False
 
