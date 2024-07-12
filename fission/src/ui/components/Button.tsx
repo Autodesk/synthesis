@@ -1,4 +1,4 @@
-import React from "react"
+import React, { ReactNode } from "react"
 import { Button as BaseButton } from "@mui/base/Button"
 
 export enum ButtonSize {
@@ -8,8 +8,8 @@ export enum ButtonSize {
     XL,
 }
 
-type ButtonProps = {
-    value: string
+export type ButtonProps = {
+    value: ReactNode
     colorOverrideClass?: string
     size?: ButtonSize
     onClick?: () => void
@@ -23,10 +23,10 @@ const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, size, onClic
 
     switch (size) {
         case ButtonSize.Small:
-            sizeClassNames = "px-2 py-1"
+            sizeClassNames = "px-4 py-1"
             break
         case ButtonSize.Medium:
-            sizeClassNames = "px-4 py-1"
+            sizeClassNames = "px-6 py-1.5"
             break
         case ButtonSize.Large:
             sizeClassNames = "px-8 py-2"
@@ -43,7 +43,7 @@ const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, size, onClic
                 colorOverrideClass
                     ? colorOverrideClass
                     : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
-            } w-full h-full ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 focus:outline-0 ${
+            } w-fit h-fit ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 focus:outline-0 ${
                 className || ""
             }`}
         >

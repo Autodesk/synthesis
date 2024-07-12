@@ -52,11 +52,11 @@ import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
-import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import APS from "./aps/APS.ts"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import Skybox from './ui/components/Skybox.tsx';
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -202,7 +202,6 @@ const initialModals = [
     <SpawningModal modalId="spawning" />,
     <ConfigMotorModal modalId="config-motor" />,
     <ManageAssembliesModal modalId="manage-assembles" />,
-    <ImportMirabufModal modalId="import-mirabuf" />,
     <ImportLocalMirabufModal modalId="import-local-mirabuf" />,
 ]
 
@@ -215,6 +214,7 @@ const initialPanels: ReactElement[] = [
     <ConfigureShotTrajectoryPanel panelId="config-shot-trajectory" />,
     <ScoringZonesPanel panelId="scoring-zones" />,
     <ZoneConfigPanel panelId="zone-config" />,
+    <ImportMirabufPanel panelId="import-mirabuf" />,
 ]
 
 export default Synthesis

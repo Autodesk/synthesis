@@ -56,7 +56,7 @@ const Modal: React.FC<ModalProps> = ({
             <div
                 id={modalId}
                 key={modalId}
-                className={`${className} backdrop-blur-[4px] absolute w-fit h-fit left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
+                className={`${className} flex flex-col absolute max-w-[98vw] max-h-[90vh] w-fit h-fit left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
             >
                 {name && (
                     <div id="header" className="flex items-center gap-8 h-16">
@@ -70,7 +70,7 @@ const Modal: React.FC<ModalProps> = ({
                     id="content"
                     className={`${contentClassName} ${
                         !contentClassName?.includes("mx") ? "mx-16" : ""
-                    } flex flex-col gap-4`}
+                    } flex overflow-y-auto flex-col h-fit gap-4`}
                 >
                     {children}
                 </div>

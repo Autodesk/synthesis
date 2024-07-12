@@ -57,11 +57,18 @@ export class Data {
     id: string
     type: string
     attributes: DataAttributes
+    href: string | undefined
+
+    raw: any
 
     constructor(x: any) {
         this.id = x.id
         this.type = x.type
         this.attributes = x.attributes;
+
+        this.raw = x
+
+        this.href = x.relationships?.storage?.meta?.link?.href
     }
 }
 
@@ -99,7 +106,7 @@ export class Item extends Data {
 }
 
 export async function getHubs(): Promise<Hub[] | undefined> {
-    const auth = APS.getAuth()
+    const auth = await APS.getAuth()
     if (!auth) {
         return undefined
     }
@@ -113,7 +120,7 @@ export async function getHubs(): Promise<Hub[] | undefined> {
         })
             .then(x => x.json())
             .then(x => {
-                if ((x.data as any[]).length > 0) {
+                if ((x.data as any[] | undefined)?.length ?? 0 > 0) {
                     return (x.data as any[]).map<Hub>(y => {
                         return { id: y.id, name: y.attributes.name }
                     })
@@ -136,7 +143,7 @@ export async function getHubs(): Promise<Hub[] | undefined> {
 }
 
 export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
-    const auth = APS.getAuth()
+    const auth = await APS.getAuth()
     if (!auth) {
         return undefined
     }
@@ -172,7 +179,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
 }
 
 export async function getFolderData(project: Project, folder: Folder): Promise<Data[] | undefined> {
-    const auth = APS.getAuth()
+    const auth = await APS.getAuth()
     if (!auth) {
         return undefined
     }
@@ -220,7 +227,7 @@ function filterToQuery(filters: Filter[]): string {
 }
 
 export async function searchFolder(project: Project, folder: Folder, filters?: Filter[]): Promise<Data[] | undefined> {
-    const auth = APS.getAuth()
+    const auth = await APS.getAuth()
     if (!auth) return undefined
     let endpoint = `https://developer.api.autodesk.com/data/v1/projects/${project.id}/folders/${folder.id}/search`
     if (filters && filters.length > 0) {

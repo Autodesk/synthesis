@@ -125,7 +125,7 @@ const Panel: React.FC<PanelProps> = ({
     return (
         <div>
             <div
-                className={`absolute ${locationClasses.className} ${className || ""} bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
+                className={`absolute ${locationClasses.className} ${className || ""} max-h-[95vh] max-w-[50vw] bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
                 style={locationClasses.styles}
                 key={"panel-" + panelId}
             >
@@ -138,13 +138,13 @@ const Panel: React.FC<PanelProps> = ({
                 <div
                     id="content"
                     className={`${contentClassName || ""} ${
-                        !contentClassName?.includes("mx") ? "mx-16" : ""
+                        !contentClassName?.includes("mx") ? "mx-[2rem]" : ""
                     } flex flex-col gap-4 max-h-[75vh]`}
                 >
                     {children}
                 </div>
                 {(cancelEnabled || middleEnabled || acceptEnabled) && (
-                    <div id="footer" className="flex justify-between mx-10 py-8 text-accept-cancel-button-text">
+                    <div id="footer" className="flex justify-between mx-[2rem] py-[1rem] text-accept-cancel-button-text">
                         {cancelEnabled && (
                             <input
                                 type="button"

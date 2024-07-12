@@ -114,7 +114,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Import Mira"}
                         icon={<IoPeople />}
-                        onClick={() => openModal("import-mirabuf")}
+                        onClick={() => openPanel("import-mirabuf")}
                     />
                     <MainHUDButton
                         value={"Import Local Mira"}
@@ -125,7 +125,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
-                        onClick={() => APS.isSignedIn() && APS.refreshAuthToken(APS.getAuth()!.refresh_token)}
+                        onClick={async () => APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)}
                     />
                     <MainHUDButton
                         value={"Expire APS Token"}
