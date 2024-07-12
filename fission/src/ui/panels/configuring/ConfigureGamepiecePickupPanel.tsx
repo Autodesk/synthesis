@@ -22,8 +22,13 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
 
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
 
-    // creating mesh & gizmo for the pickup node
-    const setupGizmo = () => {
+    /**
+     * Creating a mesh to mimic the pickup node
+     * - adds a transform gizmo to the Mesh
+     * - sets the position of the mesh in relation to the position and rotation of the robot
+     * - sets the scale of the mesh to the previously saved configuration
+     */
+    const setupGizmo = (): void => {
         if (!selectedRobot?.intakePreferences) return
 
         if (transformGizmoRef.current == undefined) {
@@ -38,10 +43,16 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         const scale = selectedRobot.intakePreferences.diameter
         const robotPosition = World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetPosition()
         const theta = calculateRobotAngle()
-        
-        const calculatedX = - Math.cos(theta) * selectedRobot.intakePreferences.position[0] + Math.sin(theta) * selectedRobot.intakePreferences.position[2]
-        const calculatedZ = Math.sin(theta) * selectedRobot.intakePreferences.position[0] + Math.cos(theta) * selectedRobot.intakePreferences.position[2]
 
+        // Re-calculating the position of the pickup node in relation to the robot based on the robot's local rotation and position
+        const calculatedX =
+            -Math.cos(theta) * selectedRobot.intakePreferences.position[0] +
+            Math.sin(theta) * selectedRobot.intakePreferences.position[2]
+        const calculatedZ =
+            Math.sin(theta) * selectedRobot.intakePreferences.position[0] +
+            Math.cos(theta) * selectedRobot.intakePreferences.position[2]
+
+        // Calculating the position of the pickup mesh relative to the robot
         const position = [
             robotPosition.GetX() + calculatedX,
             robotPosition.GetY() + selectedRobot.intakePreferences.position[1],
@@ -52,61 +63,71 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         transformGizmoRef.current.mesh.position.set(position[0], position[1], position[2])
     }
 
-    // Saves zone preferences to local storage
-    const saveZonePreferences = () => {
+    /**
+     * Saves pickup configuration preferences to local storage
+     */
+    const savePickupPreferences = (): void => {
         if (!selectedRobot?.intakePreferences) return
 
         const scale = transformGizmoRef.current?.mesh.scale
         const position = transformGizmoRef.current?.mesh.position
+        const robotPosition = World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetPosition()
 
         if (scale == undefined || position == undefined) return
 
         selectedRobot.intakePreferences.diameter = scale.x
-        const robotPosition = World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetPosition()
-
         selectedRobot.intakePreferences.rotation = calculateRobotAngle()
-        selectedRobot.intakePreferences.position = [
-            position.x - robotPosition.GetX(),
-            position.y - robotPosition.GetY(),
-            position.z - robotPosition.GetZ(),
-        ]
 
-        const theta = selectedRobot.intakePreferences.rotation
-        const calculatedX = Math.cos(theta) * selectedRobot.intakePreferences.position[0] - Math.sin(theta) * selectedRobot.intakePreferences.position[2]
-        const calculatedZ = Math.sin(theta) * selectedRobot.intakePreferences.position[0] + Math.cos(theta) * selectedRobot.intakePreferences.position[2]
-        selectedRobot.intakePreferences.position = [
-            calculatedX,
-            selectedRobot.intakePreferences.position[1],
-            calculatedZ
-        ]
+        // resetting the position of the pickup node in relation to the robot at the default position it faces
+        const calculatedX =
+            Math.cos(selectedRobot.intakePreferences.rotation) * (position.x - robotPosition.GetX()) -
+            Math.sin(selectedRobot.intakePreferences.rotation) * (position.z - robotPosition.GetZ())
+        const calculatedZ =
+            Math.sin(selectedRobot.intakePreferences.rotation) * (position.x - robotPosition.GetX()) +
+            Math.cos(selectedRobot.intakePreferences.rotation) * (position.z - robotPosition.GetZ())
 
+        selectedRobot.intakePreferences.position = [calculatedX, position.y - robotPosition.GetY(), calculatedZ]
         selectedRobot.intakePreferences.parentBody = bodyAttachmentRef.current
 
         PreferencesSystem.savePreferences()
     }
-    
-    const calculateRobotAngle = () => {
-        const robotRotationY = World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!).GetRotation().GetEulerAngles().GetY()
-        const robotRotationZ = Math.abs(World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!).GetRotation().GetEulerAngles().GetZ())
+
+    /**
+     * @returns The angle of the robot in radians
+     */
+    const calculateRobotAngle = (): number => {
+        const robotRotation = World.PhysicsSystem.GetBody(selectedRobot!.GetRootNodeId()!)
+            .GetRotation()
+            .GetEulerAngles()
+        const robotRotationY = robotRotation.GetY()
+        const robotRotationZ = Math.abs(robotRotation.GetZ())
 
         if (robotRotationY > 0 && robotRotationZ < 2) {
+            // if the robot is between 0 - pi/2 rotation on a cartesian plane
             return robotRotationY
         } else if (robotRotationY > 0 && robotRotationZ > 2) {
+            // if the robot is between pi/2 - pi rotation
             return Math.PI - robotRotationY
         } else if (robotRotationY < 0 && robotRotationZ > 2) {
+            // if the robot is between pi - 3pi/2 rotation
             return Math.PI - robotRotationY
         } else {
+            // if the robot is between 3pi/2 - 2pi rotation
             return 2 * Math.PI + robotRotationY
         }
     }
 
-    const listRobots = () => {
+    /**
+     * @returns A list of all robots as MirabufSceneObjects
+     */
+    const listRobots = (): MirabufSceneObject[] => {
+        // filtering out robots that are not dynamic and not MirabufSceneObjects
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
-            return x instanceof MirabufSceneObject
-        })
-        // .filter(x => {
-        //     return (x as MirabufSceneObject).assemblyType == "robot"
-        // })
+            return (
+                x instanceof MirabufSceneObject &&
+                World.PhysicsSystem.GetBody((x as MirabufSceneObject).GetRootNodeId()!).IsDynamic()
+            )
+        }) as MirabufSceneObject[]
         return assemblies
     }
 
@@ -124,7 +145,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             onAccept={() => {
                 if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
 
-                saveZonePreferences()
+                savePickupPreferences()
             }}
             onCancel={() => {
                 if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
