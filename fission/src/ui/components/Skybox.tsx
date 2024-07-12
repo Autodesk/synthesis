@@ -1,5 +1,5 @@
 import World from "@/systems/World"
-import { useTheme } from "../ThemeContext"
+import { useTheme } from "@/ui/ThemeContext"
 
 const Skybox = () => {
     const { currentTheme, themes } = useTheme()
