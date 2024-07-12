@@ -55,8 +55,9 @@ import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import APS from "./aps/APS.ts"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
-import Skybox from './ui/components/Skybox.tsx';
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
+import Skybox from "./ui/components/Skybox.tsx"
+import PokerPanel from "@/panels/PokerPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -135,17 +136,21 @@ function Synthesis() {
             World.DestroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
-        <AnimatePresence>
-            <Skybox key="123"/>
+        <AnimatePresence key={"animate-presence"}>
+            <Skybox key={"skybox"} />
             <TooltipControlProvider
+                key={"tooltip-control-provider"}
                 showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
                     showTooltip(type, controls, duration)
                 }}
             >
                 <ModalControlProvider
+                    key={"modal-control-provider"}
                     openModal={(modalId: string) => {
                         closeAllPanels()
                         openModal(modalId)
@@ -153,17 +158,22 @@ function Synthesis() {
                     closeModal={closeModal}
                 >
                     <PanelControlProvider
+                        key={"panel-control-provider"}
                         openPanel={openPanel}
                         closePanel={(id: string) => {
                             closePanel(id)
                         }}
                     >
-                        <ToastProvider>
-                            <Scene useStats={true} />
-                            <MainHUD />
+                        <ToastProvider key="toast-provider">
+                            <Scene useStats={true} key="scene-in-toast-provider" />
+                            <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
-                            {modalElement && <div className="absolute w-full h-full left-0 top-0">{modalElement}</div>}
-                            <ToastContainer />
+                            {modalElement && (
+                                <div className="absolute w-full h-full left-0 top-0" key={"modal-element"}>
+                                    {modalElement}
+                                </div>
+                            )}
+                            <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>
                 </ModalControlProvider>
@@ -215,6 +225,7 @@ const initialPanels: ReactElement[] = [
     <ScoringZonesPanel panelId="scoring-zones" />,
     <ZoneConfigPanel panelId="zone-config" />,
     <ImportMirabufPanel panelId="import-mirabuf" />,
+    <PokerPanel key="poker" panelId="poker" />,
 ]
 
 export default Synthesis

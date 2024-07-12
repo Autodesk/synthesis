@@ -45,11 +45,6 @@ class APS {
     }
 
     private static set auth(a: APSAuth | undefined) {
-
-        if (a) {
-            console.debug(`Expires in ${((Date.now() - a?.expires_at) / 1000.0).toFixed(3)} seconds`)
-        }
-        
         window.localStorage.removeItem(APS_AUTH_KEY)
         if (a) {
             window.localStorage.setItem(APS_AUTH_KEY, JSON.stringify(a))
@@ -63,8 +58,7 @@ class APS {
      * @param {number} expires_at - When the token expires
      */
     static setExpiresAt(expires_at: number) {
-        if (this.auth)
-            this.auth.expires_at = expires_at;
+        if (this.auth) this.auth.expires_at = expires_at
     }
 
     /**
@@ -128,15 +122,15 @@ class APS {
     }
 
     /**
-    * Logs the user out by setting their auth data to undefined.
-    */
+     * Logs the user out by setting their auth data to undefined.
+     */
     static async logout() {
         this.auth = undefined
     }
 
     /**
-    * Prompts the user to sign in, which will retrieve the auth code.
-        */
+     * Prompts the user to sign in, which will retrieve the auth code.
+     */
     static async requestAuthCode() {
         await this.requestMutex.runExclusive(async () => {
             const callbackUrl = import.meta.env.DEV
@@ -180,9 +174,6 @@ class APS {
     */
     static async refreshAuthToken(refresh_token: string, shouldRelog: boolean): Promise<boolean> {
         return this.requestMutex.runExclusive(async () => {
-
-            console.debug('Refreshing token')
-
             try {
                 const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN, {
                     method: "POST",
@@ -226,9 +217,9 @@ class APS {
     }
 
     /**
-    * Fetches the auth data from Autodesk using the auth code.
-    * @param {string} code - The auth code
-    */
+     * Fetches the auth data from Autodesk using the auth code.
+     * @param {string} code - The auth code
+     */
     static async convertAuthToken(code: string) {
         let retry_login = false
         try {
@@ -264,9 +255,9 @@ class APS {
     }
 
     /**
-    * Fetches user information using the auth data. See {@link APSAuth}
-    * @param {APSAuth} auth - The auth data
-    */
+     * Fetches user information using the auth data. See {@link APSAuth}
+     * @param {APSAuth} auth - The auth data
+     */
     static async loadUserInfo(auth: APSAuth) {
         console.log("Loading user information")
         try {
@@ -299,8 +290,8 @@ class APS {
     }
 
     /**
-    * Fetches the code challenge from our server for requesting the auth code.
-    */
+     * Fetches the code challenge from our server for requesting the auth code.
+     */
     static async codeChallenge() {
         try {
             const res = await fetch(ENDPOINT_SYNTHESIS_CHALLENGE)

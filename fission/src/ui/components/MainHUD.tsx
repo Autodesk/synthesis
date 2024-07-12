@@ -20,7 +20,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
-import TransformGizmo from "./TransformGizmo"
+import { AiOutlineDoubleRight } from "react-icons/ai"
 
 type ButtonProps = {
     value: string
@@ -101,7 +101,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Manage Assemblies"}
                         icon={<FaGear />}
-                        onClick={() => openModal("manage-assembles")}
+                        onClick={() => openModal("manage-assemblies")}
                     />
                     <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
                     <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
@@ -120,6 +120,11 @@ const MainHUD: React.FC = () => {
                         value={"Import Local Mira"}
                         icon={<IoPeople />}
                         onClick={() => openModal("import-local-mirabuf")}
+                    />
+                    <MainHUDButton
+                        value={"The Poker"}
+                        icon={<AiOutlineDoubleRight />}
+                        onClick={() => openPanel("poker")}
                     />
                     <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                     <MainHUDButton
@@ -171,13 +176,6 @@ const MainHUD: React.FC = () => {
                         onClick={() => {
                             const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
                             addToast(type, type, "This is a test toast to test the toast system")
-                        }}
-                    />
-                    <MainHUDButton
-                        value={"Test Gizmo"}
-                        icon={<IoGameControllerOutline />}
-                        onClick={() => {
-                            new TransformGizmo("translate").setMode = "rotate"
                         }}
                     />
                 </div>
