@@ -12,6 +12,8 @@ import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
+import { EjectorPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const DEBUG_BODIES = true
 
@@ -27,10 +29,13 @@ class MirabufSceneObject extends SceneObject {
     private _brain: SynthesisBrain | undefined
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
-    private _physicsLayerReserve: LayerReserve | undefined = undefined
+    private _physicsLayerReserve: LayerReserve | undefined
 
-    private _transformGizmos: TransformGizmos | undefined = undefined
+    private _transformGizmos: TransformGizmos | undefined
     private _deleteGizmoOnEscape: boolean = true
+
+    private _intakePreferences: IntakePreferences | undefined
+    private _ejectorPreferences: EjectorPreferences | undefined
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -38,6 +43,18 @@ class MirabufSceneObject extends SceneObject {
 
     get mechanism() {
         return this._mechanism
+    }
+
+    get assemblyName() {
+        return this._assemblyName
+    }
+
+    get intakePreferences() {
+        return this._intakePreferences
+    }
+
+    get ejectorPreferences() {
+        return this._ejectorPreferences
     }
 
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
@@ -54,6 +71,8 @@ class MirabufSceneObject extends SceneObject {
         this._debugBodies = null
 
         this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
+
+        this.getPreferences()
     }
 
     public Setup(): void {
@@ -85,6 +104,8 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Update(): void {
+        // console.log(World.PhysicsSystem.GetBody(this.GetRootNodeId()!).GetPosition().GetZ())
+
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
@@ -168,10 +189,6 @@ class MirabufSceneObject extends SceneObject {
         this._brain?.clearControls()
     }
 
-    public GetRootNodeId(): Jolt.BodyID | undefined {
-        return this._mechanism.nodeToBody.get(this._mechanism.rootBody)
-    }
-
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
         const scale = new JOLT.Vec3(1, 1, 1)
         const triangleContext = new JOLT.ShapeGetTriangles(
@@ -216,6 +233,11 @@ class MirabufSceneObject extends SceneObject {
         this._transformGizmos.CreateGizmo("translate", 5.0)
 
         this.DisablePhysics()
+    }
+
+    private getPreferences(): void {
+        this._intakePreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.intake
+        this._ejectorPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.ejector
     }
 
     private EnablePhysics() {

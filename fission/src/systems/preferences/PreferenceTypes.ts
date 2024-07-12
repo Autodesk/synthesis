@@ -28,6 +28,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
 
 export type IntakePreferences = {
     position: [number, number, number]
+    rotation: number
     diameter: number
     parentBody: Jolt.Body | undefined
 }
@@ -67,7 +68,7 @@ export type FieldPreferences = {
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
-        intake: { position: [0, 0, 0], diameter: 1, parentBody: undefined },
+        intake: { position: [0, 0, 0], rotation: 0, diameter: 1, parentBody: undefined },
         ejector: { position: [0, 0, 0], direction: [0, 0, 0, 0], ejectorVelocity: 1, parentBody: undefined },
     }
 }
