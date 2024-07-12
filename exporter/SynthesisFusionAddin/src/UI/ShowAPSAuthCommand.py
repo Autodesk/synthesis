@@ -80,8 +80,8 @@ class ShowAPSAuthCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             command.execute.add(onExecute)
             gm.handlers.append(onExecute)
         except:
-            gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-            logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+            gm.ui.messageBox("Failed:\n{}Here".format(traceback.format_exc()))
+            logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}Here".format(traceback.format_exc()))
             if palette:
                 palette.deleteMe()
 
@@ -139,7 +139,7 @@ class MyHTMLEventHandler(adsk.core.HTMLEventHandler):
 
             convertAuthToken(data["code"])
         except:
-            gm.ui.messageBox("Failed:\n".format(traceback.format_exc()))
-            logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n".format(traceback.format_exc()))
+            gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
+            logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
         if palette:
             palette.deleteMe()

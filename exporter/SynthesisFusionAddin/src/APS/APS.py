@@ -95,11 +95,13 @@ def convertAuthToken(code: str):
     authUrl = f'http://localhost:80/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:80/api/aps/exporter/")}'
     res = urllib.request.urlopen(authUrl)
     data = _res_json(res)["response"]
+    curr_time = time.time() * 1000
+    logging.getLogger("curr_time{}".format(curr_time))
     APS_AUTH = APSAuth(
         access_token=data["access_token"],
         refresh_token=data["refresh_token"],
         expires_in=data["expires_in"],
-        expires_at=int(curr_time + data["expires_in"] * 1000),
+        expires_at=curr_time + data["expires_in"] * 1000,
         token_type=data["token_type"],
     )
     with open(auth_path, "wb") as f:
@@ -131,6 +133,7 @@ def refreshAuthToken():
     req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
     req.method = "POST"
     req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
+    curr_time = time.time() * 1000
     try:
         res = urllib.request.urlopen(req)
         data = _res_json(res)
