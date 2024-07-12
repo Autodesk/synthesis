@@ -41,11 +41,7 @@ class Parser:
 
             # Physical Props here when ready
 
-            if self.exporterOptions.frictionOverride:
-                assembly_out.data.parts.parts_definitions.value.friction_override = (
-                    self.exporterOptions.frictionOverrideCoeff
-                )
-            #
+                        #
 
             progressDialog = app.userInterface.createProgressDialog()
             progressDialog.cancelButtonText = "Cancel"
@@ -130,6 +126,9 @@ class Parser:
             JointHierarchy.BuildJointPartHierarchy(
                 design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
             )
+            gm.ui.messageBox(json.dumps(assembly_out.data.parts), "PRINT")
+            if self.exporterOptions.frictionOverride:
+                assembly_out.data.parts.part_definitions[].value.friction_override = self.exporterOptions.frictionOverrideCoeff
 
             # These don't have an effect, I forgot how this is suppose to work
             # progressDialog.message = "Taking Photo for thumbnail..."

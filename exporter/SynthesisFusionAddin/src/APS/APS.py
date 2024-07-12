@@ -23,7 +23,6 @@ auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
 APS_AUTH = None
 APS_USER_INFO = None
 
-
 @dataclass
 class APSAuth:
     access_token: str
@@ -66,6 +65,7 @@ def getCodeChallenge() -> str | None:
 
 
 def getAuth() -> APSAuth:
+    curr_time = int(time.time() * 1000)
     global APS_AUTH
     if APS_AUTH is not None:
         return APS_AUTH
@@ -76,12 +76,11 @@ def getAuth() -> APSAuth:
                 access_token=p["access_token"],
                 refresh_token=p["refresh_token"],
                 expires_in=p["expires_in"],
-                expires_at=int(p["expires_in"] * 1000),
+                expires_at=int(curr_time + (p["expires_in"] * 1000)),
                 token_type=p["token_type"],
             )
     except:
         raise Exception("Need to sign in!")
-    curr_time = int(time.time() * 1000)
     if curr_time >= APS_AUTH.expires_at:
         refreshAuthToken()
     if APS_USER_INFO is None:
