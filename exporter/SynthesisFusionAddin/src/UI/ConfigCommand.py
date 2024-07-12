@@ -811,20 +811,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 .children.itemById("export_as_part")
             ).value
 
-            processedFileName = gm.app.activeDocument.name.replace(" ", "_")
-            dropdownExportMode = INPUTS_ROOT.itemById("mode")
-            if dropdownExportMode.selectedItem.index == 0:
-                isRobot = True
-            elif dropdownExportMode.selectedItem.index == 1:
-                isRobot = False
-
-            if isRobot:
-                savepath = FileDialogConfig.SaveFileDialog(
-                    defaultPath=exporterOptions.fileLocation,
-                    ext="Synthesis File (*.synth)",
-                )
-            else:
-                savepath = FileDialogConfig.SaveFileDialog(defaultPath=exporterOptions.fileLocation)
+            savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
 
             if not savepath:
                 # save was canceled

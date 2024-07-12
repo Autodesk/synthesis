@@ -83,7 +83,10 @@ class ModelHierarchy(Enum):
 
 @dataclass
 class ExporterOptions:
-    fileLocation: str = field(
+    # Python's `os` module can return `None` when attempting to find the home directory if the
+    # user's computer has conflicting configs of some sort. This has happened and should be accounted
+    # for accordingly.
+    fileLocation: str | None = field(
         default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~"))
     )
     name: str = field(default=None)
