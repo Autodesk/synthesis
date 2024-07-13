@@ -94,5 +94,5 @@ export function MirabufFloatArr_JoltVec3Arr(v: number[]): Jolt.Vec3[] {
 }
 
 export function ReactRgbaColor_ThreeColor(color: RgbaColor) {
-    return new THREE.Color(Math.floor((color.r / 255)), Math.floor((color.g / 255)), Math.floor((color.b / 255)))
+    return new THREE.Color(Math.floor(color.r / 255), Math.floor(color.g / 255), Math.floor(color.b / 255))
 }

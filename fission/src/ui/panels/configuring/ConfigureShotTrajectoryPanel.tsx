@@ -23,22 +23,22 @@ const MAX_VELOCITY = 1.0
 
 /**
  * Saves ejector configuration to selected robot.
- * 
+ *
  * Math Explanation:
  * Let W be the world transformation matrix of the gizmo.
  * Let R be the world transformation matrix of the selected robot node.
  * Let L be the local transformation matrix of the gizmo, relative to the selected robot node.
- * 
+ *
  * We are given W and R, and want to save L with the robot. This way when we create
  * the ejection point afterwards, it will be relative to the selected robot node.
- * 
+ *
  * W = L R
  * L = W R^(-1)
- * 
+ *
  * ThreeJS sets the standard multiplication operation for matrices to be premultiply. I really
  * don't like this terminology as it's thrown me off multiple times, but I suppose it does go
  * against most other multiplication operations.
- * 
+ *
  * @param ejectorVelocity Velocity to eject gamepiece at.
  * @param gizmo Reference to the transform gizmo object.
  * @param selectedRobot Selected robot to save data to.
@@ -48,7 +48,7 @@ function save(
     ejectorVelocity: number,
     gizmo: TransformGizmos,
     selectedRobot: MirabufSceneObject,
-    selectedNode?: RigidNodeId,
+    selectedNode?: RigidNodeId
 ) {
     if (!selectedRobot?.ejectorPreferences || !gizmo) {
         return
@@ -104,9 +104,9 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                 new THREE.ConeGeometry(0.1, 0.4, 4).rotateX(Math.PI / 2.0).translate(0, 0, 0.2),
                 World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightSelect.color))
             )
-        );
+        )
 
-        (gizmo.mesh.material as THREE.Material).depthTest = false
+        ;(gizmo.mesh.material as THREE.Material).depthTest = false
         gizmo.AddMeshToScene()
         gizmo.CreateGizmo("translate", 1.5)
         gizmo.CreateGizmo("rotate", 2.0)
@@ -115,14 +115,29 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
 
         // DO NOT ask me why retrieving and setting the same EXACT data is done is two DIFFERENT majors
         const deltaTransformation = new THREE.Matrix4(
-            d[0], d[4], d[8], d[12],
-            d[1], d[5], d[9], d[13],
-            d[2], d[6], d[10], d[14],
-            d[3], d[7], d[11], d[15]
+            d[0],
+            d[4],
+            d[8],
+            d[12],
+            d[1],
+            d[5],
+            d[9],
+            d[13],
+            d[2],
+            d[6],
+            d[10],
+            d[14],
+            d[3],
+            d[7],
+            d[11],
+            d[15]
         )
-        
-        let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.ejectorPreferences.parentNode ?? selectedRobot.rootNodeId)
-        if (!nodeBodyId) { // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+
+        let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
+            selectedRobot.ejectorPreferences.parentNode ?? selectedRobot.rootNodeId
+        )
+        if (!nodeBodyId) {
+            // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
             nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.rootNodeId)!
         }
 
@@ -158,19 +173,22 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
         }
     }, [])
 
-    const trySetSelectedNode = useCallback((body: Jolt.BodyID) => {
-        if (!selectedRobot) {
-            return false
-        }
+    const trySetSelectedNode = useCallback(
+        (body: Jolt.BodyID) => {
+            if (!selectedRobot) {
+                return false
+            }
 
-        const assoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(body)
-        if (assoc?.sceneObject != selectedRobot) {
-            return false
-        }
+            const assoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(body)
+            if (assoc?.sceneObject != selectedRobot) {
+                return false
+            }
 
-        setSelectedNode(assoc.node)
-        return true
-    }, [selectedRobot])
+            setSelectedNode(assoc.node)
+            return true
+        },
+        [selectedRobot]
+    )
 
     return (
         <Panel
@@ -184,7 +202,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                     save(ejectorVelocity, transformGizmo, selectedRobot, selectedNode)
                 }
             }}
-            onCancel={() => { }}
+            onCancel={() => {}}
             acceptEnabled={selectedRobot?.ejectorPreferences != undefined}
         >
             {selectedRobot?.ejectorPreferences == undefined ? (
@@ -234,7 +252,9 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                         buttonClassName="w-min"
                         onClick={() => {
                             if (transformGizmo) {
-                                const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform())
+                                const robotTransformation = JoltMat44_ThreeMatrix4(
+                                    World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
+                                )
                                 transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
                                 transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
                             }

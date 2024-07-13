@@ -64,9 +64,9 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
-    private _pauseCounter = 0;
+    private _pauseCounter = 0
 
-    private _bodyAssociations: Map<BodyIndexAndSequence, BodyAssociated>;
+    private _bodyAssociations: Map<BodyIndexAndSequence, BodyAssociated>
 
     /**
      * Creates a PhysicsSystem object.
@@ -102,7 +102,7 @@ class PhysicsSystem extends WorldSystem {
 
     /**
      * Get association to a given Jolt Body.
-     * 
+     *
      * @param bodyId BodyID to check for association
      * @returns Association for given Body
      */
@@ -110,7 +110,7 @@ class PhysicsSystem extends WorldSystem {
         const res = this._bodyAssociations.get(bodyId.GetIndexAndSequenceNumber())
         if (res) {
             // Avoids error, simply returns undefined if invalid
-            return (res as unknown) as T
+            return res as unknown as T
         } else {
             return res
         }
@@ -118,7 +118,7 @@ class PhysicsSystem extends WorldSystem {
 
     /**
      * Sets assocation for a body
-     * 
+     *
      * @param assocation Assocation. See {@link BodyAssociated}
      */
     public SetBodyAssociation<T extends BodyAssociated>(assocation: T) {
@@ -131,28 +131,28 @@ class PhysicsSystem extends WorldSystem {
 
     /**
      * Holds a pause.
-     * 
+     *
      * The pause works off of a request counter.
      */
     public HoldPause() {
-        this._pauseCounter++;
+        this._pauseCounter++
     }
 
     /**
      * Forces all holds on the pause to be released.
      */
     public ForceUnpause() {
-        this._pauseCounter = 0;
+        this._pauseCounter = 0
     }
 
     /**
      * Releases a pause.
-     * 
+     *
      * The pause works off of a request counter.
      */
     public ReleasePause() {
         if (this._pauseCounter > 0) {
-            this._pauseCounter--;
+            this._pauseCounter--
         }
     }
 

@@ -23,33 +23,28 @@ const MAX_ZONE_SIZE = 1.0
 
 /**
  * Saves ejector configuration to selected robot.
- * 
+ *
  * Math Explanation:
  * Let W be the world transformation matrix of the gizmo.
  * Let R be the world transformation matrix of the selected robot node.
  * Let L be the local transformation matrix of the gizmo, relative to the selected robot node.
- * 
+ *
  * We are given W and R, and want to save L with the robot. This way when we create
  * the ejection point afterwards, it will be relative to the selected robot node.
- * 
+ *
  * W = L R
  * L = W R^(-1)
- * 
+ *
  * ThreeJS sets the standard multiplication operation for matrices to be premultiply. I really
  * don't like this terminology as it's thrown me off multiple times, but I suppose it does go
  * against most other multiplication operations.
- * 
+ *
  * @param ejectorVelocity Velocity to eject gamepiece at.
  * @param gizmo Reference to the transform gizmo object.
  * @param selectedRobot Selected robot to save data to.
  * @param selectedNode Selected node that configuration is relative to.
  */
-function save(
-    zoneSize: number,
-    gizmo: TransformGizmos,
-    selectedRobot: MirabufSceneObject,
-    selectedNode?: RigidNodeId,
-) {
+function save(zoneSize: number, gizmo: TransformGizmos, selectedRobot: MirabufSceneObject, selectedNode?: RigidNodeId) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
     }
@@ -61,11 +56,11 @@ function save(
         return
     }
 
-    const translation = new THREE.Vector3(0,0,0)
-    const rotation = new THREE.Quaternion(0,0,0,1)
-    gizmo.mesh.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1,1,1))
+    const translation = new THREE.Vector3(0, 0, 0)
+    const rotation = new THREE.Quaternion(0, 0, 0, 1)
+    gizmo.mesh.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
 
-    const gizmoTransformation = (new THREE.Matrix4()).compose(translation, rotation, new THREE.Vector3(1,1,1))
+    const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(1, 1, 1))
     const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
@@ -116,9 +111,9 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                 new THREE.SphereGeometry(0.5),
                 World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightSelect.color))
             )
-        );
+        )
 
-        (gizmo.mesh.material as THREE.Material).depthTest = false
+        ;(gizmo.mesh.material as THREE.Material).depthTest = false
         gizmo.AddMeshToScene()
         gizmo.CreateGizmo("translate", 1.5)
 
@@ -126,14 +121,29 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
 
         // DO NOT ask me why retrieving and setting the same EXACT data is done is two DIFFERENT majors
         const deltaTransformation = new THREE.Matrix4(
-            d[0], d[4], d[8], d[12],
-            d[1], d[5], d[9], d[13],
-            d[2], d[6], d[10], d[14],
-            d[3], d[7], d[11], d[15]
+            d[0],
+            d[4],
+            d[8],
+            d[12],
+            d[1],
+            d[5],
+            d[9],
+            d[13],
+            d[2],
+            d[6],
+            d[10],
+            d[14],
+            d[3],
+            d[7],
+            d[11],
+            d[15]
         )
-        
-        let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.intakePreferences.parentNode ?? selectedRobot.rootNodeId)
-        if (!nodeBodyId) { // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+
+        let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
+            selectedRobot.intakePreferences.parentNode ?? selectedRobot.rootNodeId
+        )
+        if (!nodeBodyId) {
+            // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
             nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.rootNodeId)!
         }
 
@@ -169,19 +179,22 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         }
     }, [])
 
-    const trySetSelectedNode = useCallback((body: Jolt.BodyID) => {
-        if (!selectedRobot) {
-            return false
-        }
+    const trySetSelectedNode = useCallback(
+        (body: Jolt.BodyID) => {
+            if (!selectedRobot) {
+                return false
+            }
 
-        const assoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(body)
-        if (assoc?.sceneObject != selectedRobot) {
-            return false
-        }
+            const assoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(body)
+            if (assoc?.sceneObject != selectedRobot) {
+                return false
+            }
 
-        setSelectedNode(assoc.node)
-        return true
-    }, [selectedRobot])
+            setSelectedNode(assoc.node)
+            return true
+        },
+        [selectedRobot]
+    )
 
     return (
         <Panel
@@ -195,7 +208,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                     save(zoneSize, transformGizmo, selectedRobot, selectedNode)
                 }
             }}
-            onCancel={() => { }}
+            onCancel={() => {}}
             acceptEnabled={selectedRobot?.ejectorPreferences != undefined}
         >
             {selectedRobot?.ejectorPreferences == undefined ? (
@@ -245,7 +258,9 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                         buttonClassName="w-min"
                         onClick={() => {
                             if (transformGizmo) {
-                                const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform())
+                                const robotTransformation = JoltMat44_ThreeMatrix4(
+                                    World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
+                                )
                                 transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
                                 transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
                             }

@@ -184,8 +184,7 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
-
-        this._mechanism.nodeToBody.forEach((bodyId) => {
+        this._mechanism.nodeToBody.forEach(bodyId => {
             World.PhysicsSystem.RemoveBodyAssocation(bodyId)
         })
 
