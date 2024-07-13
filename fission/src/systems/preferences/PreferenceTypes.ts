@@ -1,6 +1,5 @@
 import { Vector3Tuple, Vector4Tuple } from "three"
 import { InputScheme } from "../input/DefaultInputs"
-import Jolt from "@barclah/jolt-physics"
 
 export type GlobalPreference =
     | "ScreenMode"
@@ -27,9 +26,9 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
 }
 
 export type IntakePreferences = {
-    position: [number, number, number]
-    diameter: number
-    parentBody: Jolt.Body | undefined
+    deltaTransformation: number[]
+    zoneDiameter: number
+    parentNode: string | undefined
 }
 
 export type EjectorPreferences = {
@@ -66,7 +65,11 @@ export type FieldPreferences = {
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
-        intake: { position: [0, 0, 0], diameter: 1, parentBody: undefined },
+        intake: {
+            deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            zoneDiameter: 0.5,
+            parentNode: undefined,
+        },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             ejectorVelocity: 1,
