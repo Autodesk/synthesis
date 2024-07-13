@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
@@ -13,7 +13,7 @@ import Button from "@/ui/components/Button"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { JoltMat44_ThreeMatrix4, ReactRgbaColor_ThreeColor } from "@/util/TypeConversions"
+import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ReactRgbaColor_ThreeColor, ThreeMatrix4_Array } from "@/util/TypeConversions"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { useTheme } from "@/ui/ThemeContext"
 
@@ -64,7 +64,7 @@ function save(zoneSize: number, gizmo: TransformGizmos, selectedRobot: MirabufSc
     const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
-    selectedRobot.intakePreferences.deltaTransformation = deltaTransformation.elements
+    selectedRobot.intakePreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
     selectedRobot.intakePreferences.parentNode = selectedNode
     selectedRobot.intakePreferences.zoneDiameter = zoneSize
 
@@ -117,27 +117,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         gizmo.AddMeshToScene()
         gizmo.CreateGizmo("translate", 1.5)
 
-        const d = selectedRobot.intakePreferences.deltaTransformation
-
-        // DO NOT ask me why retrieving and setting the same EXACT data is done is two DIFFERENT majors
-        const deltaTransformation = new THREE.Matrix4(
-            d[0],
-            d[4],
-            d[8],
-            d[12],
-            d[1],
-            d[5],
-            d[9],
-            d[13],
-            d[2],
-            d[6],
-            d[10],
-            d[14],
-            d[3],
-            d[7],
-            d[11],
-            d[15]
-        )
+        const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences.deltaTransformation)
 
         let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
             selectedRobot.intakePreferences.parentNode ?? selectedRobot.rootNodeId
@@ -206,6 +186,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             onAccept={() => {
                 if (transformGizmo && selectedRobot) {
                     save(zoneSize, transformGizmo, selectedRobot, selectedNode)
+                    selectedRobot.UpdateIntakeSensor()
                 }
             }}
             onCancel={() => {}}

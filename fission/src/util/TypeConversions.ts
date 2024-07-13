@@ -14,6 +14,21 @@ export function _JoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {
     }
 }
 
+export function Array_ThreeMatrix4(arr: number[]) {
+    // DO NOT ask me why retrieving and setting the same EXACT data is done is two DIFFERENT majors
+    // prettier-ignore
+    return new THREE.Matrix4(
+        arr[0], arr[4], arr[8], arr[12],
+        arr[1], arr[5], arr[9], arr[13],
+        arr[2], arr[6], arr[10], arr[14],
+        arr[3], arr[7], arr[11], arr[15]
+    )
+}
+
+export function ThreeMatrix4_Array(mat: THREE.Matrix4) {
+    return mat.elements
+}
+
 export function ThreeEuler_JoltQuat(euler: THREE.Euler) {
     const quat = new THREE.Quaternion()
     quat.setFromEuler(euler)

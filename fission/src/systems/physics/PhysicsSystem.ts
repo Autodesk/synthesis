@@ -942,6 +942,19 @@ class PhysicsSystem extends WorldSystem {
         return [ghostBody, constraint]
     }
 
+    public CreateSensor(shapeSettings: Jolt.ShapeSettings): Jolt.BodyID | undefined {
+        const shape = shapeSettings.Create()
+        if (shape.HasError()) {
+            console.error(`Failed to create sensor body\n${shape.GetError().c_str}`)
+            return undefined
+        }
+        const body = this.CreateBody(shape.Get(), undefined, undefined, undefined)
+        this._bodies.push(body.GetID())
+        body.SetIsSensor(true)
+        this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
+        return body.GetID()
+    }
+
     /**
      * Exposes the SetPosition method on the _joltBodyInterface
      * Sets the position of the body

@@ -12,7 +12,7 @@ import Button from "@/ui/components/Button"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import { JoltMat44_ThreeMatrix4, ReactRgbaColor_ThreeColor } from "@/util/TypeConversions"
+import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ReactRgbaColor_ThreeColor, ThreeMatrix4_Array } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
@@ -65,7 +65,7 @@ function save(
     const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
-    selectedRobot.ejectorPreferences.deltaTransformation = deltaTransformation.elements
+    selectedRobot.ejectorPreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
     selectedRobot.ejectorPreferences.parentNode = selectedNode
     selectedRobot.ejectorPreferences.ejectorVelocity = ejectorVelocity
 
@@ -111,27 +111,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
         gizmo.CreateGizmo("translate", 1.5)
         gizmo.CreateGizmo("rotate", 2.0)
 
-        const d = selectedRobot.ejectorPreferences.deltaTransformation
-
-        // DO NOT ask me why retrieving and setting the same EXACT data is done is two DIFFERENT majors
-        const deltaTransformation = new THREE.Matrix4(
-            d[0],
-            d[4],
-            d[8],
-            d[12],
-            d[1],
-            d[5],
-            d[9],
-            d[13],
-            d[2],
-            d[6],
-            d[10],
-            d[14],
-            d[3],
-            d[7],
-            d[11],
-            d[15]
-        )
+        const deltaTransformation = Array_ThreeMatrix4(selectedRobot.ejectorPreferences.deltaTransformation)
 
         let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
             selectedRobot.ejectorPreferences.parentNode ?? selectedRobot.rootNodeId

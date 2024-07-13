@@ -15,6 +15,7 @@ import TransformGizmos from "@/ui/components/TransformGizmos"
 import { EjectorPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
+import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 
 const DEBUG_BODIES = true
 
@@ -37,6 +38,8 @@ class MirabufSceneObject extends SceneObject {
 
     private _intakePreferences: IntakePreferences | undefined
     private _ejectorPreferences: EjectorPreferences | undefined
+
+    private _intakeSensor?: IntakeSensorSceneObject
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -125,6 +128,9 @@ class MirabufSceneObject extends SceneObject {
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
         this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
         simLayer.SetBrain(this._brain)
+
+        // Intake
+        this.UpdateIntakeSensor()
     }
 
     public Update(): void {
@@ -195,6 +201,11 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
+        if (this._intakeSensor) {
+            World.SceneRenderer.RemoveSceneObject(this._intakeSensor.id)
+            this._intakeSensor = undefined
+        }
+
         this._mechanism.nodeToBody.forEach(bodyId => {
             World.PhysicsSystem.RemoveBodyAssocation(bodyId)
         })
@@ -246,6 +257,19 @@ class MirabufSceneObject extends SceneObject {
         mesh.castShadow = true
 
         return mesh
+    }
+
+    public UpdateIntakeSensor() {
+        if (this._intakeSensor) {
+            World.SceneRenderer.RemoveSceneObject(this._intakeSensor.id)
+            this._intakeSensor = undefined
+        }
+
+        // Do we have an intake, and is it something other than the default. Config will default to root node at least.
+        if (this._intakePreferences && this._intakePreferences.parentNode) {
+            this._intakeSensor = new IntakeSensorSceneObject(this)
+            World.SceneRenderer.RegisterSceneObject(this._intakeSensor)
+        }
     }
 
     public EnableTransformControls(): void {
