@@ -2,6 +2,8 @@ import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
 import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
 
+export type RigidNodeId = string
+
 export enum ParseErrorSeverity {
     Unimportable = 10,
     LikelyIssues = 6,
@@ -400,11 +402,11 @@ class MirabufParser {
  */
 class RigidNode {
     public isRoot: boolean
-    public id: string
+    public id: RigidNodeId
     public parts: Set<string> = new Set()
     public isDynamic: boolean
 
-    public constructor(id: string, isDynamic?: boolean) {
+    public constructor(id: RigidNodeId, isDynamic?: boolean) {
         this.id = id
         this.isDynamic = isDynamic ?? true
         this.isRoot = false
@@ -414,7 +416,7 @@ class RigidNode {
 export class RigidNodeReadOnly {
     private _original: RigidNode
 
-    public get id(): string {
+    public get id(): RigidNodeId {
         return this._original.id
     }
 

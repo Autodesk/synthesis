@@ -2,6 +2,7 @@ import * as THREE from "three"
 import JOLT from "./loading/JoltSyncLoader"
 import Jolt from "@barclah/jolt-physics"
 import { mirabuf } from "../proto/mirabuf"
+import { RgbaColor } from "react-colorful"
 
 export function _JoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {
     if (a instanceof THREE.Euler) {
@@ -90,4 +91,8 @@ export function MirabufFloatArr_JoltVec3Arr(v: number[]): Jolt.Vec3[] {
         arr.push(MirabufFloatArr_JoltVec3(v, i))
     }
     return arr
+}
+
+export function ReactRgbaColor_ThreeColor(color: RgbaColor) {
+    return new THREE.Color(Math.floor((color.r / 255)), Math.floor((color.g / 255)), Math.floor((color.b / 255)))
 }

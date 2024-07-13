@@ -229,9 +229,7 @@ class SceneRenderer extends WorldSystem {
         transformControl.attach(obj)
 
         // allowing the transform gizmos to rotate with the object
-        if (mode === "translate") {
-            transformControl.space = "local"
-        }
+        transformControl.space = "local"
 
         transformControl.addEventListener(
             "dragging-changed",

@@ -15,6 +15,8 @@ import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly }
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
 
+export type BodyIndexAndSequence = number
+
 /**
  * Layers used for determining enabled/disabled collisions.
  */
@@ -62,6 +64,10 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
+    private _pauseCounter = 0;
+
+    private _bodyAssociations: Map<BodyIndexAndSequence, BodyAssociated>;
+
     /**
      * Creates a PhysicsSystem object.
      */
@@ -90,6 +96,64 @@ class PhysicsSystem extends WorldSystem {
         )
         ground.SetFriction(FLOOR_FRICTION)
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
+
+        this._bodyAssociations = new Map()
+    }
+
+    /**
+     * Get association to a given Jolt Body.
+     * 
+     * @param bodyId BodyID to check for association
+     * @returns Association for given Body
+     */
+    public GetBodyAssociation<T extends object & BodyAssociated>(bodyId: Jolt.BodyID): T | undefined {
+        const res = this._bodyAssociations.get(bodyId.GetIndexAndSequenceNumber())
+        if (res) {
+            // Avoids error, simply returns undefined if invalid
+            return (res as unknown) as T
+        } else {
+            return res
+        }
+    }
+
+    /**
+     * Sets assocation for a body
+     * 
+     * @param assocation Assocation. See {@link BodyAssociated}
+     */
+    public SetBodyAssociation<T extends BodyAssociated>(assocation: T) {
+        this._bodyAssociations.set(assocation.associatedBody, assocation)
+    }
+
+    public RemoveBodyAssocation(bodyId: Jolt.BodyID) {
+        this._bodyAssociations.delete(bodyId.GetIndexAndSequenceNumber())
+    }
+
+    /**
+     * Holds a pause.
+     * 
+     * The pause works off of a request counter.
+     */
+    public HoldPause() {
+        this._pauseCounter++;
+    }
+
+    /**
+     * Forces all holds on the pause to be released.
+     */
+    public ForceUnpause() {
+        this._pauseCounter = 0;
+    }
+
+    /**
+     * Releases a pause.
+     * 
+     * The pause works off of a request counter.
+     */
+    public ReleasePause() {
+        if (this._pauseCounter > 0) {
+            this._pauseCounter--;
+        }
     }
 
     /**
@@ -815,6 +879,10 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public Update(deltaT: number): void {
+        if (this._pauseCounter > 0) {
+            return
+        }
+
         const diffDeltaT = deltaT - lastDeltaT
 
         lastDeltaT = lastDeltaT + Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
@@ -999,6 +1067,13 @@ export type RayCastHit = {
     data: Jolt.RayCastResult
     point: Jolt.Vec3
     ray: Jolt.RayCast
+}
+
+/**
+ * An interface to create an association between a body and anything.
+ */
+export interface BodyAssociated {
+    readonly associatedBody: BodyIndexAndSequence
 }
 
 export default PhysicsSystem

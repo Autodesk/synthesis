@@ -33,11 +33,9 @@ export type IntakePreferences = {
 }
 
 export type EjectorPreferences = {
-    position: [number, number, number]
-    direction: [number, number, number, number]
-    relativeRotation: number
+    deltaTransformation: number[]
     ejectorVelocity: number
-    parentBody: Jolt.Body | undefined
+    parentNode: string | undefined
 }
 
 export type RobotPreferences = {
@@ -70,11 +68,9 @@ export function DefaultRobotPreferences(): RobotPreferences {
         inputsSchemes: [],
         intake: { position: [0, 0, 0], diameter: 1, parentBody: undefined },
         ejector: {
-            position: [0, 0, 0],
-            direction: [0, 0, 0, 0],
-            relativeRotation: 0,
+            deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             ejectorVelocity: 1,
-            parentBody: undefined,
+            parentNode: undefined,
         },
     }
 }

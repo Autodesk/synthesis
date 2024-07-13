@@ -1,13 +1,13 @@
 import { mirabuf } from "@/proto/mirabuf"
 import SceneObject from "../systems/scene/SceneObject"
 import MirabufInstance from "./MirabufInstance"
-import MirabufParser, { ParseErrorSeverity } from "./MirabufParser"
+import MirabufParser, { ParseErrorSeverity, RigidNodeId } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
 import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { BodyAssociated, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
@@ -62,6 +62,10 @@ class MirabufSceneObject extends SceneObject {
         return this._mirabufInstance.parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD
     }
 
+    public get rootNodeId(): string {
+        return this._mirabufInstance.parser.rootNode
+    }
+
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
         super()
 
@@ -100,6 +104,10 @@ class MirabufSceneObject extends SceneObject {
                 })
             })
         }
+
+        this._mechanism.nodeToBody.forEach((bodyId, node) => {
+            World.PhysicsSystem.SetBodyAssociation(new RigidNodeAssociate(this, node, bodyId))
+        })
 
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
@@ -176,6 +184,11 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
+
+        this._mechanism.nodeToBody.forEach((bodyId) => {
+            World.PhysicsSystem.RemoveBodyAssocation(bodyId)
+        })
+
         World.SimulationSystem.UnregisterMechanism(this._mechanism)
         World.PhysicsSystem.DestroyMechanism(this._mechanism)
         this._mirabufInstance.Dispose(World.SceneRenderer.scene)
@@ -268,6 +281,21 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
     }
 
     return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!)
+}
+
+/**
+ * Body association to a rigid node with a given mirabuf scene object.
+ */
+export class RigidNodeAssociate implements BodyAssociated {
+    public readonly associatedBody: number
+    public readonly sceneObject: MirabufSceneObject
+    public readonly node: RigidNodeId
+
+    public constructor(sceneObject: MirabufSceneObject, node: RigidNodeId, body: Jolt.BodyID) {
+        this.sceneObject = sceneObject
+        this.node = node
+        this.associatedBody = body.GetIndexAndSequenceNumber()
+    }
 }
 
 export default MirabufSceneObject
