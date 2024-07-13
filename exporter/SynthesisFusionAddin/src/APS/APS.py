@@ -68,7 +68,7 @@ def getCodeChallenge() -> str | None:
     return data["challenge"]
 
 
-def getAuth() -> APSAuth:
+def getAuth() -> APSAuth | None:
     global APS_AUTH
     if APS_AUTH is not None:
         return APS_AUTH
@@ -84,7 +84,8 @@ def getAuth() -> APSAuth:
                 token_type=p["token_type"],
             )
     except:
-        raise Exception("Need to sign in!")
+        gm.ui.messageBox("Sign in","Sign in")
+        return None
     curr_time = int(time.time() * 1000)
     if curr_time >= APS_AUTH.expires_at:
         logging.getLogger(f"{INTERNAL_ID}").info(f"Refreshing {curr_time}\n{json.dumps(APS_AUTH.__dict__)}")
@@ -104,7 +105,7 @@ def convertAuthToken(code: str):
         access_token=data["access_token"],
         refresh_token=data["refresh_token"],
         expires_in=data["expires_in"],
-        expires_at=int(curr_time + (p["expires_in"] * 1000)),
+        expires_at=int(curr_time + (data["expires_in"] * 1000)),
         token_type=data["token_type"],
     )
     with open(auth_path, "wb") as f:
