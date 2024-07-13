@@ -1,7 +1,7 @@
 import { mirabuf } from "@/proto/mirabuf"
 import SceneObject from "../systems/scene/SceneObject"
 import MirabufInstance from "./MirabufInstance"
-import MirabufParser, { ParseErrorSeverity, RigidNodeId } from "./MirabufParser"
+import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
 import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
@@ -105,8 +105,19 @@ class MirabufSceneObject extends SceneObject {
             })
         }
 
-        this._mechanism.nodeToBody.forEach((bodyId, node) => {
-            World.PhysicsSystem.SetBodyAssociation(new RigidNodeAssociate(this, node, bodyId))
+        const rigidNodes = this._mirabufInstance.parser.rigidNodes
+        this._mechanism.nodeToBody.forEach((bodyId, rigidNodeId) => {
+            const rigidNode = rigidNodes.get(rigidNodeId)
+            if (!rigidNode) {
+                console.warn('Found a RigidNodeId with no related RigidNode. Skipping for now...')
+                return
+            }
+            if (rigidNode.isGamePiece) {
+                World.PhysicsSystem.SetBodyAssociation(new GamePieceAssociate(this, rigidNode, bodyId))
+            } else {
+                World.PhysicsSystem.SetBodyAssociation(new RigidNodeAssociate(this, rigidNode, bodyId))
+            }
+            
         })
 
         // Simulation
@@ -288,12 +299,22 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
 export class RigidNodeAssociate implements BodyAssociated {
     public readonly associatedBody: number
     public readonly sceneObject: MirabufSceneObject
-    public readonly node: RigidNodeId
+    
+    public readonly rigidNode: RigidNodeReadOnly
+    public get rigidNodeId(): RigidNodeId {
+        return this.rigidNode.id
+    }
 
-    public constructor(sceneObject: MirabufSceneObject, node: RigidNodeId, body: Jolt.BodyID) {
+    public constructor(sceneObject: MirabufSceneObject, rigidNode: RigidNodeReadOnly, body: Jolt.BodyID) {
         this.sceneObject = sceneObject
-        this.node = node
+        this.rigidNode = rigidNode
         this.associatedBody = body.GetIndexAndSequenceNumber()
+    }
+}
+
+export class GamePieceAssociate extends RigidNodeAssociate {
+    public constructor(sceneObject: MirabufSceneObject, rigidNode: RigidNodeReadOnly, body: Jolt.BodyID) {
+        super(sceneObject, rigidNode, body)
     }
 }
 

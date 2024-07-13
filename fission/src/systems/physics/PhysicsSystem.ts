@@ -610,7 +610,7 @@ class PhysicsSystem extends WorldSystem {
 
         const reservedLayer: number | undefined = layerReserve?.layer
 
-        filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(rn => {
+        filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly).forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
             let shapesAdded = 0
 

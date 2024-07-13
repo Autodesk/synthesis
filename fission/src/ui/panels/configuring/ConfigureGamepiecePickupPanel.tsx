@@ -190,7 +190,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                 return false
             }
 
-            setSelectedNode(assoc.node)
+            setSelectedNode(assoc.rigidNodeId)
             return true
         },
         [selectedRobot]

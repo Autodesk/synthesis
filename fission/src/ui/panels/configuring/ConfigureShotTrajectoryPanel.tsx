@@ -184,7 +184,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                 return false
             }
 
-            setSelectedNode(assoc.node)
+            setSelectedNode(assoc.rigidNodeId)
             return true
         },
         [selectedRobot]
