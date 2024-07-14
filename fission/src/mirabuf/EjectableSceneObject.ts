@@ -49,6 +49,7 @@ class EjectableSceneObject extends SceneObject {
                 return
             }
 
+            // I had a think and free wrote this matrix math on a whim. It worked first try and I honestly can't quite remember how it works... -Hunter
             const gpBody = World.PhysicsSystem.GetBody(this._gamePieceBodyId)
             const posToCOM = JoltMat44_ThreeMatrix4(gpBody.GetCenterOfMassTransform()).premultiply(JoltMat44_ThreeMatrix4(gpBody.GetWorldTransform()).invert())
 

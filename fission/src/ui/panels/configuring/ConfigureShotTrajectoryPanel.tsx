@@ -18,8 +18,8 @@ import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 
 // slider constants
-const MIN_VELOCITY = 0.1
-const MAX_VELOCITY = 1.0
+const MIN_VELOCITY = 0.0
+const MAX_VELOCITY = 20.0
 
 /**
  * Saves ejector configuration to selected robot.
