@@ -225,7 +225,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                         min={MIN_ZONE_SIZE}
                         max={MAX_ZONE_SIZE}
                         value={zoneSize}
-                        label="Velocity"
+                        label="Size"
                         format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                         onChange={(_, vel: number | number[]) => {
                             setZoneSize(vel as number)
