@@ -15,6 +15,8 @@ from ..general_imports import (
     APP_NAME,
     DESCRIPTION,
     INTERNAL_ID,
+    APS_AUTH,
+    APS_USER_INFO,
     gm,
     my_addin_path,
     root_logger,
@@ -22,10 +24,6 @@ from ..general_imports import (
 
 CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
-
-APS_AUTH = None
-APS_USER_INFO = None
-
 
 @dataclass
 class APSAuth:
@@ -69,7 +67,6 @@ def getCodeChallenge() -> str | None:
 
 
 def getAuth() -> APSAuth | None:
-    global APS_AUTH
     if APS_AUTH is not None:
         return APS_AUTH
     try:
@@ -99,6 +96,7 @@ def convertAuthToken(code: str):
     global APS_AUTH
     authUrl = f'http://localhost:80/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:80/api/aps/exporter/")}'
     res = urllib.request.urlopen(authUrl)
+
     data = _res_json(res)["response"]
     curr_time = time.time() * 1000
     APS_AUTH = APSAuth(
@@ -117,7 +115,6 @@ def convertAuthToken(code: str):
 
 
 def removeAuth():
-    global APS_AUTH, APS_USER_INFO
     APS_AUTH = None
     APS_USER_INFO = None
     pathlib.Path.unlink(pathlib.Path(auth_path))
@@ -156,7 +153,6 @@ def refreshAuthToken():
 
 
 def loadUserInfo() -> APSUserInfo | None:
-    global APS_AUTH
     if not APS_AUTH:
         return None
     global APS_USER_INFO
@@ -275,7 +271,6 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> Result[st
     """
 
     # data:create
-    global APS_AUTH
     if not APS_AUTH:
         gm.ui.messageBox("You must login to upload designs to APS", "USER ERROR")
     auth_write = APS_AUTH
