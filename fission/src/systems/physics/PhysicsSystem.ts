@@ -986,7 +986,11 @@ class PhysicsSystem extends WorldSystem {
             return
         }
 
-        this._joltBodyInterface.SetPosition(id, position, activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate)
+        this._joltBodyInterface.SetPosition(
+            id,
+            position,
+            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
     }
 
     public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat, activate: boolean = true): void {
@@ -994,7 +998,11 @@ class PhysicsSystem extends WorldSystem {
             return
         }
 
-        this._joltBodyInterface.SetRotation(id, rotation, activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate)
+        this._joltBodyInterface.SetRotation(
+            id,
+            rotation,
+            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
     }
 }
 

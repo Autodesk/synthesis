@@ -12,7 +12,12 @@ import Button from "@/ui/components/Button"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ReactRgbaColor_ThreeColor, ThreeMatrix4_Array } from "@/util/TypeConversions"
+import {
+    Array_ThreeMatrix4,
+    JoltMat44_ThreeMatrix4,
+    ReactRgbaColor_ThreeColor,
+    ThreeMatrix4_Array,
+} from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"

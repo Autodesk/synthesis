@@ -118,7 +118,7 @@ class MirabufSceneObject extends SceneObject {
         this._mechanism.nodeToBody.forEach((bodyId, rigidNodeId) => {
             const rigidNode = rigidNodes.get(rigidNodeId)
             if (!rigidNode) {
-                console.warn('Found a RigidNodeId with no related RigidNode. Skipping for now...')
+                console.warn("Found a RigidNodeId with no related RigidNode. Skipping for now...")
                 return
             }
             World.PhysicsSystem.SetBodyAssociation(new RigidNodeAssociate(this, rigidNode, bodyId))
@@ -362,7 +362,7 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
 export class RigidNodeAssociate implements BodyAssociated {
     public readonly associatedBody: JoltBodyIndexAndSequence
     public readonly sceneObject: MirabufSceneObject
-    
+
     public readonly rigidNode: RigidNodeReadOnly
     public get rigidNodeId(): RigidNodeId {
         return this.rigidNode.id

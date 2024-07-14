@@ -151,7 +151,7 @@ describe("Three to Jolt Conversions", async () => {
 
 describe("Three Storage Conversion", () => {
     test("Array -> THREE.Matrix4 -> Array", () => {
-        const originalArr = [ 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16 ]
+        const originalArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
         const threeMat = Array_ThreeMatrix4(originalArr)
         const arr = ThreeMatrix4_Array(threeMat)
