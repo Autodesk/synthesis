@@ -132,15 +132,14 @@ class APS {
         const headers = {
             "Content-Type": "application/x-www-form-urlencoded",
         }
-        const body = {
-            token: this.auth?.access_token,
-            token_type_hint: "access_token",
-            client_id: CLIENT_ID,
-        }
         const opts = {
             method: "POST",
             headers: headers,
-            body: body.toString(),
+            body: new URLSearchParams([
+                ["token", this.auth?.access_token],
+                ["token_type_hint", "access_token"],
+                ["client_id", CLIENT_ID],
+            ] as string[][]),
         }
         const res = await fetch(ENDPOINT_AUTODESK_REVOKE_TOKEN, opts)
         if (!res.ok) {
