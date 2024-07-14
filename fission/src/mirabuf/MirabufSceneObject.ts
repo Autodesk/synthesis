@@ -10,6 +10,8 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import InputSystem from "@/systems/input/InputSystem"
+import TransformGizmos from "@/ui/components/TransformGizmos"
 
 const DEBUG_BODIES = false
 
@@ -27,6 +29,17 @@ class MirabufSceneObject extends SceneObject {
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined = undefined
 
+    private _transformGizmos: TransformGizmos | undefined = undefined
+    private _deleteGizmoOnEscape: boolean = true
+
+    get mirabufInstance() {
+        return this._mirabufInstance
+    }
+
+    get mechanism() {
+        return this._mechanism
+    }
+
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
         super()
 
@@ -39,6 +52,8 @@ class MirabufSceneObject extends SceneObject {
         }
 
         this._debugBodies = null
+
+        this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
     }
 
     public Setup(): void {
@@ -71,6 +86,7 @@ class MirabufSceneObject extends SceneObject {
 
     public Update(): void {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
             const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
             rn.parts.forEach(part => {
@@ -85,6 +101,34 @@ class MirabufSceneObject extends SceneObject {
                 const [mesh, index] = this._mirabufInstance.meshes.get(part) ?? [undefined, 0]
                 mesh?.setMatrixAt(index, partTransform)
             })
+
+            /**
+             * Update the position and rotation of the body to match the position of the transform gizmo.
+             *
+             * This block of code should only be executed if the transform gizmo exists.
+             */
+            if (this._transformGizmos) {
+                if (InputSystem.isKeyPressed("Enter")) {
+                    // confirming placement of the mirabuf object
+                    this._transformGizmos.RemoveGizmos()
+                    this.EnablePhysics()
+                    this._transformGizmos = undefined
+                    return
+                } else if (InputSystem.isKeyPressed("Escape") && this._deleteGizmoOnEscape) {
+                    // cancelling the creation of the mirabuf scene object
+                    this._transformGizmos.RemoveGizmos()
+                    World.SceneRenderer.RemoveSceneObject(this.id)
+                    this._transformGizmos = undefined
+                    this._deleteGizmoOnEscape = false
+                    return
+                }
+
+                // if the gizmo is being dragged, copy the mesh position and rotation to the Mirabuf body
+                if (this._transformGizmos.isBeingDragged()) {
+                    this._transformGizmos.UpdateMirabufPositioning(this, rn)
+                    World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+                }
+            }
 
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
@@ -156,6 +200,31 @@ class MirabufSceneObject extends SceneObject {
         mesh.castShadow = true
 
         return mesh
+    }
+
+    public EnableTransformControls(): void {
+        this._transformGizmos = new TransformGizmos(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(3.0),
+                new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
+            )
+        )
+        this._transformGizmos.AddMeshToScene()
+        this._transformGizmos.CreateGizmo("translate")
+
+        this.DisablePhysics()
+    }
+
+    private EnablePhysics() {
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
+    }
+
+    private DisablePhysics() {
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+        })
     }
 
     public GetRootNodeId(): Jolt.BodyID | undefined {

@@ -55,8 +55,8 @@ import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning
 import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import APS from "./aps/APS.ts"
-import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
+import PokerPanel from "@/panels/PokerPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -75,7 +75,7 @@ function Synthesis() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
-    const { currentTheme, applyTheme } = useTheme()
+    const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
     useEffect(() => {
         applyTheme(currentTheme)
@@ -128,6 +128,9 @@ function Synthesis() {
             World.UpdateWorld()
         }
         mainLoop()
+
+        World.SceneRenderer.updateSkyboxColors(defaultTheme)
+
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
@@ -140,14 +143,16 @@ function Synthesis() {
     }, [])
 
     return (
-        <AnimatePresence>
-            <Skybox key="123" />
+        <AnimatePresence key={"animate-presence"}>
+            <Skybox key={"skybox"} />
             <TooltipControlProvider
+                key={"tooltip-control-provider"}
                 showTooltip={(type: TooltipType, controls?: TooltipControl[], duration: number = TOOLTIP_DURATION) => {
                     showTooltip(type, controls, duration)
                 }}
             >
                 <ModalControlProvider
+                    key={"modal-control-provider"}
                     openModal={(modalId: string) => {
                         closeAllPanels()
                         openModal(modalId)
@@ -155,17 +160,22 @@ function Synthesis() {
                     closeModal={closeModal}
                 >
                     <PanelControlProvider
+                        key={"panel-control-provider"}
                         openPanel={openPanel}
                         closePanel={(id: string) => {
                             closePanel(id)
                         }}
                     >
-                        <ToastProvider>
-                            <Scene useStats={true} />
-                            <MainHUD />
+                        <ToastProvider key="toast-provider">
+                            <Scene useStats={true} key="scene-in-toast-provider" />
+                            <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
-                            {modalElement && <div className="absolute w-full h-full left-0 top-0">{modalElement}</div>}
-                            <ToastContainer />
+                            {modalElement && (
+                                <div className="absolute w-full h-full left-0 top-0" key={"modal-element"}>
+                                    {modalElement}
+                                </div>
+                            )}
+                            <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>
                 </ModalControlProvider>
@@ -175,48 +185,47 @@ function Synthesis() {
 }
 
 const initialModals = [
-    <SettingsModal modalId="settings" />,
-    <SpawningModal modalId="spawning" />,
-    <AddRobotsModal modalId="add-robot" />,
-    <AddFieldsModal modalId="add-field" />,
-    <ViewModal modalId="view" />,
-    <DownloadAssetsModal modalId="download-assets" />,
-    <RoboRIOModal modalId="roborio" />,
-    <DrivetrainModal modalId="drivetrain" />,
-    <ThemeEditorModal modalId="theme-editor" />,
-    <ExitSynthesisModal modalId="exit-synthesis" />,
-    <MatchResultsModal modalId="match-results" />,
-    <UpdateAvailableModal modalId="update-available" />,
-    <ConnectToMultiplayerModal modalId="connect-to-multiplayer" />,
-    <ServerHostingModal modalId="server-hosting" />,
-    <ChangeInputsModal modalId="change-inputs" />,
-    <ResetAllInputsModal modalId="reset-inputs" />,
-    <ChooseMultiplayerModeModal modalId="multiplayer-mode" />,
-    <ChooseSingleplayerModeModal modalId="singleplayer-mode" />,
-    <PracticeSettingsModal modalId="practice-settings" />,
-    <DeleteThemeModal modalId="delete-theme" />,
-    <DeleteAllThemesModal modalId="delete-all-themes" />,
-    <NewThemeModal modalId="new-theme" />,
-    <RCCreateDeviceModal modalId="create-device" />,
-    <RCConfigPwmGroupModal modalId="config-pwm" />,
-    <RCConfigEncoderModal modalId="config-encoder" />,
-    <MatchModeModal modalId="match-mode" />,
-    <SpawningModal modalId="spawning" />,
-    <ConfigMotorModal modalId="config-motor" />,
-    <ManageAssembliesModal modalId="manage-assembles" />,
-    <ImportMirabufModal modalId="import-mirabuf" />,
-    <ImportLocalMirabufModal modalId="import-local-mirabuf" />,
+    <SettingsModal key="settings" modalId="settings" />,
+    <SpawningModal key="spawning" modalId="spawning" />,
+    <AddRobotsModal key="add-robot" modalId="add-robot" />,
+    <AddFieldsModal key="add-field" modalId="add-field" />,
+    <ViewModal key="view" modalId="view" />,
+    <DownloadAssetsModal key="download-assets" modalId="download-assets" />,
+    <RoboRIOModal key="roborio" modalId="roborio" />,
+    <DrivetrainModal key="drivetrain" modalId="drivetrain" />,
+    <ThemeEditorModal key="theme-editor" modalId="theme-editor" />,
+    <ExitSynthesisModal key="exit-synthesis" modalId="exit-synthesis" />,
+    <MatchResultsModal key="match-results" modalId="match-results" />,
+    <UpdateAvailableModal key="update-available" modalId="update-available" />,
+    <ConnectToMultiplayerModal key="connect-to-multiplayer" modalId="connect-to-multiplayer" />,
+    <ServerHostingModal key="server-hosting" modalId="server-hosting" />,
+    <ChangeInputsModal key="change-inputs" modalId="change-inputs" />,
+    <ChooseMultiplayerModeModal key="multiplayer-mode" modalId="multiplayer-mode" />,
+    <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
+    <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,
+    <DeleteThemeModal key="delete-theme" modalId="delete-theme" />,
+    <DeleteAllThemesModal key="delete-all-themes" modalId="delete-all-themes" />,
+    <NewThemeModal key="new-theme" modalId="new-theme" />,
+    <RCCreateDeviceModal key="create-device" modalId="create-device" />,
+    <RCConfigPwmGroupModal key="config-pwm" modalId="config-pwm" />,
+    <RCConfigEncoderModal key="config-encoder" modalId="config-encoder" />,
+    <MatchModeModal key="match-mode" modalId="match-mode" />,
+    <ConfigMotorModal key="config-motor" modalId="config-motor" />,
+    <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
+    <ImportMirabufModal key="import-mirabuf" modalId="import-mirabuf" />,
+    <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
 ]
 
 const initialPanels: ReactElement[] = [
-    <RobotSwitchPanel panelId="multibot" openLocation="right" sidePadding={8} />,
-    <DriverStationPanel panelId="driver-station" />,
-    <SpawnLocationsPanel panelId="spawn-locations" />,
-    <ScoreboardPanel panelId="scoreboard" />,
-    <ConfigureGamepiecePickupPanel panelId="config-gamepiece-pickup" />,
-    <ConfigureShotTrajectoryPanel panelId="config-shot-trajectory" />,
-    <ScoringZonesPanel panelId="scoring-zones" />,
-    <ZoneConfigPanel panelId="zone-config" />,
+    <RobotSwitchPanel key="multibot" panelId="multibot" openLocation="right" sidePadding={8} />,
+    <DriverStationPanel key="driver-station" panelId="driver-station" />,
+    <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
+    <ScoreboardPanel key="scoreboard" panelId="scoreboard" />,
+    <ConfigureGamepiecePickupPanel key="config-gamepiece-pickup" panelId="config-gamepiece-pickup" />,
+    <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" />,
+    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
+    <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
+    <PokerPanel key="poker" panelId="poker" />,
 ]
 
 export default Synthesis
