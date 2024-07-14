@@ -78,8 +78,8 @@ class TransformGizmos {
             //     mesh.rotation.setFromRotationMatrix(partTransform)
             // })
 
-            const [mesh, index] = obj.mirabufInstance.meshes.get(part) ?? [undefined, 0]
-            mesh?.setMatrixAt(index, partTransform)
+            const meshes = obj.mirabufInstance.meshes.get(part) ?? []
+            meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
         })
     }
 }

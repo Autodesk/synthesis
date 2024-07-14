@@ -4,8 +4,6 @@ import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
 
 type MirabufPartInstanceGUID = string
-type MirabufPartDefinitionGUID = string
-type MirabufBodyGUID = string
 
 const WIREFRAME = false
 
@@ -37,14 +35,20 @@ export const miraMatToString = (mat: mirabuf.ITransform) => {
 
 let nextFillerMaterial = 0
 const fillerMaterials = [
-    new THREE.MeshToonMaterial({
+    new THREE.MeshStandardMaterial({
         color: 0xe32b50,
     }),
-    new THREE.MeshToonMaterial({
+    new THREE.MeshStandardMaterial({
         color: 0x4ccf57,
     }),
-    new THREE.MeshToonMaterial({
+    new THREE.MeshStandardMaterial({
         color: 0xcf4cca,
+    }),
+    new THREE.MeshStandardMaterial({
+        color: 0x585fed,
+    }),
+    new THREE.MeshStandardMaterial({
+        color: 0xade04f,
     }),
 ]
 
@@ -87,7 +91,8 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
 class MirabufInstance {
     private _mirabufParser: MirabufParser
     private _materials: Map<string, THREE.Material>
-    private _meshes: Map<MirabufPartInstanceGUID, [THREE.BatchedMesh, number]>
+    private _meshes: Map<MirabufPartInstanceGUID, Array<[THREE.BatchedMesh, number]>>
+    private _batches: Array<THREE.BatchedMesh>
 
     public get parser() {
         return this._mirabufParser
@@ -98,6 +103,9 @@ class MirabufInstance {
     public get meshes() {
         return this._meshes
     }
+    public get batches() {
+        return this._batches
+    }
 
     public constructor(parser: MirabufParser, materialStyle?: MaterialStyle) {
         if (parser.errors.some(x => x[0] >= ParseErrorSeverity.Unimportable)) {
@@ -107,6 +115,7 @@ class MirabufInstance {
         this._mirabufParser = parser
         this._materials = new Map()
         this._meshes = new Map()
+        this._batches = new Array<THREE.BatchedMesh>()
 
         this.LoadMaterials(materialStyle ?? MaterialStyle.Regular)
         this.CreateMeshes()
@@ -219,6 +228,7 @@ class MirabufInstance {
         batchMap.forEach((materialBodyMap, material) => {
             const count = countMap.get(material)!
             const batchedMesh = new THREE.BatchedMesh(count.maxInstances, count.maxVertices, count.maxIndices)
+            this._batches.push(batchedMesh)
 
             console.debug(`${count.maxInstances}, ${count.maxVertices}, ${count.maxIndices}`)
 
@@ -239,7 +249,13 @@ class MirabufInstance {
 
                     console.debug(geoId)
 
-                    this._meshes.set(instance.info!.GUID!, [ batchedMesh, geoId ])
+                    let bodies = this._meshes.get(instance.info!.GUID!)
+                    if (!bodies) {
+                        bodies = new Array<[THREE.BatchedMesh, number]>()
+                        this._meshes.set(instance.info!.GUID!, bodies)
+                    }
+
+                    bodies.push([ batchedMesh, geoId ])
                 })
             })
         })
@@ -255,18 +271,18 @@ class MirabufInstance {
      * @param scene
      */
     public AddToScene(scene: THREE.Scene) {
-        this._meshes.forEach(([mesh, _]) => scene.add(mesh))
-        // this._meshes.forEach(x => x.forEach(y => scene.add(y)))
+        this._batches.forEach(x => scene.add(x))
     }
 
     /**
      * Disposes of all ThreeJs scenes and materials.
      */
     public Dispose(scene: THREE.Scene) {
-        this._meshes.forEach(([mesh, _]) => {
-            mesh.dispose()
-            scene.remove(mesh)
+        this._batches.forEach(x => {
+            x.dispose()
+            scene.remove(x)
         })
+        this._batches = []
         this._meshes.clear()
 
         this._materials.forEach(x => x.dispose())
