@@ -1,15 +1,17 @@
 import * as THREE from "three"
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import SceneObject from "./SceneObject"
-import WorldSystem from "../WorldSystem"
+import SceneObject from "@/systems/scene/SceneObject"
+import WorldSystem from "@/systems/WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 
 import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
+import InputSystem from "../input/InputSystem"
 
 const CLEAR_COLOR = 0x121212
-const GROUND_COLOR = 0x73937e
+const GROUND_COLOR = 0x4066c7
 
 let nextSceneObjectId = 1
 
@@ -18,12 +20,14 @@ class SceneRenderer extends WorldSystem {
     private _scene: THREE.Scene
     private _renderer: THREE.WebGLRenderer
     private _skybox: THREE.Mesh
+    private _composer: EffectComposer
+
+    private _antiAliasPass: EffectPass
 
     private _sceneObjects: Map<number, SceneObject>
 
-    private orbitControls: OrbitControls
-    private transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
-    private isShiftPressed: boolean = false
+    private _orbitControls: OrbitControls
+    private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -45,13 +49,20 @@ class SceneRenderer extends WorldSystem {
         super()
 
         this._sceneObjects = new Map()
+        this._transformControls = new Map()
 
         this._mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
         this._mainCamera.position.set(-2.5, 2, 2.5)
 
         this._scene = new THREE.Scene()
 
-        this._renderer = new THREE.WebGLRenderer()
+        this._renderer = new THREE.WebGLRenderer({
+            // Following parameters are used to optimize post-processing
+            powerPreference: "high-performance",
+            antialias: false,
+            stencil: false,
+            depth: false,
+        })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
         this._renderer.shadowMap.enabled = true
@@ -85,22 +96,6 @@ class SceneRenderer extends WorldSystem {
         ground.castShadow = true
         this._scene.add(ground)
 
-        this.orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
-        this.orbitControls.update()
-
-        // Add event listeners for shift key
-        this.transformControls = new Map()
-        document.addEventListener("keydown", event => {
-            if (event.key === "Shift") {
-                this.isShiftPressed = true
-            }
-        })
-        document.addEventListener("keyup", event => {
-            if (event.key === "Shift") {
-                this.isShiftPressed = false
-            }
-        })
-
         // Adding spherical skybox mesh
         const geometry = new THREE.SphereGeometry(1000)
         const material = new THREE.ShaderMaterial({
@@ -113,10 +108,23 @@ class SceneRenderer extends WorldSystem {
                 bColor: { value: 1.0 },
             },
         })
+
         this._skybox = new THREE.Mesh(geometry, material)
         this._skybox.receiveShadow = false
         this._skybox.castShadow = false
         this.scene.add(this._skybox)
+
+        // POST PROCESSING: https://github.com/pmndrs/postprocessing
+        this._composer = new EffectComposer(this._renderer)
+        this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
+
+        const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+        this._antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
+        this._composer.addPass(this._antiAliasPass)
+
+        // Orbit controls
+        this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
+        this._orbitControls.update()
     }
 
     public UpdateCanvasSize() {
@@ -126,27 +134,23 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
-    public Update(_: number): void {
+    public Update(deltaT: number): void {
         this._sceneObjects.forEach(obj => {
             obj.Update()
         })
 
-        // controls.update(deltaTime); // TODO: Add controls?
+        this._skybox.position.copy(this._mainCamera.position)
 
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
-        this.transformControls.forEach((size, tc) => {
+        this._transformControls.forEach((size, tc) => {
             tc.setSize(
                 (size / this._mainCamera.position.distanceTo(tc.object!.position)) *
                     Math.tan(mainCameraFovRadians) *
                     1.9
             )
-            // tc.position.copy(tc.object!.position);
-            // tc.rotation.copy(tc.object!.rotation);
         })
 
-        this._skybox.position.copy(this._mainCamera.position)
-
-        this._renderer.render(this._scene, this._mainCamera)
+        this._composer.render(deltaT)
     }
 
     public Destroy(): void {
@@ -196,99 +200,25 @@ class SceneRenderer extends WorldSystem {
         })
     }
 
-    /*
-     * Attach new transform gizmo to Mesh
+    /**
+     * Convert pixel coordinates to a world space vector
      *
-     * @param obj - Mesh to attach gizmo to
-     * @param mode - Transform mode (translate, rotate, scale)
-     * @param size - Size of the gizmo
+     * @param mouseX X pixel position of the mouse (MouseEvent.clientX)
+     * @param mouseY Y pixel position of the mouse (MouseEvent.clientY)
+     * @param z Travel from the near to far plane of the camera frustum. Default is 0.5, range is [0.0, 1.0]
+     * @returns World space point within the frustum given the parameters.
      */
-    public AddTransformGizmo(
-        obj: THREE.Object3D,
-        mode: "translate" | "rotate" | "scale" = "translate",
-        size: number = 5.0
-    ) {
-        const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement)
-        transformControl.setMode(mode)
-        transformControl.attach(obj)
-
-        if (mode === "translate") {
-            // allowing the transform gizmos to rotate with the object
-            transformControl.space = "local"
-        }
-
-        transformControl.addEventListener(
-            "dragging-changed",
-            (event: { target: TransformControls; value: unknown }) => {
-                if (!event.value) {
-                    // enable orbit controls when not dragging another transform gizmo
-                    const isDragging = Array.from(this.transformControls.keys()).some(tc => tc.dragging)
-                    if (isDragging) {
-                        return
-                    }
-                }
-
-                this.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
-
-                if (mode === "translate" && event.target) {
-                    this.transformControls.forEach((_size, tc) => {
-                        // disable other transform gizmos when translating
-                        if (tc !== event.target && tc.object === event.target.object && tc.mode !== "translate") {
-                            tc.dragging = !event.value
-                            tc.enabled = !event.value
-                            return
-                        }
-                    })
-                } else if (mode === "scale" && this.isShiftPressed) {
-                    // scale uniformly if shift is pressed
-                    transformControl.axis = "XYZE"
-                } else if (mode === "rotate") {
-                    // scale on all axes
-                    this.transformControls.forEach((_size, tc) => {
-                        // disable scale transform gizmo when scaling
-                        if (tc !== event.target && tc.object === event.target.object && tc.mode === "scale") {
-                            tc.dragging = false
-                            tc.enabled = !event.value
-                            return
-                        }
-                    })
-                }
-            }
+    public PixelToWorldSpace(mouseX: number, mouseY: number, z: number = 0.5): THREE.Vector3 {
+        const screenSpace = new THREE.Vector3(
+            (mouseX / window.innerWidth) * 2 - 1,
+            ((window.innerHeight - mouseY) / window.innerHeight) * 2 - 1,
+            Math.min(1.0, Math.max(0.0, z))
         )
 
-        this.transformControls.set(transformControl, size)
-        this._scene.add(obj)
-        this._scene.add(transformControl)
+        return screenSpace.unproject(this.mainCamera)
     }
 
     /*
-     * Remove transform gizmo from Mesh
-     *
-     * @param obj - Mesh to remove gizmo from
-     */
-    public RemoveTransformGizmo(obj: THREE.Object3D) {
-        this.transformControls.forEach((_, tc) => {
-            if (tc.object === obj) {
-                this._scene.remove(tc)
-                this.transformControls.delete(tc)
-            }
-        })
-    }
-
-    /*
-     * Update the mode of the transform gizmo
-     *
-     * @param mode - Transform mode (translate, rotate, scale)
-     * @param obj - Mesh to update gizmo mode
-     */
-    public UpdateTransformGizmoMode(mode: "translate" | "rotate" | "scale", obj: THREE.Object3D) {
-        this.transformControls.forEach((_, tc) => {
-            if (tc.object === obj) {
-                tc.setMode(mode)
-            }
-        })
-    }
-    /* 
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
@@ -300,6 +230,105 @@ class SceneRenderer extends WorldSystem {
             this._skybox.material.uniforms.gColor.value = currentTheme["Background"]["color"]["g"]
             this._skybox.material.uniforms.bColor.value = currentTheme["Background"]["color"]["b"]
         }
+    }
+
+    /**
+     * Attach new transform gizmo to Mesh
+     *
+     * @param obj Mesh to attach gizmo to
+     * @param mode Transform mode (translate, rotate, scale)
+     * @param size Size of the gizmo
+     * @returns void
+     */
+    public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = "translate", size: number) {
+        const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement)
+        transformControl.setMode(mode)
+        transformControl.attach(obj)
+
+        // allowing the transform gizmos to rotate with the object
+        if (mode === "translate") {
+            transformControl.space = "local"
+        }
+
+        transformControl.addEventListener(
+            "dragging-changed",
+            (event: { target: TransformControls; value: unknown }) => {
+                const isAnyGizmoDragging = Array.from(this._transformControls.keys()).some(gizmo => gizmo.dragging)
+                if (!event.value && !isAnyGizmoDragging) {
+                    this._orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
+                } else if (!event.value && isAnyGizmoDragging) {
+                    this._orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
+                } else {
+                    this._orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
+                }
+
+                if (event.target.mode === "translate") {
+                    this._transformControls.forEach((_size, tc) => {
+                        // disable other transform gizmos when translating
+                        if (tc.object === event.target.object && tc.mode !== "translate") {
+                            tc.dragging = false
+                            tc.enabled = !event.value
+                            return
+                        }
+                    })
+                } else if (
+                    event.target.mode === "scale" &&
+                    (InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft"))
+                ) {
+                    // scale uniformly if shift is pressed
+                    transformControl.axis = "XYZE"
+                } else if (event.target.mode === "rotate") {
+                    // scale on all axes
+                    this._transformControls.forEach((_size, tc) => {
+                        // disable scale transform gizmo when scaling
+                        if (tc.mode === "scale" && tc !== event.target && tc.object === event.target.object) {
+                            tc.dragging = false
+                            tc.enabled = !event.value
+                            return
+                        }
+                    })
+                }
+            }
+        )
+
+        this._transformControls.set(transformControl, size)
+        this._scene.add(transformControl)
+
+        return transformControl
+    }
+
+    /**
+     * Remove transform gizmos from Mesh
+     *
+     * @param obj Mesh to remove gizmo from
+     * @returns void
+     */
+    public RemoveTransformGizmos(obj: THREE.Object3D) {
+        this._transformControls.forEach((_, tc) => {
+            if (tc.object === obj) {
+                tc.detach()
+                this._scene.remove(tc)
+                this._transformControls.delete(tc)
+            }
+        })
+    }
+
+    /**
+     * Adding object to scene
+     *
+     * @param obj Object to add
+     */
+    public AddObject(obj: THREE.Object3D) {
+        this._scene.add(obj)
+    }
+
+    /**
+     * Removing object from scene
+     *
+     * @param obj Object to remove
+     */
+    public RemoveObject(obj: THREE.Object3D) {
+        this._scene.remove(obj)
     }
 }
 
