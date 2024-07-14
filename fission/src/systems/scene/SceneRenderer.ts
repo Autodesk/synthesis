@@ -125,8 +125,6 @@ class SceneRenderer extends WorldSystem {
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this._orbitControls.update()
-
-        this._renderer.info.autoReset = false
     }
 
     public UpdateCanvasSize() {
@@ -153,9 +151,6 @@ class SceneRenderer extends WorldSystem {
         })
 
         this._composer.render(deltaT)
-
-        console.debug(`Render Stats:\nDraw Calls: ${this._renderer.info.render.calls}\nTriangles: ${this._renderer.info.render.triangles}`)
-        this._renderer.info.reset()
     }
 
     public Destroy(): void {
