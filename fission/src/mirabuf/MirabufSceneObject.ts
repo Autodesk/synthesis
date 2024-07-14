@@ -85,7 +85,6 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Update(): void {
-
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)

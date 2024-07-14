@@ -192,7 +192,7 @@ class MirabufInstance {
 
                         let materialBodyMap = batchMap.get(material)
                         if (!materialBodyMap) {
-                            materialBodyMap = new Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>();
+                            materialBodyMap = new Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>()
                             batchMap.set(material, materialBodyMap)
                         }
 
@@ -213,7 +213,7 @@ class MirabufInstance {
                             const count: BatchCounts = {
                                 maxInstances: 1,
                                 maxVertices: mesh.mesh.verts.length / 3,
-                                maxIndices: mesh.mesh.indices.length
+                                maxIndices: mesh.mesh.indices.length,
                             }
                             countMap.set(material, count)
                         }
@@ -255,7 +255,7 @@ class MirabufInstance {
                         this._meshes.set(instance.info!.GUID!, bodies)
                     }
 
-                    bodies.push([ batchedMesh, geoId ])
+                    bodies.push([batchedMesh, geoId])
                 })
             })
         })
