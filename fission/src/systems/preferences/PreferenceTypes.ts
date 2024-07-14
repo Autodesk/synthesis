@@ -26,32 +26,32 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
 }
 
 export type IntakePreferences = {
-    location: Vector3Tuple,
+    location: Vector3Tuple
     diameter: number
 }
 
 export type EjectorPreferences = {
-    location: Vector3Tuple, 
+    location: Vector3Tuple
     ejectorVelocity: number
 }
 
 export type RobotPreferences = {
-    inputsSchemes: InputScheme[],
-    intake: IntakePreferences,
+    inputsSchemes: InputScheme[]
+    intake: IntakePreferences
     ejector: EjectorPreferences
 }
 
 export type Alliance = "Blue" | "Red"
 
 export type ScoringZonePreferences = {
-    name: string,
-    alliance: Alliance,
-    parent: string,
-    points: number,
-    destroyGamepiece: boolean,
-    persistentPoints: boolean,
-    localPosition: Vector3Tuple,
-    localRotation: Vector4Tuple,
+    name: string
+    alliance: Alliance
+    parent: string
+    points: number
+    destroyGamepiece: boolean
+    persistentPoints: boolean
+    localPosition: Vector3Tuple
+    localRotation: Vector4Tuple
     localScale: Vector3Tuple
 }
 
@@ -60,13 +60,12 @@ export type FieldPreferences = {
     scoringZones: ScoringZonePreferences[]
 }
 
-
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
-        intake: { location: [0, 0, 0], diameter: 1 }, 
-        ejector: { location: [0, 0, 0], ejectorVelocity: 1 }
-    };
+        intake: { location: [0, 0, 0], diameter: 1 },
+        ejector: { location: [0, 0, 0], ejectorVelocity: 1 },
+    }
 }
 
 export function DefaultFieldPreferences(): FieldPreferences {

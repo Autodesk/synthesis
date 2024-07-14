@@ -131,9 +131,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Clear Prefs"}
                         icon={<IoBug />}
-                        onClick={() =>
-                            (PreferencesSystem.clearPreferences())
-                        }
+                        onClick={() => PreferencesSystem.clearPreferences()}
                     />
                     <MainHUDButton
                         value={"Refresh APS Token"}

@@ -244,7 +244,7 @@ class InputSystem extends WorldSystem {
     public static getInput(inputName: string, assemblyName: string, assemblyIndex: number): number {
         const targetScheme = PreferencesSystem.getRobotPreferences(assemblyName).inputsSchemes[assemblyIndex]
 
-        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as (Input)
+        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
 
         if (targetScheme == null || targetInput == null) return 0
 

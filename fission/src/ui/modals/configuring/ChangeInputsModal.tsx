@@ -112,8 +112,10 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // If there is a robot spawned, set it as the selected robot
     if (selectedScheme == null && Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0) {
         setTimeout(() => {
-            if (!InputSystem.selectedScheme) 
-                InputSystem.selectedScheme = Object.values(PreferencesSystem.getAllRobotPreferences())[0].inputsSchemes[0]
+            if (!InputSystem.selectedScheme)
+                InputSystem.selectedScheme = Object.values(
+                    PreferencesSystem.getAllRobotPreferences()
+                )[0].inputsSchemes[0]
 
             setUseButtons({})
             setSelectedScheme(InputSystem.selectedScheme)
@@ -336,11 +338,15 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     return (
-        <Modal name="Keybinds" icon={<FaGamepad />} modalId={modalId}
-        onAccept={() => {
+        <Modal
+            name="Keybinds"
+            icon={<FaGamepad />}
+            modalId={modalId}
+            onAccept={() => {
                 PreferencesSystem.savePreferences()
                 InputSystem.selectedScheme = undefined
-            }}>
+            }}
+        >
             {Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0 ? (
                 <>
                     <Stack direction={StackDirection.Horizontal} spacing={25}>
@@ -349,14 +355,19 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 <Dropdown
                                     label={"Select Robot"}
                                     // Moves the selected option to the start of the array
-                                    options={moveElementToTop(SynthesisBrain.robotsSpawned, InputSystem?.selectedScheme?.schemeName)}
+                                    options={moveElementToTop(
+                                        SynthesisBrain.robotsSpawned,
+                                        InputSystem?.selectedScheme?.schemeName
+                                    )}
                                     onSelect={value => {
                                         const roboName = value.substring(4)
                                         const controlSchemeIndex: number = +value.charAt(1)
 
-                                        const newScheme = PreferencesSystem.getAllRobotPreferences()[roboName].inputsSchemes[controlSchemeIndex]
-                                        if (newScheme == selectedScheme) 
-                                            return
+                                        const newScheme =
+                                            PreferencesSystem.getAllRobotPreferences()[roboName].inputsSchemes[
+                                                controlSchemeIndex
+                                            ]
+                                        if (newScheme == selectedScheme) return
 
                                         setSelectedScheme(undefined)
                                         InputSystem.selectedScheme = newScheme
