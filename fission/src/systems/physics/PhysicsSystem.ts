@@ -15,7 +15,7 @@ import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly }
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
 
-export type BodyIndexAndSequence = number
+export type JoltBodyIndexAndSequence = number
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -66,7 +66,11 @@ class PhysicsSystem extends WorldSystem {
 
     private _pauseCounter = 0
 
-    private _bodyAssociations: Map<BodyIndexAndSequence, BodyAssociated>
+    private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociated>
+
+    public get isPaused(): boolean {
+        return this._pauseCounter > 0
+    }
 
     /**
      * Creates a PhysicsSystem object.
@@ -162,6 +166,10 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId
      */
     public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
+        if (!this.IsBodyAdded(bodyId)) {
+            return
+        }
+
         this._joltBodyInterface.DeactivateBody(bodyId)
         this.GetBody(bodyId).SetIsSensor(true)
     }
@@ -172,8 +180,16 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId
      */
     public EnablePhysicsForBody(bodyId: Jolt.BodyID) {
+        if (!this.IsBodyAdded(bodyId)) {
+            return
+        }
+
         this._joltBodyInterface.ActivateBody(bodyId)
         this.GetBody(bodyId).SetIsSensor(false)
+    }
+
+    public IsBodyAdded(bodyId: Jolt.BodyID) {
+        return this._joltBodyInterface.IsAdded(bodyId)
     }
 
     /**
@@ -803,15 +819,18 @@ class PhysicsSystem extends WorldSystem {
      * @param dir Direction of the ray. Note: Length of dir specifies the maximum length it will check.
      * @returns Either the hit results of the closest object in the ray's path, or undefined if nothing was hit.
      */
-    public RayCast(from: Jolt.Vec3, dir: Jolt.Vec3): RayCastHit | undefined {
+    public RayCast(from: Jolt.Vec3, dir: Jolt.Vec3, ...ignoreBodies: Jolt.BodyID[]): RayCastHit | undefined {
         const ray = new JOLT.RayCast(from, dir)
 
         const raySettings = new JOLT.RayCastSettings()
+        raySettings.mTreatConvexAsSolid = false
         const collector = new JOLT.CastRayClosestHitCollisionCollector()
         const bp_filter = new JOLT.BroadPhaseLayerFilter()
         const object_filter = new JOLT.ObjectLayerFilter()
-        const body_filter = new JOLT.BodyFilter() // We don't want to filter out any bodies
+        const body_filter = new JOLT.IgnoreMultipleBodiesFilter()
         const shape_filter = new JOLT.ShapeFilter() // We don't want to filter out any shapes
+
+        ignoreBodies.forEach(x => body_filter.IgnoreBody(x))
 
         this._joltPhysSystem
             .GetNarrowPhaseQuery()
@@ -962,12 +981,20 @@ class PhysicsSystem extends WorldSystem {
      * @param id The id of the body
      * @param position The new position of the body
      */
-    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
-        this._joltBodyInterface.SetPosition(id, position, JOLT.EActivation_Activate)
+    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3, activate: boolean = true): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetPosition(id, position, activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate)
     }
 
-    public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat): void {
-        this._joltBodyInterface.SetRotation(id, rotation, JOLT.EActivation_Activate)
+    public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat, activate: boolean = true): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetRotation(id, rotation, activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate)
     }
 }
 
@@ -1086,7 +1113,7 @@ export type RayCastHit = {
  * An interface to create an association between a body and anything.
  */
 export interface BodyAssociated {
-    readonly associatedBody: BodyIndexAndSequence
+    readonly associatedBody: JoltBodyIndexAndSequence
 }
 
 export default PhysicsSystem

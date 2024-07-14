@@ -180,6 +180,9 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
             onAccept={() => {
                 if (transformGizmo && selectedRobot) {
                     save(ejectorVelocity, transformGizmo, selectedRobot, selectedNode)
+                    const currentGp = selectedRobot.activeEjectable
+                    selectedRobot.SetEjectable(undefined, true)
+                    selectedRobot.SetEjectable(currentGp)
                 }
             }}
             onCancel={() => {}}
