@@ -99,6 +99,15 @@ class MirabufSceneObject extends SceneObject {
                 //     mesh.rotation.setFromRotationMatrix(partTransform)
                 // })
                 const [mesh, index] = this._mirabufInstance.meshes.get(part) ?? [undefined, 0]
+                if (!mesh) {
+                    const numBodies = this._mirabufInstance.parser.assembly.data!.parts!.partDefinitions![
+                        this._mirabufInstance.parser.assembly.data!.parts!.partInstances![part].partDefinitionReference!
+                    ].bodies!.length
+                    if (numBodies) {
+                        console.warn(`Problem Child [Found ${numBodies} bodies]: ${part}`)
+                    }
+                    return
+                }
                 mesh?.setMatrixAt(index, partTransform)
             })
 
