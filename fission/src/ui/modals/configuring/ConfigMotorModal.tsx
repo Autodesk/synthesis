@@ -63,7 +63,7 @@ const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         </td>
                         <td className="w-48">
                             <Slider
-                                defaultValue={m.defaultVelocity}
+                                value={m.defaultVelocity}
                                 min={m.minVelocity}
                                 max={m.maxVelocity}
                                 label={m.unit}

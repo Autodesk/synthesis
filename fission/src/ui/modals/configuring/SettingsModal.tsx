@@ -93,26 +93,26 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Slider
                 min={1}
                 max={15}
-                defaultValue={PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")}
+                value={PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")}
                 label={"Zoom Sensitivity"}
                 format={{ maximumFractionDigits: 2 }}
-                onChange={value => setZoomSensitivity(value)}
+                onChange={(_, value) => setZoomSensitivity(value as number)}
             />
             <Slider
                 min={1}
                 max={15}
-                defaultValue={PreferencesSystem.getGlobalPreference<number>("PitchSensitivity")}
+                value={PreferencesSystem.getGlobalPreference<number>("PitchSensitivity")}
                 label={"Pitch Sensitivity"}
                 format={{ maximumFractionDigits: 2 }}
-                onChange={value => setPitchSensitivity(value)}
+                onChange={(_, value) => setPitchSensitivity(value as number)}
             />
             <Slider
                 min={1}
                 max={15}
-                defaultValue={PreferencesSystem.getGlobalPreference<number>("YawSensitivity")}
+                value={PreferencesSystem.getGlobalPreference<number>("YawSensitivity")}
                 label={"Yaw Sensitivity"}
                 format={{ maximumFractionDigits: 2 }}
-                onChange={value => setYawSensitivity(value)}
+                onChange={(_, value) => setYawSensitivity(value as number)}
             />
             <Label size={LabelSize.Medium}>Preferences</Label>
             <Checkbox
