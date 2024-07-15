@@ -9,6 +9,7 @@ export enum MaterialStyle {
     Regular = 0,
     Normals = 1,
     Toon = 2,
+    Transparent = 3,
 }
 
 export const matToString = (mat: THREE.Matrix4) => {
@@ -131,6 +132,10 @@ class MirabufInstance {
                 } else if (materialStyle == MaterialStyle.Toon) {
                     material = World.SceneRenderer.CreateToonMaterial(hex, 5)
                     console.debug("Toon Material")
+                } else if (materialStyle == MaterialStyle.Transparent) {
+                    material = new THREE.MeshStandardMaterial({
+                        transparent: true,
+                    })
                 }
 
                 this._materials.set(appearanceId, material!)
