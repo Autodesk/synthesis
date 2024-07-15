@@ -131,9 +131,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Clear Prefs"}
                         icon={<IoBug />}
-                        onClick={() =>
-                            (PreferencesSystem.clearPreferences())
-                        }
+                        onClick={() => PreferencesSystem.clearPreferences()}
                     />
                     <MainHUDButton
                         value={"Refresh APS Token"}
@@ -177,6 +175,13 @@ const MainHUD: React.FC = () => {
                         icon={<GiSteeringWheel />}
                         onClick={() => MirabufCachingService.RemoveAll()}
                     />
+                    <MainHUDButton
+                        value={"Edit Scoring Zones"}
+                        icon={<IoBasketball />}
+                        onClick={() => {
+                            openPanel("scoring-zones")
+                        }}
+                    />
                     <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton
                         value={"Toasts"}
@@ -186,18 +191,8 @@ const MainHUD: React.FC = () => {
                             addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
-                    <MainHUDButton
-                        value={"Configure"}
-                        icon={<FaGear />}
-                        onClick={() => openModal("config-robot")}
-                    />
-                    <MainHUDButton
-                        value={"Edit Scoring Zones"}
-                        icon={<IoBasketball />}
-                        onClick={() => {
-                            openPanel("scoring-zones")
-                        }}
-                    />               </div>
+                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
+                </div>
                 {userInfo ? (
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}

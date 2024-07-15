@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
@@ -12,7 +12,6 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 type ScoringZoneRowProps = {
     zone: ScoringZonePreferences
     openPanel: (id: string) => void
-    closePanel: (paneId: string) => void
     deleteZone: () => void
     saveZones: () => void
 }
@@ -21,7 +20,7 @@ export class SelectedZone {
     public static zone: ScoringZonePreferences;
 }
 
-const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, closePanel, deleteZone, saveZones }) => {
+const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, deleteZone, saveZones }) => {
     return (
         <Stack direction={StackDirection.Horizontal} spacing={48} justify="between">
             <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
@@ -39,7 +38,6 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, closeP
                     onClick={() => {
                         SelectedZone.zone = zone
                         saveZones()
-                        closePanel("scoring-zones")
                         openPanel("zone-config")
                     }}
                 />
@@ -72,6 +70,10 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
         }
     }
 
+    useEffect(() => {
+        closePanel("zone-config")
+    },[])
+
     return (
         <Panel
             name="Scoring Zones"
@@ -94,7 +96,6 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                                 key={i}
                                 zone={z}
                                 openPanel={openPanel}
-                                closePanel={closePanel}
                                 deleteZone={() => {
                                     setZones(zones.filter((_, idx) => idx !== i))
                                 }}
@@ -119,7 +120,6 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                             zones.push(newZone)
                             SelectedZone.zone = newZone
                             saveZones()
-                            closePanel(panelId)
                             openPanel("zone-config")
                         }}
                         className="px-36 w-full"

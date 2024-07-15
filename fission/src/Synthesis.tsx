@@ -164,6 +164,7 @@ function Synthesis() {
                         closePanel={(id: string) => {
                             closePanel(id)
                         }}
+                        closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
@@ -231,9 +232,14 @@ const initialPanels: ReactElement[] = [
         openLocation="right"
         sidePadding={8}
     />,
-    <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" openLocation="right" sidePadding={8} />,
-    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
-    <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
+    <ConfigureShotTrajectoryPanel
+        key="config-shot-trajectory"
+        panelId="config-shot-trajectory"
+        openLocation="right"
+        sidePadding={8}
+    />,
+    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
+    <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <PokerPanel key="poker" panelId="poker" />,
 ]
 

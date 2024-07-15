@@ -52,6 +52,16 @@ class TransformGizmos {
     }
 
     /**
+     * Removes active gizmos and creates a new one
+     *
+     * @param mode The type of gizmo to create
+     */
+    public SwitchGizmo(mode: "translate" | "rotate" | "scale", size: number = 1.5) {
+        World.SceneRenderer.RemoveTransformGizmos(this._mesh)
+        this.CreateGizmo(mode, size)
+    }
+
+    /**
      * Updates the position and rotation of the gizmos to match the mesh's position
      *
      * @param obj The MirabufSceneObject that the gizmos are attached to

@@ -62,7 +62,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
 
     useEffect(() => {
        setupGizmo()
-    })
+    }, [])
 
     return (
         <Panel
