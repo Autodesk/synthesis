@@ -269,6 +269,10 @@ class PhysicsSystem extends WorldSystem {
         return body
     }
 
+    public AddBodyToSystem(bodyId: Jolt.BodyID, shouldActivate: boolean) {
+        this._joltBodyInterface.AddBody(bodyId, shouldActivate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate)
+    }
+
     /**
      * Utility function for creating convex hulls. Mostly used for Unit test validation.
      *
