@@ -20,11 +20,9 @@ const AssemblyCard: React.FC<AssemblyCardProps> = ({ id, update }) => {
             <Label className="text-wrap break-all">{id}</Label>
             <Button
                 value="Delete"
+                // prettier-ignore
                 onClick={() => {
-                    if (World.SceneRenderer.sceneObjects.get(id) && World.SceneRenderer.sceneObjects.get(id) instanceof MirabufSceneObject) {
-                        const mirabuf = World.SceneRenderer.sceneObjects.get(id) as MirabufSceneObject
-                        mirabuf.DisableTransformControls()
-                    }
+                    (World.SceneRenderer.sceneObjects.get(id) as MirabufSceneObject).DisableTransformControls()
                     World.SceneRenderer.RemoveSceneObject(id)
                     update()
                 }}
