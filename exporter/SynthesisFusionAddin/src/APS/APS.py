@@ -272,6 +272,10 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
     auth = APS_AUTH.access_token
     # Get token from APS API later
     file_name = file_path_to_file_name(file_path)
+    file_id = get_file_id(auth, project_id, folder_id, file_name)
+    if file_id not None:
+        update_file_version()
+
 
     """
     Create APS Storage Location
@@ -303,6 +307,19 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
     (_lineage_id, _lineage_href) = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
 
     return ""
+
+def check_file_exists(auth: str, project_id: str, file_id: str) -> bool | None:
+    headers = {
+        "Authorization": f"Bearer {auth}"
+    }
+    res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/items/{file_id}", headers=headers)
+
+    if res.status_code == 200:
+        return True
+    elif res.status_code == 404:
+        return False
+    else:
+        return None
 
 
 def get_hub_id(auth: str, hub_name: str) -> str | None:
@@ -392,7 +409,7 @@ def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str
 
 
     headers = {
-        "Authorization:": f"Bearer {auth}",
+        "Authorization": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json",
         "Accept": "application/vnd.api+json"
 
@@ -406,35 +423,19 @@ def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str
         }
     }
 
-    refs = {
-        "data": {
-            "type": "versions",
-            "id": "", #version URN
-            "meta": {
-                "refType": "xrefs",
-                "direction": "to",
-                "extension": {
-                    "type": "xrefs:autodesk.core:Xref",
-                    "version": "1.1.0"
-                }
-            }
-        }
-    }
-
     relationships: dict[str, Any] = {
         "item": {
             "data": {
                 "type": "items",
-                "id": ""#wtf some id
+                "id": file_id,
             }
         },
         "storage": {
             "data": {
                 "type": "objects",
-                "id": object_id
+                "id": object_id,
             }
         },
-        "refs": refs
     }
 
     data = {
