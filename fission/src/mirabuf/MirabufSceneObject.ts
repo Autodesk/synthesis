@@ -7,7 +7,7 @@ import Jolt from "@barclah/jolt-physics"
 import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { BodyAssociated, JoltBodyIndexAndSequence, LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { BodyAssociate, JoltBodyIndexAndSequence, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
@@ -359,7 +359,7 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
 /**
  * Body association to a rigid node with a given mirabuf scene object.
  */
-export class RigidNodeAssociate implements BodyAssociated {
+export class RigidNodeAssociate implements BodyAssociate {
     public readonly associatedBody: JoltBodyIndexAndSequence
     public readonly sceneObject: MirabufSceneObject
 

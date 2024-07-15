@@ -66,7 +66,7 @@ class PhysicsSystem extends WorldSystem {
 
     private _pauseCounter = 0
 
-    private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociated>
+    private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
 
     public get isPaused(): boolean {
         return this._pauseCounter > 0
@@ -110,7 +110,7 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId BodyID to check for association
      * @returns Association for given Body
      */
-    public GetBodyAssociation<T extends object & BodyAssociated>(bodyId: Jolt.BodyID): T | undefined {
+    public GetBodyAssociation<T extends object & BodyAssociate>(bodyId: Jolt.BodyID): T | undefined {
         const res = this._bodyAssociations.get(bodyId.GetIndexAndSequenceNumber())
         if (res) {
             // Avoids error, simply returns undefined if invalid
@@ -123,9 +123,9 @@ class PhysicsSystem extends WorldSystem {
     /**
      * Sets assocation for a body
      *
-     * @param assocation Assocation. See {@link BodyAssociated}
+     * @param assocation Assocation. See {@link BodyAssociate}
      */
-    public SetBodyAssociation<T extends BodyAssociated>(assocation: T) {
+    public SetBodyAssociation<T extends BodyAssociate>(assocation: T) {
         this._bodyAssociations.set(assocation.associatedBody, assocation)
     }
 
@@ -1120,7 +1120,7 @@ export type RayCastHit = {
 /**
  * An interface to create an association between a body and anything.
  */
-export interface BodyAssociated {
+export interface BodyAssociate {
     readonly associatedBody: JoltBodyIndexAndSequence
 }
 

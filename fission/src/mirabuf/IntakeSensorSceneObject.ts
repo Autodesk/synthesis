@@ -66,7 +66,13 @@ class IntakeSensorSceneObject extends SceneObject {
             World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(position))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
 
+            if (this._mesh) {
+                this._mesh.position.setFromMatrixPosition(bodyTransform)
+                this._mesh.rotation.setFromRotationMatrix(bodyTransform)
+            }
+
             if (!World.PhysicsSystem.isPaused) {
+                // TEMPORARY GAME PIECE DETECTION
                 const hitRes = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(position), new JOLT.Vec3(0, 0, 3))
                 if (hitRes) {
                     const gpAssoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(hitRes.data.mBodyID)
@@ -75,11 +81,6 @@ class IntakeSensorSceneObject extends SceneObject {
                         this._parentAssembly.SetEjectable(hitRes.data.mBodyID, false)
                     }
                 }
-            }
-
-            if (this._mesh) {
-                this._mesh.position.setFromMatrixPosition(bodyTransform)
-                this._mesh.rotation.setFromRotationMatrix(bodyTransform)
             }
         }
     }
