@@ -121,7 +121,7 @@ def refreshAuthToken():
             "client_id": CLIENT_ID,
             "grant_type": "refresh_token",
             "refresh_token": APS_AUTH.refresh_token,
-            "scope": "data:create",
+            "scope": "data:create data:write",
         }
     ).encode("utf-8")
     req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)

@@ -4,6 +4,7 @@ import traceback
 from shutil import rmtree
 
 import adsk.core
+from proto.deps import installDependencies
 
 from .src.APS import APS
 from .src.configure import setAnalytics, unload_config
@@ -29,6 +30,7 @@ def run(_):
     """
 
     try:
+        installDependencies()
         # Remove all items prior to start just to make sure
         unregister_all()
 
