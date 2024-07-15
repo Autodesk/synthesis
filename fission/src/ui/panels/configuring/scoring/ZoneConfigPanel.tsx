@@ -7,7 +7,6 @@ import NumberInput from "@/components/NumberInput"
 import { SelectedZone } from "./ScoringZonesPanel"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { usePanelControlContext } from "@/ui/PanelContext"
-import Stack, { StackDirection } from "@/ui/components/Stack"
 import SelectButton from "@/ui/components/SelectButton"
 import Jolt from "@barclah/jolt-physics"
 import TransformGizmos from "@/ui/components/TransformGizmos"
@@ -17,6 +16,7 @@ import { ReactRgbaColor_ThreeColor } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 
 const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const { openPanel, closePanel } = usePanelControlContext()
@@ -61,7 +61,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         transformGizmoRef.current = new TransformGizmos(
             new THREE.Mesh(
                 new THREE.BoxGeometry(1, 1, 1),
-                World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightSelect.color))
+                World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
             )
         )
         transformGizmoRef.current.AddMeshToScene()
@@ -123,18 +123,19 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
-
             onAccept={() => {
                 saveSettings()
                 if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
                 openPanel("scoring-zones")
             }}
-
             onCancel={() => {
                 openPanel("scoring-zones")
                 if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
             }}
         >
+            
+            <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
+
             {/** Set the zone name */}
             <Input label="Name" placeholder="Enter zone name" defaultValue={SelectedZone.zone.name} onInput={setName} />
 
@@ -174,37 +175,28 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             />
 
             {/** Switch between transform control modes */}
-            <Stack direction={StackDirection.Horizontal} spacing={8}>
-                <>
-                    <Button
-                        value="Move"
-                        colorOverrideClass={transformMode != "translate" ? "bg-interactive-background" : undefined}
-                        onClick={() => {
-                            setTransformMode("translate")
+            
+                    <ToggleButtonGroup
+                        value={transformMode}
+                        exclusive
+                        onChange={(_, v) => {
+                            if (v == undefined)
+                                return
 
-                            transformGizmoRef.current?.SwitchGizmo("translate", 1.5)
+                            setTransformMode(v)
+                            transformGizmoRef.current?.SwitchGizmo(v, 1.5)
                         }}
-                    />
-                    <Button
-                        value="Scale"
-                        colorOverrideClass={transformMode != "scale" ? "bg-interactive-background" : undefined}
-                        onClick={() => {
-                            setTransformMode("scale")
-
-                            transformGizmoRef.current?.SwitchGizmo("scale", 1.5)
+                        sx={{
+                            alignSelf: "center",
                         }}
-                    />
-                    <Button
-                        value="Rotate"
-                        colorOverrideClass={transformMode != "rotate" ? "bg-interactive-background" : undefined}
-                        onClick={() => {
-                            setTransformMode("rotate")
-
-                            transformGizmoRef.current?.SwitchGizmo("rotate", 1.5)
-                        }}
-                    />
-                </>
-            </Stack>
+                    >
+                        <ToggleButton value={"translate"}>Move</ToggleButton>
+                        <ToggleButton value={"scale"}>Scale</ToggleButton>
+                        <ToggleButton value={"rotate"}>Rotate</ToggleButton>
+                    </ToggleButtonGroup>
+                    
+            </div>
+            {/* </Stack> */}
         </Panel>
     )
 }

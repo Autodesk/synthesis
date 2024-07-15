@@ -8,6 +8,12 @@ import Stack, { StackDirection } from "@/components/Stack"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { AiOutlinePlus } from "react-icons/ai"
+import { IoPencil, IoTrashBin } from "react-icons/io5"
+
+const AddIcon = <AiOutlinePlus size={"1.25rem"} />
+const DeleteIcon = <IoTrashBin size={"1.25rem"} />
+const EditIcon = <IoPencil size={"1.25rem"} />
 
 type ScoringZoneRowProps = {
     zone: ScoringZonePreferences
@@ -34,19 +40,21 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, delete
             </Stack>
             <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
                 <Button
-                    value="Edit"
+                    value={EditIcon}
                     onClick={() => {
                         SelectedZone.zone = zone
                         saveZones()
                         openPanel("zone-config")
                     }}
+                    colorOverrideClass="bg-accept-button hover:brightness-90"
                 />
                 <Button
-                    value="Delete"
+                    value={DeleteIcon}
                     onClick={() => {
                         deleteZone()
                         saveZones()
                     }}
+                    colorOverrideClass="bg-cancel-button hover:brightness-90"
                 />
             </Stack>
         </Stack>
@@ -60,8 +68,6 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
      const fieldPrefs = PreferencesSystem.getAllFieldPreferences()[SynthesisBrain.fieldsSpawned[0]]
 
      if (zones == undefined && fieldPrefs != undefined) {
-        console.log("set zones") 
-        console.log(fieldPrefs.scoringZones)
         setZones(fieldPrefs.scoringZones)
      }
 
@@ -106,7 +112,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                         ))}
                     </ScrollView>
                     <Button
-                        value="Add Zone"
+                        value={AddIcon}
                         onClick={() => {
                             const newZone: ScoringZonePreferences = {
                                 name: "New Scoring Zone",
@@ -122,9 +128,9 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                             zones.push(newZone)
                             SelectedZone.zone = newZone
                             saveZones()
+                            console.log(SelectedZone.zone.name)
                             openPanel("zone-config")
                         }}
-                        className="px-36 w-full"
                     />
                 </>
             )}
