@@ -6,7 +6,6 @@ import traceback
 from shutil import rmtree
 
 import adsk.core
-from proto.deps import installDependencies
 
 from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
 from .src.Types.OString import OString
