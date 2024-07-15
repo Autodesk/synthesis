@@ -118,7 +118,6 @@ class MirabufInstance {
                 let opacity = 1.0
                 if (appearance.albedo) {
                     const { A, B, G, R } = appearance.albedo
-                    console.log(A)
                     if (A && B && G && R) {
                         hex = (A << 24) | (R << 16) | (G << 8) | B
                         opacity = A / 255.0
