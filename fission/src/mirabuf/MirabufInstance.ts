@@ -9,7 +9,6 @@ export enum MaterialStyle {
     Regular = 0,
     Normals = 1,
     Toon = 2,
-    Transparent = 3,
 }
 
 export const matToString = (mat: THREE.Matrix4) => {
