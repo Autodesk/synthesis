@@ -57,6 +57,7 @@ import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.ts
 import APS from "./aps/APS.ts"
 import Skybox from "./ui/components/Skybox.tsx"
 import PokerPanel from "@/panels/PokerPanel.tsx"
+import ProgressNotifications, { ProgressHandle, ProgressHandleStatus } from "./ui/components/ProgressNotification.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -97,11 +98,16 @@ function Synthesis() {
         }
 
         const setup = async () => {
+            const setupProgress = new ProgressHandle("Spawning Default Robot")
+            setupProgress.Update("Checking cache...", 0.1)
+
             const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
                 .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
 
             const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
+
+            setupProgress.Update("Parsing assembly...", 0.5)
 
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
@@ -111,11 +117,16 @@ function Synthesis() {
                 const parser = new MirabufParser(miraAssembly)
                 if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
                     console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+                    setupProgress.Update("Failed to parse assembly", 1, ProgressHandleStatus.Error)
                     return
                 }
 
+                setupProgress.Update("Creating scene object...", 0.9)
+
                 const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
+
+                setupProgress.Update("Done", 1, ProgressHandleStatus.Done)
             })()
         }
 
@@ -175,6 +186,7 @@ function Synthesis() {
                                     {modalElement}
                                 </div>
                             )}
+                            <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>

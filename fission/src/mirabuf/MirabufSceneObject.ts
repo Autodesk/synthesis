@@ -12,6 +12,7 @@ import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
+import { ProgressHandle } from "@/ui/components/ProgressNotification"
 
 const DEBUG_BODIES = false
 
@@ -40,11 +41,13 @@ class MirabufSceneObject extends SceneObject {
         return this._mechanism
     }
 
-    public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
+    public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
         super()
 
         this._mirabufInstance = mirabufInstance
         this._assemblyName = assemblyName
+
+        progressHandle?.Update("Creating mechanism...", 0.9)
 
         this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser)
         if (this._mechanism.layerReserve) {

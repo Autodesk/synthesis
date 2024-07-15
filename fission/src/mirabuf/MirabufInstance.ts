@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { mirabuf } from "../proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
+import { ProgressHandle } from "@/ui/components/ProgressNotification.tsx"
 
 const WIREFRAME = false
 
@@ -95,7 +96,7 @@ class MirabufInstance {
         return this._meshes
     }
 
-    public constructor(parser: MirabufParser, materialStyle?: MaterialStyle) {
+    public constructor(parser: MirabufParser, materialStyle?: MaterialStyle, progressHandle?: ProgressHandle) {
         if (parser.errors.some(x => x[0] >= ParseErrorSeverity.Unimportable)) {
             throw new Error("Parser has significant errors...")
         }
@@ -104,7 +105,10 @@ class MirabufInstance {
         this._materials = new Map()
         this._meshes = new Map()
 
+        progressHandle?.Update('Loading materials...', 0.4)
         this.LoadMaterials(materialStyle ?? MaterialStyle.Regular)
+
+        progressHandle?.Update('Creating meshes...', 0.5)
         this.CreateMeshes()
     }
 
