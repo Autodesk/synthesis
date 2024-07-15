@@ -33,7 +33,6 @@ def run(_):
     """
 
     try:
-        installDependencies()
         # Remove all items prior to start just to make sure
         unregister_all()
 
