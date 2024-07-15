@@ -9,11 +9,9 @@ from datetime import datetime
 from time import time
 from types import FunctionType
 
-from requests import get, post
-from result import Ok, Err, is_err
-
 import adsk.core
 import adsk.fusion
+from .strings import INTERNAL_ID
 
 # hard coded to bypass errors for now
 PROTOBUF = True

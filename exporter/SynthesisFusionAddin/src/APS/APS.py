@@ -7,23 +7,21 @@ import time
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from typing import Any
-from result import Ok, Err, Result, is_err
-import requests
 
 from ..general_imports import (
     APP_NAME,
     DESCRIPTION,
     INTERNAL_ID,
-    APS_AUTH,
-    APS_USER_INFO,
     gm,
     my_addin_path,
-    root_logger,
 )
 
 CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
+
+APS_AUTH = None
+APS_USER_INFO = None
+
 
 @dataclass
 class APSAuth:
@@ -66,26 +64,25 @@ def getCodeChallenge() -> str | None:
     return data["challenge"]
 
 
-def getAuth() -> APSAuth | None:
+def getAuth() -> APSAuth:
+    global APS_AUTH
     if APS_AUTH is not None:
         return APS_AUTH
     try:
+        curr_time = time.time()
         with open(auth_path, "rb") as f:
             p = pickle.load(f)
-            logging.getLogger(f"{INTERNAL_ID}").info(f"Auth Path: {auth_path}\n{json.dumps(p)}")
             APS_AUTH = APSAuth(
                 access_token=p["access_token"],
                 refresh_token=p["refresh_token"],
                 expires_in=p["expires_in"],
-                expires_at=p["expires_at"],
+                expires_at=int(curr_time + p["expires_in"] * 1000),
                 token_type=p["token_type"],
             )
     except:
-        gm.ui.messageBox("Sign in","Sign in")
-        return None
+        gm.ui.messageBox("Please Sign In", "Please Sign In")
     curr_time = int(time.time() * 1000)
     if curr_time >= APS_AUTH.expires_at:
-        logging.getLogger(f"{INTERNAL_ID}").info(f"Refreshing {curr_time}\n{json.dumps(APS_AUTH.__dict__)}")
         refreshAuthToken()
     if APS_USER_INFO is None:
         loadUserInfo()
@@ -96,25 +93,24 @@ def convertAuthToken(code: str):
     global APS_AUTH
     authUrl = f'http://localhost:80/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:80/api/aps/exporter/")}'
     res = urllib.request.urlopen(authUrl)
-
     data = _res_json(res)["response"]
-    curr_time = time.time() * 1000
+    curr_time = time.time()
     APS_AUTH = APSAuth(
         access_token=data["access_token"],
         refresh_token=data["refresh_token"],
         expires_in=data["expires_in"],
-        expires_at=int(curr_time + (data["expires_in"] * 1000)),
+        expires_at=int(curr_time + data["expires_in"] * 1000),
         token_type=data["token_type"],
     )
     with open(auth_path, "wb") as f:
-        logging.getLogger(f"{INTERNAL_ID}").info(f"APS AUTH: {json.dumps(APS_AUTH.__dict__)}")
-        pickle.dump(APS_AUTH.__dict__, f)
+        pickle.dump(data, f)
         f.close()
 
     loadUserInfo()
 
 
 def removeAuth():
+    global APS_AUTH, APS_USER_INFO
     APS_AUTH = None
     APS_USER_INFO = None
     pathlib.Path.unlink(pathlib.Path(auth_path))
@@ -129,7 +125,7 @@ def refreshAuthToken():
             "client_id": CLIENT_ID,
             "grant_type": "refresh_token",
             "refresh_token": APS_AUTH.refresh_token,
-            "scope": "data:create",
+            "scope": "data:read",
         }
     ).encode("utf-8")
     req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
@@ -138,12 +134,12 @@ def refreshAuthToken():
     try:
         res = urllib.request.urlopen(req)
         data = _res_json(res)
-        curr_time = time.time() * 1000
+        curr_time = time.time()
         APS_AUTH = APSAuth(
             access_token=data["access_token"],
             refresh_token=data["refresh_token"],
             expires_in=data["expires_in"],
-            expires_at=int(curr_time + (data["expires_in"] * 1000)),
+            expires_at=int(curr_time + data["expires_in"] * 1000),
             token_type=data["token_type"],
         )
     except urllib.request.HTTPError as e:
@@ -153,6 +149,7 @@ def refreshAuthToken():
 
 
 def loadUserInfo() -> APSUserInfo | None:
+    global APS_AUTH
     if not APS_AUTH:
         return None
     global APS_USER_INFO
@@ -271,10 +268,10 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> Result[st
     """
 
     # data:create
+    global APS_AUTH
     if not APS_AUTH:
         gm.ui.messageBox("You must login to upload designs to APS", "USER ERROR")
-    auth_write = APS_AUTH
-    auth_read = APS_AUTH
+    auth = APS_AUTH
     # Get token from APS API later
     file_name = file_path_to_file_name(file_path)
 
@@ -296,7 +293,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> Result[st
     """
     Create APS Storage Location
     """
-    object_id = create_storage_location(auth_write, project_id, folder_id, file_name)
+    object_id = create_storage_location(auth, project_id, folder_id, file_name)
     if object_id.is_err():
         return Err(None)
     object_id = object_id.ok()
@@ -309,7 +306,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> Result[st
     """
     Create Signed URL For APS Upload
     """
-    generate_signed_url_result = generate_signed_url(auth_read, bucket_key, object_key)
+    generate_signed_url_result = generate_signed_url(auth, bucket_key, object_key)
     if generate_signed_url_result.is_err():
         return Err(None)
 
@@ -323,7 +320,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> Result[st
     if complete_upload(auth_write, upload_key, bucket_key).is_err():
         return Err(None)
     file_name = file_path_to_file_name(file_path)
-    (_lineage_id, _lineage_href) = create_first_file_version(auth_write, str(object_id), project_id, str(folder_id), file_name)
+    (_lineage_id, _lineage_href) = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
 
     return Ok(None)
 
