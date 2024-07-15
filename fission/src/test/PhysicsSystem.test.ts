@@ -102,7 +102,6 @@ describe("Mirabuf Physics Loading", () => {
 })
 
 describe("Body Association", () => {
-
     const B_SAMPLE_NUMBER = 52
     const C_SAMPLE_NUMBER = 24
 
@@ -137,11 +136,9 @@ describe("Body Association", () => {
 
     test("Simple Association", () => {
         const physSystem = new PhysicsSystem()
-        const boxA = physSystem.CreateBox(new THREE.Vector3(1,1,1), undefined, undefined, undefined)
+        const boxA = physSystem.CreateBox(new THREE.Vector3(1, 1, 1), undefined, undefined, undefined)
         physSystem.AddBodyToSystem(boxA.GetID(), true)
 
         physSystem.SetBodyAssociation(new A(boxA.GetID()))
-
-
     })
 })

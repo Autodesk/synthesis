@@ -270,7 +270,10 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public AddBodyToSystem(bodyId: Jolt.BodyID, shouldActivate: boolean) {
-        this._joltBodyInterface.AddBody(bodyId, shouldActivate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate)
+        this._joltBodyInterface.AddBody(
+            bodyId,
+            shouldActivate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
     }
 
     /**
