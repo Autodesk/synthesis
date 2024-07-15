@@ -42,7 +42,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                     "response_type": "code",
                     "client_id": CLIENT_ID,
                     "redirect_uri": urllib.parse.quote_plus(callbackUrl),
-                    "scope": "data:read",
+                    "scope": "data:create",
                     "nonce": time.time(),
                     "prompt": "login",
                     "code_challenge": challenge,
