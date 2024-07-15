@@ -30,7 +30,6 @@ class MirabufSceneObject extends SceneObject {
     private _physicsLayerReserve: LayerReserve | undefined = undefined
 
     private _transformGizmos: TransformGizmos | undefined = undefined
-    private _deleteGizmoOnEscape: boolean = true
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -109,16 +108,12 @@ class MirabufSceneObject extends SceneObject {
             if (this._transformGizmos) {
                 if (InputSystem.isKeyPressed("Enter")) {
                     // confirming placement of the mirabuf object
-                    this._transformGizmos.RemoveGizmos()
-                    this.EnablePhysics()
-                    this._transformGizmos = undefined
+                    this.DisableTransformControls()
                     return
-                } else if (InputSystem.isKeyPressed("Escape") && this._deleteGizmoOnEscape) {
+                } else if (InputSystem.isKeyPressed("Escape")) {
                     // cancelling the creation of the mirabuf scene object
-                    this._transformGizmos.RemoveGizmos()
+                    this.DisableTransformControls()
                     World.SceneRenderer.RemoveSceneObject(this.id)
-                    this._transformGizmos = undefined
-                    this._deleteGizmoOnEscape = false
                     return
                 }
 
@@ -168,10 +163,6 @@ class MirabufSceneObject extends SceneObject {
         this._brain?.clearControls()
     }
 
-    public GetRootNodeId(): Jolt.BodyID | undefined {
-        return this._mechanism.nodeToBody.get(this._mechanism.rootBody)
-    }
-
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
         const scale = new JOLT.Vec3(1, 1, 1)
         const triangleContext = new JOLT.ShapeGetTriangles(
@@ -205,6 +196,9 @@ class MirabufSceneObject extends SceneObject {
         return mesh
     }
 
+    /**
+     * Changes the mode of the mirabuf object from being interacted with to being placed.
+     */
     public EnableTransformControls(): void {
         this._transformGizmos = new TransformGizmos(
             new THREE.Mesh(
@@ -216,6 +210,15 @@ class MirabufSceneObject extends SceneObject {
         this._transformGizmos.CreateGizmo("translate")
 
         this.DisablePhysics()
+    }
+
+    /**
+     * Changes the mode of the mirabuf object from being placed to being interacted with.
+     */
+    public DisableTransformControls(): void {
+        this._transformGizmos?.RemoveGizmos()
+        this._transformGizmos = undefined
+        this.EnablePhysics()
     }
 
     private EnablePhysics() {

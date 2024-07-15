@@ -21,6 +21,10 @@ const AssemblyCard: React.FC<AssemblyCardProps> = ({ id, update }) => {
             <Button
                 value="Delete"
                 onClick={() => {
+                    if (World.SceneRenderer.sceneObjects.get(id) && World.SceneRenderer.sceneObjects.get(id) instanceof MirabufSceneObject) {
+                        const mirabuf = World.SceneRenderer.sceneObjects.get(id) as MirabufSceneObject
+                        mirabuf.DisableTransformControls()
+                    }
                     World.SceneRenderer.RemoveSceneObject(id)
                     update()
                 }}
