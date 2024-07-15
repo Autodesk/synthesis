@@ -451,7 +451,7 @@ def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str
     if not update_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"updating file to new version failed: {update_res.text}")
         return None
-    gm.ui.messageBox("UPLOAD ERROR", f"File {file_name} successfully updated to version {int(curr_file_version) + 1}")
+    gm.ui.messageBox("UPLOAD SUCCESS", f"File {file_name} successfully updated to version {int(curr_file_version) + 1}")
     new_id: str = update_res.json()["data"]["id"]
     return new_id
 
@@ -617,7 +617,6 @@ def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str
         "uploadKey": upload_key
     }
 
-    gm.ui.messageBox(f"upload_key: {upload_key}\nobject_key: {object_key}\nbucket_key:{bucket_key}")
     completed_res = requests.post(f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload", json=data, headers=headers)
     if not completed_res.ok:
         gm.ui.messageBox(f"UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}", "Failed to complete upload")
@@ -647,8 +646,6 @@ def create_first_file_version(auth: str, object_id: str, project_id: str, folder
     notes:
     - super complex request, probably not written correctly, likely a dev error
     """
-
-    gm.ui.messageBox(f"file_name: {file_name}\nfolder_id: {folder_id}\nobject_id: {object_id}\nproject_id: {project_id}")
 
     headers = {
         "Authorization": f"Bearer {auth}",
