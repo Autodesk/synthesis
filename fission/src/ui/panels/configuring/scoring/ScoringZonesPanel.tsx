@@ -23,7 +23,7 @@ type ScoringZoneRowProps = {
 }
 
 export class SelectedZone {
-    public static zone: ScoringZonePreferences;
+    public static zone: ScoringZonePreferences
 }
 
 const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, deleteZone, saveZones }) => {
@@ -65,11 +65,11 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
     const { openPanel, closePanel } = usePanelControlContext()
     const [zones, setZones] = useState<ScoringZonePreferences[] | undefined>(undefined)
 
-     const fieldPrefs = PreferencesSystem.getAllFieldPreferences()[SynthesisBrain.fieldsSpawned[0]]
+    const fieldPrefs = PreferencesSystem.getAllFieldPreferences()[SynthesisBrain.fieldsSpawned[0]]
 
-     if (zones == undefined && fieldPrefs != undefined) {
+    if (zones == undefined && fieldPrefs != undefined) {
         setZones(fieldPrefs.scoringZones)
-     }
+    }
 
     const saveZones = () => {
         if (fieldPrefs != undefined && zones != undefined) {
@@ -80,7 +80,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
 
     useEffect(() => {
         closePanel("zone-config")
-    },[])
+    }, [])
 
     return (
         <Panel

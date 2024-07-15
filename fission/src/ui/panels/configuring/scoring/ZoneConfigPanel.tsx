@@ -38,7 +38,6 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     }, [currentTheme, themes])
 
     const field = useMemo(() => {
-
         const assemblies = [...World.SceneRenderer.sceneObjects.values()]
         for (let i = 0; i < assemblies.length; i++) {
             const assembly = assemblies[i]
@@ -55,7 +54,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     useEffect(() => {
         closePanel("scoring-zones")
         configureGizmo()
-    },[])
+    }, [])
 
     const configureGizmo = () => {
         transformGizmoRef.current = new TransformGizmos(
@@ -133,68 +132,69 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                 if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
             }}
         >
-            
             <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
+                {/** Set the zone name */}
+                <Input
+                    label="Name"
+                    placeholder="Enter zone name"
+                    defaultValue={SelectedZone.zone.name}
+                    onInput={setName}
+                />
 
-            {/** Set the zone name */}
-            <Input label="Name" placeholder="Enter zone name" defaultValue={SelectedZone.zone.name} onInput={setName} />
+                {/** Set the alliance color */}
+                <Button
+                    value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
+                    onClick={() => setAlliance(alliance == "blue" ? "red" : "blue")}
+                    colorOverrideClass={`bg-match-${alliance}-alliance`}
+                />
 
-            {/** Set the alliance color */}
-            <Button
-                value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
-                onClick={() => setAlliance(alliance == "blue" ? "red" : "blue")}
-                colorOverrideClass={`bg-match-${alliance}-alliance`}
-            />
+                {/** Select a parent node */}
+                <SelectButton
+                    placeholder="Select parent node"
+                    onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
+                />
 
-            {/** Select a parent node */}
-            <SelectButton
-                placeholder="Select parent node"
-                onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
-            />
+                {/** Set the point value */}
+                <NumberInput
+                    label="Points"
+                    placeholder="Zone points"
+                    defaultValue={SelectedZone.zone.points}
+                    onInput={v => setPoints(v || 1)}
+                />
 
-            {/** Set the point value */}
-            <NumberInput
-                label="Points"
-                placeholder="Zone points"
-                defaultValue={SelectedZone.zone.points}
-                onInput={v => setPoints(v || 1)}
-            />
+                {/** When checked, the zone will destroy gamepieces it comes in contact with */}
+                <Checkbox
+                    label="Destroy Gamepiece"
+                    defaultState={SelectedZone.zone.destroyGamepiece}
+                    onClick={setDestroy}
+                />
 
-            {/** When checked, the zone will destroy gamepieces it comes in contact with */}
-            <Checkbox
-                label="Destroy Gamepiece"
-                defaultState={SelectedZone.zone.destroyGamepiece}
-                onClick={setDestroy}
-            />
+                {/** When checked, points will stay even when a gamepiece leaves the zone */}
+                <Checkbox
+                    label="Persistent Points"
+                    defaultState={SelectedZone.zone.persistentPoints}
+                    onClick={setPersistent}
+                />
 
-            {/** When checked, points will stay even when a gamepiece leaves the zone */}
-            <Checkbox
-                label="Persistent Points"
-                defaultState={SelectedZone.zone.persistentPoints}
-                onClick={setPersistent}
-            />
+                {/** Switch between transform control modes */}
 
-            {/** Switch between transform control modes */}
-            
-                    <ToggleButtonGroup
-                        value={transformMode}
-                        exclusive
-                        onChange={(_, v) => {
-                            if (v == undefined)
-                                return
+                <ToggleButtonGroup
+                    value={transformMode}
+                    exclusive
+                    onChange={(_, v) => {
+                        if (v == undefined) return
 
-                            setTransformMode(v)
-                            transformGizmoRef.current?.SwitchGizmo(v, 1.5)
-                        }}
-                        sx={{
-                            alignSelf: "center",
-                        }}
-                    >
-                        <ToggleButton value={"translate"}>Move</ToggleButton>
-                        <ToggleButton value={"scale"}>Scale</ToggleButton>
-                        <ToggleButton value={"rotate"}>Rotate</ToggleButton>
-                    </ToggleButtonGroup>
-                    
+                        setTransformMode(v)
+                        transformGizmoRef.current?.SwitchGizmo(v, 1.5)
+                    }}
+                    sx={{
+                        alignSelf: "center",
+                    }}
+                >
+                    <ToggleButton value={"translate"}>Move</ToggleButton>
+                    <ToggleButton value={"scale"}>Scale</ToggleButton>
+                    <ToggleButton value={"rotate"}>Rotate</ToggleButton>
+                </ToggleButtonGroup>
             </div>
             {/* </Stack> */}
         </Panel>

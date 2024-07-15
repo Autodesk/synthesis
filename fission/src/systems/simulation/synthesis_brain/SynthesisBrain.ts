@@ -223,9 +223,9 @@ class SynthesisBrain extends Brain {
     }
 
     private configureField() {
-       PreferencesSystem.getFieldPreferences(this._assemblyName)
+        PreferencesSystem.getFieldPreferences(this._assemblyName)
 
-       /** Put any field configuration here */
+        /** Put any field configuration here */
     }
 
     private getNumberedAssemblyName(): string {

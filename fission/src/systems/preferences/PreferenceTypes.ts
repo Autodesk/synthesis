@@ -43,7 +43,6 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
 }
 
-
 export type ScoringZonePreferences = {
     name: string
     alliance: "red" | "blue"
