@@ -62,8 +62,7 @@ function ProgressNotifications() {
         const onHandleUpdate = (e: Event) => {
             const handle = (e as ProgressEvent).handle;
             if (handle.status > 0) {
-                setTimeout(() => handleMap.delete(handle.handleId) && updateProgressElements(), 1000)
-                console.debug('Deleting')
+                setTimeout(() => handleMap.delete(handle.handleId) && updateProgressElements(), 2000)
             }
             handleMap.set(handle.handleId, handle)
             updateProgressElements()
@@ -124,6 +123,14 @@ export class ProgressHandle {
         status && (this.status = status)
 
         this.Push()
+    }
+
+    public Fail(message?: string) {
+        this.Update(message ?? "Failed", 1, ProgressHandleStatus.Error)
+    }
+
+    public Done(message?: string) {
+        this.Update(message ?? "Done", 1, ProgressHandleStatus.Done)
     }
 
     public Push() {
