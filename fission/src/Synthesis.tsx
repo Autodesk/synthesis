@@ -58,7 +58,7 @@ import APS from "./aps/APS.ts"
 import Skybox from "./ui/components/Skybox.tsx"
 import PokerPanel from "@/panels/PokerPanel.tsx"
 
-const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
+const DEFAULT_MIRA_PATH = "/api/mira/Fields/FRC Field 2018_v13.mira"
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
@@ -97,12 +97,12 @@ function Synthesis() {
         }
 
         const setup = async () => {
-            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
-                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
+            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.FIELD)
+                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.FIELD))
                 .catch(console.error)
-
-            const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
-
+                const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.FIELD)
+                
+                
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
                     return

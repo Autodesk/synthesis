@@ -78,6 +78,8 @@ class MirabufParser {
         this.GenerateTreeValues()
         this.LoadGlobalTransforms()
 
+        console.log(assembly)
+
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this
 
@@ -166,6 +168,7 @@ class MirabufParser {
                     rn = this.MergeRigidNodes(currentRn, rn)
                 }
             })
+            console.log(`rg: ${rg.name}`)
         })
 
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);

@@ -39,10 +39,11 @@ class ScoringSystem extends WorldSystem {
             const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body;
             const manifold = JOLT.wrapPointer(manifoldPtr, Jolt.ContactManifold);
             const settings = JOLT.wrapPointer(settingsPtr, Jolt.ContactSettings);
-            console.log(`${body1.GetID().GetIndex()} collided with ${body2.GetID().GetIndex()}`)
 
             if (body1.GetID().GetIndex() == zone.GetID().GetIndex()) {
                 this.points++
+                // GetSceneObject and check if gamepiece
+                console.log(`${body1.GetID().GetIndex()} collided with ${body2.GetID().GetIndex()}`)
                 console.log(this.points)
             }
         };
@@ -56,7 +57,8 @@ class ScoringSystem extends WorldSystem {
             const body1ID = shapePair.GetBody1ID()
             const body2ID = shapePair.GetBody2ID()
 
-            console.log(`${body1ID.GetIndex()} collided with ${body2ID.GetIndex()}`)
+            if (body1ID.GetIndex() == zone.GetID().GetIndex()) 
+                console.log(`${body1ID.GetIndex()} removed from ${body2ID.GetIndex()}`)
 
         }
 
