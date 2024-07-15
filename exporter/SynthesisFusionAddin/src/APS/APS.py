@@ -297,7 +297,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
     """
     Finish Upload and Initialize First File Version
     """
-    if complete_upload(auth, upload_key, bucket_key) is None:
+    if complete_upload(auth, upload_key, object_key, bucket_key) is None:
         return None
     file_name = file_path_to_file_name(file_path)
     (_lineage_id, _lineage_href) = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
@@ -595,7 +595,7 @@ def upload_file(signed_url: str, file_path: str) -> str |None:
         return None
     return ""
 
-def complete_upload(auth: str, upload_key: str, bucket_key: str) -> str |None:
+def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str) -> str |None:
     """
     completes and verifies the APS file upload given the upload_key
 
@@ -617,13 +617,14 @@ def complete_upload(auth: str, upload_key: str, bucket_key: str) -> str |None:
         "uploadKey": upload_key
     }
 
-    completed_res = requests.post(f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{upload_key}/signeds3upload", json=data, headers=headers)
+    gm.ui.messageBox(f"upload_key: {upload_key}\nobject_key: {object_key}\nbucket_key:{bucket_key}")
+    completed_res = requests.post(f"https://developer.api.autodesk.com/oss/v2/buckets/{bucket_key}/objects/{object_key}/signeds3upload", json=data, headers=headers)
     if not completed_res.ok:
         gm.ui.messageBox(f"UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}", "Failed to complete upload")
         return None
     return ""
 
-def create_first_file_version(auth: str, project_id: str, object_id: str, folder_id: str, file_name: str) -> tuple[str, str]| None:
+def create_first_file_version(auth: str, object_id: str, project_id: str, folder_id: str, file_name: str) -> tuple[str, str]| None:
     """
     initializes versioning for a file
 
@@ -647,18 +648,28 @@ def create_first_file_version(auth: str, project_id: str, object_id: str, folder
     - super complex request, probably not written correctly, likely a dev error
     """
 
+    gm.ui.messageBox(f"file_name: {file_name}\nfolder_id: {folder_id}\nobject_id: {object_id}\nproject_id: {project_id}")
+
     headers = {
-        "Authorization:": f"Bearer {auth}",
+        "Authorization": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json",
         "Accept": "application/vnd.api+json"
 
     }
 
-    attributes = {
+    included_attributes = {
         "name": file_name,
         "extension": {
-            "type": "items:autodesk.core:File",
+            "type": "versions:autodesk.core:File",
             "version": "1.0"
+        }
+    }
+
+    attributes = {
+        "displayName": file_name,
+        "extension": {
+            "type": "items:autodesk.core:File",
+            "version": "1.0",
         }
     }
 
@@ -681,7 +692,7 @@ def create_first_file_version(auth: str, project_id: str, object_id: str, folder
         {
             "type": "versions",
             "id": "1",
-            "attributes": attributes,
+            "attributes": included_attributes,
             "relationships": {
                 "storage": {
                     "data": {
@@ -699,14 +710,15 @@ def create_first_file_version(auth: str, project_id: str, object_id: str, folder
         },
         "data": {
             "type": "items",
+            "attributes": attributes,
             "relationships": relationships
         },
         "included": included
     }
 
-    first_version_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}L/items", data=data, headers=headers)
+    first_version_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/items", json=data, headers=headers)
     if not first_version_res.ok:
-        gm.ui.messageBox("UPLOAD ERROR", f"Failed to create first file version: {first_version_res.text}")
+        gm.ui.messageBox(f"Failed to create first file version: {first_version_res.text}", "UPLOAD ERROR")
         return None
     first_version_json: dict[str, Any] = first_version_res.json()
 

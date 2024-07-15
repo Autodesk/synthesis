@@ -193,7 +193,7 @@ class Parser:
                 project_name = project.name
                 folder_id = project.rootFolder.id
                 file_location = self.exporterOptions.fileLocation
-                gm.ui.messageBox(f"hub: {hub_name}\nprojects: {projects}\nproject: name - {project_name}; id - {project_id}\nfolder: {folder_id}\nfile: {file_location}", "ARGS:")
+                gm.ui.messageBox(f"hub: {hub_name}\nproject: name - {project_name}; id - {project_id}\nfolder: {folder_id}\nfile: {file_location}", "ARGS:")
                 if upload_mirabuf(project_id, folder_id, file_location) is None:
                     gm.ui.messageBox("FAILED TO UPLOAD FILE TO APS", "ERROR") # add throw later
 
