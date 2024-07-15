@@ -1,3 +1,5 @@
+# DO NOT CHANGE ORDER, OR ADD IMPORTS BEFORE UNTIL END COMMENT
+
 import logging
 import os
 import traceback
@@ -6,8 +8,6 @@ from shutil import rmtree
 import adsk.core
 from proto.deps import installDependencies
 
-from .src.APS import APS
-from .src.configure import setAnalytics, unload_config
 from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
 from .src.Types.OString import OString
 from .src.UI import (
@@ -21,6 +21,10 @@ from .src.UI import (
 )
 from .src.UI.Toolbar import Toolbar
 
+# END OF RESTRICTION
+
+from .src.APS import APS
+from .src.configure import setAnalytics, unload_config
 
 def run(_):
     """## Entry point to application from Fusion.

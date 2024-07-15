@@ -38,6 +38,7 @@ try:
         sys.path.insert(2, path_proto_files)
 
     from proto import deps
+    deps.installDependencies()
 
 except:
     logging.getLogger(f"{INTERNAL_ID}.import_manager").error("Failed\n{}".format(traceback.format_exc()))
