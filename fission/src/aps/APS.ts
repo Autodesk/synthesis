@@ -8,14 +8,14 @@ export const APS_USER_INFO_UPDATE_EVENT = "aps_user_info_update"
 
 const CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 
-const ENDPOINT_SYNTHESIS_CODE = `${import.meta.env.VITE_SYNTHESIS_SERVER_PATH}api/aps/code`
-export const ENDPOINT_SYNTHESIS_CHALLENGE = `${import.meta.env.VITE_SYNTHESIS_SERVER_PATH}api/aps/challenge`
+const ENDPOINT_SYNTHESIS_CODE = `/api/aps/code`
+export const ENDPOINT_SYNTHESIS_CHALLENGE = `/api/aps/challenge`
 
 const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
 const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
 const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
 
-interface APSAuth {
+export interface APSAuth {
     access_token: string
     refresh_token: string
     expires_in: number
@@ -23,7 +23,7 @@ interface APSAuth {
     token_type: number
 }
 
-interface APSUserInfo {
+export interface APSUserInfo {
     name: string
     picture: string
     givenName: string
@@ -73,7 +73,14 @@ class APS {
      * Returns the auth data of the current user. See {@link APSAuth}
      * @returns {(APSAuth | undefined)} Auth data of the current user
      */
-    static getAuth(): APSAuth | undefined {
+    static async getAuth(): Promise<APSAuth | undefined> {
+        const auth = this.auth
+        if (!auth) return undefined
+
+        if (Date.now() > auth.expires_at) {
+            console.debug("Expired. Refreshing...")
+            await this.refreshAuthToken(auth.refresh_token, false)
+        }
         return this.auth
     }
 
@@ -83,10 +90,13 @@ class APS {
      */
     static async getAuthOrLogin(): Promise<APSAuth | undefined> {
         const auth = this.auth
-        if (!auth) return undefined
+        if (!auth) {
+            this.requestAuthCode()
+            return undefined
+        }
 
         if (Date.now() > auth.expires_at) {
-            await this.refreshAuthToken(auth.refresh_token)
+            await this.refreshAuthToken(auth.refresh_token, true)
         }
         return this.auth
     }
@@ -158,9 +168,12 @@ class APS {
     /**
      * Refreshes the access token using our refresh token.
      * @param {string} refresh_token - The refresh token from our auth data
+     *
+     * @returns If the promise returns true, that means the auth token is currently available. If not, it means it
+     *           is not readily available, although one may be in the works
      */
-    static async refreshAuthToken(refresh_token: string) {
-        await this.requestMutex.runExclusive(async () => {
+    static async refreshAuthToken(refresh_token: string, shouldRelog: boolean): Promise<boolean> {
+        return this.requestMutex.runExclusive(async () => {
             try {
                 const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN, {
                     method: "POST",
@@ -176,12 +189,16 @@ class APS {
                 })
                 const json = await res.json()
                 if (!res.ok) {
-                    MainHUD_AddToast("error", "Error signing in.", json.userMessage)
-                    this.auth = undefined
-                    await this.requestAuthCode()
-                    return
+                    if (shouldRelog) {
+                        MainHUD_AddToast("warning", "Must Re-signin.", json.userMessage)
+                        this.auth = undefined
+                        await this.requestAuthCode()
+                        return false
+                    } else {
+                        return false
+                    }
                 }
-                json.expires_at = json.expires_in + Date.now()
+                json.expires_at = json.expires_in * 1000 + Date.now()
                 this.auth = json as APSAuth
                 if (this.auth) {
                     await this.loadUserInfo(this.auth)
@@ -189,10 +206,12 @@ class APS {
                         MainHUD_AddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
                     }
                 }
+                return true
             } catch (e) {
                 MainHUD_AddToast("error", "Error signing in.", "Please try again.")
                 this.auth = undefined
                 await this.requestAuthCode()
+                return false
             }
         })
     }
@@ -212,7 +231,7 @@ class APS {
                 return
             }
             const auth_res = json.response as APSAuth
-            auth_res.expires_at = auth_res.expires_in + Date.now()
+            auth_res.expires_at = auth_res.expires_in * 1000 + Date.now()
             this.auth = auth_res
             console.log("Preloading user info")
             const auth = await this.getAuth()
