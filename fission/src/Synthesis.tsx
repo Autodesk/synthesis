@@ -53,9 +53,9 @@ import PokerPanel from "@/panels/PokerPanel.tsx"
 import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
-import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import APS from "./aps/APS.ts"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 
@@ -214,7 +214,6 @@ const initialModals = [
     <MatchModeModal key="match-mode" modalId="match-mode" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
-    <ImportMirabufModal key="import-mirabuf" modalId="import-mirabuf" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
     <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
@@ -240,6 +239,7 @@ const initialPanels: ReactElement[] = [
     />,
     <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
     <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
+    <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
 ]
 

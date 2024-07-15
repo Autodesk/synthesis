@@ -60,7 +60,9 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
      const fieldPrefs = PreferencesSystem.getAllFieldPreferences()[SynthesisBrain.fieldsSpawned[0]]
 
      if (zones == undefined && fieldPrefs != undefined) {
-         setZones(fieldPrefs.scoringZones)
+        console.log("set zones") 
+        console.log(fieldPrefs.scoringZones)
+        setZones(fieldPrefs.scoringZones)
      }
 
     const saveZones = () => {

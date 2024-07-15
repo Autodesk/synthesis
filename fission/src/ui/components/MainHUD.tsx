@@ -96,7 +96,7 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={<FaPlus />}
                     larger={true}
-                    onClick={() => openModal("spawning")}
+                    onClick={() => openPanel("import-mirabuf")}
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -112,11 +112,6 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("change-inputs")}
                     />
                     <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
-                    <MainHUDButton
-                        value={"Import Mira"}
-                        icon={<IoPeople />}
-                        onClick={() => openModal("import-mirabuf")}
-                    />
                     <MainHUDButton
                         value={"Import Local Mira"}
                         icon={<IoPeople />}
@@ -136,7 +131,9 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
-                        onClick={() => APS.isSignedIn() && APS.refreshAuthToken(APS.getAuth()!.refresh_token)}
+                        onClick={async () =>
+                            APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
+                        }
                     />
                     <MainHUDButton
                         value={"Expire APS Token"}

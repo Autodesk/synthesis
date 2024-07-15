@@ -95,7 +95,7 @@ class PreferencesSystem {
 
     /** Gets preferences for every robot in local storage */
     public static getAllFieldPreferences(): { [key: string]: FieldPreferences } {
-        let allFieldPrefs = this.getPreference<{ [key: string]: FieldPreferences }>(RobotPreferencesKey)
+        let allFieldPrefs = this.getPreference<{ [key: string]: FieldPreferences }>(FieldPreferencesKey)
 
         if (allFieldPrefs == undefined) {
             allFieldPrefs = {}
@@ -110,7 +110,6 @@ class PreferencesSystem {
         const loadedPrefs = window.localStorage.getItem(this._localStorageKey)
 
         if (loadedPrefs == undefined) {
-            console.log("Preferences not found in local storage!")
             this._preferences = {}
             return
         }

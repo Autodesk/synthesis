@@ -58,7 +58,7 @@ class SynthesisBrain extends Brain {
             else SynthesisBrain.numberRobotsSpawned[assemblyName]++
 
             this._assemblyIndex = SynthesisBrain.numberRobotsSpawned[assemblyName]
-            SynthesisBrain.robotsSpawned.push(`[${this._assemblyIndex}] ${assemblyName}`)
+            SynthesisBrain.robotsSpawned.push(this.getNumberedAssemblyName())
 
             this.configureArcadeDriveBehavior()
             this.configureArmBehaviors()
@@ -83,7 +83,7 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        const index = SynthesisBrain.robotsSpawned.indexOf(`[${this._assemblyIndex}] ${this._assemblyName}`)
+        const index = SynthesisBrain.robotsSpawned.indexOf(this.getNumberedAssemblyName())
         SynthesisBrain.robotsSpawned.splice(index, 1)
     }
 
@@ -226,6 +226,10 @@ class SynthesisBrain extends Brain {
        PreferencesSystem.getFieldPreferences(this._assemblyName)
 
        /** Put any field configuration here */
+    }
+
+    private getNumberedAssemblyName(): string {
+        return `[${this._assemblyIndex}] ${this._assemblyName}`
     }
 
     private static parseInputs(rawInputs: InputScheme) {
