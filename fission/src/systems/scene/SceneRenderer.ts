@@ -3,6 +3,7 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 import SceneObject from "@/systems/scene/SceneObject"
 import WorldSystem from "@/systems/WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 
 import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
@@ -10,7 +11,7 @@ import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
 
 const CLEAR_COLOR = 0x121212
-const GROUND_COLOR = 0x73937e
+const GROUND_COLOR = 0x4066c7
 
 let nextSceneObjectId = 1
 
@@ -19,6 +20,9 @@ class SceneRenderer extends WorldSystem {
     private _scene: THREE.Scene
     private _renderer: THREE.WebGLRenderer
     private _skybox: THREE.Mesh
+    private _composer: EffectComposer
+
+    private _antiAliasPass: EffectPass
 
     private _sceneObjects: Map<number, SceneObject>
 
@@ -52,7 +56,13 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
-        this._renderer = new THREE.WebGLRenderer()
+        this._renderer = new THREE.WebGLRenderer({
+            // Following parameters are used to optimize post-processing
+            powerPreference: "high-performance",
+            antialias: false,
+            stencil: false,
+            depth: false,
+        })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
         this._renderer.shadowMap.enabled = true
@@ -98,10 +108,19 @@ class SceneRenderer extends WorldSystem {
                 bColor: { value: 1.0 },
             },
         })
+
         this._skybox = new THREE.Mesh(geometry, material)
         this._skybox.receiveShadow = false
         this._skybox.castShadow = false
         this.scene.add(this._skybox)
+
+        // POST PROCESSING: https://github.com/pmndrs/postprocessing
+        this._composer = new EffectComposer(this._renderer)
+        this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
+
+        const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+        this._antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
+        this._composer.addPass(this._antiAliasPass)
 
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
@@ -115,12 +134,11 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
-    public Update(_: number): void {
+    public Update(deltaT: number): void {
         this._sceneObjects.forEach(obj => {
             obj.Update()
         })
 
-        // controls.update(deltaTime); // TODO: Add controls?
         this._skybox.position.copy(this._mainCamera.position)
 
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
@@ -132,7 +150,7 @@ class SceneRenderer extends WorldSystem {
             )
         })
 
-        this._renderer.render(this._scene, this._mainCamera)
+        this._composer.render(deltaT)
     }
 
     public Destroy(): void {

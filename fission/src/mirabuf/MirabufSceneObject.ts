@@ -13,7 +13,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 
-const DEBUG_BODIES = true
+const DEBUG_BODIES = false
 
 interface RnDebugMeshes {
     colliderMesh: THREE.Mesh
@@ -168,7 +168,11 @@ class MirabufSceneObject extends SceneObject {
         this._brain?.clearControls()
     }
 
-    public CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
+    public GetRootNodeId(): Jolt.BodyID | undefined {
+        return this._mechanism.nodeToBody.get(this._mechanism.rootBody)
+    }
+
+    private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
         const scale = new JOLT.Vec3(1, 1, 1)
         const triangleContext = new JOLT.ShapeGetTriangles(
             shape,

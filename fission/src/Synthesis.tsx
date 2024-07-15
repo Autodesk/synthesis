@@ -52,9 +52,9 @@ import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
-import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import APS from "./aps/APS.ts"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import PokerPanel from "@/panels/PokerPanel.tsx"
 
@@ -75,7 +75,7 @@ function Synthesis() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
-    const { currentTheme, applyTheme } = useTheme()
+    const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
     useEffect(() => {
         applyTheme(currentTheme)
@@ -128,6 +128,9 @@ function Synthesis() {
             World.UpdateWorld()
         }
         mainLoop()
+
+        World.SceneRenderer.updateSkyboxColors(defaultTheme)
+
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
@@ -207,10 +210,8 @@ const initialModals = [
     <RCConfigPwmGroupModal key="config-pwm" modalId="config-pwm" />,
     <RCConfigEncoderModal key="config-encoder" modalId="config-encoder" />,
     <MatchModeModal key="match-mode" modalId="match-mode" />,
-    <SpawningModal key="spawning-2" modalId="spawning" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
-    <ImportMirabufModal key="import-mirabuf" modalId="import-mirabuf" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
 ]
 
@@ -223,6 +224,7 @@ const initialPanels: ReactElement[] = [
     <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" />,
     <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
     <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
+    <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
 ]
 
