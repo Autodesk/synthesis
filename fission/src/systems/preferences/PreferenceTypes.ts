@@ -1,6 +1,5 @@
 import { Vector3Tuple } from "three"
 import { InputScheme } from "../input/DefaultInputs"
-import Jolt from "@barclah/jolt-physics"
 
 export type GlobalPreference =
     | "ScreenMode"
@@ -48,7 +47,7 @@ export type RobotPreferences = {
 export type ScoringZonePreferences = {
     name: string
     alliance: "red" | "blue"
-    parent: Jolt.Body | undefined
+    parentNode: string | undefined
     points: number
     destroyGamepiece: boolean
     persistentPoints: boolean
