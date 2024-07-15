@@ -77,7 +77,7 @@ class IntakeSensorSceneObject extends SceneObject {
                 if (hitRes) {
                     const gpAssoc = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(hitRes.data.mBodyID)
                     // This works, however the check for game piece is doing two checks.
-                    if (gpAssoc && gpAssoc.isGamePiece) {
+                    if (gpAssoc?.isGamePiece) {
                         console.debug("Found game piece!")
                         this._parentAssembly.SetEjectable(hitRes.data.mBodyID, false)
                     }
