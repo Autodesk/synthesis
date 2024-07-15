@@ -64,28 +64,24 @@ def getCodeChallenge() -> str | None:
     return data["challenge"]
 
 
-def getAuth() -> APSAuth:
+def getAuth() -> APSAuth | None:
     global APS_AUTH
     if APS_AUTH is not None:
         return APS_AUTH
     try:
         curr_time = time.time()
         with open(auth_path, "rb") as f:
-            p = pickle.load(f)
-            APS_AUTH = APSAuth(
-                access_token=p["access_token"],
-                refresh_token=p["refresh_token"],
-                expires_in=p["expires_in"],
-                expires_at=int(curr_time + p["expires_in"] * 1000),
-                token_type=p["token_type"],
-            )
-    except:
-        gm.ui.messageBox("Please Sign In", "Please Sign In")
+            p: APSAuth = pickle.load(f)
+            logging.getLogger(f"{INTERNAL_ID}").info(msg=f"{json.dumps(p.__dict__)}")
+            APS_AUTH = p
+    except Exception as arg:
+        gm.ui.messageBox(f"ERROR:\n{arg}", "Please Sign In")
+        return None
     curr_time = int(time.time() * 1000)
     if curr_time >= APS_AUTH.expires_at:
         refreshAuthToken()
     if APS_USER_INFO is None:
-        loadUserInfo()
+         _ = loadUserInfo()
     return APS_AUTH
 
 
@@ -103,10 +99,10 @@ def convertAuthToken(code: str):
         token_type=data["token_type"],
     )
     with open(auth_path, "wb") as f:
-        pickle.dump(data, f)
+        pickle.dump(APS_AUTH, f)
         f.close()
 
-    loadUserInfo()
+    _ = loadUserInfo()
 
 
 def removeAuth():
@@ -142,11 +138,13 @@ def refreshAuthToken():
             expires_at=int(curr_time + data["expires_in"] * 1000),
             token_type=data["token_type"],
         )
+        with open(auth_path, "wb") as f:
+            pickle.dump(APS_AUTH, f)
+            f.close()
     except urllib.request.HTTPError as e:
         removeAuth()
         logging.getLogger(f"{INTERNAL_ID}").error(f"Refresh Error:\n{e.code} - {e.reason}")
         gm.ui.messageBox("Please sign in again.")
-
 
 def loadUserInfo() -> APSUserInfo | None:
     global APS_AUTH
@@ -304,7 +302,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
     file_name = file_path_to_file_name(file_path)
     (_lineage_id, _lineage_href) = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
 
-    return None
+    return ""
 
 
 def get_hub_id(auth: str, hub_name: str) -> str | None:
