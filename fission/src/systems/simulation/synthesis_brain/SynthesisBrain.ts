@@ -226,7 +226,7 @@ class SynthesisBrain extends Brain {
     }
 
     private getNumberedAssemblyName(): string {
-        return `[${this._assemblyIndex}] ${this._assemblyName}` 
+        return `[${this._assemblyIndex}] ${this._assemblyName}`
     }
 
     private static parseInputs(rawInputs: InputScheme) {
