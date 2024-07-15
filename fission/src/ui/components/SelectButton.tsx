@@ -18,7 +18,6 @@ function SelectNode(e: MouseEvent) {
     const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
 
     if (res) {
-        console.log(res)
         const body = World.PhysicsSystem.GetBody(res.data.mBodyID)
         if (!body.IsDynamic()) {
             return null
@@ -32,25 +31,28 @@ function SelectNode(e: MouseEvent) {
 type SelectButtonProps = {
     colorClass?: string
     size?: ButtonSize
+    value?: string
     placeholder?: string
-    onSelect?: (value: Jolt.Body) => void
+    onSelect?: (value: Jolt.Body) => boolean
     className?: string
 }
 
-const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placeholder, onSelect, className }) => {
-    const [value, setValue] = useState<string>()
+const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, value, placeholder, onSelect, className }) => {
     const [selecting, setSelecting] = useState<boolean>(false)
     const timeoutRef = useRef<NodeJS.Timeout>()
 
     const onReceiveSelection = useCallback(
         (value: Jolt.Body) => {
-            // TODO remove this when communication works
-            clearTimeout(timeoutRef.current)
-            setValue("Node")
-            setSelecting(false)
-            if (onSelect) onSelect(value)
+            if (onSelect) {
+                if (onSelect(value)) {
+                    clearTimeout(timeoutRef.current)
+                    setSelecting(false)
+                } else {
+                    setSelecting(true)
+                }
+            }
         },
-        [setValue, setSelecting, onSelect]
+        [setSelecting, onSelect]
     )
 
     useEffect(() => {
@@ -73,10 +75,10 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, placehold
     // should send selecting state when clicked and then receive string value to set selecting to false
 
     return (
-        <Stack direction={StackDirection.Horizontal}>
-            <Label size={LabelSize.Medium}>{value || placeholder || "Click to select"}</Label>
+        <Stack direction={StackDirection.Vertical}>
+            <Label size={LabelSize.Small}>{"Click to select"}</Label>
             <Button
-                value={selecting ? "..." : "Select"}
+                value={selecting ? "..." : value || placeholder || "Click to select"}
                 colorOverrideClass={selecting ? "bg-background-secondary" : colorClass}
                 size={size}
                 onClick={() => {

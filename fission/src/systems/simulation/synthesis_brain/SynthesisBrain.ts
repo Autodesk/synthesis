@@ -42,7 +42,7 @@ class SynthesisBrain extends Brain {
 
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
-        
+
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
         this._assemblyName = assemblyName
 
@@ -54,19 +54,17 @@ class SynthesisBrain extends Brain {
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (mechanism.controllable) {
             if (SynthesisBrain.numberRobotsSpawned[assemblyName] == undefined)
-               SynthesisBrain.numberRobotsSpawned[assemblyName] = 0 
-            else
-                SynthesisBrain.numberRobotsSpawned[assemblyName]++
+                SynthesisBrain.numberRobotsSpawned[assemblyName] = 0
+            else SynthesisBrain.numberRobotsSpawned[assemblyName]++
 
             this._assemblyIndex = SynthesisBrain.numberRobotsSpawned[assemblyName]
             SynthesisBrain.robotsSpawned.push(`[${this._assemblyIndex}] ${assemblyName}`)
-            
+
             this.configureArcadeDriveBehavior()
             this.configureArmBehaviors()
             this.configureElevatorBehaviors()
             this.configureInputs()
-            }
-        else {
+        } else {
             this.configureField()
             SynthesisBrain.fieldsSpawned.push(assemblyName)
         }
@@ -85,8 +83,8 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        const index = SynthesisBrain.robotsSpawned.indexOf(`[${this._assemblyIndex}] ${this._assemblyName}`);
-        SynthesisBrain.robotsSpawned.splice(index, 1);
+        const index = SynthesisBrain.robotsSpawned.indexOf(`[${this._assemblyIndex}] ${this._assemblyName}`)
+        SynthesisBrain.robotsSpawned.splice(index, 1)
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
@@ -130,7 +128,14 @@ class SynthesisBrain extends Brain {
         }
 
         this._behaviors.push(
-            new ArcadeDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._assemblyName, this._assemblyIndex)
+            new ArcadeDriveBehavior(
+                leftWheels,
+                rightWheels,
+                leftStimuli,
+                rightStimuli,
+                this._assemblyName,
+                this._assemblyIndex
+            )
         )
     }
 
@@ -145,7 +150,13 @@ class SynthesisBrain extends Brain {
 
         for (let i = 0; i < hingeDrivers.length; i++) {
             this._behaviors.push(
-                new GenericArmBehavior(hingeDrivers[i], hingeStimuli[i], this._currentJointIndex, this._assemblyName, this._assemblyIndex)
+                new GenericArmBehavior(
+                    hingeDrivers[i],
+                    hingeStimuli[i],
+                    this._currentJointIndex,
+                    this._assemblyName,
+                    this._assemblyIndex
+                )
             )
             this._currentJointIndex++
         }

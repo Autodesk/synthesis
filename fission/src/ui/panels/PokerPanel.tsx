@@ -20,7 +20,14 @@ const MARK_RADIUS_MIN = 0.01
 
 const MARK_RADIUS_SLIDER_STEP = 0.01
 
-function affect(e: MouseEvent, punch: boolean, mark: boolean, punchForce: number, markRadius: number) {
+function affect(
+    e: MouseEvent,
+    punch: boolean,
+    mark: boolean,
+    punchForce: number,
+    markRadius: number,
+    markers: THREE.Mesh[]
+) {
     const origin = World.SceneRenderer.mainCamera.position
 
     const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
@@ -37,6 +44,7 @@ function affect(e: MouseEvent, punch: boolean, mark: boolean, punchForce: number
             World.SceneRenderer.scene.add(ballMesh)
             const hitPoint = res.point
             ballMesh.position.set(hitPoint.GetX(), hitPoint.GetY(), hitPoint.GetZ())
+            markers.push(ballMesh)
         }
 
         if (punch) {
@@ -54,9 +62,11 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [mark, setMark] = useState(MARK_DEFAULT)
     const [markRadius, setMarkRadius] = useState(MARK_RADIUS_DEFAULT)
 
+    const [markers, _] = useState<THREE.Mesh[]>([])
+
     useEffect(() => {
         const onClick = (e: MouseEvent) => {
-            affect(e, punch, mark, punchForce, markRadius)
+            affect(e, punch, mark, punchForce, markRadius, markers)
         }
 
         World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
@@ -64,7 +74,16 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => {
             World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
         }
-    }, [mark, markRadius, punch, punchForce])
+    }, [mark, markRadius, punch, punchForce, markers])
+
+    useEffect(() => {
+        return () => {
+            markers.forEach(x => {
+                x.geometry.dispose()
+                World.SceneRenderer.scene.remove(x)
+            })
+        }
+    }, [markers])
 
     return (
         <Panel
@@ -72,7 +91,7 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             name={"The Poker"}
             icon={<AiOutlineDoubleRight />}
             panelId={panelId}
-            acceptBlocked={true}
+            acceptEnabled={false}
             cancelName="Close"
         >
             <Checkbox label="Punch?" defaultState={PUNCH_DEFAULT} onClick={x => setPunch(x)} />

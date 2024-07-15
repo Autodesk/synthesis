@@ -56,7 +56,6 @@ import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning
 import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import APS from "./aps/APS.ts"
-import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 
@@ -77,7 +76,7 @@ function Synthesis() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
-    const { currentTheme, applyTheme } = useTheme()
+    const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
     useEffect(() => {
         applyTheme(currentTheme)
@@ -130,6 +129,9 @@ function Synthesis() {
             World.UpdateWorld()
         }
         mainLoop()
+
+        World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
+
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
@@ -200,7 +202,6 @@ const initialModals = [
     <ConnectToMultiplayerModal key="connect-to-multiplayer" modalId="connect-to-multiplayer" />,
     <ServerHostingModal key="server-hosting" modalId="server-hosting" />,
     <ChangeInputsModal key="change-inputs" modalId="change-inputs" />,
-    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
     <ChooseMultiplayerModeModal key="multiplayer-mode" modalId="multiplayer-mode" />,
     <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
     <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,
@@ -211,7 +212,6 @@ const initialModals = [
     <RCConfigPwmGroupModal key="config-pwm" modalId="config-pwm" />,
     <RCConfigEncoderModal key="config-encoder" modalId="config-encoder" />,
     <MatchModeModal key="match-mode" modalId="match-mode" />,
-    <SpawningModal key="spawning-2" modalId="spawning" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportMirabufModal key="import-mirabuf" modalId="import-mirabuf" />,

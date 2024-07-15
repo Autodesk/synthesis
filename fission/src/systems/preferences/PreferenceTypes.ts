@@ -27,21 +27,20 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
 }
 
 export type IntakePreferences = {
-    position: [number, number, number]
-    diameter: number
-    parentBody: Jolt.Body | undefined
+    deltaTransformation: number[]
+    zoneDiameter: number
+    parentNode: string | undefined
 }
 
 export type EjectorPreferences = {
-    position: [number, number, number]
-    direction: [number, number, number, number]
+    deltaTransformation: number[]
     ejectorVelocity: number
-    parentBody: Jolt.Body | undefined
+    parentNode: string | undefined
 }
 
 export type RobotPreferences = {
-    inputsSchemes: InputScheme[],
-    intake: IntakePreferences,
+    inputsSchemes: InputScheme[]
+    intake: IntakePreferences
     ejector: EjectorPreferences
 }
 
@@ -63,13 +62,20 @@ export type FieldPreferences = {
     scoringZones: ScoringZonePreferences[]
 }
 
-
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
-        intake: { position: [0, 0, 0], diameter: 1, parentBody: undefined }, 
-        ejector: { position: [0, 0, 0], direction: [0,0,0,0], ejectorVelocity: 1, parentBody: undefined }
-    };
+        intake: {
+            deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            zoneDiameter: 0.5,
+            parentNode: undefined,
+        },
+        ejector: {
+            deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            ejectorVelocity: 1,
+            parentNode: undefined,
+        },
+    }
 }
 
 export function DefaultFieldPreferences(): FieldPreferences {
