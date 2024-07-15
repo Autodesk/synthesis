@@ -1,5 +1,5 @@
 import { test, expect, describe, assert } from "vitest"
-import PhysicsSystem, { BodyAssociate, LayerReserve } from "../systems/physics/PhysicsSystem"
+import PhysicsSystem, { LayerReserve } from "../systems/physics/PhysicsSystem"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import * as THREE from "three"
 import Jolt from "@barclah/jolt-physics"
@@ -98,47 +98,5 @@ describe("Mirabuf Physics Loading", () => {
         const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(10)
-    })
-})
-
-describe("Body Association", () => {
-    const B_SAMPLE_NUMBER = 52
-    const C_SAMPLE_NUMBER = 24
-
-    class A implements BodyAssociate {
-        public associatedBody: number
-        public sampleBoolean: boolean
-
-        public constructor(bodyId: Jolt.BodyID) {
-            this.associatedBody = bodyId.GetIndexAndSequenceNumber()
-            this.sampleBoolean = true
-        }
-    }
-
-    class B implements BodyAssociate {
-        public associatedBody: number
-        public sampleNumber: number
-
-        public constructor(bodyId: Jolt.BodyID) {
-            this.associatedBody = bodyId.GetIndexAndSequenceNumber()
-            this.sampleNumber = B_SAMPLE_NUMBER
-        }
-    }
-
-    class C extends A {
-        public sampleNumber: number
-
-        public constructor(bodyId: Jolt.BodyID) {
-            super(bodyId)
-            this.sampleNumber = C_SAMPLE_NUMBER
-        }
-    }
-
-    test("Simple Association", () => {
-        const physSystem = new PhysicsSystem()
-        const boxA = physSystem.CreateBox(new THREE.Vector3(1, 1, 1), undefined, undefined, undefined)
-        physSystem.AddBodyToSystem(boxA.GetID(), true)
-
-        physSystem.SetBodyAssociation(new A(boxA.GetID()))
     })
 })

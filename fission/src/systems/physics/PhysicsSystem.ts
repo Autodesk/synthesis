@@ -110,14 +110,8 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId BodyID to check for association
      * @returns Association for given Body
      */
-    public GetBodyAssociation<T extends object & BodyAssociate>(bodyId: Jolt.BodyID): T | undefined {
-        const res = this._bodyAssociations.get(bodyId.GetIndexAndSequenceNumber())
-        if (res) {
-            // Avoids error, simply returns undefined if invalid
-            return res as unknown as T
-        } else {
-            return res
-        }
+    public GetBodyAssociation(bodyId: Jolt.BodyID): BodyAssociate | undefined {
+        return this._bodyAssociations.get(bodyId.GetIndexAndSequenceNumber())
     }
 
     /**
@@ -1127,8 +1121,12 @@ export type RayCastHit = {
 /**
  * An interface to create an association between a body and anything.
  */
-export interface BodyAssociate {
+export class BodyAssociate {
     readonly associatedBody: JoltBodyIndexAndSequence
+
+    public constructor(bodyId: Jolt.BodyID) {
+        this.associatedBody = bodyId.GetIndexAndSequenceNumber()
+    }
 }
 
 export default PhysicsSystem

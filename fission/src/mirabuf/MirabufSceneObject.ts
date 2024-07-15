@@ -359,8 +359,7 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
 /**
  * Body association to a rigid node with a given mirabuf scene object.
  */
-export class RigidNodeAssociate implements BodyAssociate {
-    public readonly associatedBody: JoltBodyIndexAndSequence
+export class RigidNodeAssociate extends BodyAssociate {
     public readonly sceneObject: MirabufSceneObject
 
     public readonly rigidNode: RigidNodeReadOnly
@@ -373,9 +372,9 @@ export class RigidNodeAssociate implements BodyAssociate {
     }
 
     public constructor(sceneObject: MirabufSceneObject, rigidNode: RigidNodeReadOnly, body: Jolt.BodyID) {
+        super(body)
         this.sceneObject = sceneObject
         this.rigidNode = rigidNode
-        this.associatedBody = body.GetIndexAndSequenceNumber()
     }
 }
 

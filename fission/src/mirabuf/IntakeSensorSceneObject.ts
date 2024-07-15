@@ -75,7 +75,8 @@ class IntakeSensorSceneObject extends SceneObject {
                 // TEMPORARY GAME PIECE DETECTION
                 const hitRes = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(position), new JOLT.Vec3(0, 0, 3))
                 if (hitRes) {
-                    const gpAssoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(hitRes.data.mBodyID)
+                    const gpAssoc = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(hitRes.data.mBodyID)
+                    // This works, however the check for game piece is doing two checks.
                     if (gpAssoc && gpAssoc.isGamePiece) {
                         console.debug("Found game piece!")
                         this._parentAssembly.SetEjectable(hitRes.data.mBodyID, false)
