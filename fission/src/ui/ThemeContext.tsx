@@ -51,6 +51,11 @@ export const colorNameToProp = (colorName: ColorName) => {
             .toLowerCase()
     )
 }
+
+export const colorNameToVar = (colorName: ColorName) => {
+    return `var(${colorNameToProp(colorName)})`
+}
+
 export type Theme = {
     [name in ColorName]: { color: RgbaColor; above: (ColorName | string)[] }
 }
