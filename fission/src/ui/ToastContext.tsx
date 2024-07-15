@@ -80,7 +80,7 @@ export const ToastContainer: React.FC = () => {
                             key={t.id}
                             className="w-fit"
                         >
-                            <Toast id={t.id} type={t.type} title={t.title} description={t.description} />
+                            <Toast key={t.id} id={t.id} type={t.type} title={t.title} description={t.description} />
                         </motion.div>
                     ))}
             </AnimatePresence>
