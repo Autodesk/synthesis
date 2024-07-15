@@ -11,7 +11,6 @@ from types import FunctionType
 
 import adsk.core
 import adsk.fusion
-from .strings import INTERNAL_ID
 
 # hard coded to bypass errors for now
 PROTOBUF = True
@@ -42,7 +41,6 @@ try:
 
 except:
     logging.getLogger(f"{INTERNAL_ID}.import_manager").error("Failed\n{}".format(traceback.format_exc()))
-
 try:
     # simple analytics endpoint
     # A_EP = AnalyticsEndpoint("UA-188467590-1", 1)
