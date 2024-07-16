@@ -5,7 +5,9 @@ import glsl from 'vite-plugin-glsl';
 
 const basePath = '/fission/'
 const serverPort = 3000
-const dockerServerPort = 3003
+const dockerServerPort = 80
+
+const useLocal = false
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -46,18 +48,24 @@ export default defineConfig({
         // this sets a default port to 3000
         port: serverPort,
         cors: false,
-        proxy: {
+        proxy: useLocal ? {
             '/api/mira': {
                 target: `http://localhost:${serverPort}${basePath}`,
                 changeOrigin: true,
                 secure: false,
                 rewrite: (path) => path.replace(/^\/api\/mira/, '/Downloadables/Mira')
             },
-            '/api/auth': {
+            '/api/aps': {
                 target: `http://localhost:${dockerServerPort}/`,
                 changeOrigin: true,
-                secure: false
-            }
+                secure: false,
+            },
+        } : {
+            '/api': {
+                target: `https://synthesis.autodesk.com/`,
+                changeOrigin: true,
+                secure: true,
+            },
         },
     },
     build: {

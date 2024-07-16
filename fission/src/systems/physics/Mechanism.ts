@@ -1,5 +1,6 @@
 import Jolt from "@barclah/jolt-physics"
 import { LayerReserve } from "./PhysicsSystem"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID
@@ -9,16 +10,23 @@ export interface MechanismConstraint {
 
 class Mechanism {
     public rootBody: string
-    public nodeToBody: Map<string, Jolt.BodyID>
+    public nodeToBody: Map<RigidNodeId, Jolt.BodyID>
     public constraints: Array<MechanismConstraint>
     public stepListeners: Array<Jolt.PhysicsStepListener>
     public layerReserve: LayerReserve | undefined
+    public controllable: boolean
 
-    public constructor(rootBody: string, bodyMap: Map<string, Jolt.BodyID>, layerReserve?: LayerReserve) {
+    public constructor(
+        rootBody: string,
+        bodyMap: Map<string, Jolt.BodyID>,
+        controllable: boolean,
+        layerReserve?: LayerReserve
+    ) {
         this.rootBody = rootBody
         this.nodeToBody = bodyMap
         this.constraints = []
         this.stepListeners = []
+        this.controllable = controllable
         this.layerReserve = layerReserve
     }
 
