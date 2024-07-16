@@ -5,11 +5,10 @@ import JOLT from "@/util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject";
 import { MiraType } from "@/mirabuf/MirabufLoader";
+import { OnContactAddedEvent } from "../physics/ContactEvents";
 
 class ScoringSystem extends WorldSystem {
     private zone: Jolt.Body;
-
-    private _contactListener: Jolt.ContactListenerJS;
 
     private points = 0
 
@@ -29,18 +28,14 @@ class ScoringSystem extends WorldSystem {
             true
         )
 
-
         this.zone = zone
-        
+
         World.PhysicsSystem.JoltBodyInterface.AddBody(zone.GetID(), JOLT.EActivation_Activate)
 
-        this._contactListener = new JOLT.ContactListenerJS()
-
-        this._contactListener.OnContactAdded = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
-            const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body;
-            const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body;
-            const manifold = JOLT.wrapPointer(manifoldPtr, Jolt.ContactManifold);
-            const settings = JOLT.wrapPointer(settingsPtr, Jolt.ContactSettings);
+        const onContactAdded = (e: Event) => {
+            const event = e as OnContactAddedEvent
+            const body1 = event.message.body1
+            const body2 = event.message.body2
 
             if (body1.GetID().GetIndex() == zone.GetID().GetIndex()) {
                 console.log(`${body1.GetID().GetIndex()} collided with ${body2.GetID().GetIndex()}`)
@@ -63,7 +58,6 @@ class ScoringSystem extends WorldSystem {
                                 const body2ID = body2.GetID().GetIndex()
                                 const gamepieceID = +associate.rigidNodeId.replace("_gp", "") // Gets number without gamepiece tag
 
-                                console.log(`${(gamepieceID)} and ${body2ID}`)
                                 if (body2ID == gamepieceID) {
                                     this.points++
                                     console.log(this.points)
@@ -73,30 +67,10 @@ class ScoringSystem extends WorldSystem {
                     })
                 })
             }
-        };
-
-        this._contactListener.OnContactPersisted = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
 
         }
 
-        this._contactListener.OnContactRemoved = (subShapePairPtr) => {
-            const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
-            const body1ID = shapePair.GetBody1ID()
-            const body2ID = shapePair.GetBody2ID()
-
-            if (body1ID.GetIndex() == zone.GetID().GetIndex()) 
-                console.log(`${body1ID.GetIndex()} removed from ${body2ID.GetIndex()}`)
-
-        }
-
-        this._contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {
-            const body1 = JOLT.wrapPointer(bodyPtr1, Jolt.Body);
-            const body2 = JOLT.wrapPointer(bodyPtr2, Jolt.Body);
-            const collideShapeResult = JOLT.wrapPointer(inCollisionResultPtr, Jolt.CollideShapeResult);
-            return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
-        }
-
-        World.PhysicsSystem.JoltPhysicsSystem.SetContactListener(this._contactListener)
+        OnContactAddedEvent.AddListener(onContactAdded)
     }
 
     public Update(_: number): void {
