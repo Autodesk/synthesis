@@ -304,10 +304,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
     """
     if complete_upload(auth, upload_key, object_key, bucket_key) is None:
         return None
-    lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
-
-    with open(f"lineage_{file_id}", "wb") as f:
-        _ = pickle.dump(lineage_info, f)
+    _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
 
     return ""
 
