@@ -2,8 +2,8 @@ import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { GrFormClose } from "react-icons/gr"
 import { useModalControlContext } from "@/ui/ModalContext"
-import InputSystem from "@/systems/input/InputSystem"
 import DefaultInputs from "@/systems/input/DefaultInputs"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -14,24 +14,27 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={<GrFormClose />}
             modalId={modalId}
             onAccept={() => {
-                let i = 0
-                InputSystem.allInputs.forEach(currentScheme => {
-                    const scheme = DefaultInputs.ALL_INPUT_SCHEMES[i]
-                    if (!currentScheme || !scheme) return
+                const roboPrefs = PreferencesSystem.getAllRobotPreferences()
 
-                    scheme.inputs.forEach(newInput => {
-                        const currentInput = currentScheme.inputs.find(i => i.inputName == newInput.inputName)
+                // TODO: This will be improved to make more sense to a user in the "named inputs" PR
+                Object.values(roboPrefs).forEach(roboPref => {
+                    roboPref.inputsSchemes.forEach(currentScheme => {
+                        const resetScheme = DefaultInputs.ALL_INPUT_SCHEMES[0]
+                        if (!currentScheme || !resetScheme) return
 
-                        if (currentInput) {
-                            const inputIndex = currentScheme.inputs.indexOf(currentInput)
+                        resetScheme.inputs.forEach(newInput => {
+                            const currentInput = currentScheme.inputs.find(i => i.inputName == newInput.inputName)
 
-                            currentScheme.inputs[inputIndex] = newInput.getCopy()
-                        }
+                            if (currentInput) {
+                                const inputIndex = currentScheme.inputs.indexOf(currentInput)
+
+                                currentScheme.inputs[inputIndex] = newInput.getCopy()
+                            }
+                        })
+                        currentScheme.usesGamepad = resetScheme.usesGamepad
                     })
-                    currentScheme.usesGamepad = scheme.usesGamepad
-
-                    i++
                 })
+
                 openModal("change-inputs")
             }}
             onCancel={() => {

@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
+import { IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -21,6 +21,7 @@ import { Button } from "@mui/base/Button"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
 import { AiOutlineDoubleRight } from "react-icons/ai"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 type ButtonProps = {
     value: string
@@ -95,7 +96,7 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={<FaPlus />}
                     larger={true}
-                    onClick={() => openModal("spawning")}
+                    onClick={() => openPanel("import-mirabuf")}
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -112,11 +113,6 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
                     <MainHUDButton
-                        value={"Import Mira"}
-                        icon={<IoPeople />}
-                        onClick={() => openModal("import-mirabuf")}
-                    />
-                    <MainHUDButton
                         value={"Import Local Mira"}
                         icon={<IoPeople />}
                         onClick={() => openModal("import-local-mirabuf")}
@@ -128,9 +124,16 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                     <MainHUDButton
+                        value={"Clear Prefs"}
+                        icon={<IoBug />}
+                        onClick={() => PreferencesSystem.clearPreferences()}
+                    />
+                    <MainHUDButton
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
-                        onClick={() => APS.isSignedIn() && APS.refreshAuthToken(APS.getAuth()!.refresh_token)}
+                        onClick={async () =>
+                            APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
+                        }
                     />
                     <MainHUDButton
                         value={"Expire APS Token"}
@@ -178,6 +181,7 @@ const MainHUD: React.FC = () => {
                             addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
+                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                 </div>
                 {userInfo ? (
                     <MainHUDButton

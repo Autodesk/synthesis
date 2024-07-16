@@ -38,8 +38,8 @@ class TransformGizmos {
      *
      * @param mode The type of gizmo to create
      */
-    public CreateGizmo(mode: "translate" | "rotate" | "scale") {
-        const gizmo = World.SceneRenderer.AddTransformGizmo(this._mesh, mode, this._gizmos.length ? 3.0 : 5.0)
+    public CreateGizmo(mode: "translate" | "rotate" | "scale", size: number = 1.5) {
+        const gizmo = World.SceneRenderer.AddTransformGizmo(this._mesh, mode, size)
         this._gizmos.push(gizmo)
     }
 
@@ -72,11 +72,9 @@ class TransformGizmos {
                 .get(part)!
                 .clone()
                 .premultiply(this.mesh.matrix)
-            obj.mirabufInstance.meshes.get(part)!.forEach(mesh => {
-                // iterating through each mesh and updating their position and rotation
-                mesh.position.setFromMatrixPosition(partTransform)
-                mesh.rotation.setFromRotationMatrix(partTransform)
-            })
+
+            const meshes = obj.mirabufInstance.meshes.get(part) ?? []
+            meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
         })
     }
 }
