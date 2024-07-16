@@ -11,7 +11,7 @@ describe("Mirabuf Parser Tests", () => {
         ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
 
         const t = new MirabufParser(spikeMira!)
-        const rn = t.rigidNodes
+        const rn = [...t.rigidNodes.values()]
 
         expect(filterNonPhysicsNodes(rn, spikeMira!).length).toBe(7)
     })
@@ -23,7 +23,7 @@ describe("Mirabuf Parser Tests", () => {
         ).then(x => MirabufCachingService.Get(x!.id, MiraType.FIELD))
         const t = new MirabufParser(field!)
 
-        expect(filterNonPhysicsNodes(t.rigidNodes, field!).length).toBe(34)
+        expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(34)
     })
 
     test("Generate Rigid Nodes (Team 2471 (2018)_v7.mira)", async () => {
@@ -33,7 +33,7 @@ describe("Mirabuf Parser Tests", () => {
         ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
         const t = new MirabufParser(mm!)
 
-        expect(filterNonPhysicsNodes(t.rigidNodes, mm!).length).toBe(10)
+        expect(filterNonPhysicsNodes([...t.rigidNodes.values()], mm!).length).toBe(10)
     })
 })
 

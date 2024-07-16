@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
+import { IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -21,6 +21,7 @@ import { Button } from "@mui/base/Button"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
 import { AiOutlineDoubleRight } from "react-icons/ai"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 type ButtonProps = {
     value: string
@@ -123,6 +124,11 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
                     <MainHUDButton
+                        value={"Clear Prefs"}
+                        icon={<IoBug />}
+                        onClick={() => PreferencesSystem.clearPreferences()}
+                    />
+                    <MainHUDButton
                         value={"Refresh APS Token"}
                         icon={<IoRefresh />}
                         onClick={async () =>
@@ -175,6 +181,7 @@ const MainHUD: React.FC = () => {
                             addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
+                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                 </div>
                 {userInfo ? (
                     <MainHUDButton

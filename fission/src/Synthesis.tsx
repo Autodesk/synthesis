@@ -49,6 +49,7 @@ import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
 import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
+import PokerPanel from "@/panels/PokerPanel.tsx"
 import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
@@ -56,9 +57,10 @@ import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.ts
 import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
-import PokerPanel from "@/panels/PokerPanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import { ProgressHandle } from "./ui/components/ProgressNotificationData.ts"
+import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
+import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -141,7 +143,7 @@ function Synthesis() {
         }
         mainLoop()
 
-        World.SceneRenderer.updateSkyboxColors(defaultTheme)
+        World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
 
         // Cleanup
         return () => {
@@ -226,6 +228,8 @@ const initialModals = [
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
+    <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
+    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
 const initialPanels: ReactElement[] = [
@@ -233,8 +237,18 @@ const initialPanels: ReactElement[] = [
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" />,
-    <ConfigureGamepiecePickupPanel key="config-gamepiece-pickup" panelId="config-gamepiece-pickup" />,
-    <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" />,
+    <ConfigureGamepiecePickupPanel
+        key="config-gamepiece-pickup"
+        panelId="config-gamepiece-pickup"
+        openLocation="right"
+        sidePadding={8}
+    />,
+    <ConfigureShotTrajectoryPanel
+        key="config-shot-trajectory"
+        panelId="config-shot-trajectory"
+        openLocation="right"
+        sidePadding={8}
+    />,
     <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
     <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
