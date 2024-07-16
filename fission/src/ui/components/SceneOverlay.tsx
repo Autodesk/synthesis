@@ -5,16 +5,22 @@ import { SceneOverlayTag, SceneOverlayTagEvent } from "./SceneOverlayEvents"
 const tagMap = new Map<number, SceneOverlayTag>()
 
 function SceneOverlay() {
+    /* h1 text for each tagMap tag */
+    const [components, updateComponents] = useReducer(() => {
+        return [...tagMap.values()].map(x => (
+            <h1 className="text-2xl text-white font-bold" key={x.id}>
+                {x.text}
+            </h1>
+        ))
+    }, [])
 
-    // const [components, updateComponents] = useReducer(() => {
-    //     return [...tagMap.values()].map(x => <h1 key={x.id}>{x.text}</h1>)
-    // }, )
-
+    /* Creating listener for tag events which  */
     useEffect(() => {
         const onTagUpdate = (e: Event) => {
             const tagEvent = e as SceneOverlayTagEvent
             const tag = tagEvent.tag
             tagMap.set(tag.id, tag)
+            updateComponents()
         }
 
         SceneOverlayTagEvent.Listen(onTagUpdate)
@@ -24,6 +30,7 @@ function SceneOverlay() {
         }
     }, [])
 
+    /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (
         <Box
             component="div"
@@ -34,10 +41,11 @@ function SceneOverlay() {
                 top: "0pt",
                 width: "100vw",
                 height: "100vh",
-                overflow: "hidden"
+                overflow: "hidden",
+                pointerEvents: "none",
             }}
         >
-            { <></> }
+            {components ?? <h1 className="text-2xl text-white font-bold">nothing</h1>}
         </Box>
     )
 }

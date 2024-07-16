@@ -4,7 +4,7 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -95,6 +95,7 @@ class MirabufSceneObject extends SceneObject {
         this.getPreferences()
 
         this._nameTag = new SceneOverlayTag("bob")
+        this._nameTag.Update()
     }
 
     public Setup(): void {
@@ -205,7 +206,11 @@ class MirabufSceneObject extends SceneObject {
             x.computeBoundingSphere()
         })
 
-        World.SceneRenderer.WorldToPixelSpace(JoltVec3_ThreeVector3(World.PhysicsSystem.GetBody(this.mechanism.GetBodyByNodeId(this.rootNodeId)!).GetCenterOfMassPosition()))
+        World.SceneRenderer.WorldToPixelSpace(
+            JoltVec3_ThreeVector3(
+                World.PhysicsSystem.GetBody(this.mechanism.GetBodyByNodeId(this.rootNodeId)!).GetCenterOfMassPosition()
+            )
+        )
     }
 
     public Dispose(): void {

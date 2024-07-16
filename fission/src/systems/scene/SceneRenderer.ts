@@ -10,6 +10,7 @@ import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
+
 import { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
 
 const CLEAR_COLOR = 0x121212
@@ -127,35 +128,6 @@ class SceneRenderer extends WorldSystem {
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this._orbitControls.update()
-
-
-
-        /* Creating a canvas example for text labels*/
-        const canvas = document.createElement('canvas');
-        const context = canvas.getContext('2d');
-        canvas.width = 256;
-        canvas.height = 128;
-
-        if (!context) return
-        context.fillStyle = 'rgba(255, 255, 255, 1.0)';
-        context.fillRect(0, 0, canvas.width, canvas.height);
-        context.fillStyle = 'black';
-        context.font = '48px Arial';
-        context.textAlign = 'center';
-        context.textBaseline = 'middle';
-        context.fillText('Tag', canvas.width / 2, canvas.height / 2);
-
-        // Create a texture from the canvas
-        const texture = new THREE.CanvasTexture(canvas);
-
-        // Create a plane and apply the canvas texture
-        const planeGeometry = new THREE.PlaneGeometry(1, 0.5);
-        const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
-        const tagPlane = new THREE.Mesh(planeGeometry, planeMaterial);
-        this.scene.add(tagPlane);
-
-        const point = new THREE.Vector3(0,0,0)
-        point.applyMatrix4(this._mainCamera.projectionMatrix)
     }
 
     public UpdateCanvasSize() {
@@ -249,9 +221,17 @@ class SceneRenderer extends WorldSystem {
         return screenSpace.unproject(this.mainCamera)
     }
 
+    /**
+     * Convert world space coordinates to pixel space coordinates
+     *
+     * @param world World space coordinates
+     * @returns Pixel space coordinates
+     */
     public WorldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
         const pixel = world.clone().applyMatrix4(this._mainCamera.projectionMatrix)
-        
+        const x = ((pixel.x + 1) / 2) * window.innerWidth
+        const y = ((-pixel.y + 1) / 2) * window.innerHeight
+        return [x, y]
     }
 
     /** 
