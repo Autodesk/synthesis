@@ -1001,7 +1001,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if dropdownExportMode.selectedItem.index == 0:
@@ -1009,22 +1008,24 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
 
-            if isRobot:
-                savepath = FileDialogConfig.SaveFileDialog(
-                    defaultPath=exporterOptions.fileLocation,
-                    ext="Synthesis File (*.synth)",
-                )
+            if exporterOptions.exportLocation == ExportLocation.DOWNLOAD:
+                if isRobot:
+                    savepath = FileDialogConfig.SaveFileDialog(
+                        defaultPath=exporterOptions.fileLocation,
+                        ext="Synthesis File (*.synth)",
+                    )
+                else:
+                    savepath = FileDialogConfig.SaveFileDialog(defaultPath=exporterOptions.fileLocation)
+
+                if savepath == False:
+                    # save was canceled
+                    return
+
+                updatedPath = pathlib.Path(savepath).parent
+                if updatedPath != self.current.filePath:
+                    self.current.filePath = str(updatedPath)
             else:
-                savepath = FileDialogConfig.SaveFileDialog(defaultPath=exporterOptions.fileLocation)
-
-            if savepath == False:
-                # save was canceled
-                return
-
-            updatedPath = pathlib.Path(savepath).parent
-            if updatedPath != self.current.filePath:
-                self.current.filePath = str(updatedPath)
-
+                savepath = processedFileName
             adsk.doEvents()
             # get active document
             design = gm.app.activeDocument.design
@@ -1207,6 +1208,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 exportAsPart=export_as_part_boolean,
             )
 
+            
             _: bool = Parser(exporterOptions).export()
             exporterOptions.writeToDesign()
         except:

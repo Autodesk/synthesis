@@ -159,26 +159,13 @@ class Parser:
             self.pdMessage.currentMessage = "Compressing File..."
             self.pdMessage.update()
 
-            # check if entire path exists and create if not since gzip doesn't do that.
-            path = pathlib.Path(self.exporterOptions.fileLocation).parent
-            path.mkdir(parents=True, exist_ok=True)
-
+            
             ### Print out assembly as JSON
             # miraJson = MessageToJson(assembly_out)
             # miraJsonFile = open(f'', 'wb')
             # miraJsonFile.write(str.encode(miraJson))
             # miraJsonFile.close()
-
-            if self.exporterOptions.compressOutput:
-                self.logger.debug("Compressing file")
-                with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
-                    self.pdMessage.currentMessage = "Saving File..."
-                    self.pdMessage.update()
-                    f.write(assembly_out.SerializeToString())
-            else:
-                f = open(self.exporterOptions.fileLocation, "wb")
-                f.write(assembly_out.SerializeToString())
-                f.close()
+            
 
             # Upload Mirabuf File to APS
             if self.exporterOptions.exportLocation == ExportLocation.UPLOAD:
@@ -189,10 +176,26 @@ class Parser:
                     return False # add throw later
                 project_id = project.id
                 folder_id = project.rootFolder.id
-                file_location = self.exporterOptions.fileLocation
-                if upload_mirabuf(project_id, folder_id, file_location) is None:
+                file_name = f"{self.exporterOptions.fileLocation}.mira"
+                if upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString()) is None:
                     gm.ui.messageBox("FAILED TO UPLOAD FILE TO APS", "ERROR") # add throw later
+            # Download Mirabuf File
+            else:
+                # check if entire path exists and create if not since gzip doesn't do that.
+                path = pathlib.Path(self.exporterOptions.fileLocation).parent
+                path.mkdir(parents=True, exist_ok=True)
+                if self.exporterOptions.compressOutput:
+                    self.logger.debug("Compressing file")
+                    with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
+                        self.pdMessage.currentMessage = "Saving File..."
+                        self.pdMessage.update()
+                        f.write(assembly_out.SerializeToString())
+                else:
+                    f = open(self.exporterOptions.fileLocation, "wb")
+                    f.write(assembly_out.SerializeToString())
+                    f.close()
 
+            
             _ = progressDialog.hide()
 
             if DEBUG:

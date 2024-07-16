@@ -236,7 +236,7 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
 def file_path_to_file_name(file_path: str) -> str:
     return file_path.split("/").pop()
 
-def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | None:
+def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_contents: str) -> str | None:
     """
     uploads mirabuf file to a specific folder in an APS project
     the folder and project must be created and valid
@@ -271,13 +271,8 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
     auth = APS_AUTH.access_token
     # Get token from APS API later
     
-    # Check if file is already on aps
-    file_name = file_path_to_file_name(file_path)
     (lineage_id, file_id, file_version) = get_file_id(auth, project_id, folder_id, file_name)
-    if file_id is not "":
-        _ = update_file_version(auth, project_id, folder_id, lineage_id, file_id, file_path, file_version)
-        return ""
-
+    
     """
     Create APS Storage Location
     """
@@ -296,16 +291,18 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
         return None
 
     (upload_key, signed_url) = generate_signed_url_result
-    if upload_file(signed_url, file_path) is None:
+    if upload_file(signed_url, file_contents) is None:
         return None
 
     """
-    Finish Upload and Initialize First File Version
+    Finish Upload and Initialize File Version
     """
     if complete_upload(auth, upload_key, object_key, bucket_key) is None:
         return None
-    _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
-
+    if file_id is not "":
+        update_file_version(auth, project_id, folder_id, lineage_id, file_id, file_name, file_contents, file_version, object_id)
+    else:
+        _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
     return ""
 
 def get_hub_id(auth: str, hub_name: str) -> str | None:
@@ -367,7 +364,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
     return ""
 
 
-def update_file_version(auth: str, project_id: str, folder_id: str, lineage_id: str, file_id: str, file_path: str, curr_file_version: str) -> str| None:
+def update_file_version(auth: str, project_id: str, folder_id: str, lineage_id: str, file_id: str, file_name: str, file_contents: str, curr_file_version: str, object_id: str) -> str| None:
     """
     updates an existing file in an APS folder
 
@@ -388,24 +385,22 @@ def update_file_version(auth: str, project_id: str, folder_id: str, lineage_id: 
     - version one of the file hasn't been created ; fix: create_first_file_version()
     """
 
-    file_name = file_path_to_file_name(file_path)
+    #object_id = create_storage_location(auth, project_id, folder_id, file_name)
+    #if object_id is None: 
+    #    return None
+    #
+    #(prefix, object_key) = str(object_id).split("/", 1)
+    #bucket_key = prefix.split(":", 3)[3] # gets the last element smth like: wip.dm.prod
+    #(upload_key, signed_url) = generate_signed_url(auth, bucket_key, object_key)
+    #
+    #if upload_file(signed_url, file_contents) is None:
+    #    return None
 
-    object_id = create_storage_location(auth, project_id, folder_id, file_name)
-    if object_id is None: 
-        return None
-    
-    (prefix, object_key) = str(object_id).split("/", 1)
-    bucket_key = prefix.split(":", 3)[3] # gets the last element smth like: wip.dm.prod
-    (upload_key, signed_url) = generate_signed_url(auth, bucket_key, object_key)
-    
-    if upload_file(signed_url, file_path) is None:
-        return None
-
-    if complete_upload(auth, upload_key, object_key, bucket_key) is None:
-        return None
+    #if complete_upload(auth, upload_key, object_key, bucket_key) is None:
+    #    return None
 
 
-    gm.ui.messageBox(f"file_name:{file_name}\nfile_id:{file_id}\ncurr_file_version:{curr_file_version}\nobject_id:{object_id}", "REUPLOAD ARGS")
+    #gm.ui.messageBox(f"file_name:{file_name}\nlineage_id:{lineage_id}\nfile_id:{file_id}\ncurr_file_version:{curr_file_version}\nobject_id:{object_id}", "REUPLOAD ARGS")
     headers = {
         "Authorization": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json",
@@ -415,7 +410,7 @@ def update_file_version(auth: str, project_id: str, folder_id: str, lineage_id: 
         "name": file_name,
         "extension": {
             "type": "versions:autodesk.core:File",
-            "version": f"{curr_file_version}.0"
+            "version": f"1.0"
         }
     }
 
@@ -472,6 +467,7 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> t
     notes:
     - checking if a file exists is an intended use-case
     """
+    gm.ui.messageBox(f"ARGS: {file_name}", "")
 
     headers: dict[str, str] = {
         "Authorization": f"Bearer {auth}"
@@ -488,6 +484,8 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> t
         gm.ui.messageBox(f"UPLOAD ERROR: {file_res.text}", "Failed to get file")
         return None
     file_json: list[dict[str, Any]] = file_res.json()
+    if len(file_json["data"]) is 0:
+        return ("", "")
     id: str = str(file_json["data"][0]["id"])
     lineage: str = str(file_json["data"][0]["relationships"]["item"]["data"]["id"])
     version: str = str(file_json["data"][0]["attributes"]["versionNumber"])
@@ -572,7 +570,7 @@ def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> tuple[st
     signed_url_json: dict[str, str] = signed_url_res.json()
     return (signed_url_json["uploadKey"], signed_url_json["urls"][0])
 
-def upload_file(signed_url: str, file_path: str) -> str |None:
+def upload_file(signed_url: str, file_contents: str) -> str |None:
     """
     uploads a file to APS given a signed_url a path to the file on your machine
 
@@ -587,10 +585,7 @@ def upload_file(signed_url: str, file_path: str) -> str |None:
     notes:
     - fails if the auth or the signed URL are invalid
     """
-
-    with open(file_path, 'rb') as f:
-        data = f.read()
-    upload_response = requests.put(url=signed_url, data=data)
+    upload_response = requests.put(url=signed_url, data=file_contents)
     if not upload_response.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to upload to signed url: {upload_response.text}")
         return None
