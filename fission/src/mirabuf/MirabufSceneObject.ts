@@ -94,8 +94,7 @@ class MirabufSceneObject extends SceneObject {
 
         this.getPreferences()
 
-        this._nameTag = new SceneOverlayTag("bob")
-        this._nameTag.Update()
+        this._nameTag = new SceneOverlayTag("Hunter Barclah")
     }
 
     public Setup(): void {
@@ -206,11 +205,14 @@ class MirabufSceneObject extends SceneObject {
             x.computeBoundingSphere()
         })
 
-        World.SceneRenderer.WorldToPixelSpace(
+        /* Updating the position of the name tag */
+        this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
             JoltVec3_ThreeVector3(
                 World.PhysicsSystem.GetBody(this.mechanism.GetBodyByNodeId(this.rootNodeId)!).GetCenterOfMassPosition()
             )
         )
+        // console.log(this._nameTag.position)
+        this._nameTag.Update()
     }
 
     public Dispose(): void {

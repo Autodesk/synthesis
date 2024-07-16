@@ -222,15 +222,17 @@ class SceneRenderer extends WorldSystem {
     }
 
     /**
-     * Convert world space coordinates to pixel space coordinates
+     * Convert world space coordinates to screen space coordinates
      *
      * @param world World space coordinates
      * @returns Pixel space coordinates
      */
     public WorldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
-        const pixel = world.clone().applyMatrix4(this._mainCamera.projectionMatrix)
-        const x = ((pixel.x + 1) / 2) * window.innerWidth
-        const y = ((-pixel.y + 1) / 2) * window.innerHeight
+        const screenSpace = world.project(this._mainCamera)
+        const widthHalf = window.innerWidth / 2
+        const heightHalf = window.innerHeight / 2
+        const x = (screenSpace.x * widthHalf) + widthHalf
+        const y = -(screenSpace.y * heightHalf) + heightHalf
         return [x, y]
     }
 
