@@ -98,19 +98,22 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                 <Label>Spawn a field to configure scoring zones</Label>
             ) : (
                 <>
-                    <ScrollView className="flex flex-col gap-4">
-                        {zones.map((z: ScoringZonePreferences, i: number) => (
-                            <ScoringZoneRow
-                                key={i}
-                                zone={z}
-                                openPanel={openPanel}
-                                deleteZone={() => {
-                                    setZones(zones.filter((_, idx) => idx !== i))
-                                }}
-                                saveZones={saveZones}
-                            />
-                        ))}
-                    </ScrollView>
+                    {zones?.length > 0 ? (
+                        <ScrollView className="flex flex-col gap-4">
+                            {zones.map((z: ScoringZonePreferences, i: number) => (
+                                <ScoringZoneRow
+                                    key={i}
+                                    zone={z}
+                                    openPanel={openPanel}
+                                    deleteZone={() => {
+                                        setZones(zones.filter((_, idx) => idx !== i))
+                                    }}
+                                    saveZones={saveZones}
+                                />
+                            ))}
+                        </ScrollView>)
+                    : (<Label>No scoring zones</Label>)
+                    }
                     <Button
                         value={AddIcon}
                         onClick={() => {
