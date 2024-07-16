@@ -26,13 +26,15 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
 }
 
 export type IntakePreferences = {
-    location: Vector3Tuple
-    diameter: number
+    deltaTransformation: number[]
+    zoneDiameter: number
+    parentNode: string | undefined
 }
 
 export type EjectorPreferences = {
-    location: Vector3Tuple
+    deltaTransformation: number[]
     ejectorVelocity: number
+    parentNode: string | undefined
 }
 
 export type RobotPreferences = {
@@ -63,8 +65,16 @@ export type FieldPreferences = {
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
-        intake: { location: [0, 0, 0], diameter: 1 },
-        ejector: { location: [0, 0, 0], ejectorVelocity: 1 },
+        intake: {
+            deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            zoneDiameter: 0.5,
+            parentNode: undefined,
+        },
+        ejector: {
+            deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+            ejectorVelocity: 1,
+            parentNode: undefined,
+        },
     }
 }
 

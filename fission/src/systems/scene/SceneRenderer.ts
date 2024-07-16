@@ -1,7 +1,8 @@
 import * as THREE from "three"
+import SceneObject from "./SceneObject"
+import WorldSystem from "../WorldSystem"
+
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import SceneObject from "@/systems/scene/SceneObject"
-import WorldSystem from "@/systems/WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 
@@ -218,12 +219,12 @@ class SceneRenderer extends WorldSystem {
         return screenSpace.unproject(this.mainCamera)
     }
 
-    /*
+    /** 
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
      */
-    public updateSkyboxColors(currentTheme: Theme) {
+    public UpdateSkyboxColors(currentTheme: Theme) {
         if (!this._skybox) return
         if (this._skybox.material instanceof THREE.ShaderMaterial) {
             this._skybox.material.uniforms.rColor.value = currentTheme["Background"]["color"]["r"]
@@ -246,9 +247,7 @@ class SceneRenderer extends WorldSystem {
         transformControl.attach(obj)
 
         // allowing the transform gizmos to rotate with the object
-        if (mode === "translate") {
-            transformControl.space = "local"
-        }
+        transformControl.space = "local"
 
         transformControl.addEventListener(
             "dragging-changed",
