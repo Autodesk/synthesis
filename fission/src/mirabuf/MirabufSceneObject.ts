@@ -200,6 +200,8 @@ class MirabufSceneObject extends SceneObject {
      * Changes the mode of the mirabuf object from being interacted with to being placed.
      */
     public EnableTransformControls(): void {
+        if (this._transformGizmos) return
+
         this._transformGizmos = new TransformGizmos(
             new THREE.Mesh(
                 new THREE.SphereGeometry(3.0),
