@@ -3,6 +3,7 @@ import World from "../World";
 import WorldSystem from "../WorldSystem";
 import JOLT from "@/util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
+import EjectableSceneObject from "@/mirabuf/EjectableSceneObject";
 
 class ScoringSystem extends WorldSystem {
     private zone: Jolt.Body;
@@ -39,6 +40,22 @@ class ScoringSystem extends WorldSystem {
             const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body;
             const manifold = JOLT.wrapPointer(manifoldPtr, Jolt.ContactManifold);
             const settings = JOLT.wrapPointer(settingsPtr, Jolt.ContactSettings);
+
+            const ejectables = [...World.SceneRenderer.sceneObjects.entries()]
+                .filter(x => {
+                    const y = x[1] instanceof EjectableSceneObject
+                    return y
+                })
+                .map(x => x[1])
+
+            ejectables.forEach( x => {
+                console.log(x as EjectableSceneObject)
+            })
+
+            // for (const ejectable in ejectables) {
+            //     if (body2.GetID().GetIndex() == (ejectable as EjectableSceneObject).id)
+            //         console.log("Game object detected")
+            // }
 
             if (body1.GetID().GetIndex() == zone.GetID().GetIndex()) {
                 this.points++
