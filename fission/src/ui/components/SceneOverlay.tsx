@@ -8,13 +8,24 @@ function SceneOverlay() {
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
         return [...tagMap.values()].map(x => (
-            <h1
-                className="text-2xl text-white font-bold"
+            <div
                 key={x.id}
-                style={{ position: "absolute", left: x.position[0], top: x.position[1] }}
+                style={{
+                    position: "absolute",
+                    left: x.position[0],
+                    top: x.position[1],
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    borderRadius: "8px",
+                    padding: "8px",
+                }}
             >
-                {x.text}
-            </h1>
+                <h1
+                    className="text-2xl text-white font-sans"
+                    style={{ fontWeight: "bold" }}
+                >
+                    {x.text}
+                </h1>
+            </div>
         ))
     }, [])
 
@@ -24,7 +35,6 @@ function SceneOverlay() {
             const tagEvent = e as SceneOverlayTagEvent
             const tag = tagEvent.tag
             tagMap.set(tag.id, tag)
-            // console.log(tag.position)
             updateComponents()
         }
 

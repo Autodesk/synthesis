@@ -43,7 +43,7 @@ class MirabufSceneObject extends SceneObject {
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
 
-    private _nameTag: SceneOverlayTag
+    private _nameTag: SceneOverlayTag | undefined
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -94,7 +94,9 @@ class MirabufSceneObject extends SceneObject {
 
         this.getPreferences()
 
-        this._nameTag = new SceneOverlayTag("Hunter Barclah")
+        // creating nametag
+        if (this.miraType === MiraType.ROBOT) 
+            this._nameTag = new SceneOverlayTag("Hunter Barclah")
     }
 
     public Setup(): void {
@@ -206,13 +208,14 @@ class MirabufSceneObject extends SceneObject {
         })
 
         /* Updating the position of the name tag */
-        this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
-            JoltVec3_ThreeVector3(
-                World.PhysicsSystem.GetBody(this.mechanism.GetBodyByNodeId(this.rootNodeId)!).GetCenterOfMassPosition()
+        if (this._nameTag) {
+            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
+                JoltVec3_ThreeVector3(
+                    World.PhysicsSystem.GetBody(this.mechanism.GetBodyByNodeId(this.rootNodeId)!).GetCenterOfMassPosition()
+                )
             )
-        )
-        // console.log(this._nameTag.position)
-        this._nameTag.Update()
+            this._nameTag.Update()
+        }
     }
 
     public Dispose(): void {
