@@ -58,7 +58,7 @@ def _res_json(res):
 
 
 def getCodeChallenge() -> str | None:
-    endpoint = "http://localhost:80/api/aps/challenge/"
+    endpoint = "https://synthesis.autodesk.com/api/aps/challenge/"
     res = urllib.request.urlopen(endpoint)
     data = _res_json(res)
     return data["challenge"]
@@ -84,10 +84,9 @@ def getAuth() -> APSAuth | None:
          _ = loadUserInfo()
     return APS_AUTH
 
-
 def convertAuthToken(code: str):
     global APS_AUTH
-    authUrl = f'http://localhost:80/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("http://localhost:80/api/aps/exporter/")}'
+    authUrl = f'https://synthesis.autodesk.com/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("https://synthesis.autodesk.com/api/aps/exporter/")}'
     res = urllib.request.urlopen(authUrl)
     data = _res_json(res)["response"]
     curr_time = time.time()

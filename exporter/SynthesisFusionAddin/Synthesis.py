@@ -140,7 +140,7 @@ def register_ui() -> None:
         work_panel,
         Helper.check_solid_open,
         ShowAPSAuthCommand.ShowAPSAuthCommandCreatedHandler,
-        description=f"APS TEST",
+        description=f"APS",
         command=True,
     )
 

@@ -31,7 +31,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
             global palette
             palette = gm.ui.palettes.itemById("authPalette")
             if not palette:
-                callbackUrl = "http://localhost:80/api/aps/exporter/"
+                callbackUrl = "https://synthesis.autodesk.com/api/aps/exporter/"
                 challenge = getCodeChallenge()
                 if challenge is None:
                     logging.getLogger(f"{INTERNAL_ID}").error(
