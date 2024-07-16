@@ -3,19 +3,22 @@ let nextHandleId = 0
 export enum ProgressHandleStatus {
     inProgress = 0,
     Done = 1,
-    Error = 2
+    Error = 2,
 }
 
 export class ProgressHandle {
-    
     private _handleId: number
     private _title: string
     public message: string = ""
     public progress: number = 0.0
     public status: ProgressHandleStatus = ProgressHandleStatus.inProgress
 
-    public get handleId() { return this._handleId }
-    public get title() { return this._title }
+    public get handleId() {
+        return this._handleId
+    }
+    public get title() {
+        return this._title
+    }
 
     public constructor(title: string) {
         this._handleId = nextHandleId++
@@ -44,7 +47,7 @@ export class ProgressHandle {
 }
 
 export class ProgressEvent extends Event {
-    public static readonly EVENT_KEY = 'ProgressEvent'
+    public static readonly EVENT_KEY = "ProgressEvent"
 
     public handle: ProgressHandle
 

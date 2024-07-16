@@ -22,7 +22,7 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import TaskStatus from "@/util/TaskStatus"
 import { BiRefresh } from "react-icons/bi"
-import { ProgressHandle, ProgressHandleStatus } from "@/ui/components/ProgressNotification"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 
 const DownloadIcon = <HiDownload size={"1.25rem"} />
 const AddIcon = <AiOutlinePlus size={"1.25rem"} />
@@ -130,23 +130,25 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
         progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
     }
 
-    MirabufCachingService.Get(info.id, type).then(assembly => {
-        if (assembly) {
-            CreateMirabuf(assembly).then(x => {
-                if (x) {
-                    World.SceneRenderer.RegisterSceneObject(x)
-                    progressHandle.Done()
-                } else {
-                    progressHandle.Fail()
-                }
-            })
+    MirabufCachingService.Get(info.id, type)
+        .then(assembly => {
+            if (assembly) {
+                CreateMirabuf(assembly).then(x => {
+                    if (x) {
+                        World.SceneRenderer.RegisterSceneObject(x)
+                        progressHandle.Done()
+                    } else {
+                        progressHandle.Fail()
+                    }
+                })
 
-            if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
-        } else {
-            progressHandle.Fail()
-            console.error("Failed to spawn robot")
-        }
-    }).catch(() => progressHandle.Fail())
+                if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
+            } else {
+                progressHandle.Fail()
+                console.error("Failed to spawn robot")
+            }
+        })
+        .catch(() => progressHandle.Fail())
 }
 
 const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
@@ -245,13 +247,15 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             const status = new ProgressHandle(info.displayName)
             status.Update("Downloading from Synthesis...", 0.05)
 
-            MirabufCachingService.CacheRemote(info.src, type).then(cacheInfo => {
-                if (cacheInfo) {
-                    SpawnCachedMira(cacheInfo, type, status)
-                } else {
-                    status.Fail("Failed to cache")
-                }
-            }).catch(() => status.Fail())
+            MirabufCachingService.CacheRemote(info.src, type)
+                .then(cacheInfo => {
+                    if (cacheInfo) {
+                        SpawnCachedMira(cacheInfo, type, status)
+                    } else {
+                        status.Fail("Failed to cache")
+                    }
+                })
+                .catch(() => status.Fail())
 
             closePanel(panelId)
         },
@@ -263,13 +267,15 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             const status = new ProgressHandle(data.attributes.displayName ?? data.id)
             status.Update("Downloading from APS...", 0.05)
 
-            MirabufCachingService.CacheAPS(data, type).then(cacheInfo => {
-                if (cacheInfo) {
-                    SpawnCachedMira(cacheInfo, type, status)
-                } else {
-                    status.Fail("Failed to cache")
-                }
-            }).catch(() => status.Fail())
+            MirabufCachingService.CacheAPS(data, type)
+                .then(cacheInfo => {
+                    if (cacheInfo) {
+                        SpawnCachedMira(cacheInfo, type, status)
+                    } else {
+                        status.Fail("Failed to cache")
+                    }
+                })
+                .catch(() => status.Fail())
 
             closePanel(panelId)
         },

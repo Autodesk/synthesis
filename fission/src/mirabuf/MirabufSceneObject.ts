@@ -361,7 +361,10 @@ class MirabufSceneObject extends SceneObject {
     }
 }
 
-export async function CreateMirabuf(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle): Promise<MirabufSceneObject | null | undefined> {
+export async function CreateMirabuf(
+    assembly: mirabuf.Assembly,
+    progressHandle?: ProgressHandle
+): Promise<MirabufSceneObject | null | undefined> {
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)

@@ -118,10 +118,10 @@ class MirabufInstance {
         this._meshes = new Map()
         this._batches = new Array<THREE.BatchedMesh>()
 
-        progressHandle?.Update('Loading materials...', 0.4)
+        progressHandle?.Update("Loading materials...", 0.4)
         this.LoadMaterials(materialStyle ?? MaterialStyle.Regular)
 
-        progressHandle?.Update('Creating meshes...', 0.5)
+        progressHandle?.Update("Creating meshes...", 0.5)
         this.CreateMeshes()
     }
 
