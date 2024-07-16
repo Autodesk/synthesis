@@ -478,14 +478,14 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> t
     }
 
     file_res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{folder_id}/search", headers=headers, params=params)
-    if file_res.status_code is 404:
-        return ("", "")
+    if file_res.status_code == 404:
+        return ("", "", "")
     elif not file_res.ok:
         gm.ui.messageBox(f"UPLOAD ERROR: {file_res.text}", "Failed to get file")
         return None
     file_json: list[dict[str, Any]] = file_res.json()
-    if len(file_json["data"]) is 0:
-        return ("", "")
+    if len(file_json["data"]) == 0:
+        return ("", "", "")
     id: str = str(file_json["data"][0]["id"])
     lineage: str = str(file_json["data"][0]["relationships"]["item"]["data"]["id"])
     version: str = str(file_json["data"][0]["attributes"]["versionNumber"])
