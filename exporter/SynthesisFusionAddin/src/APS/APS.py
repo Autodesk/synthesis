@@ -121,7 +121,7 @@ def refreshAuthToken():
             "client_id": CLIENT_ID,
             "grant_type": "refresh_token",
             "refresh_token": APS_AUTH.refresh_token,
-            "scope": "data:create data:write data:search",
+            "scope": "data:create data:write data:search data:read",
         }
     ).encode("utf-8")
     req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
@@ -225,13 +225,13 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
         }
     }
 
-    res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders", headers=headers, data=data)
+    res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders", headers=headers, json=data)
     if not res.ok:
-        gm.ui.messageBox("", f"Failed to create folder: {res.text}")
+        gm.ui.messageBox(f"Failed to create new folder: {res.text}", "ERROR")
         return None
     json: dict[str, Any] = res.json()
-    href: str = json["links"]["self"]["href"]
-    return href
+    id: str = json["data"]["id"]
+    return id 
 
 def file_path_to_file_name(file_path: str) -> str:
     return file_path.split("/").pop()
@@ -270,7 +270,12 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
         gm.ui.messageBox("You must login to upload designs to APS", "USER ERROR")
     auth = APS_AUTH.access_token
     # Get token from APS API later
-    
+
+    new_folder_id = get_item_id(auth, project_id, folder_id, "MirabufDir", "folders")
+    if new_folder_id is None:
+        folder_id = create_folder(auth, project_id, folder_id, "MirabufDir")
+    else:
+        folder_id = new_folder_id
     (lineage_id, file_id, file_version) = get_file_id(auth, project_id, folder_id, file_name)
     
     """
@@ -363,6 +368,21 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
             return id
     return ""
 
+def get_item_id(auth: str, project_id: str, parent_folder_id: str, folder_name: str, item_type: str) -> str | None:
+    headers = {
+        "Authorization": f"Bearer {auth}"
+    }
+    res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{parent_folder_id}/contents", headers=headers)
+    if not res.ok:
+        gm.ui.messageBox(f"Failed to get item: {res.text}")
+        return None
+    data: list[dict[str, Any]] = res.json()["data"]
+    if len(data) == 0:
+        return ""
+    for item in data:
+        if item["type"] == item_type and item["attributes"]["name"] == folder_name:
+            return item["id"]
+    return None
 
 def update_file_version(auth: str, project_id: str, folder_id: str, lineage_id: str, file_id: str, file_name: str, file_contents: str, curr_file_version: str, object_id: str) -> str| None:
     """
