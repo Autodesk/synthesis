@@ -1,6 +1,7 @@
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { useEffect, useState } from "react"
 import { FaQuestion } from "react-icons/fa"
+import { HiDownload } from "react-icons/hi"
 
 interface UserIconProps {
     className: string
