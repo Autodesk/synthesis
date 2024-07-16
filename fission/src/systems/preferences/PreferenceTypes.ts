@@ -43,16 +43,18 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
 }
 
+export type Alliance = "red" | "blue"
+
 export type ScoringZonePreferences = {
     name: string
-    alliance: "red" | "blue"
+    alliance: Alliance
     parentNode: string | undefined
     points: number
     destroyGamepiece: boolean
     persistentPoints: boolean
-    position: [number, number, number]
-    rotation: [number, number, number, number]
-    scale: [number, number, number]
+
+    deltaTransformation: number[]
+    //scale: [number, number, number]
 }
 
 export type FieldPreferences = {

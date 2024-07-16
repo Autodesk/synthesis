@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
@@ -7,9 +7,12 @@ import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { AiOutlinePlus } from "react-icons/ai"
 import { IoPencil, IoTrashBin } from "react-icons/io5"
+import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import { Box } from "@mui/material"
 
 const AddIcon = <AiOutlinePlus size={"1.25rem"} />
 const DeleteIcon = <IoTrashBin size={"1.25rem"} />
@@ -17,18 +20,29 @@ const EditIcon = <IoPencil size={"1.25rem"} />
 
 type ScoringZoneRowProps = {
     zone: ScoringZonePreferences
+    field: MirabufSceneObject
+    save: () => void
     openPanel: (id: string) => void
     deleteZone: () => void
-    saveZones: () => void
 }
 
 export class SelectedZone {
+    public static field: MirabufSceneObject | undefined
     public static zone: ScoringZonePreferences
 }
 
-const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, deleteZone, saveZones }) => {
+const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+    if (!zones || !field) return
+
+    const fieldPrefs = field.fieldPreferences
+    if (fieldPrefs) fieldPrefs.scoringZones = zones
+
+    PreferencesSystem.savePreferences()
+}
+
+const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, field, openPanel, deleteZone }) => {
     return (
-        <Stack direction={StackDirection.Horizontal} spacing={48} justify="between">
+        <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
             <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
                 <div className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`} />
                 <Stack direction={StackDirection.Vertical} spacing={4} justify={"center"} className="w-max">
@@ -38,12 +52,20 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, delete
                     </Label>
                 </Stack>
             </Stack>
-            <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
+            <Box
+                component={"div"}
+                display={"flex"}
+                flexDirection={"row-reverse"}
+                gap={"0.25rem"}
+                justifyContent={"center"}
+                alignItems={"center"}
+            >
                 <Button
                     value={EditIcon}
                     onClick={() => {
                         SelectedZone.zone = zone
-                        saveZones()
+                        SelectedZone.field = field
+                        save()
                         openPanel("zone-config")
                     }}
                     colorOverrideClass="bg-accept-button hover:brightness-90"
@@ -52,35 +74,50 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, openPanel, delete
                     value={DeleteIcon}
                     onClick={() => {
                         deleteZone()
-                        saveZones()
+                        save()
                     }}
                     colorOverrideClass="bg-cancel-button hover:brightness-90"
                 />
-            </Stack>
-        </Stack>
+            </Box>
+        </Box>
     )
 }
 
 const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const { openPanel, closePanel } = usePanelControlContext()
-    const [zones, setZones] = useState<ScoringZonePreferences[] | undefined>(undefined)
 
-    const fieldPrefs = PreferencesSystem.getAllFieldPreferences()[SynthesisBrain.fieldsSpawned[0]]
+    const [selectedField, setSelectedField] = useState<MirabufSceneObject | undefined>(SelectedZone.field)
+    const [zones, setZones] = useState<ScoringZonePreferences[] | undefined>(
+        SelectedZone.field?.fieldPreferences?.scoringZones
+    )
 
-    if (zones == undefined && fieldPrefs != undefined) {
+    const fields = useMemo(() => {
+        const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
+            if (x instanceof MirabufSceneObject) {
+                return x.miraType === MiraType.FIELD
+            }
+            return false
+        }) as MirabufSceneObject[]
+
+        return assemblies
+    }, [])
+
+    /*     const [zones, setZones] = useState<ScoringZonePreferences[] | undefined>(undefined)
+    const fieldPrefs = PreferencesSystem.getAllFieldPreferences()[SynthesisBrain.fieldsSpawned[0]] */
+
+    /*     if (zones == undefined && fieldPrefs != undefined) {
         setZones(fieldPrefs.scoringZones)
-    }
-
-    const saveZones = () => {
-        if (fieldPrefs != undefined && zones != undefined) {
-            fieldPrefs.scoringZones = zones
-            PreferencesSystem.savePreferences()
-        }
-    }
+    } */
 
     useEffect(() => {
         closePanel("zone-config")
-    }, [])
+
+        World.PhysicsSystem.HoldPause()
+
+        return () => {
+            World.PhysicsSystem.ReleasePause()
+        }
+    }, [closePanel])
 
     return (
         <Panel
@@ -91,29 +128,52 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
             cancelEnabled={false}
             acceptName="Close"
             onAccept={() => {
-                saveZones()
+                SelectedZone.field = undefined
+                saveZones(zones, selectedField)
             }}
         >
-            {zones == undefined ? (
-                <Label>Spawn a field to configure scoring zones</Label>
+            {selectedField == undefined || zones == undefined ? (
+                <>
+                    <Label>Select a field</Label>
+                    {/** Scroll view for selecting a robot to configure */}
+                    <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[40vh] bg-background-secondary rounded-md p-2">
+                        {fields.map(mirabufSceneObject => {
+                            return (
+                                <Button
+                                    value={mirabufSceneObject.assemblyName}
+                                    onClick={() => {
+                                        setSelectedField(mirabufSceneObject)
+                                        setZones(mirabufSceneObject.fieldPreferences?.scoringZones)
+                                    }}
+                                    key={mirabufSceneObject.id}
+                                ></Button>
+                            )
+                        })}
+                    </div>
+                </>
             ) : (
                 <>
                     <ScrollView className="flex flex-col gap-4">
-                        {zones.map((z: ScoringZonePreferences, i: number) => (
+                        {zones.map((zonePrefs: ScoringZonePreferences, i: number) => (
                             <ScoringZoneRow
                                 key={i}
-                                zone={z}
+                                zone={(() => {
+                                    return zonePrefs
+                                })()}
+                                field={selectedField}
                                 openPanel={openPanel}
+                                save={() => saveZones(zones, selectedField)}
                                 deleteZone={() => {
                                     setZones(zones.filter((_, idx) => idx !== i))
                                 }}
-                                saveZones={saveZones}
                             />
                         ))}
                     </ScrollView>
                     <Button
                         value={AddIcon}
                         onClick={() => {
+                            if (zones == undefined) return
+
                             const newZone: ScoringZonePreferences = {
                                 name: "New Scoring Zone",
                                 alliance: "blue",
@@ -121,14 +181,15 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                                 points: 0,
                                 destroyGamepiece: false,
                                 persistentPoints: false,
-                                position: [0, 0, 0],
-                                rotation: [0, 0, 0, 0],
-                                scale: [1, 1, 1],
+                                deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                             }
-                            zones.push(newZone)
+
+                            saveZones(zones, selectedField)
+
+                            //zones.push(newZone)
                             SelectedZone.zone = newZone
-                            saveZones()
-                            console.log(SelectedZone.zone.name)
+                            SelectedZone.field = selectedField
+
                             openPanel("zone-config")
                         }}
                     />

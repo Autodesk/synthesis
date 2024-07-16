@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import Input from "@/components/Input"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Button from "@/components/Button"
@@ -9,112 +9,175 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import SelectButton from "@/ui/components/SelectButton"
 import Jolt from "@barclah/jolt-physics"
-import TransformGizmos from "@/ui/components/TransformGizmos"
+import TransformGizmos, { GizmoTransformMode } from "@/ui/components/TransformGizmos"
 import * as THREE from "three"
 import World from "@/systems/World"
-import { ReactRgbaColor_ThreeColor } from "@/util/TypeConversions"
+import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { MiraType } from "@/mirabuf/MirabufLoader"
+import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import { RgbaColor } from "react-colorful"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
+
+/**
+ * Saves ejector configuration to selected field.
+ *
+ * Math Explanation:
+ * Let W be the world transformation matrix of the gizmo.
+ * Let R be the world transformation matrix of the selected field node.
+ * Let L be the local transformation matrix of the gizmo, relative to the selected field node.
+ *
+ * We are given W and R, and want to save L with the field. This way when we create
+ * the ejection point afterwards, it will be relative to the selected field node.
+ *
+ * W = L R
+ * L = W R^(-1)
+ *
+ * ThreeJS sets the standard multiplication operation for matrices to be premultiply. I really
+ * don't like this terminology as it's thrown me off multiple times, but I suppose it does go
+ * against most other multiplication operations.
+ *
+ * @param name Name given to the scoring zone by the user.
+ * @param alliance Scoring zone alliance.
+ * @param points Number of points the zone is worth.
+ * @param destroy Destroy gamepiece setting.
+ * @param persistent Persistent points setting.
+ * @param gizmo Reference to the transform gizmo object.
+ * @param selectedNode Selected node that configuration is relative to.
+ */
+function save(
+    name: string,
+    alliance: Alliance,
+    points: number,
+    destroy: boolean,
+    persistent: boolean,
+    gizmo: TransformGizmos,
+    selectedNode?: RigidNodeId
+) {
+    const field = SelectedZone.field
+    if (!field?.fieldPreferences || !gizmo) {
+        return
+    }
+
+    selectedNode ??= field.rootNodeId
+
+    const nodeBodyId = field.mechanism.nodeToBody.get(selectedNode)
+    if (!nodeBodyId) {
+        return
+    }
+
+    const gizmoTransformation = gizmo.mesh.matrixWorld
+    const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+    const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
+
+    const zone = SelectedZone.zone
+
+    zone.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
+    zone.name = name
+    zone.alliance = alliance
+    zone.parentNode = selectedNode
+    zone.points = points
+    zone.destroyGamepiece = destroy
+    zone.persistentPoints = persistent
+
+    if (!field.fieldPreferences.scoringZones.includes(zone)) field.fieldPreferences.scoringZones.push(zone)
+
+    PreferencesSystem.savePreferences()
+}
 
 const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const { openPanel, closePanel } = usePanelControlContext()
 
-    const transformGizmoRef = useRef<TransformGizmos>()
-
     const [name, setName] = useState<string>(SelectedZone.zone.name)
-    const [alliance, setAlliance] = useState<"red" | "blue">(SelectedZone.zone.alliance)
-    const [selectedNode, setSelectedNode] = useState<string | undefined>(SelectedZone.zone.parentNode)
+    const [alliance, setAlliance] = useState<Alliance>(SelectedZone.zone.alliance)
+    const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(SelectedZone.zone.parentNode)
     const [points, setPoints] = useState<number>(SelectedZone.zone.points)
     const [destroy, setDestroy] = useState<boolean>(SelectedZone.zone.destroyGamepiece)
     const [persistent, setPersistent] = useState<boolean>(SelectedZone.zone.persistentPoints)
 
-    const [transformMode, setTransformMode] = useState<"translate" | "rotate" | "scale">("translate")
+    const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
+    const [transformMode, setTransformMode] = useState<GizmoTransformMode>("translate")
 
     const { currentTheme, themes } = useTheme()
     const theme = useMemo(() => {
         return themes[currentTheme]
     }, [currentTheme, themes])
 
-    const field = useMemo(() => {
-        const assemblies = [...World.SceneRenderer.sceneObjects.values()]
-        for (let i = 0; i < assemblies.length; i++) {
-            const assembly = assemblies[i]
-            if (!(assembly instanceof MirabufSceneObject)) continue
-
-            if ((assembly as MirabufSceneObject).miraType != MiraType.FIELD) continue
-
-            return assembly
-        }
-
-        return undefined
-    }, [])
-
     useEffect(() => {
         closePanel("scoring-zones")
-        configureGizmo()
-    }, [])
 
-    const configureGizmo = () => {
-        transformGizmoRef.current = new TransformGizmos(
-            new THREE.Mesh(
-                new THREE.BoxGeometry(1, 1, 1),
-                World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
-            )
-        )
-        transformGizmoRef.current.AddMeshToScene()
+        World.PhysicsSystem.HoldPause()
 
-        transformGizmoRef.current.CreateGizmo("translate", 1.5)
+        return () => {
+            World.PhysicsSystem.ReleasePause()
+        }
+    }, [closePanel])
 
-        const position = SelectedZone.zone.position
-        const rotation = SelectedZone.zone.rotation
-        const scale = SelectedZone.zone.scale
+    useEffect(() => {
+        const field = SelectedZone.field
+        const zone = SelectedZone.zone
 
-        transformGizmoRef.current.mesh.position.set(position[0], position[1], position[2])
-        transformGizmoRef.current.mesh.rotation.setFromQuaternion(
-            new THREE.Quaternion(rotation[0], rotation[1], rotation[2], rotation[3])
-        )
-        transformGizmoRef.current.mesh.scale.set(scale[0], scale[1], scale[2])
-    }
-
-    const saveSettings = () => {
-        SelectedZone.zone.name = name
-        SelectedZone.zone.alliance = alliance
-        SelectedZone.zone.parentNode = selectedNode
-        SelectedZone.zone.points = points
-        SelectedZone.zone.destroyGamepiece = destroy
-        SelectedZone.zone.persistentPoints = persistent
-
-        if (transformGizmoRef.current != undefined) {
-            const position = transformGizmoRef.current.mesh.position
-            const rotation = transformGizmoRef.current.mesh.quaternion
-            const scale = transformGizmoRef.current.mesh.scale
-
-            SelectedZone.zone.position = [position.x, position.y, position.z]
-            SelectedZone.zone.rotation = [rotation.x, rotation.y, rotation.z, rotation.w]
-            SelectedZone.zone.scale = [scale.x, scale.y, scale.z]
+        if (!field || !zone) {
+            setTransformGizmo(undefined)
+            return
         }
 
-        PreferencesSystem.savePreferences()
-    }
+        const gizmo = new TransformGizmos(
+            new THREE.Mesh(
+                new THREE.BoxGeometry(1, 1, 1),
+                new THREE.MeshPhongMaterial({
+                    color: colorToNumber(theme.HighlightHover.color),
+                    shininess: 0.0,
+                    opacity: 0.7,
+                    transparent: true,
+                })
+                /* World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color)) */
+            )
+        )
+
+        ;(gizmo.mesh.material as THREE.Material).depthTest = false
+        gizmo.AddMeshToScene()
+        gizmo.CreateGizmo("translate", 1.5)
+
+        const deltaTransformation = Array_ThreeMatrix4(zone.deltaTransformation)
+
+        let nodeBodyId = field.mechanism.nodeToBody.get(zone.parentNode ?? field.rootNodeId)
+        if (!nodeBodyId) {
+            // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+            nodeBodyId = field.mechanism.nodeToBody.get(field.rootNodeId)!
+        }
+
+        /** W = L x R. See save() for math details */
+        const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+        const gizmoTransformation = deltaTransformation.premultiply(fieldTransformation)
+
+        gizmo.mesh.position.setFromMatrixPosition(gizmoTransformation)
+        gizmo.mesh.rotation.setFromRotationMatrix(gizmoTransformation)
+        gizmo.mesh.scale.setFromMatrixScale(gizmoTransformation)
+
+        setTransformGizmo(gizmo)
+
+        return () => {
+            gizmo.RemoveGizmos()
+            setTransformGizmo(undefined)
+        }
+    }, [theme])
 
     /** Sets the selected node if it is a part of the currently loaded field */
-    const trySetSelectedNode = useCallback(
-        (body: Jolt.BodyID) => {
-            if (SelectedZone.zone == undefined || Object.keys(PreferencesSystem.getAllFieldPreferences()).length == 0)
-                return false
+    const trySetSelectedNode = useCallback((body: Jolt.BodyID) => {
+        if (!SelectedZone.field) {
+            return false
+        }
 
-            const assoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(body)
-            if (!assoc || assoc?.sceneObject != field) {
-                return false
-            }
+        const assoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(body)
+        if (assoc?.sceneObject != SelectedZone.field) {
+            return false
+        }
 
-            setSelectedNode(assoc.rigidNodeId)
-            return true
-        },
-        [field]
-    )
+        setSelectedNode(assoc.rigidNodeId)
+        return true
+    }, [])
 
     return (
         <Panel
@@ -123,13 +186,13 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {
-                saveSettings()
-                if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
+                if (transformGizmo && SelectedZone.field) {
+                    save(name, alliance, points, destroy, persistent, transformGizmo, selectedNode)
+                }
                 openPanel("scoring-zones")
             }}
             onCancel={() => {
                 openPanel("scoring-zones")
-                if (transformGizmoRef.current) transformGizmoRef.current.RemoveGizmos()
             }}
         >
             <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
@@ -150,7 +213,8 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
 
                 {/** Select a parent node */}
                 <SelectButton
-                    placeholder="Select parent node"
+                    placeholder="Select pickup node"
+                    value={selectedNode}
                     onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
                 />
 
@@ -185,7 +249,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                         if (v == undefined) return
 
                         setTransformMode(v)
-                        transformGizmoRef.current?.SwitchGizmo(v, 1.5)
+                        transformGizmo?.SwitchGizmo(v, 1.5)
                     }}
                     sx={{
                         alignSelf: "center",
@@ -196,9 +260,12 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                     <ToggleButton value={"rotate"}>Rotate</ToggleButton>
                 </ToggleButtonGroup>
             </div>
-            {/* </Stack> */}
         </Panel>
     )
+}
+
+const colorToNumber = (color: RgbaColor) => {
+    return color.r * 10000 + color.g * 100 + color.b
 }
 
 export default ZoneConfigPanel
