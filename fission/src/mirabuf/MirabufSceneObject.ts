@@ -1,17 +1,22 @@
 import { mirabuf } from "@/proto/mirabuf"
 import SceneObject from "../systems/scene/SceneObject"
 import MirabufInstance from "./MirabufInstance"
-import MirabufParser, { ParseErrorSeverity } from "./MirabufParser"
+import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
 import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
+import { EjectorPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { MiraType } from "./MirabufLoader"
+import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
+import EjectableSceneObject from "./EjectableSceneObject"
 
 const DEBUG_BODIES = false
 
@@ -27,10 +32,16 @@ class MirabufSceneObject extends SceneObject {
     private _brain: SynthesisBrain | undefined
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
-    private _physicsLayerReserve: LayerReserve | undefined = undefined
+    private _physicsLayerReserve: LayerReserve | undefined
 
-    private _transformGizmos: TransformGizmos | undefined = undefined
+    private _transformGizmos: TransformGizmos | undefined
     private _deleteGizmoOnEscape: boolean = true
+
+    private _intakePreferences: IntakePreferences | undefined
+    private _ejectorPreferences: EjectorPreferences | undefined
+
+    private _intakeSensor?: IntakeSensorSceneObject
+    private _ejectable?: EjectableSceneObject
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -38,6 +49,30 @@ class MirabufSceneObject extends SceneObject {
 
     get mechanism() {
         return this._mechanism
+    }
+
+    get assemblyName() {
+        return this._assemblyName
+    }
+
+    get intakePreferences() {
+        return this._intakePreferences
+    }
+
+    get ejectorPreferences() {
+        return this._ejectorPreferences
+    }
+
+    public get activeEjectable(): Jolt.BodyID | undefined {
+        return this._ejectable?.gamePieceBodyId
+    }
+
+    public get miraType(): MiraType {
+        return this._mirabufInstance.parser.assembly.dynamic ? MiraType.ROBOT : MiraType.FIELD
+    }
+
+    public get rootNodeId(): string {
+        return this._mirabufInstance.parser.rootNode
     }
 
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
@@ -54,6 +89,8 @@ class MirabufSceneObject extends SceneObject {
         this._debugBodies = null
 
         this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
+
+        this.getPreferences()
     }
 
     public Setup(): void {
@@ -77,14 +114,31 @@ class MirabufSceneObject extends SceneObject {
             })
         }
 
+        const rigidNodes = this._mirabufInstance.parser.rigidNodes
+        this._mechanism.nodeToBody.forEach((bodyId, rigidNodeId) => {
+            const rigidNode = rigidNodes.get(rigidNodeId)
+            if (!rigidNode) {
+                console.warn("Found a RigidNodeId with no related RigidNode. Skipping for now...")
+                return
+            }
+            World.PhysicsSystem.SetBodyAssociation(new RigidNodeAssociate(this, rigidNode, bodyId))
+        })
+
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
         this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
         simLayer.SetBrain(this._brain)
+
+        // Intake
+        this.UpdateIntakeSensor()
     }
 
     public Update(): void {
+        if (InputSystem.currentModifierState.ctrl && InputSystem.currentModifierState.shift && this._ejectable) {
+            this.Eject()
+        }
+
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
@@ -152,6 +206,20 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
+        if (this._intakeSensor) {
+            World.SceneRenderer.RemoveSceneObject(this._intakeSensor.id)
+            this._intakeSensor = undefined
+        }
+
+        if (this._ejectable) {
+            World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
+            this._ejectable = undefined
+        }
+
+        this._mechanism.nodeToBody.forEach(bodyId => {
+            World.PhysicsSystem.RemoveBodyAssocation(bodyId)
+        })
+
         World.SimulationSystem.UnregisterMechanism(this._mechanism)
         World.PhysicsSystem.DestroyMechanism(this._mechanism)
         this._mirabufInstance.Dispose(World.SceneRenderer.scene)
@@ -168,8 +236,14 @@ class MirabufSceneObject extends SceneObject {
         this._brain?.clearControls()
     }
 
-    public GetRootNodeId(): Jolt.BodyID | undefined {
-        return this._mechanism.nodeToBody.get(this._mechanism.rootBody)
+    public Eject() {
+        if (!this._ejectable) {
+            return
+        }
+
+        this._ejectable.Eject()
+        World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
+        this._ejectable = undefined
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
@@ -205,6 +279,38 @@ class MirabufSceneObject extends SceneObject {
         return mesh
     }
 
+    public UpdateIntakeSensor() {
+        if (this._intakeSensor) {
+            World.SceneRenderer.RemoveSceneObject(this._intakeSensor.id)
+            this._intakeSensor = undefined
+        }
+
+        // Do we have an intake, and is it something other than the default. Config will default to root node at least.
+        if (this._intakePreferences && this._intakePreferences.parentNode) {
+            this._intakeSensor = new IntakeSensorSceneObject(this)
+            World.SceneRenderer.RegisterSceneObject(this._intakeSensor)
+        }
+    }
+
+    public SetEjectable(bodyId?: Jolt.BodyID, removeExisting: boolean = false): boolean {
+        if (this._ejectable) {
+            if (!removeExisting) {
+                return false
+            }
+
+            World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
+            this._ejectable = undefined
+        }
+
+        if (!this._ejectorPreferences || !this._ejectorPreferences.parentNode || !bodyId) {
+            return false
+        }
+
+        this._ejectable = new EjectableSceneObject(this, bodyId)
+        World.SceneRenderer.RegisterSceneObject(this._ejectable)
+        return true
+    }
+
     public EnableTransformControls(): void {
         this._transformGizmos = new TransformGizmos(
             new THREE.Mesh(
@@ -213,9 +319,14 @@ class MirabufSceneObject extends SceneObject {
             )
         )
         this._transformGizmos.AddMeshToScene()
-        this._transformGizmos.CreateGizmo("translate")
+        this._transformGizmos.CreateGizmo("translate", 5.0)
 
         this.DisablePhysics()
+    }
+
+    private getPreferences(): void {
+        this._intakePreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.intake
+        this._ejectorPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.ejector
     }
 
     private EnablePhysics() {
@@ -239,6 +350,28 @@ export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<Mirabuf
     }
 
     return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!)
+}
+
+/**
+ * Body association to a rigid node with a given mirabuf scene object.
+ */
+export class RigidNodeAssociate extends BodyAssociate {
+    public readonly sceneObject: MirabufSceneObject
+
+    public readonly rigidNode: RigidNodeReadOnly
+    public get rigidNodeId(): RigidNodeId {
+        return this.rigidNode.id
+    }
+
+    public get isGamePiece(): boolean {
+        return this.rigidNode.isGamePiece
+    }
+
+    public constructor(sceneObject: MirabufSceneObject, rigidNode: RigidNodeReadOnly, body: Jolt.BodyID) {
+        super(body)
+        this.sceneObject = sceneObject
+        this.rigidNode = rigidNode
+    }
 }
 
 export default MirabufSceneObject

@@ -2,7 +2,6 @@ import { useState } from "react"
 import Input from "@/components/Input"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Button from "@/components/Button"
-import SelectButton from "@/components/SelectButton"
 import Checkbox from "@/components/Checkbox"
 import Slider from "@/components/Slider"
 import NumberInput from "@/components/NumberInput"
@@ -37,7 +36,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                 onClick={() => setAlliance(alliance == "blue" ? "red" : "blue")}
                 colorOverrideClass={`bg-match-${alliance}-alliance`}
             />
-            <SelectButton placeholder="Select zone parent" onSelect={(p: string) => setParent(p)} />
+            {/* <SelectButton placeholder="Select zone parent" onSelect={(p: string) => setParent(p)} /> */}
             <NumberInput label="Points" placeholder="Zone points" defaultValue={1} onInput={v => setPoints(v || 1)} />
             <Checkbox label="Destroy Gamepiece" defaultState={false} onClick={setDestroy} />
             <Checkbox label="Persistent Points" defaultState={false} onClick={setPersistent} />
