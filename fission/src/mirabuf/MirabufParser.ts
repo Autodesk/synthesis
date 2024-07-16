@@ -1,7 +1,7 @@
 import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
 import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
-import { ProgressHandle } from "@/ui/components/ProgressNotification"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 
 export enum ParseErrorSeverity {
     Unimportable = 10,

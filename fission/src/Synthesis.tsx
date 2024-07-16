@@ -57,7 +57,8 @@ import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import PokerPanel from "@/panels/PokerPanel.tsx"
-import ProgressNotifications, { ProgressHandle, ProgressHandleStatus } from "./ui/components/ProgressNotification.tsx"
+import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
+import { ProgressHandle } from "./ui/components/ProgressNotificationData.ts"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -117,7 +118,7 @@ function Synthesis() {
                 const parser = new MirabufParser(miraAssembly)
                 if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
                     console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
-                    setupProgress.Update("Failed to parse assembly", 1, ProgressHandleStatus.Error)
+                    setupProgress.Fail("Failed to parse assembly")
                     return
                 }
 
@@ -126,7 +127,7 @@ function Synthesis() {
                 const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
 
-                setupProgress.Update("Done", 1, ProgressHandleStatus.Done)
+                setupProgress.Done()
             })()
         }
 

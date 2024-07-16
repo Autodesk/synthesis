@@ -12,7 +12,7 @@ import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
-import { ProgressHandle } from "@/ui/components/ProgressNotification"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 
 const DEBUG_BODIES = false
 

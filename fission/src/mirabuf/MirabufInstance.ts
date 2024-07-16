@@ -2,7 +2,7 @@ import * as THREE from "three"
 import { mirabuf } from "../proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
-import { ProgressHandle } from "@/ui/components/ProgressNotification.tsx"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
 
 const WIREFRAME = false
 

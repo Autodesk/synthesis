@@ -1,6 +1,7 @@
 import { styled, Typography } from "@mui/material"
 import { Box } from "@mui/system"
 import { useEffect, useReducer } from "react"
+import { ProgressHandle, ProgressHandleStatus, ProgressEvent } from "./ProgressNotificationData"
 
 const handleMap = new Map<number, ProgressHandle>()
 
@@ -59,18 +60,18 @@ function ProgressNotifications() {
     }, undefined)
 
     useEffect(() => {
-        const onHandleUpdate = (e: Event) => {
-            const handle = (e as ProgressEvent).handle;
+        const onHandleUpdate = (e: ProgressEvent) => {
+            const handle = e.handle;
             if (handle.status > 0) {
                 setTimeout(() => handleMap.delete(handle.handleId) && updateProgressElements(), 2000)
             }
             handleMap.set(handle.handleId, handle)
             updateProgressElements()
         }
-
-        window.addEventListener(ProgressEvent.EVENT_KEY, onHandleUpdate)
+        
+        ProgressEvent.AddListener(onHandleUpdate)
         return () => {
-            window.removeEventListener(ProgressEvent.EVENT_KEY, onHandleUpdate)
+            ProgressEvent.RemoveListener(onHandleUpdate)
         }
     }, [updateProgressElements])
 
@@ -93,61 +94,6 @@ function ProgressNotifications() {
     )
 }
 
-let nextHandleId = 0
 
-export enum ProgressHandleStatus {
-    inProgress = 0,
-    Done = 1,
-    Error = 2
-}
-
-export class ProgressHandle {
-    
-    private _handleId: number
-    private _title: string
-    public message: string = ""
-    public progress: number = 0.0
-    public status: ProgressHandleStatus = ProgressHandleStatus.inProgress
-
-    public get handleId() { return this._handleId }
-    public get title() { return this._title }
-
-    public constructor(title: string) {
-        this._handleId = nextHandleId++
-        this._title = title
-    }
-
-    public Update(message: string, progress: number, status?: ProgressHandleStatus) {
-        this.message = message
-        this.progress = progress
-        status && (this.status = status)
-
-        this.Push()
-    }
-
-    public Fail(message?: string) {
-        this.Update(message ?? "Failed", 1, ProgressHandleStatus.Error)
-    }
-
-    public Done(message?: string) {
-        this.Update(message ?? "Done", 1, ProgressHandleStatus.Done)
-    }
-
-    public Push() {
-        window.dispatchEvent(new ProgressEvent(this))
-    }
-}
-
-class ProgressEvent extends Event {
-    public static readonly EVENT_KEY = 'ProgressEvent'
-
-    public handle: ProgressHandle
-
-    public constructor(handle: ProgressHandle) {
-        super(ProgressEvent.EVENT_KEY)
-
-        this.handle = handle
-    }
-}
 
 export default ProgressNotifications
