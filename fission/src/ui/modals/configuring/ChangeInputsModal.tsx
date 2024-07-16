@@ -389,7 +389,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                             <Dropdown
                                                 label={""}
                                                 // Moves the selected option to the start of the array
-                                                options={DefaultInputs.ALL_INPUT_SCHEMES.map(
+                                                options={DefaultInputs.AVAILABLE_INPUT_SCHEMES.map(
                                                     scheme => scheme.schemeName
                                                 )}
                                                 onSelect={value => {
@@ -400,7 +400,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                         <Button
                                             value={"Apply"}
                                             onClick={() => {
-                                                const scheme = DefaultInputs.ALL_INPUT_SCHEMES.find(
+                                                const scheme = DefaultInputs.AVAILABLE_INPUT_SCHEMES.find(
                                                     s => s.schemeName == chosenResetScheme
                                                 )
                                                 if (!selectedScheme || !scheme) return

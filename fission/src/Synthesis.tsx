@@ -1,9 +1,4 @@
 import Scene from "@/components/Scene.tsx"
-import MirabufSceneObject from "./mirabuf/MirabufSceneObject.ts"
-import MirabufCachingService, { MiraType } from "./mirabuf/MirabufLoader.ts"
-import { mirabuf } from "./proto/mirabuf"
-import MirabufParser, { ParseErrorSeverity } from "./mirabuf/MirabufParser.ts"
-import MirabufInstance from "./mirabuf/MirabufInstance.ts"
 import { AnimatePresence } from "framer-motion"
 import { ReactElement, useEffect } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
@@ -57,6 +52,7 @@ import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import PokerPanel from "@/panels/PokerPanel.tsx"
+import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -96,7 +92,8 @@ function Synthesis() {
             console.debug(`Selected Mirabuf File: ${mira_path}`)
         }
 
-        const setup = async () => {
+        // TODO: do we actually want to spawn a robot right away when synthesis loads?
+        /* const setup = async () => {
             const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
                 .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
@@ -117,9 +114,9 @@ function Synthesis() {
                 const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
             })()
-        }
+        } */
 
-        setup()
+        //setup()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -226,6 +223,7 @@ const initialPanels: ReactElement[] = [
     <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
+    <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
 ]
 
 export default Synthesis

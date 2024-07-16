@@ -18,7 +18,26 @@ import { AxisInput, ButtonInput, Input } from "@/systems/input/InputSystem"
 import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
+class BrainConfiguredEvent extends Event {
+    public brainIndex: number
+    public schemeName: string
+
+    constructor(brainIndex: number, schemeName: string) {
+        super("brainConfigured")
+        this.brainIndex = brainIndex
+        this.schemeName = schemeName
+    }
+}
+
 class SynthesisBrain extends Brain {
+    public static triggerBrainConfiguredEvent(schemeName: string, brainIndex: number) {
+        window.dispatchEvent(new BrainConfiguredEvent(brainIndex, schemeName))
+    }
+
+    private static addBrainConfiguredEventListener(callback: (e: BrainConfiguredEvent) => void) {
+        window.addEventListener("brainConfigured", callback as EventListener)
+    }
+
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
 
@@ -60,12 +79,13 @@ class SynthesisBrain extends Brain {
             this.configureArcadeDriveBehavior()
             this.configureArmBehaviors()
             this.configureElevatorBehaviors()
-            this.configureInputs()
         } else {
             this.configureField()
         }
 
         SynthesisBrain._currentRobotIndex++
+
+        SynthesisBrain.addBrainConfiguredEventListener(this.configureInputs)
     }
 
     public Enable(): void {}
@@ -84,7 +104,7 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
-    public configureArcadeDriveBehavior() {
+    private configureArcadeDriveBehavior() {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
@@ -136,7 +156,7 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates instances of ArmBehavior and automatically configures them
-    public configureArmBehaviors() {
+    private configureArmBehaviors() {
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof HingeDriver
         ) as HingeDriver[]
@@ -159,7 +179,7 @@ class SynthesisBrain extends Brain {
     }
 
     // Creates instances of ElevatorBehavior and automatically configures them
-    public configureElevatorBehaviors() {
+    private configureElevatorBehaviors() {
         const sliderDrivers: SliderDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof SliderDriver
         ) as SliderDriver[]
@@ -181,7 +201,7 @@ class SynthesisBrain extends Brain {
         }
     }
 
-    private configureInputs() {
+    private configureInputs(_: BrainConfiguredEvent) {
         // Check for existing inputs
         const robotConfig = PreferencesSystem.getRobotPreferences(this._assemblyName)
         if (robotConfig.inputsSchemes[this._assemblyIndex] != undefined) {
@@ -191,10 +211,12 @@ class SynthesisBrain extends Brain {
 
         // Configure with default inputs
 
-        const scheme = DefaultInputs.ALL_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex]
+        const scheme = DefaultInputs.AVAILABLE_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex]
 
         robotConfig.inputsSchemes[this._assemblyIndex] = {
             schemeName: this._assemblyName,
+            descriptiveName: "",
+            customized: false,
             usesGamepad: scheme?.usesGamepad ?? false,
             inputs: [],
         }

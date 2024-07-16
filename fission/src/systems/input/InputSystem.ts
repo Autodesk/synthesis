@@ -248,7 +248,9 @@ class InputSystem extends WorldSystem {
 
         if (targetScheme == null || targetInput == null) return 0
 
-        return targetInput.getValue(targetScheme.usesGamepad)
+        // TODO
+        //return targetInput.getValue(targetScheme.usesGamepad)
+        return 0.0
     }
 
     // Returns true if two modifier states are identical

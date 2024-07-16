@@ -2,13 +2,17 @@ import { AxisInput, Input, EmptyModifierState } from "./InputSystem"
 
 export type InputScheme = {
     schemeName: string
+    descriptiveName: string
+    customized: boolean
     usesGamepad: boolean
     inputs: Input[]
 }
 
 class DefaultInputs {
     private static wasd: InputScheme = {
-        schemeName: "WASD",
+        schemeName: "Ernie",
+        descriptiveName: "WASD",
+        customized: false,
         usesGamepad: false,
         inputs: [
             new AxisInput("arcadeDrive", "KeyW", "KeyS"),
@@ -48,7 +52,9 @@ class DefaultInputs {
     }
 
     private static arrowKeys: InputScheme = {
-        schemeName: "Arrow Keys",
+        schemeName: "Luna",
+        descriptiveName: "Arrow Keys",
+        customized: false,
         usesGamepad: false,
         inputs: [
             new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown"),
@@ -88,7 +94,9 @@ class DefaultInputs {
     }
 
     private static fullController: InputScheme = {
-        schemeName: "Full Controller",
+        schemeName: "Jax",
+        descriptiveName: "Full Controller",
+        customized: false,
         usesGamepad: true,
         inputs: [
             new AxisInput("arcadeDrive", "", "", 1, true),
@@ -103,7 +111,9 @@ class DefaultInputs {
     }
 
     private static leftStick: InputScheme = {
-        schemeName: "Left Stick",
+        schemeName: "Hunter",
+        descriptiveName: "Left Stick",
+        customized: false,
         usesGamepad: true,
         inputs: [
             new AxisInput("arcadeDrive", "", "", 1, true),
@@ -115,7 +125,9 @@ class DefaultInputs {
     }
 
     private static rightStick: InputScheme = {
-        schemeName: "Right Stick",
+        schemeName: "Carmela",
+        descriptiveName: "Right Stick",
+        customized: false,
         usesGamepad: true,
         inputs: [
             new AxisInput("arcadeDrive", "", "", 3, true),
@@ -126,12 +138,115 @@ class DefaultInputs {
         ],
     }
 
-    public static ALL_INPUT_SCHEMES: InputScheme[] = [
+    public static AVAILABLE_INPUT_SCHEMES: InputScheme[] = [
         this.wasd,
         this.arrowKeys,
         this.fullController,
         this.leftStick,
         this.rightStick,
+    ]
+
+    public static NAMES: string[] = [
+        "Kennedy",
+        "Duke",
+        "Bria",
+        "Creed",
+        "Angie",
+        "Moises",
+        "Hattie",
+        "Quinton",
+        "Luisa",
+        "Ocean",
+        "Marlowe",
+        "Jimmy",
+        "Brielle",
+        "Forest",
+        "Katherine",
+        "Cade",
+        "Kori",
+        "Myles",
+        "Valeria",
+        "Braylon",
+        "Gracelyn",
+        "Killian",
+        "Holland",
+        "Jake",
+        "Jovie",
+        "William",
+        "Makenzie",
+        "Eden",
+        "Mabel",
+        "Ian",
+        "Leilany",
+        "Jayson",
+        "Kylie",
+        "Cal",
+        "Juliet",
+        "Emory",
+        "Eden",
+        "Nathanael",
+        "Eloise",
+        "Darian",
+        "Shelby",
+        "Neil",
+        "Scarlett",
+        "Ace",
+        "Florence",
+        "Alessandro",
+        "Sariyah",
+        "Joey",
+        "Aubrie",
+        "Edward",
+        "Octavia",
+        "Bode",
+        "Aaliyah",
+        "Francis",
+        "Camilla",
+        "Wilson",
+        "Elaina",
+        "Kayson",
+        "Kara",
+        "Rey",
+        "Madison",
+        "Emir",
+        "Alaya",
+        "Finley",
+        "Jayleen",
+        "Joseph",
+        "Arianna",
+        "Samson",
+        "Ezra",
+        "Amias",
+        "Ellen",
+        "Zion",
+        "Harley",
+        "Abraham",
+        "Elaine",
+        "Conner",
+        "Jolene",
+        "Kylan",
+        "Aislinn",
+        "Omar",
+        "Skyla",
+        "Shepard",
+        "Jaylin",
+        "Osiris",
+        "Lilyana",
+        "Noe",
+        "Crystal",
+        "Jeffrey",
+        "Emily",
+        "Rayan",
+        "Elise",
+        "Forrest",
+        "Aarya",
+        "Beckett",
+        "Jacqueline",
+        "Kyle",
+        "Kailey",
+        "Hank",
+        "Alanna",
+        "Marco",
     ]
 }
 
