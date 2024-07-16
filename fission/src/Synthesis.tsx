@@ -46,7 +46,6 @@ import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
 import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
 import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
 import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
-import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
@@ -58,6 +57,8 @@ import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
+import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
+import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -218,6 +219,7 @@ const initialModals = [
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
     <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
     <ZoneConfigPanel panelId="zone-config" openLocation="right" />,
+    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
 const initialPanels: ReactElement[] = [
