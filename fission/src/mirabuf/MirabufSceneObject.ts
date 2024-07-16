@@ -229,10 +229,6 @@ class MirabufSceneObject extends SceneObject {
             World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
     }
-
-    public GetRootNodeId(): Jolt.BodyID | undefined {
-        return this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)
-    }
 }
 
 export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<MirabufSceneObject | null | undefined> {
