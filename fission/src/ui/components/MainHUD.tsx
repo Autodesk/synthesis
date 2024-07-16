@@ -20,8 +20,8 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { AiOutlineDoubleRight } from "react-icons/ai"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 type ButtonProps = {
     value: string
@@ -181,6 +181,7 @@ const MainHUD: React.FC = () => {
                             addToast(type, type, "This is a test toast to test the toast system")
                         }}
                     />
+                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                 </div>
                 {userInfo ? (
                     <MainHUDButton

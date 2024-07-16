@@ -99,8 +99,8 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 label="Punch Force"
                 min={PUNCH_FORCE_MIN}
                 max={PUNCH_FORCE_MAX}
-                defaultValue={PUNCH_FORCE_DEFAULT}
-                onChange={x => setPunchForce(x)}
+                value={punchForce}
+                onChange={(_, x) => setPunchForce(x as number)}
             />
             <Checkbox label="Mark?" defaultState={MARK_DEFAULT} onClick={x => setMark(x)} />
             <Slider
@@ -108,8 +108,8 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 min={MARK_RADIUS_MIN}
                 max={MARK_RADIUS_MAX}
                 step={MARK_RADIUS_SLIDER_STEP}
-                defaultValue={MARK_RADIUS_DEFAULT}
-                onChange={x => setMarkRadius(x)}
+                value={markRadius}
+                onChange={(_, x) => setMarkRadius(x as number)}
             />
         </Panel>
     )

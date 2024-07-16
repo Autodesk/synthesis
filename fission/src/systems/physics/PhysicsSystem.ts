@@ -15,6 +15,8 @@ import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly }
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
 
+export type JoltBodyIndexAndSequence = number
+
 /**
  * Layers used for determining enabled/disabled collisions.
  */
@@ -62,6 +64,14 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
+    private _pauseCounter = 0
+
+    private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
+
+    public get isPaused(): boolean {
+        return this._pauseCounter > 0
+    }
+
     /**
      * Creates a PhysicsSystem object.
      */
@@ -90,6 +100,58 @@ class PhysicsSystem extends WorldSystem {
         )
         ground.SetFriction(FLOOR_FRICTION)
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
+
+        this._bodyAssociations = new Map()
+    }
+
+    /**
+     * Get association to a given Jolt Body.
+     *
+     * @param bodyId BodyID to check for association
+     * @returns Association for given Body
+     */
+    public GetBodyAssociation(bodyId: Jolt.BodyID): BodyAssociate | undefined {
+        return this._bodyAssociations.get(bodyId.GetIndexAndSequenceNumber())
+    }
+
+    /**
+     * Sets assocation for a body
+     *
+     * @param assocation Assocation. See {@link BodyAssociate}
+     */
+    public SetBodyAssociation<T extends BodyAssociate>(assocation: T) {
+        this._bodyAssociations.set(assocation.associatedBody, assocation)
+    }
+
+    public RemoveBodyAssocation(bodyId: Jolt.BodyID) {
+        this._bodyAssociations.delete(bodyId.GetIndexAndSequenceNumber())
+    }
+
+    /**
+     * Holds a pause.
+     *
+     * The pause works off of a request counter.
+     */
+    public HoldPause() {
+        this._pauseCounter++
+    }
+
+    /**
+     * Forces all holds on the pause to be released.
+     */
+    public ForceUnpause() {
+        this._pauseCounter = 0
+    }
+
+    /**
+     * Releases a pause.
+     *
+     * The pause works off of a request counter.
+     */
+    public ReleasePause() {
+        if (this._pauseCounter > 0) {
+            this._pauseCounter--
+        }
     }
 
     /**
@@ -98,6 +160,10 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId
      */
     public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
+        if (!this.IsBodyAdded(bodyId)) {
+            return
+        }
+
         this._joltBodyInterface.DeactivateBody(bodyId)
         this.GetBody(bodyId).SetIsSensor(true)
     }
@@ -108,8 +174,16 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId
      */
     public EnablePhysicsForBody(bodyId: Jolt.BodyID) {
+        if (!this.IsBodyAdded(bodyId)) {
+            return
+        }
+
         this._joltBodyInterface.ActivateBody(bodyId)
         this.GetBody(bodyId).SetIsSensor(false)
+    }
+
+    public IsBodyAdded(bodyId: Jolt.BodyID) {
+        return this._joltBodyInterface.IsAdded(bodyId)
     }
 
     /**
@@ -187,6 +261,13 @@ class PhysicsSystem extends WorldSystem {
 
         this._bodies.push(body.GetID())
         return body
+    }
+
+    public AddBodyToSystem(bodyId: Jolt.BodyID, shouldActivate: boolean) {
+        this._joltBodyInterface.AddBody(
+            bodyId,
+            shouldActivate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
     }
 
     /**
@@ -546,7 +627,7 @@ class PhysicsSystem extends WorldSystem {
 
         const reservedLayer: number | undefined = layerReserve?.layer
 
-        filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(rn => {
+        filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly).forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
             let shapesAdded = 0
 
@@ -739,15 +820,18 @@ class PhysicsSystem extends WorldSystem {
      * @param dir Direction of the ray. Note: Length of dir specifies the maximum length it will check.
      * @returns Either the hit results of the closest object in the ray's path, or undefined if nothing was hit.
      */
-    public RayCast(from: Jolt.Vec3, dir: Jolt.Vec3): RayCastHit | undefined {
+    public RayCast(from: Jolt.Vec3, dir: Jolt.Vec3, ...ignoreBodies: Jolt.BodyID[]): RayCastHit | undefined {
         const ray = new JOLT.RayCast(from, dir)
 
         const raySettings = new JOLT.RayCastSettings()
+        raySettings.mTreatConvexAsSolid = false
         const collector = new JOLT.CastRayClosestHitCollisionCollector()
         const bp_filter = new JOLT.BroadPhaseLayerFilter()
         const object_filter = new JOLT.ObjectLayerFilter()
-        const body_filter = new JOLT.BodyFilter() // We don't want to filter out any bodies
+        const body_filter = new JOLT.IgnoreMultipleBodiesFilter()
         const shape_filter = new JOLT.ShapeFilter() // We don't want to filter out any shapes
+
+        ignoreBodies.forEach(x => body_filter.IgnoreBody(x))
 
         this._joltPhysSystem
             .GetNarrowPhaseQuery()
@@ -815,6 +899,10 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public Update(deltaT: number): void {
+        if (this._pauseCounter > 0) {
+            return
+        }
+
         const diffDeltaT = deltaT - lastDeltaT
 
         lastDeltaT = lastDeltaT + Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
@@ -874,6 +962,19 @@ class PhysicsSystem extends WorldSystem {
         return [ghostBody, constraint]
     }
 
+    public CreateSensor(shapeSettings: Jolt.ShapeSettings): Jolt.BodyID | undefined {
+        const shape = shapeSettings.Create()
+        if (shape.HasError()) {
+            console.error(`Failed to create sensor body\n${shape.GetError().c_str}`)
+            return undefined
+        }
+        const body = this.CreateBody(shape.Get(), undefined, undefined, undefined)
+        this._bodies.push(body.GetID())
+        body.SetIsSensor(true)
+        this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
+        return body.GetID()
+    }
+
     /**
      * Exposes the SetPosition method on the _joltBodyInterface
      * Sets the position of the body
@@ -881,12 +982,28 @@ class PhysicsSystem extends WorldSystem {
      * @param id The id of the body
      * @param position The new position of the body
      */
-    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
-        this._joltBodyInterface.SetPosition(id, position, JOLT.EActivation_Activate)
+    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3, activate: boolean = true): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetPosition(
+            id,
+            position,
+            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
     }
 
-    public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat): void {
-        this._joltBodyInterface.SetRotation(id, rotation, JOLT.EActivation_Activate)
+    public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat, activate: boolean = true): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetRotation(
+            id,
+            rotation,
+            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
     }
 }
 
@@ -999,6 +1116,17 @@ export type RayCastHit = {
     data: Jolt.RayCastResult
     point: Jolt.Vec3
     ray: Jolt.RayCast
+}
+
+/**
+ * An interface to create an association between a body and anything.
+ */
+export class BodyAssociate {
+    readonly associatedBody: JoltBodyIndexAndSequence
+
+    public constructor(bodyId: Jolt.BodyID) {
+        this.associatedBody = bodyId.GetIndexAndSequenceNumber()
+    }
 }
 
 export default PhysicsSystem
