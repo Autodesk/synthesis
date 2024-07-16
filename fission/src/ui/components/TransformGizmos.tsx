@@ -82,11 +82,9 @@ class TransformGizmos {
                 .get(part)!
                 .clone()
                 .premultiply(this.mesh.matrix)
-            obj.mirabufInstance.meshes.get(part)!.forEach(mesh => {
-                // iterating through each mesh and updating their position and rotation
-                mesh.position.setFromMatrixPosition(partTransform)
-                mesh.rotation.setFromRotationMatrix(partTransform)
-            })
+
+            const meshes = obj.mirabufInstance.meshes.get(part) ?? []
+            meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
         })
     }
 }

@@ -63,9 +63,7 @@ class MirabufParser {
         return this._groundedNode ? new RigidNodeReadOnly(this._groundedNode) : undefined
     }
     public get rigidNodes(): Map<RigidNodeId, RigidNodeReadOnly> {
-        const result = new Map<RigidNodeId, RigidNodeReadOnly>()
-        this._rigidNodes.forEach(x => result.set(x.id, new RigidNodeReadOnly(x)))
-        return result
+        return new Map(this._rigidNodes.map(x => [x.id, new RigidNodeReadOnly(x)]))
     }
     public get directedGraph() {
         return this._directedGraph

@@ -66,20 +66,22 @@ class IntakeSensorSceneObject extends SceneObject {
             World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(position))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
 
+            if (this._mesh) {
+                this._mesh.position.setFromMatrixPosition(bodyTransform)
+                this._mesh.rotation.setFromRotationMatrix(bodyTransform)
+            }
+
             if (!World.PhysicsSystem.isPaused) {
+                // TEMPORARY GAME PIECE DETECTION
                 const hitRes = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(position), new JOLT.Vec3(0, 0, 3))
                 if (hitRes) {
-                    const gpAssoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(hitRes.data.mBodyID)
-                    if (gpAssoc && gpAssoc.isGamePiece) {
+                    const gpAssoc = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(hitRes.data.mBodyID)
+                    // This works, however the check for game piece is doing two checks.
+                    if (gpAssoc?.isGamePiece) {
                         console.debug("Found game piece!")
                         this._parentAssembly.SetEjectable(hitRes.data.mBodyID, false)
                     }
                 }
-            }
-
-            if (this._mesh) {
-                this._mesh.position.setFromMatrixPosition(bodyTransform)
-                this._mesh.rotation.setFromRotationMatrix(bodyTransform)
             }
         }
     }

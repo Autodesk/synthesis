@@ -170,8 +170,8 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                 return false
             }
 
-            const assoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(body)
-            if (assoc?.sceneObject != selectedRobot) {
+            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+            if (!assoc || !assoc.sceneObject || assoc.sceneObject != selectedRobot) {
                 return false
             }
 
