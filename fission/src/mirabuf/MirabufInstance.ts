@@ -128,9 +128,13 @@ class MirabufInstance {
         Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!).forEach(
             ([appearanceId, appearance]) => {
                 let hex = 0xe32b50
+                let opacity = 1.0
                 if (appearance.albedo) {
                     const { A, B, G, R } = appearance.albedo
-                    if (A && B && G && R) hex = (A << 24) | (R << 16) | (G << 8) | B
+                    if (A && B && G && R) {
+                        hex = (A << 24) | (R << 16) | (G << 8) | B
+                        opacity = A / 255.0
+                    }
                 }
 
                 let material: THREE.Material
@@ -138,6 +142,8 @@ class MirabufInstance {
                     material = new THREE.MeshPhongMaterial({
                         color: hex,
                         shininess: 0.0,
+                        opacity: opacity,
+                        transparent: opacity < 1.0,
                     })
                 } else if (materialStyle == MaterialStyle.Normals) {
                     material = new THREE.MeshNormalMaterial()
