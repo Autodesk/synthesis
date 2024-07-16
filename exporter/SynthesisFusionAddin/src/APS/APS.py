@@ -461,9 +461,9 @@ def update_file_version(auth: str, project_id: str, folder_id: str, lineage_id: 
     }
     update_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/versions", headers=headers, json=data)
     if not update_res.ok:
-        gm.ui.messageBox(f"REUPLOAD ERROR:\n{update_res.text}", "Updating file to new version failed")
+        gm.ui.messageBox(f"UPLOAD ERROR:\n{update_res.text}", "Updating file to new version failed")
         return None
-    gm.ui.messageBox("REUPLOAD SUCCESS", f"File {file_name} successfully updated to version {int(curr_file_version) + 1}")
+    gm.ui.messageBox(f"Successfully updated file {file_name} to version {int(curr_file_version) + 1} on APS", "UPLOAD SUCCESS")
     new_id: str = update_res.json()["data"]["id"]
     return new_id
 
@@ -487,7 +487,6 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> t
     notes:
     - checking if a file exists is an intended use-case
     """
-    gm.ui.messageBox(f"ARGS: {file_name}", "")
 
     headers: dict[str, str] = {
         "Authorization": f"Bearer {auth}"
@@ -737,5 +736,7 @@ def create_first_file_version(auth: str, object_id: str, project_id: str, folder
 
     lineage_id: str = first_version_json["data"]["id"]
     href: str = first_version_json["links"]["self"]["href"]
+
+    gm.ui.messageBox(f"Successful Upload of {file_name} to APS", "UPLOAD SUCCESS")
 
     return (lineage_id, href)
