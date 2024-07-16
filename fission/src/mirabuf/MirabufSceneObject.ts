@@ -148,11 +148,8 @@ class MirabufSceneObject extends SceneObject {
                     .get(part)!
                     .clone()
                     .premultiply(transform)
-                this._mirabufInstance.meshes.get(part)!.forEach(mesh => {
-                    // iterating through each mesh and updating their position and rotation
-                    mesh.position.setFromMatrixPosition(partTransform)
-                    mesh.rotation.setFromRotationMatrix(partTransform)
-                })
+                const meshes = this._mirabufInstance.meshes.get(part) ?? []
+                meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
             })
 
             /**
@@ -202,6 +199,11 @@ class MirabufSceneObject extends SceneObject {
                 comMesh.position.setFromMatrixPosition(comTransform)
                 comMesh.rotation.setFromRotationMatrix(comTransform)
             }
+        })
+
+        this._mirabufInstance.batches.forEach(x => {
+            x.computeBoundingBox()
+            x.computeBoundingSphere()
         })
     }
 
