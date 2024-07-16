@@ -19,10 +19,7 @@ function SceneOverlay() {
                     padding: "8px",
                 }}
             >
-                <h1
-                    className="text-2xl text-white font-sans"
-                    style={{ fontWeight: "bold" }}
-                >
+                <h1 className="text-2xl text-white font-sans" style={{ fontWeight: "bold" }}>
                     {x.text}
                 </h1>
             </div>

@@ -231,7 +231,7 @@ class SceneRenderer extends WorldSystem {
         const screenSpace = world.project(this._mainCamera)
         const widthHalf = window.innerWidth / 2
         const heightHalf = window.innerHeight / 2
-        const x = (screenSpace.x * widthHalf) + widthHalf
+        const x = screenSpace.x * widthHalf + widthHalf
         const y = -(screenSpace.y * heightHalf) + heightHalf
         return [x, y]
     }

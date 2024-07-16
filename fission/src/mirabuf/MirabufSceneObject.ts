@@ -95,8 +95,7 @@ class MirabufSceneObject extends SceneObject {
         this.getPreferences()
 
         // creating nametag
-        if (this.miraType === MiraType.ROBOT) 
-            this._nameTag = new SceneOverlayTag("Hunter Barclah")
+        if (this.miraType === MiraType.ROBOT) this._nameTag = new SceneOverlayTag("Hunter Barclah")
     }
 
     public Setup(): void {
@@ -211,7 +210,9 @@ class MirabufSceneObject extends SceneObject {
         if (this._nameTag) {
             this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
                 JoltVec3_ThreeVector3(
-                    World.PhysicsSystem.GetBody(this.mechanism.GetBodyByNodeId(this.rootNodeId)!).GetCenterOfMassPosition()
+                    World.PhysicsSystem.GetBody(
+                        this.mechanism.GetBodyByNodeId(this.rootNodeId)!
+                    ).GetCenterOfMassPosition()
                 )
             )
             this._nameTag.Update()
