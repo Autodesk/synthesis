@@ -112,7 +112,6 @@ class MirabufSceneObject extends SceneObject {
                     return
                 } else if (InputSystem.isKeyPressed("Escape")) {
                     // cancelling the creation of the mirabuf scene object
-                    this.DisableTransformControls()
                     World.SceneRenderer.RemoveSceneObject(this.id)
                     return
                 }
@@ -147,6 +146,7 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
+        this.DisableTransformControls()
         World.SimulationSystem.UnregisterMechanism(this._mechanism)
         World.PhysicsSystem.DestroyMechanism(this._mechanism)
         this._mirabufInstance.Dispose(World.SceneRenderer.scene)
@@ -216,6 +216,7 @@ class MirabufSceneObject extends SceneObject {
      * Changes the mode of the mirabuf object from being placed to being interacted with.
      */
     public DisableTransformControls(): void {
+        if (!this._transformGizmos) return
         this._transformGizmos?.RemoveGizmos()
         this._transformGizmos = undefined
         this.EnablePhysics()
