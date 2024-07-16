@@ -121,7 +121,7 @@ def refreshAuthToken():
             "client_id": CLIENT_ID,
             "grant_type": "refresh_token",
             "refresh_token": APS_AUTH.refresh_token,
-            "scope": "data:create data:write",
+            "scope": "data:create data:write data:search",
         }
     ).encode("utf-8")
     req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
@@ -233,7 +233,6 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
     href: str = json["links"]["self"]["href"]
     return href
 
-
 def file_path_to_file_name(file_path: str) -> str:
     return file_path.split("/").pop()
 
@@ -272,9 +271,15 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
     auth = APS_AUTH.access_token
     # Get token from APS API later
     file_name = file_path_to_file_name(file_path)
-    file_id = get_file_id(auth, project_id, folder_id, file_name)
-    if file_id not None:
-        update_file_version()
+    (file_id, file_version) = get_file_id(auth, project_id, folder_id, file_name)
+    
+    loaded = None
+    with open(f"lineage_{file_id}", "rb") as f:
+        loaded = pickle.load(f)
+
+    if loaded is not None and file_id is not None:
+        lineage_id = loaded[0]
+        _ = update_file_version(auth, project_id, folder_id, file_id, lineage_id, file_name, file_version)
 
 
     """
@@ -304,7 +309,10 @@ def upload_mirabuf(project_id: str, folder_id: str, file_path: str) -> str | Non
     if complete_upload(auth, upload_key, object_key, bucket_key) is None:
         return None
     file_name = file_path_to_file_name(file_path)
-    (_lineage_id, _lineage_href) = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
+    lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
+
+    with open(f"lineage_{file_id}", "wb") as f:
+        _ = pickle.dump(lineage_info, f)
 
     return ""
 
@@ -381,7 +389,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
     return ""
 
 
-def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str, file_name: str, curr_file_version: str) -> str| None:
+def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str, lineage_id:str, file_name: str, curr_file_version: str) -> str| None:
     """
     updates an existing file in an APS folder
 
@@ -406,13 +414,15 @@ def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str
     object_id = create_storage_location(auth, project_id, folder_id, file_name)
     if object_id is None: 
         return None
+    
+    (prefix, object_key) = str(object_id).split("/", 1)
+    bucket_key = prefix.split(":", 3)[3] # gets the last element smth like: wip.dm.prod
+    signed_url = generate_signed_url(auth, object_key, bucket_key)
 
 
     headers = {
         "Authorization": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json",
-        "Accept": "application/vnd.api+json"
-
     }
 
     attributes = {
@@ -420,6 +430,24 @@ def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str
         "extension": {
             "type": "versions:autodesk.core:File",
             "version": curr_file_version
+        }
+    }
+
+    refs: dict[str, Any] = {
+        "data": {
+            "types": "versions",
+            "id": lineage_id,
+            "meta": {
+                "refType": "xref",
+                "direction": "to",
+                "extension": {
+                    "type": "xrefs:autodesk.core:Xref",
+                    "version": "1.1.0",
+                    "data": {
+                        "nestedType": "overlay"
+                    }
+                }
+            }
         }
     }
 
@@ -450,13 +478,13 @@ def update_file_version(auth: str, project_id: str, folder_id: str, file_id: str
     }
     update_res = requests.post(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/versions", headers=headers, data=data)
     if not update_res.ok:
-        gm.ui.messageBox("UPLOAD ERROR", f"updating file to new version failed: {update_res.text}")
+        gm.ui.messageBox(f"UPLOAD ERROR:\n{update_res.text}", "Updating file to new version failed")
         return None
     gm.ui.messageBox("UPLOAD SUCCESS", f"File {file_name} successfully updated to version {int(curr_file_version) + 1}")
     new_id: str = update_res.json()["data"]["id"]
     return new_id
 
-def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> str | None:
+def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> tuple[str, str]| None:
     """
     gets the file id given a file name
 
@@ -467,7 +495,7 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> s
     file_name - the name of the file in APS ; ex. test.mira
 
     returns:
-    success - the id of the file, or none if the file doesn't exist
+    success - the id of the file and it's current version, or an empty tuple string if the file doesn't exist
     failure - none
 
     potential causes of failure:
@@ -481,18 +509,21 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> s
         "Authorization": f"Bearer {auth}"
     }
 
-    file_list_res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{folder_id}/contents")
-    if not file_list_res.ok:
-        gm.ui.messageBox(f"UPLOAD ERROR: {file_list_res.text}", "Failed to get file list")
+    params = {
+        "filter[attributes.name]": file_name
+    }
+
+    file_res = requests.get(f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{folder_id}/search", headers=headers, params=params)
+    if file_res.status_code is 404:
+        return ("", "")
+    elif not file_res.ok:
+        gm.ui.messageBox(f"UPLOAD ERROR: {file_res.text}", "Failed to get file")
         return None
-    file_list_json: list[dict[str, Any]] = file_list_res.json()
-    for file in file_list_json:
-        name: str = file["attributes"]["name"]
-        if name == file_name:
-            id: str = file["id"]
-            gm.ui.messageBox("UPLOAD ERROR", f"Found file {name} with id: {id}")
-            return id
-    return "" 
+    file_json: list[dict[str, Any]] = file_res.json()
+    name: str = str(file_json["data"][0]["attributes"]["name"])
+    id: str = str(file_json["data"][0]["attributes"]["versionNumber"])
+    return (name, id)
+
 
 def create_storage_location(auth: str, project_id: str, folder_id: str, file_name: str) -> str| None:
     """
