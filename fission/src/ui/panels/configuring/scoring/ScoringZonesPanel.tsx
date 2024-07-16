@@ -102,13 +102,6 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
         return assemblies
     }, [])
 
-    /*     const [zones, setZones] = useState<ScoringZonePreferences[] | undefined>(undefined)
-    const fieldPrefs = PreferencesSystem.getAllFieldPreferences()[SynthesisBrain.fieldsSpawned[0]] */
-
-    /*     if (zones == undefined && fieldPrefs != undefined) {
-        setZones(fieldPrefs.scoringZones)
-    } */
-
     useEffect(() => {
         closePanel("zone-config")
 
@@ -117,7 +110,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
-    }, [closePanel])
+    }, [])
 
     return (
         <Panel
@@ -153,22 +146,26 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                 </>
             ) : (
                 <>
-                    <ScrollView className="flex flex-col gap-4">
-                        {zones.map((zonePrefs: ScoringZonePreferences, i: number) => (
-                            <ScoringZoneRow
-                                key={i}
-                                zone={(() => {
-                                    return zonePrefs
-                                })()}
-                                field={selectedField}
-                                openPanel={openPanel}
-                                save={() => saveZones(zones, selectedField)}
-                                deleteZone={() => {
-                                    setZones(zones.filter((_, idx) => idx !== i))
-                                }}
-                            />
-                        ))}
-                    </ScrollView>
+                    {zones?.length > 0 ? (
+                        <ScrollView className="flex flex-col gap-4">
+                            {zones.map((zonePrefs: ScoringZonePreferences, i: number) => (
+                                <ScoringZoneRow
+                                    key={i}
+                                    zone={(() => {
+                                        return zonePrefs
+                                    })()}
+                                    field={selectedField}
+                                    openPanel={openPanel}
+                                    save={() => saveZones(zones, selectedField)}
+                                    deleteZone={() => {
+                                        setZones(zones.filter((_, idx) => idx !== i))
+                                    }}
+                                />
+                            ))}
+                        </ScrollView>
+                    ) : (
+                        <Label>No scoring zones</Label>
+                    )}
                     <Button
                         value={AddIcon}
                         onClick={() => {

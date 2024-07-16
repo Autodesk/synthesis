@@ -112,7 +112,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
-    }, [closePanel])
+    }, [])
 
     useEffect(() => {
         const field = SelectedZone.field
@@ -170,8 +170,8 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             return false
         }
 
-        const assoc = World.PhysicsSystem.GetBodyAssociation<RigidNodeAssociate>(body)
-        if (assoc?.sceneObject != SelectedZone.field) {
+        const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+        if (!assoc || assoc?.sceneObject != SelectedZone.field) {
             return false
         }
 
