@@ -3,7 +3,6 @@ import Input from "@/components/Input"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
-import Slider from "@/components/Slider"
 import NumberInput from "@/components/NumberInput"
 
 export type ScoringZone = {
@@ -22,11 +21,11 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     // then set all default values to the state of the zone
     const [, setName] = useState<string>("")
     const [alliance, setAlliance] = useState<"red" | "blue">("blue")
-    const [, setParent] = useState<string>("")
+    const [, ] = useState<string>("")
     const [, setPoints] = useState<number>(1)
     const [, setDestroy] = useState<boolean>(false)
     const [, setPersistent] = useState<boolean>(false)
-    const [, setScale] = useState<[number, number, number]>([1, 1, 1])
+    const [, ] = useState<[number, number, number]>([1, 1, 1])
 
     return (
         <Panel name="Scoring Zone Config" panelId={panelId} openLocation={openLocation} sidePadding={sidePadding}>
@@ -40,7 +39,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             <NumberInput label="Points" placeholder="Zone points" defaultValue={1} onInput={v => setPoints(v || 1)} />
             <Checkbox label="Destroy Gamepiece" defaultState={false} onClick={setDestroy} />
             <Checkbox label="Persistent Points" defaultState={false} onClick={setPersistent} />
-            <Slider
+            {/* <Slider
                 label="X Scale"
                 min={0}
                 max={10}
@@ -76,9 +75,9 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                     setScale(s => {
                         s[2] = v
                         return s
-                    })
+                    } )
                 }
-            />
+            />*/}
         </Panel>
     )
 }
