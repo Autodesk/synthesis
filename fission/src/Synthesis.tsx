@@ -58,6 +58,7 @@ import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
+import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -169,6 +170,7 @@ function Synthesis() {
                     >
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
+                            <SceneOverlay />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (

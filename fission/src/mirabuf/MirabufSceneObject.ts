@@ -4,7 +4,7 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -17,6 +17,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
+import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 
 const DEBUG_BODIES = false
 
@@ -42,6 +43,8 @@ class MirabufSceneObject extends SceneObject {
 
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
+
+    private _nameTag: SceneOverlayTag
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -91,6 +94,8 @@ class MirabufSceneObject extends SceneObject {
         this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
 
         this.getPreferences()
+
+        this._nameTag = new SceneOverlayTag("bob")
     }
 
     public Setup(): void {
@@ -205,6 +210,8 @@ class MirabufSceneObject extends SceneObject {
             x.computeBoundingBox()
             x.computeBoundingSphere()
         })
+
+        World.SceneRenderer.WorldToPixelSpace(JoltVec3_ThreeVector3(World.PhysicsSystem.GetBody(this.mechanism.GetBodyByNodeId(this.rootNodeId)!).GetCenterOfMassPosition()))
     }
 
     public Dispose(): void {

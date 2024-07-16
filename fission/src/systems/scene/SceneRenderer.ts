@@ -10,6 +10,7 @@ import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
+import { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -152,6 +153,9 @@ class SceneRenderer extends WorldSystem {
         const planeMaterial = new THREE.MeshBasicMaterial({ map: texture, transparent: true });
         const tagPlane = new THREE.Mesh(planeGeometry, planeMaterial);
         this.scene.add(tagPlane);
+
+        const point = new THREE.Vector3(0,0,0)
+        point.applyMatrix4(this._mainCamera.projectionMatrix)
     }
 
     public UpdateCanvasSize() {
@@ -243,6 +247,11 @@ class SceneRenderer extends WorldSystem {
         )
 
         return screenSpace.unproject(this.mainCamera)
+    }
+
+    public WorldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
+        const pixel = world.clone().applyMatrix4(this._mainCamera.projectionMatrix)
+        
     }
 
     /** 
