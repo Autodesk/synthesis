@@ -299,7 +299,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
     """
     if complete_upload(auth, upload_key, object_key, bucket_key) is None:
         return None
-    if file_id is not "":
+    if file_id != "":
         update_file_version(auth, project_id, folder_id, lineage_id, file_id, file_name, file_contents, file_version, object_id)
     else:
         _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
