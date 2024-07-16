@@ -171,7 +171,6 @@ class MirabufParser {
                     rn = this.MergeRigidNodes(currentRn, rn)
                 }
             })
-            console.log(`rg: ${rg.name}`)
         })
 
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);

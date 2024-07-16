@@ -3,7 +3,8 @@ import World from "../World";
 import WorldSystem from "../WorldSystem";
 import JOLT from "@/util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
-import EjectableSceneObject from "@/mirabuf/EjectableSceneObject";
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject";
+import { MiraType } from "@/mirabuf/MirabufLoader";
 
 class ScoringSystem extends WorldSystem {
     private zone: Jolt.Body;
@@ -41,27 +42,36 @@ class ScoringSystem extends WorldSystem {
             const manifold = JOLT.wrapPointer(manifoldPtr, Jolt.ContactManifold);
             const settings = JOLT.wrapPointer(settingsPtr, Jolt.ContactSettings);
 
-            const ejectables = [...World.SceneRenderer.sceneObjects.entries()]
-                .filter(x => {
-                    const y = x[1] instanceof EjectableSceneObject
-                    return y
-                })
-                .map(x => x[1])
-
-            ejectables.forEach( x => {
-                console.log(x as EjectableSceneObject)
-            })
-
-            // for (const ejectable in ejectables) {
-            //     if (body2.GetID().GetIndex() == (ejectable as EjectableSceneObject).id)
-            //         console.log("Game object detected")
-            // }
-
             if (body1.GetID().GetIndex() == zone.GetID().GetIndex()) {
-                this.points++
-                // GetSceneObject and check if gamepiece
                 console.log(`${body1.GetID().GetIndex()} collided with ${body2.GetID().GetIndex()}`)
-                console.log(this.points)
+
+                const fields = [...World.SceneRenderer.sceneObjects.entries()]
+                    .filter(x => {
+                        if (!(x[1] instanceof MirabufSceneObject)) {
+                            return false
+                        } else {
+                            return x[1].miraType == MiraType.FIELD
+                        }
+                    })
+                    .map(x => x[1]) as MirabufSceneObject[]
+
+                fields.forEach(x => {
+                    x.mechanism.nodeToBody.forEach( (bodyID, rigidNodeID) => {
+                        const associate = World.PhysicsSystem.GetBodyAssociation(bodyID)
+                        if (associate instanceof RigidNodeAssociate) {
+                            if (associate.isGamePiece) {
+                                const body2ID = body2.GetID().GetIndex()
+                                const gamepieceID = +associate.rigidNodeId.replace("_gp", "") // Gets number without gamepiece tag
+
+                                console.log(`${(gamepieceID)} and ${body2ID}`)
+                                if (body2ID == gamepieceID) {
+                                    this.points++
+                                    console.log(this.points)
+                                }
+                            }
+                        }
+                    })
+                })
             }
         };
 
