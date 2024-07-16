@@ -216,7 +216,7 @@ const initialModals = [
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
-    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />
+    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
 const initialPanels: ReactElement[] = [

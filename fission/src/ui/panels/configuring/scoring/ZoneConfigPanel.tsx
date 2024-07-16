@@ -21,11 +21,11 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     // then set all default values to the state of the zone
     const [, setName] = useState<string>("")
     const [alliance, setAlliance] = useState<"red" | "blue">("blue")
-    const [, ] = useState<string>("")
+    const [,] = useState<string>("")
     const [, setPoints] = useState<number>(1)
     const [, setDestroy] = useState<boolean>(false)
     const [, setPersistent] = useState<boolean>(false)
-    const [, ] = useState<[number, number, number]>([1, 1, 1])
+    const [,] = useState<[number, number, number]>([1, 1, 1])
 
     return (
         <Panel name="Scoring Zone Config" panelId={panelId} openLocation={openLocation} sidePadding={sidePadding}>

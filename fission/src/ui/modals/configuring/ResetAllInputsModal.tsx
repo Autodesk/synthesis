@@ -16,7 +16,7 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             onAccept={() => {
                 const roboPrefs = PreferencesSystem.getAllRobotPreferences()
 
-                // TODO: This will be improved to make more sense to a user in the "named inputs" PR 
+                // TODO: This will be improved to make more sense to a user in the "named inputs" PR
                 Object.values(roboPrefs).forEach(roboPref => {
                     roboPref.inputsSchemes.forEach(currentScheme => {
                         const resetScheme = DefaultInputs.ALL_INPUT_SCHEMES[0]
