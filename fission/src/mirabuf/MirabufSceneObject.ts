@@ -12,7 +12,7 @@ import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
-import { EjectorPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
+import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
@@ -40,6 +40,8 @@ class MirabufSceneObject extends SceneObject {
     private _intakePreferences: IntakePreferences | undefined
     private _ejectorPreferences: EjectorPreferences | undefined
 
+    private _fieldPreferences: FieldPreferences | undefined
+
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
 
@@ -63,6 +65,10 @@ class MirabufSceneObject extends SceneObject {
 
     get ejectorPreferences() {
         return this._ejectorPreferences
+    }
+
+    get fieldPreferences() {
+        return this._fieldPreferences
     }
 
     public get activeEjectable(): Jolt.BodyID | undefined {
@@ -378,6 +384,8 @@ class MirabufSceneObject extends SceneObject {
     private getPreferences(): void {
         this._intakePreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.intake
         this._ejectorPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.ejector
+
+        this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
     }
 
     private EnablePhysics() {

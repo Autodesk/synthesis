@@ -14,7 +14,7 @@ type CheckboxProps = {
 const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, stateOverride, onClick }) => {
     const [state] = useState(defaultState)
     return (
-        <Stack direction={StackDirection.Horizontal}>
+        <Stack direction={StackDirection.Horizontal} className="items-center">
             <Label size={LabelSize.Medium} className={`mr-8 ${className} whitespace-nowrap`}>
                 {label}
             </Label>

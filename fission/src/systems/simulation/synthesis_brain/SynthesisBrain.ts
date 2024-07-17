@@ -37,6 +37,9 @@ class SynthesisBrain extends Brain {
     // The total number of robots spawned
     private static _currentRobotIndex: number = 0
 
+    // A list of all the fields spawned
+    public static fieldsSpawned: string[] = []
+
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
 
@@ -63,6 +66,7 @@ class SynthesisBrain extends Brain {
             this.configureInputs()
         } else {
             this.configureField()
+            SynthesisBrain.fieldsSpawned.push(assemblyName)
         }
 
         SynthesisBrain._currentRobotIndex++
@@ -219,10 +223,9 @@ class SynthesisBrain extends Brain {
     }
 
     private configureField() {
-        const fieldPrefs = PreferencesSystem.getFieldPreferences(this._assemblyName)
-        console.log("Loaded field prefs " + fieldPrefs)
+        PreferencesSystem.getFieldPreferences(this._assemblyName)
 
-        /** Put any scoring zone or other field configuration here */
+        /** Put any field configuration here */
     }
 
     private getNumberedAssemblyName(): string {
