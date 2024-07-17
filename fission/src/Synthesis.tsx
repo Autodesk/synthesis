@@ -60,10 +60,10 @@ import Skybox from "./ui/components/Skybox.tsx"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 
-import WPILibWSWorker from '@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker'
-import WSViewPanel from './ui/panels/WSViewPanel.tsx';
+import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
+import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 
-const DEFAULT_MIRA_PATH = '/api/mira/Robots/Team 2471 (2018)_v7.mira';
+const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
 export let worker: Worker | undefined = undefined
 

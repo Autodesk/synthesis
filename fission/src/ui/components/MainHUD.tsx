@@ -146,11 +146,7 @@ const MainHUD: React.FC = () => {
                             }
                         }}
                     />
-                    <MainHUDButton
-                        value={"WS Viewer"}
-                        icon={<GrConnect />}
-                        onClick={() => openPanel("ws-view")}
-                    />
+                    <MainHUDButton value={"WS Viewer"} icon={<GrConnect />} onClick={() => openPanel("ws-view")} />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -184,8 +180,9 @@ const MainHUD: React.FC = () => {
                         icon={<FaCar />}
                         onClick={() => {
                             // worker?.postMessage({ command: 'connect' });
-                            const miraObjs = [...World.SceneRenderer.sceneObjects.entries()]
-                                .filter(x => x[1] instanceof MirabufSceneObject)
+                            const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
+                                x => x[1] instanceof MirabufSceneObject
+                            )
                             console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
                             if (miraObjs.length > 0) {
                                 const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism

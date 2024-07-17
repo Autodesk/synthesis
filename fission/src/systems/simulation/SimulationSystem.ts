@@ -1,16 +1,16 @@
-import JOLT from "@/util/loading/JoltSyncLoader";
-import Mechanism from "../physics/Mechanism";
-import WorldSystem from "../WorldSystem";
-import Brain from "./Brain";
-import Driver from "./driver/Driver";
-import Stimulus from "./stimulus/Stimulus";
-import HingeDriver from "./driver/HingeDriver";
-import WheelDriver from "./driver/WheelDriver";
-import SliderDriver from "./driver/SliderDriver";
-import HingeStimulus from "./stimulus/HingeStimulus";
-import WheelRotationStimulus from "./stimulus/WheelStimulus";
-import SliderStimulus from "./stimulus/SliderStimulus";
-import ChassisStimulus from "./stimulus/ChassisStimulus";
+import JOLT from "@/util/loading/JoltSyncLoader"
+import Mechanism from "../physics/Mechanism"
+import WorldSystem from "../WorldSystem"
+import Brain from "./Brain"
+import Driver from "./driver/Driver"
+import Stimulus from "./stimulus/Stimulus"
+import HingeDriver from "./driver/HingeDriver"
+import WheelDriver from "./driver/WheelDriver"
+import SliderDriver from "./driver/SliderDriver"
+import HingeStimulus from "./stimulus/HingeStimulus"
+import WheelRotationStimulus from "./stimulus/WheelStimulus"
+import SliderStimulus from "./stimulus/SliderStimulus"
+import ChassisStimulus from "./stimulus/ChassisStimulus"
 // import WPILibConnector from "./wpilib_brain/WPILibConnector";
 
 class SimulationSystem extends WorldSystem {
@@ -19,7 +19,7 @@ class SimulationSystem extends WorldSystem {
     constructor() {
         super()
 
-        this._simMechanisms = new Map();
+        this._simMechanisms = new Map()
 
         // WPILibConnector.getInstance()
     }

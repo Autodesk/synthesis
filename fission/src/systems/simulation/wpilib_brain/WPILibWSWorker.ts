@@ -5,18 +5,26 @@ let socket: WebSocket | undefined = undefined
 const connectMutex = new Mutex()
 
 async function tryConnect(port: number | undefined): Promise<void> {
-    await connectMutex.runExclusive(() => {
-        if ((socket?.readyState ?? WebSocket.CLOSED) == WebSocket.OPEN) {
-            return
-        }
+    await connectMutex
+        .runExclusive(() => {
+            if ((socket?.readyState ?? WebSocket.CLOSED) == WebSocket.OPEN) {
+                return
+            }
 
-        socket = new WebSocket(`ws://localhost:${port ?? 3300}/wpilibws`)
+            socket = new WebSocket(`ws://localhost:${port ?? 3300}/wpilibws`)
 
-        socket.addEventListener('open', () => { console.log('WS Opened'); self.postMessage({ status: 'open' }); })
-        socket.addEventListener('error', () => { console.log('WS Could not open'); self.postMessage({ status: 'error' }) })
+            socket.addEventListener("open", () => {
+                console.log("WS Opened")
+                self.postMessage({ status: "open" })
+            })
+            socket.addEventListener("error", () => {
+                console.log("WS Could not open")
+                self.postMessage({ status: "error" })
+            })
 
-        socket.addEventListener('message', onMessage)
-    }).then(() => console.debug('Mutex released'))
+            socket.addEventListener("message", onMessage)
+        })
+        .then(() => console.debug("Mutex released"))
 }
 
 async function tryDisconnect(): Promise<void> {
@@ -35,15 +43,15 @@ function onMessage(event: MessageEvent) {
     self.postMessage(event.data)
 }
 
-self.addEventListener('message', e => {
+self.addEventListener("message", e => {
     switch (e.data.command) {
-        case 'connect':
+        case "connect":
             tryConnect(e.data.port)
             break
-        case 'disconnect':
+        case "disconnect":
             tryDisconnect()
             break
-        case 'update':
+        case "update":
             if (socket) {
                 socket.send(JSON.stringify(e.data.data))
             }
@@ -54,4 +62,4 @@ self.addEventListener('message', e => {
     }
 })
 
-console.log('Worker started')
+console.log("Worker started")

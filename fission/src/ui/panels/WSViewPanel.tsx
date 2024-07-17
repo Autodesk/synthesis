@@ -1,6 +1,17 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SimMapUpdateEvent, SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { Box, Stack, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import {
+    Box,
+    Stack,
+    styled,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Typography,
+} from "@mui/material"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { GrConnect } from "react-icons/gr"
 import Dropdown from "../components/Dropdown"
@@ -18,42 +29,84 @@ const TypoStyled = styled(Typography)({
 function generateTableBody() {
     return (
         <TableBody>
-            {simMap.has('PWM') ? [...simMap.get('PWM')!.entries()].filter(x => x[1]["<init"] == true).map(x => {
-                return (
-                    <TableRow key={x[0]}>
-                        <TableCell><TypoStyled>PWM</TypoStyled></TableCell>
-                        <TableCell><TypoStyled>{x[0]}</TypoStyled></TableCell>
-                        <TableCell><TypoStyled>{JSON.stringify(x[1])}</TypoStyled></TableCell>
-                    </TableRow>
-                )
-            }) : <></>}
-            {simMap.has('SimDevice') ? [...simMap.get('SimDevice')!.entries()].map(x => {
-                return (
-                    <TableRow key={x[0]}>
-                        <TableCell><TypoStyled>SimDevice</TypoStyled></TableCell>
-                        <TableCell><TypoStyled>{x[0]}</TypoStyled></TableCell>
-                        <TableCell><TypoStyled>{JSON.stringify(x[1])}</TypoStyled></TableCell>
-                    </TableRow>
-                )
-            }): <></>}
-            {simMap.has('CANMotor') ? [...simMap.get('CANMotor')!.entries()].map(x => {
-                return (
-                    <TableRow key={x[0]}>
-                        <TableCell><TypoStyled>CAN Motor</TypoStyled></TableCell>
-                        <TableCell><TypoStyled>{x[0]}</TypoStyled></TableCell>
-                        <TableCell><TypoStyled>{JSON.stringify(x[1])}</TypoStyled></TableCell>
-                    </TableRow>
-                )
-            }) : <></>}
-            {simMap.has('CANEncoder') ? [...simMap.get('CANEncoder')!.entries()].map(x => {
-                return (
-                    <TableRow key={x[0]}>
-                        <TableCell><TypoStyled>CAN Encoder</TypoStyled></TableCell>
-                        <TableCell><TypoStyled>{x[0]}</TypoStyled></TableCell>
-                        <TableCell><TypoStyled>{JSON.stringify(x[1])}</TypoStyled></TableCell>
-                    </TableRow>
-                )
-            }) : <></>}
+            {simMap.has("PWM") ? (
+                [...simMap.get("PWM")!.entries()]
+                    .filter(x => x[1]["<init"] == true)
+                    .map(x => {
+                        return (
+                            <TableRow key={x[0]}>
+                                <TableCell>
+                                    <TypoStyled>PWM</TypoStyled>
+                                </TableCell>
+                                <TableCell>
+                                    <TypoStyled>{x[0]}</TypoStyled>
+                                </TableCell>
+                                <TableCell>
+                                    <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                </TableCell>
+                            </TableRow>
+                        )
+                    })
+            ) : (
+                <></>
+            )}
+            {simMap.has("SimDevice") ? (
+                [...simMap.get("SimDevice")!.entries()].map(x => {
+                    return (
+                        <TableRow key={x[0]}>
+                            <TableCell>
+                                <TypoStyled>SimDevice</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{x[0]}</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                            </TableCell>
+                        </TableRow>
+                    )
+                })
+            ) : (
+                <></>
+            )}
+            {simMap.has("CANMotor") ? (
+                [...simMap.get("CANMotor")!.entries()].map(x => {
+                    return (
+                        <TableRow key={x[0]}>
+                            <TableCell>
+                                <TypoStyled>CAN Motor</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{x[0]}</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                            </TableCell>
+                        </TableRow>
+                    )
+                })
+            ) : (
+                <></>
+            )}
+            {simMap.has("CANEncoder") ? (
+                [...simMap.get("CANEncoder")!.entries()].map(x => {
+                    return (
+                        <TableRow key={x[0]}>
+                            <TableCell>
+                                <TypoStyled>CAN Encoder</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{x[0]}</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                            </TableCell>
+                        </TableRow>
+                    )
+                })
+            ) : (
+                <></>
+            )}
         </TableBody>
     )
 }
@@ -76,7 +129,6 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
 }
 
 const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-
     const [tb, setTb] = useState(generateTableBody())
 
     const [selectedType, setSelectedType] = useState<SimType | undefined>()
@@ -87,12 +139,10 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const deviceSelect = useMemo(() => {
         if (!selectedType || !simMap.has(selectedType)) {
-            return (<></>)
+            return <></>
         }
 
-        return (
-            <Dropdown options={[...simMap.get(selectedType)!.keys()]} onSelect={(v) => setSelectedDevice(v)}/>
-        )
+        return <Dropdown options={[...simMap.get(selectedType)!.keys()]} onSelect={v => setSelectedDevice(v)} />
     }, [selectedType])
 
     useEffect(() => {
@@ -112,45 +162,54 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [onSimMapUpdate])
 
     return (
-        <Panel
-            name={"WS View Panel"}
-            icon={<GrConnect />}
-            panelId={panelId}
-            openLocation="right"
-            sidePadding={4}
-        >
+        <Panel name={"WS View Panel"} icon={<GrConnect />} panelId={panelId} openLocation="right" sidePadding={4}>
             <TableContainer
                 sx={{
-                    maxWidth: '80vw',
-                    maxHeight: '80vh',
+                    maxWidth: "80vw",
+                    maxHeight: "80vh",
                 }}
             >
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell><TypoStyled>Type</TypoStyled></TableCell>
-                            <TableCell><TypoStyled>Device</TypoStyled></TableCell>
-                            <TableCell><TypoStyled>Data</TypoStyled></TableCell>
+                            <TableCell>
+                                <TypoStyled>Type</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>Device</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>Data</TypoStyled>
+                            </TableCell>
                         </TableRow>
                     </TableHead>
                     {tb}
                 </Table>
             </TableContainer>
             <Stack>
-                <Dropdown options={["PWM", "SimDevice", "CANMotor", "CANEncoder"]} onSelect={(v) => setSelectedType(v as unknown as SimType)} />
+                <Dropdown
+                    options={["PWM", "SimDevice", "CANMotor", "CANEncoder"]}
+                    onSelect={v => setSelectedType(v as unknown as SimType)}
+                />
                 {deviceSelect}
-                {selectedDevice
-                    ? <Box>
-                        <Input placeholder="Field Name" onInput={(v) => setField(v)} />
-                        <Input placeholder="Value" onInput={(v) => setValue(v)} />
-                        <Dropdown options={["string", "number", "object", "boolean"]} onSelect={(v) => setSelectedValueType(v as ValueType)} />
+                {selectedDevice ? (
+                    <Box>
+                        <Input placeholder="Field Name" onInput={v => setField(v)} />
+                        <Input placeholder="Value" onInput={v => setValue(v)} />
+                        <Dropdown
+                            options={["string", "number", "object", "boolean"]}
+                            onSelect={v => setSelectedValueType(v as ValueType)}
+                        />
                         <Button
                             value={"Set"}
-                            onClick={() => setGeneric(selectedType ?? "PWM", selectedDevice, field, value, selectedValueType)}
+                            onClick={() =>
+                                setGeneric(selectedType ?? "PWM", selectedDevice, field, value, selectedValueType)
+                            }
                         />
                     </Box>
-                    : <></>
-                }
+                ) : (
+                    <></>
+                )}
             </Stack>
         </Panel>
     )
