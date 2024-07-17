@@ -307,7 +307,9 @@ class MirabufSceneObject extends SceneObject {
         }
 
         this._ejectable = new EjectableSceneObject(this, bodyId)
+        console.log("3/4 there")
         World.SceneRenderer.RegisterSceneObject(this._ejectable)
+        console.log("About to return")
         return true
     }
 

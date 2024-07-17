@@ -10,6 +10,7 @@ import {
     ThreeQuaternion_JoltQuat,
     ThreeVector3_JoltVec3,
 } from "@/util/TypeConversions"
+import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -73,15 +74,30 @@ class IntakeSensorSceneObject extends SceneObject {
 
             if (!World.PhysicsSystem.isPaused) {
                 // TEMPORARY GAME PIECE DETECTION
-                const hitRes = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(position), new JOLT.Vec3(0, 0, 3))
-                if (hitRes) {
-                    const gpAssoc = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(hitRes.data.mBodyID)
-                    // This works, however the check for game piece is doing two checks.
-                    if (gpAssoc?.isGamePiece) {
-                        console.debug("Found game piece!")
-                        this._parentAssembly.SetEjectable(hitRes.data.mBodyID, false)
+                // const hitRes = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(position), new JOLT.Vec3(0, 0, 3))
+                // if (hitRes) {
+                //     const gpAssoc = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(hitRes.data.mBodyID)
+                //     // This works, however the check for game piece is doing two checks.
+                //     if (gpAssoc?.isGamePiece) {
+                //         console.debug("Found game piece!")
+                //         this._parentAssembly.SetEjectable(hitRes.data.mBodyID, false)
+                //     }
+                // }
+
+                const collision = (e: Event) => {
+                    const event = e as OnContactAddedEvent
+                    const body1 = event.message.body1
+                    const body2 = event.message.body2
+
+                    if (body1.GetID().GetIndex() == this._joltBodyId?.GetIndex()) {
+                        this.IntakeCollision(body2.GetID())
+                    } else if (body2.GetID().GetIndex() == this._joltBodyId?.GetIndex()) {
+                        this.IntakeCollision(body1.GetID())
                     }
                 }
+
+                OnContactAddedEvent.AddListener(collision)
+
             }
         }
     }
@@ -97,6 +113,15 @@ class IntakeSensorSceneObject extends SceneObject {
                 ;(this._mesh.material as THREE.Material).dispose()
                 World.SceneRenderer.scene.remove(this._mesh)
             }
+        }
+    }
+
+    private IntakeCollision(gpID: Jolt.BodyID) {
+        console.log(`Intake collided with ${gpID.GetIndex()}`)
+
+        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+        if (associate?.isGamePiece) {
+            this._parentAssembly.SetEjectable(gpID, false)
         }
     }
 }

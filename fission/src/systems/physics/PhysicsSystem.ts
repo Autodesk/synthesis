@@ -172,12 +172,20 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId
      */
     public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
+        console.log(`1`)
         if (!this.IsBodyAdded(bodyId)) {
+        console.log(`2`)
+
             return
         }
+        console.log(`3`)
 
         this._joltBodyInterface.DeactivateBody(bodyId)
+        console.log(`4`)
+
         this.GetBody(bodyId).SetIsSensor(true)
+        console.log(`5`)
+
     }
 
     /**
@@ -195,6 +203,9 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public IsBodyAdded(bodyId: Jolt.BodyID) {
+        console.log(`6 ${this}`)
+        console.log(`6.1 ${this._joltBodyInterface}`)
+        console.log(`7 ${this._joltBodyInterface.IsAdded(bodyId)}`)
         return this._joltBodyInterface.IsAdded(bodyId)
     }
 
