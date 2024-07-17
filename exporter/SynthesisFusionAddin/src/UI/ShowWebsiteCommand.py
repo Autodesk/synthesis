@@ -6,7 +6,7 @@ class ShowWebsiteCommandExecuteHandler(adsk.core.CommandEventHandler):
         super().__init__()
     def notify(self, args):
         try:
-            url = "https://synthesis.autodesk.com/"
+            url = "https://synthesis.autodesk.com/tutorials.html"
             res = webbrowser.open(url, new=2)
             if not res:
                 gm.ui.messageBox("Failed\n{}".format(traceback.format_exc()))
