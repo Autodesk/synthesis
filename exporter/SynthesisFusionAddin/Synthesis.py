@@ -143,12 +143,13 @@ def register_ui() -> None:
 
     gm.elements.append(apsButton)
 
+
     websiteButton = HUI.HButton(
         "Synthesis Website", 
         work_panel,
         Helper.check_solid_open,
         ShowWebsiteCommand.ShowWebsiteCommandCreatedHandler,
-        description=f"WEBSITE TEST",
+        description=f"Website Test",
         command=True
     )
     gm.elements.append(websiteButton)
