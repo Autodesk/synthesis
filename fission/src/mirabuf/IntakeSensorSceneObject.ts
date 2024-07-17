@@ -50,6 +50,33 @@ class IntakeSensorSceneObject extends SceneObject {
             )
             World.SceneRenderer.scene.add(this._mesh)
 
+            const collision = (event: OnContactAddedEvent) => {
+                if (this._joltBodyId && this._parentBodyId && this._deltaTransformation && !World.PhysicsSystem.isPaused) {
+                    const body1 = event.message.body1
+                    const body2 = event.message.body2
+
+                    if (body1.GetID().GetIndex() == this._joltBodyId.GetIndex()) {
+                        console.log("1")
+                        console.log(`Intake collided with ${body2.GetID().GetIndex()}`)
+
+                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(body2.GetID())
+                        if (associate?.isGamePiece) {
+                            this._parentAssembly.SetEjectable(body2.GetID(), false)
+                        }
+                    } else if (body2.GetID().GetIndex() == this._joltBodyId.GetIndex()) {
+                        console.log("2")
+                        console.log(`Intake collided with ${body1.GetID().GetIndex()}`)
+
+                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(body1.GetID())
+                        if (associate?.isGamePiece) {
+                            this._parentAssembly.SetEjectable(body1.GetID(), false)
+                        }
+                    }
+                }
+            }
+
+            OnContactAddedEvent.AddListener(collision)
+
             console.debug("Intake sensor created successfully!")
         }
     }
@@ -84,26 +111,13 @@ class IntakeSensorSceneObject extends SceneObject {
                 //     }
                 // }
 
-                const collision = (e: Event) => {
-                    const event = e as OnContactAddedEvent
-                    const body1 = event.message.body1
-                    const body2 = event.message.body2
-
-                    if (body1.GetID().GetIndex() == this._joltBodyId?.GetIndex()) {
-                        this.IntakeCollision(body2.GetID())
-                    } else if (body2.GetID().GetIndex() == this._joltBodyId?.GetIndex()) {
-                        this.IntakeCollision(body1.GetID())
-                    }
-                }
-
-                OnContactAddedEvent.AddListener(collision)
-
+                
             }
         }
     }
 
     public Dispose(): void {
-        console.debug("Destroying intake sensor")
+        console.log("Destroying intake sensor")
 
         if (this._joltBodyId) {
             World.PhysicsSystem.DestroyBodyIds(this._joltBodyId)

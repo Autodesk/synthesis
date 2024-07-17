@@ -7,7 +7,8 @@ import {
     ThreeVector3_JoltVec3,
     _JoltQuat,
 } from "../../util/TypeConversions"
-import JOLT from "../../util/loading/JoltSyncLoader"
+import JOLT from "@/util/loading/JoltSyncLoader"
+
 import Jolt from "@barclah/jolt-physics"
 import * as THREE from "three"
 import { mirabuf } from "../../proto/mirabuf"
@@ -203,8 +204,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public IsBodyAdded(bodyId: Jolt.BodyID) {
-        console.log(`6 ${this}`)
-        console.log(`6.1 ${this._joltBodyInterface}`)
+        console.log(`6 ${bodyId.GetIndex()}`)
         console.log(`7 ${this._joltBodyInterface.IsAdded(bodyId)}`)
         return this._joltBodyInterface.IsAdded(bodyId)
     }

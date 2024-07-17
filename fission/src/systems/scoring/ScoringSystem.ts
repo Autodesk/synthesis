@@ -34,13 +34,12 @@ class ScoringSystem extends WorldSystem {
         World.PhysicsSystem.JoltBodyInterface.AddBody(zone.GetID(), JOLT.EActivation_Activate)
 
         // When zone collides with gamepiece, adds point
-        const onContactAdded = (e: Event) => {
-            const event = e as OnContactAddedEvent
+        const onContactAdded = (event: OnContactAddedEvent) => {
             const body1 = event.message.body1
             const body2 = event.message.body2
 
-
-            if (body1.GetID().GetIndex() == zone.GetID().GetIndex()) {
+            console.log(`index1: ${body1.GetID().GetIndex()} and seq1: ${body1.GetID().GetIndexAndSequenceNumber()} `)
+            if (body1.GetID().GetIndex() == zone.GetID().GetIndexAndSequenceNumber()) {
                 this.ZoneCollision(body2.GetID())
             } else if (body2.GetID().GetIndex() == zone.GetID().GetIndex()) {
                 this.ZoneCollision(body1.GetID())

@@ -27,12 +27,12 @@ export class OnContactAddedEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: Event) => void) {
-        window.addEventListener(OnContactAddedEvent.EVENT_KEY, func)
+    public static AddListener(func: (e: OnContactAddedEvent) => void) {
+        window.addEventListener(OnContactAddedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener(OnContactAddedEvent.EVENT_KEY, func)
+    public static RemoveListener(func: (e: OnContactAddedEvent) => void) {
+        window.removeEventListener(OnContactAddedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
 
@@ -49,12 +49,12 @@ export class OnContactPersistedEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: Event) => void) {
-        window.addEventListener(OnContactPersistedEvent.EVENT_KEY, func)
+    public static AddListener(func: (e: OnContactPersistedEvent) => void) {
+        window.addEventListener(OnContactPersistedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener(OnContactPersistedEvent.EVENT_KEY, func)
+    public static RemoveListener(func: (e: OnContactPersistedEvent) => void) {
+        window.removeEventListener(OnContactPersistedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
 
@@ -71,12 +71,12 @@ export class OnContactRemovedEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: Event) => void) {
-        window.addEventListener(OnContactRemovedEvent.EVENT_KEY, func)
+    public static AddListener(func: (e: OnContactRemovedEvent) => void) {
+        window.addEventListener(OnContactRemovedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener(OnContactRemovedEvent.EVENT_KEY, func)
+    public static RemoveListener(func: (e: OnContactRemovedEvent) => void) {
+        window.removeEventListener(OnContactRemovedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
 
@@ -93,11 +93,11 @@ export class OnContactValidateEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: Event) => void) {
-        window.addEventListener(OnContactValidateEvent.EVENT_KEY, func)
+    public static AddListener(func: (e: OnContactValidateEvent) => void) {
+        window.addEventListener(OnContactValidateEvent.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener(OnContactValidateEvent.EVENT_KEY, func)
+    public static RemoveListener(func: (e: OnContactValidateEvent) => void) {
+        window.removeEventListener(OnContactValidateEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
