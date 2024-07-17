@@ -214,21 +214,16 @@ class MirabufSceneObject extends SceneObject {
             x.computeBoundingSphere()
         })
 
-        /* Updating the position of the name tag */
-        if (this._nameTag) {
+        /* Updating the position of the name tag according to the robots position on screen */
+        if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
             const boundingBox = this.ComputeBoundingBox()
-            const centerPoint = new THREE.Vector3(
-                (boundingBox.max.x + boundingBox.min.x) / 2,
-                boundingBox.max.y + 0.1,
-                (boundingBox.max.z + boundingBox.min.z) / 2
+            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
+                new THREE.Vector3(
+                    (boundingBox.max.x + boundingBox.min.x) / 2,
+                    boundingBox.max.y + 0.1,
+                    (boundingBox.max.z + boundingBox.min.z) / 2
+                )
             )
-            const position = World.SceneRenderer.WorldToPixelSpace(centerPoint)
-            if (isNaN(position[0]) || isNaN(position[1])) {
-                console.warn(`Invalid position for nametag: ${this._nameTag.position}`)
-                this._nameTag.position = [0, 0]
-            } else {
-                this._nameTag.position = position
-            }
         }
     }
 

@@ -8,6 +8,7 @@ import Button from "@/components/Button"
 import Slider from "@/components/Slider"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { SceneOverlayDisableEvent, SceneOverlayEnableEvent } from "@/ui/components/SceneOverlayEvents"
 
 const moveElementToTop = (arr: string[], element: string | undefined) => {
     if (element == undefined) {
@@ -44,6 +45,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [renderScoringZones, setRenderScoringZones] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
     )
+    const [renderSceneTags, setRenderSceneTags] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")
+    )
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<string>("ScreenMode", screenMode)
@@ -54,6 +58,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
         PreferencesSystem.setGlobalPreference<boolean>("UseMetric", useMetric)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
+        PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
 
         PreferencesSystem.savePreferences()
     }
@@ -134,6 +139,15 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")}
                 onClick={checked => {
                     setRenderScoringZones(checked)
+                }}
+            />
+            <Checkbox
+                label="Render Scene Tags"
+                defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")}
+                onClick={checked => {
+                    setRenderSceneTags(checked)
+                    if (!checked) new SceneOverlayDisableEvent()
+                    else new SceneOverlayEnableEvent()
                 }}
             />
         </Modal>

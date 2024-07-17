@@ -85,3 +85,57 @@ export class SceneOverlayTagRemoveEvent extends Event {
         window.removeEventListener(SceneOverlayTagRemoveEvent.EVENT_KEY, func)
     }
 }
+
+export class SceneOverlayUpdateEvent extends Event {
+    private static readonly EVENT_KEY = "SceneOverlayUpdateEvent"
+
+    public constructor() {
+        super(SceneOverlayUpdateEvent.EVENT_KEY)
+
+        window.dispatchEvent(this)
+    }
+
+    public static Listen(func: (e: Event) => void) {
+        window.addEventListener(SceneOverlayUpdateEvent.EVENT_KEY, func)
+    }
+
+    public static RemoveListener(func: (e: Event) => void) {
+        window.removeEventListener(SceneOverlayUpdateEvent.EVENT_KEY, func)
+    }
+}
+
+export class SceneOverlayDisableEvent extends Event {
+    private static readonly EVENT_KEY = "SceneOverlayDisableEvent"
+
+    public constructor() {
+        super(SceneOverlayDisableEvent.EVENT_KEY)
+
+        window.dispatchEvent(this)
+    }
+
+    public static Listen(func: (e: Event) => void) {
+        window.addEventListener(SceneOverlayDisableEvent.EVENT_KEY, func)
+    }
+
+    public static RemoveListener(func: (e: Event) => void) {
+        window.removeEventListener(SceneOverlayDisableEvent.EVENT_KEY, func)
+    }
+}
+
+export class SceneOverlayEnableEvent extends Event {
+    private static readonly EVENT_KEY = "SceneOverlayEnableEvent"
+
+    public constructor() {
+        super(SceneOverlayEnableEvent.EVENT_KEY)
+
+        window.dispatchEvent(this)
+    }
+
+    public static Listen(func: (e: Event) => void) {
+        window.addEventListener(SceneOverlayEnableEvent.EVENT_KEY, func)
+    }
+
+    public static RemoveListener(func: (e: Event) => void) {
+        window.removeEventListener(SceneOverlayEnableEvent.EVENT_KEY, func)
+    }
+}

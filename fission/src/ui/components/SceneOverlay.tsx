@@ -1,12 +1,23 @@
 import { Box } from "@mui/material"
-import { useEffect, useReducer } from "react"
-import { SceneOverlayTag, SceneOverlayTagAddEvent, SceneOverlayTagRemoveEvent } from "./SceneOverlayEvents"
+import { useEffect, useReducer, useState } from "react"
+import {
+    SceneOverlayTag,
+    SceneOverlayTagAddEvent,
+    SceneOverlayTagRemoveEvent,
+    SceneOverlayUpdateEvent,
+    SceneOverlayDisableEvent,
+    SceneOverlayEnableEvent,
+} from "./SceneOverlayEvents"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
 function SceneOverlay() {
+    const [isDisabled, setIsDisabled] = useState<boolean>(false)
+
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
+        if (isDisabled) return <></> // if the overlay is disabled, return nothing
+
         return [...tagMap.values()].map(x => (
             <div
                 key={x.id}
@@ -42,12 +53,26 @@ function SceneOverlay() {
             updateComponents()
         }
 
+        const onDisable = () => {
+            setIsDisabled(true)
+            updateComponents()
+        }
+
+        const onEnable = () => {
+            setIsDisabled(false)
+            updateComponents()
+        }
+
         // listening for tags being added and removed
         SceneOverlayTagAddEvent.Listen(onTagAdd)
         SceneOverlayTagRemoveEvent.Listen(onTagRemove)
 
         // listening for updates to the overlay every frame
         SceneOverlayUpdateEvent.Listen(onUpdate)
+
+        // listening for disabling and enabling scene tags
+        SceneOverlayDisableEvent.Listen(onDisable)
+        SceneOverlayEnableEvent.Listen(onEnable)
 
         // disposing all the tags and listeners when the scene is destroyed
         return () => {
@@ -79,21 +104,3 @@ function SceneOverlay() {
 }
 
 export default SceneOverlay
-
-export class SceneOverlayUpdateEvent extends Event {
-    private static readonly EVENT_KEY = "SceneOverlayUpdateEvent"
-
-    public constructor() {
-        super(SceneOverlayUpdateEvent.EVENT_KEY)
-
-        window.dispatchEvent(this)
-    }
-
-    public static Listen(func: (e: Event) => void) {
-        window.addEventListener(SceneOverlayUpdateEvent.EVENT_KEY, func)
-    }
-
-    public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener(SceneOverlayUpdateEvent.EVENT_KEY, func)
-    }
-}
