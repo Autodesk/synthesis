@@ -96,6 +96,23 @@ class InputSchemeManager {
         return availableSchemes.filter(scheme => !schemesInUse.includes(scheme))
     }
 
+    /** @returns a random available robot name */
+    public static get randomAvailableName(): string {
+        const usedNames = this.availableInputSchemes.map(s => s.schemeName)
+
+        const randomName = () => {
+            const index = Math.floor(Math.random() * DefaultInputs.NAMES.length)
+            return DefaultInputs.NAMES[index]
+        }
+
+        let name = randomName()
+        while (usedNames.includes(name)) name = randomName()
+
+        console.log(name)
+        return name
+    }
+
+    /** Save all schemes that have been customized to local storage via preferences */
     public static saveSchemes() {
         const customizedSchemes = Array.from(InputSystem.brainIndexSchemeMap.values()).filter(s => {
             return s.customized

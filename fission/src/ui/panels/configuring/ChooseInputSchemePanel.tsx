@@ -45,15 +45,13 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             <Button
                 value={AddIcon}
                 onClick={() => {
-                    throw new Error("Not implemented!!!")
-                    // Find a random name and remove it from the list
-                    const index = Math.floor(Math.random() * DefaultInputs.NAMES.length)
-                    const schemeName = DefaultInputs.NAMES[index]
-                    DefaultInputs.NAMES.splice(index, 1)
+                    // Assign a blank input scheme a random name
+                    const name = InputSchemeManager.randomAvailableName
+                    const scheme = DefaultInputs.newBlankScheme
+                    scheme.schemeName = name
 
-                    // TODO: Create a new blank scheme for this name
+                    InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, scheme)
 
-                    // SynthesisBrain.triggerBrainConfiguredEvent(schemeName)
                     closePanel(panelId)
                 }}
             />

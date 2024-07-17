@@ -14,8 +14,6 @@ import GenericArmBehavior from "../behavior/GenericArmBehavior"
 import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior"
-import { AxisInput, ButtonInput, Input } from "@/systems/input/InputSystem"
-import { InputScheme } from "@/systems/input/InputSchemeManager"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 class SynthesisBrain extends Brain {

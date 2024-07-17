@@ -41,6 +41,11 @@ class DefaultInputs {
                 shift: true,
                 meta: false,
             }),
+            new AxisInput("joint 6"),
+            new AxisInput("joint 7"),
+            new AxisInput("joint 8"),
+            new AxisInput("joint 9"),
+            new AxisInput("joint 10"),
         ],
     }
 
@@ -83,6 +88,11 @@ class DefaultInputs {
                 shift: false,
                 meta: false,
             }),
+            new AxisInput("joint 6"),
+            new AxisInput("joint 7"),
+            new AxisInput("joint 8"),
+            new AxisInput("joint 9"),
+            new AxisInput("joint 10"),
         ],
     }
 
@@ -98,8 +108,13 @@ class DefaultInputs {
             new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
             new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
             new AxisInput("joint 3", "", "", -1, false, true, 4, 5),
-            new AxisInput("joint 3", "", "", -1, false, true, 15, 14),
-            new AxisInput("joint 3", "", "", -1, false, true, 12, 13),
+            new AxisInput("joint 4", "", "", -1, false, true, 15, 14),
+            new AxisInput("joint 5", "", "", -1, false, true, 12, 13),
+            new AxisInput("joint 6"),
+            new AxisInput("joint 7"),
+            new AxisInput("joint 8"),
+            new AxisInput("joint 9"),
+            new AxisInput("joint 10"),
         ],
     }
 
@@ -114,6 +129,14 @@ class DefaultInputs {
 
             new AxisInput("joint 2", "", "", -1, false, true, 15, 14),
             new AxisInput("joint 1", "", "", -1, false, true, 12, 13),
+            new AxisInput("joint 3"),
+            new AxisInput("joint 4"),
+            new AxisInput("joint 5"),
+            new AxisInput("joint 6"),
+            new AxisInput("joint 7"),
+            new AxisInput("joint 8"),
+            new AxisInput("joint 9"),
+            new AxisInput("joint 10"),
         ],
     }
 
@@ -128,7 +151,39 @@ class DefaultInputs {
 
             new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
             new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
+            new AxisInput("joint 3"),
+            new AxisInput("joint 4"),
+            new AxisInput("joint 5"),
+            new AxisInput("joint 6"),
+            new AxisInput("joint 7"),
+            new AxisInput("joint 8"),
+            new AxisInput("joint 9"),
+            new AxisInput("joint 10"),
         ],
+    }
+
+    public static get newBlankScheme() {
+        return {
+            schemeName: "",
+            descriptiveName: "",
+            customized: true,
+            usesGamepad: false,
+            inputs: [
+                new AxisInput("arcadeDrive"),
+                new AxisInput("arcadeTurn"),
+
+                new AxisInput("joint 1"),
+                new AxisInput("joint 2"),
+                new AxisInput("joint 3"),
+                new AxisInput("joint 4"),
+                new AxisInput("joint 5"),
+                new AxisInput("joint 6"),
+                new AxisInput("joint 7"),
+                new AxisInput("joint 8"),
+                new AxisInput("joint 9"),
+                new AxisInput("joint 10"),
+            ],
+        }
     }
 
     public static NAMES: string[] = [

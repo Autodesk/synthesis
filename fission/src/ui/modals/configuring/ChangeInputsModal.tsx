@@ -10,7 +10,6 @@ import Checkbox from "@/ui/components/Checkbox"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 // capitalize first letter
 const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
