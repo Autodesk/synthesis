@@ -51,8 +51,6 @@ export class OnContactPersistedEvent extends PhysicsEvent {
         super(OnContactPersistedEvent.EVENT_KEY)
 
         this.message = data
-
-        window.dispatchEvent(this)
     }
 
     public Dispatch(): void {
@@ -68,7 +66,7 @@ export class OnContactPersistedEvent extends PhysicsEvent {
     }
 }
 
-export class OnContactRemovedEvent extends Event {
+export class OnContactRemovedEvent extends PhysicsEvent {
     public static readonly EVENT_KEY = 'OnContactRemovedEvent'
 
     public message: Jolt.SubShapeIDPair
@@ -77,7 +75,9 @@ export class OnContactRemovedEvent extends Event {
         super(OnContactRemovedEvent.EVENT_KEY)
 
         this.message = data
+    }
 
+    public Dispatch(): void {
         window.dispatchEvent(this)
     }
 
@@ -90,7 +90,7 @@ export class OnContactRemovedEvent extends Event {
     }
 }
 
-export class OnContactValidateEvent extends Event {
+export class OnContactValidateEvent extends PhysicsEvent {
     public static readonly EVENT_KEY = 'OnContactValidateEvent'
 
     public message: OnContactValidateData
@@ -99,7 +99,9 @@ export class OnContactValidateEvent extends Event {
         super(OnContactValidateEvent.EVENT_KEY)
 
         this.message = data
+    }
 
+    public Dispatch(): void {
         window.dispatchEvent(this)
     }
 

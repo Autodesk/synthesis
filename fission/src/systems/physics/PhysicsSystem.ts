@@ -1054,26 +1054,26 @@ class PhysicsSystem extends WorldSystem {
         };
 
         contactListener.OnContactPersisted = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
-            // const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
-            // const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
+            const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
+            const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
 
-            // const body1Id = body1.GetID()
-            // const body2Id = body2.GetID()
+            const body1Id = body1.GetID()
+            const body2Id = body2.GetID()
 
-            // const message: CurrentContactData = {
-            //     body1: body1Id,
-            //     body2: body2Id,
-            //     manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
-            //     settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings
-            // };
+            const message: CurrentContactData = {
+                body1: body1Id,
+                body2: body2Id,
+                manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
+                settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings
+            };
 
-            // (async () => new OnContactPersistedEvent(message))()
+            this._physicsEventQueue.push(new OnContactPersistedEvent(message))
         }
 
         contactListener.OnContactRemoved = (subShapePairPtr) => {
             const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
             
-            new OnContactRemovedEvent(shapePair)
+            this._physicsEventQueue.push(new OnContactRemovedEvent(shapePair))
         }
 
         contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {        
@@ -1084,7 +1084,7 @@ class PhysicsSystem extends WorldSystem {
                 collisionResult: JOLT.wrapPointer(inCollisionResultPtr, JOLT.CollideShapeResult) as Jolt.CollideShapeResult
             }
 
-            new OnContactValidateEvent(message)
+            this._physicsEventQueue.push(new OnContactValidateEvent(message))
 
             return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
         }

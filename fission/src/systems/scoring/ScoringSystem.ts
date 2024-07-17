@@ -3,13 +3,10 @@ import World from "../World";
 import WorldSystem from "../WorldSystem";
 import JOLT from "@/util/loading/JoltSyncLoader";
 import Jolt from "@barclah/jolt-physics";
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject";
-import { MiraType } from "@/mirabuf/MirabufLoader";
+import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject";
 import { OnContactAddedEvent } from "../physics/ContactEvents";
 
 class ScoringSystem extends WorldSystem {
-    private zone: Jolt.Body;
-
     private points = 0
 
     constructor() {
@@ -29,8 +26,6 @@ class ScoringSystem extends WorldSystem {
             true
         )
 
-        this.zone = zone
-
         World.PhysicsSystem.JoltBodyInterface.AddBody(zone.GetID(), JOLT.EActivation_Activate)
 
         // When zone collides with gamepiece, adds point
@@ -46,6 +41,12 @@ class ScoringSystem extends WorldSystem {
         }
 
         OnContactAddedEvent.AddListener(onContactAdded)
+
+
+        // ContactListenerTests
+        // OnContactPersistedEvent.AddListener((event: OnContactPersistedEvent) => console.log(`persisted: ${event.message.body1.GetIndexAndSequenceNumber()}`))
+        // OnContactRemovedEvent.AddListener((event: OnContactRemovedEvent) => console.log(`removed: ${event.message.GetSubShapeID1()}`))
+        // OnContactValidateEvent.AddListener((event: OnContactValidateEvent) => console.log(`validate: ${event.message.body1.GetID().GetIndexAndSequenceNumber()}`))
     }
 
     public Update(_: number): void {
