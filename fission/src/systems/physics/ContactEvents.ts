@@ -23,10 +23,8 @@ export class OnContactAddedEvent extends Event {
         super(OnContactAddedEvent.EVENT_KEY)
 
         this.message = data
-    }
-
-    public static Dispatch(data: CurrentContactData) {
-        window.dispatchEvent(new OnContactAddedEvent(data))
+        
+        window.dispatchEvent(this)
     }
 
     public static AddListener(func: (e: Event) => void) {
@@ -47,10 +45,8 @@ export class OnContactPersistedEvent extends Event {
         super(OnContactPersistedEvent.EVENT_KEY)
 
         this.message = data
-    }
 
-    public static Dispatch(data: CurrentContactData) {
-        window.dispatchEvent(new OnContactPersistedEvent(data))
+        window.dispatchEvent(this)
     }
 
     public static AddListener(func: (e: Event) => void) {
@@ -71,10 +67,8 @@ export class OnContactRemovedEvent extends Event {
         super(OnContactRemovedEvent.EVENT_KEY)
 
         this.message = data
-    }
 
-    public static Dispatch(data: Jolt.SubShapeIDPair) {
-        window.dispatchEvent(new OnContactRemovedEvent(data))
+        window.dispatchEvent(this)
     }
 
     public static AddListener(func: (e: Event) => void) {
@@ -95,10 +89,8 @@ export class OnContactValidateEvent extends Event {
         super(OnContactValidateEvent.EVENT_KEY)
 
         this.message = data
-    }
 
-    public static Dispatch(data: OnContactValidateData) {
-        window.dispatchEvent(new OnContactValidateEvent(data))
+        window.dispatchEvent(this)
     }
 
     public static AddListener(func: (e: Event) => void) {

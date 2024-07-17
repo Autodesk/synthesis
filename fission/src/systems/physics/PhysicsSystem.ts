@@ -943,6 +943,7 @@ class PhysicsSystem extends WorldSystem {
 
         JOLT.destroy(this._joltBodyInterface)
         JOLT.destroy(this._joltInterface)
+        JOLT.destroy(this._joltPhysSystem.GetContactListener())
     }
 
     /**
@@ -1137,58 +1138,42 @@ function SetUpContactListener(physSystem: Jolt.PhysicsSystem) {
     const contactListener = new JOLT.ContactListenerJS()
 
     contactListener.OnContactAdded = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
-        const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body;
-        const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body;
-        const manifold = JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold;
-        const settings = JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings;
-
         const message: CurrentContactData = {
-            body1: body1,
-            body2: body2,
-            manifold: manifold,
-            settings: settings
+            body1: JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body,
+            body2: JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body,
+            manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
+            settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings
         }
 
-        OnContactAddedEvent.Dispatch(message)        
+        new OnContactAddedEvent(message)      
     };
 
     contactListener.OnContactPersisted = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
-        const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body;
-        const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body;
-        const manifold = JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold;
-        const settings = JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings;
-
         const message: CurrentContactData = {
-            body1: body1,
-            body2: body2,
-            manifold: manifold,
-            settings: settings
+            body1: JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body,
+            body2: JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body,
+            manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
+            settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings
         }
 
-        OnContactPersistedEvent.Dispatch(message)
+        new OnContactPersistedEvent(message)
     }
 
     contactListener.OnContactRemoved = (subShapePairPtr) => {
         const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
         
-        OnContactRemovedEvent.Dispatch(shapePair)
+        new OnContactRemovedEvent(shapePair)
     }
 
     contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {
-        const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body;
-        const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body;
-        const baseOffset = JOLT.wrapPointer(inBaseOffsetPtr, JOLT.RVec3) as Jolt.RVec3;
-        const collideShapeResult = JOLT.wrapPointer(inCollisionResultPtr, JOLT.CollideShapeResult) as Jolt.CollideShapeResult;
-       
         const message: OnContactValidateData = {
-            body1: body1,
-            body2: body2,
-            baseOffset: baseOffset,
-            collisionResult: collideShapeResult
+            body1: JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body,
+            body2: JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body,
+            baseOffset: JOLT.wrapPointer(inBaseOffsetPtr, JOLT.RVec3) as Jolt.RVec3,
+            collisionResult: JOLT.wrapPointer(inCollisionResultPtr, JOLT.CollideShapeResult) as Jolt.CollideShapeResult
         }
 
-
-        OnContactValidateEvent.Dispatch(message)
+        new OnContactValidateEvent(message)
 
         return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
     }

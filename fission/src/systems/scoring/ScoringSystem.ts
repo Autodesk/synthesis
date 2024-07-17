@@ -15,6 +15,7 @@ class ScoringSystem extends WorldSystem {
     constructor() {
         super()
 
+        // Create and render a zone sensor
         const geometry = new THREE.BoxGeometry( 1, 1, 1 );
         const material = new THREE.MeshBasicMaterial( { color: 0x0000ff } );
         const cube = new THREE.Mesh( geometry, material );
@@ -32,6 +33,7 @@ class ScoringSystem extends WorldSystem {
 
         World.PhysicsSystem.JoltBodyInterface.AddBody(zone.GetID(), JOLT.EActivation_Activate)
 
+        // When zone collides with gamepiece, adds point
         const onContactAdded = (e: Event) => {
             const event = e as OnContactAddedEvent
             const body1 = event.message.body1
