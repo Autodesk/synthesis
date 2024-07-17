@@ -127,7 +127,7 @@ class APS {
      * Does nothing if the auth token couldn't be revoked
      */
     static async logout() {
-        if (!(await this.revoke_token_public())) return
+        await this.revoke_token_public()
         this.auth = undefined
     }
 
