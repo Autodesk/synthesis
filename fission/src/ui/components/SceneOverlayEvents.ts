@@ -24,25 +24,26 @@ export class SceneOverlayTag {
 
         this.text = text
         this.position = position ?? [0, 0]
+        new SceneOverlayTagAddEvent(this)
     }
 
-    /** Update the tag's text */
-    public Update() {
-        new SceneOverlayTagEvent(this)
+    /** Removing the tag */
+    public Dispose() {
+        new SceneOverlayTagRemoveEvent(this)
     }
 }
 
 /**
  * Event handler that is run when a SceneOverlayTag is updated
  */
-export class SceneOverlayTagEvent extends Event {
+export class SceneOverlayTagAddEvent extends Event {
     private static readonly EVENT_KEY = "SceneOverlayTagEvent"
 
     public tag: SceneOverlayTag
 
     /** Create a new event bound to a tag */
     public constructor(tag: SceneOverlayTag) {
-        super(SceneOverlayTagEvent.EVENT_KEY)
+        super(SceneOverlayTagAddEvent.EVENT_KEY)
 
         this.tag = tag
 
@@ -51,11 +52,36 @@ export class SceneOverlayTagEvent extends Event {
 
     /** Listener for tag updates */
     public static Listen(func: (e: Event) => void) {
-        window.addEventListener(SceneOverlayTagEvent.EVENT_KEY, func)
+        window.addEventListener(SceneOverlayTagAddEvent.EVENT_KEY, func)
     }
 
     /** Removing listener */
     public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener(SceneOverlayTagEvent.EVENT_KEY, func)
+        window.removeEventListener(SceneOverlayTagAddEvent.EVENT_KEY, func)
+    }
+}
+
+export class SceneOverlayTagRemoveEvent extends Event {
+    private static readonly EVENT_KEY = "SceneOverlayTagRemoveEvent"
+
+    public tag: SceneOverlayTag
+
+    /** Create a new event bound to a tag */
+    public constructor(tag: SceneOverlayTag) {
+        super(SceneOverlayTagRemoveEvent.EVENT_KEY)
+
+        this.tag = tag
+
+        window.dispatchEvent(this)
+    }
+
+    /** Listener for tag updates */
+    public static Listen(func: (e: Event) => void) {
+        window.addEventListener(SceneOverlayTagRemoveEvent.EVENT_KEY, func)
+    }
+
+    /** Removing listener */
+    public static RemoveListener(func: (e: Event) => void) {
+        window.removeEventListener(SceneOverlayTagRemoveEvent.EVENT_KEY, func)
     }
 }

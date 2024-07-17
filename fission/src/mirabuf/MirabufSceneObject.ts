@@ -223,8 +223,6 @@ class MirabufSceneObject extends SceneObject {
             } else {
                 this._nameTag.position = position
             }
-
-            this._nameTag.Update()
         }
     }
 
@@ -243,6 +241,7 @@ class MirabufSceneObject extends SceneObject {
             World.PhysicsSystem.RemoveBodyAssocation(bodyId)
         })
 
+        this._nameTag?.Dispose()
         this.DisableTransformControls()
         World.SimulationSystem.UnregisterMechanism(this._mechanism)
         World.PhysicsSystem.DestroyMechanism(this._mechanism)

@@ -12,6 +12,7 @@ import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
 
 import { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
+import { SceneOverlayUpdateEvent } from "@/ui/components/SceneOverlay"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -152,6 +153,8 @@ class SceneRenderer extends WorldSystem {
                     1.9
             )
         })
+
+        new SceneOverlayUpdateEvent() // Update the tags
 
         this._composer.render(deltaT)
     }
