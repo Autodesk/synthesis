@@ -240,8 +240,6 @@ class MirabufInstance {
             const batchedMesh = new THREE.BatchedMesh(count.maxInstances, count.maxVertices, count.maxIndices)
             this._batches.push(batchedMesh)
 
-            console.debug(`${count.maxInstances}, ${count.maxVertices}, ${count.maxIndices}`)
-
             batchedMesh.material = material
             batchedMesh.castShadow = true
             batchedMesh.receiveShadow = true
@@ -256,8 +254,6 @@ class MirabufInstance {
                     const geoId = batchedMesh.addGeometry(geometry)
 
                     batchedMesh.setMatrixAt(geoId, mat)
-
-                    console.debug(geoId)
 
                     let bodies = this._meshes.get(instance.info!.GUID!)
                     if (!bodies) {

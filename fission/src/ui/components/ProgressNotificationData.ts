@@ -23,6 +23,8 @@ export class ProgressHandle {
     public constructor(title: string) {
         this._handleId = nextHandleId++
         this._title = title
+
+        this.Push()
     }
 
     public Update(message: string, progress: number, status?: ProgressHandleStatus) {
