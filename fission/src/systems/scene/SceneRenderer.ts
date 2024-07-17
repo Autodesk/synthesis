@@ -222,7 +222,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     /**
-     * Convert world space coordinates to screen space coordinates
+     * Convert world space coordinates to screen space coordinates 
      *
      * @param world World space coordinates
      * @returns Pixel space coordinates

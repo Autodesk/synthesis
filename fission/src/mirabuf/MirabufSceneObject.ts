@@ -4,7 +4,7 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -94,8 +94,10 @@ class MirabufSceneObject extends SceneObject {
 
         this.getPreferences()
 
-        // creating nametag
-        if (this.miraType === MiraType.ROBOT) this._nameTag = new SceneOverlayTag("Hunter Barclah")
+        // creating nametag for robots
+        if (this.miraType === MiraType.ROBOT) {
+            this._nameTag = new SceneOverlayTag("Hunter Barclah")
+        }
     }
 
     public Setup(): void {
@@ -208,13 +210,20 @@ class MirabufSceneObject extends SceneObject {
 
         /* Updating the position of the name tag */
         if (this._nameTag) {
-            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
-                JoltVec3_ThreeVector3(
-                    World.PhysicsSystem.GetBody(
-                        this.mechanism.GetBodyByNodeId(this.rootNodeId)!
-                    ).GetCenterOfMassPosition()
-                )
+            const boundingBox = this.ComputeBoundingBox()
+            const centerPoint = new THREE.Vector3(
+                ((boundingBox.max.x + boundingBox.min.x) / 2 ),
+                boundingBox.max.y + 0.1,
+                (boundingBox.max.z + boundingBox.min.z) / 2
             )
+            const position = World.SceneRenderer.WorldToPixelSpace(centerPoint)
+            if (isNaN(position[0]) || isNaN(position[1])) {
+                console.warn(`Invalid position for nametag: ${this._nameTag.position}`)
+                this._nameTag.position = [0, 0]
+            } else {
+                this._nameTag.position = position
+            }
+
             this._nameTag.Update()
         }
     }
@@ -352,6 +361,20 @@ class MirabufSceneObject extends SceneObject {
         this._transformGizmos?.RemoveGizmos()
         this._transformGizmos = undefined
         this.EnablePhysics()
+    }
+
+    /**
+     * 
+     * @returns The bounding box of the mirabuf object.
+     */
+    private ComputeBoundingBox(): THREE.Box3 {
+        const box = new THREE.Box3()
+        this._mirabufInstance.batches.forEach(batch => {
+            if (batch.boundingBox) 
+                box.union(batch.boundingBox)
+        })
+    
+        return box
     }
 
     private getPreferences(): void {

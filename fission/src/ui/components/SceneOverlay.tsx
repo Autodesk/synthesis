@@ -17,6 +17,8 @@ function SceneOverlay() {
                     backgroundColor: "rgba(0, 0, 0, 0.5)",
                     borderRadius: "8px",
                     padding: "8px",
+                    whiteSpace: "nowrap",
+                    transform: "translate(-50%, -100%)",
                 }}
             >
                 <h1 className="text-2xl text-white font-sans" style={{ fontWeight: "bold" }}>
