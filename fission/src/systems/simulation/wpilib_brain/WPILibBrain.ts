@@ -10,7 +10,7 @@ const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
 const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
 const CANMOTOR_SUPPLY_VOLTAGE = ">supplyVoltage"
-const CANENCODER_RAW_POSITION_INPUT = ">rawPositionInput"
+const CANENCODER_RAW_INPUT_POSITION = ">rawPositionInput"
 
 export type SimType =
     | 'PWM'

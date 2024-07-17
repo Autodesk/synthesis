@@ -1,7 +1,7 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SimMapUpdateEvent, SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { Box, MenuItem, Select, Stack, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material"
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import { Box, Stack, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { GrConnect } from "react-icons/gr"
 import Dropdown from "../components/Dropdown"
 import Input from "../components/Input"
@@ -12,18 +12,6 @@ type ValueType = "string" | "number" | "object" | "boolean"
 const TypoStyled = styled(Typography)({
     fontFamily: "Artifakt Legend",
     fontWeight: 300,
-    color: "white",
-})
-
-const SelectStyled = styled(Select)({
-    borderColor: "white",
-    '&.MuiOutlinedInput-root': {
-        borderColor: "white"
-    }
-})
-
-const TextFieldStyled = styled(TextField)({
-    borderColor: "white",
     color: "white",
 })
 
