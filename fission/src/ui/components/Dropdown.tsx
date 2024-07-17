@@ -39,9 +39,10 @@ const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
             <div className="relative w-full">
                 <Select
                     defaultValue={optionList[0]}
-                    onChange={(_event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null, value: string | unknown) =>
-                        typeof value === "string" && onSelect && onSelect(value)
-                    }
+                    onChange={(
+                        _event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
+                        value: string | unknown
+                    ) => typeof value === "string" && onSelect && onSelect(value)}
                 >
                     {optionList.map(option => (
                         <Option value={option} key={option}>
@@ -54,10 +55,10 @@ const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
     )
 }
 
-const CustomButton = React.forwardRef(function CustomButton<TValue extends NonNullable<unknown>, Multiple extends boolean>(
-    props: SelectRootSlotProps<TValue, Multiple>,
-    ref: React.ForwardedRef<HTMLButtonElement>
-) {
+const CustomButton = React.forwardRef(function CustomButton<
+    TValue extends NonNullable<unknown>,
+    Multiple extends boolean,
+>(props: SelectRootSlotProps<TValue, Multiple>, ref: React.ForwardedRef<HTMLButtonElement>) {
     return (
         <StyledButton type="button" {...props} ref={ref}>
             {props.children}
@@ -118,26 +119,5 @@ const Popup = styled("div")`
     z-index: 1;
     width: 100%;
 `
-
-// <div
-//     onClick={() => setExpanded(!expanded)}
-//     className={`relative flex flex-col gap-2 select-none cursor-pointer bg-gradient-to-r from-interactive-element-left to-interactive-element-right w-full rounded-md ${className}`}
-// >
-//     <DropdownOption value={optionList[0]}>
-//         {optionList[0]}
-//         {optionList.length > 1 && (
-//             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col h-1/2 content-center items-center">
-//                 <FaChevronUp className="h-1/2" />
-//                 <FaChevronDown className="h-1/2" />
-//             </div>
-//         )}
-//     </DropdownOption>
-//     {expanded &&
-//         optionList.slice(1).map(o => (
-//             <DropdownOption key={o} value={o}>
-//                 {o}
-//             </DropdownOption>
-//         ))}
-// </div>
 
 export default Dropdown

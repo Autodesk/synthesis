@@ -1,10 +1,4 @@
-import React, {
-    createContext,
-    useState,
-    useContext,
-    useCallback,
-    ReactNode,
-} from "react"
+import React, { createContext, useState, useContext, useCallback, ReactNode } from "react"
 import Toast from "@/components/Toast"
 import { AnimatePresence, motion } from "framer-motion"
 
@@ -86,7 +80,7 @@ export const ToastContainer: React.FC = () => {
                             key={t.id}
                             className="w-fit"
                         >
-                            <Toast id={t.id} type={t.type} title={t.title} description={t.description} />
+                            <Toast key={t.id} id={t.id} type={t.type} title={t.title} description={t.description} />
                         </motion.div>
                     ))}
             </AnimatePresence>

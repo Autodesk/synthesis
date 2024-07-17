@@ -16,17 +16,19 @@
 
 """
 
-import adsk, logging, traceback
+import logging
+import traceback
+from typing import Union
+
+import adsk
 
 from proto.proto_out import types_pb2
-from typing import Union
+
 from ...general_imports import INTERNAL_ID
 
 
 def GetPhysicalProperties(
-    fusionObject: Union[
-        adsk.fusion.BRepBody, adsk.fusion.Occurrence, adsk.fusion.Component
-    ],
+    fusionObject: Union[adsk.fusion.BRepBody, adsk.fusion.Occurrence, adsk.fusion.Component],
     physicalProperties: types_pb2.PhysicalProperties,
     level=1,
 ):

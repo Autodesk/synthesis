@@ -1,51 +1,104 @@
-import { MainHUD_AddToast } from "@/components/MainHUD"
-import { Random } from "@/util/Random"
+import { MainHUD_AddToast } from "@/ui/components/MainHUD"
+import { Mutex } from "async-mutex"
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
 
 export const APS_USER_INFO_UPDATE_EVENT = "aps_user_info_update"
 
-const delay = 1000
-const authCodeTimeout = 200000
-
 const CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
-const CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
-let lastCall = Date.now()
+const ENDPOINT_SYNTHESIS_CODE = `/api/aps/code`
+export const ENDPOINT_SYNTHESIS_CHALLENGE = `/api/aps/challenge`
 
-interface APSAuth {
+const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
+const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
+const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
+
+export interface APSAuth {
     access_token: string
     refresh_token: string
     expires_in: number
+    expires_at: number
     token_type: number
 }
 
-interface APSUserInfo {
+export interface APSUserInfo {
     name: string
     picture: string
     givenName: string
+    email: string
 }
 
 class APS {
     static authCode: string | undefined = undefined
+    static requestMutex: Mutex = new Mutex()
 
-    static get auth(): APSAuth | undefined {
+    private static get auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
         try {
-            return res ? (JSON.parse(res) as APSAuth) : undefined
+            return res ? JSON.parse(res) : undefined
         } catch (e) {
             console.warn(`Failed to parse stored APS auth data: ${e}`)
             return undefined
         }
     }
 
-    static set auth(a: APSAuth | undefined) {
+    private static set auth(a: APSAuth | undefined) {
         window.localStorage.removeItem(APS_AUTH_KEY)
         if (a) {
             window.localStorage.setItem(APS_AUTH_KEY, JSON.stringify(a))
         }
         this.userInfo = undefined
+    }
+
+    /**
+     * Sets the timestamp at which the access token expires
+     *
+     * @param {number} expires_at - When the token expires
+     */
+    static setExpiresAt(expires_at: number) {
+        if (this.auth) this.auth.expires_at = expires_at
+    }
+
+    /**
+     * Returns whether the user is signed in
+     * @returns {boolean} Whether the user is signed in
+     */
+    static isSignedIn(): boolean {
+        return !!this.getAuth()
+    }
+
+    /**
+     * Returns the auth data of the current user. See {@link APSAuth}
+     * @returns {(APSAuth | undefined)} Auth data of the current user
+     */
+    static async getAuth(): Promise<APSAuth | undefined> {
+        const auth = this.auth
+        if (!auth) return undefined
+
+        if (Date.now() > auth.expires_at) {
+            console.debug("Expired. Refreshing...")
+            await this.refreshAuthToken(auth.refresh_token, false)
+        }
+        return this.auth
+    }
+
+    /**
+     * Returns the auth data of the current user or prompts them to sign in if they haven't. See {@link APSAuth} and {@link APS#refreshAuthToken}
+     * @returns {Promise<APSAuth | undefined>} Promise that resolves to the auth data
+     */
+    static async getAuthOrLogin(): Promise<APSAuth | undefined> {
+        const auth = this.auth
+        if (!auth) {
+            this.requestAuthCode()
+            return undefined
+        }
+
+        if (Date.now() > auth.expires_at) {
+            await this.refreshAuthToken(auth.refresh_token, true)
+        }
+        return this.auth
     }
 
     static get userInfo(): APSUserInfo | undefined {
@@ -68,120 +121,187 @@ class APS {
         document.dispatchEvent(new Event(APS_USER_INFO_UPDATE_EVENT))
     }
 
+    /**
+     * Logs the user out by setting their auth data to undefined.
+     */
     static async logout() {
         this.auth = undefined
     }
 
+    /**
+     * Prompts the user to sign in, which will retrieve the auth code.
+     */
     static async requestAuthCode() {
-        if (Date.now() - lastCall > delay) {
-            lastCall = Date.now()
+        await this.requestMutex.runExclusive(async () => {
             const callbackUrl = import.meta.env.DEV
                 ? `http://localhost:3000${import.meta.env.BASE_URL}`
                 : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
 
-            const [codeVerifier, codeChallenge] = await this.codeChallenge()
+            try {
+                const challenge = await this.codeChallenge()
 
-            const dataParams = [
-                ["response_type", "code"],
-                ["client_id", CLIENT_ID],
-                ["redirect_uri", callbackUrl],
-                ["scope", "data:read"],
-                ["nonce", Date.now().toString()],
-                ["prompt", "login"],
-                ["code_challenge", codeChallenge],
-                ["code_challenge_method", "S256"],
-            ]
-            const data = dataParams.map(x => `${x[0]}=${encodeURIComponent(x[1])}`).join("&")
+                const params = new URLSearchParams({
+                    response_type: "code",
+                    client_id: CLIENT_ID,
+                    redirect_uri: callbackUrl,
+                    scope: "data:read",
+                    nonce: Date.now().toString(),
+                    prompt: "login",
+                    code_challenge: challenge,
+                    code_challenge_method: "S256",
+                })
 
-            window.open(`https://developer.api.autodesk.com/authentication/v2/authorize?${data}`)
-
-            const searchStart = Date.now()
-            const func = () => {
-                if (Date.now() - searchStart > authCodeTimeout) {
-                    console.debug("Auth Code Timeout")
-                    return
+                if (APS.userInfo) {
+                    params.append("authoptions", encodeURIComponent(JSON.stringify({ id: APS.userInfo.email })))
                 }
 
-                if (this.authCode) {
-                    const code = this.authCode
-                    this.authCode = undefined
+                const url = `${ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE}?${params.toString()}`
 
-                    this.convertAuthToken(code, codeVerifier)
-                } else {
-                    setTimeout(func, 500)
-                }
+                window.open(url, "_self")
+            } catch (e) {
+                console.error(e)
+                MainHUD_AddToast("error", "Error signing in.", "Please try again.")
             }
-            func()
+        })
+    }
+
+    /**
+     * Refreshes the access token using our refresh token.
+     * @param {string} refresh_token - The refresh token from our auth data
+     *
+     * @returns If the promise returns true, that means the auth token is currently available. If not, it means it
+     *           is not readily available, although one may be in the works
+     */
+    static async refreshAuthToken(refresh_token: string, shouldRelog: boolean): Promise<boolean> {
+        return this.requestMutex.runExclusive(async () => {
+            try {
+                const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded",
+                    },
+                    body: new URLSearchParams({
+                        client_id: CLIENT_ID,
+                        grant_type: "refresh_token",
+                        refresh_token: refresh_token,
+                        scope: "data:read",
+                    }),
+                })
+                const json = await res.json()
+                if (!res.ok) {
+                    if (shouldRelog) {
+                        MainHUD_AddToast("warning", "Must Re-signin.", json.userMessage)
+                        this.auth = undefined
+                        await this.requestAuthCode()
+                        return false
+                    } else {
+                        return false
+                    }
+                }
+                json.expires_at = json.expires_in * 1000 + Date.now()
+                this.auth = json as APSAuth
+                if (this.auth) {
+                    await this.loadUserInfo(this.auth)
+                    if (APS.userInfo) {
+                        MainHUD_AddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                    }
+                }
+                return true
+            } catch (e) {
+                MainHUD_AddToast("error", "Error signing in.", "Please try again.")
+                this.auth = undefined
+                await this.requestAuthCode()
+                return false
+            }
+        })
+    }
+
+    /**
+     * Fetches the auth data from Autodesk using the auth code.
+     * @param {string} code - The auth code
+     */
+    static async convertAuthToken(code: string) {
+        let retry_login = false
+        try {
+            const res = await fetch(`${ENDPOINT_SYNTHESIS_CODE}?code=${code}`)
+            const json = await res.json()
+            if (!res.ok) {
+                MainHUD_AddToast("error", "Error signing in.", json.userMessage)
+                this.auth = undefined
+                return
+            }
+            const auth_res = json.response as APSAuth
+            auth_res.expires_at = auth_res.expires_in * 1000 + Date.now()
+            this.auth = auth_res
+            console.log("Preloading user info")
+            const auth = await this.getAuth()
+            if (auth) {
+                await this.loadUserInfo(auth)
+                if (APS.userInfo) {
+                    MainHUD_AddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                }
+            } else {
+                console.error("Couldn't get auth data.")
+                retry_login = true
+            }
+        } catch (e) {
+            console.error(e)
+            retry_login = true
+        }
+        if (retry_login) {
+            this.auth = undefined
+            MainHUD_AddToast("error", "Error signing in.", "Please try again.")
         }
     }
 
-    static async convertAuthToken(code: string, codeVerifier: string) {
-        const authUrl = import.meta.env.DEV
-            ? `http://localhost:3003/api/aps/code/`
-            : `https://synthesis.autodesk.com/api/aps/code/`
-        fetch(`${authUrl}?code=${code}&code_verifier=${codeVerifier}`)
-            .then(x => x.json())
-            .then(x => {
-                this.auth = x.response as APSAuth
-            })
-            .then(() => {
-                console.log("Preloading user info")
-                if (this.auth) {
-                    this.loadUserInfo(this.auth!).then(async () => {
-                        if (APS.userInfo) {
-                            MainHUD_AddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
-                        }
-                    })
-                }
-            })
-    }
-
+    /**
+     * Fetches user information using the auth data. See {@link APSAuth}
+     * @param {APSAuth} auth - The auth data
+     */
     static async loadUserInfo(auth: APSAuth) {
         console.log("Loading user information")
-        await fetch("https://api.userprofile.autodesk.com/userinfo", {
-            method: "GET",
-            headers: {
-                Authorization: auth.access_token,
-            },
-        })
-            .then(x => x.json())
-            .then(x => {
-                const info: APSUserInfo = {
-                    name: x.name,
-                    givenName: x.given_name,
-                    picture: x.picture,
-                }
-
-                this.userInfo = info
+        try {
+            const res = await fetch(ENDPOINT_AUTODESK_USERINFO, {
+                method: "GET",
+                headers: {
+                    Authorization: auth.access_token,
+                },
             })
-    }
+            const json = await res.json()
+            if (!res.ok) {
+                MainHUD_AddToast("error", "Error fetching user data.", json.userMessage)
+                this.auth = undefined
+                await this.requestAuthCode()
+                return
+            }
+            const info: APSUserInfo = {
+                name: json.name,
+                givenName: json.given_name,
+                picture: json.picture,
+                email: json.email,
+            }
 
-    static async codeChallenge() {
-        const codeVerifier = this.genRandomString(50)
-
-        const msgBuffer = new TextEncoder().encode(codeVerifier)
-        const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer)
-
-        let str = ""
-        new Uint8Array(hashBuffer).forEach(x => (str = str + String.fromCharCode(x)))
-        const codeChallenge = btoa(str).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
-
-        return [codeVerifier, codeChallenge]
-    }
-
-    static genRandomString(len: number): string {
-        const s: string[] = []
-        for (let i = 0; i < len; i++) {
-            const c = CHARACTERS.charAt(Math.abs(Random() * 10000) % CHARACTERS.length)
-            s.push(c)
+            this.userInfo = info
+        } catch (e) {
+            console.error(e)
+            MainHUD_AddToast("error", "Error signing in.", "Please try again.")
+            this.auth = undefined
         }
-
-        return s.join("")
     }
-}
 
-Window.prototype.setAuthCode = (code: string) => {
-    APS.authCode = code
+    /**
+     * Fetches the code challenge from our server for requesting the auth code.
+     */
+    static async codeChallenge() {
+        try {
+            const res = await fetch(ENDPOINT_SYNTHESIS_CHALLENGE)
+            const json = await res.json()
+            return json["challenge"]
+        } catch (e) {
+            console.error(e)
+            MainHUD_AddToast("error", "Error signing in.", "Please try again.")
+        }
+    }
 }
 
 export default APS

@@ -25,6 +25,7 @@ jobs:
     - name: Install Dependencies
       run: |
         cd fission
+        rm package-lock.json
         npm install
 
     - name: Get package info
@@ -37,11 +38,19 @@ jobs:
       id: build
       run: |
         cd fission
-        npm run build
+        npm run build:prod
+        npm run build:dev
 
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
-      id: upload-artifact
+      id: upload-artifact-prod
       with:
         name: "${{ steps.info.outputs.name }}@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
-        path: fission/dist/
+        path: fission/dist/prod/
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      id: upload-artifact-dev
+      with:
+        name: "${{ steps.info.outputs.name }}-dev@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
+        path: fission/dist/dev/

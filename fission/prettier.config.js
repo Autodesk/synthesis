@@ -9,7 +9,16 @@ const config = {
     bracketSpacing: true,
     bracketSameLine: false,
     arrowParens: "avoid",
-    printWidth: 120
+    printWidth: 120,
+    overrides: [
+        {
+            files: "*.json",
+            options: {
+                tabWidth: 2,
+            },
+        },
+    ],
+    endOfLine: "auto",
 }
 
-export default config;
+export default config

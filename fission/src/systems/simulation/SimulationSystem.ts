@@ -64,6 +64,12 @@ class SimulationLayer {
     public get brain() {
         return this._brain
     }
+    public get drivers() {
+        return this._drivers
+    }
+    public get stimuli() {
+        return this._stimuli
+    }
 
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
@@ -106,8 +112,11 @@ class SimulationLayer {
 
         this._brain = brain
 
-        if (this._brain) this._brain.Enable()
+        if (this._brain) {
+            this._brain.Enable()
+        }
     }
 }
 
 export default SimulationSystem
+export { SimulationLayer }

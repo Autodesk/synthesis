@@ -1,15 +1,30 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SimMapUpdateEvent, SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { Button, Dropdown } from "@mui/base"
 import { Box, MenuItem, Select, Stack, styled, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { GrConnect } from "react-icons/gr"
+import Dropdown from "../components/Dropdown"
+import Input from "../components/Input"
+import Button from "../components/Button"
 
 type ValueType = "string" | "number" | "object" | "boolean"
 
 const TypoStyled = styled(Typography)({
     fontFamily: "Artifakt Legend",
     fontWeight: 300,
+    color: "white",
+})
+
+const SelectStyled = styled(Select)({
+    borderColor: "white",
+    '&.MuiOutlinedInput-root': {
+        borderColor: "white"
+    }
+})
+
+const TextFieldStyled = styled(TextField)({
+    borderColor: "white",
+    color: "white",
 })
 
 function generateTableBody() {
@@ -88,13 +103,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         return (
-            <Select
-                onChange={x => setSelectedDevice(x.target.value as string)}
-            >{
-                [...simMap.get(selectedType)!.keys()].map(x => {
-                    return (<MenuItem value={x}>{x}</MenuItem>)
-                })
-            }</Select>
+            <Dropdown options={[...simMap.get(selectedType)!.keys()]} onSelect={(v) => setSelectedDevice(v)}/>
         )
     }, [selectedType])
 
@@ -140,38 +149,17 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 </Table>
             </TableContainer>
             <Stack>
-                <Select
-                    onChange={x => setSelectedType(x.target.value as SimType)}
-                >
-                    <MenuItem value="PWM">PWM</MenuItem>
-                    <MenuItem value="SimDevice">SimDevice</MenuItem>
-                    <MenuItem value="CANMotor">CAN Motor</MenuItem>
-                    <MenuItem value="CANEncoder">CAN Encoder</MenuItem>
-                </Select>
+                <Dropdown options={["PWM", "SimDevice", "CANMotor", "CANEncoder"]} onSelect={(v) => setSelectedType(v as unknown as SimType)} />
                 {deviceSelect}
                 {selectedDevice
                     ? <Box>
-                        <TextField
-                            onChange={x => setField(x.target.value as string)}
-                        >
-                        </TextField>
-                        <TextField
-                            onChange={x => setValue(x.target.value as string)}
-                        >
-                        </TextField>
-                        <Select
-                            onChange={x => setSelectedValueType(x.target.value as ValueType)}
-                        >
-                            <MenuItem value="string">String</MenuItem>
-                            <MenuItem value="number">Number</MenuItem>
-                            <MenuItem value="object">Object</MenuItem>
-                            <MenuItem value="boolean">Boolean</MenuItem>
-                        </Select>
+                        <Input placeholder="Field Name" onInput={(v) => setField(v)} />
+                        <Input placeholder="Value" onInput={(v) => setValue(v)} />
+                        <Dropdown options={["string", "number", "object", "boolean"]} onSelect={(v) => setSelectedValueType(v as ValueType)} />
                         <Button
-                            onClick={x => setGeneric(selectedType!, selectedDevice, field, value, selectedValueType)}
-                        >
-                            Set
-                        </Button>
+                            value={"Set"}
+                            onClick={() => setGeneric(selectedType ?? "PWM", selectedDevice, field, value, selectedValueType)}
+                        />
                     </Box>
                     : <></>
                 }
