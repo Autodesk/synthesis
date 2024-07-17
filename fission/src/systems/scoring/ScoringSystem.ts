@@ -38,13 +38,11 @@ class ScoringSystem extends WorldSystem {
             const body1 = event.message.body1
             const body2 = event.message.body2
 
-            console.log(`index1: ${body1.GetID().GetIndex()} and seq1: ${body1.GetID().GetIndexAndSequenceNumber()} `)
-            if (body1.GetID().GetIndex() == zone.GetID().GetIndexAndSequenceNumber()) {
-                this.ZoneCollision(body2.GetID())
-            } else if (body2.GetID().GetIndex() == zone.GetID().GetIndex()) {
-                this.ZoneCollision(body1.GetID())
+            if (body1.GetIndexAndSequenceNumber() == zone.GetID().GetIndexAndSequenceNumber()) {
+                this.ZoneCollision(body2)
+            } else if (body2.GetIndexAndSequenceNumber() == zone.GetID().GetIndexAndSequenceNumber()) {
+                this.ZoneCollision(body1)
             }
-
         }
 
         OnContactAddedEvent.AddListener(onContactAdded)

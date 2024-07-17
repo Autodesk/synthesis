@@ -55,21 +55,23 @@ class IntakeSensorSceneObject extends SceneObject {
                     const body1 = event.message.body1
                     const body2 = event.message.body2
 
-                    if (body1.GetID().GetIndex() == this._joltBodyId.GetIndex()) {
+                    if (body1.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
                         console.log("1")
-                        console.log(`Intake collided with ${body2.GetID().GetIndex()}`)
+                        console.log(`Intake collided with ${body2.GetIndex()}`)
 
-                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(body2.GetID())
+                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(body2)
                         if (associate?.isGamePiece) {
-                            this._parentAssembly.SetEjectable(body2.GetID(), false)
+                            this._parentAssembly.SetEjectable(body2, false)
+                            World.PhysicsSystem.GetBody(body2).AddImpulse(new JOLT.Vec3(0, 100, 0))
                         }
-                    } else if (body2.GetID().GetIndex() == this._joltBodyId.GetIndex()) {
+                    } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
                         console.log("2")
-                        console.log(`Intake collided with ${body1.GetID().GetIndex()}`)
+                        console.log(`Intake collided with ${body1.GetIndex()}`)
 
-                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(body1.GetID())
+                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(body1)
                         if (associate?.isGamePiece) {
-                            this._parentAssembly.SetEjectable(body1.GetID(), false)
+                            this._parentAssembly.SetEjectable(body1, false)
+                            // World.PhysicsSystem.GetBody(body1).AddImpulse(new JOLT.Vec3(0, 100, 0))
                         }
                     }
                 }

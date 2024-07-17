@@ -1,8 +1,8 @@
 import Jolt from "@barclah/jolt-physics";
 
 export interface CurrentContactData {
-    body1: Jolt.Body
-    body2: Jolt.Body
+    body1: Jolt.BodyID
+    body2: Jolt.BodyID
     manifold: Jolt.ContactManifold
     settings: Jolt.ContactSettings
 }
@@ -14,7 +14,11 @@ export interface OnContactValidateData {
     collisionResult: Jolt.CollideShapeResult
 }
 
-export class OnContactAddedEvent extends Event {
+export abstract class PhysicsEvent extends Event {
+    abstract Dispatch(): void
+}
+
+export class OnContactAddedEvent extends PhysicsEvent {
     public static readonly EVENT_KEY = 'OnContactAddedEvent'
 
     public message: CurrentContactData
@@ -23,7 +27,9 @@ export class OnContactAddedEvent extends Event {
         super(OnContactAddedEvent.EVENT_KEY)
 
         this.message = data
-        
+    }
+
+    public Dispatch(): void {
         window.dispatchEvent(this)
     }
 
@@ -36,7 +42,7 @@ export class OnContactAddedEvent extends Event {
     }
 }
 
-export class OnContactPersistedEvent extends Event {
+export class OnContactPersistedEvent extends PhysicsEvent {
     public static readonly EVENT_KEY = 'OnContactPersistedEvent'
 
     public message: CurrentContactData
@@ -46,6 +52,10 @@ export class OnContactPersistedEvent extends Event {
 
         this.message = data
 
+        window.dispatchEvent(this)
+    }
+
+    public Dispatch(): void {
         window.dispatchEvent(this)
     }
 
