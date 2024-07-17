@@ -212,7 +212,7 @@ class MirabufSceneObject extends SceneObject {
         if (this._nameTag) {
             const boundingBox = this.ComputeBoundingBox()
             const centerPoint = new THREE.Vector3(
-                ((boundingBox.max.x + boundingBox.min.x) / 2 ),
+                (boundingBox.max.x + boundingBox.min.x) / 2,
                 boundingBox.max.y + 0.1,
                 (boundingBox.max.z + boundingBox.min.z) / 2
             )
@@ -364,16 +364,15 @@ class MirabufSceneObject extends SceneObject {
     }
 
     /**
-     * 
+     *
      * @returns The bounding box of the mirabuf object.
      */
     private ComputeBoundingBox(): THREE.Box3 {
         const box = new THREE.Box3()
         this._mirabufInstance.batches.forEach(batch => {
-            if (batch.boundingBox) 
-                box.union(batch.boundingBox)
+            if (batch.boundingBox) box.union(batch.boundingBox)
         })
-    
+
         return box
     }
 
