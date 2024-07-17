@@ -60,7 +60,10 @@ class ScoringSystem extends WorldSystem {
         console.log(`Scoring zone collided with ${gpID.GetIndex()}`)
 
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
-        if (associate.isGamePiece) this.points++
+        if (associate?.isGamePiece) {
+            this.points++
+            console.log(`points ${this.points}`)
+        }
     }
 }
 

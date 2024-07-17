@@ -176,20 +176,13 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId
      */
     public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
-        console.log(`1`)
-        // if (!this.IsBodyAdded(bodyId)) {
-        //     console.log(`2`)
-
-        //     return
-        // }
-        console.log(`3`)
+        if (!this.IsBodyAdded(bodyId)) {
+            return
+        }
 
         this._joltBodyInterface.DeactivateBody(bodyId)
-        console.log(`4`)
 
         this.GetBody(bodyId).SetIsSensor(true)
-        console.log(`5`)
-
     }
 
     /**
@@ -203,8 +196,6 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public IsBodyAdded(bodyId: Jolt.BodyID) {
-        console.log(`6 ${bodyId.GetIndex()}`)
-        console.log(`7 ${this._joltBodyInterface.IsAdded(bodyId)}`)
         return this._joltBodyInterface.IsAdded(bodyId)
     }
 
@@ -1013,9 +1004,9 @@ class PhysicsSystem extends WorldSystem {
      * @param position The new position of the body
      */
     public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3, activate: boolean = true): void {
-        // if (!this.IsBodyAdded(id)) {
-        //     return
-        // }
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
 
         this._joltBodyInterface.SetPosition(
             id,
@@ -1025,9 +1016,9 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat, activate: boolean = true): void {
-        // if (!this.IsBodyAdded(id)) {
-        //     return
-        // }
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
 
         this._joltBodyInterface.SetRotation(
             id,

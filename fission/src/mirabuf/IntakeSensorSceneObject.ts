@@ -51,28 +51,15 @@ class IntakeSensorSceneObject extends SceneObject {
             World.SceneRenderer.scene.add(this._mesh)
 
             const collision = (event: OnContactAddedEvent) => {
-                if (this._joltBodyId && this._parentBodyId && this._deltaTransformation && !World.PhysicsSystem.isPaused) {
+                //TODO: Add intake key pressed check
+                if (this._joltBodyId && !World.PhysicsSystem.isPaused) {
                     const body1 = event.message.body1
                     const body2 = event.message.body2
 
                     if (body1.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
-                        console.log("1")
-                        console.log(`Intake collided with ${body2.GetIndex()}`)
-
-                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(body2)
-                        if (associate?.isGamePiece) {
-                            this._parentAssembly.SetEjectable(body2, false)
-                            World.PhysicsSystem.GetBody(body2).AddImpulse(new JOLT.Vec3(0, 100, 0))
-                        }
+                        this.IntakeCollision(body2)
                     } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
-                        console.log("2")
-                        console.log(`Intake collided with ${body1.GetIndex()}`)
-
-                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(body1)
-                        if (associate?.isGamePiece) {
-                            this._parentAssembly.SetEjectable(body1, false)
-                            // World.PhysicsSystem.GetBody(body1).AddImpulse(new JOLT.Vec3(0, 100, 0))
-                        }
+                        this.IntakeCollision(body1)
                     }
                 }
             }
@@ -99,21 +86,6 @@ class IntakeSensorSceneObject extends SceneObject {
             if (this._mesh) {
                 this._mesh.position.setFromMatrixPosition(bodyTransform)
                 this._mesh.rotation.setFromRotationMatrix(bodyTransform)
-            }
-
-            if (!World.PhysicsSystem.isPaused) {
-                // TEMPORARY GAME PIECE DETECTION
-                // const hitRes = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(position), new JOLT.Vec3(0, 0, 3))
-                // if (hitRes) {
-                //     const gpAssoc = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(hitRes.data.mBodyID)
-                //     // This works, however the check for game piece is doing two checks.
-                //     if (gpAssoc?.isGamePiece) {
-                //         console.debug("Found game piece!")
-                //         this._parentAssembly.SetEjectable(hitRes.data.mBodyID, false)
-                //     }
-                // }
-
-                
             }
         }
     }
