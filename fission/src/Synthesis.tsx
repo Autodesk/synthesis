@@ -46,7 +46,6 @@ import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
 import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
 import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
 import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
-import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
@@ -59,6 +58,7 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
+import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Fields/FRC Field 2018_v13.mira"
 
@@ -167,6 +167,7 @@ function Synthesis() {
                         closePanel={(id: string) => {
                             closePanel(id)
                         }}
+                        closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
@@ -216,6 +217,8 @@ const initialModals = [
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
+    <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
+    <ZoneConfigPanel panelId="zone-config" openLocation="right" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
@@ -236,8 +239,8 @@ const initialPanels: ReactElement[] = [
         openLocation="right"
         sidePadding={8}
     />,
-    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
-    <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
+    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
+    <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
 ]
