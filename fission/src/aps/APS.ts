@@ -127,7 +127,7 @@ class APS {
      * Does nothing if the auth token couldn't be revoked
      */
     static async logout() {
-        await this.revoke_token_public()
+        await this.revokeTokenPublic() 
         this.auth = undefined
     }
 
@@ -138,7 +138,7 @@ class APS {
      * Endpoint documentation:
      * https://aps.autodesk.com/en/docs/oauth/v2/reference/http/revoke-POST/
      */
-    static async revoke_token_public(): Promise<boolean> {
+    static async revokeTokenPublic(): Promise<boolean> {
         const headers = {
             "Content-Type": "application/x-www-form-urlencoded",
         }
