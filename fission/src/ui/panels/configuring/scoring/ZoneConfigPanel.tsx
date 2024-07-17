@@ -67,9 +67,15 @@ function save(
         return
     }
 
-    const gizmoTransformation = gizmo.mesh.matrixWorld
-    const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
-    const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
+    // This step seems useless, but keeps the scale from messing up the rotation
+    const translation = new THREE.Vector3(0, 0, 0)
+    const rotation = new THREE.Quaternion(0, 0, 0, 1)
+    const scale = new THREE.Vector3(1, 1, 1)
+    gizmo.mesh.matrixWorld.decompose(translation, rotation, scale)
+
+    const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
+    const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+    const deltaTransformation = gizmoTransformation.premultiply(fieldTransformation.invert())
 
     const zone = SelectedZone.zone
 
@@ -152,9 +158,15 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
         const gizmoTransformation = deltaTransformation.premultiply(fieldTransformation)
 
-        gizmo.mesh.position.setFromMatrixPosition(gizmoTransformation)
-        gizmo.mesh.rotation.setFromRotationMatrix(gizmoTransformation)
-        gizmo.mesh.scale.setFromMatrixScale(gizmoTransformation)
+        // This step seems useless, but keeps the scale from messing up the rotation
+        const translation = new THREE.Vector3(0, 0, 0)
+        const rotation = new THREE.Quaternion(0, 0, 0, 1)
+        const scale = new THREE.Vector3(1, 1, 1)
+        gizmoTransformation.decompose(translation, rotation, scale)
+
+        gizmo.mesh.position.set(translation.x, translation.y, translation.z)
+        gizmo.mesh.rotation.setFromQuaternion(rotation)
+        gizmo.mesh.scale.set(scale.x, scale.y, scale.z)
 
         setTransformGizmo(gizmo)
 
