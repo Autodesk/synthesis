@@ -292,7 +292,6 @@ class MirabufSceneObject extends SceneObject {
     public SetEjectable(bodyId?: Jolt.BodyID, removeExisting: boolean = false): boolean {
         if (this._ejectable) {
             if (!removeExisting) {
-                console.log("sup")
                 return false
             }
 
@@ -301,6 +300,7 @@ class MirabufSceneObject extends SceneObject {
         }
 
         if (!this._ejectorPreferences || !this._ejectorPreferences.parentNode || !bodyId) {
+            console.log(`Configure an ejectable first.`)
             return false
         }
 
