@@ -16,7 +16,7 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             onAccept={() => {
                 let i = 0
                 InputSystem.allInputs.forEach(currentScheme => {
-                    const scheme = InputSchemeManager.AVAILABLE_INPUT_SCHEMES[i]
+                    const scheme = InputSchemeManager.availableInputSchemes[i]
                     if (!currentScheme || !scheme) return
 
                     scheme.inputs.forEach(newInput => {

@@ -11,7 +11,6 @@ import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeMana
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 // capitalize first letter
 const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
@@ -106,16 +105,16 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [modifierState, setModifierState] = useState<ModifierState>(EmptyModifierState)
 
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
-    const [chosenResetScheme, setChosenResetScheme] = useState<string>("WASD")
+    // const [chosenResetScheme, setChosenResetScheme] = useState<string>("WASD") TODO
     const [useButtons, setUseButtons] = useState<UseButtonsState>({})
 
     // If there is a robot spawned, set it as the selected robot
-    if (selectedScheme == null && Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0) {
+    if (selectedScheme == null && InputSystem.brainIndexSchemeMap.size > 0) {
         setTimeout(() => {
-            if (!InputSystem.selectedScheme)
-                InputSystem.selectedScheme = Object.values(
-                    PreferencesSystem.getAllRobotPreferences()
-                )[0].inputsSchemes[0]
+            if (!InputSystem.selectedScheme) {
+                InputSystem.selectedScheme = InputSystem.brainIndexSchemeMap.values().next().value
+                console.log("set selected to " + InputSystem.selectedScheme)
+            }
 
             setUseButtons({})
             setSelectedScheme(InputSystem.selectedScheme)
@@ -137,7 +136,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     // Assign keyboard inputs when a key is pressed
-    if (!useGamepad && selectedInput && chosenKey) {
+    if (!useGamepad && selectedInput && chosenKey && selectedScheme) {
         if (selectedInput.startsWith("pos")) {
             const input = selectedScheme?.inputs.find(
                 input => input.inputName == selectedInput.substring(3)
@@ -156,12 +155,14 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             input.keyModifiers = modifierState
         }
 
+        selectedScheme.customized = true
+
         setChosenKey("")
         setSelectedInput("")
         setModifierState(EmptyModifierState)
     }
     // Assign gamepad button inputs when a button is pressed
-    else if (useGamepad && selectedInput && chosenButton != -1) {
+    else if (selectedScheme && useGamepad && selectedInput && chosenButton != -1) {
         if (selectedInput.startsWith("pos")) {
             const input = selectedScheme?.inputs.find(
                 input => input.inputName == selectedInput.substring(3)
@@ -178,14 +179,18 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             input.gamepadButton = chosenButton
         }
 
+        selectedScheme.customized = true
+
         setChosenButton(-1)
         setSelectedInput("")
     }
 
     // Assign gamepad axis inputs when a gamepad axis is selected
-    if (useGamepad && selectedInput && chosenGamepadAxis != -1) {
+    if (useGamepad && selectedInput && chosenGamepadAxis != -1 && selectedScheme) {
         const selected = selectedScheme?.inputs.find(input => input.inputName == selectedInput) as AxisInput
         selected.gamepadAxisNumber = chosenGamepadAxis - 1
+
+        selectedScheme.customized = true
 
         setChosenGamepadAxis(-1)
         setSelectedInput("")
@@ -343,11 +348,11 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={<FaGamepad />}
             modalId={modalId}
             onAccept={() => {
-                PreferencesSystem.savePreferences()
+                InputSchemeManager.saveSchemes()
                 InputSystem.selectedScheme = undefined
             }}
         >
-            {Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0 ? (
+            {InputSystem.brainIndexSchemeMap.size > 0 ? (
                 <>
                     <Stack direction={StackDirection.Horizontal} spacing={25}>
                         <div>
@@ -356,21 +361,17 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     label={"Select Robot"}
                                     // Moves the selected option to the start of the array
                                     options={moveElementToTop(
-                                        SynthesisBrain.robotsSpawned,
+                                        Array.from(InputSystem.brainIndexSchemeMap.values()).map(s => s.schemeName),
                                         InputSystem?.selectedScheme?.schemeName
                                     )}
                                     onSelect={value => {
-                                        const roboName = value.substring(4)
-                                        const controlSchemeIndex: number = +value.charAt(1)
-
-                                        const newScheme =
-                                            PreferencesSystem.getAllRobotPreferences()[roboName].inputsSchemes[
-                                                controlSchemeIndex
-                                            ]
-                                        if (newScheme == selectedScheme) return
+                                        const schemeData = Array.from(InputSystem.brainIndexSchemeMap.entries()).find(
+                                            s => s[1].schemeName == value
+                                        )
+                                        if (!schemeData || schemeData[1] == selectedScheme) return
 
                                         setSelectedScheme(undefined)
-                                        InputSystem.selectedScheme = newScheme
+                                        InputSystem.selectedScheme = schemeData[1]
                                     }}
                                 />
                                 {selectedScheme ? (
@@ -384,8 +385,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                             }}
                                         />
                                         <Label size={LabelSize.Medium}>Default Control Schemes</Label>
-                                        {/* <Stack direction={StackDirection.Horizontal} justify="center" align="stretch"> */}
-                                        <div>
+                                        {/**
                                             <Dropdown
                                                 label={""}
                                                 // Moves the selected option to the start of the array
@@ -396,38 +396,37 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                                     setChosenResetScheme(value)
                                                 }}
                                             />
-                                        </div>
-                                        <Button
-                                            value={"Apply"}
-                                            onClick={() => {
-                                                const scheme = InputSchemeManager.AVAILABLE_INPUT_SCHEMES.find(
-                                                    s => s.schemeName == chosenResetScheme
-                                                )
-                                                if (!selectedScheme || !scheme) return
-
-                                                scheme.inputs.forEach(newInput => {
-                                                    const currentInput = selectedScheme.inputs.find(
-                                                        i => i.inputName == newInput.inputName
+                                            <Button
+                                                value={"Apply"}
+                                                onClick={() => {
+                                                    const scheme = InputSchemeManager.AVAILABLE_INPUT_SCHEMES.find(
+                                                        s => s.schemeName == chosenResetScheme
                                                     )
-
-                                                    if (currentInput) {
-                                                        const inputIndex = selectedScheme.inputs.indexOf(currentInput)
-
-                                                        selectedScheme.inputs[inputIndex] = newInput.getCopy()
-                                                    }
-                                                })
-                                                selectedScheme.usesGamepad = scheme.usesGamepad
-
-                                                setSelectedScheme(undefined)
-                                            }}
-                                        />
+                                                    if (!selectedScheme || !scheme) return
+    
+                                                    scheme.inputs.forEach(newInput => {
+                                                        const currentInput = selectedScheme.inputs.find(
+                                                            i => i.inputName == newInput.inputName
+                                                        )
+    
+                                                        if (currentInput) {
+                                                            const inputIndex = selectedScheme.inputs.indexOf(currentInput)
+    
+                                                            selectedScheme.inputs[inputIndex] = newInput.getCopy()
+                                                        }
+                                                    })
+                                                    selectedScheme.usesGamepad = scheme.usesGamepad
+    
+                                                    setSelectedScheme(undefined)
+                                                }}
+                                            />
+                                        */}
                                         <Button
                                             value={"Reset all to Defaults"}
                                             onClick={() => {
                                                 openModal("reset-inputs")
                                             }}
                                         />
-                                        {/* </Stack> */}
                                     </>
                                 ) : (
                                     <Label>No robot selected.</Label>

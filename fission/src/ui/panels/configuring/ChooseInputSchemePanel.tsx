@@ -27,17 +27,13 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             cancelEnabled={false}
         >
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[20vh] bg-background-secondary rounded-md p-2">
-                {InputSchemeManager.AVAILABLE_INPUT_SCHEMES.map(scheme => {
+                {/** A scroll view with buttons to select default and custom input schemes */}
+                {InputSchemeManager.availableInputSchemes.map(scheme => {
                     return (
                         <Button
-                            value={`${scheme.schemeName} | ${scheme.descriptiveName}`}
+                            value={`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
                             onClick={() => {
-                                // Remove the chosen scheme from the list
-                                //const index = InputSchemeManager.AVAILABLE_INPUT_SCHEMES.indexOf(scheme)
-                                //InputSchemeManager.AVAILABLE_INPUT_SCHEMES.splice(index, 1)
-
-                                InputSystem.brainIndexSchemeMap.set(SynthesisBrain.currentBrainIndex - 1, scheme)
-
+                                InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, scheme)
                                 closePanel(panelId)
                             }}
                             key={scheme.schemeName}
@@ -45,9 +41,11 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     )
                 })}
             </div>
+            {/** A button to create a new scheme with a randomly assigned name */}
             <Button
                 value={AddIcon}
                 onClick={() => {
+                    throw new Error("Not implemented!!!")
                     // Find a random name and remove it from the list
                     const index = Math.floor(Math.random() * DefaultInputs.NAMES.length)
                     const schemeName = DefaultInputs.NAMES[index]

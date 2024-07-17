@@ -18,28 +18,14 @@ import { AxisInput, ButtonInput, Input } from "@/systems/input/InputSystem"
 import { InputScheme } from "@/systems/input/InputSchemeManager"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
-/* class BrainConfiguredEvent extends Event {
-    public schemeName: string
-
-    constructor(schemeName: string) {
-        super("brainConfigured")
-        this.schemeName = schemeName
-    }
-} */
-
 class SynthesisBrain extends Brain {
-    /*  public static triggerBrainConfiguredEvent(schemeName: string) {
-        window.dispatchEvent(new BrainConfiguredEvent(schemeName))
-    } */
-
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
 
-    // Tracks how many joins have been made for unique controls
+    // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
 
     private _assemblyName: string
-    // private _assemblyIndex: number = 0
     private _brainIndex: number
 
     // Tracks the number of each specific mira file spawned
@@ -49,7 +35,9 @@ class SynthesisBrain extends Brain {
     // public static robotsSpawned: string[] = []
 
     // The total number of robots spawned
-    public static currentBrainIndex: number = 0
+    // public static currentBrainIndex: number = 0
+
+    public static brainIndexMap = new Map<number, SynthesisBrain>()
 
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
@@ -57,8 +45,10 @@ class SynthesisBrain extends Brain {
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
         this._assemblyName = assemblyName
 
-        this._brainIndex = SynthesisBrain.currentBrainIndex
-        SynthesisBrain.currentBrainIndex++
+        this._brainIndex = SynthesisBrain.brainIndexMap.size
+        SynthesisBrain.brainIndexMap.set(this._brainIndex, this)
+
+        console.log(SynthesisBrain.brainIndexMap)
 
         if (!this._simLayer) {
             console.log("SimulationLayer is undefined")
@@ -229,43 +219,6 @@ class SynthesisBrain extends Brain {
     /* private getNumberedAssemblyName(): string {
         return `[${this._assemblyIndex}] ${this._assemblyName}`
     } */
-
-    private static parseInputs(rawInputs: InputScheme) {
-        for (let i = 0; i < rawInputs.inputs.length; i++) {
-            const rawInput = rawInputs.inputs[i]
-            let parsedInput: Input
-
-            if ((rawInput as ButtonInput).keyCode != undefined) {
-                const rawButton = rawInput as ButtonInput
-
-                parsedInput = new ButtonInput(
-                    rawButton.inputName,
-                    rawButton.keyCode,
-                    rawButton.gamepadButton,
-                    rawButton.isGlobal,
-                    rawButton.keyModifiers
-                )
-            } else {
-                const rawAxis = rawInput as AxisInput
-
-                parsedInput = new AxisInput(
-                    rawAxis.inputName,
-                    rawAxis.posKeyCode,
-                    rawAxis.negKeyCode,
-                    rawAxis.gamepadAxisNumber,
-                    rawAxis.joystickInverted,
-                    rawAxis.useGamepadButtons,
-                    rawAxis.posGamepadButton,
-                    rawAxis.negGamepadButton,
-                    rawAxis.isGlobal,
-                    rawAxis.posKeyModifiers,
-                    rawAxis.negKeyModifiers
-                )
-            }
-
-            rawInputs.inputs[i] = parsedInput
-        }
-    }
 }
 
 export default SynthesisBrain
