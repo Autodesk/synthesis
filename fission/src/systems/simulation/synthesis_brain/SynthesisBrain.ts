@@ -15,28 +15,22 @@ import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior"
 import { AxisInput, ButtonInput, Input } from "@/systems/input/InputSystem"
-import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
+import { InputScheme } from "@/systems/input/InputSchemeManager"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
-class BrainConfiguredEvent extends Event {
-    public brainIndex: number
+/* class BrainConfiguredEvent extends Event {
     public schemeName: string
 
-    constructor(brainIndex: number, schemeName: string) {
+    constructor(schemeName: string) {
         super("brainConfigured")
-        this.brainIndex = brainIndex
         this.schemeName = schemeName
     }
-}
+} */
 
 class SynthesisBrain extends Brain {
-    public static triggerBrainConfiguredEvent(schemeName: string, brainIndex: number) {
-        window.dispatchEvent(new BrainConfiguredEvent(brainIndex, schemeName))
-    }
-
-    private static addBrainConfiguredEventListener(callback: (e: BrainConfiguredEvent) => void) {
-        window.addEventListener("brainConfigured", callback as EventListener)
-    }
+    /*  public static triggerBrainConfiguredEvent(schemeName: string) {
+        window.dispatchEvent(new BrainConfiguredEvent(schemeName))
+    } */
 
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
@@ -45,22 +39,26 @@ class SynthesisBrain extends Brain {
     private _currentJointIndex = 1
 
     private _assemblyName: string
-    private _assemblyIndex: number = 0
+    // private _assemblyIndex: number = 0
+    private _brainIndex: number
 
     // Tracks the number of each specific mira file spawned
-    public static numberRobotsSpawned: { [key: string]: number } = {}
+    // public static numberRobotsSpawned: { [key: string]: number } = {}
 
     // A list of all the robots spawned including their assembly index
-    public static robotsSpawned: string[] = []
+    // public static robotsSpawned: string[] = []
 
     // The total number of robots spawned
-    private static _currentRobotIndex: number = 0
+    public static currentBrainIndex: number = 0
 
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
 
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
         this._assemblyName = assemblyName
+
+        this._brainIndex = SynthesisBrain.currentBrainIndex
+        SynthesisBrain.currentBrainIndex++
 
         if (!this._simLayer) {
             console.log("SimulationLayer is undefined")
@@ -69,23 +67,21 @@ class SynthesisBrain extends Brain {
 
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (mechanism.controllable) {
-            if (SynthesisBrain.numberRobotsSpawned[assemblyName] == undefined)
+            /* if (SynthesisBrain.numberRobotsSpawned[assemblyName] == undefined)
                 SynthesisBrain.numberRobotsSpawned[assemblyName] = 0
             else SynthesisBrain.numberRobotsSpawned[assemblyName]++
 
             this._assemblyIndex = SynthesisBrain.numberRobotsSpawned[assemblyName]
-            SynthesisBrain.robotsSpawned.push(this.getNumberedAssemblyName())
-
+            SynthesisBrain.robotsSpawned.push(this.getNumberedAssemblyName()) */
             this.configureArcadeDriveBehavior()
             this.configureArmBehaviors()
             this.configureElevatorBehaviors()
+
+            window.addEventListener("brainConfigured", this.configureInputs as EventListener)
+            // console.log(this._assemblyIndex)
         } else {
             this.configureField()
         }
-
-        SynthesisBrain._currentRobotIndex++
-
-        SynthesisBrain.addBrainConfiguredEventListener(this.configureInputs)
     }
 
     public Enable(): void {}
@@ -99,8 +95,10 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        const index = SynthesisBrain.robotsSpawned.indexOf(this.getNumberedAssemblyName())
-        SynthesisBrain.robotsSpawned.splice(index, 1)
+        // TODO
+        throw new Error("Not Implemented")
+        // const index = SynthesisBrain.robotsSpawned.indexOf(this.getNumberedAssemblyName())
+        // SynthesisBrain.robotsSpawned.splice(index, 1)
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
@@ -144,14 +142,7 @@ class SynthesisBrain extends Brain {
         }
 
         this._behaviors.push(
-            new ArcadeDriveBehavior(
-                leftWheels,
-                rightWheels,
-                leftStimuli,
-                rightStimuli,
-                this._assemblyName,
-                this._assemblyIndex
-            )
+            new ArcadeDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex)
         )
     }
 
@@ -166,13 +157,7 @@ class SynthesisBrain extends Brain {
 
         for (let i = 0; i < hingeDrivers.length; i++) {
             this._behaviors.push(
-                new GenericArmBehavior(
-                    hingeDrivers[i],
-                    hingeStimuli[i],
-                    this._currentJointIndex,
-                    this._assemblyName,
-                    this._assemblyIndex
-                )
+                new GenericArmBehavior(hingeDrivers[i], hingeStimuli[i], this._currentJointIndex, this._brainIndex)
             )
             this._currentJointIndex++
         }
@@ -193,51 +178,45 @@ class SynthesisBrain extends Brain {
                     sliderDrivers[i],
                     sliderStimuli[i],
                     this._currentJointIndex,
-                    this._assemblyName,
-                    this._assemblyIndex
+                    this._brainIndex
                 )
             )
             this._currentJointIndex++
         }
     }
 
-    private configureInputs(_: BrainConfiguredEvent) {
-        // Check for existing inputs
-        const robotConfig = PreferencesSystem.getRobotPreferences(this._assemblyName)
-        if (robotConfig.inputsSchemes[this._assemblyIndex] != undefined) {
-            SynthesisBrain.parseInputs(robotConfig.inputsSchemes[this._assemblyIndex])
-            return
-        }
-
-        // Configure with default inputs
-
-        const scheme = DefaultInputs.AVAILABLE_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex]
-
-        robotConfig.inputsSchemes[this._assemblyIndex] = {
-            schemeName: this._assemblyName,
-            descriptiveName: "",
-            customized: false,
-            usesGamepad: scheme?.usesGamepad ?? false,
-            inputs: [],
-        }
-        const inputList = robotConfig.inputsSchemes[this._assemblyIndex].inputs
-
-        if (scheme) {
-            const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive")
-            if (arcadeDrive) inputList.push(arcadeDrive.getCopy())
-            else inputList.push(new AxisInput("arcadeDrive"))
-
-            const arcadeTurn = scheme.inputs.find(i => i.inputName === "arcadeTurn")
-            if (arcadeTurn) inputList.push(arcadeTurn.getCopy())
-            else inputList.push(new AxisInput("arcadeTurn"))
-
-            for (let i = 1; i < this._currentJointIndex; i++) {
-                const controlPreset = scheme.inputs.find(input => input.inputName == "joint " + i)
-
-                if (controlPreset) inputList.push(controlPreset.getCopy())
-                else inputList.push(new AxisInput("joint " + i))
-            }
-        }
+    private configureInputs(/* e: BrainConfiguredEvent */) {
+        // window.removeEventListener("brainConfigured", this.configureInputs as EventListener)
+        // console.log(this._assemblyIndex + " " + this._assemblyName + " configured with " + e.schemeName)
+        // // Check for existing inputs
+        // const robotConfig = PreferencesSystem.getRobotPreferences(this._assemblyName)
+        // if (robotConfig.inputsSchemes[this._assemblyIndex] != undefined) {
+        //     SynthesisBrain.parseInputs(robotConfig.inputsSchemes[this._assemblyIndex])
+        //     return
+        // }
+        // // Configure with default inputs
+        // const scheme = DefaultInputs.AVAILABLE_INPUT_SCHEMES[SynthesisBrain._currentBrainIndex]
+        // robotConfig.inputsSchemes[this._assemblyIndex] = {
+        //     schemeName: this._assemblyName,
+        //     descriptiveName: "",
+        //     customized: false,
+        //     usesGamepad: scheme?.usesGamepad ?? false,
+        //     inputs: [],
+        // }
+        // const inputList = robotConfig.inputsSchemes[this._assemblyIndex].inputs
+        // if (scheme) {
+        //     const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive")
+        //     if (arcadeDrive) inputList.push(arcadeDrive.getCopy())
+        //     else inputList.push(new AxisInput("arcadeDrive"))
+        //     const arcadeTurn = scheme.inputs.find(i => i.inputName === "arcadeTurn")
+        //     if (arcadeTurn) inputList.push(arcadeTurn.getCopy())
+        //     else inputList.push(new AxisInput("arcadeTurn"))
+        //     for (let i = 1; i < this._currentJointIndex; i++) {
+        //         const controlPreset = scheme.inputs.find(input => input.inputName == "joint " + i)
+        //         if (controlPreset) inputList.push(controlPreset.getCopy())
+        //         else inputList.push(new AxisInput("joint " + i))
+        //     }
+        // }
     }
 
     private configureField() {
@@ -247,9 +226,9 @@ class SynthesisBrain extends Brain {
         /** Put any scoring zone or other field configuration here */
     }
 
-    private getNumberedAssemblyName(): string {
+    /* private getNumberedAssemblyName(): string {
         return `[${this._assemblyIndex}] ${this._assemblyName}`
-    }
+    } */
 
     private static parseInputs(rawInputs: InputScheme) {
         for (let i = 0; i < rawInputs.inputs.length; i++) {

@@ -7,7 +7,7 @@ import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
 import InputSystem, { AxisInput, ButtonInput, ModifierState, EmptyModifierState } from "@/systems/input/InputSystem"
 import Dropdown from "@/ui/components/Dropdown"
 import Checkbox from "@/ui/components/Checkbox"
-import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
+import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -389,7 +389,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                             <Dropdown
                                                 label={""}
                                                 // Moves the selected option to the start of the array
-                                                options={DefaultInputs.AVAILABLE_INPUT_SCHEMES.map(
+                                                options={InputSchemeManager.AVAILABLE_INPUT_SCHEMES.map(
                                                     scheme => scheme.schemeName
                                                 )}
                                                 onSelect={value => {
@@ -400,7 +400,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                         <Button
                                             value={"Apply"}
                                             onClick={() => {
-                                                const scheme = DefaultInputs.AVAILABLE_INPUT_SCHEMES.find(
+                                                const scheme = InputSchemeManager.AVAILABLE_INPUT_SCHEMES.find(
                                                     s => s.schemeName == chosenResetScheme
                                                 )
                                                 if (!selectedScheme || !scheme) return

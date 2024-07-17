@@ -3,7 +3,7 @@ import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { GrFormClose } from "react-icons/gr"
 import { useModalControlContext } from "@/ui/ModalContext"
 import InputSystem from "@/systems/input/InputSystem"
-import DefaultInputs from "@/systems/input/DefaultInputs"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 
 const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -16,7 +16,7 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             onAccept={() => {
                 let i = 0
                 InputSystem.allInputs.forEach(currentScheme => {
-                    const scheme = DefaultInputs.AVAILABLE_INPUT_SCHEMES[i]
+                    const scheme = InputSchemeManager.AVAILABLE_INPUT_SCHEMES[i]
                     if (!currentScheme || !scheme) return
 
                     scheme.inputs.forEach(newInput => {

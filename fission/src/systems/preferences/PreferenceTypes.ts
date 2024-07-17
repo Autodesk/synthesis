@@ -1,5 +1,5 @@
 import { Vector3Tuple, Vector4Tuple } from "three"
-import { InputScheme } from "../input/DefaultInputs"
+import { InputScheme } from "../input/InputSchemeManager"
 
 export type GlobalPreference =
     | "ScreenMode"
@@ -10,6 +10,7 @@ export type GlobalPreference =
     | "ReportAnalytics"
     | "UseMetric"
     | "RenderScoringZones"
+    | "InputSchemes"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -23,6 +24,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
+    InputSchemes: [],
 }
 
 export type IntakePreferences = {

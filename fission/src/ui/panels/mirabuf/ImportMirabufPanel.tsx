@@ -239,6 +239,8 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 cacheInfo && SpawnCachedMira(cacheInfo, type)
             })
             closePanel(panelId)
+
+            if (type == MiraType.ROBOT) openPanel("choose-scheme")
         },
         [closePanel, panelId]
     )

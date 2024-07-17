@@ -1,6 +1,5 @@
 import WorldSystem from "../WorldSystem"
-import PreferencesSystem from "../preferences/PreferencesSystem"
-import { InputScheme } from "./DefaultInputs"
+import { InputScheme } from "./InputSchemeManager"
 
 export type ModifierState = {
     alt: boolean
@@ -155,6 +154,9 @@ class InputSystem extends WorldSystem {
     // The scheme most recently selected in the controls modal
     public static selectedScheme: InputScheme | undefined
 
+    // Maps a brain index to a certain input scheme
+    public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+
     constructor() {
         super()
 
@@ -241,15 +243,15 @@ class InputSystem extends WorldSystem {
     }
 
     // If an input exists, return it's value
-    public static getInput(inputName: string, assemblyName: string, assemblyIndex: number): number {
-        const targetScheme = PreferencesSystem.getRobotPreferences(assemblyName).inputsSchemes[assemblyIndex]
+    public static getInput(inputName: string, brainIndex: number): number {
+        const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
 
         if (targetScheme == null || targetInput == null) return 0
 
         // TODO
-        //return targetInput.getValue(targetScheme.usesGamepad)
+        return targetInput.getValue(targetScheme.usesGamepad)
         return 0.0
     }
 

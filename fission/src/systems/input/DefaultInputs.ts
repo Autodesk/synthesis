@@ -1,15 +1,8 @@
-import { AxisInput, Input, EmptyModifierState } from "./InputSystem"
-
-export type InputScheme = {
-    schemeName: string
-    descriptiveName: string
-    customized: boolean
-    usesGamepad: boolean
-    inputs: Input[]
-}
+import { InputScheme } from "./InputSchemeManager"
+import { AxisInput, EmptyModifierState } from "./InputSystem"
 
 class DefaultInputs {
-    private static wasd: InputScheme = {
+    public static ernie: InputScheme = {
         schemeName: "Ernie",
         descriptiveName: "WASD",
         customized: false,
@@ -51,7 +44,7 @@ class DefaultInputs {
         ],
     }
 
-    private static arrowKeys: InputScheme = {
+    public static luna: InputScheme = {
         schemeName: "Luna",
         descriptiveName: "Arrow Keys",
         customized: false,
@@ -93,7 +86,7 @@ class DefaultInputs {
         ],
     }
 
-    private static fullController: InputScheme = {
+    public static jax: InputScheme = {
         schemeName: "Jax",
         descriptiveName: "Full Controller",
         customized: false,
@@ -110,7 +103,7 @@ class DefaultInputs {
         ],
     }
 
-    private static leftStick: InputScheme = {
+    public static hunter: InputScheme = {
         schemeName: "Hunter",
         descriptiveName: "Left Stick",
         customized: false,
@@ -124,7 +117,7 @@ class DefaultInputs {
         ],
     }
 
-    private static rightStick: InputScheme = {
+    public static carmela: InputScheme = {
         schemeName: "Carmela",
         descriptiveName: "Right Stick",
         customized: false,
@@ -137,14 +130,6 @@ class DefaultInputs {
             new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
         ],
     }
-
-    public static AVAILABLE_INPUT_SCHEMES: InputScheme[] = [
-        this.wasd,
-        this.arrowKeys,
-        this.fullController,
-        this.leftStick,
-        this.rightStick,
-    ]
 
     public static NAMES: string[] = [
         "Kennedy",
