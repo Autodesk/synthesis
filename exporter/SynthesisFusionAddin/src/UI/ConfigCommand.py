@@ -14,9 +14,7 @@ from ..Analytics.alert import showAnalyticsAlert
 from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
 from ..configure import NOTIFIED, write_configuration
 from ..general_imports import *
-from ..Parser.ExporterOptions import (
-    ExporterOptions,
-)
+from ..Parser.ExporterOptions import ExporterOptions
 from ..Parser.SynthesisParser.Parser import Parser
 from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
 from .Configuration.SerialCommand import SerialCommand
@@ -650,7 +648,6 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             duplicateSelection = INPUTS_ROOT.itemById("duplicate_selection")
             # indicator = INPUTS_ROOT.itemById("algorithmic_indicator")
 
-
             # Transition: AARD-1683
             # TODO: Implement gamepiece things
             # if self.selectedOcc:
@@ -901,7 +898,6 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 else:
                     frictionCoeff.isVisible = False
 
-
             # Transition: AARD-1683
             # TODO: Implement gamepiece things
             # elif cmdInput.id == "weight_unit_f":
@@ -947,7 +943,6 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             #                     weight_input.value = self.allWeights[0]
             #                 else:
             #                     weight_input.value = self.allWeights[1]
-
 
             # Transition: AARD-1683
             # TODO: Implement gamepiece things
