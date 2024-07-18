@@ -189,6 +189,7 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                     <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
+                    <MainHUDButton value={"Configure Brain"} icon={<FaGear />} onClick={() => openPanel("config-robot-brain")} />
                 </div>
                 {userInfo ? (
                     <MainHUDButton
