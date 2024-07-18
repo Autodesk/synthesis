@@ -1,8 +1,14 @@
 import { styled, Typography } from "@mui/material"
 import { Box } from "@mui/system"
-import { useEffect, useMemo, useReducer, useState } from "react"
+import { useEffect, useReducer, useState } from "react"
 import { ProgressHandle, ProgressHandleStatus, ProgressEvent } from "./ProgressNotificationData"
 import { easeOutQuad } from "@/util/EasingFunctions"
+
+interface ProgressData {
+    lastValue: number
+    currentValue: number
+    lastUpdate: number
+}
 
 const handleMap = new Map<number, ProgressHandle>()
 
@@ -15,47 +21,44 @@ interface NotificationProps {
     handle: ProgressHandle
 }
 
-function Timer(startTime: number, elapse: number) {
+function Interp(elapse: number, progressData: ProgressData) {
     const [time, setTime] = useState<number>(0)
 
     useEffect(() => {
+        console.debug(`Updated: [${progressData.lastValue}, ${progressData.currentValue}, ${progressData.lastUpdate}]`)
+
         const update = () => {
-            const n = Math.min(1.0, Math.max(0.0, (Date.now() - startTime) / elapse))
+            const n = Math.min(1.0, Math.max(0.0, (Date.now() - progressData.lastUpdate) / elapse))
 
             setTime(n)
         }
 
         const interval = setInterval(update, 5)
+        const timeout = setTimeout(() => clearInterval(interval), elapse)
 
         return () => {
+            clearTimeout(timeout)
             clearInterval(interval)
         }
-    }, [startTime, elapse])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [progressData])
 
-    return time
+    return progressData.lastValue + (progressData.currentValue - progressData.lastValue) * easeOutQuad(time)
 }
 
 function ProgressNotification({ handle }: NotificationProps) {
 
-    const [progressData, setProgressData] = useState<[lastValue: number, currentValue: number, lastUpdate: number]>([0, 0, Date.now()])
+    const [progressData, setProgressData] = useState<ProgressData>({ lastValue: 0, currentValue: 0, lastUpdate: Date.now() })
 
-    const timer = Timer(progressData[2], 500)
+    const interpProgress = Interp(500, progressData)
 
     useEffect(() => {
-        setProgressData([progressData[1], handle.progress, Date.now()])
+        setProgressData({ lastValue: progressData.currentValue, currentValue: handle.progress, lastUpdate: Date.now() })
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [handle.progress])
 
-    useEffect(() => {
-        console.debug(`Updated: [${progressData[0]}, ${progressData[1]}, ${progressData[2]}]`)
-    }, [progressData])
-
-    const interpolatedProgress = Math.min(1, Math.max(0,
-        progressData[0] + (progressData[1] - progressData[0]) * easeOutQuad(timer)
-    ))
-
-    console.debug(`[${progressData[0]}, ${progressData[1]}, ${progressData[2]}]`)
-    console.debug(interpolatedProgress.toFixed(2))
+    console.debug(`[${progressData.lastValue}, ${progressData.currentValue}, ${progressData.lastUpdate}]`)
+    console.debug(interpProgress.toFixed(2))
 
     return (
         <Box
@@ -100,7 +103,7 @@ function ProgressNotification({ handle }: NotificationProps) {
                               : "#d74e26", // Autodesk Clay
                     bottom: "0pt",
                     left: "0pt",
-                    width: `${interpolatedProgress * 100}%`,
+                    width: `${interpProgress * 100}%`,
                     height: "0.5rem",
                 }}
             />
