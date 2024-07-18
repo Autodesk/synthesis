@@ -236,11 +236,7 @@ class SceneRenderer extends WorldSystem {
     public WorldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
         this._mainCamera.updateMatrixWorld()
         const screenSpace = world.project(this._mainCamera)
-        const widthHalf = window.innerWidth / 2
-        const heightHalf = window.innerHeight / 2
-        const x = screenSpace.x * widthHalf + widthHalf
-        const y = -(screenSpace.y * heightHalf) + heightHalf
-        return [x, y]
+        return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
 
     /** 

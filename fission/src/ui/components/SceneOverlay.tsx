@@ -7,6 +7,7 @@ import {
     SceneOverlayTagEvent,
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
+import Label, { LabelSize } from "./Label"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -32,9 +33,7 @@ function SceneOverlay() {
                     transform: "translate(-50%, -100%)",
                 }}
             >
-                <h1 className="text-2xl text-white font-sans" style={{ fontWeight: "bold" }}>
-                    {x.text}
-                </h1>
+                <Label size={LabelSize.Large}>{x.text}</Label>
             </div>
         ))
     }, [])
