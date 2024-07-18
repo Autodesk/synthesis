@@ -38,13 +38,11 @@ export class SceneOverlayTag {
         this.text = text
         this.position = position ?? [0, 0]
         new SceneOverlayTagEvent(SceneOverlayTagEventKey.ADD, this)
-        // new SceneOverlayTagAddEvent(this)
     }
 
     /** Removing the tag */
     public Dispose() {
         new SceneOverlayTagEvent(SceneOverlayTagEventKey.REMOVE, this)
-        // new SceneOverlayTagRemoveEvent(this)
     }
 }
 
