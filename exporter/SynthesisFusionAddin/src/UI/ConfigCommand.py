@@ -183,7 +183,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             Creates the general tab.
                 - Parent container for all the command inputs in the tab.
             """
-            inputs = INPUTS_ROOT.addTabCommandInput("general_settings", "General").children
+            # inputs = INPUTS_ROOT.addTabCommandInput("general_settings", "General").children
 
             # ~~~~~~~~~~~~~~~~ HELP FILE ~~~~~~~~~~~~~~~~
             """
@@ -215,66 +215,66 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             Table for weight config.
                 - Used this to align multiple commandInputs on the same row
             """
-            weightTableInput = self.createTableInput(
-                "weight_table",
-                "Weight Table",
-                inputs,
-                4,
-                "3:2:2:1",
-                1,
-            )
-            weightTableInput.tablePresentationStyle = 2  # set transparent background for table
+            # weightTableInput = self.createTableInput(
+            #     "weight_table",
+            #     "Weight Table",
+            #     inputs,
+            #     4,
+            #     "3:2:2:1",
+            #     1,
+            # )
+            # weightTableInput.tablePresentationStyle = 2  # set transparent background for table
 
-            weight_name = inputs.addStringValueInput("weight_name", "Weight")
-            weight_name.value = "Weight"
-            weight_name.isReadOnly = True
+            # weight_name = inputs.addStringValueInput("weight_name", "Weight")
+            # weight_name.value = "Weight"
+            # weight_name.isReadOnly = True
 
-            auto_calc_weight = self.createBooleanInput(
-                "auto_calc_weight",
-                "‎",
-                inputs,
-                checked=False,
-                tooltip="Approximate the weight of your robot assembly.",
-                tooltipadvanced="<i>This may take a moment...</i>",
-                enabled=True,
-                isCheckBox=False,
-            )
-            auto_calc_weight.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
-            auto_calc_weight.isFullWidth = True
+            # auto_calc_weight = self.createBooleanInput(
+            #     "auto_calc_weight",
+            #     "‎",
+            #     inputs,
+            #     checked=False,
+            #     tooltip="Approximate the weight of your robot assembly.",
+            #     tooltipadvanced="<i>This may take a moment...</i>",
+            #     enabled=True,
+            #     isCheckBox=False,
+            # )
+            # auto_calc_weight.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
+            # auto_calc_weight.isFullWidth = True
 
-            imperialUnits = exporterOptions.preferredUnits == PreferredUnits.IMPERIAL
-            if imperialUnits:
-                # ExporterOptions always contains the metric value
-                displayWeight = exporterOptions.robotWeight * 2.2046226218
-            else:
-                displayWeight = exporterOptions.robotWeight
+            # imperialUnits = exporterOptions.preferredUnits == PreferredUnits.IMPERIAL
+            # if imperialUnits:
+            #     # ExporterOptions always contains the metric value
+            #     displayWeight = exporterOptions.robotWeight * 2.2046226218
+            # else:
+            #     displayWeight = exporterOptions.robotWeight
 
-            weight_input = inputs.addValueInput(
-                "weight_input",
-                "Weight Input",
-                "",
-                adsk.core.ValueInput.createByReal(displayWeight),
-            )
-            weight_input.tooltip = "Robot weight"
-            weight_input.tooltipDescription = (
-                """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
-            )
+            # weight_input = inputs.addValueInput(
+            #     "weight_input",
+            #     "Weight Input",
+            #     "",
+            #     adsk.core.ValueInput.createByReal(displayWeight),
+            # )
+            # weight_input.tooltip = "Robot weight"
+            # weight_input.tooltipDescription = (
+            #     """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
+            # )
 
-            weight_unit = inputs.addDropDownCommandInput(
-                "weight_unit",
-                "Weight Unit",
-                adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-            )
+            # weight_unit = inputs.addDropDownCommandInput(
+            #     "weight_unit",
+            #     "Weight Unit",
+            #     adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            # )
 
-            weight_unit.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
-            weight_unit.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
-            weight_unit.tooltip = "Unit of mass"
-            weight_unit.tooltipDescription = "<hr>Configure the unit of mass for the weight calculation."
+            # weight_unit.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
+            # weight_unit.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
+            # weight_unit.tooltip = "Unit of mass"
+            # weight_unit.tooltipDescription = "<hr>Configure the unit of mass for the weight calculation."
 
-            weightTableInput.addCommandInput(weight_name, 0, 0)  # add command inputs to table
-            weightTableInput.addCommandInput(auto_calc_weight, 0, 1)  # add command inputs to table
-            weightTableInput.addCommandInput(weight_input, 0, 2)  # add command inputs to table
-            weightTableInput.addCommandInput(weight_unit, 0, 3)  # add command inputs to table
+            # weightTableInput.addCommandInput(weight_name, 0, 0)  # add command inputs to table
+            # weightTableInput.addCommandInput(auto_calc_weight, 0, 1)  # add command inputs to table
+            # weightTableInput.addCommandInput(weight_input, 0, 2)  # add command inputs to table
+            # weightTableInput.addCommandInput(weight_unit, 0, 3)  # add command inputs to table
 
             global jointConfigTab
             jointConfigTab = JointConfigTab(args)
@@ -310,134 +310,134 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             Gamepiece group command input, isVisible=False by default
                 - Container for gamepiece selection table
             """
-            gamepieceConfig = inputs.addGroupCommandInput("gamepiece_config", "Gamepiece Configuration")
-            gamepieceConfig.isExpanded = True
-            gamepieceConfig.isVisible = False
-            gamepieceConfig.tooltip = "Select and define the gamepieces in your field."
-            gamepiece_inputs = gamepieceConfig.children
+            # gamepieceConfig = inputs.addGroupCommandInput("gamepiece_config", "Gamepiece Configuration")
+            # gamepieceConfig.isExpanded = True
+            # gamepieceConfig.isVisible = False
+            # gamepieceConfig.tooltip = "Select and define the gamepieces in your field."
+            # gamepiece_inputs = gamepieceConfig.children
 
-            # GAMEPIECE MASS CONFIGURATION
-            """
-            Mass unit dropdown and calculation for gamepiece elements
-            """
-            weightTableInput_f = self.createTableInput(
-                "weight_table_f", "Weight Table", gamepiece_inputs, 3, "6:2:1", 1
-            )
-            weightTableInput_f.tablePresentationStyle = 2  # set to clear background
+            # # GAMEPIECE MASS CONFIGURATION
+            # """
+            # Mass unit dropdown and calculation for gamepiece elements
+            # """
+            # weightTableInput_f = self.createTableInput(
+            #     "weight_table_f", "Weight Table", gamepiece_inputs, 3, "6:2:1", 1
+            # )
+            # weightTableInput_f.tablePresentationStyle = 2  # set to clear background
 
-            weight_name_f = gamepiece_inputs.addStringValueInput("weight_name", "Weight")
-            weight_name_f.value = "Unit of Mass"
-            weight_name_f.isReadOnly = True
+            # weight_name_f = gamepiece_inputs.addStringValueInput("weight_name", "Weight")
+            # weight_name_f.value = "Unit of Mass"
+            # weight_name_f.isReadOnly = True
 
-            auto_calc_weight_f = self.createBooleanInput(  # CALCULATE button
-                "auto_calc_weight_f",
-                "‎",
-                gamepiece_inputs,
-                checked=False,
-                tooltip="Approximate the weight of all your selected gamepieces.",
-                enabled=True,
-                isCheckBox=False,
-            )
-            auto_calc_weight_f.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
-            auto_calc_weight_f.isFullWidth = True
+            # auto_calc_weight_f = self.createBooleanInput(  # CALCULATE button
+            #     "auto_calc_weight_f",
+            #     "‎",
+            #     gamepiece_inputs,
+            #     checked=False,
+            #     tooltip="Approximate the weight of all your selected gamepieces.",
+            #     enabled=True,
+            #     isCheckBox=False,
+            # )
+            # auto_calc_weight_f.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
+            # auto_calc_weight_f.isFullWidth = True
 
-            weight_unit_f = gamepiece_inputs.addDropDownCommandInput(
-                "weight_unit_f",
-                "Unit of Mass",
-                adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-            )
-            weight_unit_f.listItems.add("‎", True, IconPaths.massIcons["LBS"])  # add listdropdown mass options
-            weight_unit_f.listItems.add("‎", False, IconPaths.massIcons["KG"])  # add listdropdown mass options
-            weight_unit_f.tooltip = "Unit of mass"
-            weight_unit_f.tooltipDescription = "<hr>Configure the unit of mass for for the weight calculation."
+            # weight_unit_f = gamepiece_inputs.addDropDownCommandInput(
+            #     "weight_unit_f",
+            #     "Unit of Mass",
+            #     adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            # )
+            # weight_unit_f.listItems.add("‎", True, IconPaths.massIcons["LBS"])  # add listdropdown mass options
+            # weight_unit_f.listItems.add("‎", False, IconPaths.massIcons["KG"])  # add listdropdown mass options
+            # weight_unit_f.tooltip = "Unit of mass"
+            # weight_unit_f.tooltipDescription = "<hr>Configure the unit of mass for for the weight calculation."
 
-            weightTableInput_f.addCommandInput(weight_name_f, 0, 0)  # add command inputs to table
-            weightTableInput_f.addCommandInput(auto_calc_weight_f, 0, 1)  # add command inputs to table
-            weightTableInput_f.addCommandInput(weight_unit_f, 0, 2)  # add command inputs to table
+            # weightTableInput_f.addCommandInput(weight_name_f, 0, 0)  # add command inputs to table
+            # weightTableInput_f.addCommandInput(auto_calc_weight_f, 0, 1)  # add command inputs to table
+            # weightTableInput_f.addCommandInput(weight_unit_f, 0, 2)  # add command inputs to table
 
-            # GAMEPIECE SELECTION TABLE
-            """
-            All selected gamepieces appear here
-            """
-            gamepieceTableInput = self.createTableInput(
-                "gamepiece_table",
-                "Gamepiece",
-                gamepiece_inputs,
-                4,
-                "1:8:5:12",
-                50,
-            )
+            # # GAMEPIECE SELECTION TABLE
+            # """
+            # All selected gamepieces appear here
+            # """
+            # gamepieceTableInput = self.createTableInput(
+            #     "gamepiece_table",
+            #     "Gamepiece",
+            #     gamepiece_inputs,
+            #     4,
+            #     "1:8:5:12",
+            #     50,
+            # )
 
-            addFieldInput = gamepiece_inputs.addBoolValueInput("field_add", "Add", False)
+            # addFieldInput = gamepiece_inputs.addBoolValueInput("field_add", "Add", False)
 
-            removeFieldInput = gamepiece_inputs.addBoolValueInput("field_delete", "Remove", False)
-            addFieldInput.isEnabled = removeFieldInput.isEnabled = True
+            # removeFieldInput = gamepiece_inputs.addBoolValueInput("field_delete", "Remove", False)
+            # addFieldInput.isEnabled = removeFieldInput.isEnabled = True
 
-            removeFieldInput.tooltip = "Remove a field element"
-            addFieldInput.tooltip = "Add a field element"
+            # removeFieldInput.tooltip = "Remove a field element"
+            # addFieldInput.tooltip = "Add a field element"
 
-            gamepieceSelectInput = gamepiece_inputs.addSelectionInput(
-                "gamepiece_select",
-                "Selection",
-                "Select the unique gamepieces in your field.",
-            )
-            gamepieceSelectInput.addSelectionFilter("Occurrences")
-            gamepieceSelectInput.setSelectionLimits(0)
-            gamepieceSelectInput.isEnabled = True
-            gamepieceSelectInput.isVisible = False
+            # gamepieceSelectInput = gamepiece_inputs.addSelectionInput(
+            #     "gamepiece_select",
+            #     "Selection",
+            #     "Select the unique gamepieces in your field.",
+            # )
+            # gamepieceSelectInput.addSelectionFilter("Occurrences")
+            # gamepieceSelectInput.setSelectionLimits(0)
+            # gamepieceSelectInput.isEnabled = True
+            # gamepieceSelectInput.isVisible = False
 
-            gamepieceTableInput.addToolbarCommandInput(addFieldInput)
-            gamepieceTableInput.addToolbarCommandInput(removeFieldInput)
+            # gamepieceTableInput.addToolbarCommandInput(addFieldInput)
+            # gamepieceTableInput.addToolbarCommandInput(removeFieldInput)
 
-            """
-            Gamepiece table column headers. (the permanent captions in the first row of table)
-            """
-            gamepieceTableInput.addCommandInput(
-                self.createTextBoxInput(
-                    "e_header",
-                    "Gamepiece name",
-                    gamepiece_inputs,
-                    "Gamepiece",
-                    bold=False,
-                ),
-                0,
-                1,
-            )
+            # """
+            # Gamepiece table column headers. (the permanent captions in the first row of table)
+            # """
+            # gamepieceTableInput.addCommandInput(
+            #     self.createTextBoxInput(
+            #         "e_header",
+            #         "Gamepiece name",
+            #         gamepiece_inputs,
+            #         "Gamepiece",
+            #         bold=False,
+            #     ),
+            #     0,
+            #     1,
+            # )
 
-            gamepieceTableInput.addCommandInput(
-                self.createTextBoxInput(
-                    "w_header",
-                    "Gamepiece weight",
-                    gamepiece_inputs,
-                    "Weight",
-                    background="#d9d9d9",
-                ),
-                0,
-                2,
-            )
+            # gamepieceTableInput.addCommandInput(
+            #     self.createTextBoxInput(
+            #         "w_header",
+            #         "Gamepiece weight",
+            #         gamepiece_inputs,
+            #         "Weight",
+            #         background="#d9d9d9",
+            #     ),
+            #     0,
+            #     2,
+            # )
 
-            gamepieceTableInput.addCommandInput(
-                self.createTextBoxInput(
-                    "f_header",
-                    "Friction coefficient",
-                    gamepiece_inputs,
-                    "Friction coefficient",
-                    background="#d9d9d9",
-                ),
-                0,
-                3,
-            )
+            # gamepieceTableInput.addCommandInput(
+            #     self.createTextBoxInput(
+            #         "f_header",
+            #         "Friction coefficient",
+            #         gamepiece_inputs,
+            #         "Friction coefficient",
+            #         background="#d9d9d9",
+            #     ),
+            #     0,
+            #     3,
+            # )
 
             # ====================================== ADVANCED TAB ======================================
             """
             Creates the advanced tab, which is the parent container for internal command inputs
             """
             # Transition: AARD-1683
-            advancedSettings = INPUTS_ROOT.addTabCommandInput("advanced_settings", "Advanced")
-            advancedSettings.tooltip = (
-                "Additional Advanced Settings to change how your model will be translated into Unity."
-            )
-            a_input = advancedSettings.children
+            # advancedSettings = INPUTS_ROOT.addTabCommandInput("advanced_settings", "Advanced")
+            # advancedSettings.tooltip = (
+            #     "Additional Advanced Settings to change how your model will be translated into Unity."
+            # )
+            # a_input = advancedSettings.children
 
             # Transition: AARD-1683
             # ~~~~~~~~~~~~~~~~ EXPORTER SETTINGS ~~~~~~~~~~~~~~~~
@@ -473,55 +473,55 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Physics settings group command
             """
-            physicsSettings = a_input.addGroupCommandInput("physics_settings", "Physics Settings")
+            # physicsSettings = a_input.addGroupCommandInput("physics_settings", "Physics Settings")
 
-            physicsSettings.isExpanded = False
-            physicsSettings.isEnabled = True
-            physicsSettings.tooltip = "tooltip"  # TODO: update tooltip
-            physics_settings = physicsSettings.children
+            # physicsSettings.isExpanded = False
+            # physicsSettings.isEnabled = True
+            # physicsSettings.tooltip = "tooltip"  # TODO: update tooltip
+            # physics_settings = physicsSettings.children
 
-            # AARD-1687
-            # Should also be commented out / removed?
-            # This would cause problems elsewhere but I can't tell i f
-            # this is even being used.
-            frictionOverrideTable = self.createTableInput(
-                "friction_override_table",
-                "",
-                physics_settings,
-                2,
-                "1:2",
-                1,
-                columnSpacing=25,
-            )
-            frictionOverrideTable.tablePresentationStyle = 2
-            # frictionOverrideTable.isFullWidth = True
+            # # AARD-1687
+            # # Should also be commented out / removed?
+            # # This would cause problems elsewhere but I can't tell i f
+            # # this is even being used.
+            # frictionOverrideTable = self.createTableInput(
+            #     "friction_override_table",
+            #     "",
+            #     physics_settings,
+            #     2,
+            #     "1:2",
+            #     1,
+            #     columnSpacing=25,
+            # )
+            # frictionOverrideTable.tablePresentationStyle = 2
+            # # frictionOverrideTable.isFullWidth = True
 
-            frictionOverride = self.createBooleanInput(
-                "friction_override",
-                "",
-                physics_settings,
-                checked=False,
-                tooltip="Manually override the default friction values on the bodies in the assembly.",
-                enabled=True,
-                isCheckBox=False,
-            )
-            frictionOverride.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
-            frictionOverride.isFullWidth = True
+            # frictionOverride = self.createBooleanInput(
+            #     "friction_override",
+            #     "",
+            #     physics_settings,
+            #     checked=False,
+            #     tooltip="Manually override the default friction values on the bodies in the assembly.",
+            #     enabled=True,
+            #     isCheckBox=False,
+            # )
+            # frictionOverride.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
+            # frictionOverride.isFullWidth = True
 
-            valueList = [1]
-            for i in range(20):
-                valueList.append(i / 20)
+            # valueList = [1]
+            # for i in range(20):
+            #     valueList.append(i / 20)
 
-            frictionCoeff = physics_settings.addFloatSliderListCommandInput(
-                "friction_coeff_override", "Friction Coefficient", "", valueList
-            )
-            frictionCoeff.isVisible = False
-            frictionCoeff.valueOne = 0.5
-            frictionCoeff.tooltip = "Friction coefficient of field element."
-            frictionCoeff.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
+            # frictionCoeff = physics_settings.addFloatSliderListCommandInput(
+            #     "friction_coeff_override", "Friction Coefficient", "", valueList
+            # )
+            # frictionCoeff.isVisible = False
+            # frictionCoeff.valueOne = 0.5
+            # frictionCoeff.tooltip = "Friction coefficient of field element."
+            # frictionCoeff.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
 
-            frictionOverrideTable.addCommandInput(frictionOverride, 0, 0)
-            frictionOverrideTable.addCommandInput(frictionCoeff, 0, 1)
+            # frictionOverrideTable.addCommandInput(frictionOverride, 0, 0)
+            # frictionOverrideTable.addCommandInput(frictionCoeff, 0, 1)
 
             # ~~~~~~~~~~~~~~~~ JOINT SETTINGS ~~~~~~~~~~~~~~~~
             """
@@ -646,153 +646,153 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "Failed:\n{}".format(traceback.format_exc())
             )
 
+    # # Transition: AARD-1685
+    # # Functionality will be fully moved to `CreateCommandInputsHelper` in AARD-1683
+    # def createBooleanInput(
+    #     self,
+    #     _id: str,
+    #     name: str,
+    #     inputs: adsk.core.CommandInputs,
+    #     tooltip="",
+    #     tooltipadvanced="",
+    #     checked=True,
+    #     enabled=True,
+    #     isCheckBox=True,
+    # ) -> adsk.core.BoolValueCommandInput:
+    #     """### Simple helper to generate all of the options for me to create a boolean command input
+
+    #     Args:
+    #         _id (str): id value of the object - pretty much lowercase name
+    #         name (str): name as displayed by the command prompt
+    #         inputs (adsk.core.CommandInputs): parent command input container
+    #         tooltip (str, optional): Description on hover of the checkbox. Defaults to "".
+    #         tooltipadvanced (str, optional): Long hover description. Defaults to "".
+    #         checked (bool, optional): Is checked by default?. Defaults to True.
+
+    #     Returns:
+    #         adsk.core.BoolValueCommandInput: Recently created command input
+    #     """
+    #     try:
+    #         _input = inputs.addBoolValueInput(_id, name, isCheckBox)
+    #         _input.value = checked
+    #         _input.isEnabled = enabled
+    #         _input.tooltip = tooltip
+    #         _input.tooltipDescription = tooltipadvanced
+    #         return _input
+    #     except:
+    #         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createBooleanInput()").error(
+    #             "Failed:\n{}".format(traceback.format_exc())
+    #         )
+
+    # # Transition: AARD-1685
+    # # Functionality will be fully moved to `CreateCommandInputsHelper` in AARD-1683
+    # def createTableInput(
+    #     self,
+    #     _id: str,
+    #     name: str,
+    #     inputs: adsk.core.CommandInputs,
+    #     columns: int,
+    #     ratio: str,
+    #     maxRows: int,
+    #     minRows=1,
+    #     columnSpacing=0,
+    #     rowSpacing=0,
+    # ) -> adsk.core.TableCommandInput:
+    #     """### Simple helper to generate all the TableCommandInput options.
+
+    #     Args:
+    #         _id (str): unique ID of command
+    #         name (str): displayed name
+    #         inputs (adsk.core.CommandInputs): parent command input container
+    #         columns (int): column count
+    #         ratio (str): column width ratio
+    #         maxRows (int): the maximum number of displayed rows possible
+    #         minRows (int, optional): the minimum number of displayed rows. Defaults to 1.
+    #         columnSpacing (int, optional): spacing in between the columns, in pixels. Defaults to 0.
+    #         rowSpacing (int, optional): spacing in between the rows, in pixels. Defaults to 0.
+
+    #     Returns:
+    #         adsk.core.TableCommandInput: created tableCommandInput
+    #     """
+    #     try:
+    #         _input = inputs.addTableCommandInput(_id, name, columns, ratio)
+    #         _input.minimumVisibleRows = minRows
+    #         _input.maximumVisibleRows = maxRows
+    #         _input.columnSpacing = columnSpacing
+    #         _input.rowSpacing = rowSpacing
+    #         return _input
+    #     except:
+    #         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createTableInput()").error(
+    #             "Failed:\n{}".format(traceback.format_exc())
+    #         )
+
     # Transition: AARD-1685
     # Functionality will be fully moved to `CreateCommandInputsHelper` in AARD-1683
-    def createBooleanInput(
-        self,
-        _id: str,
-        name: str,
-        inputs: adsk.core.CommandInputs,
-        tooltip="",
-        tooltipadvanced="",
-        checked=True,
-        enabled=True,
-        isCheckBox=True,
-    ) -> adsk.core.BoolValueCommandInput:
-        """### Simple helper to generate all of the options for me to create a boolean command input
+    # def createTextBoxInput(
+    #     self,
+    #     _id: str,
+    #     name: str,
+    #     inputs: adsk.core.CommandInputs,
+    #     text: str,
+    #     italics=True,
+    #     bold=True,
+    #     fontSize=10,
+    #     alignment="center",
+    #     rowCount=1,
+    #     read=True,
+    #     background="whitesmoke",
+    #     tooltip="",
+    #     advanced_tooltip="",
+    # ) -> adsk.core.TextBoxCommandInput:
+    #     """### Helper to generate a textbox input from inputted options.
 
-        Args:
-            _id (str): id value of the object - pretty much lowercase name
-            name (str): name as displayed by the command prompt
-            inputs (adsk.core.CommandInputs): parent command input container
-            tooltip (str, optional): Description on hover of the checkbox. Defaults to "".
-            tooltipadvanced (str, optional): Long hover description. Defaults to "".
-            checked (bool, optional): Is checked by default?. Defaults to True.
+    #     Args:
+    #         _id (str): unique ID
+    #         name (str): displayed name
+    #         inputs (adsk.core.CommandInputs): parent command input container
+    #         text (str): the user-visible text in command
+    #         italics (bool, optional): is italics? Defaults to True.
+    #         bold (bool, optional): isBold? Defaults to True.
+    #         fontSize (int, optional): fontsize. Defaults to 10.
+    #         alignment (str, optional): HTML style alignment (left, center, right). Defaults to "center".
+    #         rowCount (int, optional): number of rows in textbox. Defaults to 1.
+    #         read (bool, optional): read only? Defaults to True.
+    #         background (str, optional): background color (HTML color names or hex) Defaults to "whitesmoke".
 
-        Returns:
-            adsk.core.BoolValueCommandInput: Recently created command input
-        """
-        try:
-            _input = inputs.addBoolValueInput(_id, name, isCheckBox)
-            _input.value = checked
-            _input.isEnabled = enabled
-            _input.tooltip = tooltip
-            _input.tooltipDescription = tooltipadvanced
-            return _input
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createBooleanInput()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+    #     Returns:
+    #         adsk.core.TextBoxCommandInput: newly created textBoxCommandInput
+    #     """
+    #     try:
+    #         i = ["", ""]
+    #         b = ["", ""]
 
-    # Transition: AARD-1685
-    # Functionality will be fully moved to `CreateCommandInputsHelper` in AARD-1683
-    def createTableInput(
-        self,
-        _id: str,
-        name: str,
-        inputs: adsk.core.CommandInputs,
-        columns: int,
-        ratio: str,
-        maxRows: int,
-        minRows=1,
-        columnSpacing=0,
-        rowSpacing=0,
-    ) -> adsk.core.TableCommandInput:
-        """### Simple helper to generate all the TableCommandInput options.
+    #         if bold:
+    #             b[0] = "<b>"
+    #             b[1] = "</b>"
+    #         if italics:
+    #             i[0] = "<i>"
+    #             i[1] = "</i>"
 
-        Args:
-            _id (str): unique ID of command
-            name (str): displayed name
-            inputs (adsk.core.CommandInputs): parent command input container
-            columns (int): column count
-            ratio (str): column width ratio
-            maxRows (int): the maximum number of displayed rows possible
-            minRows (int, optional): the minimum number of displayed rows. Defaults to 1.
-            columnSpacing (int, optional): spacing in between the columns, in pixels. Defaults to 0.
-            rowSpacing (int, optional): spacing in between the rows, in pixels. Defaults to 0.
+    #         # simple wrapper for html formatting
+    #         wrapper = """<body style='background-color:%s;'>
+    #                      <div align='%s'>
+    #                      <p style='font-size:%spx'>
+    #                      %s%s{}%s%s
+    #                      </p>
+    #                      </body>
+    #                   """.format(
+    #             text
+    #         )
+    #         _text = wrapper % (background, alignment, fontSize, b[0], i[0], i[1], b[1])
 
-        Returns:
-            adsk.core.TableCommandInput: created tableCommandInput
-        """
-        try:
-            _input = inputs.addTableCommandInput(_id, name, columns, ratio)
-            _input.minimumVisibleRows = minRows
-            _input.maximumVisibleRows = maxRows
-            _input.columnSpacing = columnSpacing
-            _input.rowSpacing = rowSpacing
-            return _input
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.createTableInput()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
-
-    # Transition: AARD-1685
-    # Functionality will be fully moved to `CreateCommandInputsHelper` in AARD-1683
-    def createTextBoxInput(
-        self,
-        _id: str,
-        name: str,
-        inputs: adsk.core.CommandInputs,
-        text: str,
-        italics=True,
-        bold=True,
-        fontSize=10,
-        alignment="center",
-        rowCount=1,
-        read=True,
-        background="whitesmoke",
-        tooltip="",
-        advanced_tooltip="",
-    ) -> adsk.core.TextBoxCommandInput:
-        """### Helper to generate a textbox input from inputted options.
-
-        Args:
-            _id (str): unique ID
-            name (str): displayed name
-            inputs (adsk.core.CommandInputs): parent command input container
-            text (str): the user-visible text in command
-            italics (bool, optional): is italics? Defaults to True.
-            bold (bool, optional): isBold? Defaults to True.
-            fontSize (int, optional): fontsize. Defaults to 10.
-            alignment (str, optional): HTML style alignment (left, center, right). Defaults to "center".
-            rowCount (int, optional): number of rows in textbox. Defaults to 1.
-            read (bool, optional): read only? Defaults to True.
-            background (str, optional): background color (HTML color names or hex) Defaults to "whitesmoke".
-
-        Returns:
-            adsk.core.TextBoxCommandInput: newly created textBoxCommandInput
-        """
-        try:
-            i = ["", ""]
-            b = ["", ""]
-
-            if bold:
-                b[0] = "<b>"
-                b[1] = "</b>"
-            if italics:
-                i[0] = "<i>"
-                i[1] = "</i>"
-
-            # simple wrapper for html formatting
-            wrapper = """<body style='background-color:%s;'>
-                         <div align='%s'>
-                         <p style='font-size:%spx'>
-                         %s%s{}%s%s
-                         </p>
-                         </body>
-                      """.format(
-                text
-            )
-            _text = wrapper % (background, alignment, fontSize, b[0], i[0], i[1], b[1])
-
-            _input = inputs.addTextBoxCommandInput(_id, name, _text, rowCount, read)
-            _input.tooltip = tooltip
-            _input.tooltipDescription = advanced_tooltip
-            return _input
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.createTextBoxInput()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+    #         _input = inputs.addTextBoxCommandInput(_id, name, _text, rowCount, read)
+    #         _input.tooltip = tooltip
+    #         _input.tooltipDescription = advanced_tooltip
+    #         return _input
+    #     except:
+    #         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.createTextBoxInput()").error(
+    #             "Failed:\n{}".format(traceback.format_exc())
+    #         )
 
 
 class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
@@ -938,11 +938,11 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 exportMode=generalConfigTab.exportMode,
                 compressOutput=generalConfigTab.compress,
                 exportAsPart=generalConfigTab.exportAsPart,
+                autoCalcWeight=generalConfigTab.autoCalculateWeight,
             )
 
-            # TODO: Swap back
+            Parser(exporterOptions).export()
             exporterOptions.writeToDesign()
-            # Parser(exporterOptions).export()
 
             # All selections should be reset AFTER a successful export and save.
             # If we run into an exporting error we should return back to the panel with all current options

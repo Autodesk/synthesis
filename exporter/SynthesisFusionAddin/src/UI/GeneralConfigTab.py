@@ -77,6 +77,7 @@ class GeneralConfigTab:
             weightInput.tooltipDescription = (
                 """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
             )
+            weightInput.isEnabled = not exporterOptions.autoCalcWeight
 
             weightUnitDropdown = generalTabInputs.addDropDownCommandInput(
                 "weightUnitDropdown",
@@ -155,8 +156,21 @@ class GeneralConfigTab:
 
     @property
     def robotWeight(self) -> KG:
-        weightInput: adsk.core.ValueCommandInput = self.generalOptionsTab.children.itemById("weightTable").getInputAtPosition(0, 1)
-        return KG(weightInput.value)
+        weightInput: adsk.core.ValueCommandInput = self.generalOptionsTab.children.itemById(
+            "weightTable"
+        ).getInputAtPosition(0, 1)
+        if self.currentUnits == PreferredUnits.METRIC:
+            return KG(weightInput.value)
+        else:
+            assert self.currentUnits == PreferredUnits.IMPERIAL
+            return toKg(weightInput.value)
+
+    @property
+    def autoCalculateWeight(self) -> bool:
+        autoCalcWeightButton: adsk.core.BoolValueCommandInput = self.generalOptionsTab.children.itemById(
+            "autoCalcWeightButton"
+        )
+        return autoCalcWeightButton.value
 
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs) -> None:
         try:
