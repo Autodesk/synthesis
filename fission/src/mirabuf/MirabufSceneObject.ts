@@ -17,6 +17,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
+import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 
 const DEBUG_BODIES = false
 
@@ -43,6 +44,8 @@ class MirabufSceneObject extends SceneObject {
 
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
+
+    private _nameTag: SceneOverlayTag | undefined
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -96,6 +99,11 @@ class MirabufSceneObject extends SceneObject {
         this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
 
         this.getPreferences()
+
+        // creating nametag for robots
+        if (this.miraType === MiraType.ROBOT) {
+            this._nameTag = new SceneOverlayTag(() => (this._brain ? this._brain.inputSchemeName : "Not Configured"))
+        }
     }
 
     public Setup(): void {
@@ -205,6 +213,18 @@ class MirabufSceneObject extends SceneObject {
             x.computeBoundingBox()
             x.computeBoundingSphere()
         })
+
+        /* Updating the position of the name tag according to the robots position on screen */
+        if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
+            const boundingBox = this.ComputeBoundingBox()
+            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
+                new THREE.Vector3(
+                    (boundingBox.max.x + boundingBox.min.x) / 2,
+                    boundingBox.max.y + 0.1,
+                    (boundingBox.max.z + boundingBox.min.z) / 2
+                )
+            )
+        }
     }
 
     public Dispose(): void {
@@ -222,6 +242,7 @@ class MirabufSceneObject extends SceneObject {
             World.PhysicsSystem.RemoveBodyAssocation(bodyId)
         })
 
+        this._nameTag?.Dispose()
         this.DisableTransformControls()
         World.SimulationSystem.UnregisterMechanism(this._mechanism)
         World.PhysicsSystem.DestroyMechanism(this._mechanism)
@@ -342,6 +363,19 @@ class MirabufSceneObject extends SceneObject {
         this.EnablePhysics()
     }
 
+    /**
+     *
+     * @returns The bounding box of the mirabuf object.
+     */
+    private ComputeBoundingBox(): THREE.Box3 {
+        const box = new THREE.Box3()
+        this._mirabufInstance.batches.forEach(batch => {
+            if (batch.boundingBox) box.union(batch.boundingBox)
+        })
+
+        return box
+    }
+
     private getPreferences(): void {
         this._intakePreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.intake
         this._ejectorPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.ejector
@@ -359,6 +393,10 @@ class MirabufSceneObject extends SceneObject {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
+    }
+
+    public GetRootNodeId(): Jolt.BodyID | undefined {
+        return this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)
     }
 }
 

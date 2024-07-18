@@ -50,7 +50,7 @@ class ButtonInput extends Input {
     }
 
     getCopy(): Input {
-        return new ButtonInput(this.inputName, this.keyCode, this.gamepadButton, this.isGlobal, this.keyModifiers)
+        return new ButtonInput(this.inputName, this.keyCode, this.gamepadButton, this.keyModifiers)
     }
 }
 

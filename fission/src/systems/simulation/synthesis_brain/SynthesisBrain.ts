@@ -21,6 +21,13 @@ class SynthesisBrain extends Brain {
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
 
+    public get inputSchemeName(): string {
+        const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
+        if (scheme == undefined) return "Not Configured"
+
+        return scheme.schemeName
+    }
+
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
 
