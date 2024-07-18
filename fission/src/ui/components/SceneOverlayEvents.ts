@@ -80,7 +80,7 @@ export class SceneOverlayEvent extends Event {
     public static Listen(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
         window.addEventListener(eventKey, func)
     }
-    
+
     public static RemoveListener(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
         window.removeEventListener(eventKey, func)
     }

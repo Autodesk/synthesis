@@ -146,7 +146,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")}
                 onClick={checked => {
                     setRenderSceneTags(checked)
-                    if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE) 
+                    if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE)
                     else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
                 }}
             />
