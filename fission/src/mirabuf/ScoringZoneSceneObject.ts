@@ -93,6 +93,28 @@ class ScoringZoneSceneObject extends SceneObject {
     }
 
     public Update(): void {
+        if (this._parentBodyId && this._deltaTransformation && this._joltBodyId && this._mesh) {
+            const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
+            const gizmoTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
+
+            const translation = new THREE.Vector3(0, 0, 0)
+            const rotation = new THREE.Quaternion(0, 0, 0, 1)
+            const scale = new THREE.Vector3(1, 1, 1)
+            gizmoTransformation.decompose(translation, rotation, scale)
+            
+            this._mesh.position.set(translation.x, translation.y, translation.z)
+            this._mesh.rotation.setFromQuaternion(rotation)
+            this._mesh.scale.set(scale.x, scale.y, scale.z)
+        
+            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(translation))
+            World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
+
+            const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(scale.x / 2, scale.y / 2, scale.z / 2))
+            const shape = shapeSettings.Create()
+            World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
+        } else {
+            console.debug("Failed to update scoring zone")
+        }
     }
 
     public Dispose(): void {

@@ -225,6 +225,7 @@ class MirabufSceneObject extends SceneObject {
         //TODO: pluralize
         if (this._scoringZone) {
             World.SceneRenderer.RemoveSceneObject(this._scoringZone.id)
+            this._scoringZone = undefined
         }
 
         this._mechanism.nodeToBody.forEach(bodyId => {
