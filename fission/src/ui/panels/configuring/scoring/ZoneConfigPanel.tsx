@@ -163,6 +163,8 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         const rotation = new THREE.Quaternion(0, 0, 0, 1)
         const scale = new THREE.Vector3(1, 1, 1)
         gizmoTransformation.decompose(translation, rotation, scale)
+        // console.log(`config trans: ${translation.toArray()} ${rotation.toArray()} ${scale.toArray()}`)
+
 
         gizmo.mesh.position.set(translation.x, translation.y, translation.z)
         gizmo.mesh.rotation.setFromQuaternion(rotation)

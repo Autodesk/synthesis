@@ -56,7 +56,7 @@ class ScoringZoneSceneObject extends SceneObject {
                 World.SceneRenderer.scene.add(this._mesh)
                 
                 const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
-                const gizmoTransformation = this._deltaTransformation.premultiply(fieldTransformation)
+                const gizmoTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
 
                 const translation = new THREE.Vector3(0, 0, 0)
                 const rotation = new THREE.Quaternion(0, 0, 0, 1)
@@ -101,6 +101,8 @@ class ScoringZoneSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             const scale = new THREE.Vector3(1, 1, 1)
             gizmoTransformation.decompose(translation, rotation, scale)
+            // console.log(`update trans: ${translation.toArray()} ${rotation.toArray()} ${scale.toArray()}`)
+
             
             this._mesh.position.set(translation.x, translation.y, translation.z)
             this._mesh.rotation.setFromQuaternion(rotation)
