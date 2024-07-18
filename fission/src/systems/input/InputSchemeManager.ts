@@ -25,6 +25,10 @@ class InputSchemeManager {
         return this._customSchemes
     }
 
+    public static addCustomScheme(scheme: InputScheme) {
+        this.customInputSchemes.push(scheme)
+    }
+
     private static parseScheme(rawInputs: InputScheme) {
         for (let i = 0; i < rawInputs.inputs.length; i++) {
             const rawInput = rawInputs.inputs[i]
@@ -37,7 +41,6 @@ class InputSchemeManager {
                     rawButton.inputName,
                     rawButton.keyCode,
                     rawButton.gamepadButton,
-                    rawButton.isGlobal,
                     rawButton.keyModifiers
                 )
             } else {
@@ -52,7 +55,6 @@ class InputSchemeManager {
                     rawAxis.useGamepadButtons,
                     rawAxis.posGamepadButton,
                     rawAxis.negGamepadButton,
-                    rawAxis.isGlobal,
                     rawAxis.posKeyModifiers,
                     rawAxis.negKeyModifiers
                 )
@@ -66,7 +68,6 @@ class InputSchemeManager {
 
     public static resetDefaultSchemes() {
         this.defaultInputSchemes = DefaultInputs.defaultInputCopies
-        this.defaultInputSchemes.forEach(s => console.log(s.customized))
         this._customSchemes = undefined
     }
 
@@ -75,7 +76,7 @@ class InputSchemeManager {
         // Start with custom input schemes
         const allSchemes: InputScheme[] = []
 
-        InputSchemeManager.customInputSchemes.forEach(s => allSchemes.push(s))
+        this.customInputSchemes.forEach(s => allSchemes.push(s))
 
         // Add default schemes if they have not been customized
         this.defaultInputSchemes.forEach(defaultScheme => {

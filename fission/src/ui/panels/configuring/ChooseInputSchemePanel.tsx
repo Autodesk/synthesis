@@ -26,6 +26,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             let scheme = InputSchemeManager.availableInputSchemes[0]
             //if (!scheme.customized) scheme = InputSchemeManager.copyScheme(scheme)
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            InputSystem.selectedScheme = scheme
 
             openModal("change-inputs")
         }
@@ -67,6 +68,9 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     scheme.schemeName = name
 
                     InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, scheme)
+                    InputSystem.selectedScheme = scheme
+                    InputSchemeManager.addCustomScheme(scheme)
+
                     openModal("change-inputs")
                 }}
             />

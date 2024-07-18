@@ -12,11 +12,9 @@ export const EmptyModifierState: ModifierState = { ctrl: false, alt: false, shif
 // Represents any input
 abstract class Input {
     public inputName: string
-    public isGlobal: boolean
 
-    constructor(inputName: string, isGlobal: boolean) {
+    constructor(inputName: string) {
         this.inputName = inputName
-        this.isGlobal = isGlobal
     }
 
     // Returns the current value of the input. Range depends on input type
@@ -33,14 +31,8 @@ class ButtonInput extends Input {
 
     public gamepadButton: number
 
-    public constructor(
-        inputName: string,
-        keyCode?: string,
-        gamepadButton?: number,
-        isGlobal?: boolean,
-        keyModifiers?: ModifierState
-    ) {
-        super(inputName, isGlobal ?? false)
+    public constructor(inputName: string, keyCode?: string, gamepadButton?: number, keyModifiers?: ModifierState) {
+        super(inputName)
         this.keyCode = keyCode ?? ""
         this.keyModifiers = keyModifiers ?? EmptyModifierState
         this.gamepadButton = gamepadButton ?? -1
@@ -84,11 +76,10 @@ class AxisInput extends Input {
         useGamepadButtons?: boolean,
         posGamepadButton?: number,
         negGamepadButton?: number,
-        isGlobal?: boolean,
         posKeyModifiers?: ModifierState,
         negKeyModifiers?: ModifierState
     ) {
-        super(inputName, isGlobal ?? false)
+        super(inputName)
 
         this.posKeyCode = posKeyCode ?? ""
         this.posKeyModifiers = posKeyModifiers ?? EmptyModifierState
@@ -135,7 +126,6 @@ class AxisInput extends Input {
             this.useGamepadButtons,
             this.posGamepadButton,
             this.negGamepadButton,
-            this.isGlobal,
             this.posKeyModifiers,
             this.negKeyModifiers
         )
