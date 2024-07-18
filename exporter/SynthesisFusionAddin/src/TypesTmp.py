@@ -8,8 +8,8 @@ class KG(float):
 
 
 def toLbs(kgs: float) -> LBS:
-    return LBS(kgs * 2.2062)
+    return LBS(round(kgs * 2.2062, 2))
 
 
 def toKg(pounds: float) -> KG:
-    return KG(pounds / 2.2062)
+    return KG(round(pounds / 2.2062, 2))

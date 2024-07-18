@@ -227,4 +227,4 @@ def designMassCalculation() -> KG:
             physical = body.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
             mass += physical.mass
 
-    return KG(mass)
+    return KG(round(mass, 2))
