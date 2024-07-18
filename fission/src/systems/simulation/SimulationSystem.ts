@@ -11,7 +11,6 @@ import HingeStimulus from "./stimulus/HingeStimulus"
 import WheelRotationStimulus from "./stimulus/WheelStimulus"
 import SliderStimulus from "./stimulus/SliderStimulus"
 import ChassisStimulus from "./stimulus/ChassisStimulus"
-// import WPILibConnector from "./wpilib_brain/WPILibConnector";
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
@@ -20,8 +19,6 @@ class SimulationSystem extends WorldSystem {
         super()
 
         this._simMechanisms = new Map()
-
-        // WPILibConnector.getInstance()
     }
 
     public RegisterMechanism(mechanism: Mechanism) {
