@@ -1428,21 +1428,22 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 else:
                     frictionCoeff.isVisible = False
 
-            elif cmdInput.id == "weight_unit":
-                unitDropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
-                weightInput = weightTableInput.getInputAtPosition(0, 2)
-                if unitDropdown.selectedItem.index == 0:
-                    self.isLbs = True
+            # Transition: AARD-1683
+            # elif cmdInput.id == "weight_unit":
+            #     unitDropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
+            #     weightInput = weightTableInput.getInputAtPosition(0, 2)
+            #     if unitDropdown.selectedItem.index == 0:
+            #         self.isLbs = True
 
-                    weightInput.tooltipDescription = (
-                        """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
-                    )
-                elif unitDropdown.selectedItem.index == 1:
-                    self.isLbs = False
+            #         weightInput.tooltipDescription = (
+            #             """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
+            #         )
+            #     elif unitDropdown.selectedItem.index == 1:
+            #         self.isLbs = False
 
-                    weightInput.tooltipDescription = (
-                        """<tt>(in kilograms)</tt><hr>This is the weight of the entire robot assembly."""
-                    )
+            #         weightInput.tooltipDescription = (
+            #             """<tt>(in kilograms)</tt><hr>This is the weight of the entire robot assembly."""
+            #         )
 
             elif cmdInput.id == "weight_unit_f":
                 unitDropdown = adsk.core.DropDownCommandInput.cast(cmdInput)

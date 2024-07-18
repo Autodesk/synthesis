@@ -75,7 +75,8 @@ class GeneralConfigTab:
             )
             weightInput.tooltip = "Robot weight"
             weightInput.tooltipDescription = (
-                """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
+                f"<tt>(in {'pounds' if self.currentUnits == PreferredUnits.IMPERIAL else 'kilograms'})"
+                "</tt><hr>This is the weight of the entire robot assembly."
             )
             weightInput.isEnabled = not exporterOptions.autoCalcWeight
 
@@ -85,6 +86,8 @@ class GeneralConfigTab:
                 adsk.core.DropDownStyles.LabeledIconDropDownStyle,
             )
 
+            # Invisible white space characters are required in the list item name field to make this work.
+            # I have no idea why, Fusion API needs some special education help - Brandon
             weightUnitDropdown.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
             weightUnitDropdown.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
             weightUnitDropdown.tooltip = "Unit of Mass"
@@ -185,10 +188,16 @@ class GeneralConfigTab:
                 if weightUnitDropdown.selectedItem.index == 0:
                     self.currentUnits = PreferredUnits.IMPERIAL
                     weightInput.value = toLbs(weightInput.value)
+                    weightInput.tooltipDescription = (
+                        "<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."
+                    )
                 else:
                     assert weightUnitDropdown.selectedItem.index == 1
                     self.currentUnits = PreferredUnits.METRIC
                     weightInput.value = toKg(weightInput.value)
+                    weightInput.tooltipDescription = (
+                        "<tt>(in kilograms)</tt><hr>This is the weight of the entire robot assembly."
+                    )
 
                 self.previousSelectedUnitDropdownIndex = weightUnitDropdown.selectedItem.index
 
