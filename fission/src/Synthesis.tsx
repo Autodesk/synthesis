@@ -62,10 +62,11 @@ import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx
 
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
+import Lazy from "./util/Lazy.ts"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
-export let worker: Worker | undefined = undefined
+const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
@@ -96,7 +97,7 @@ function Synthesis() {
 
         World.InitWorld()
 
-        worker = new WPILibWSWorker()
+        worker.getValue()
 
         let mira_path = DEFAULT_MIRA_PATH
 
