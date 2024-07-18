@@ -14,6 +14,7 @@ import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
 from ..strings import INTERNAL_ID
+from ..TypesTmp import KG
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
@@ -96,7 +97,8 @@ class ExporterOptions:
     preferredUnits: PreferredUnits = field(default=PreferredUnits.IMPERIAL)
 
     # Always stored in kg regardless of 'preferredUnits'
-    robotWeight: float = field(default=0.0)
+    robotWeight: KG = field(default=0.0)
+    autoCalcWeight: bool = field(default=False)
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)

@@ -24,6 +24,7 @@ from ..Parser.SynthesisParser.Parser import Parser
 from ..Parser.SynthesisParser.Utilities import guid_occurrence
 from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
 from .Configuration.SerialCommand import SerialCommand
+from .GeneralConfigTab import GeneralConfigTab
 
 # Transition: AARD-1685
 # In the future all components should be handled in this way.
@@ -32,6 +33,7 @@ from .JointConfigTab import JointConfigTab
 
 # ====================================== CONFIG COMMAND ======================================
 
+generalConfigTab: GeneralConfigTab
 jointConfigTab: JointConfigTab
 
 """
@@ -91,41 +93,42 @@ class JointMotions(Enum):
     BALL = 6
 
 
-class FullMassCalculation:
-    def __init__(self):
-        self.totalMass = 0.0
-        self.bRepMassInRoot()
-        self.traverseOccurrenceHierarchy()
+# Transition: AARD-1683
+# class FullMassCalculation:
+#     def __init__(self):
+#         self.totalMass = 0.0
+#         self.bRepMassInRoot()
+#         self.traverseOccurrenceHierarchy()
 
-    def bRepMassInRoot(self):
-        try:
-            for body in gm.app.activeDocument.design.rootComponent.bRepBodies:
-                if not body.isLightBulbOn:
-                    continue
-                physical = body.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
-                self.totalMass += physical.mass
-        except:
-            if gm.ui:
-                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
+#     def bRepMassInRoot(self):
+#         try:
+#             for body in gm.app.activeDocument.design.rootComponent.bRepBodies:
+#                 if not body.isLightBulbOn:
+#                     continue
+#                 physical = body.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
+#                 self.totalMass += physical.mass
+#         except:
+#             if gm.ui:
+#                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
-    def traverseOccurrenceHierarchy(self):
-        try:
-            for occ in gm.app.activeDocument.design.rootComponent.allOccurrences:
-                if not occ.isLightBulbOn:
-                    continue
+#     def traverseOccurrenceHierarchy(self):
+#         try:
+#             for occ in gm.app.activeDocument.design.rootComponent.allOccurrences:
+#                 if not occ.isLightBulbOn:
+#                     continue
 
-                for body in occ.component.bRepBodies:
-                    if not body.isLightBulbOn:
-                        continue
-                    physical = body.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
-                    self.totalMass += physical.mass
-        except:
-            pass
-            if gm.ui:
-                gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
+#                 for body in occ.component.bRepBodies:
+#                     if not body.isLightBulbOn:
+#                         continue
+#                     physical = body.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
+#                     self.totalMass += physical.mass
+#         except:
+#             pass
+#             if gm.ui:
+#                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
 
-    def getTotalMass(self):
-        return self.totalMass
+#     def getTotalMass(self):
+#         return self.totalMass
 
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
@@ -170,6 +173,11 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             global INPUTS_ROOT  # Global CommandInputs arg
             INPUTS_ROOT = cmd.commandInputs
 
+            # Transition: AARD-1683
+            # Working on replacing all of the general tab stuff
+            global generalConfigTab
+            generalConfigTab = GeneralConfigTab(args, exporterOptions)
+
             # ====================================== GENERAL TAB ======================================
             """
             Creates the general tab.
@@ -184,22 +192,23 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
 
+            # Transition: AARD-1683
             # ~~~~~~~~~~~~~~~~ EXPORT MODE ~~~~~~~~~~~~~~~~
             """
             Dropdown to choose whether to export robot or field element
             """
-            dropdownExportMode = inputs.addDropDownCommandInput(
-                "mode",
-                "Export Mode",
-                dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-            )
+            # dropdownExportMode = inputs.addDropDownCommandInput(
+            #     "mode",
+            #     "Export Mode",
+            #     dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            # )
 
-            dynamic = exporterOptions.exportMode == ExportMode.ROBOT
-            dropdownExportMode.listItems.add("Dynamic", dynamic)
-            dropdownExportMode.listItems.add("Static", not dynamic)
+            # dynamic = exporterOptions.exportMode == ExportMode.ROBOT
+            # dropdownExportMode.listItems.add("Dynamic", dynamic)
+            # dropdownExportMode.listItems.add("Static", not dynamic)
 
-            dropdownExportMode.tooltip = "Export Mode"
-            dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
+            # dropdownExportMode.tooltip = "Export Mode"
+            # dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
 
             # ~~~~~~~~~~~~~~~~ WEIGHT CONFIGURATION ~~~~~~~~~~~~~~~~
             """
@@ -423,40 +432,42 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             """
             Creates the advanced tab, which is the parent container for internal command inputs
             """
+            # Transition: AARD-1683
             advancedSettings = INPUTS_ROOT.addTabCommandInput("advanced_settings", "Advanced")
             advancedSettings.tooltip = (
                 "Additional Advanced Settings to change how your model will be translated into Unity."
             )
             a_input = advancedSettings.children
 
+            # Transition: AARD-1683
             # ~~~~~~~~~~~~~~~~ EXPORTER SETTINGS ~~~~~~~~~~~~~~~~
             """
             Exporter settings group command
             """
-            exporterSettings = a_input.addGroupCommandInput("exporter_settings", "Exporter Settings")
-            exporterSettings.isExpanded = True
-            exporterSettings.isEnabled = True
-            exporterSettings.tooltip = "tooltip"  # TODO: update tooltip
-            exporter_settings = exporterSettings.children
+            # exporterSettings = a_input.addGroupCommandInput("exporter_settings", "Exporter Settings")
+            # exporterSettings.isExpanded = True
+            # exporterSettings.isEnabled = True
+            # exporterSettings.tooltip = "tooltip"  # TODO: update tooltip
+            # exporter_settings = exporterSettings.children
 
-            self.createBooleanInput(
-                "compress",
-                "Compress Output",
-                exporter_settings,
-                checked=exporterOptions.compressOutput,
-                tooltip="Compress the output file for a smaller file size.",
-                tooltipadvanced="<hr>Use the GZIP compression system to compress the resulting file which will be opened in the simulator, perfect if you want to share the file.<br>",
-                enabled=True,
-            )
+            # self.createBooleanInput(
+            #     "compress",
+            #     "Compress Output",
+            #     exporter_settings,
+            #     checked=exporterOptions.compressOutput,
+            #     tooltip="Compress the output file for a smaller file size.",
+            #     tooltipadvanced="<hr>Use the GZIP compression system to compress the resulting file which will be opened in the simulator, perfect if you want to share the file.<br>",
+            #     enabled=True,
+            # )
 
-            self.createBooleanInput(
-                "export_as_part",
-                "Export As Part",
-                exporter_settings,
-                checked=exporterOptions.exportAsPart,
-                tooltip="Use to export as a part for Mix And Match",
-                enabled=True,
-            )
+            # self.createBooleanInput(
+            #     "export_as_part",
+            #     "Export As Part",
+            #     exporter_settings,
+            #     checked=exporterOptions.exportAsPart,
+            #     tooltip="Use to export as a part for Mix And Match",
+            #     enabled=True,
+            # )
 
             # ~~~~~~~~~~~~~~~~ PHYSICS SETTINGS ~~~~~~~~~~~~~~~~
             """
@@ -581,13 +592,16 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             #     enabled=True,
             # )
 
-            getAuth()
-            user_info = getUserInfo()
-            apsSettings = INPUTS_ROOT.addTabCommandInput(
-                "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-            )
-            apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
-            aps_input = apsSettings.children
+            # Transition: AARD-1683
+            # Needed to comment this out because it throws if you don't login preventing anything from working
+
+            # getAuth()
+            # user_info = getUserInfo()
+            # apsSettings = INPUTS_ROOT.addTabCommandInput(
+            #     "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
+            # )
+            # apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
+            # aps_input = apsSettings.children
 
             # clear all selections before instantiating handlers.
             gm.ui.activeSelections.clear()
@@ -814,26 +828,27 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            export_as_part_boolean = (
-                eventArgs.command.commandInputs.itemById("advanced_settings")
-                .children.itemById("exporter_settings")
-                .children.itemById("export_as_part")
-            ).value
+            # Transition: AARD-1683
+            # export_as_part_boolean = (
+            #     eventArgs.command.commandInputs.itemById("advanced_settings")
+            #     .children.itemById("exporter_settings")
+            #     .children.itemById("export_as_part")
+            # ).value
 
-            processedFileName = gm.app.activeDocument.name.replace(" ", "_")
-            dropdownExportMode = INPUTS_ROOT.itemById("mode")
-            if dropdownExportMode.selectedItem.index == 0:
-                isRobot = True
-            elif dropdownExportMode.selectedItem.index == 1:
-                isRobot = False
+            # processedFileName = gm.app.activeDocument.name.replace(" ", "_")
+            # dropdownExportMode = INPUTS_ROOT.itemById("mode")
+            # if dropdownExportMode.selectedItem.index == 0:
+            #     isRobot = True
+            # elif dropdownExportMode.selectedItem.index == 1:
+            #     isRobot = False
 
-            if isRobot:
-                savepath = FileDialogConfig.SaveFileDialog(
-                    defaultPath=exporterOptions.fileLocation,
-                    ext="Synthesis File (*.synth)",
-                )
-            else:
-                savepath = FileDialogConfig.SaveFileDialog(defaultPath=exporterOptions.fileLocation)
+            # if isRobot:
+            #     savepath = FileDialogConfig.SaveFileDialog(
+            #         defaultPath=exporterOptions.fileLocation,
+            #         ext="Synthesis File (*.synth)",
+            #     )
+            # else:
+            savepath = FileDialogConfig.SaveFileDialog(defaultPath=exporterOptions.fileLocation)
 
             if not savepath:
                 # save was canceled
@@ -850,61 +865,63 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             version = design.rootComponent.name.rsplit(" ", 1)[1]
 
             _exportGamepieces = []  # TODO work on the code to populate Gamepiece
-            _robotWeight = float
+            _robotWeight = 0.0
             _mode = ExportMode.ROBOT
 
+            # Transition: AARD-1683
+            # This was never being used it appears, should be looped back to.
             """
             Loops through all rows in the gamepiece table to extract the input values
             """
-            gamepieceTableInput = gamepieceTable()
-            weight_unit_f = INPUTS_ROOT.itemById("weight_unit_f")
-            for row in range(gamepieceTableInput.rowCount):
-                if row == 0:
-                    continue
+            # gamepieceTableInput = gamepieceTable()
+            # weight_unit_f = INPUTS_ROOT.itemById("weight_unit_f")
+            # for row in range(gamepieceTableInput.rowCount):
+            #     if row == 0:
+            #         continue
 
-                weightValue = gamepieceTableInput.getInputAtPosition(row, 2).value  # weight/mass input, float
+            #     weightValue = gamepieceTableInput.getInputAtPosition(row, 2).value  # weight/mass input, float
 
-                if weight_unit_f.selectedItem.index == 0:
-                    weightValue /= 2.2046226218
+            #     if weight_unit_f.selectedItem.index == 0:
+            #         weightValue /= 2.2046226218
 
-                frictionValue = gamepieceTableInput.getInputAtPosition(row, 3).valueOne  # friction value, float
+            #     frictionValue = gamepieceTableInput.getInputAtPosition(row, 3).valueOne  # friction value, float
 
-                _exportGamepieces.append(
-                    Gamepiece(
-                        guid_occurrence(GamepieceListGlobal[row - 1]),
-                        weightValue,
-                        frictionValue,
-                    )
-                )
+            #     _exportGamepieces.append(
+            #         Gamepiece(
+            #             guid_occurrence(GamepieceListGlobal[row - 1]),
+            #             weightValue,
+            #             frictionValue,
+            #         )
+            #     )
 
             """
             Robot Weight
             """
-            weight_input = INPUTS_ROOT.itemById("weight_input")
-            weight_unit = INPUTS_ROOT.itemById("weight_unit")
+            # weight_input = INPUTS_ROOT.itemById("weight_input")
+            # weight_unit = INPUTS_ROOT.itemById("weight_unit")
 
-            if weight_unit.selectedItem.index == 0:
-                selectedUnits = PreferredUnits.IMPERIAL
-                _robotWeight = float(weight_input.value) / 2.2046226218
-            else:
-                selectedUnits = PreferredUnits.METRIC
-                _robotWeight = float(weight_input.value)
+            # if weight_unit.selectedItem.index == 0:
+            #     selectedUnits = PreferredUnits.IMPERIAL
+            #     _robotWeight = float(weight_input.value) / 2.2046226218
+            # else:
+            #     selectedUnits = PreferredUnits.METRIC
+            #     _robotWeight = float(weight_input.value)
 
             """
             Export Mode
             """
-            dropdownExportMode = INPUTS_ROOT.itemById("mode")
-            if dropdownExportMode.selectedItem.index == 0:
-                _mode = ExportMode.ROBOT
-            elif dropdownExportMode.selectedItem.index == 1:
-                _mode = ExportMode.FIELD
+            # dropdownExportMode = INPUTS_ROOT.itemById("mode")
+            # if dropdownExportMode.selectedItem.index == 0:
+            #     _mode = ExportMode.ROBOT
+            # elif dropdownExportMode.selectedItem.index == 1:
+            #     _mode = ExportMode.FIELD
 
-            global compress
-            compress = (
-                eventArgs.command.commandInputs.itemById("advanced_settings")
-                .children.itemById("exporter_settings")
-                .children.itemById("compress")
-            ).value
+            # global compress
+            # compress = (
+            #     eventArgs.command.commandInputs.itemById("advanced_settings")
+            #     .children.itemById("exporter_settings")
+            #     .children.itemById("compress")
+            # ).value
 
             selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
 
@@ -915,16 +932,17 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 materials=0,
                 joints=selectedJoints,
                 wheels=selectedWheels,
-                gamepieces=_exportGamepieces,
-                preferredUnits=selectedUnits,
-                robotWeight=_robotWeight,
-                exportMode=_mode,
-                compressOutput=compress,
-                exportAsPart=export_as_part_boolean,
+                gamepieces=_exportGamepieces,  # TODO
+                preferredUnits=generalConfigTab.selectedUnits,
+                robotWeight=generalConfigTab.robotWeight,
+                exportMode=generalConfigTab.exportMode,
+                compressOutput=generalConfigTab.compress,
+                exportAsPart=generalConfigTab.exportAsPart,
             )
 
-            Parser(exporterOptions).export()
+            # TODO: Swap back
             exporterOptions.writeToDesign()
+            # Parser(exporterOptions).export()
 
             # All selections should be reset AFTER a successful export and save.
             # If we run into an exporting error we should return back to the panel with all current options
@@ -1184,37 +1202,37 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
 
             preSelected = preSelectedOcc if preSelectedOcc else preSelectedJoint
 
-            dropdownExportMode = INPUTS_ROOT.itemById("mode")
-            if preSelected and design:
-                if dropdownExportMode.selectedItem.index == 0:  # Dynamic
-                    if preSelected.entityToken in onSelect.allWheelPreselections:
-                        self.cmd.setCursor(
-                            IconPaths.mouseIcons["remove"],
-                            0,
-                            0,
-                        )
-                    else:
-                        self.cmd.setCursor(
-                            IconPaths.mouseIcons["add"],
-                            0,
-                            0,
-                        )
+            # dropdownExportMode = INPUTS_ROOT.itemById("mode")
+            # if preSelected and design:
+            #     if dropdownExportMode.selectedItem.index == 0:  # Dynamic
+            #         if preSelected.entityToken in onSelect.allWheelPreselections:
+            #             self.cmd.setCursor(
+            #                 IconPaths.mouseIcons["remove"],
+            #                 0,
+            #                 0,
+            #             )
+            #         else:
+            #             self.cmd.setCursor(
+            #                 IconPaths.mouseIcons["add"],
+            #                 0,
+            #                 0,
+            #             )
 
-                elif dropdownExportMode.selectedItem.index == 1:  # Static
-                    if preSelected.entityToken in onSelect.allGamepiecePreselections:
-                        self.cmd.setCursor(
-                            IconPaths.mouseIcons["remove"],
-                            0,
-                            0,
-                        )
-                    else:
-                        self.cmd.setCursor(
-                            IconPaths.mouseIcons["add"],
-                            0,
-                            0,
-                        )
-            else:  # Should literally be impossible? - Brandon
-                self.cmd.setCursor("", 0, 0)
+            #     elif dropdownExportMode.selectedItem.index == 1:  # Static
+            #         if preSelected.entityToken in onSelect.allGamepiecePreselections:
+            #             self.cmd.setCursor(
+            #                 IconPaths.mouseIcons["remove"],
+            #                 0,
+            #                 0,
+            #             )
+            #         else:
+            #             self.cmd.setCursor(
+            #                 IconPaths.mouseIcons["add"],
+            #                 0,
+            #                 0,
+            #             )
+            # else:  # Should literally be impossible? - Brandon
+            #     self.cmd.setCursor("", 0, 0)
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -1279,37 +1297,38 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                 "Failed:\n{}".format(traceback.format_exc())
             )
 
-    def weight(self, isLbs=True):  # maybe add a progress dialog??
-        """### Get the total design weight using the predetermined units.
+    # Transition: AARD-1683
+    # def weight(self, isLbs=True):  # maybe add a progress dialog??
+    #     """### Get the total design weight using the predetermined units.
 
-        Args:
-            isLbs (bool, optional): Is selected mass unit pounds? Defaults to True.
+    #     Args:
+    #         isLbs (bool, optional): Is selected mass unit pounds? Defaults to True.
 
-        Returns:
-            value (float): weight value in specified unit
-        """
-        try:
-            if gm.app.activeDocument.design:
-                massCalculation = FullMassCalculation()
-                totalMass = massCalculation.getTotalMass()
+    #     Returns:
+    #         value (float): weight value in specified unit
+    #     """
+    #     try:
+    #         if gm.app.activeDocument.design:
+    #             massCalculation = FullMassCalculation()
+    #             totalMass = massCalculation.getTotalMass()
 
-                value = float
+    #             value = float
 
-                self.allWeights[0] = round(totalMass * 2.2046226218, 2)
+    #             self.allWeights[0] = round(totalMass * 2.2046226218, 2)
 
-                self.allWeights[1] = round(totalMass, 2)
+    #             self.allWeights[1] = round(totalMass, 2)
 
-                if isLbs:
-                    value = self.allWeights[0]
-                else:
-                    value = self.allWeights[1]
+    #             if isLbs:
+    #                 value = self.allWeights[0]
+    #             else:
+    #                 value = self.allWeights[1]
 
-                value = round(value, 2)  # round weight to 2 decimals places
-                return value
-        except:
-            logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.weight()").error(
-                "Failed:\n{}".format(traceback.format_exc())
-            )
+    #             value = round(value, 2)  # round weight to 2 decimals places
+    #             return value
+    #     except:
+    #         logging.getLogger("{INTERNAL_ID}.UI.ConfigCommand.{self.__class__.__name__}.weight()").error(
+    #             "Failed:\n{}".format(traceback.format_exc())
+    #         )
 
     def notify(self, args):
         try:
@@ -1319,6 +1338,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             # Transition: AARD-1685
             # Should be how all input changed handles are done in the future
             jointConfigTab.handleInputChanged(args, INPUTS_ROOT)
+            generalConfigTab.handleInputChanged(args)
 
             MySelectHandler.lastInputCmd = cmdInput
             inputs = cmdInput.commandInputs
@@ -1443,28 +1463,30 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
                         weightInput = gamepieceTableInput.getInputAtPosition(row, 2)
                         weightInput.tooltipDescription = "<tt>(in kilograms)</tt>"
 
-            elif cmdInput.id == "auto_calc_weight":
-                button = adsk.core.BoolValueCommandInput.cast(cmdInput)
+            # Transition: AARD-1683
+            # elif cmdInput.id == "auto_calc_weight":
+            #     button = adsk.core.BoolValueCommandInput.cast(cmdInput)
 
-                if button.value == True:  # CALCULATE button pressed
-                    if self.allWeights.count(None) == 2:  # if button is pressed for the first time
-                        if self.isLbs:  # if pounds unit selected
-                            self.allWeights[0] = self.weight()
-                            weight_input.value = self.allWeights[0]
-                        else:  # if kg unit selected
-                            self.allWeights[1] = self.weight(False)
-                            weight_input.value = self.allWeights[1]
-                    else:  # if a mass value has already been configured
-                        if (
-                            weight_input.value != self.allWeights[0]
-                            or weight_input.value != self.allWeights[1]
-                            or not weight_input.isValidExpression
-                        ):
-                            if self.isLbs:
-                                weight_input.value = self.allWeights[0]
-                            else:
-                                weight_input.value = self.allWeights[1]
+            #     if button.value == True:  # CALCULATE button pressed
+            #         if self.allWeights.count(None) == 2:  # if button is pressed for the first time
+            #             if self.isLbs:  # if pounds unit selected
+            #                 self.allWeights[0] = self.weight()
+            #                 weight_input.value = self.allWeights[0]
+            #             else:  # if kg unit selected
+            #                 self.allWeights[1] = self.weight(False)
+            #                 weight_input.value = self.allWeights[1]
+            #         else:  # if a mass value has already been configured
+            #             if (
+            #                 weight_input.value != self.allWeights[0]
+            #                 or weight_input.value != self.allWeights[1]
+            #                 or not weight_input.isValidExpression
+            #             ):
+            #                 if self.isLbs:
+            #                     weight_input.value = self.allWeights[0]
+            #                 else:
+            #                     weight_input.value = self.allWeights[1]
 
+            # TODO: Figure out gamepiece stuff
             elif cmdInput.id == "auto_calc_weight_f":
                 button = adsk.core.BoolValueCommandInput.cast(cmdInput)
 
