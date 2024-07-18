@@ -8,7 +8,7 @@ import Button from "@/components/Button"
 import Slider from "@/components/Slider"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { SceneOverlayDisableEvent, SceneOverlayEnableEvent } from "@/ui/components/SceneOverlayEvents"
+import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 
 const moveElementToTop = (arr: string[], element: string | undefined) => {
     if (element == undefined) {
@@ -146,8 +146,8 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")}
                 onClick={checked => {
                     setRenderSceneTags(checked)
-                    if (!checked) new SceneOverlayDisableEvent()
-                    else new SceneOverlayEnableEvent()
+                    if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE) 
+                    else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
                 }}
             />
         </Modal>

@@ -2,16 +2,16 @@ import { Box } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import {
     SceneOverlayTag,
-    SceneOverlayTagAddEvent,
-    SceneOverlayTagRemoveEvent,
-    SceneOverlayUpdateEvent,
-    SceneOverlayDisableEvent,
-    SceneOverlayEnableEvent,
+    SceneOverlayEvent,
+    SceneOverlayEventKey,
+    SceneOverlayTagEvent,
+    SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
 function SceneOverlay() {
+    /* State to determine if the overlay is disabled */
     const [isDisabled, setIsDisabled] = useState<boolean>(false)
 
     /* h1 text for each tagMap tag */
@@ -42,11 +42,11 @@ function SceneOverlay() {
     /* Creating listener for tag events to update tagMap and rerender overlay */
     useEffect(() => {
         const onTagAdd = (e: Event) => {
-            tagMap.set((e as SceneOverlayTagAddEvent).tag.id, (e as SceneOverlayTagAddEvent).tag)
+            tagMap.set((e as SceneOverlayTagEvent).tag.id, (e as SceneOverlayTagEvent).tag)
         }
 
         const onTagRemove = (e: Event) => {
-            tagMap.delete((e as SceneOverlayTagRemoveEvent).tag.id)
+            tagMap.delete((e as SceneOverlayTagEvent).tag.id)
         }
 
         const onUpdate = (_: Event) => {
@@ -64,21 +64,23 @@ function SceneOverlay() {
         }
 
         // listening for tags being added and removed
-        SceneOverlayTagAddEvent.Listen(onTagAdd)
-        SceneOverlayTagRemoveEvent.Listen(onTagRemove)
+        SceneOverlayTagEvent.Listen(SceneOverlayTagEventKey.ADD, onTagAdd)
+        SceneOverlayTagEvent.Listen(SceneOverlayTagEventKey.REMOVE, onTagRemove)
 
         // listening for updates to the overlay every frame
-        SceneOverlayUpdateEvent.Listen(onUpdate)
+        SceneOverlayEvent.Listen(SceneOverlayEventKey.UPDATE, onUpdate)
 
         // listening for disabling and enabling scene tags
-        SceneOverlayDisableEvent.Listen(onDisable)
-        SceneOverlayEnableEvent.Listen(onEnable)
+        SceneOverlayEvent.Listen(SceneOverlayEventKey.DISABLE, onDisable)
+        SceneOverlayEvent.Listen(SceneOverlayEventKey.ENABLE, onEnable)
 
         // disposing all the tags and listeners when the scene is destroyed
         return () => {
-            SceneOverlayTagAddEvent.RemoveListener(onTagAdd)
-            SceneOverlayTagRemoveEvent.RemoveListener(onTagRemove)
-            SceneOverlayUpdateEvent.RemoveListener(onUpdate)
+            SceneOverlayTagEvent.RemoveListener(SceneOverlayTagEventKey.ADD, onTagAdd)
+            SceneOverlayTagEvent.RemoveListener(SceneOverlayTagEventKey.REMOVE, onTagRemove)
+            SceneOverlayEvent.RemoveListener(SceneOverlayEventKey.UPDATE, onUpdate)
+            SceneOverlayEvent.RemoveListener(SceneOverlayEventKey.DISABLE, onDisable)
+            SceneOverlayEvent.RemoveListener(SceneOverlayEventKey.ENABLE, onEnable)
             tagMap.clear()
         }
     }, [])

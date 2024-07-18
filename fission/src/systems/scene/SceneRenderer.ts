@@ -11,8 +11,8 @@ import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
 
-import { PixelSpaceCoord } from "@/ui/components/SceneOverlayEvents"
-import { SceneOverlayUpdateEvent } from "@/ui/components/SceneOverlayEvents"
+import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
+import {  } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 
 const CLEAR_COLOR = 0x121212
@@ -155,8 +155,8 @@ class SceneRenderer extends WorldSystem {
             )
         })
 
-        // Update the tags if they are enabled
-        if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) new SceneOverlayUpdateEvent()
+        // Update the tags each frame if they are enabled in preferences
+        if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
 
         this._composer.render(deltaT)
     }
