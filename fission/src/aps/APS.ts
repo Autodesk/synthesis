@@ -124,7 +124,6 @@ class APS {
 
     /**
      * Logs the user out by setting their auth data to undefined and revoking their auth token.
-     * Does nothing if the auth token couldn't be revoked
      */
     static async logout() {
         await this.revokeTokenPublic() 
