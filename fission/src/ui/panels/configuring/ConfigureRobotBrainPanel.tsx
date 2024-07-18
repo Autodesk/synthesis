@@ -1,12 +1,12 @@
-import { MiraType } from "@/mirabuf/MirabufLoader";
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
-import World from "@/systems/World";
-import Label from "@/ui/components/Label";
-import Button from "@/ui/components/Button";
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel";
-import { useMemo, useState } from "react";
-import { FaGear } from "react-icons/fa6";
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup";
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import World from "@/systems/World"
+import Label from "@/ui/components/Label"
+import Button from "@/ui/components/Button"
+import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import { useMemo, useState } from "react"
+import { FaGear } from "react-icons/fa6"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 
 // eslint-disable-next-line react-refresh/only-export-components
 export enum ConfigureRobotBrainTypes {
@@ -34,8 +34,8 @@ const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
-            onAccept={() => { }}
-            onCancel={() => { }}
+            onAccept={() => {}}
+            onCancel={() => {}}
         >
             {selectedRobot?.ejectorPreferences == undefined ? (
                 <>
@@ -58,7 +58,6 @@ const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                 </>
             ) : (
                 <>
-
                     <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
                         <ToggleButtonGroup
                             value={viewType}
@@ -71,16 +70,12 @@ const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                             <ToggleButton value={ConfigureRobotBrainTypes.SYNTHESIS}>SynthesisBrain</ToggleButton>
                             <ToggleButton value={ConfigureRobotBrainTypes.WIPLIB}>WIPLIBBrain</ToggleButton>
                         </ToggleButtonGroup>
-                        {viewType === ConfigureRobotBrainTypes.SYNTHESIS ? (
-                            <Label>hi</Label>
-                        ) : (
-                            <Label>hi2</Label>
-                        )}
+                        {viewType === ConfigureRobotBrainTypes.SYNTHESIS ? <Label>hi</Label> : <Label>hi2</Label>}
                     </div>
                 </>
             )}
         </Panel>
-    );
+    )
 }
 
-export default ConfigureRobotBrainPanel;
+export default ConfigureRobotBrainPanel

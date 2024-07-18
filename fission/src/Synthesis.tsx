@@ -244,7 +244,12 @@ const initialPanels: ReactElement[] = [
     <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
-    <ConfigureRobotBrainPanel key="config-robot-brain" panelId="config-robot-brain" openLocation="right" sidePadding={8} />,
+    <ConfigureRobotBrainPanel
+        key="config-robot-brain"
+        panelId="config-robot-brain"
+        openLocation="right"
+        sidePadding={8}
+    />,
 ]
 
 export default Synthesis
