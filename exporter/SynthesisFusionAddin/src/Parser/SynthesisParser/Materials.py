@@ -2,18 +2,32 @@
 import logging
 import math
 import traceback
-
+import json
 import adsk
 
 from proto.proto_out import material_pb2
 
-from ...general_imports import INTERNAL_ID
+from ...general_imports import *
 from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
 from .Utilities import *
 
 OPACITY_RAMPING_CONSTANT = 14.0
 
+# Update tables as needed for UX and needed materials
+static_friction_coeffs = {
+    'Aluminum': 1.1,
+    'Steel': 0.75,
+    'Rubber': 1.0,
+    'Plastic': 0.7,
+}
+
+dynamic_friction_coeffs = {
+    'Aluminum': 1.1,
+    'Steel': 0.75,
+    'Rubber': 1.0,
+    'Plastic': 0.7,
+}
 
 def _MapAllPhysicalMaterials(
     physicalMaterials: list,
@@ -24,6 +38,7 @@ def _MapAllPhysicalMaterials(
     setDefaultMaterial(materials.physicalMaterials["default"], options)
 
     for material in physicalMaterials:
+
         progressDialog.addMaterial(material.name)
 
         if progressDialog.wasCancelled():
@@ -57,6 +72,14 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material (protomaterial): proto material mirabuf
         options (parseoptions): parse options
     """
+
+    string: str = ""
+
+    for prop in fusion_material.materialProperties:
+        string += " " + prop.name +" type: " +str(type(prop)) + "\n\n"
+
+    logging.getLogger(INTERNAL_ID).info(string) 
+
     try:
         construct_info("", proto_material, fus_object=fusion_material)
 
@@ -69,8 +92,13 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         mechanicalProperties = proto_material.mechanical
         strengthProperties = proto_material.strength
 
-        proto_material.dynamic_friction = 0.5
-        proto_material.static_friction = 0.5
+        if options.frictionOverride:
+            physical_material.dynamic_friction = options.frictionOverrideCoeff
+            physical_material.static_friction = options.frictionOverrideCoeff
+        else:
+            physical_material.dynamic_friction = dynamic_friction_coeffs.get(fusion_material.name, 0.5)
+            physical_material.static_friction = static_friction_coeffs.get(fusion_material.name, 0.5)
+
         proto_material.restitution = 0.5
 
         proto_material.description = f"{fusion_material.name} exported from FUSION"
