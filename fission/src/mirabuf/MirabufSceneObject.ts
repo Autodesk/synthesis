@@ -17,6 +17,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
+import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 const DEBUG_BODIES = false
 
@@ -43,6 +44,7 @@ class MirabufSceneObject extends SceneObject {
 
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
+    private _scoringZone?: ScoringZoneSceneObject
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -137,6 +139,8 @@ class MirabufSceneObject extends SceneObject {
 
         // Intake
         this.UpdateIntakeSensor()
+
+        this.UpdateScoringZones()
     }
 
     public Update(): void {
@@ -216,6 +220,11 @@ class MirabufSceneObject extends SceneObject {
         if (this._ejectable) {
             World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
             this._ejectable = undefined
+        }
+
+        //TODO: pluralize
+        if (this._scoringZone) {
+            World.SceneRenderer.RemoveSceneObject(this._scoringZone.id)
         }
 
         this._mechanism.nodeToBody.forEach(bodyId => {
@@ -313,6 +322,19 @@ class MirabufSceneObject extends SceneObject {
         this._ejectable = new EjectableSceneObject(this, bodyId)
         World.SceneRenderer.RegisterSceneObject(this._ejectable)
         return true
+    }
+
+    public UpdateScoringZones() {
+        //TODO: pluralize
+        if (this._scoringZone) {
+            World.SceneRenderer.RemoveSceneObject(this._scoringZone.id)
+            this._scoringZone = undefined
+        }
+
+        if (this._fieldPreferences && this._fieldPreferences.scoringZones[0].parentNode) {
+            this._scoringZone = new ScoringZoneSceneObject(this)
+            World.SceneRenderer.RegisterSceneObject(this._scoringZone)
+        }
     }
 
     /**

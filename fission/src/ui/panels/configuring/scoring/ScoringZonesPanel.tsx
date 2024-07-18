@@ -38,6 +38,7 @@ const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSc
     if (fieldPrefs) fieldPrefs.scoringZones = zones
 
     PreferencesSystem.savePreferences()
+    field.UpdateScoringZones()
 }
 
 const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, field, openPanel, deleteZone }) => {

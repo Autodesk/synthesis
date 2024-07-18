@@ -10,6 +10,7 @@ import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
+import Jolt from "@barclah/jolt-physics"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -186,6 +187,16 @@ class SceneRenderer extends WorldSystem {
             return new THREE.Mesh(geo, this.CreateToonMaterial())
         }
     }
+
+    public CreateBox(halfExtent: Jolt.Vec3, material?: THREE.Material | undefined): THREE.Mesh {
+        const geo = new THREE.BoxGeometry(halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ())
+        if (material) {
+            return new THREE.Mesh(geo, material)
+        } else {
+            return new THREE.Mesh(geo, this.CreateToonMaterial())
+        }
+    }
+
 
     public CreateToonMaterial(color: THREE.ColorRepresentation = 0xff00aa, steps: number = 5): THREE.MeshToonMaterial {
         const format = this._renderer.capabilities.isWebGL2 ? THREE.RedFormat : THREE.LuminanceFormat

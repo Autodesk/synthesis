@@ -140,9 +140,9 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                 })
                 /* World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color)) */
             )
-        )
+        );
 
-        ;(gizmo.mesh.material as THREE.Material).depthTest = false
+        (gizmo.mesh.material as THREE.Material).depthTest = false
         gizmo.AddMeshToScene()
         gizmo.CreateGizmo("translate", 1.5)
 
