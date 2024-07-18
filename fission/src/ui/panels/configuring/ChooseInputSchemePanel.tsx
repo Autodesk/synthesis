@@ -23,8 +23,8 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            let scheme = InputSchemeManager.availableInputSchemes[0]
-            //if (!scheme.customized) scheme = InputSchemeManager.copyScheme(scheme)
+            const scheme = InputSchemeManager.availableInputSchemes[0]
+
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
             InputSystem.selectedScheme = scheme
 
