@@ -25,8 +25,6 @@ function Interp(elapse: number, progressData: ProgressData) {
     const [value, setValue] = useState<number>(0)
 
     useEffect(() => {
-        console.debug(`Updated: [${progressData.lastValue}, ${progressData.currentValue}, ${progressData.lastUpdate}]`)
-
         const update = () => {
             const n = Math.min(1.0, Math.max(0.0, (Date.now() - progressData.lastUpdate) / elapse))
             const v = progressData.lastValue + (progressData.currentValue - progressData.lastValue) * easeOutQuad(n)
@@ -41,25 +39,25 @@ function Interp(elapse: number, progressData: ProgressData) {
             clearTimeout(timeout)
             clearInterval(interval)
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [progressData])
 
     return value
 }
 
 function ProgressNotification({ handle }: NotificationProps) {
-
-    const [progressData, setProgressData] = useState<ProgressData>({ lastValue: 0, currentValue: 0, lastUpdate: Date.now() })
+    const [progressData, setProgressData] = useState<ProgressData>({
+        lastValue: 0,
+        currentValue: 0,
+        lastUpdate: Date.now(),
+    })
 
     const interpProgress = Interp(500, progressData)
 
     useEffect(() => {
         setProgressData({ lastValue: progressData.currentValue, currentValue: handle.progress, lastUpdate: Date.now() })
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [handle.progress])
-
-    console.debug(`[${progressData.lastValue}, ${progressData.currentValue}, ${progressData.lastUpdate}]`)
-    console.debug(interpProgress.toFixed(2))
 
     return (
         <Box
@@ -86,11 +84,7 @@ function ProgressNotification({ handle }: NotificationProps) {
                 <TypoStyled fontWeight={"700"} fontSize={"1rem"}>
                     {handle.title}
                 </TypoStyled>
-                {handle.message.length > 0 ? (
-                    <TypoStyled fontSize={"0.75rem"}>{handle.message}</TypoStyled>
-                ) : (
-                    <></>
-                )}
+                {handle.message.length > 0 ? <TypoStyled fontSize={"0.75rem"}>{handle.message}</TypoStyled> : <></>}
             </Box>
             <Box
                 key={"bar"}
@@ -115,9 +109,10 @@ function ProgressNotification({ handle }: NotificationProps) {
 function ProgressNotifications() {
     const [progressElements, updateProgressElements] = useReducer(() => {
         return handleMap.size > 0
-            ? [...handleMap.entries()].map(([_, handle]) =>
-                <ProgressNotification handle={handle} key={handle.handleId} />
-            ) : undefined
+            ? [...handleMap.entries()].map(([_, handle]) => (
+                  <ProgressNotification handle={handle} key={handle.handleId} />
+              ))
+            : undefined
     }, undefined)
 
     useEffect(() => {
