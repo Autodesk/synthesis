@@ -12,7 +12,7 @@ from ...UI.Camera import captureThumbnail, clearIconCache
 from ..ExporterOptions import ExporterOptions, ExportMode, ExportLocation
 from . import Components, JointHierarchy, Joints, Materials, PDMessage
 from .Utilities import *
-from ...APS.APS import upload_mirabuf # This line causes everything to break
+from ...APS.APS import upload_mirabuf  # This line causes everything to break
 
 
 class Parser:
@@ -159,13 +159,11 @@ class Parser:
             self.pdMessage.currentMessage = "Compressing File..."
             self.pdMessage.update()
 
-            
             ### Print out assembly as JSON
             # miraJson = MessageToJson(assembly_out)
             # miraJsonFile = open(f'', 'wb')
             # miraJsonFile.write(str.encode(miraJson))
             # miraJsonFile.close()
-            
 
             # Upload Mirabuf File to APS
             if self.exporterOptions.exportLocation == ExportLocation.UPLOAD:
@@ -173,12 +171,12 @@ class Parser:
                 project = app.data.activeProject
                 if not project.isValid:
                     gm.ui.messageBox("Project is invalid", "")
-                    return False # add throw later
+                    return False  # add throw later
                 project_id = project.id
                 folder_id = project.rootFolder.id
                 file_name = f"{self.exporterOptions.fileLocation}.mira"
                 if upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString()) is None:
-                    gm.ui.messageBox("FAILED TO UPLOAD FILE TO APS", "ERROR") # add throw later
+                    gm.ui.messageBox("FAILED TO UPLOAD FILE TO APS", "ERROR")  # add throw later
             # Download Mirabuf File
             else:
                 # check if entire path exists and create if not since gzip doesn't do that.
@@ -195,7 +193,6 @@ class Parser:
                     f.write(assembly_out.SerializeToString())
                     f.close()
 
-            
             _ = progressDialog.hide()
 
             if DEBUG:

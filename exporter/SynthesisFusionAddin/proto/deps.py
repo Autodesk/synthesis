@@ -9,6 +9,7 @@ from src.strings import INTERNAL_ID
 
 system = platform.system()
 
+
 def getPythonFolder() -> str:
     """Retreives the folder that contains the Autodesk python executable
 
@@ -164,11 +165,14 @@ def _checkDeps() -> bool:
     except ImportError:
         return False
 
+
 """
 Checks for, and installs if need be, the dependencies needed by the Synthesis Exporter. Will error if it cannot install the dependencies
 correctly. This should crash the exporter, since most of the exporter needs these dependencies to function in
 the first place.
 """
+
+
 def installDependencies():
     try:
         import logging.handlers

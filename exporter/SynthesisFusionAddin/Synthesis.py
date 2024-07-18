@@ -25,6 +25,7 @@ from .src.UI.Toolbar import Toolbar
 from .src.APS import APS
 from .src.configure import setAnalytics, unload_config
 
+
 def run(_):
     """## Entry point to application from Fusion.
 
