@@ -1007,8 +1007,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 isRobot = True
             elif dropdownExportMode.selectedItem.index == 1:
                 isRobot = False
-
-            if exporterOptions.exportLocation == ExportLocation.DOWNLOAD:
+            dropdownExportLocation = INPUTS_ROOT.itemById("location")
+            if dropdownExportLocation.selectedItem.index == 1: # Download
                 if isRobot:
                     savepath = FileDialogConfig.SaveFileDialog(
                         defaultPath=exporterOptions.fileLocation,
