@@ -1028,6 +1028,28 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Exposes SetShape method on the _joltBodyInterface
+     * Sets the shape of the body
+     * 
+     * @param id 
+     * @param shape 
+     * @param massProperties 
+     * @param activationMode 
+     */
+    public SetShape(id: Jolt.BodyID, shape: Jolt.Shape, massProperties: boolean, activationMode: Jolt.EActivation): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetShape(
+            id,
+            shape,
+            massProperties,
+            activationMode
+        )
+    }
+
+    /**
      * Creates and assigns Jolt contact listener that dispatches events.
      * 
      * @param physSystem 

@@ -331,7 +331,7 @@ class MirabufSceneObject extends SceneObject {
             this._scoringZone = undefined
         }
 
-        if (this._fieldPreferences && this._fieldPreferences.scoringZones[0].parentNode) {
+        if (this._fieldPreferences && this._fieldPreferences.scoringZones[0] && this._fieldPreferences.scoringZones[0].parentNode) {
             this._scoringZone = new ScoringZoneSceneObject(this)
             World.SceneRenderer.RegisterSceneObject(this._scoringZone)
         }

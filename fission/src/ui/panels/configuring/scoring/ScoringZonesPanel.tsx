@@ -179,7 +179,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                                 points: 0,
                                 destroyGamepiece: false,
                                 persistentPoints: false,
-                                deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                                deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]
                             }
 
                             saveZones(zones, selectedField)
