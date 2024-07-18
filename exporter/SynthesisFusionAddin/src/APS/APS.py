@@ -8,13 +8,10 @@ import urllib.parse
 import urllib.request
 from dataclasses import dataclass
 from typing import Any
+
 import requests
 
-from ..general_imports import (
-    INTERNAL_ID,
-    gm,
-    my_addin_path,
-)
+from ..general_imports import INTERNAL_ID, gm, my_addin_path
 
 CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))

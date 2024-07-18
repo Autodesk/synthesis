@@ -22,8 +22,10 @@ from .src.UI.Toolbar import Toolbar
 
 # END OF RESTRICTION
 
-from .src.APS import APS
-from .src.configure import setAnalytics, unload_config
+# Transition: AARD-1721
+# Should attempt to fix this ordering scheme within AARD-1741
+from .src.APS import APS  # isort:skip
+from .src.configure import setAnalytics, unload_config  # isort:skip
 
 
 def run(_):

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import adsk.core
 import adsk.fusion
+
 from src.strings import INTERNAL_ID
 
 system = platform.system()
@@ -179,11 +180,11 @@ def installDependencies():
 
         import google.protobuf
         import pkg_resources
+        from requests import get, post
 
         from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
-
-        from requests import get, post
     except ImportError or ModuleNotFoundError:
         installCross(["protobuf==4.23.3", "result==0.17.0"])
-        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
         from requests import get, post
+
+        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2

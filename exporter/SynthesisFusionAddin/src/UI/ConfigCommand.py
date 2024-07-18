@@ -18,6 +18,7 @@ from ..configure import NOTIFIED, write_configuration
 from ..general_imports import *
 from ..Parser.ExporterOptions import (
     ExporterOptions,
+    ExportLocation,
     ExportMode,
     Gamepiece,
     Joint,
@@ -26,7 +27,6 @@ from ..Parser.ExporterOptions import (
     SignalType,
     Wheel,
     WheelType,
-    ExportLocation,
 )
 from ..Parser.SynthesisParser.Parser import Parser
 from ..Parser.SynthesisParser.Utilities import guid_occurrence

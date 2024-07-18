@@ -7,12 +7,12 @@ from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
 
+from ...APS.APS import upload_mirabuf  # This line causes everything to break
 from ...general_imports import *
 from ...UI.Camera import captureThumbnail, clearIconCache
-from ..ExporterOptions import ExporterOptions, ExportMode, ExportLocation
+from ..ExporterOptions import ExporterOptions, ExportLocation, ExportMode
 from . import Components, JointHierarchy, Joints, Materials, PDMessage
 from .Utilities import *
-from ...APS.APS import upload_mirabuf  # This line causes everything to break
 
 
 class Parser:
