@@ -26,7 +26,9 @@ function Interp(elapse: number, progressData: ProgressData) {
 
     useEffect(() => {
         const update = () => {
+            // Get the portion of the completed elapse timer, passed into an easing function.
             const n = Math.min(1.0, Math.max(0.0, (Date.now() - progressData.lastUpdate) / elapse))
+            // Convert the result of the easing function [0, 1] to a lerp from last value to current value
             const v = progressData.lastValue + (progressData.currentValue - progressData.lastValue) * easeOutQuad(n)
 
             setValue(v)
