@@ -22,15 +22,16 @@ interface NotificationProps {
 }
 
 function Interp(elapse: number, progressData: ProgressData) {
-    const [time, setTime] = useState<number>(0)
+    const [value, setValue] = useState<number>(0)
 
     useEffect(() => {
         console.debug(`Updated: [${progressData.lastValue}, ${progressData.currentValue}, ${progressData.lastUpdate}]`)
 
         const update = () => {
             const n = Math.min(1.0, Math.max(0.0, (Date.now() - progressData.lastUpdate) / elapse))
+            const v = progressData.lastValue + (progressData.currentValue - progressData.lastValue) * easeOutQuad(n)
 
-            setTime(n)
+            setValue(v)
         }
 
         const interval = setInterval(update, 5)
@@ -43,7 +44,7 @@ function Interp(elapse: number, progressData: ProgressData) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [progressData])
 
-    return progressData.lastValue + (progressData.currentValue - progressData.lastValue) * easeOutQuad(time)
+    return value
 }
 
 function ProgressNotification({ handle }: NotificationProps) {
