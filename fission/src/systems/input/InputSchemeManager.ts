@@ -10,8 +10,8 @@ export type InputScheme = {
     inputs: Input[]
 }
 
-class InputSchemeParser {
-    private static _customSchemes: InputScheme[]
+class InputSchemeManager {
+    private static _customSchemes: InputScheme[] | undefined
 
     /** Fetches custom input schemes from preferences manager */
     public static get customInputSchemes(): InputScheme[] {
@@ -61,17 +61,21 @@ class InputSchemeParser {
             rawInputs.inputs[i] = parsedInput
         }
     }
-}
 
-class InputSchemeManager {
     public static defaultInputSchemes: InputScheme[] = DefaultInputs.defaultInputCopies
+
+    public static resetDefaultSchemes() {
+        this.defaultInputSchemes = DefaultInputs.defaultInputCopies
+        this.defaultInputSchemes.forEach(s => console.log(s.customized))
+        this._customSchemes = undefined
+    }
 
     /** Creates an array of every input scheme that is either a default or customized by the user. Custom themes will appear on top. */
     public static get allInputSchemes(): InputScheme[] {
         // Start with custom input schemes
         const allSchemes: InputScheme[] = []
 
-        InputSchemeParser.customInputSchemes.forEach(s => allSchemes.push(s))
+        InputSchemeManager.customInputSchemes.forEach(s => allSchemes.push(s))
 
         // Add default schemes if they have not been customized
         this.defaultInputSchemes.forEach(defaultScheme => {
@@ -97,16 +101,6 @@ class InputSchemeManager {
         return allSchemes.filter(scheme => !schemesInUse.includes(scheme))
     }
 
-    // /** Creates an array of every input scheme that can be configured in the change inputs modal */
-    // public static get configurableInputSchemes(): InputScheme[] {
-    //     const schemes = this.availableInputSchemes
-    //     Array.from(InputSystem.brainIndexSchemeMap.values()).forEach(s => {
-    //         schemes.push(s)
-    //     })
-
-    //     return schemes
-    // }
-
     /** @returns a random available robot name */
     public static get randomAvailableName(): string {
         const usedNames = this.availableInputSchemes.map(s => s.schemeName)
@@ -128,8 +122,18 @@ class InputSchemeManager {
             return s.customized
         })
 
+        // Save default schemes that have been customized if a customized version does not already exist
         this.defaultInputSchemes.forEach(s => {
-            if (s.customized) customizedSchemes.push(s)
+            if (!s.customized) return
+
+            if (
+                customizedSchemes.some(c => {
+                    if (c.schemeName === s.schemeName) return true
+                })
+            )
+                return
+
+            customizedSchemes.push(s)
         })
 
         PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)

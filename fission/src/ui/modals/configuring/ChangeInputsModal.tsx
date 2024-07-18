@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaGamepad } from "react-icons/fa6"
-import Stack, { StackDirection } from "../../components/Stack"
-import Label, { LabelSize } from "../../components/Label"
+import Stack, { StackDirection } from "@/ui/components/Stack"
+import Label, { LabelSize } from "@/ui/components/Label"
 import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
 import InputSystem, { AxisInput, ButtonInput, ModifierState, EmptyModifierState } from "@/systems/input/InputSystem"
 import Dropdown from "@/ui/components/Dropdown"
@@ -421,8 +421,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     <Button
                                         value={"Reset all to Defaults"}
                                         onClick={() => {
-                                            throw new Error("not implemented")
-                                            //openModal("reset-inputs")
+                                            openModal("reset-inputs")
                                         }}
                                     />
                                 </>

@@ -3,8 +3,11 @@ import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { GrFormClose } from "react-icons/gr"
 import { useModalControlContext } from "@/ui/ModalContext"
 import InputSystem from "@/systems/input/InputSystem"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 
 const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -17,6 +20,22 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             onAccept={() => {
                 // Wipe global input scheme prefs
                 PreferencesSystem.setGlobalPreference("InputSchemes", [])
+                InputSystem.brainIndexSchemeMap.clear()
+                InputSchemeManager.resetDefaultSchemes()
+                PreferencesSystem.savePreferences()
+
+                const assemblies = [...World.SceneRenderer.sceneObjects.entries()]
+                    .filter(x => {
+                        const y =
+                            x[1] instanceof MirabufSceneObject &&
+                            (x[1] as MirabufSceneObject).miraType == MiraType.ROBOT
+                        return y
+                    })
+                    .map(x => x[0])
+
+                assemblies.forEach(a => {
+                    World.SceneRenderer.RemoveSceneObject(a)
+                })
 
                 // // Reset default schemes in scheme map
                 // InputSystem.brainIndexSchemeMap.forEach((scheme, brainIndex) => {
@@ -37,8 +56,6 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 // Regenerate blank schemes in scheme map and add them to preferences
 
                 // Save preferences
-                InputSystem.brainIndexSchemeMap.clear()
-                PreferencesSystem.savePreferences()
 
                 // let i = 0
                 // InputSystem.allInputs.forEach(currentScheme => {

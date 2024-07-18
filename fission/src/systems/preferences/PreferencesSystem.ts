@@ -11,9 +11,9 @@ import {
 
 class PreferenceEvent extends Event {
     public prefName: GlobalPreference
-    public prefValue: object
+    public prefValue: unknown
 
-    constructor(prefName: GlobalPreference, prefValue: object) {
+    constructor(prefName: GlobalPreference, prefValue: unknown) {
         super("preferenceChanged")
         this.prefName = prefName
         this.prefValue = prefValue
@@ -21,7 +21,7 @@ class PreferenceEvent extends Event {
 }
 
 class PreferencesSystem {
-    private static _preferences: { [key: string]: object }
+    private static _preferences: { [key: string]: unknown }
     private static _localStorageKey = "Preferences"
 
     /** Event dispatched when any global preference is updated */
@@ -30,7 +30,7 @@ class PreferencesSystem {
     }
 
     /** Sets a global preference to be a value of a specific type */
-    public static setGlobalPreference<T extends object>(key: GlobalPreference, value: T) {
+    public static setGlobalPreference<T>(key: GlobalPreference, value: T) {
         if (this._preferences == undefined) this.loadPreferences()
 
         window.dispatchEvent(new PreferenceEvent(key, value))
@@ -95,7 +95,7 @@ class PreferencesSystem {
 
     /** Gets preferences for every robot in local storage */
     public static getAllFieldPreferences(): { [key: string]: FieldPreferences } {
-        let allFieldPrefs = this.getPreference<{ [key: string]: FieldPreferences }>(RobotPreferencesKey)
+        let allFieldPrefs = this.getPreference<{ [key: string]: FieldPreferences }>(FieldPreferencesKey)
 
         if (allFieldPrefs == undefined) {
             allFieldPrefs = {}
@@ -110,7 +110,6 @@ class PreferencesSystem {
         const loadedPrefs = window.localStorage.getItem(this._localStorageKey)
 
         if (loadedPrefs == undefined) {
-            console.log("Preferences not found in local storage!")
             this._preferences = {}
             return
         }

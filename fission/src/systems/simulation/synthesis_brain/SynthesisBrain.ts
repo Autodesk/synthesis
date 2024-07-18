@@ -29,6 +29,9 @@ class SynthesisBrain extends Brain {
 
     public static brainIndexMap = new Map<number, SynthesisBrain>()
 
+    // A list of all the fields spawned
+    public static fieldsSpawned: string[] = []
+
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
 
@@ -50,6 +53,7 @@ class SynthesisBrain extends Brain {
             this.configureElevatorBehaviors()
         } else {
             this.configureField()
+            SynthesisBrain.fieldsSpawned.push(assemblyName)
         }
     }
 
@@ -154,7 +158,7 @@ class SynthesisBrain extends Brain {
     private configureField() {
         PreferencesSystem.getFieldPreferences(this._assemblyName)
 
-        /** Put any scoring zone or other field configuration here */
+        /** Put any field configuration here */
     }
 }
 
