@@ -53,6 +53,7 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import PokerPanel from "@/panels/PokerPanel.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
+import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -91,32 +92,6 @@ function Synthesis() {
             mira_path = `test_mira/${urlParams.get("mira")!}`
             console.debug(`Selected Mirabuf File: ${mira_path}`)
         }
-
-        // TODO: do we actually want to spawn a robot right away when synthesis loads?
-        /* const setup = async () => {
-            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
-                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
-                .catch(console.error)
-
-            const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
-
-            await (async () => {
-                if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-                    return
-                }
-
-                const parser = new MirabufParser(miraAssembly)
-                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
-                    return
-                }
-
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
-                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
-            })()
-        } */
-
-        //setup()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -210,6 +185,7 @@ const initialModals = [
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
+    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
 const initialPanels: ReactElement[] = [

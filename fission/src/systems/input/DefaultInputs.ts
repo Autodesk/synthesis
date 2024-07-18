@@ -2,167 +2,187 @@ import { InputScheme } from "./InputSchemeManager"
 import { AxisInput, EmptyModifierState } from "./InputSystem"
 
 class DefaultInputs {
-    public static ernie: InputScheme = {
-        schemeName: "Ernie",
-        descriptiveName: "WASD",
-        customized: false,
-        usesGamepad: false,
-        inputs: [
-            new AxisInput("arcadeDrive", "KeyW", "KeyS"),
-            new AxisInput("arcadeTurn", "KeyD", "KeyA"),
+    static ernie = () => {
+        return {
+            schemeName: "Ernie",
+            descriptiveName: "WASD",
+            customized: false,
+            usesGamepad: false,
+            inputs: [
+                new AxisInput("arcadeDrive", "KeyW", "KeyS"),
+                new AxisInput("arcadeTurn", "KeyD", "KeyA"),
 
-            new AxisInput("joint 1", "Digit1", "Digit1", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: false,
-                alt: false,
-                shift: true,
-                meta: false,
-            }),
-            new AxisInput("joint 2", "Digit2", "Digit2", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: false,
-                alt: false,
-                shift: true,
-                meta: false,
-            }),
-            new AxisInput("joint 3", "Digit3", "Digit3", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: false,
-                alt: false,
-                shift: true,
-                meta: false,
-            }),
-            new AxisInput("joint 4", "Digit4", "Digit4", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: false,
-                alt: false,
-                shift: true,
-                meta: false,
-            }),
-            new AxisInput("joint 5", "Digit5", "Digit5", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: false,
-                alt: false,
-                shift: true,
-                meta: false,
-            }),
-            new AxisInput("joint 6"),
-            new AxisInput("joint 7"),
-            new AxisInput("joint 8"),
-            new AxisInput("joint 9"),
-            new AxisInput("joint 10"),
-        ],
+                new AxisInput("joint 1", "Digit1", "Digit1", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 2", "Digit2", "Digit2", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 3", "Digit3", "Digit3", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 4", "Digit4", "Digit4", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 5", "Digit5", "Digit5", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 6"),
+                new AxisInput("joint 7"),
+                new AxisInput("joint 8"),
+                new AxisInput("joint 9"),
+                new AxisInput("joint 10"),
+            ],
+        }
     }
 
-    public static luna: InputScheme = {
-        schemeName: "Luna",
-        descriptiveName: "Arrow Keys",
-        customized: false,
-        usesGamepad: false,
-        inputs: [
-            new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown"),
-            new AxisInput("arcadeTurn", "ArrowRight", "ArrowLeft"),
+    public static luna = () => {
+        return {
+            schemeName: "Luna",
+            descriptiveName: "Arrow Keys",
+            customized: false,
+            usesGamepad: false,
+            inputs: [
+                new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown"),
+                new AxisInput("arcadeTurn", "ArrowRight", "ArrowLeft"),
 
-            new AxisInput("joint 1", "Slash", "Slash", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: true,
-                alt: false,
-                shift: false,
-                meta: false,
-            }),
-            new AxisInput("joint 2", "Period", "Period", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: true,
-                alt: false,
-                shift: false,
-                meta: false,
-            }),
-            new AxisInput("joint 3", "Comma", "Comma", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: true,
-                alt: false,
-                shift: false,
-                meta: false,
-            }),
-            new AxisInput("joint 4", "KeyM", "KeyM", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: true,
-                alt: false,
-                shift: false,
-                meta: false,
-            }),
-            new AxisInput("joint 5", "KeyN", "true", -1, false, false, -1, -1, false, EmptyModifierState, {
-                ctrl: false,
-                alt: false,
-                shift: false,
-                meta: false,
-            }),
-            new AxisInput("joint 6"),
-            new AxisInput("joint 7"),
-            new AxisInput("joint 8"),
-            new AxisInput("joint 9"),
-            new AxisInput("joint 10"),
-        ],
+                new AxisInput("joint 1", "Slash", "Slash", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                new AxisInput("joint 2", "Period", "Period", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                new AxisInput("joint 3", "Comma", "Comma", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                new AxisInput("joint 4", "KeyM", "KeyM", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                new AxisInput("joint 5", "KeyN", "true", -1, false, false, -1, -1, false, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                new AxisInput("joint 6"),
+                new AxisInput("joint 7"),
+                new AxisInput("joint 8"),
+                new AxisInput("joint 9"),
+                new AxisInput("joint 10"),
+            ],
+        }
     }
 
-    public static jax: InputScheme = {
-        schemeName: "Jax",
-        descriptiveName: "Full Controller",
-        customized: false,
-        usesGamepad: true,
-        inputs: [
-            new AxisInput("arcadeDrive", "", "", 1, true),
-            new AxisInput("arcadeTurn", "", "", 2, false),
+    public static jax = () => {
+        return {
+            schemeName: "Jax",
+            descriptiveName: "Full Controller",
+            customized: false,
+            usesGamepad: true,
+            inputs: [
+                new AxisInput("arcadeDrive", "", "", 1, true),
+                new AxisInput("arcadeTurn", "", "", 2, false),
 
-            new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
-            new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
-            new AxisInput("joint 3", "", "", -1, false, true, 4, 5),
-            new AxisInput("joint 4", "", "", -1, false, true, 15, 14),
-            new AxisInput("joint 5", "", "", -1, false, true, 12, 13),
-            new AxisInput("joint 6"),
-            new AxisInput("joint 7"),
-            new AxisInput("joint 8"),
-            new AxisInput("joint 9"),
-            new AxisInput("joint 10"),
-        ],
+                new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
+                new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
+                new AxisInput("joint 3", "", "", -1, false, true, 4, 5),
+                new AxisInput("joint 4", "", "", -1, false, true, 15, 14),
+                new AxisInput("joint 5", "", "", -1, false, true, 12, 13),
+                new AxisInput("joint 6"),
+                new AxisInput("joint 7"),
+                new AxisInput("joint 8"),
+                new AxisInput("joint 9"),
+                new AxisInput("joint 10"),
+            ],
+        }
     }
 
-    public static hunter: InputScheme = {
-        schemeName: "Hunter",
-        descriptiveName: "Left Stick",
-        customized: false,
-        usesGamepad: true,
-        inputs: [
-            new AxisInput("arcadeDrive", "", "", 1, true),
-            new AxisInput("arcadeTurn", "", "", 0, false),
+    public static hunter = () => {
+        return {
+            schemeName: "Hunter",
+            descriptiveName: "Left Stick",
+            customized: false,
+            usesGamepad: true,
+            inputs: [
+                new AxisInput("arcadeDrive", "", "", 1, true),
+                new AxisInput("arcadeTurn", "", "", 0, false),
 
-            new AxisInput("joint 2", "", "", -1, false, true, 15, 14),
-            new AxisInput("joint 1", "", "", -1, false, true, 12, 13),
-            new AxisInput("joint 3"),
-            new AxisInput("joint 4"),
-            new AxisInput("joint 5"),
-            new AxisInput("joint 6"),
-            new AxisInput("joint 7"),
-            new AxisInput("joint 8"),
-            new AxisInput("joint 9"),
-            new AxisInput("joint 10"),
-        ],
+                new AxisInput("joint 2", "", "", -1, false, true, 15, 14),
+                new AxisInput("joint 1", "", "", -1, false, true, 12, 13),
+                new AxisInput("joint 3"),
+                new AxisInput("joint 4"),
+                new AxisInput("joint 5"),
+                new AxisInput("joint 6"),
+                new AxisInput("joint 7"),
+                new AxisInput("joint 8"),
+                new AxisInput("joint 9"),
+                new AxisInput("joint 10"),
+            ],
+        }
     }
 
-    public static carmela: InputScheme = {
-        schemeName: "Carmela",
-        descriptiveName: "Right Stick",
-        customized: false,
-        usesGamepad: true,
-        inputs: [
-            new AxisInput("arcadeDrive", "", "", 3, true),
-            new AxisInput("arcadeTurn", "", "", 2, false),
+    public static carmela = () => {
+        return {
+            schemeName: "Carmela",
+            descriptiveName: "Right Stick",
+            customized: false,
+            usesGamepad: true,
+            inputs: [
+                new AxisInput("arcadeDrive", "", "", 3, true),
+                new AxisInput("arcadeTurn", "", "", 2, false),
 
-            new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
-            new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
-            new AxisInput("joint 3"),
-            new AxisInput("joint 4"),
-            new AxisInput("joint 5"),
-            new AxisInput("joint 6"),
-            new AxisInput("joint 7"),
-            new AxisInput("joint 8"),
-            new AxisInput("joint 9"),
-            new AxisInput("joint 10"),
-        ],
+                new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
+                new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
+                new AxisInput("joint 3"),
+                new AxisInput("joint 4"),
+                new AxisInput("joint 5"),
+                new AxisInput("joint 6"),
+                new AxisInput("joint 7"),
+                new AxisInput("joint 8"),
+                new AxisInput("joint 9"),
+                new AxisInput("joint 10"),
+            ],
+        }
     }
 
-    public static get newBlankScheme() {
+    public static get defaultInputCopies() {
+        return [
+            DefaultInputs.ernie(),
+            DefaultInputs.luna(),
+            DefaultInputs.jax(),
+            DefaultInputs.hunter(),
+            DefaultInputs.carmela(),
+        ]
+    }
+
+    public static get newBlankScheme(): InputScheme {
         return {
             schemeName: "",
             descriptiveName: "",

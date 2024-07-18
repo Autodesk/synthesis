@@ -15,6 +15,7 @@ import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import InputSystem from "@/systems/input/InputSystem"
 
 class SynthesisBrain extends Brain {
     private _behaviors: Behavior[] = []
@@ -25,15 +26,6 @@ class SynthesisBrain extends Brain {
 
     private _assemblyName: string
     private _brainIndex: number
-
-    // Tracks the number of each specific mira file spawned
-    // public static numberRobotsSpawned: { [key: string]: number } = {}
-
-    // A list of all the robots spawned including their assembly index
-    // public static robotsSpawned: string[] = []
-
-    // The total number of robots spawned
-    // public static currentBrainIndex: number = 0
 
     public static brainIndexMap = new Map<number, SynthesisBrain>()
 
@@ -46,27 +38,16 @@ class SynthesisBrain extends Brain {
         this._brainIndex = SynthesisBrain.brainIndexMap.size
         SynthesisBrain.brainIndexMap.set(this._brainIndex, this)
 
-        console.log(SynthesisBrain.brainIndexMap)
-
         if (!this._simLayer) {
-            console.log("SimulationLayer is undefined")
+            console.error("SimulationLayer is undefined")
             return
         }
 
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (mechanism.controllable) {
-            /* if (SynthesisBrain.numberRobotsSpawned[assemblyName] == undefined)
-                SynthesisBrain.numberRobotsSpawned[assemblyName] = 0
-            else SynthesisBrain.numberRobotsSpawned[assemblyName]++
-
-            this._assemblyIndex = SynthesisBrain.numberRobotsSpawned[assemblyName]
-            SynthesisBrain.robotsSpawned.push(this.getNumberedAssemblyName()) */
             this.configureArcadeDriveBehavior()
             this.configureArmBehaviors()
             this.configureElevatorBehaviors()
-
-            window.addEventListener("brainConfigured", this.configureInputs as EventListener)
-            // console.log(this._assemblyIndex)
         } else {
             this.configureField()
         }
@@ -83,10 +64,7 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        // TODO
-        throw new Error("Not Implemented")
-        // const index = SynthesisBrain.robotsSpawned.indexOf(this.getNumberedAssemblyName())
-        // SynthesisBrain.robotsSpawned.splice(index, 1)
+        InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
@@ -173,50 +151,11 @@ class SynthesisBrain extends Brain {
         }
     }
 
-    private configureInputs(/* e: BrainConfiguredEvent */) {
-        // window.removeEventListener("brainConfigured", this.configureInputs as EventListener)
-        // console.log(this._assemblyIndex + " " + this._assemblyName + " configured with " + e.schemeName)
-        // // Check for existing inputs
-        // const robotConfig = PreferencesSystem.getRobotPreferences(this._assemblyName)
-        // if (robotConfig.inputsSchemes[this._assemblyIndex] != undefined) {
-        //     SynthesisBrain.parseInputs(robotConfig.inputsSchemes[this._assemblyIndex])
-        //     return
-        // }
-        // // Configure with default inputs
-        // const scheme = DefaultInputs.AVAILABLE_INPUT_SCHEMES[SynthesisBrain._currentBrainIndex]
-        // robotConfig.inputsSchemes[this._assemblyIndex] = {
-        //     schemeName: this._assemblyName,
-        //     descriptiveName: "",
-        //     customized: false,
-        //     usesGamepad: scheme?.usesGamepad ?? false,
-        //     inputs: [],
-        // }
-        // const inputList = robotConfig.inputsSchemes[this._assemblyIndex].inputs
-        // if (scheme) {
-        //     const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive")
-        //     if (arcadeDrive) inputList.push(arcadeDrive.getCopy())
-        //     else inputList.push(new AxisInput("arcadeDrive"))
-        //     const arcadeTurn = scheme.inputs.find(i => i.inputName === "arcadeTurn")
-        //     if (arcadeTurn) inputList.push(arcadeTurn.getCopy())
-        //     else inputList.push(new AxisInput("arcadeTurn"))
-        //     for (let i = 1; i < this._currentJointIndex; i++) {
-        //         const controlPreset = scheme.inputs.find(input => input.inputName == "joint " + i)
-        //         if (controlPreset) inputList.push(controlPreset.getCopy())
-        //         else inputList.push(new AxisInput("joint " + i))
-        //     }
-        // }
-    }
-
     private configureField() {
-        const fieldPrefs = PreferencesSystem.getFieldPreferences(this._assemblyName)
-        console.log("Loaded field prefs " + fieldPrefs)
+        PreferencesSystem.getFieldPreferences(this._assemblyName)
 
         /** Put any scoring zone or other field configuration here */
     }
-
-    /* private getNumberedAssemblyName(): string {
-        return `[${this._assemblyIndex}] ${this._assemblyName}`
-    } */
 }
 
 export default SynthesisBrain

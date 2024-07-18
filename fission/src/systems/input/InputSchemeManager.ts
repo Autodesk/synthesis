@@ -64,37 +64,48 @@ class InputSchemeParser {
 }
 
 class InputSchemeManager {
-    private static _defaultInputSchemes: InputScheme[] = [
-        DefaultInputs.ernie,
-        DefaultInputs.luna,
-        DefaultInputs.jax,
-        DefaultInputs.hunter,
-        DefaultInputs.carmela,
-    ]
+    public static defaultInputSchemes: InputScheme[] = DefaultInputs.defaultInputCopies
 
     /** Creates an array of every input scheme that is either a default or customized by the user. Custom themes will appear on top. */
-    public static get availableInputSchemes(): InputScheme[] {
+    public static get allInputSchemes(): InputScheme[] {
         // Start with custom input schemes
-        const availableSchemes: InputScheme[] = []
+        const allSchemes: InputScheme[] = []
 
-        InputSchemeParser.customInputSchemes.forEach(s => availableSchemes.push(s))
+        InputSchemeParser.customInputSchemes.forEach(s => allSchemes.push(s))
 
         // Add default schemes if they have not been customized
-        this._defaultInputSchemes.forEach(defaultScheme => {
+        this.defaultInputSchemes.forEach(defaultScheme => {
             if (
-                availableSchemes.some(s => {
+                allSchemes.some(s => {
                     return s.schemeName === defaultScheme.schemeName
                 })
             )
                 return
 
-            availableSchemes.push(defaultScheme)
+            allSchemes.push(defaultScheme)
         })
+
+        return allSchemes
+    }
+
+    /** Creates an array of every input scheme that is not currently in use by a robot */
+    public static get availableInputSchemes(): InputScheme[] {
+        const allSchemes = this.allInputSchemes
 
         // Remove schemes that are in use
         const schemesInUse = Array.from(InputSystem.brainIndexSchemeMap.values())
-        return availableSchemes.filter(scheme => !schemesInUse.includes(scheme))
+        return allSchemes.filter(scheme => !schemesInUse.includes(scheme))
     }
+
+    // /** Creates an array of every input scheme that can be configured in the change inputs modal */
+    // public static get configurableInputSchemes(): InputScheme[] {
+    //     const schemes = this.availableInputSchemes
+    //     Array.from(InputSystem.brainIndexSchemeMap.values()).forEach(s => {
+    //         schemes.push(s)
+    //     })
+
+    //     return schemes
+    // }
 
     /** @returns a random available robot name */
     public static get randomAvailableName(): string {
@@ -108,7 +119,6 @@ class InputSchemeManager {
         let name = randomName()
         while (usedNames.includes(name)) name = randomName()
 
-        console.log(name)
         return name
     }
 
@@ -118,8 +128,26 @@ class InputSchemeManager {
             return s.customized
         })
 
+        this.defaultInputSchemes.forEach(s => {
+            if (s.customized) customizedSchemes.push(s)
+        })
+
         PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)
         PreferencesSystem.savePreferences()
+    }
+
+    /** Returns a copy of a scheme without references to the original in any way */
+    public static copyScheme(scheme: InputScheme): InputScheme {
+        const copiedInputs: Input[] = []
+        scheme.inputs.forEach(i => copiedInputs.push(i.getCopy()))
+
+        return {
+            schemeName: scheme.schemeName,
+            descriptiveName: scheme.descriptiveName,
+            customized: scheme.customized,
+            usesGamepad: scheme.usesGamepad,
+            inputs: copiedInputs,
+        }
     }
 }
 

@@ -4,6 +4,7 @@ import { GrFormClose } from "react-icons/gr"
 import { useModalControlContext } from "@/ui/ModalContext"
 import InputSystem from "@/systems/input/InputSystem"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -14,25 +15,50 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={<GrFormClose />}
             modalId={modalId}
             onAccept={() => {
-                let i = 0
-                InputSystem.allInputs.forEach(currentScheme => {
-                    const scheme = InputSchemeManager.availableInputSchemes[i]
-                    if (!currentScheme || !scheme) return
+                // Wipe global input scheme prefs
+                PreferencesSystem.setGlobalPreference("InputSchemes", [])
 
-                    scheme.inputs.forEach(newInput => {
-                        const currentInput = currentScheme.inputs.find(i => i.inputName == newInput.inputName)
+                // // Reset default schemes in scheme map
+                // InputSystem.brainIndexSchemeMap.forEach((scheme, brainIndex) => {
+                //     // If the scheme is in default, reset it to the default
 
-                        if (currentInput) {
-                            const inputIndex = currentScheme.inputs.indexOf(currentInput)
+                //     const defaults = InputSchemeManager.defaultInputSchemes
 
-                            currentScheme.inputs[inputIndex] = newInput.getCopy()
-                        }
-                    })
-                    currentScheme.usesGamepad = scheme.usesGamepad
+                //     defaults.forEach(d => {
+                //         if (d.schemeName == scheme.schemeName) {
+                //             InputSystem.brainIndexSchemeMap.set(brainIndex, d)
+                //         }
+                //         return
+                //     })
 
-                    i++
-                })
-                openModal("change-inputs")
+                //     return
+                // })
+
+                // Regenerate blank schemes in scheme map and add them to preferences
+
+                // Save preferences
+                InputSystem.brainIndexSchemeMap.clear()
+                PreferencesSystem.savePreferences()
+
+                // let i = 0
+                // InputSystem.allInputs.forEach(currentScheme => {
+                //     const scheme = InputSchemeManager.availableInputSchemes[i]
+                //     if (!currentScheme || !scheme) return
+
+                //     scheme.inputs.forEach(newInput => {
+                //         const currentInput = currentScheme.inputs.find(i => i.inputName == newInput.inputName)
+
+                //         if (currentInput) {
+                //             const inputIndex = currentScheme.inputs.indexOf(currentInput)
+
+                //             currentScheme.inputs[inputIndex] = newInput.getCopy()
+                //         }
+                //     })
+                //     currentScheme.usesGamepad = scheme.usesGamepad
+
+                //     i++
+                // })
+                // openModal("change-inputs")
             }}
             onCancel={() => {
                 openModal("change-inputs")

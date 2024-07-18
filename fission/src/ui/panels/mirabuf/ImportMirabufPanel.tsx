@@ -229,7 +229,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             if (type == MiraType.ROBOT) openPanel("choose-scheme")
         },
-        [showTooltip, closePanel, panelId]
+        [showTooltip, closePanel, panelId, openPanel]
     )
 
     // Cache a selected remote mirabuf assembly, load from cache.
@@ -242,7 +242,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             if (type == MiraType.ROBOT) openPanel("choose-scheme")
         },
-        [closePanel, panelId]
+        [closePanel, panelId, openPanel]
     )
 
     const selectAPS = useCallback(

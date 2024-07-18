@@ -4,6 +4,7 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Button from "@/ui/components/Button"
+import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { Box } from "@mui/material"
 import { useEffect } from "react"
@@ -11,10 +12,23 @@ import { AiOutlinePlus } from "react-icons/ai"
 
 const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel } = usePanelControlContext()
+    const { openModal } = useModalControlContext()
     const AddIcon = <AiOutlinePlus size={"1.25rem"} />
 
     useEffect(() => {
         closePanel("import-mirabuf")
+
+        return () => {
+            const brainIndex = SynthesisBrain.brainIndexMap.size - 1
+
+            if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
+
+            let scheme = InputSchemeManager.availableInputSchemes[0]
+            //if (!scheme.customized) scheme = InputSchemeManager.copyScheme(scheme)
+            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+
+            openModal("change-inputs")
+        }
     }, [])
 
     return (
@@ -33,6 +47,8 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         <Button
                             value={`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
                             onClick={() => {
+                                //if (!scheme.customized) scheme = InputSchemeManager.copyScheme(scheme)
+
                                 InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, scheme)
                                 closePanel(panelId)
                             }}
@@ -51,8 +67,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     scheme.schemeName = name
 
                     InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, scheme)
-
-                    closePanel(panelId)
+                    openModal("change-inputs")
                 }}
             />
             <Box height="12px"></Box>
