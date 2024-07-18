@@ -1128,6 +1128,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             # This is how all handle selection events should be done in the future although it will look
             # slightly differently for each type of handle.
             elif self.selectedJoint:
+                self.cmd.setCursor("", 0, 0)  # Reset select cursor back to normal cursor.
                 jointConfigTab.handleSelectionEvent(args, self.selectedJoint)
         except:
             if gm.ui:
