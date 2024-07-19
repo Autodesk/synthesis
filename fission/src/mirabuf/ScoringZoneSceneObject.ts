@@ -6,36 +6,40 @@ import Jolt from "@barclah/jolt-physics"
 import * as THREE from "three"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import SceneObject from "@/systems/scene/SceneObject"
-import TransformGizmos from "@/ui/components/TransformGizmos"
+import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 
 class ScoringZoneSceneObject extends SceneObject {
+    //Official FIRST hex
+    static redMaterial = new THREE.MeshBasicMaterial( { color: 0xED1C24 } ) //0xff0000
+    static blueMaterial = new THREE.MeshBasicMaterial( { color: 0x0066B3 } )  //0x0000ff
+
     private _parentAssembly: MirabufSceneObject
     private _parentBodyId?: Jolt.BodyID
     private _deltaTransformation?: THREE.Matrix4
 
-    private _gizmo?: TransformGizmos
+    private _prefs?: ScoringZonePreferences
     private _joltBodyId?: Jolt.BodyID
     private _mesh?: THREE.Mesh
-    private points = 0
+    private _collision?: (event: OnContactAddedEvent) => void
 
-    public constructor(parentAssembly: MirabufSceneObject) {
+    public constructor(parentAssembly: MirabufSceneObject, index: number) {
         super()
 
         console.debug("Trying to create scoring zone...")
 
         this._parentAssembly = parentAssembly
+        this._prefs = this._parentAssembly.fieldPreferences?.scoringZones[index]
     }
 
     public Setup(): void {
-        const zones = this._parentAssembly.fieldPreferences?.scoringZones
-        if (zones) {
-            //TODO pluralize
-            this._parentBodyId = this._parentAssembly.mechanism.nodeToBody.get(zones[0].parentNode ?? this._parentAssembly.rootNodeId)
+        if (this._prefs) {
+            this._parentBodyId = this._parentAssembly.mechanism.nodeToBody.get(this._prefs.parentNode ?? this._parentAssembly.rootNodeId)
 
             if (this._parentBodyId) {
 
-                this._deltaTransformation = Array_ThreeMatrix4(zones[0].deltaTransformation)
+                this._deltaTransformation = Array_ThreeMatrix4(this._prefs.deltaTransformation)
 
                 this._joltBodyId = World.PhysicsSystem.CreateSensor(
                     new JOLT.BoxShapeSettings(
@@ -74,7 +78,7 @@ class ScoringZoneSceneObject extends SceneObject {
                 const shape = shapeSettings.Create()
                 World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
 
-                const collision = (event: OnContactAddedEvent) => {
+                this._collision = (event: OnContactAddedEvent) => {
                     const body1 = event.message.body1
                     const body2 = event.message.body2
         
@@ -85,7 +89,7 @@ class ScoringZoneSceneObject extends SceneObject {
                     }
                 }
         
-                OnContactAddedEvent.AddListener(collision)
+                OnContactAddedEvent.AddListener(this._collision)
 
                 console.debug("Scoring zone created successfully")
             }
@@ -93,7 +97,7 @@ class ScoringZoneSceneObject extends SceneObject {
     }
 
     public Update(): void {
-        if (this._parentBodyId && this._deltaTransformation && this._joltBodyId && this._mesh) {
+        if (this._parentBodyId && this._deltaTransformation && this._joltBodyId && this._mesh && this._prefs) {
             const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
             const gizmoTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
 
@@ -113,7 +117,10 @@ class ScoringZoneSceneObject extends SceneObject {
 
             const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(scale.x / 2, scale.y / 2, scale.z / 2))
             const shape = shapeSettings.Create()
-            World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
+            World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate);
+
+            this._mesh.material = this._prefs.alliance == "red" ? ScoringZoneSceneObject.redMaterial : ScoringZoneSceneObject.blueMaterial
+
         } else {
             console.debug("Failed to update scoring zone")
         }
@@ -131,17 +138,24 @@ class ScoringZoneSceneObject extends SceneObject {
                 World.SceneRenderer.scene.remove(this._mesh)
             }
         }
+        
+        if (this._collision) OnContactAddedEvent.RemoveListener(this._collision)
     }
 
     private ZoneCollision(gpID: Jolt.BodyID) {
-        console.log(`Scoring zone collided with ${gpID.GetIndex()}`)
+        console.log(`Scoring zone ${this._joltBodyId?.GetIndexAndSequenceNumber()} collided with ${gpID.GetIndex()}`)
 
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
-        if (associate?.isGamePiece) {
-            this.points++
-            console.log(`points ${this.points}`)
+        if (associate?.isGamePiece && this._prefs) {
+            if (this._prefs.alliance == "red") {
+                SimulationSystem.redScore += this._prefs.points
+            } else {
+                SimulationSystem.blueScore += this._prefs.points
+            }
+            console.log(`Red: ${SimulationSystem.redScore} Blue: ${SimulationSystem.blueScore}`)
         }
     }
     
 }
+
 export default ScoringZoneSceneObject

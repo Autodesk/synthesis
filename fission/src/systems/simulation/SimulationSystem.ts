@@ -15,6 +15,9 @@ import ChassisStimulus from "./stimulus/ChassisStimulus"
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
 
+    public static redScore = 0
+    public static blueScore = 0
+
     constructor() {
         super()
 
@@ -48,6 +51,11 @@ class SimulationSystem extends WorldSystem {
         } else {
             return false
         }
+    }
+
+    public ResetScores(): void {
+        SimulationSystem.redScore = 0
+        SimulationSystem.blueScore = 0
     }
 }
 

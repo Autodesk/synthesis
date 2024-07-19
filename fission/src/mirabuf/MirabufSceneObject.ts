@@ -12,7 +12,7 @@ import Mechanism from "@/systems/physics/Mechanism"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
-import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
+import { EjectorPreferences, FieldPreferences, IntakePreferences, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
@@ -44,7 +44,7 @@ class MirabufSceneObject extends SceneObject {
 
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
-    private _scoringZone?: ScoringZoneSceneObject
+    private _scoringZones: ScoringZoneSceneObject[] = []
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -222,11 +222,8 @@ class MirabufSceneObject extends SceneObject {
             this._ejectable = undefined
         }
 
-        //TODO: pluralize
-        if (this._scoringZone) {
-            World.SceneRenderer.RemoveSceneObject(this._scoringZone.id)
-            this._scoringZone = undefined
-        }
+        this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._scoringZones = []
 
         this._mechanism.nodeToBody.forEach(bodyId => {
             World.PhysicsSystem.RemoveBodyAssocation(bodyId)
@@ -326,15 +323,15 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public UpdateScoringZones() {
-        //TODO: pluralize
-        if (this._scoringZone) {
-            World.SceneRenderer.RemoveSceneObject(this._scoringZone.id)
-            this._scoringZone = undefined
-        }
+        this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._scoringZones = []
 
-        if (this._fieldPreferences && this._fieldPreferences.scoringZones[0] && this._fieldPreferences.scoringZones[0].parentNode) {
-            this._scoringZone = new ScoringZoneSceneObject(this)
-            World.SceneRenderer.RegisterSceneObject(this._scoringZone)
+        if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
+            for (let i = 0; i < this._fieldPreferences.scoringZones.length;  i++) {
+                const newZone = new ScoringZoneSceneObject(this, i)
+                this._scoringZones.push(newZone)
+                World.SceneRenderer.RegisterSceneObject(newZone)
+            }
         }
     }
 
