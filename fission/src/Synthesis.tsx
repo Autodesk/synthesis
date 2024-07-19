@@ -60,7 +60,13 @@ import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
 
+import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
+import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
+import Lazy from "./util/Lazy.ts"
+
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
+
+const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
@@ -90,6 +96,8 @@ function Synthesis() {
         if (has_code) return
 
         World.InitWorld()
+
+        worker.getValue()
 
         let mira_path = DEFAULT_MIRA_PATH
 
@@ -243,6 +251,7 @@ const initialPanels: ReactElement[] = [
     <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
+    <WSViewPanel key="ws-view" panelId="ws-view" />,
 ]
 
 export default Synthesis
