@@ -56,6 +56,8 @@ import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.ts
 import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
+import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
+import { ProgressHandle } from "./ui/components/ProgressNotificationData.ts"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
@@ -107,11 +109,16 @@ function Synthesis() {
         }
 
         const setup = async () => {
+            const setupProgress = new ProgressHandle("Spawning Default Robot")
+            setupProgress.Update("Checking cache...", 0.1)
+
             const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
                 .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
 
             const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
+
+            setupProgress.Update("Parsing assembly...", 0.5)
 
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
@@ -121,11 +128,16 @@ function Synthesis() {
                 const parser = new MirabufParser(miraAssembly)
                 if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
                     console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+                    setupProgress.Fail("Failed to parse assembly")
                     return
                 }
 
+                setupProgress.Update("Creating scene object...", 0.9)
+
                 const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
+
+                setupProgress.Done()
             })()
         }
 
@@ -186,6 +198,7 @@ function Synthesis() {
                                     {modalElement}
                                 </div>
                             )}
+                            <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>
