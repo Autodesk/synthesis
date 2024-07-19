@@ -17,6 +17,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 
 const DEBUG_BODIES = false
 
@@ -80,11 +81,13 @@ class MirabufSceneObject extends SceneObject {
         return this._mirabufInstance.parser.rootNode
     }
 
-    public constructor(mirabufInstance: MirabufInstance, assemblyName: string) {
+    public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
         super()
 
         this._mirabufInstance = mirabufInstance
         this._assemblyName = assemblyName
+
+        progressHandle?.Update("Creating mechanism...", 0.9)
 
         this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser)
         if (this._mechanism.layerReserve) {
@@ -366,14 +369,17 @@ class MirabufSceneObject extends SceneObject {
     }
 }
 
-export async function CreateMirabuf(assembly: mirabuf.Assembly): Promise<MirabufSceneObject | null | undefined> {
-    const parser = new MirabufParser(assembly)
+export async function CreateMirabuf(
+    assembly: mirabuf.Assembly,
+    progressHandle?: ProgressHandle
+): Promise<MirabufSceneObject | null | undefined> {
+    const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!)
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle)
 }
 
 /**
