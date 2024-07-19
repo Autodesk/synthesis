@@ -58,7 +58,6 @@ export type ScoringZonePreferences = {
     persistentPoints: boolean
 
     deltaTransformation: number[]
-    //scale: [number, number, number]
 }
 
 export type FieldPreferences = {

@@ -11,6 +11,7 @@ export type InputScheme = {
 }
 
 class InputSchemeManager {
+    // References to the current custom schemes to avoid parsing every time they are requested
     private static _customSchemes: InputScheme[] | undefined
 
     /** Fetches custom input schemes from preferences manager */
@@ -25,10 +26,12 @@ class InputSchemeManager {
         return this._customSchemes
     }
 
+    /** Registers a new custom scheme */
     public static addCustomScheme(scheme: InputScheme) {
         this.customInputSchemes.push(scheme)
     }
 
+    /** Parses a schemes inputs into working Input instances */
     private static parseScheme(rawInputs: InputScheme) {
         for (let i = 0; i < rawInputs.inputs.length; i++) {
             const rawInput = rawInputs.inputs[i]

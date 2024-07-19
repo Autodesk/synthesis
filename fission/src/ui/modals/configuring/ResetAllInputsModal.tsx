@@ -14,7 +14,7 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     return (
         <Modal
-            name="Reset all Inputs??"
+            name="Reset all Inputs?"
             icon={<GrFormClose />}
             modalId={modalId}
             onAccept={() => {
@@ -24,6 +24,7 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 InputSchemeManager.resetDefaultSchemes()
                 PreferencesSystem.savePreferences()
 
+                // Remove all robot assemblies
                 const assemblies = [...World.SceneRenderer.sceneObjects.entries()]
                     .filter(x => {
                         const y =
@@ -36,46 +37,6 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 assemblies.forEach(a => {
                     World.SceneRenderer.RemoveSceneObject(a)
                 })
-
-                // // Reset default schemes in scheme map
-                // InputSystem.brainIndexSchemeMap.forEach((scheme, brainIndex) => {
-                //     // If the scheme is in default, reset it to the default
-
-                //     const defaults = InputSchemeManager.defaultInputSchemes
-
-                //     defaults.forEach(d => {
-                //         if (d.schemeName == scheme.schemeName) {
-                //             InputSystem.brainIndexSchemeMap.set(brainIndex, d)
-                //         }
-                //         return
-                //     })
-
-                //     return
-                // })
-
-                // Regenerate blank schemes in scheme map and add them to preferences
-
-                // Save preferences
-
-                // let i = 0
-                // InputSystem.allInputs.forEach(currentScheme => {
-                //     const scheme = InputSchemeManager.availableInputSchemes[i]
-                //     if (!currentScheme || !scheme) return
-
-                //     scheme.inputs.forEach(newInput => {
-                //         const currentInput = currentScheme.inputs.find(i => i.inputName == newInput.inputName)
-
-                //         if (currentInput) {
-                //             const inputIndex = currentScheme.inputs.indexOf(currentInput)
-
-                //             currentScheme.inputs[inputIndex] = newInput.getCopy()
-                //         }
-                //     })
-                //     currentScheme.usesGamepad = scheme.usesGamepad
-
-                //     i++
-                // })
-                // openModal("change-inputs")
             }}
             onCancel={() => {
                 openModal("change-inputs")

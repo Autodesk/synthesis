@@ -104,7 +104,6 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [modifierState, setModifierState] = useState<ModifierState>(EmptyModifierState)
 
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
-    // const [chosenResetScheme, setChosenResetScheme] = useState<string>("WASD") TODO
     const [useButtons, setUseButtons] = useState<UseButtonsState>({})
 
     // If there is a robot spawned, set it as the selected robot
@@ -382,42 +381,6 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                         }}
                                     />
                                     <Label size={LabelSize.Medium}>Default Control Schemes</Label>
-                                    {/**
-                                            <Dropdown
-                                                label={""}
-                                                // Moves the selected option to the start of the array
-                                                options={InputSchemeManager.AVAILABLE_INPUT_SCHEMES.map(
-                                                    scheme => scheme.schemeName
-                                                )}
-                                                onSelect={value => {
-                                                    setChosenResetScheme(value)
-                                                }}
-                                            />
-                                            <Button
-                                                value={"Apply"}
-                                                onClick={() => {
-                                                    const scheme = InputSchemeManager.AVAILABLE_INPUT_SCHEMES.find(
-                                                        s => s.schemeName == chosenResetScheme
-                                                    )
-                                                    if (!selectedScheme || !scheme) return
-    
-                                                    scheme.inputs.forEach(newInput => {
-                                                        const currentInput = selectedScheme.inputs.find(
-                                                            i => i.inputName == newInput.inputName
-                                                        )
-    
-                                                        if (currentInput) {
-                                                            const inputIndex = selectedScheme.inputs.indexOf(currentInput)
-    
-                                                            selectedScheme.inputs[inputIndex] = newInput.getCopy()
-                                                        }
-                                                    })
-                                                    selectedScheme.usesGamepad = scheme.usesGamepad
-    
-                                                    setSelectedScheme(undefined)
-                                                }}
-                                            />
-                                        */}
                                     <Button
                                         value={"Reset all to Defaults"}
                                         onClick={() => {

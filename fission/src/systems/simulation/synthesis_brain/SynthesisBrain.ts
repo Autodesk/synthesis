@@ -18,8 +18,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import InputSystem from "@/systems/input/InputSystem"
 
 class SynthesisBrain extends Brain {
-    private _behaviors: Behavior[] = []
-    private _simLayer: SimulationLayer
+    public static brainIndexMap = new Map<number, SynthesisBrain>()
 
     public get inputSchemeName(): string {
         const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
@@ -28,16 +27,13 @@ class SynthesisBrain extends Brain {
         return scheme.schemeName
     }
 
-    // Tracks how many joins have been made with unique controls
-    private _currentJointIndex = 1
-
+    private _behaviors: Behavior[] = []
+    private _simLayer: SimulationLayer
     private _assemblyName: string
     private _brainIndex: number
 
-    public static brainIndexMap = new Map<number, SynthesisBrain>()
-
-    // A list of all the fields spawned
-    public static fieldsSpawned: string[] = []
+    // Tracks how many joins have been made with unique controls
+    private _currentJointIndex = 1
 
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
@@ -60,7 +56,6 @@ class SynthesisBrain extends Brain {
             this.configureElevatorBehaviors()
         } else {
             this.configureField()
-            SynthesisBrain.fieldsSpawned.push(assemblyName)
         }
     }
 
