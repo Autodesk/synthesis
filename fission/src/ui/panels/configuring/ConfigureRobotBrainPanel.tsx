@@ -1,18 +1,28 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import Label from "@/ui/components/Label"
+import Label, { LabelSize } from "@/ui/components/Label"
 import Button from "@/ui/components/Button"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import { Divider, styled } from "@mui/material"
 
 // eslint-disable-next-line react-refresh/only-export-components
 export enum ConfigureRobotBrainTypes {
     SYNTHESIS = 0,
     WIPLIB = 1,
 }
+
+const LabelStyled = styled(Label)({
+    fontWeight: 700,
+    margin: "0pt",
+})
+
+const DividerStyled = styled(Divider)({
+    borderColor: "white",
+})
 
 const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
@@ -70,7 +80,31 @@ const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                             <ToggleButton value={ConfigureRobotBrainTypes.SYNTHESIS}>SynthesisBrain</ToggleButton>
                             <ToggleButton value={ConfigureRobotBrainTypes.WIPLIB}>WIPLIBBrain</ToggleButton>
                         </ToggleButtonGroup>
-                        {viewType === ConfigureRobotBrainTypes.SYNTHESIS ? <Label>hi</Label> : <Label>hi2</Label>}
+                        {viewType === ConfigureRobotBrainTypes.SYNTHESIS ? (
+                            <>
+                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                    Behaviors  
+                                </LabelStyled>
+                                <DividerStyled />
+
+                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                    thing2
+                                </LabelStyled>
+                                <DividerStyled />
+
+                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                    thing3
+                                </LabelStyled>
+                                <DividerStyled />
+
+                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                    thing4
+                                </LabelStyled>
+                                <DividerStyled /> 
+                            </>
+                        ) : (
+                            <Label>hi2</Label>
+                        )}
                     </div>
                 </>
             )}
