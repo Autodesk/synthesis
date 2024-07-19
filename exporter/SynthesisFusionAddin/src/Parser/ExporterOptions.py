@@ -22,6 +22,7 @@ WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
 PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
+ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
 
 
 @dataclass
@@ -94,6 +95,8 @@ class ExporterOptions:
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
+
+    exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
     visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)

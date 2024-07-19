@@ -1,0 +1,8 @@
+*.json
+
+.gradle/
+.vscode/
+.wpilib/
+build/
+ctre_sim/
+bin/

@@ -52,12 +52,17 @@ import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
+import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
-const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
+import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
+import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
+import Lazy from "./util/Lazy.ts"
+
+const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
@@ -88,12 +93,7 @@ function Synthesis() {
 
         World.InitWorld()
 
-        let mira_path = DEFAULT_MIRA_PATH
-
-        if (urlParams.has("mira")) {
-            mira_path = `test_mira/${urlParams.get("mira")!}`
-            console.debug(`Selected Mirabuf File: ${mira_path}`)
-        }
+        worker.getValue()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -151,6 +151,7 @@ function Synthesis() {
                                     {modalElement}
                                 </div>
                             )}
+                            <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>
@@ -217,6 +218,7 @@ const initialPanels: ReactElement[] = [
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
+    <WSViewPanel key="ws-view" panelId="ws-view" />,
 ]
 
 export default Synthesis
