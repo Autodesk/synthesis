@@ -13,7 +13,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 import { EjectorPreferences, FieldPreferences, IntakePreferences, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
@@ -141,6 +141,15 @@ class MirabufSceneObject extends SceneObject {
         this.UpdateIntakeSensor()
 
         this.UpdateScoringZones()
+
+        // Purely because mesh will not properly switch to more opaque material if the array changes or is formed while RenderScoringZones = false
+        PreferencesSystem.addEventListener((event: PreferenceEvent) => {
+            if (event.prefName == "RenderScoringZones") {
+                if (event.prefValue) {
+                    this.UpdateScoringZones(event.prefValue as boolean)
+                }
+            }
+        })
     }
 
     public Update(): void {
@@ -322,13 +331,13 @@ class MirabufSceneObject extends SceneObject {
         return true
     }
 
-    public UpdateScoringZones() {
+    public UpdateScoringZones(render?: boolean) {
         this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
         this._scoringZones = []
 
         if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
             for (let i = 0; i < this._fieldPreferences.scoringZones.length;  i++) {
-                const newZone = new ScoringZoneSceneObject(this, i)
+                const newZone = new ScoringZoneSceneObject(this, i, render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones"))
                 this._scoringZones.push(newZone)
                 World.SceneRenderer.RegisterSceneObject(newZone)
             }

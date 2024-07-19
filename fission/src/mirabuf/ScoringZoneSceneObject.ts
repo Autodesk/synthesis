@@ -8,29 +8,48 @@ import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import SceneObject from "@/systems/scene/SceneObject"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
-    static redMaterial = new THREE.MeshBasicMaterial( { color: 0xED1C24 } ) //0xff0000
-    static blueMaterial = new THREE.MeshBasicMaterial( { color: 0x0066B3 } )  //0x0000ff
+    static redMaterial =  new THREE.MeshPhongMaterial({
+        color: 0xED1C24,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })
+    static blueMaterial = new THREE.MeshPhongMaterial({
+        color: 0x0066B3,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })  //0x0000ff
+    static transparentMaterial = new THREE.MeshPhongMaterial({
+        color: 0x0000,
+        shininess: 0.0,
+        opacity: 0.0,
+        transparent: true
+    })
 
     private _parentAssembly: MirabufSceneObject
     private _parentBodyId?: Jolt.BodyID
     private _deltaTransformation?: THREE.Matrix4
 
+    private _toRender: boolean
     private _prefs?: ScoringZonePreferences
     private _joltBodyId?: Jolt.BodyID
     private _mesh?: THREE.Mesh
     private _collision?: (event: OnContactAddedEvent) => void
 
-    public constructor(parentAssembly: MirabufSceneObject, index: number) {
+    public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
         super()
 
         console.debug("Trying to create scoring zone...")
 
         this._parentAssembly = parentAssembly
         this._prefs = this._parentAssembly.fieldPreferences?.scoringZones[index]
+        this._toRender = render ?? PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
     }
 
     public Setup(): void {
@@ -51,13 +70,6 @@ class ScoringZoneSceneObject extends SceneObject {
                     console.log("Failed to create scoring zone. No Jolt Body")
                     return
                 }
-
-                this._mesh = World.SceneRenderer.CreateBox(
-                    new JOLT.Vec3(1,1,1),
-                    World.SceneRenderer.CreateToonMaterial(0x0000ff)
-                )
-
-                World.SceneRenderer.scene.add(this._mesh)
                 
                 const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
                 const gizmoTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
@@ -67,9 +79,18 @@ class ScoringZoneSceneObject extends SceneObject {
                 const scale = new THREE.Vector3(1, 1, 1)
                 gizmoTransformation.decompose(translation, rotation, scale)
         
-                this._mesh.position.set(translation.x, translation.y, translation.z)
-                this._mesh.rotation.setFromQuaternion(rotation)
-                this._mesh.scale.set(scale.x, scale.y, scale.z)
+                this._mesh = World.SceneRenderer.CreateBox(
+                    new JOLT.Vec3(1,1,1),
+                    ScoringZoneSceneObject.blueMaterial
+                )
+
+                if (this._toRender) {
+                    this._mesh.position.set(translation.x, translation.y, translation.z)
+                    this._mesh.rotation.setFromQuaternion(rotation)
+                    this._mesh.scale.set(scale.x, scale.y, scale.z)
+
+                    World.SceneRenderer.scene.add(this._mesh)
+                }
 
                 World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(translation))
                 World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
@@ -98,6 +119,7 @@ class ScoringZoneSceneObject extends SceneObject {
 
     public Update(): void {
         if (this._parentBodyId && this._deltaTransformation && this._joltBodyId && this._mesh && this._prefs) {
+            this._toRender = PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
             const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
             const gizmoTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
 
@@ -107,10 +129,14 @@ class ScoringZoneSceneObject extends SceneObject {
             gizmoTransformation.decompose(translation, rotation, scale)
             // console.log(`update trans: ${translation.toArray()} ${rotation.toArray()} ${scale.toArray()}`)
 
-            
-            this._mesh.position.set(translation.x, translation.y, translation.z)
-            this._mesh.rotation.setFromQuaternion(rotation)
-            this._mesh.scale.set(scale.x, scale.y, scale.z)
+            if (this._toRender) {
+                this._mesh.position.set(translation.x, translation.y, translation.z)
+                this._mesh.rotation.setFromQuaternion(rotation)
+                this._mesh.scale.set(scale.x, scale.y, scale.z)
+                this._mesh.material = this._prefs.alliance == "red" ? ScoringZoneSceneObject.redMaterial : ScoringZoneSceneObject.blueMaterial
+            } else {
+                this._mesh.material = ScoringZoneSceneObject.transparentMaterial
+            }
         
             World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(translation))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
@@ -119,7 +145,6 @@ class ScoringZoneSceneObject extends SceneObject {
             const shape = shapeSettings.Create()
             World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate);
 
-            this._mesh.material = this._prefs.alliance == "red" ? ScoringZoneSceneObject.redMaterial : ScoringZoneSceneObject.blueMaterial
 
         } else {
             console.debug("Failed to update scoring zone")
