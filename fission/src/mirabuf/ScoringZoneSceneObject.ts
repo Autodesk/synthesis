@@ -198,7 +198,7 @@ class ScoringZoneSceneObject extends SceneObject {
     
     // TODO: Add handling for when the ejectable carries the gamepiece out
     private ZoneCollisionRemoved(gpID: Jolt.BodyID) {
-        console.log(`Scoring zone ${gpID.GetIndex()} removed from ${this._joltBodyId?.GetIndex()}`)
+        // console.log(`Scoring zone ${gpID.GetIndex()} removed from ${this._joltBodyId?.GetIndex()}`)
 
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
@@ -210,7 +210,7 @@ class ScoringZoneSceneObject extends SceneObject {
                     return y
                 })
                 .map(x => x[1]) as EjectableSceneObject[]
-            console.log(`eject ${ejectables.length}`)
+            // console.log(`eject ${ejectables.length}`)
 
             ejectables.forEach(x => {
                 if (x.parentBodyId == gpID) {

@@ -105,7 +105,7 @@ class IntakeSensorSceneObject extends SceneObject {
     }
 
     private IntakeCollision(gpID: Jolt.BodyID) {
-        console.log(`Intake collided with ${gpID.GetIndex()}`)
+        // console.log(`Intake collided with ${gpID.GetIndex()}`)
 
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
