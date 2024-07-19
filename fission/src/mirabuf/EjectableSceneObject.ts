@@ -10,6 +10,7 @@ import {
     ThreeVector3_JoltVec3,
 } from "@/util/TypeConversions"
 import * as THREE from "three"
+import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 class EjectableSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -46,6 +47,18 @@ class EjectableSceneObject extends SceneObject {
             this._ejectVelocity = this._parentAssembly.ejectorPreferences.ejectorVelocity
 
             World.PhysicsSystem.DisablePhysicsForBody(this._gamePieceBodyId)
+
+            const zones = [...World.SceneRenderer.sceneObjects.entries()]
+                .filter(x => {
+                    const y = x[1] instanceof ScoringZoneSceneObject
+                    return y
+                })
+                .map(x => x[1]) as ScoringZoneSceneObject[]
+
+            zones.forEach(x => {
+                if (this._gamePieceBodyId)
+                    ScoringZoneSceneObject.RemoveGamepiece(x, this._gamePieceBodyId)
+            })
 
             console.debug("Ejectable created successfully!")
         }

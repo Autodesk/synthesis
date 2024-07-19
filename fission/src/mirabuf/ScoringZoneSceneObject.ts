@@ -9,8 +9,6 @@ import SceneObject from "@/systems/scene/SceneObject"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import EjectableSceneObject from "./EjectableSceneObject"
-
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
@@ -43,6 +41,13 @@ class ScoringZoneSceneObject extends SceneObject {
     private _mesh?: THREE.Mesh
     private _collision?: (event: OnContactAddedEvent) => void
     private _collisionRemoved?: (event: OnContactRemovedEvent) => void
+
+    private _gpContacted:  Jolt.BodyID[] = []
+    // private _gpContacting: Jolt.BodyID[] = []
+
+    public get gpContacted() {
+        return this._gpContacted
+    }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
         super()
@@ -161,7 +166,9 @@ class ScoringZoneSceneObject extends SceneObject {
             const shape = shapeSettings.Create()
             World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate);
 
-
+            // console.log(`length ${this._gpContacted.length}`)
+            // this._gpContacted.forEach(x => 
+            //     console.log(`gp ${x.GetIndex()}`))
         } else {
             console.debug("Failed to update scoring zone")
         }
@@ -187,6 +194,8 @@ class ScoringZoneSceneObject extends SceneObject {
     private ZoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece && this._prefs) {
+            console.log(`Adding ${gpID.GetIndex()}`)
+            this._gpContacted.push(gpID)
             if (this._prefs.alliance == "red") {
                 SimulationSystem.redScore += this._prefs.points
             } else {
@@ -202,21 +211,14 @@ class ScoringZoneSceneObject extends SceneObject {
 
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
-            this.RemoveScore()
-        } else {
-            const ejectables = [...World.SceneRenderer.sceneObjects.entries()]
-                .filter(x => {
-                    const y = x[1] instanceof EjectableSceneObject
-                    return y
-                })
-                .map(x => x[1]) as EjectableSceneObject[]
-            // console.log(`eject ${ejectables.length}`)
-
-            ejectables.forEach(x => {
-                if (x.parentBodyId == gpID) {
-                    this.RemoveScore()
-                }
+            console.log(`Removing ${gpID.GetIndex()}`)
+            const temp = this._gpContacted.filter(x => {
+                return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
             })
+            if (this._gpContacted != temp) {
+                this._gpContacted = temp
+                this.RemoveScore()
+            }
         }
     }
 
@@ -230,6 +232,17 @@ class ScoringZoneSceneObject extends SceneObject {
                 if (SimulationSystem.blueScore < 1) SimulationSystem.blueScore = 0
             }
         console.log(`Red: ${SimulationSystem.redScore} Blue: ${SimulationSystem.blueScore}`)
+    }
+
+    public static RemoveGamepiece(zone: ScoringZoneSceneObject, gpID: Jolt.BodyID) {
+        console.log(`Removing ${gpID.GetIndex()} from ${zone.id}`)
+        const temp = zone._gpContacted.filter(x => {
+            return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
+        })
+        if (zone._gpContacted != temp) {
+            zone._gpContacted = temp
+            zone.RemoveScore()
+        }
     }
 }
 
