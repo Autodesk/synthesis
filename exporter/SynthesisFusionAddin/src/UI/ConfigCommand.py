@@ -815,12 +815,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            export_as_part_boolean = (
-                eventArgs.command.commandInputs.itemById("advanced_settings")
-                .children.itemById("exporter_settings")
-                .children.itemById("export_as_part")
-            ).value
-
             processedFileName = gm.app.activeDocument.name.replace(" ", "_")
             dropdownExportMode = INPUTS_ROOT.itemById("mode")
             if dropdownExportMode.selectedItem.index == 0:
