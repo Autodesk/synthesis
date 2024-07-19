@@ -16,8 +16,6 @@ import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly }
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
 import { OnContactAddedEvent, CurrentContactData, OnContactPersistedEvent, OnContactRemovedEvent, OnContactValidateEvent, OnContactValidateData, PhysicsEvent } from "./ContactEvents"
-import World from "../World"
-import Queue from "@/util/Queue"
 
 export type JoltBodyIndexAndSequence = number
 
@@ -191,6 +189,10 @@ class PhysicsSystem extends WorldSystem {
      * @param bodyId
      */
     public EnablePhysicsForBody(bodyId: Jolt.BodyID) {
+        if (!this.IsBodyAdded(bodyId)) {
+            return
+        }
+
         this._joltBodyInterface.ActivateBody(bodyId)
         this.GetBody(bodyId).SetIsSensor(false)
     }
@@ -213,8 +215,7 @@ class PhysicsSystem extends WorldSystem {
         halfExtents: THREE.Vector3,
         mass: number | undefined,
         position: THREE.Vector3 | undefined,
-        rotation: THREE.Euler | THREE.Quaternion | undefined,
-        isSensor: boolean = false
+        rotation: THREE.Euler | THREE.Quaternion | undefined
     ) {
         const size = ThreeVector3_JoltVec3(halfExtents)
         const shape = new JOLT.BoxShape(size, 0.1)
@@ -231,9 +232,6 @@ class PhysicsSystem extends WorldSystem {
         )
         if (mass) {
             creationSettings.mMassPropertiesOverride.mMass = mass
-        }
-        if (isSensor) {
-            creationSettings.mIsSensor = isSensor
         }
         const body = this._joltBodyInterface.CreateBody(creationSettings)
         JOLT.destroy(pos)

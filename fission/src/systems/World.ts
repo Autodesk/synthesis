@@ -4,7 +4,6 @@ import PhysicsSystem from "./physics/PhysicsSystem"
 import SceneRenderer from "./scene/SceneRenderer"
 import SimulationSystem from "./simulation/SimulationSystem"
 import InputSystem from "./input/InputSystem"
-// import ScoringSystem from "./scoring/ScoringSystem"
 
 class World {
     private static _isAlive: boolean = false

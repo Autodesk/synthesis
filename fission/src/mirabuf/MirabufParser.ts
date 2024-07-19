@@ -79,9 +79,7 @@ class MirabufParser {
 
         this.GenerateTreeValues()
         this.LoadGlobalTransforms()
-
-        console.log(assembly)
-
+        
         // eslint-disable-next-line @typescript-eslint/no-this-alias
         const that = this
 
