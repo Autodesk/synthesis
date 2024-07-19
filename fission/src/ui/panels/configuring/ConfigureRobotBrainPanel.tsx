@@ -103,7 +103,27 @@ const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                                 <DividerStyled /> 
                             </>
                         ) : (
-                            <Label>hi2</Label>
+                            <>
+                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                    Example WIPLIB Brain 
+                                </LabelStyled>
+                                <DividerStyled />
+
+                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                    Example 2
+                                </LabelStyled>
+                                <DividerStyled />
+
+                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                    Example 3
+                                </LabelStyled>
+                                <DividerStyled />
+
+                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                                    Example 4
+                                </LabelStyled>
+                                <DividerStyled /> 
+                            </>
                         )}
                     </div>
                 </>
