@@ -3,6 +3,16 @@ import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
 import WPILibWSWorker from "./WPILibWSWorker?worker"
+import Behavior from "../behavior/Behavior"
+import { SimulationLayer } from "../SimulationSystem"
+import World from "@/systems/World"
+import Driver from "../driver/Driver"
+import WheelDriver from "../driver/WheelDriver"
+import WheelRotationStimulus from "../stimulus/WheelStimulus"
+import Jolt from "@barclah/jolt-physics"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import ArcadeDriveBehavior from "../behavior/synthesis/ArcadeDriveBehavior"
+import WPILibArcadeDriveBehavior from "../behavior/wpilib/WPILibArcadeDriveBehavior"
 
 const worker = new WPILibWSWorker()
 
@@ -36,10 +46,36 @@ function GetFieldType(field: string): FieldType {
     }
 }
 
+const defaultSimMap: Map<SimType, Map<string, any>> = new Map(
+    Object.entries({
+        "CANMotor": {
+            "CANSparkMax[0]": {
+                "<percentOutput": 0.75
+            },
+            "CANSparkMax[1]": {
+                "<percentOutput": 0.75
+            },
+            "CANSparkMax[2]": {
+                "<percentOutput": 0.75
+            },
+            "CANSparkMax[3]": {
+                "<percentOutput": -0.75
+            },
+            "CANSparkMax[4]": {
+                "<percentOutput": -0.75
+            },
+            "CANSparkMax[5]": {
+                "<percentOutput": -0.75
+            },
+        }
+    })
+        .map(([key, value]) => [key as SimType, new Map(Object.entries(value))])
+)
+
 export const simMap = new Map<SimType, Map<string, any>>()
 
 export class SimGeneric {
-    private constructor() {}
+    private constructor() { }
 
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
         const fieldType = GetFieldType(field)
@@ -101,7 +137,7 @@ export class SimGeneric {
 }
 
 export class SimPWM {
-    private constructor() {}
+    private constructor() { }
 
     public static GetSpeed(device: string): number | undefined {
         return SimGeneric.Get("PWM", device, PWM_SPEED, 0.0)
@@ -112,8 +148,30 @@ export class SimPWM {
     }
 }
 
+export class SimCAN {
+    private constructor() { }
+
+    public static GetDeviceWithID(id: number): any {
+        const id_exp = /.*\[(\d+)\]/g;
+        const entries = [...simMap.entries()].filter(([simType, _data]) => simType.startsWith("CAN"))
+        entries.forEach(([_simType, data]) => {
+            [...data.keys()].forEach(key => {
+                let result;
+                if ((result = [...key.matchAll(id_exp)]) != undefined) {
+                    if (result.length > 0 && result[0].length > 1) {
+                        const parsed_id = parseInt(result[0][1]);
+                        if (parsed_id == id)
+                            return data.get(key)
+                    }
+                }
+            })
+        })
+        return undefined
+    }
+}
+
 export class SimCANMotor {
-    private constructor() {}
+    private constructor() { }
 
     public static GetDutyCycle(device: string): number | undefined {
         return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
@@ -125,7 +183,7 @@ export class SimCANMotor {
 }
 
 export class SimCANEncoder {
-    private constructor() {}
+    private constructor() { }
 
     public static SetRawInputPosition(device: string, rawInputPosition: number): boolean {
         return SimGeneric.Set("CANEncoder", device, CANENCODER_RAW_INPUT_POSITION, rawInputPosition)
@@ -193,17 +251,42 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
         currentData = {}
         typeMap.set(device, currentData)
     }
-    Object.entries(updateData).forEach(kvp => (currentData[kvp[0]] = kvp[1]))
+    Object.entries(updateData).forEach(([key, value]) => (currentData[key] = value))
 
     window.dispatchEvent(new SimMapUpdateEvent(false))
 }
 
 class WPILibBrain extends Brain {
-    constructor(mech: Mechanism) {
-        super(mech)
+    private _behaviors: Behavior[] = []
+    private _simLayer: SimulationLayer
+
+    private _driverDevices: Map<SimType, Map<string, Driver>> = new Map()
+
+    public static robotsSpawned: string[] = []
+
+    private static _currentRobotIndex: number = 0
+
+    constructor(mechanism: Mechanism) {
+        super(mechanism)
+
+        this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
+
+        if (!this._simLayer) {
+            console.warn("SimulationLayer is undefined")
+            return
+        }
+
+        // if (mechanism.controllable) {
+        //     WPILibBrain.robotsSpawned.push(this.getNumberedAssemblyName())
+        // }
+
+        // WPILibBrain._currentRobotIndex++
+        this.configureArcadeDriveBehavior()
     }
 
-    public Update(_: number): void {}
+    public Update(deltaT: number): void {
+        this._behaviors.forEach(b => b.Update(deltaT))
+    }
 
     public Enable(): void {
         worker.postMessage({ command: "connect" })
@@ -211,6 +294,64 @@ class WPILibBrain extends Brain {
 
     public Disable(): void {
         worker.postMessage({ command: "disconnect" })
+    }
+    
+    public configureArcadeDriveBehavior() {
+        const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
+            driver => driver instanceof WheelDriver
+        ) as WheelDriver[]
+        wheelDrivers.forEach((wheel, idx) => {
+            wheel.deviceType = 'SimDevice'
+            wheel.device = `SYN CANSparkMax[${idx}]`
+        })
+        const wheelStimuli: WheelRotationStimulus[] = this._simLayer.stimuli.filter(
+            stimulus => stimulus instanceof WheelRotationStimulus
+        ) as WheelRotationStimulus[]
+
+        // Two body constraints are part of wheels and are used to determine which way a wheel is facing
+        const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints
+            .filter(mechConstraint => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint)
+            .map(mechConstraint => mechConstraint.constraint as Jolt.TwoBodyConstraint)
+
+        const leftWheels: WheelDriver[] = []
+        const leftStimuli: WheelRotationStimulus[] = []
+
+        const rightWheels: WheelDriver[] = []
+        const rightStimuli: WheelRotationStimulus[] = []
+
+        // Determines which wheels and stimuli belong to which side of the robot
+        for (let i = 0; i < wheelDrivers.length; i++) {
+            const wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
+
+            const robotCOM = World.PhysicsSystem.GetBody(
+                this._mechanism.constraints[0].childBody
+            ).GetCenterOfMassPosition() as Jolt.Vec3
+            const rightVector = new JOLT.Vec3(1, 0, 0)
+
+            const dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
+
+            if (dotProduct < 0) {
+                rightWheels.push(wheelDrivers[i])
+                rightStimuli.push(wheelStimuli[i])
+            } else {
+                leftWheels.push(wheelDrivers[i])
+                leftStimuli.push(wheelStimuli[i])
+            }
+        }
+
+        // TODO: all this is very temporary
+        this._driverDevices.set("CANMotor", new Map<string, Driver>());
+        leftWheels.forEach(wheel => this._driverDevices.get(wheel.deviceType!)!.set(wheel.device!, wheel))
+        rightWheels.forEach(wheel => this._driverDevices.get(wheel.deviceType!)!.set(wheel.device!, wheel))
+
+        this._behaviors.push(
+            new WPILibArcadeDriveBehavior(
+                leftWheels,
+                rightWheels,
+                leftStimuli,
+                rightStimuli
+            )
+        )
     }
 }
 
