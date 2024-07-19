@@ -1,16 +1,16 @@
 import * as THREE from "three"
-import SceneObject from "./SceneObject"
-import WorldSystem from "../WorldSystem"
+import SceneObject from "@/systems/scene/SceneObject"
+import WorldSystem from "@/systems/WorldSystem"
 
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 
 import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
-import InputSystem from "../input/InputSystem"
 import Jolt from "@barclah/jolt-physics"
+import InputSystem from "@/systems/input/InputSystem"
+import { CameraControls, CameraControlsType, OrbitControls } from "@/systems/scene/CameraControls"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -32,7 +32,7 @@ class SceneRenderer extends WorldSystem {
 
     private _sceneObjects: Map<number, SceneObject>
 
-    private _orbitControls: OrbitControls
+    private _cameraControls: CameraControls
     private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
 
     private _light: THREE.DirectionalLight | CSM | undefined
@@ -116,8 +116,19 @@ class SceneRenderer extends WorldSystem {
         this._composer.addPass(this._antiAliasPass)
 
         // Orbit controls
-        this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
-        this._orbitControls.update()
+        this._cameraControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
+    }
+
+    public SetCameraControls(controlsType: CameraControlsType) {
+        this._cameraControls.dispose()
+        switch (controlsType) {
+            case CameraControlsType.Orbit:
+                this._cameraControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
+                break
+            case CameraControlsType.Fly:
+                // this._cameraControls = new 
+                break
+        }
     }
 
     public UpdateCanvasSize() {
@@ -151,6 +162,8 @@ class SceneRenderer extends WorldSystem {
         // Update the tags each frame if they are enabled in preferences
         if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
             new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
+        
+        this._cameraControls.update(deltaT)
 
         this._composer.render(deltaT)
     }
@@ -349,11 +362,11 @@ class SceneRenderer extends WorldSystem {
             (event: { target: TransformControls; value: unknown }) => {
                 const isAnyGizmoDragging = Array.from(this._transformControls.keys()).some(gizmo => gizmo.dragging)
                 if (!event.value && !isAnyGizmoDragging) {
-                    this._orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
+                    this._cameraControls.enabled = true // enable orbit controls when not dragging another transform gizmo
                 } else if (!event.value && isAnyGizmoDragging) {
-                    this._orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
+                    this._cameraControls.enabled = false // disable orbit controls when dragging another transform gizmo
                 } else {
-                    this._orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
+                    this._cameraControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
                 }
 
                 if (event.target.mode === "translate") {
