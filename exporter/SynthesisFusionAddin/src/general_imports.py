@@ -39,9 +39,10 @@ try:
 
     from proto import deps
 
+    deps.installDependencies()
+
 except:
     logging.getLogger(f"{INTERNAL_ID}.import_manager").error("Failed\n{}".format(traceback.format_exc()))
-
 try:
     # simple analytics endpoint
     # A_EP = AnalyticsEndpoint("UA-188467590-1", 1)

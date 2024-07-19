@@ -1,16 +1,31 @@
-import importlib.util
-import logging.handlers
+# DO NOT CHANGE ORDER, OR ADD IMPORTS BEFORE UNTIL END COMMENT
+
+import logging
 import os
 import traceback
 from shutil import rmtree
 
 import adsk.core
 
-from .src.configure import setAnalytics, unload_config
 from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
 from .src.Types.OString import OString
-from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
+from .src.UI import (
+    HUI,
+    Camera,
+    ConfigCommand,
+    Handlers,
+    Helper,
+    MarkingMenu,
+    ShowAPSAuthCommand,
+)
 from .src.UI.Toolbar import Toolbar
+
+# END OF RESTRICTION
+
+# Transition: AARD-1721
+# Should attempt to fix this ordering scheme within AARD-1741
+from .src.APS import APS  # isort:skip
+from .src.configure import setAnalytics, unload_config  # isort:skip
 
 
 def run(_):
@@ -122,3 +137,14 @@ def register_ui() -> None:
     )
 
     gm.elements.append(commandButton)
+
+    apsButton = HUI.HButton(
+        "APS",
+        work_panel,
+        Helper.check_solid_open,
+        ShowAPSAuthCommand.ShowAPSAuthCommandCreatedHandler,
+        description=f"APS",
+        command=True,
+    )
+
+    gm.elements.append(apsButton)

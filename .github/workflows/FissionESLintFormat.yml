@@ -24,21 +24,14 @@ jobs:
         npm install
     - name: Linter
       id: linter-validation
+      if: ${{ always() }}
       run: |
         cd fission
-        npm run lint
-      continue-on-error: true
+        npm run lint && echo "ESLint Validation Passed" || (echo "ESLint Validation Failed" && exit 1)
     - name: Prettier
       id: prettier-validation
+      if: ${{ always() }}
       run: |
         cd fission
-        npm run prettier
-      continue-on-error: true
-    - name: Check Success
-      run: |
-        if [ ${{ steps.linter-validation.outcome }} == "success" ]; then
-          echo "Format Validation Passed"
-        else
-          echo "Format Validation Failed"
-          exit 1
-        fi
+        npx prettier --version
+        npm run prettier && echo "Prettier Validation Passed" || (echo "Prettier Validation Failed" && exit 1)

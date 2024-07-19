@@ -5,7 +5,8 @@
         "lib": [
             "ES2020",
             "DOM",
-            "DOM.Iterable"
+            "DOM.Iterable",
+            "DOM.AsyncIterable"
         ],
         "module": "ESNext",
         "skipLibCheck": true,
@@ -38,7 +39,10 @@
         "strict": true,
         "noUnusedLocals": true,
         "noUnusedParameters": true,
-        "noFallthroughCasesInSwitch": true
+        "noFallthroughCasesInSwitch": true,
+        "types": [
+            "vite-plugin-glsl/ext"
+        ],
     },
     "include": [
         "src"
