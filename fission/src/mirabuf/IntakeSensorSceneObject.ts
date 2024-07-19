@@ -10,7 +10,8 @@ import {
     ThreeQuaternion_JoltQuat,
     ThreeVector3_JoltVec3,
 } from "@/util/TypeConversions"
-import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
+import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
+import InputSystem from "@/systems/input/InputSystem"
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -19,6 +20,7 @@ class IntakeSensorSceneObject extends SceneObject {
 
     private _joltBodyId?: Jolt.BodyID
     private _mesh?: THREE.Mesh
+    private _collision?: (e: OnContactPersistedEvent) => void
 
     public constructor(parentAssembly: MirabufSceneObject) {
         super()
@@ -50,21 +52,22 @@ class IntakeSensorSceneObject extends SceneObject {
             )
             World.SceneRenderer.scene.add(this._mesh)
 
-            const collision = (event: OnContactAddedEvent) => {
-                //TODO: Add intake key pressed check
-                if (this._joltBodyId && !World.PhysicsSystem.isPaused) {
-                    const body1 = event.message.body1
-                    const body2 = event.message.body2
+            this._collision = (event: OnContactPersistedEvent) => {
+                if (InputSystem.isKeyPressed("KeyQ")) {
+                    if (this._joltBodyId && !World.PhysicsSystem.isPaused) {
+                        const body1 = event.message.body1
+                        const body2 = event.message.body2
 
-                    if (body1.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
-                        this.IntakeCollision(body2)
-                    } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
-                        this.IntakeCollision(body1)
+                        if (body1.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
+                            this.IntakeCollision(body2)
+                        } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId.GetIndexAndSequenceNumber()) {
+                            this.IntakeCollision(body1)
+                        }
                     }
                 }
             }
 
-            OnContactAddedEvent.AddListener(collision)
+            OnContactPersistedEvent.AddListener(this._collision)
 
             console.debug("Intake sensor created successfully!")
         }
@@ -102,11 +105,12 @@ class IntakeSensorSceneObject extends SceneObject {
                 World.SceneRenderer.scene.remove(this._mesh)
             }
         }
+
+        if (this._collision) OnContactPersistedEvent.RemoveListener(this._collision)
     }
 
     private IntakeCollision(gpID: Jolt.BodyID) {
         // console.log(`Intake collided with ${gpID.GetIndex()}`)
-
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
             this._parentAssembly.SetEjectable(gpID, false)
