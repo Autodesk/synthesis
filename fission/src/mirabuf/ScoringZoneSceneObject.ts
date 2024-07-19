@@ -4,11 +4,12 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
 import * as THREE from "three"
-import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
+import { OnContactAddedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
 import SceneObject from "@/systems/scene/SceneObject"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import EjectableSceneObject from "./EjectableSceneObject"
 
 
 class ScoringZoneSceneObject extends SceneObject {
@@ -41,6 +42,7 @@ class ScoringZoneSceneObject extends SceneObject {
     private _joltBodyId?: Jolt.BodyID
     private _mesh?: THREE.Mesh
     private _collision?: (event: OnContactAddedEvent) => void
+    private _collisionRemoved?: (event: OnContactRemovedEvent) => void
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
         super()
@@ -109,8 +111,22 @@ class ScoringZoneSceneObject extends SceneObject {
                         this.ZoneCollision(body1)
                     }
                 }
+
+                this._collisionRemoved = (event: OnContactRemovedEvent) => {
+                    if (this._prefs?.persistentPoints) {
+                        const body1 = event.message.GetBody1ID()
+                        const body2 = event.message.GetBody2ID()
+
+                        if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                            this.ZoneCollisionRemoved(body2)
+                        } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                            this.ZoneCollisionRemoved(body1)
+                        }
+                    }
+                }
         
                 OnContactAddedEvent.AddListener(this._collision)
+                OnContactRemovedEvent.AddListener(this._collisionRemoved)
 
                 console.debug("Scoring zone created successfully")
             }
@@ -165,11 +181,10 @@ class ScoringZoneSceneObject extends SceneObject {
         }
         
         if (this._collision) OnContactAddedEvent.RemoveListener(this._collision)
+        if (this._collisionRemoved) OnContactRemovedEvent.RemoveListener(this._collisionRemoved)
     }
 
     private ZoneCollision(gpID: Jolt.BodyID) {
-        console.log(`Scoring zone ${this._joltBodyId?.GetIndexAndSequenceNumber()} collided with ${gpID.GetIndex()}`)
-
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece && this._prefs) {
             if (this._prefs.alliance == "red") {
@@ -181,6 +196,41 @@ class ScoringZoneSceneObject extends SceneObject {
         }
     }
     
+    // TODO: Add handling for when the ejectable carries the gamepiece out
+    private ZoneCollisionRemoved(gpID: Jolt.BodyID) {
+        console.log(`Scoring zone ${gpID.GetIndex()} removed from ${this._joltBodyId?.GetIndex()}`)
+
+        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+        if (associate?.isGamePiece) {
+            this.RemoveScore()
+        } else {
+            const ejectables = [...World.SceneRenderer.sceneObjects.entries()]
+                .filter(x => {
+                    const y = x[1] instanceof EjectableSceneObject
+                    return y
+                })
+                .map(x => x[1]) as EjectableSceneObject[]
+            console.log(`eject ${ejectables.length}`)
+
+            ejectables.forEach(x => {
+                if (x.parentBodyId == gpID) {
+                    this.RemoveScore()
+                }
+            })
+        }
+    }
+
+    private RemoveScore() {
+        if (this._prefs)
+            if (this._prefs.alliance == "red") {
+                SimulationSystem.redScore -= this._prefs.points
+                if (SimulationSystem.redScore < 1) SimulationSystem.redScore = 0
+            } else {
+                SimulationSystem.blueScore -= this._prefs.points
+                if (SimulationSystem.blueScore < 1) SimulationSystem.blueScore = 0
+            }
+        console.log(`Red: ${SimulationSystem.redScore} Blue: ${SimulationSystem.blueScore}`)
+    }
 }
 
 export default ScoringZoneSceneObject

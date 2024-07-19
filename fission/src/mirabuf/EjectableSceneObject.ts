@@ -23,6 +23,10 @@ class EjectableSceneObject extends SceneObject {
         return this._gamePieceBodyId
     }
 
+    public get parentBodyId() {
+        return this._parentBodyId
+    }
+
     public constructor(parentAssembly: MirabufSceneObject, gamePieceBody: Jolt.BodyID) {
         super()
 
