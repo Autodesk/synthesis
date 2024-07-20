@@ -139,11 +139,11 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
                     />
-                    {/*                     <MainHUDButton
+                    <MainHUDButton
                         value={"View"}
                         icon={SynthesisIcons.MagnifyingGlass}
                         onClick={() => openModal("view")}
-                    /> */}
+                    />
                     <MainHUDButton
                         value={"Configure Assets"}
                         icon={SynthesisIcons.Wrench}

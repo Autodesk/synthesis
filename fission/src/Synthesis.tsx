@@ -60,6 +60,7 @@ import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
+import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -228,6 +229,7 @@ const initialPanels: ReactElement[] = [
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
+    <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
 ]
 
 export default Synthesis
