@@ -14,6 +14,7 @@ import InputSystem from "../input/InputSystem"
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import {} from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
+import CascadingShadows from "./CascadingShadows"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -33,6 +34,8 @@ class SceneRenderer extends WorldSystem {
 
     private _orbitControls: OrbitControls
     private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
+
+    private _light: CascadingShadows
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -74,23 +77,25 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0)
-        directionalLight.position.set(-1.0, 3.0, 2.0)
-        directionalLight.castShadow = true
-        this._scene.add(directionalLight)
+        // const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0)
+        // directionalLight.position.set(-1.0, 3.0, 2.0)
+        // directionalLight.castShadow = true
+        // this._scene.add(directionalLight)
 
-        const shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
-        const shadowCamSize = 15
-        console.debug(`Shadow Map Size: ${shadowMapSize}`)
+        // const shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
+        // const shadowCamSize = 15
+        // console.debug(`Shadow Map Size: ${shadowMapSize}`)
 
-        directionalLight.shadow.camera.top = shadowCamSize
-        directionalLight.shadow.camera.bottom = -shadowCamSize
-        directionalLight.shadow.camera.left = -shadowCamSize
-        directionalLight.shadow.camera.right = shadowCamSize
-        directionalLight.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize)
-        directionalLight.shadow.blurSamples = 16
-        directionalLight.shadow.normalBias = 0.01
-        directionalLight.shadow.bias = 0.0
+        // directionalLight.shadow.camera.top = shadowCamSize
+        // directionalLight.shadow.camera.bottom = -shadowCamSize
+        // directionalLight.shadow.camera.left = -shadowCamSize
+        // directionalLight.shadow.camera.right = shadowCamSize
+        // directionalLight.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize)
+        // directionalLight.shadow.blurSamples = 16
+        // directionalLight.shadow.normalBias = 0.01
+        // directionalLight.shadow.bias = 0.0
+
+        this._light = new CascadingShadows(this._mainCamera, this._scene, this._renderer)
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
         this._scene.add(ambientLight)
@@ -143,6 +148,7 @@ class SceneRenderer extends WorldSystem {
         this._sceneObjects.forEach(obj => {
             obj.Update()
         })
+        this._light.Update()
 
         this._skybox.position.copy(this._mainCamera.position)
 
