@@ -1,9 +1,7 @@
 import * as THREE from 'three'
-import { OrbitControls as ThreeOrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
-import { FlyControls as ThreeFlyControls } from "three/examples/jsm/controls/FlyControls.js"
 
 export enum CameraControlsType {
-    OrbitFocus = 1, OrbitFree = 2
+    OrbitFocus = 1, OrbitFree = 2, OrbitLocked = 3
 }
 
 export abstract class CameraControls {
@@ -20,45 +18,12 @@ export abstract class CameraControls {
 
     public abstract update(deltaT: number): void
 
-    public abstract setFocus(vec: THREE.Vector3): void;
+    public abstract setFocusTransform(mat: THREE.Matrix4): void;
+    public setFocusTranslation(vec: THREE.Vector3): void {
+        this.setFocusTransform((new THREE.Matrix4()).makeTranslation(vec))
+    }
 
     public abstract dispose(): void
-}
-
-export class OrbitControls extends CameraControls {
-    private _orbit: ThreeOrbitControls
-
-    public get settings() { return this._orbit }
-    
-    public set enabled(val: boolean) { this._orbit.enabled = val }
-    public get enabled(): boolean { return this._orbit.enabled }
-
-    private _allowFocus: boolean
-    
-    public constructor(mainCamera: THREE.Camera, domElement: HTMLElement, allowFocus: boolean) {
-        super(allowFocus ? CameraControlsType.OrbitFocus : CameraControlsType.OrbitFree)
-
-        this._allowFocus = allowFocus
-
-        this._orbit = new ThreeOrbitControls(mainCamera, domElement)
-        this._orbit.enablePan = !allowFocus
-    }
-
-    public update(deltaT: number): void {
-        this._orbit.update(deltaT)
-    }
-
-    public setFocus(vec: THREE.Vector3): void {
-        if (!this._allowFocus) {
-            return
-        }
-
-        this._orbit.target = vec
-    }
-
-    public dispose(): void {
-        this._orbit.dispose()
-    }
 }
 
 class PointerHandler {
@@ -118,12 +83,17 @@ interface SphericalCoords {
     r: number
 }
 
+type PointerType = -1 | 0 | 1
+
+const PRIMARY_POINTER_TYPE = 0
+const MIDDLE_POINTER_TYPE = 1
+
 const CO_MAX_ZOOM = 40.0
 const CO_MIN_ZOOM = 0.1
 const CO_MAX_PHI = Math.PI / 2.1
 const CO_MIN_PHI = -Math.PI / 2.1
 
-const CO_SENSITIVITY_ZOOM = 3.0
+const CO_SENSITIVITY_ZOOM = 5.0
 const CO_SENSITIVITY_PHI = 1.0
 const CO_SENSITIVITY_THETA = 1.0
 
@@ -131,19 +101,42 @@ const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0
 const CO_DEFAULT_THETA = -Math.PI / 4.0
 
+const DEG2RAD = Math.PI / 180.0
+
+/**
+ * Creates a pseudo frustum of the perspective camera to scale the mouse movement to something relative to the scenes dimensions and scale
+ * 
+ * @param camera Main Camera
+ * @param distanceFromFocus Distance from the focus point
+ * @param originalMovement Original movement of the mouse across the screen
+ * @returns Augmented movement to scale to the scenes relative dimensions
+ */
+function augmentMovement(camera: THREE.Camera, distanceFromFocus: number, originalMovement: [number, number]): [number, number] {
+    const aspect = window.innerWidth / window.innerHeight
+    const fov: number | undefined = (camera as THREE.PerspectiveCamera)?.fov
+    if (fov) {
+        return [
+            (2 * distanceFromFocus * Math.tan(DEG2RAD * fov * aspect / 2) * originalMovement[0]) / window.innerWidth,
+            (2 * distanceFromFocus * Math.tan(DEG2RAD * fov / 2) * originalMovement[1]) / window.innerHeight
+        ]
+    } else {
+        return originalMovement
+    }
+}
+
 export class CustomOrbitControls extends CameraControls {
     private _enabled = true
     
     private _mainCamera: THREE.Camera
-    private _domElement: HTMLElement
 
     private _pointerHandler: PointerHandler
 
-    private _isPointerDown: boolean
-    private _currentPos: SphericalCoords
-    private _lastPos: SphericalCoords
+    private _activePointerType: PointerType
+    private _nextCoords: SphericalCoords
     private _coords: SphericalCoords
-    private _focus: THREE.Vector3
+    private _focus: THREE.Matrix4
+
+    private _focusEnabled: boolean
 
     public set enabled(val: boolean) {
         this._enabled = val
@@ -152,18 +145,19 @@ export class CustomOrbitControls extends CameraControls {
         return this._enabled
     }
 
-    public constructor(mainCamera: THREE.Camera, domElement: HTMLElement) {
-        super(CameraControlsType.OrbitFocus)
+    public constructor(mainCamera: THREE.Camera, domElement: HTMLElement, focusEnabled: boolean, locked: boolean) {
+        super(focusEnabled ? locked ? CameraControlsType.OrbitLocked : CameraControlsType.OrbitFocus : CameraControlsType.OrbitFree)
 
         this._mainCamera = mainCamera
-        this._domElement = domElement
 
-        this._currentPos = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
-        this._lastPos = this._currentPos
+        this._focusEnabled = focusEnabled
+
+        this._nextCoords = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
         this._coords = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
-        this._isPointerDown = false
+        this._activePointerType = -1
 
-        this._focus = new THREE.Vector3(0,0,0)
+        // Identity
+        this._focus = new THREE.Matrix4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)
 
         this._pointerHandler = new PointerHandler(domElement,
             (ev) => this.pointerDown(ev),
@@ -174,40 +168,68 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public wheelMove(ev: WheelEvent) {
-        this._currentPos.r += ev.deltaY * 0.01
+        // Something to just scale the scrolling delta to something more reasonable.
+        this._nextCoords.r += ev.deltaY * 0.01
     }
 
     public pointerUp(ev: PointerEvent) {
-        this._isPointerDown = false
+        /**
+         * If Pointer is already down, and the button that is being
+         * released is the primary button, make Pointer not be down
+         */
+        if (ev.button == this._activePointerType) {
+            this._activePointerType = -1
+        }
     }
 
     public pointerDown(ev: PointerEvent) {
-        this._isPointerDown = ev.button == 0
+        // If primary button, make Pointer be down
+        if (this._activePointerType < 0) {
+            switch (ev.button) {
+                case PRIMARY_POINTER_TYPE:
+                    this._activePointerType = PRIMARY_POINTER_TYPE
+                    break
+                case MIDDLE_POINTER_TYPE:
+                    this._activePointerType = MIDDLE_POINTER_TYPE
+                    break
+                default:
+                    break
+            }
+        }
     }
 
     public pointerMove(ev: PointerEvent) {
-        if (!this._isPointerDown) {
-            return
+        if (this._activePointerType == PRIMARY_POINTER_TYPE) {
+            // Add the movement of the mouse to the _currentPos
+            this._nextCoords.theta -= ev.movementX
+            this._nextCoords.phi -= ev.movementY
+        } else if (this._activePointerType == MIDDLE_POINTER_TYPE && this.controlsType == CameraControlsType.OrbitFree) {
+            const orientation = (new THREE.Quaternion()).setFromEuler(this._mainCamera.rotation)
+
+            const augmentedMovement = augmentMovement(
+                this._mainCamera,
+                this._coords.r,
+                [ev.movementX, ev.movementY]
+            )
+
+            const pan = (new THREE.Vector3(-augmentedMovement[0], augmentedMovement[1], 0)).applyQuaternion(orientation)
+            const newPos = (new THREE.Vector3()).setFromMatrixPosition(this._focus)
+            newPos.add(pan)
+            this._focus.setPosition(newPos)
         }
-
-        this._currentPos.theta -= ev.movementX
-        this._currentPos.phi -= ev.movementY
-
-        console.debug(this._currentPos)
     }
 
     public update(deltaT: number): void {
+        // Generate delta of spherical coordinates
         const omega: SphericalCoords = this.enabled ? {
-            theta: this._currentPos.theta - this._lastPos.theta,
-            phi: this._currentPos.phi - this._lastPos.phi,
-            r: this._currentPos.r - this._lastPos.r
+            theta: this._nextCoords.theta - this._coords.theta,
+            phi: this._nextCoords.phi - this._coords.phi,
+            r: this._nextCoords.r - this._coords.r
         } : { theta: 0, phi: 0, r: 0 }
-
-        this._lastPos = { theta: this._currentPos.theta, phi: this._currentPos.phi, r: this._currentPos.r }
 
         this._coords.theta += omega.theta * deltaT * CO_SENSITIVITY_THETA
         this._coords.phi += omega.phi * deltaT * CO_SENSITIVITY_PHI
-        this._coords.r += omega.r * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(this._coords.r, 1.6)
+        this._coords.r += omega.r * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(this._coords.r, 1.4)
 
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, this._coords.phi))
         this._coords.r = Math.min(CO_MAX_ZOOM, Math.max(CO_MIN_ZOOM, this._coords.r))
@@ -215,15 +237,23 @@ export class CustomOrbitControls extends CameraControls {
         const deltaTransform = (new THREE.Matrix4()).makeTranslation(0, 0, this._coords.r)
             .premultiply((new THREE.Matrix4()).makeRotationFromEuler(new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ")))
 
-        deltaTransform.premultiply((new THREE.Matrix4()).makeTranslation(this._focus))
+        if (this.controlsType == CameraControlsType.OrbitLocked) {
+            deltaTransform.premultiply(this._focus)
+        } else {
+            const focusPosition = (new THREE.Matrix4()).copyPosition(this._focus)
+            deltaTransform.premultiply(focusPosition)
+        }
+        
 
         this._mainCamera.position.setFromMatrixPosition(deltaTransform)
         this._mainCamera.rotation.setFromRotationMatrix(deltaTransform)
+
+        this._nextCoords = { theta: this._coords.theta, phi: this._coords.phi, r: this._coords.r }
     }
 
-    public setFocus(vec: THREE.Vector3): void {
-        if (this.enabled) {
-            this._focus.copy(vec)
+    public setFocusTransform(mat: THREE.Matrix4): void {
+        if (this.enabled && this._focusEnabled) {
+            this._focus.copy(mat)
         }
     }
 
