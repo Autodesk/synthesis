@@ -4,7 +4,7 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -228,6 +228,9 @@ class MirabufSceneObject extends SceneObject {
                 )
             )
         }
+        
+        const com = World.PhysicsSystem.GetBody(this._mechanism.nodeToBody.get(this.rootNodeId)!).GetCenterOfMassPosition()
+        World.SceneRenderer.currentCameraControls.setFocus(JoltVec3_ThreeVector3(com))
     }
 
     public Dispose(): void {

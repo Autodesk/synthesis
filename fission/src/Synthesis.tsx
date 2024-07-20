@@ -63,6 +63,7 @@ import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
 import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
+import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -223,6 +224,7 @@ const initialPanels: ReactElement[] = [
     <PokerPanel key="poker" panelId="poker" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
+    <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
 ]
 
 export default Synthesis
