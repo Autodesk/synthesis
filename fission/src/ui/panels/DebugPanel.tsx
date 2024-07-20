@@ -20,7 +20,7 @@ import { colorNameToVar } from "../ThemeContext"
 const LabelStyled = styled(Label)({
     fontWeight: 700,
     margin: "0pt",
-    marginTop: "0.5rem"
+    marginTop: "0.5rem",
 })
 
 async function TestGodMode() {
@@ -70,7 +70,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     padding: "0.25rem",
                     overflowY: "auto",
                     borderRadius: "0.5rem",
-                    backgroundColor: colorNameToVar("BackgroundSecondary")
+                    backgroundColor: colorNameToVar("BackgroundSecondary"),
                 }}
             >
                 <LabelStyled>Generic</LabelStyled>
@@ -87,14 +87,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         openPanel("poker")
                     }}
                 />
-                <Button
-                    value={"Test God Mode"}
-                    onClick={TestGodMode}
-                />
-                <Button
-                    value={"Clear Prefs"}
-                    onClick={() => PreferencesSystem.clearPreferences()}
-                />
+                <Button value={"Test God Mode"} onClick={TestGodMode} />
+                <Button value={"Clear Prefs"} onClick={() => PreferencesSystem.clearPreferences()} />
                 <LabelStyled>Autodesk Platform Services</LabelStyled>
                 <Button
                     value={"Refresh APS Token"}
@@ -119,10 +113,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
                     }}
                 />
-                <Button
-                    value={"Clear Mira Cache"}
-                    onClick={() => MirabufCachingService.RemoveAll()}
-                />
+                <Button value={"Clear Mira Cache"} onClick={() => MirabufCachingService.RemoveAll()} />
                 <LabelStyled>Code Simulation</LabelStyled>
                 <Button
                     value={"WS Test"}

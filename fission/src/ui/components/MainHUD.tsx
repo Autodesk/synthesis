@@ -1,28 +1,17 @@
 import React, { useEffect, useState } from "react"
-import { BsCodeSquare } from "react-icons/bs"
 import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
-import { GrConnect, GrFormClose } from "react-icons/gr"
-import { GiSteeringWheel } from "react-icons/gi"
-import { HiDownload } from "react-icons/hi"
-import { IoBasketball, IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
+import { GrFormClose } from "react-icons/gr"
+import { IoBasketball, IoGameControllerOutline, IoPeople } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
 import logo from "@/assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "@/ui/ToastContext"
-import { Random } from "@/util/Random"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
-import World from "@/systems/World"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import Jolt from "@barclah/jolt-physics"
-import { AiOutlineDoubleRight, AiOutlineTool } from "react-icons/ai"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { AiOutlineTool } from "react-icons/ai"
 
 type ButtonProps = {
     value: string
@@ -156,7 +145,5 @@ const MainHUD: React.FC = () => {
         </>
     )
 }
-
-
 
 export default MainHUD
