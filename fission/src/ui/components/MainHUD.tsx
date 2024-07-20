@@ -21,7 +21,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
-import { AiOutlineDoubleRight } from "react-icons/ai"
+import { AiOutlineDoubleRight, AiOutlineTool } from "react-icons/ai"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 type ButtonProps = {
@@ -118,62 +118,8 @@ const MainHUD: React.FC = () => {
                         icon={<IoPeople />}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
-                    <MainHUDButton
-                        value={"The Poker"}
-                        icon={<AiOutlineDoubleRight />}
-                        onClick={() => openPanel("poker")}
-                    />
-                    <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
-                    <MainHUDButton
-                        value={"Clear Prefs"}
-                        icon={<IoBug />}
-                        onClick={() => PreferencesSystem.clearPreferences()}
-                    />
-                    <MainHUDButton
-                        value={"Refresh APS Token"}
-                        icon={<IoRefresh />}
-                        onClick={async () =>
-                            APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
-                        }
-                    />
-                    <MainHUDButton
-                        value={"Expire APS Token"}
-                        icon={<IoTimer />}
-                        onClick={() => {
-                            if (APS.isSignedIn()) {
-                                APS.setExpiresAt(Date.now())
-                                APS.getAuthOrLogin()
-                            }
-                        }}
-                    />
-                    <MainHUDButton value={"WS Viewer"} icon={<GrConnect />} onClick={() => openPanel("ws-view")} />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
-                    <MainHUDButton
-                        value={"Download Asset"}
-                        icon={<HiDownload />}
-                        onClick={() => openModal("download-assets")}
-                    />
-                    <MainHUDButton value={"RoboRIO"} icon={<BsCodeSquare />} onClick={() => openModal("roborio")} />
-                    <MainHUDButton
-                        value={"Driver Station"}
-                        icon={<GiSteeringWheel />}
-                        onClick={() => openPanel("driver-station")}
-                    />
-                    {/* MiraMap and OPFS Temp Buttons */}
-                    <MainHUDButton
-                        value={"Print Mira Maps"}
-                        icon={<BsCodeSquare />}
-                        onClick={() => {
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
-                        }}
-                    />
-                    <MainHUDButton
-                        value={"Clear Mira"}
-                        icon={<GiSteeringWheel />}
-                        onClick={() => MirabufCachingService.RemoveAll()}
-                    />
                     <MainHUDButton
                         value={"Edit Scoring Zones"}
                         icon={<IoBasketball />}
@@ -182,31 +128,14 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                     <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
-                    <MainHUDButton
-                        value={"WS Test"}
-                        icon={<FaCar />}
-                        onClick={() => {
-                            // worker?.postMessage({ command: 'connect' });
-                            const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
-                                x => x[1] instanceof MirabufSceneObject
-                            )
-                            console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
-                            if (miraObjs.length > 0) {
-                                const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-                                const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
-                                simLayer?.SetBrain(new WPILibBrain(mechanism))
-                            }
-                        }}
-                    />
-                    <MainHUDButton
-                        value={"Toasts"}
-                        icon={<FaCar />}
-                        onClick={() => {
-                            const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
-                            addToast(type, type, "This is a test toast to test the toast system")
-                        }}
-                    />
                     <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
+                    <MainHUDButton
+                        value={"Debug Tools"}
+                        icon={<AiOutlineTool />}
+                        onClick={() => {
+                            openPanel("debug")
+                        }}
+                    />
                 </div>
                 {userInfo ? (
                     <MainHUDButton
@@ -228,29 +157,6 @@ const MainHUD: React.FC = () => {
     )
 }
 
-async function TestGodMode() {
-    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()]
-        .filter(x => {
-            const y = x[1] instanceof MirabufSceneObject
-            return y
-        })
-        .map(x => x[1])[0] as MirabufSceneObject
-    const rootNodeId = robot.GetRootNodeId()
-    if (rootNodeId == undefined) {
-        console.error("Robot root node not found for god mode")
-        return
-    }
-    const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
-    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId, robotPosition as Jolt.Vec3)
 
-    // Move ghostBody to demonstrate godMode movement
-    await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(
-        ghostBody.GetID(),
-        new JOLT.Vec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
-    )
-    await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(2, 2, 2))
-}
 
 export default MainHUD
