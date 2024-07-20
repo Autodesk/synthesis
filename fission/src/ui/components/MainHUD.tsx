@@ -106,7 +106,11 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("manage-assemblies")}
                     />
                     <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
-                    <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
+                    <MainHUDButton
+                        value={"View"}
+                        icon={<FaMagnifyingGlass />}
+                        onClick={() => openPanel("camera-select")}
+                    />
                     <MainHUDButton
                         value={"Controls"}
                         icon={<IoGameControllerOutline />}

@@ -9,7 +9,7 @@ import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "@/systems/input/InputSystem"
-import { CameraControls, CameraControlsType, OrbitControls } from "@/systems/scene/CameraControls"
+import { CameraControls, CameraControlsType, CustomOrbitControls, OrbitControls } from "@/systems/scene/CameraControls"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import {} from "@/ui/components/SceneOverlayEvents"
@@ -48,6 +48,10 @@ class SceneRenderer extends WorldSystem {
 
     public get renderer(): THREE.WebGLRenderer {
         return this._renderer
+    }
+
+    public get currentCameraControls(): CameraControls {
+        return this._cameraControls
     }
 
     public constructor() {
@@ -128,17 +132,17 @@ class SceneRenderer extends WorldSystem {
         this._composer.addPass(this._antiAliasPass)
 
         // Orbit controls
-        this._cameraControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
+        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement);
     }
 
     public SetCameraControls(controlsType: CameraControlsType) {
         this._cameraControls.dispose()
         switch (controlsType) {
-            case CameraControlsType.Orbit:
-                this._cameraControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
+            case CameraControlsType.OrbitFocus:
+                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement)
                 break
-            case CameraControlsType.Fly:
-                // this._cameraControls = new 
+            case CameraControlsType.OrbitFree:
+                this._cameraControls = new OrbitControls(this._mainCamera, this._renderer.domElement, false)
                 break
         }
     }
