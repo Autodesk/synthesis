@@ -30,6 +30,7 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 onChange={(_, v) => v != null && setCameraControlType(v as CameraControlsType)}
             >
                 <ToggleButton value={CameraControlsType.OrbitFocus}>Orbit Focus</ToggleButton>
+                <ToggleButton value={CameraControlsType.OrbitLocked}>Orbit Locked</ToggleButton>
                 <ToggleButton value={CameraControlsType.OrbitFree}>Orbit Free</ToggleButton>
             </ToggleButtonGroup>
         </Panel>
