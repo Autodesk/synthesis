@@ -1,38 +1,71 @@
-import { CameraControlsType } from "@/systems/scene/CameraControls"
+import { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { AiOutlineCamera } from "react-icons/ai"
+
+interface OrbitSettingsProps {
+    controls: CustomOrbitControls
+}
+
+function OrbitSettings({ controls }: OrbitSettingsProps) {
+    const [locked, setLocked] = useState<boolean>(controls.locked)
+
+    useEffect(() => {
+        controls.locked = locked
+    }, [controls, locked])
+
+    return (
+        <Checkbox label={"Lock to Robot"} defaultState={locked} onClick={(v) => setLocked(v)} />
+    )
+}
 
 const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(World.SceneRenderer.currentCameraControls.controlsType)
 
-    useEffect(() => {
-        if (World.SceneRenderer.currentCameraControls.controlsType != cameraControlType) {
-            World.SceneRenderer.SetCameraControls(cameraControlType)
+    const setCameraControls = useCallback((t: CameraControlsType) => {
+        switch (t) {
+            case "Orbit":
+                World.SceneRenderer.SetCameraControls(t)
+                setCameraControlType(t)
+                break
+            default:
+                console.error("Unrecognized camera control option detected")
+                break
         }
-    }, [cameraControlType])
+    }, [])
 
     return (
         <Panel
-            openLocation="bottom-right"
+            openLocation="right"
             name={"Choose a Camera"}
             icon={<AiOutlineCamera />}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"
+            contentClassName="items-center"
         >
             <ToggleButtonGroup
                 orientation="vertical"
                 value={cameraControlType}
                 exclusive
-                onChange={(_, v) => v != null && setCameraControlType(v as CameraControlsType)}
+                onChange={(_, v) => {
+                    if (v != null){
+                        return
+                    }
+
+                    setCameraControls(v)
+                }}
             >
-                <ToggleButton value={CameraControlsType.OrbitFocus}>Orbit Focus</ToggleButton>
-                <ToggleButton value={CameraControlsType.OrbitLocked}>Orbit Locked</ToggleButton>
-                <ToggleButton value={CameraControlsType.OrbitFree}>Orbit Free</ToggleButton>
+                <ToggleButton value={"Orbit"}>Orbit</ToggleButton>
             </ToggleButtonGroup>
+            {
+                cameraControlType == "Orbit"
+                    ? <OrbitSettings controls={World.SceneRenderer.currentCameraControls as CustomOrbitControls} />
+                    : <></>
+            }
         </Panel>
     )
 }

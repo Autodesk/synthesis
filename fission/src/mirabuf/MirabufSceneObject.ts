@@ -228,7 +228,7 @@ class MirabufSceneObject extends SceneObject {
             x.computeBoundingBox()
             x.computeBoundingSphere()
         })
-
+        
         /* Updating the position of the name tag according to the robots position on screen */
         if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
             const boundingBox = this.ComputeBoundingBox()
@@ -240,9 +240,6 @@ class MirabufSceneObject extends SceneObject {
                 )
             )
         }
-
-        const com = World.PhysicsSystem.GetBody(this._mechanism.nodeToBody.get(this.rootNodeId)!).GetCenterOfMassTransform()
-        World.SceneRenderer.currentCameraControls.setFocusTransform(JoltMat44_ThreeMatrix4(com))
     }
 
     public Dispose(): void {
@@ -436,6 +433,11 @@ class MirabufSceneObject extends SceneObject {
 
     public GetRootNodeId(): Jolt.BodyID | undefined {
         return this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)
+    }
+
+    public LoadFocusTransform(mat: THREE.Matrix4) {
+        const com = World.PhysicsSystem.GetBody(this._mechanism.nodeToBody.get(this.rootNodeId)!).GetCenterOfMassTransform()
+        mat.copy(JoltMat44_ThreeMatrix4(com))
     }
 }
 

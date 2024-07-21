@@ -120,20 +120,14 @@ class SceneRenderer extends WorldSystem {
         this._composer.addPass(this._antiAliasPass)
 
         // Orbit controls
-        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement, true, false);
+        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement);
     }
 
     public SetCameraControls(controlsType: CameraControlsType) {
         this._cameraControls.dispose()
         switch (controlsType) {
-            case CameraControlsType.OrbitFocus:
-                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement, true, false)
-                break
-            case CameraControlsType.OrbitLocked:
-                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement, true, true)
-                break
-            case CameraControlsType.OrbitFree:
-                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement, false, false)
+            case "Orbit":
+                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement)
                 break
         }
     }

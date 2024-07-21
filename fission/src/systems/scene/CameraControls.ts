@@ -1,27 +1,29 @@
+import MirabufSceneObject, { RigidNodeAssociate } from '@/mirabuf/MirabufSceneObject'
 import * as THREE from 'three'
+import World from '../World'
+import { ThreeVector3_JoltVec3 } from '@/util/TypeConversions'
+import { MiraType } from '@/mirabuf/MirabufLoader'
+import { MainHUD_AddToast } from '@/ui/components/MainHUD'
 
-export enum CameraControlsType {
-    OrbitFocus = 1, OrbitFree = 2, OrbitLocked = 3
-}
+export type CameraControlsType =
+    "Orbit"
 
 export abstract class CameraControls {
-    private _controlsType;
+
+    private _controlsType: CameraControlsType
 
     public abstract set enabled(val: boolean)
     public abstract get enabled(): boolean
 
-    public get controlsType() { return this._controlsType }
+    public get controlsType() {
+        return this._controlsType
+    }
 
     public constructor(controlsType: CameraControlsType) {
         this._controlsType = controlsType
     }
 
     public abstract update(deltaT: number): void
-
-    public abstract setFocusTransform(mat: THREE.Matrix4): void;
-    public setFocusTranslation(vec: THREE.Vector3): void {
-        this.setFocusTransform((new THREE.Matrix4()).makeTranslation(vec))
-    }
 
     public abstract dispose(): void
 }
@@ -83,10 +85,11 @@ interface SphericalCoords {
     r: number
 }
 
-type PointerType = -1 | 0 | 1
+type PointerType = -1 | 0 | 1 | 2
 
 const PRIMARY_POINTER_TYPE = 0
 const MIDDLE_POINTER_TYPE = 1
+const SECONDARY_POINTER_TYPE = 2
 
 const CO_MAX_ZOOM = 40.0
 const CO_MIN_ZOOM = 0.1
@@ -136,7 +139,8 @@ export class CustomOrbitControls extends CameraControls {
     private _coords: SphericalCoords
     private _focus: THREE.Matrix4
 
-    private _focusEnabled: boolean
+    private _focusProvider: MirabufSceneObject | undefined
+    public locked: boolean
 
     public set enabled(val: boolean) {
         this._enabled = val
@@ -145,12 +149,12 @@ export class CustomOrbitControls extends CameraControls {
         return this._enabled
     }
 
-    public constructor(mainCamera: THREE.Camera, domElement: HTMLElement, focusEnabled: boolean, locked: boolean) {
-        super(focusEnabled ? locked ? CameraControlsType.OrbitLocked : CameraControlsType.OrbitFocus : CameraControlsType.OrbitFree)
+    public constructor(mainCamera: THREE.Camera, domElement: HTMLElement) {
+        super("Orbit")
 
         this._mainCamera = mainCamera
 
-        this._focusEnabled = focusEnabled
+        this.locked = false
 
         this._nextCoords = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
         this._coords = { theta: CO_DEFAULT_THETA, phi: CO_DEFAULT_PHI, r: CO_DEFAULT_ZOOM }
@@ -192,6 +196,9 @@ export class CustomOrbitControls extends CameraControls {
                 case MIDDLE_POINTER_TYPE:
                     this._activePointerType = MIDDLE_POINTER_TYPE
                     break
+                case SECONDARY_POINTER_TYPE:
+                    this.tryFindFocusProvider(ev)
+                    break
                 default:
                     break
             }
@@ -203,7 +210,9 @@ export class CustomOrbitControls extends CameraControls {
             // Add the movement of the mouse to the _currentPos
             this._nextCoords.theta -= ev.movementX
             this._nextCoords.phi -= ev.movementY
-        } else if (this._activePointerType == MIDDLE_POINTER_TYPE && this.controlsType == CameraControlsType.OrbitFree) {
+        } else if (this._activePointerType == MIDDLE_POINTER_TYPE && !this.locked) {
+            this._focusProvider = undefined
+
             const orientation = (new THREE.Quaternion()).setFromEuler(this._mainCamera.rotation)
 
             const augmentedMovement = augmentMovement(
@@ -220,6 +229,9 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public update(deltaT: number): void {
+
+        this._focusProvider?.LoadFocusTransform(this._focus)
+
         // Generate delta of spherical coordinates
         const omega: SphericalCoords = this.enabled ? {
             theta: this._nextCoords.theta - this._coords.theta,
@@ -237,7 +249,7 @@ export class CustomOrbitControls extends CameraControls {
         const deltaTransform = (new THREE.Matrix4()).makeTranslation(0, 0, this._coords.r)
             .premultiply((new THREE.Matrix4()).makeRotationFromEuler(new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ")))
 
-        if (this.controlsType == CameraControlsType.OrbitLocked) {
+        if (this.locked && this._focusProvider) {
             deltaTransform.premultiply(this._focus)
         } else {
             const focusPosition = (new THREE.Matrix4()).copyPosition(this._focus)
@@ -251,9 +263,18 @@ export class CustomOrbitControls extends CameraControls {
         this._nextCoords = { theta: this._coords.theta, phi: this._coords.phi, r: this._coords.r }
     }
 
-    public setFocusTransform(mat: THREE.Matrix4): void {
-        if (this.enabled && this._focusEnabled) {
-            this._focus.copy(mat)
+    private tryFindFocusProvider(ev: PointerEvent) {
+        const dir = World.SceneRenderer.PixelToWorldSpace(ev.clientX, ev.clientY, 1.0).normalize().multiplyScalar(40.0)
+        const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(this._mainCamera.position), ThreeVector3_JoltVec3(dir))
+        if (res) {
+            const assoc = World.PhysicsSystem.GetBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
+            // Cast and Exist check
+            if (assoc?.sceneObject) {
+                if (assoc.sceneObject.miraType == MiraType.ROBOT && assoc.sceneObject != this._focusProvider) {
+                    this._focusProvider = assoc.sceneObject
+                    MainHUD_AddToast("info", "Focus Changed", `Focusing on ${assoc.sceneObject.assemblyName}`)
+                }
+            }
         }
     }
 
