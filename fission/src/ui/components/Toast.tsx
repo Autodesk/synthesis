@@ -2,7 +2,7 @@ import React, { ReactElement, useEffect } from "react"
 import { ToastData, useToastContext } from "@/ui/ToastContext"
 import { GrFormClose } from "react-icons/gr"
 import { BsFillWrenchAdjustableCircleFill } from "react-icons/bs"
-import { AiFillWarning } from "react-icons/ai"
+import { AiFillWarning, AiOutlineInfoCircle } from "react-icons/ai"
 import { BiSolidErrorCircle } from "react-icons/bi"
 
 const TOAST_TIMEOUT: number = 5_000
@@ -25,7 +25,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
 
     switch (type) {
         case "info":
-            icon = <BsFillWrenchAdjustableCircleFill size={48} className="h-full w-full text-main-text" />
+            icon = <AiOutlineInfoCircle size={48} className="h-full w-full text-main-text" />
             className = "bg-toast-info"
             break
         case "warning":

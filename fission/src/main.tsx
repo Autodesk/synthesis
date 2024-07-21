@@ -64,9 +64,9 @@ const defaultColors: Theme = {
     FloorGrid: { color: { r: 93, g: 93, b: 93, a: 1 }, above: [] },
     MatchRedAlliance: { color: { r: 255, g: 0, b: 0, a: 1 }, above: [] },
     MatchBlueAlliance: { color: { r: 0, g: 0, b: 255, a: 1 }, above: [] },
-    ToastInfo: { color: { r: 126, g: 34, b: 206, a: 1 }, above: [] },
-    ToastWarning: { color: { r: 234, g: 179, b: 8, a: 1 }, above: [] },
-    ToastError: { color: { r: 239, g: 68, b: 68, a: 1 }, above: [] },
+    ToastInfo: { color: { r: 95, g: 96, b: 255, a: 1 }, above: [] },
+    ToastWarning: { color: { r: 255, g: 194, b: 26, a: 1 }, above: [] },
+    ToastError: { color: { r: 214, g: 78, b: 38, a: 1 }, above: [] },
 }
 const themes = {
     Default: defaultColors,
