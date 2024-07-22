@@ -61,6 +61,8 @@ import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
+import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
+import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -181,6 +183,8 @@ const initialModals = [
     <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
     <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,
     <DeleteThemeModal key="delete-theme" modalId="delete-theme" />,
+    <NewInputSchemeModal key="new-scheme" modalId="new-scheme" />,
+    <AssignNewSchemeModal key="assign-new-scheme" modalId="assign-new-scheme" />,
     <DeleteAllThemesModal key="delete-all-themes" modalId="delete-all-themes" />,
     <NewThemeModal key="new-theme" modalId="new-theme" />,
     <RCCreateDeviceModal key="create-device" modalId="create-device" />,

@@ -10,6 +10,14 @@ import Checkbox from "@/ui/components/Checkbox"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
+import { Box, Divider, styled } from "@mui/material"
+import { AiOutlinePlus } from "react-icons/ai"
+
+const AddIcon = <AiOutlinePlus size={"1.25rem"} />
+
+const DividerStyled = styled(Divider)({
+    borderColor: "white",
+})
 
 // capitalize first letter
 const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
@@ -370,6 +378,13 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     InputSystem.selectedScheme = schemeData
                                 }}
                             />
+                            <Button
+                                value={AddIcon}
+                                onClick={() => {
+                                    openModal("new-scheme")
+                                }}
+                            />
+
                             {selectedScheme ? (
                                 <>
                                     <Checkbox
@@ -380,13 +395,18 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                             if (selectedScheme) selectedScheme.usesGamepad = val
                                         }}
                                     />
-                                    <Label size={LabelSize.Medium}>Default Control Schemes</Label>
-                                    <Button
-                                        value={"Reset all to Defaults"}
-                                        onClick={() => {
-                                            openModal("reset-inputs")
-                                        }}
-                                    />
+                                    <Box height={10} />
+                                    <DividerStyled />
+                                    <Box height={15}></Box>
+
+                                    <Box display="flex" justifyContent="center" alignItems="center">
+                                        <Button
+                                            value={"Reset all to Defaults"}
+                                            onClick={() => {
+                                                openModal("reset-inputs")
+                                            }}
+                                        />
+                                    </Box>
                                 </>
                             ) : (
                                 <Label>No robot selected.</Label>

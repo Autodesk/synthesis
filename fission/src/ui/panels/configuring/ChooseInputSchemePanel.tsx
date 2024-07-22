@@ -11,7 +11,7 @@ import { usePanelControlContext } from "@/ui/PanelContext"
 import { Box, Divider, styled } from "@mui/material"
 import { useEffect, useReducer } from "react"
 import { AiOutlinePlus } from "react-icons/ai"
-import { IoCheckmark, IoTrashBin } from "react-icons/io5"
+import { IoCheckmark, IoPencil, IoTrashBin } from "react-icons/io5"
 
 const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel } = usePanelControlContext()
@@ -22,6 +22,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const AddIcon = <AiOutlinePlus size={"1.25rem"} />
     const DeleteIcon = <IoTrashBin size={"1.25rem"} />
     const SelectIcon = <IoCheckmark size={"1.25rem"} />
+    const EditIcon = <IoPencil size={"1.25rem"} />
 
     const LabelStyled = styled(Label)({
         fontWeight: 700,
@@ -101,6 +102,19 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     }}
                                     colorOverrideClass="bg-accept-button hover:brightness-90"
                                 />
+                                {/** Edit button - same as select but opens the inputs modal */}
+                                <Button
+                                    value={EditIcon}
+                                    onClick={() => {
+                                        InputSystem.brainIndexSchemeMap.set(
+                                            SynthesisBrain.brainIndexMap.size - 1,
+                                            scheme
+                                        )
+                                        InputSystem.selectedScheme = scheme
+                                        openModal("change-inputs")
+                                    }}
+                                    colorOverrideClass="bg-accept-button hover:brightness-90"
+                                />
                                 {/** Delete button (only if the scheme is customized) */}
                                 {scheme.customized ? (
                                     <>
@@ -138,18 +152,11 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             <Button
                 value={AddIcon}
                 onClick={() => {
-                    // Assign a blank input scheme a random name
-                    const name = InputSchemeManager.randomAvailableName
-                    const scheme = DefaultInputs.newBlankScheme
-                    scheme.schemeName = name
-
-                    InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, scheme)
-                    InputSystem.selectedScheme = scheme
-                    InputSchemeManager.addCustomScheme(scheme)
-
-                    InputSchemeManager.saveSchemes()
-
-                    openModal("change-inputs")
+                    InputSystem.brainIndexSchemeMap.set(
+                        SynthesisBrain.brainIndexMap.size - 1,
+                        DefaultInputs.newBlankScheme
+                    )
+                    openModal("assign-new-scheme")
                 }}
             />
             <Box height="12px"></Box>

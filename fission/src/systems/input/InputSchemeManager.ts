@@ -20,10 +20,9 @@ class InputSchemeManager {
         if (this._customSchemes) return this._customSchemes
 
         // Load schemes from preferences and parse into objects
-        const inputSchemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
-        inputSchemes.forEach(scheme => this.parseScheme(scheme))
+        this._customSchemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+        this._customSchemes.forEach(scheme => this.parseScheme(scheme))
 
-        this._customSchemes = inputSchemes
         return this._customSchemes
     }
 
