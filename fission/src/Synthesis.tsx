@@ -104,7 +104,6 @@ function Synthesis() {
                 .catch(console.error)
                 const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.FIELD)
                 
-                
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
                     return

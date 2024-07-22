@@ -164,7 +164,6 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         const scale = new THREE.Vector3(1, 1, 1)
         gizmoTransformation.decompose(translation, rotation, scale)
 
-
         gizmo.mesh.position.set(translation.x, translation.y, translation.z)
         gizmo.mesh.rotation.setFromQuaternion(rotation)
         gizmo.mesh.scale.set(scale.x, scale.y, scale.z)

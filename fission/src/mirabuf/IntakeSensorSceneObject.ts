@@ -94,7 +94,7 @@ class IntakeSensorSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
-        console.log("Destroying intake sensor")
+        console.debug("Destroying intake sensor")
 
         if (this._joltBodyId) {
             World.PhysicsSystem.DestroyBodyIds(this._joltBodyId)
@@ -110,7 +110,6 @@ class IntakeSensorSceneObject extends SceneObject {
     }
 
     private IntakeCollision(gpID: Jolt.BodyID) {
-        // console.log(`Intake collided with ${gpID.GetIndex()}`)
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
             this._parentAssembly.SetEjectable(gpID, false)

@@ -48,6 +48,8 @@ class EjectableSceneObject extends SceneObject {
 
             World.PhysicsSystem.DisablePhysicsForBody(this._gamePieceBodyId)
 
+            // Checks if the gamepiece comes from a zone for persistent point score updates
+            // because gamepieces removed by intake are not detected in the collision listener
             const zones = [...World.SceneRenderer.sceneObjects.entries()]
                 .filter(x => {
                     const y = x[1] instanceof ScoringZoneSceneObject

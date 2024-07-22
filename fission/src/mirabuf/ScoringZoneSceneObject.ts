@@ -63,48 +63,47 @@ class ScoringZoneSceneObject extends SceneObject {
             this._parentBodyId = this._parentAssembly.mechanism.nodeToBody.get(this._prefs.parentNode ?? this._parentAssembly.rootNodeId)
 
             if (this._parentBodyId) {
-
-                this._deltaTransformation = Array_ThreeMatrix4(this._prefs.deltaTransformation)
-
+                // Create a default sensor
                 this._joltBodyId = World.PhysicsSystem.CreateSensor(
                     new JOLT.BoxShapeSettings(
                         new JOLT.Vec3(1,1,1)
                     )
                 )
-
                 if (!this._joltBodyId) {
                     console.log("Failed to create scoring zone. No Jolt Body")
                     return
                 }
                 
+                // Position/rotate/scale sensor to settings
+                this._deltaTransformation = Array_ThreeMatrix4(this._prefs.deltaTransformation)
                 const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
-                const gizmoTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
+                const zoneTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
 
                 const translation = new THREE.Vector3(0, 0, 0)
                 const rotation = new THREE.Quaternion(0, 0, 0, 1)
                 const scale = new THREE.Vector3(1, 1, 1)
-                gizmoTransformation.decompose(translation, rotation, scale)
-        
+                zoneTransformation.decompose(translation, rotation, scale)
+
+                World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(translation))
+                World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
+                const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(scale.x / 2, scale.y / 2, scale.z / 2))
+                const shape = shapeSettings.Create()
+                World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
+
+                // Mesh for the user to visualize sensor
                 this._mesh = World.SceneRenderer.CreateBox(
                     new JOLT.Vec3(1,1,1),
-                    ScoringZoneSceneObject.blueMaterial
+                    ScoringZoneSceneObject.transparentMaterial
                 )
+                World.SceneRenderer.scene.add(this._mesh)
 
                 if (this._toRender) {
                     this._mesh.position.set(translation.x, translation.y, translation.z)
                     this._mesh.rotation.setFromQuaternion(rotation)
                     this._mesh.scale.set(scale.x, scale.y, scale.z)
-
-                    World.SceneRenderer.scene.add(this._mesh)
                 }
 
-                World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(translation))
-                World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
-
-                const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(scale.x / 2, scale.y / 2, scale.z / 2))
-                const shape = shapeSettings.Create()
-                World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
-
+                // Detect new gamepiece listener
                 this._collision = (event: OnContactAddedEvent) => {
                     const body1 = event.message.body1
                     const body2 = event.message.body2
@@ -117,7 +116,7 @@ class ScoringZoneSceneObject extends SceneObject {
                 }
                 OnContactAddedEvent.AddListener(this._collision)
 
-
+                // If persistent, detect gamepiece removed listener
                 if (this._prefs.persistentPoints) {
                     this._collisionRemoved = (event: OnContactRemovedEvent) => {
                         if (this._prefs?.persistentPoints) {
@@ -140,8 +139,8 @@ class ScoringZoneSceneObject extends SceneObject {
     }
 
     public Update(): void {
-        if (this._parentBodyId && this._deltaTransformation && this._joltBodyId && this._mesh && this._prefs) {
-            this._toRender = PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
+        if (this._parentBodyId && this._deltaTransformation && this._joltBodyId&& this._prefs) {
+            // Update translation, rotation, and scale
             const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
             const gizmoTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
 
@@ -149,27 +148,24 @@ class ScoringZoneSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             const scale = new THREE.Vector3(1, 1, 1)
             gizmoTransformation.decompose(translation, rotation, scale)
-            // console.log(`update trans: ${translation.toArray()} ${rotation.toArray()} ${scale.toArray()}`)
 
-            if (this._toRender) {
-                this._mesh.position.set(translation.x, translation.y, translation.z)
-                this._mesh.rotation.setFromQuaternion(rotation)
-                this._mesh.scale.set(scale.x, scale.y, scale.z)
-                this._mesh.material = this._prefs.alliance == "red" ? ScoringZoneSceneObject.redMaterial : ScoringZoneSceneObject.blueMaterial
-            } else {
-                this._mesh.material = ScoringZoneSceneObject.transparentMaterial
-            }
-        
             World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(translation))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
-
             const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(scale.x / 2, scale.y / 2, scale.z / 2))
             const shape = shapeSettings.Create()
             World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate);
 
-            // console.log(`length ${this._gpContacted.length}`)
-            // this._gpContacted.forEach(x => 
-            //     console.log(`gp ${x.GetIndex()}`))
+            // Mesh for visualization
+            this._toRender = PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
+            if (this._mesh)
+                if (this._toRender) {
+                    this._mesh.position.set(translation.x, translation.y, translation.z)
+                    this._mesh.rotation.setFromQuaternion(rotation)
+                    this._mesh.scale.set(scale.x, scale.y, scale.z)
+                    this._mesh.material = this._prefs.alliance == "red" ? ScoringZoneSceneObject.redMaterial : ScoringZoneSceneObject.blueMaterial
+                } else {
+                    this._mesh.material = ScoringZoneSceneObject.transparentMaterial
+                }
         } else {
             console.debug("Failed to update scoring zone")
         }
@@ -180,10 +176,9 @@ class ScoringZoneSceneObject extends SceneObject {
 
         if (this._joltBodyId) {
             World.PhysicsSystem.DestroyBodyIds(this._joltBodyId)
-
             if (this._mesh) {
-                this._mesh.geometry.dispose()
-                ;(this._mesh.material as THREE.Material).dispose()
+                this._mesh.geometry.dispose();
+                (this._mesh.material as THREE.Material).dispose()
                 World.SceneRenderer.scene.remove(this._mesh)
             }
         }
@@ -195,26 +190,24 @@ class ScoringZoneSceneObject extends SceneObject {
     private ZoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece && this._prefs) {
-            console.log(`Adding ${gpID.GetIndex()}`)
             if (this._prefs.persistentPoints) this._gpContacted.push(gpID)
+            
             if (this._prefs.alliance == "red") {
                 SimulationSystem.redScore += this._prefs.points
             } else {
                 SimulationSystem.blueScore += this._prefs.points
             }
+
             const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
             event.Dispatch()
-            console.log(`Red: ${SimulationSystem.redScore} Blue: ${SimulationSystem.blueScore}`)
         }
     }
     
-    // TODO: Add handling for when the ejectable carries the gamepiece out
     private ZoneCollisionRemoved(gpID: Jolt.BodyID) {
         console.debug(`Scoring zone ${gpID.GetIndex()} removed from ${this._joltBodyId?.GetIndex()}`)
 
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
-            console.log(`Removing ${gpID.GetIndex()}`)
             const temp = this._gpContacted.filter(x => {
                 return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
             })

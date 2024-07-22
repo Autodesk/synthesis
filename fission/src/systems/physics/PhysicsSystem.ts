@@ -8,7 +8,6 @@ import {
     _JoltQuat,
 } from "../../util/TypeConversions"
 import JOLT from "@/util/loading/JoltSyncLoader"
-
 import Jolt from "@barclah/jolt-physics"
 import * as THREE from "three"
 import { mirabuf } from "../../proto/mirabuf"
@@ -75,15 +74,6 @@ class PhysicsSystem extends WorldSystem {
     public get isPaused(): boolean {
         return this._pauseCounter > 0
     }
-
-    public get JoltPhysicsSystem() {
-        return this._joltPhysSystem
-    }
-
-    public get JoltBodyInterface() {
-        return this._joltBodyInterface
-    }
-
 
     /**
      * Creates a PhysicsSystem object.
@@ -1029,10 +1019,10 @@ class PhysicsSystem extends WorldSystem {
      * Exposes SetShape method on the _joltBodyInterface
      * Sets the shape of the body
      * 
-     * @param id 
-     * @param shape 
-     * @param massProperties 
-     * @param activationMode 
+     * @param id The id of the body
+     * @param shape The new shape of the body
+     * @param massProperties The mass properties of the new body
+     * @param activationMode The activation mode of the new body
      */
     public SetShape(id: Jolt.BodyID, shape: Jolt.Shape, massProperties: boolean, activationMode: Jolt.EActivation): void {
         if (!this.IsBodyAdded(id)) {
@@ -1050,7 +1040,7 @@ class PhysicsSystem extends WorldSystem {
     /**
      * Creates and assigns Jolt contact listener that dispatches events.
      * 
-     * @param physSystem 
+     * @param physSystem The physics system the contact listener will attach to
      */
     private SetUpContactListener(physSystem: Jolt.PhysicsSystem) {
         const contactListener = new JOLT.ContactListenerJS()
