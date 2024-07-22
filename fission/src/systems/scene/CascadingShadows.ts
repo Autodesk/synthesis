@@ -24,7 +24,7 @@ class CascadingShadows {
         this._numCascades = numCascades
 
         // Creating the directional light
-        this._light = new THREE.DirectionalLight(0xffffff, 3)
+        this._light = new THREE.DirectionalLight(0xb6c6e3, 5.0)
         this._light.position.set(-1, 3, 2)
         this._light.castShadow = true
         scene.add(this._light)
