@@ -106,7 +106,6 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
                     <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
-                    <MainHUDButton value={"Score"} icon={<FaMagnifyingGlass />} onClick={() => openPanel("scoreboard")} />
                     <MainHUDButton
                         value={"Controls"}
                         icon={<IoGameControllerOutline />}

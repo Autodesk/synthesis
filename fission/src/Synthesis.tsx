@@ -172,6 +172,7 @@ function Synthesis() {
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
                             <MainHUD key={"main-hud"} />
+                            <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
                                 <div className="absolute w-full h-full left-0 top-0" key={"modal-element"}>
@@ -243,7 +244,6 @@ const initialPanels: ReactElement[] = [
     <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
-    <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
 ]
 
 export default Synthesis
