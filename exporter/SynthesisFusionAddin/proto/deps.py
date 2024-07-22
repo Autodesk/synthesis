@@ -6,7 +6,7 @@ from pathlib import Path
 import adsk.core
 import adsk.fusion
 
-from src.general_imports import INTERNAL_ID
+from src.strings import INTERNAL_ID
 
 system = platform.system()
 
@@ -167,13 +167,24 @@ def _checkDeps() -> bool:
         return False
 
 
-try:
-    import logging.handlers
+"""
+Checks for, and installs if need be, the dependencies needed by the Synthesis Exporter. Will error if it cannot install the dependencies
+correctly. This should crash the exporter, since most of the exporter needs these dependencies to function in
+the first place.
+"""
 
-    import google.protobuf
-    import pkg_resources
 
-    from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
-except ImportError or ModuleNotFoundError:
-    installCross(["protobuf==4.23.3"])
-    from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
+def installDependencies():
+    try:
+        import logging.handlers
+
+        import google.protobuf
+        import pkg_resources
+        from requests import get, post
+
+        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
+    except ImportError or ModuleNotFoundError:
+        installCross(["protobuf==4.23.3", "requests==2.32.3"])
+        from requests import get, post
+
+        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2

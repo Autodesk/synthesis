@@ -1,3 +1,4 @@
+import { Data, downloadData } from "@/aps/APSDataManagement"
 import { mirabuf } from "@/proto/mirabuf"
 import Pako from "pako"
 
@@ -12,6 +13,11 @@ export interface MirabufCacheInfo {
     miraType: MiraType
     name?: string
     thumbnailStorageID?: string
+}
+
+export interface MirabufRemoteInfo {
+    displayName: string
+    src: string
 }
 
 type MiraCache = { [id: string]: MirabufCacheInfo }
@@ -68,12 +74,14 @@ class MirabufCachingService {
      *
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
-    public static async CacheRemote(fetchLocation: string, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
-        const map = MirabufCachingService.GetCacheMap(miraType)
-        const target = map[fetchLocation]
+    public static async CacheRemote(fetchLocation: string, miraType?: MiraType): Promise<MirabufCacheInfo | undefined> {
+        if (miraType) {
+            const map = MirabufCachingService.GetCacheMap(miraType)
+            const target = map[fetchLocation]
 
-        if (target) {
-            return target
+            if (target) {
+                return target
+            }
         }
 
         // Grab file remote
@@ -81,6 +89,28 @@ class MirabufCachingService {
             .then(x => x.blob())
             .then(x => x.arrayBuffer())
         return await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
+    }
+
+    public static async CacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
+        if (!data.href) {
+            console.error("Data has no href")
+            return undefined
+        }
+
+        const map = MirabufCachingService.GetCacheMap(miraType)
+        const target = map[data.id]
+
+        if (target) {
+            return target
+        }
+
+        const miraBuff = await downloadData(data)
+        if (!miraBuff) {
+            console.error("Failed to download file")
+            return undefined
+        }
+
+        return await MirabufCachingService.StoreInCache(data.id, miraBuff, miraType)
     }
 
     /**
@@ -206,7 +236,14 @@ class MirabufCachingService {
      */
     public static async Remove(key: string, id: MirabufCacheID, miraType: MiraType): Promise<boolean> {
         try {
-            window.localStorage.removeItem(key)
+            const map = this.GetCacheMap(miraType)
+            if (map) {
+                delete map[key]
+                window.localStorage.setItem(
+                    miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName,
+                    JSON.stringify(map)
+                )
+            }
 
             const dir = miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
             await dir.removeEntry(id)
@@ -237,12 +274,17 @@ class MirabufCachingService {
     private static async StoreInCache(
         key: string,
         miraBuff: ArrayBuffer,
-        miraType: MiraType,
+        miraType?: MiraType,
         name?: string
     ): Promise<MirabufCacheInfo | undefined> {
         // Store in OPFS
         const backupID = Date.now().toString()
         try {
+            if (!miraType) {
+                console.log("Double loading")
+                miraType = this.AssemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
+            }
+
             const fileHandle = await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(
                 backupID,
                 { create: true }
@@ -282,8 +324,8 @@ class MirabufCachingService {
 }
 
 export enum MiraType {
-    ROBOT,
-    FIELD,
+    ROBOT = 1,
+    FIELD = 2,
 }
 
 export default MirabufCachingService

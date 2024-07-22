@@ -14,8 +14,9 @@ import GenericArmBehavior from "../behavior/GenericArmBehavior"
 import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior"
-import InputSystem, { AxisInput } from "@/systems/input/InputSystem"
-import DefaultInputs from "@/systems/input/DefaultInputs"
+import { AxisInput, ButtonInput, Input } from "@/systems/input/InputSystem"
+import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 class SynthesisBrain extends Brain {
     private _behaviors: Behavior[] = []
@@ -24,16 +25,26 @@ class SynthesisBrain extends Brain {
     // Tracks how many joins have been made for unique controls
     private _currentJointIndex = 1
 
-    private static _currentRobotIndex = 0
-
-    // Tracks how many robots are spawned for control identification
     private _assemblyName: string
+    private _assemblyIndex: number = 0
+
+    // Tracks the number of each specific mira file spawned
+    public static numberRobotsSpawned: { [key: string]: number } = {}
+
+    // A list of all the robots spawned including their assembly index
+    public static robotsSpawned: string[] = []
+
+    // The total number of robots spawned
+    private static _currentRobotIndex: number = 0
+
+    // A list of all the fields spawned
+    public static fieldsSpawned: string[] = []
 
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
 
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
-        this._assemblyName = "[" + SynthesisBrain._currentRobotIndex.toString() + "] " + assemblyName
+        this._assemblyName = assemblyName
 
         if (!this._simLayer) {
             console.log("SimulationLayer is undefined")
@@ -42,13 +53,23 @@ class SynthesisBrain extends Brain {
 
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (mechanism.controllable) {
+            if (SynthesisBrain.numberRobotsSpawned[assemblyName] == undefined)
+                SynthesisBrain.numberRobotsSpawned[assemblyName] = 0
+            else SynthesisBrain.numberRobotsSpawned[assemblyName]++
+
+            this._assemblyIndex = SynthesisBrain.numberRobotsSpawned[assemblyName]
+            SynthesisBrain.robotsSpawned.push(this.getNumberedAssemblyName())
+
             this.configureArcadeDriveBehavior()
             this.configureArmBehaviors()
             this.configureElevatorBehaviors()
             this.configureInputs()
-
-            SynthesisBrain._currentRobotIndex++
+        } else {
+            this.configureField()
+            SynthesisBrain.fieldsSpawned.push(assemblyName)
         }
+
+        SynthesisBrain._currentRobotIndex++
     }
 
     public Enable(): void {}
@@ -62,7 +83,8 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        InputSystem.allInputs.delete(this._assemblyName)
+        const index = SynthesisBrain.robotsSpawned.indexOf(this.getNumberedAssemblyName())
+        SynthesisBrain.robotsSpawned.splice(index, 1)
     }
 
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
@@ -106,7 +128,14 @@ class SynthesisBrain extends Brain {
         }
 
         this._behaviors.push(
-            new ArcadeDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._assemblyName)
+            new ArcadeDriveBehavior(
+                leftWheels,
+                rightWheels,
+                leftStimuli,
+                rightStimuli,
+                this._assemblyName,
+                this._assemblyIndex
+            )
         )
     }
 
@@ -121,7 +150,13 @@ class SynthesisBrain extends Brain {
 
         for (let i = 0; i < hingeDrivers.length; i++) {
             this._behaviors.push(
-                new GenericArmBehavior(hingeDrivers[i], hingeStimuli[i], this._currentJointIndex, this._assemblyName)
+                new GenericArmBehavior(
+                    hingeDrivers[i],
+                    hingeStimuli[i],
+                    this._currentJointIndex,
+                    this._assemblyName,
+                    this._assemblyIndex
+                )
             )
             this._currentJointIndex++
         }
@@ -142,22 +177,32 @@ class SynthesisBrain extends Brain {
                     sliderDrivers[i],
                     sliderStimuli[i],
                     this._currentJointIndex,
-                    this._assemblyName
+                    this._assemblyName,
+                    this._assemblyIndex
                 )
             )
             this._currentJointIndex++
         }
     }
 
-    public configureInputs() {
+    private configureInputs() {
+        // Check for existing inputs
+        const robotConfig = PreferencesSystem.getRobotPreferences(this._assemblyName)
+        if (robotConfig.inputsSchemes[this._assemblyIndex] != undefined) {
+            SynthesisBrain.parseInputs(robotConfig.inputsSchemes[this._assemblyIndex])
+            return
+        }
+
+        // Configure with default inputs
+
         const scheme = DefaultInputs.ALL_INPUT_SCHEMES[SynthesisBrain._currentRobotIndex]
 
-        InputSystem.allInputs.set(this._assemblyName, {
+        robotConfig.inputsSchemes[this._assemblyIndex] = {
             schemeName: this._assemblyName,
             usesGamepad: scheme?.usesGamepad ?? false,
             inputs: [],
-        })
-        const inputList = InputSystem.allInputs.get(this._assemblyName)!.inputs
+        }
+        const inputList = robotConfig.inputsSchemes[this._assemblyIndex].inputs
 
         if (scheme) {
             const arcadeDrive = scheme.inputs.find(i => i.inputName === "arcadeDrive")
@@ -174,6 +219,53 @@ class SynthesisBrain extends Brain {
                 if (controlPreset) inputList.push(controlPreset.getCopy())
                 else inputList.push(new AxisInput("joint " + i))
             }
+        }
+    }
+
+    private configureField() {
+        PreferencesSystem.getFieldPreferences(this._assemblyName)
+
+        /** Put any field configuration here */
+    }
+
+    private getNumberedAssemblyName(): string {
+        return `[${this._assemblyIndex}] ${this._assemblyName}`
+    }
+
+    private static parseInputs(rawInputs: InputScheme) {
+        for (let i = 0; i < rawInputs.inputs.length; i++) {
+            const rawInput = rawInputs.inputs[i]
+            let parsedInput: Input
+
+            if ((rawInput as ButtonInput).keyCode != undefined) {
+                const rawButton = rawInput as ButtonInput
+
+                parsedInput = new ButtonInput(
+                    rawButton.inputName,
+                    rawButton.keyCode,
+                    rawButton.gamepadButton,
+                    rawButton.isGlobal,
+                    rawButton.keyModifiers
+                )
+            } else {
+                const rawAxis = rawInput as AxisInput
+
+                parsedInput = new AxisInput(
+                    rawAxis.inputName,
+                    rawAxis.posKeyCode,
+                    rawAxis.negKeyCode,
+                    rawAxis.gamepadAxisNumber,
+                    rawAxis.joystickInverted,
+                    rawAxis.useGamepadButtons,
+                    rawAxis.posGamepadButton,
+                    rawAxis.negGamepadButton,
+                    rawAxis.isGlobal,
+                    rawAxis.posKeyModifiers,
+                    rawAxis.negKeyModifiers
+                )
+            }
+
+            rawInputs.inputs[i] = parsedInput
         }
     }
 }

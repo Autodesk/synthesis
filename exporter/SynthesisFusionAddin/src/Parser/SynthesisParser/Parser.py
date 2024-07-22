@@ -7,9 +7,10 @@ from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
 
+from ...APS.APS import upload_mirabuf  # This line causes everything to break
 from ...general_imports import *
 from ...UI.Camera import captureThumbnail, clearIconCache
-from ..ExporterOptions import ExporterOptions, ExportMode
+from ..ExporterOptions import ExporterOptions, ExportLocation, ExportMode
 from . import Components, JointHierarchy, Joints, Materials, PDMessage
 from .Utilities import *
 
@@ -156,28 +157,41 @@ class Parser:
             self.pdMessage.currentMessage = "Compressing File..."
             self.pdMessage.update()
 
-            # check if entire path exists and create if not since gzip doesn't do that.
-            path = pathlib.Path(self.exporterOptions.fileLocation).parent
-            path.mkdir(parents=True, exist_ok=True)
-
             ### Print out assembly as JSON
             # miraJson = MessageToJson(assembly_out)
             # miraJsonFile = open(f'', 'wb')
             # miraJsonFile.write(str.encode(miraJson))
             # miraJsonFile.close()
 
-            if self.exporterOptions.compressOutput:
-                self.logger.debug("Compressing file")
-                with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
-                    self.pdMessage.currentMessage = "Saving File..."
-                    self.pdMessage.update()
-                    f.write(assembly_out.SerializeToString())
+            # Upload Mirabuf File to APS
+            if self.exporterOptions.exportLocation == ExportLocation.UPLOAD:
+                self.logger.debug("Uploading file to APS")
+                project = app.data.activeProject
+                if not project.isValid:
+                    gm.ui.messageBox("Project is invalid", "")
+                    return False  # add throw later
+                project_id = project.id
+                folder_id = project.rootFolder.id
+                file_name = f"{self.exporterOptions.fileLocation}.mira"
+                if upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString()) is None:
+                    gm.ui.messageBox("FAILED TO UPLOAD FILE TO APS", "ERROR")  # add throw later
+            # Download Mirabuf File
             else:
-                f = open(self.exporterOptions.fileLocation, "wb")
-                f.write(assembly_out.SerializeToString())
-                f.close()
+                # check if entire path exists and create if not since gzip doesn't do that.
+                path = pathlib.Path(self.exporterOptions.fileLocation).parent
+                path.mkdir(parents=True, exist_ok=True)
+                if self.exporterOptions.compressOutput:
+                    self.logger.debug("Compressing file")
+                    with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
+                        self.pdMessage.currentMessage = "Saving File..."
+                        self.pdMessage.update()
+                        f.write(assembly_out.SerializeToString())
+                else:
+                    f = open(self.exporterOptions.fileLocation, "wb")
+                    f.write(assembly_out.SerializeToString())
+                    f.close()
 
-            progressDialog.hide()
+            _ = progressDialog.hide()
 
             if DEBUG:
                 part_defs = assembly_out.data.parts.part_definitions
