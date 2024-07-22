@@ -895,7 +895,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             exportAsPart=export_as_part_boolean,
         )
 
-        _: bool = Parser(exporterOptions).export()
+        Parser(exporterOptions).export()
         exporterOptions.writeToDesign()
 
         # All selections should be reset AFTER a successful export and save.
