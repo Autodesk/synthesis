@@ -1,6 +1,9 @@
 import * as THREE from "three"
-import { mirabuf } from "../proto/mirabuf"
-import { MirabufTransform_ThreeMatrix4 } from "../util/TypeConversions"
+import { mirabuf } from "@/proto/mirabuf"
+import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+
+export type RigidNodeId = string
 
 export enum ParseErrorSeverity {
     Unimportable = 10,
@@ -60,8 +63,8 @@ class MirabufParser {
     public get groundedNode() {
         return this._groundedNode ? new RigidNodeReadOnly(this._groundedNode) : undefined
     }
-    public get rigidNodes(): Array<RigidNodeReadOnly> {
-        return this._rigidNodes.map(x => new RigidNodeReadOnly(x))
+    public get rigidNodes(): Map<RigidNodeId, RigidNodeReadOnly> {
+        return new Map(this._rigidNodes.map(x => [x.id, new RigidNodeReadOnly(x)]))
     }
     public get directedGraph() {
         return this._directedGraph
@@ -70,10 +73,12 @@ class MirabufParser {
         return this._rootNode
     }
 
-    public constructor(assembly: mirabuf.Assembly) {
+    public constructor(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle) {
         this._assembly = assembly
         this._errors = new Array<ParseError>()
         this._globalTransforms = new Map()
+
+        progressHandle?.Update("Parsing assembly...", 0.3)
 
         this.GenerateTreeValues()
         this.LoadGlobalTransforms()
@@ -121,6 +126,7 @@ class MirabufParser {
                     const instNode = this.BinarySearchDesignTree(inst.info!.GUID!)
                     if (instNode) {
                         const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
+                        gpRn.isGamePiece = true
                         this.MovePartToRigidNode(instNode!.value!, gpRn)
                         instNode.children &&
                             traverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
@@ -400,21 +406,23 @@ class MirabufParser {
  */
 class RigidNode {
     public isRoot: boolean
-    public id: string
+    public id: RigidNodeId
     public parts: Set<string> = new Set()
     public isDynamic: boolean
+    public isGamePiece: boolean
 
-    public constructor(id: string, isDynamic?: boolean) {
+    public constructor(id: RigidNodeId, isDynamic?: boolean, isGamePiece?: boolean) {
         this.id = id
         this.isDynamic = isDynamic ?? true
         this.isRoot = false
+        this.isGamePiece = isGamePiece ?? false
     }
 }
 
 export class RigidNodeReadOnly {
     private _original: RigidNode
 
-    public get id(): string {
+    public get id(): RigidNodeId {
         return this._original.id
     }
 
@@ -428,6 +436,10 @@ export class RigidNodeReadOnly {
 
     public get isRoot(): boolean {
         return this._original.isRoot
+    }
+
+    public get isGamePiece(): boolean {
+        return this._original.isGamePiece
     }
 
     public constructor(original: RigidNode) {

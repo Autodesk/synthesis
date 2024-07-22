@@ -11,17 +11,15 @@ from types import FunctionType
 import adsk.core
 import adsk.fusion
 
+from .GlobalManager import *
 from .Logging import getLogger
-from .strings import INTERNAL_ID
+from .strings import *
 
 logger = getLogger()
 
 # hard coded to bypass errors for now
 PROTOBUF = True
 DEBUG = True
-
-from .GlobalManager import *
-from .strings import *
 
 try:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -35,6 +33,8 @@ try:
         sys.path.insert(2, path_proto_files)
 
     from proto import deps
+
+    deps.installDependencies()
 
 except:
     logger.error("Failed:\n{}".format(traceback.format_exc()))

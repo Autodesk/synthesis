@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --open",
     "build": "tsc && vite build",
+    "build:prod": "tsc && vite build --base=/fission/ --outDir dist/prod",
+    "build:dev": "tsc && vite build --base=/fission-closed/ --outDir dist/dev",
     "preview": "vite preview --base=/fission/",
     "test": "vitest",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives",
@@ -13,7 +15,6 @@
     "prettier": "bun x prettier src --check || npx prettier src --check",
     "prettier:fix": "bun x prettier src --write || npx prettier src --write",
     "format": "(bun run prettier:fix && bun run lint:fix) || (npm run prettier:fix && npm run lint:fix)",
-    "build:prod": "tsc && vite build --base=/fission/",
     "assetpack": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/",
     "playwright:install": "bun x playwright install || npx playwright install"
   },
@@ -29,7 +30,9 @@
     "async-mutex": "^0.5.0",
     "colord": "^2.9.3",
     "framer-motion": "^10.13.1",
+    "lygia": "^1.1.3",
     "playwright": "^1.45.0",
+    "postprocessing": "^6.35.6",
     "react": "^18.2.0",
     "react-colorful": "^5.6.1",
     "react-dom": "^18.2.0",
@@ -60,13 +63,14 @@
     "jsdom": "^24.1.0",
     "pako": "^2.1.0",
     "postcss": "^8.4.26",
-    "prettier": "^3.0.0",
+    "prettier": "3.3.2",
     "protobufjs": "^7.2.6",
     "protobufjs-cli": "^1.1.2",
     "tailwindcss": "^3.3.3",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.5",
     "vite": "^5.1.4",
+    "vite-plugin-glsl": "^1.3.0",
     "vite-plugin-singlefile": "^0.13.5",
     "vitest": "^1.5.3"
   }

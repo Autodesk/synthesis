@@ -1,17 +1,30 @@
-import importlib.util
-import logging.handlers
+# DO NOT CHANGE ORDER, OR ADD IMPORTS BEFORE UNTIL END COMMENT
+
 import os
-import traceback
 from shutil import rmtree
 
 import adsk.core
 
-from .src.configure import setAnalytics, unload_config
 from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
 from .src.Logging import getLogger, logFailure, setupLogger
 from .src.Types.OString import OString
-from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
+from .src.UI import (
+    HUI,
+    Camera,
+    ConfigCommand,
+    Handlers,
+    Helper,
+    MarkingMenu,
+    ShowAPSAuthCommand,
+)
 from .src.UI.Toolbar import Toolbar
+
+# END OF RESTRICTION
+
+# Transition: AARD-1721
+# Should attempt to fix this ordering scheme within AARD-1741
+from .src.APS import APS  # isort:skip
+from .src.configure import setAnalytics, unload_config  # isort:skip
 
 
 @logFailure
@@ -21,8 +34,9 @@ def run(_):
     Arguments:
         **context** *context* -- Fusion context to derive app and UI.
     """
-    # Remove all items prior to start just to make sure
     setupLogger()
+
+    # Remove all items prior to start just to make sure
     unregister_all()
 
     # creates the UI elements
@@ -94,16 +108,28 @@ def unregister_all() -> None:
 @logFailure
 def register_ui() -> None:
     """#### Generic Function to add all UI objects in a simple non destructive way."""
+
     # toolbar = Toolbar('SketchFab')
     work_panel = Toolbar.getNewPanel(f"{APP_NAME}", f"{INTERNAL_ID}", "ToolsTab")
 
     commandButton = HUI.HButton(
         "Synthesis Exporter",
         work_panel,
-        lambda *_: True,
+        lambda *_: True,  # TODO: Should be redone with various refactors.
         ConfigCommand.ConfigureCommandCreatedHandler,
         description=f"{DESCRIPTION}",
         command=True,
     )
 
     gm.elements.append(commandButton)
+
+    apsButton = HUI.HButton(
+        "APS",
+        work_panel,
+        lambda *_: True,  # TODO: Should be redone with various refactors.
+        ShowAPSAuthCommand.ShowAPSAuthCommandCreatedHandler,
+        description=f"APS",
+        command=True,
+    )
+
+    gm.elements.append(apsButton)

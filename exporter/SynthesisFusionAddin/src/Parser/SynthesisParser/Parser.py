@@ -1,6 +1,5 @@
 import gzip
 import pathlib
-import traceback
 
 import adsk.core
 import adsk.fusion
@@ -8,10 +7,11 @@ from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
 
+from ...APS.APS import upload_mirabuf  # This line causes everything to break
 from ...general_imports import *
 from ...Logging import getLogger, logFailure, timed
 from ...UI.Camera import captureThumbnail, clearIconCache
-from ..ExporterOptions import ExporterOptions, ExportMode
+from ..ExporterOptions import ExporterOptions, ExportLocation, ExportMode
 from . import Components, JointHierarchy, Joints, Materials, PDMessage
 from .Utilities import *
 
@@ -29,7 +29,7 @@ class Parser:
 
     @logFailure(messageBox=True)
     @timed
-    def export(self) -> bool:
+    def export(self) -> None:
         app = adsk.core.Application.get()
         design: adsk.fusion.Design = app.activeDocument.design
 
@@ -160,28 +160,41 @@ class Parser:
         self.pdMessage.currentMessage = "Compressing File..."
         self.pdMessage.update()
 
-        # check if entire path exists and create if not since gzip doesn't do that.
-        path = pathlib.Path(self.exporterOptions.fileLocation).parent
-        path.mkdir(parents=True, exist_ok=True)
-
         ### Print out assembly as JSON
         # miraJson = MessageToJson(assembly_out)
         # miraJsonFile = open(f'', 'wb')
         # miraJsonFile.write(str.encode(miraJson))
         # miraJsonFile.close()
 
-        if self.exporterOptions.compressOutput:
-            logger.debug("Compressing file")
-            with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
-                self.pdMessage.currentMessage = "Saving File..."
-                self.pdMessage.update()
-                f.write(assembly_out.SerializeToString())
+        # Upload Mirabuf File to APS
+        if self.exporterOptions.exportLocation == ExportLocation.UPLOAD:
+            logger.debug("Uploading file to APS")
+            project = app.data.activeProject
+            if not project.isValid:
+                gm.ui.messageBox("Project is invalid", "")
+                return False  # add throw later
+            project_id = project.id
+            folder_id = project.rootFolder.id
+            file_name = f"{self.exporterOptions.fileLocation}.mira"
+            if upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString()) is None:
+                gm.ui.messageBox("FAILED TO UPLOAD FILE TO APS", "ERROR")  # add throw later
+        # Download Mirabuf File
         else:
-            f = open(self.exporterOptions.fileLocation, "wb")
-            f.write(assembly_out.SerializeToString())
-            f.close()
+            # check if entire path exists and create if not since gzip doesn't do that.
+            path = pathlib.Path(self.exporterOptions.fileLocation).parent
+            path.mkdir(parents=True, exist_ok=True)
+            if self.exporterOptions.compressOutput:
+                logger.debug("Compressing file")
+                with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
+                    self.pdMessage.currentMessage = "Saving File..."
+                    self.pdMessage.update()
+                    f.write(assembly_out.SerializeToString())
+            else:
+                f = open(self.exporterOptions.fileLocation, "wb")
+                f.write(assembly_out.SerializeToString())
+                f.close()
 
-        progressDialog.hide()
+        _ = progressDialog.hide()
 
         # Transition: AARD-1735
         # Create debug log joint hierarchy graph
@@ -197,26 +210,25 @@ class Parser:
             if node.value == "ground":
                 joint_hierarchy_out = f"{joint_hierarchy_out}  |- ground\n"
             else:
-                newNode = assembly_out.data.joints.joint_instances[node.value]
-                jointDefinition = assembly_out.data.joints.joint_definitions[newNode.joint_reference]
-
-                wheel_ = " wheel : true" if (jointDefinition.user_data.data["wheel"] != "") else ""
-
+                newnode = assembly_out.data.joints.joint_instances[node.value]
+                jointdefinition = assembly_out.data.joints.joint_definitions[newnode.joint_reference]
+                wheel_ = " wheel : true" if (jointdefinition.user_data.data["wheel"] != "") else ""
                 joint_hierarchy_out = (
                     f"{joint_hierarchy_out}  |---> {jointDefinition.info.name} "
                     f"type: {jointDefinition.joint_motion_type} {wheel_}\n"
                 )
-            for child in node.children:
-                if child.value == "ground":
-                    joint_hierarchy_out = f"{joint_hierarchy_out} |---> ground\n"
-                else:
-                    newNode = assembly_out.data.joints.joint_instances[child.value]
-                    jointDefinition = assembly_out.data.joints.joint_definitions[newNode.joint_reference]
-                    wheel_ = " wheel : true" if (jointDefinition.user_data.data["wheel"] != "") else ""
-                    joint_hierarchy_out = (
-                        f"{joint_hierarchy_out}  |- {jointDefinition.info.name} "
-                        f"type: {jointDefinition.joint_motion_type} {wheel_}\n"
-                    )
+
+        for child in node.children:
+            if child.value == "ground":
+                joint_hierarchy_out = f"{joint_hierarchy_out} |---> ground\n"
+            else:
+                newNode = assembly_out.data.joints.joint_instances[child.value]
+                jointDefinition = assembly_out.data.joints.joint_definitions[newNode.joint_reference]
+                wheel_ = " wheel : true" if (jointDefinition.user_data.data["wheel"] != "") else ""
+                joint_hierarchy_out = (
+                    f"{joint_hierarchy_out}  |- {jointDefinition.info.name} "
+                    f"type: {jointDefinition.joint_motion_type} {wheel_}\n"
+                )
 
         joint_hierarchy_out += "\n\n"
         debug_output = (
