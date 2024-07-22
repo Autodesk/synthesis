@@ -1,5 +1,5 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import Label, { LabelSize } from "@/ui/components/Label"
 import Button from "@/ui/components/Button"
@@ -8,6 +8,11 @@ import { useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { Divider, styled } from "@mui/material"
+import ArcadeDriveBehavior from "@/systems/simulation/behavior/ArcadeDriveBehavior"
+import GenericArmBehavior from "@/systems/simulation/behavior/GenericArmBehavior"
+import GenericElevatorBehavior from "@/systems/simulation/behavior/GenericElevatorBehavior"
+import Stack, { StackDirection } from "@/ui/components/Stack"
+import { JSX } from "react/jsx-runtime"
 
 // eslint-disable-next-line react-refresh/only-export-components
 export enum ConfigureRobotBrainTypes {
@@ -23,6 +28,127 @@ const LabelStyled = styled(Label)({
 const DividerStyled = styled(Divider)({
     borderColor: "white",
 })
+
+/**
+ * Retrieves the joints of a robot and generates JSX elements for each joint.
+ * @param robot The MirabufSceneObject representing the robot.
+ * @returns An array of JSX elements representing the joints of the robot.
+ */
+function GetJoints(robot: MirabufSceneObject): JSX.Element[] {
+    const output: JSX.Element[] = []
+    let elementKey = 0
+
+    /* Iterate through each behavior of the robot */
+    robot.brain?.behaviors.forEach(behavior => {
+        /* Adds the joints that the wheels are associated with */
+        if (behavior instanceof ArcadeDriveBehavior) {
+            behavior.wheels.forEach(wheel => {
+                const assoc = World.PhysicsSystem.GetBodyAssociation(
+                    wheel.constraint.GetVehicleBody().GetID()
+                ) as RigidNodeAssociate
+
+                if (!assoc || assoc.sceneObject !== robot) {
+                    return
+                }
+
+                output.push(
+                    <Stack
+                        key={`Behavior ${elementKey}`}
+                        direction={StackDirection.Horizontal}
+                        className="items-center"
+                    >
+                        <LabelStyled
+                            key={`wheel-node-notation ${elementKey}`}
+                            size={LabelSize.Small}
+                            className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
+                        >
+                            Wheel Node {elementKey}
+                        </LabelStyled>
+                        <LabelStyled
+                            key={`wheel-node-number ${elementKey}`}
+                            size={LabelSize.Small}
+                            className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
+                        >
+                            {assoc.rigidNodeId}
+                        </LabelStyled>
+                    </Stack>
+                )
+                elementKey++
+            })
+            output.push(<DividerStyled key={`divider-${elementKey}`} />)
+        } else if (behavior instanceof GenericArmBehavior) {
+
+        /* Adds the joints that the arm is associated with */
+            // Get the rigid node associates for the two bodies
+            const assoc1 = World.PhysicsSystem.GetBodyAssociation(
+                behavior.hingeDriver.constraint.GetBody1().GetID()
+            ) as RigidNodeAssociate
+            const assoc2 = World.PhysicsSystem.GetBodyAssociation(
+                behavior.hingeDriver.constraint.GetBody2().GetID()
+            ) as RigidNodeAssociate
+
+            if (!assoc1 || assoc1.sceneObject !== robot || !assoc2 || assoc2.sceneObject !== robot) {
+                return
+            }
+
+            output.push(
+                <Stack key={`Behavior ${elementKey}`} direction={StackDirection.Horizontal} className="items-center">
+                    <LabelStyled
+                        key={`arm-nodes-notation ${elementKey}`}
+                        size={LabelSize.Small}
+                        className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
+                    >
+                        Arm Nodes
+                    </LabelStyled>
+                    <LabelStyled
+                        key={`arm-nodes ${elementKey}`}
+                        size={LabelSize.Small}
+                        className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
+                    >
+                        {assoc1.rigidNodeId + " " + assoc2.rigidNodeId}
+                    </LabelStyled>
+                </Stack>
+            )
+            elementKey++
+        } else if (behavior instanceof GenericElevatorBehavior) {
+
+        /* Adds the joints that the elevator is associated with */
+            // Get the rigid node associates for the two bodies
+            const assoc1 = World.PhysicsSystem.GetBodyAssociation(
+                behavior.sliderDriver.constraint.GetBody1().GetID()
+            ) as RigidNodeAssociate
+            const assoc2 = World.PhysicsSystem.GetBodyAssociation(
+                behavior.sliderDriver.constraint.GetBody2().GetID()
+            ) as RigidNodeAssociate
+
+            if (!assoc1 || assoc1.sceneObject !== robot || !assoc2 || assoc2.sceneObject !== robot) {
+                return
+            }
+
+            output.push(
+                <Stack key={`Behavior ${elementKey}`} direction={StackDirection.Horizontal} className="items-center">
+                    <LabelStyled
+                        key={`elevator-nodes-notation ${elementKey}`}
+                        size={LabelSize.Small}
+                        className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
+                    >
+                        Elevator Nodes
+                    </LabelStyled>
+                    <LabelStyled
+                        key={`elevator-nodes ${elementKey}`}
+                        size={LabelSize.Small}
+                        className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
+                    >
+                        {assoc1.rigidNodeId + " " + assoc2.rigidNodeId}
+                    </LabelStyled>
+                </Stack>
+            )
+            elementKey++
+        }
+    })
+
+    return output
+}
 
 const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
@@ -83,29 +209,15 @@ const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                         {viewType === ConfigureRobotBrainTypes.SYNTHESIS ? (
                             <>
                                 <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                                    Behaviors  
+                                    Behaviors
                                 </LabelStyled>
                                 <DividerStyled />
-
-                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                                    thing2
-                                </LabelStyled>
-                                <DividerStyled />
-
-                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                                    thing3
-                                </LabelStyled>
-                                <DividerStyled />
-
-                                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                                    thing4
-                                </LabelStyled>
-                                <DividerStyled /> 
+                                {GetJoints(selectedRobot)}
                             </>
                         ) : (
                             <>
                                 <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                                    Example WIPLIB Brain 
+                                    Example WIPLIB Brain
                                 </LabelStyled>
                                 <DividerStyled />
 
@@ -122,7 +234,7 @@ const ConfigureRobotBrainPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                                 <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                     Example 4
                                 </LabelStyled>
-                                <DividerStyled /> 
+                                <DividerStyled />
                             </>
                         )}
                     </div>

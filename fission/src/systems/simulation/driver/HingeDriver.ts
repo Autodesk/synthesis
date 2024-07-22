@@ -10,6 +10,10 @@ class HingeDriver extends Driver {
     private _targetVelocity: number = 0.0
     private _targetAngle: number
 
+    public get constraint(): Jolt.HingeConstraint {
+        return this._constraint
+    }
+
     public get targetVelocity(): number {
         return this._targetVelocity
     }

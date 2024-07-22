@@ -28,6 +28,10 @@ class SynthesisBrain extends Brain {
     private _assemblyName: string
     private _assemblyIndex: number = 0
 
+    public get behaviors(): Behavior[] {
+        return this._behaviors
+    }
+
     // Tracks the number of each specific mira file spawned
     public static numberRobotsSpawned: { [key: string]: number } = {}
 

@@ -56,6 +56,10 @@ class MirabufSceneObject extends SceneObject {
         return this._mechanism
     }
 
+    get brain() {
+        return this._brain
+    }
+
     get assemblyName() {
         return this._assemblyName
     }

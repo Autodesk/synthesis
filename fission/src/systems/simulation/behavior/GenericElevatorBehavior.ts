@@ -11,6 +11,10 @@ class GenericElevatorBehavior extends Behavior {
 
     private _linearSpeed = 2.5
 
+    public get sliderDriver(): SliderDriver {
+        return this._sliderDriver
+    }
+
     constructor(
         sliderDriver: SliderDriver,
         sliderStimulus: SliderStimulus,
