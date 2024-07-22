@@ -43,7 +43,6 @@ class ScoringZoneSceneObject extends SceneObject {
     private _collisionRemoved?: (event: OnContactRemovedEvent) => void
 
     private _gpContacted:  Jolt.BodyID[] = []
-    // private _gpContacting: Jolt.BodyID[] = []
 
     public get gpContacted() {
         return this._gpContacted
@@ -201,6 +200,8 @@ class ScoringZoneSceneObject extends SceneObject {
             } else {
                 SimulationSystem.blueScore += this._prefs.points
             }
+            const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
+            event.Dispatch()
             console.log(`Red: ${SimulationSystem.redScore} Blue: ${SimulationSystem.blueScore}`)
         }
     }
@@ -223,7 +224,7 @@ class ScoringZoneSceneObject extends SceneObject {
     }
 
     private RemoveScore() {
-        if (this._prefs)
+        if (this._prefs) {
             if (this._prefs.alliance == "red") {
                 SimulationSystem.redScore -= this._prefs.points
                 if (SimulationSystem.redScore < 1) SimulationSystem.redScore = 0
@@ -231,7 +232,10 @@ class ScoringZoneSceneObject extends SceneObject {
                 SimulationSystem.blueScore -= this._prefs.points
                 if (SimulationSystem.blueScore < 1) SimulationSystem.blueScore = 0
             }
-        console.log(`Red: ${SimulationSystem.redScore} Blue: ${SimulationSystem.blueScore}`)
+            const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
+            event.Dispatch()
+            console.log(`Red: ${SimulationSystem.redScore} Blue: ${SimulationSystem.blueScore}`)
+        }
     }
 
     public static RemoveGamepiece(zone: ScoringZoneSceneObject, gpID: Jolt.BodyID) {
@@ -243,6 +247,32 @@ class ScoringZoneSceneObject extends SceneObject {
             zone._gpContacted = temp
             zone.RemoveScore()
         }
+    }
+}
+
+export class OnScoreChangedEvent extends Event {
+    public static readonly EVENT_KEY = 'OnScoreChangedEvent'
+
+    public red: number
+    public blue: number
+
+    public constructor(redScore: number, blueScore: number) {
+        super(OnScoreChangedEvent.EVENT_KEY)
+
+        this.red = redScore
+        this.blue = blueScore
+    }
+
+    public Dispatch(): void {
+        window.dispatchEvent(this)
+    }
+
+    public static AddListener(func: (e: OnScoreChangedEvent) => void) {
+        window.addEventListener(OnScoreChangedEvent.EVENT_KEY, func as (e: Event) => void)
+    }
+
+    public static RemoveListener(func: (e: OnScoreChangedEvent) => void) {
+        window.removeEventListener(OnScoreChangedEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
 

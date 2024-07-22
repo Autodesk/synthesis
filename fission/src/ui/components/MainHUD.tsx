@@ -18,7 +18,7 @@ import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
 import { AiOutlineDoubleRight } from "react-icons/ai"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -106,6 +106,7 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
                     <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
+                    <MainHUDButton value={"Score"} icon={<FaMagnifyingGlass />} onClick={() => openPanel("scoreboard")} />
                     <MainHUDButton
                         value={"Controls"}
                         icon={<IoGameControllerOutline />}
@@ -159,14 +160,6 @@ const MainHUD: React.FC = () => {
                         onClick={() => openPanel("driver-station")}
                     />
                     {/* MiraMap and OPFS Temp Buttons */}
-                    <MainHUDButton
-                        value={"Print Mira Maps"}
-                        icon={<BsCodeSquare />}
-                        onClick={() => {
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
-                        }}
-                    />
                     <MainHUDButton
                         value={"Clear Mira"}
                         icon={<GiSteeringWheel />}
