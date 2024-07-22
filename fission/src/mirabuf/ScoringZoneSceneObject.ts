@@ -115,22 +115,24 @@ class ScoringZoneSceneObject extends SceneObject {
                         this.ZoneCollision(body1)
                     }
                 }
+                OnContactAddedEvent.AddListener(this._collision)
 
-                this._collisionRemoved = (event: OnContactRemovedEvent) => {
-                    if (this._prefs?.persistentPoints) {
-                        const body1 = event.message.GetBody1ID()
-                        const body2 = event.message.GetBody2ID()
 
-                        if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                            this.ZoneCollisionRemoved(body2)
-                        } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                            this.ZoneCollisionRemoved(body1)
+                if (this._prefs.persistentPoints) {
+                    this._collisionRemoved = (event: OnContactRemovedEvent) => {
+                        if (this._prefs?.persistentPoints) {
+                            const body1 = event.message.GetBody1ID()
+                            const body2 = event.message.GetBody2ID()
+
+                            if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                                this.ZoneCollisionRemoved(body2)
+                            } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
+                                this.ZoneCollisionRemoved(body1)
+                            }
                         }
                     }
+                    OnContactRemovedEvent.AddListener(this._collisionRemoved)
                 }
-        
-                OnContactAddedEvent.AddListener(this._collision)
-                OnContactRemovedEvent.AddListener(this._collisionRemoved)
 
                 console.debug("Scoring zone created successfully")
             }
@@ -194,7 +196,7 @@ class ScoringZoneSceneObject extends SceneObject {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece && this._prefs) {
             console.log(`Adding ${gpID.GetIndex()}`)
-            this._gpContacted.push(gpID)
+            if (this._prefs.persistentPoints) this._gpContacted.push(gpID)
             if (this._prefs.alliance == "red") {
                 SimulationSystem.redScore += this._prefs.points
             } else {
@@ -208,7 +210,7 @@ class ScoringZoneSceneObject extends SceneObject {
     
     // TODO: Add handling for when the ejectable carries the gamepiece out
     private ZoneCollisionRemoved(gpID: Jolt.BodyID) {
-        // console.log(`Scoring zone ${gpID.GetIndex()} removed from ${this._joltBodyId?.GetIndex()}`)
+        console.debug(`Scoring zone ${gpID.GetIndex()} removed from ${this._joltBodyId?.GetIndex()}`)
 
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
@@ -239,13 +241,15 @@ class ScoringZoneSceneObject extends SceneObject {
     }
 
     public static RemoveGamepiece(zone: ScoringZoneSceneObject, gpID: Jolt.BodyID) {
-        console.log(`Removing ${gpID.GetIndex()} from ${zone.id}`)
-        const temp = zone._gpContacted.filter(x => {
-            return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
-        })
-        if (zone._gpContacted != temp) {
-            zone._gpContacted = temp
-            zone.RemoveScore()
+        if (zone._prefs && zone._prefs.persistentPoints) {
+            console.debug(`Removing ${gpID.GetIndex()} from ${zone.id}`)
+            const temp = zone._gpContacted.filter(x => {
+                return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
+            })
+            if (zone._gpContacted != temp) {
+                zone._gpContacted = temp
+                zone.RemoveScore()
+            }
         }
     }
 }
