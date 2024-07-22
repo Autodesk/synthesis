@@ -184,7 +184,7 @@ def installDependencies():
 
         from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
     except ImportError or ModuleNotFoundError:
-        installCross(["protobuf==4.23.3", "result==0.17.0"])
+        installCross(["protobuf==4.23.3", "requests==2.32.3"])
         from requests import get, post
 
         from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
