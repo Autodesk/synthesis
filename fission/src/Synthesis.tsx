@@ -56,11 +56,20 @@ import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.ts
 import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
+import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
+import { ProgressHandle } from "./ui/components/ProgressNotificationData.ts"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
+import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
-const DEFAULT_MIRA_PATH = "/api/mira/Fields/FRC Field 2018_v13.mira"
+import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
+import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
+import Lazy from "./util/Lazy.ts"
+
+const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
+
+const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
@@ -91,6 +100,8 @@ function Synthesis() {
 
         World.InitWorld()
 
+        worker.getValue()
+
         let mira_path = DEFAULT_MIRA_PATH
 
         if (urlParams.has("mira")) {
@@ -99,11 +110,17 @@ function Synthesis() {
         }
 
         const setup = async () => {
-            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.FIELD)
-                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.FIELD))
+            const setupProgress = new ProgressHandle("Spawning Default Robot")
+            setupProgress.Update("Checking cache...", 0.1)
+
+            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
+                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
-                const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.FIELD)
-                
+
+            const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
+
+            setupProgress.Update("Parsing assembly...", 0.5)
+
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
                     return
@@ -112,11 +129,16 @@ function Synthesis() {
                 const parser = new MirabufParser(miraAssembly)
                 if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
                     console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+                    setupProgress.Fail("Failed to parse assembly")
                     return
                 }
 
+                setupProgress.Update("Creating scene object...", 0.9)
+
                 const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
+
+                setupProgress.Done()
             })()
         }
 
@@ -170,6 +192,7 @@ function Synthesis() {
                     >
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
+                            <SceneOverlay />
                             <MainHUD key={"main-hud"} />
                             <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />
                             {panelElements.length > 0 && panelElements}
@@ -178,6 +201,7 @@ function Synthesis() {
                                     {modalElement}
                                 </div>
                             )}
+                            <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>
@@ -243,6 +267,7 @@ const initialPanels: ReactElement[] = [
     <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
+    <WSViewPanel key="ws-view" panelId="ws-view" />,
 ]
 
 export default Synthesis

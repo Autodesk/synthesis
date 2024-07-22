@@ -25,7 +25,6 @@ jobs:
     - name: Install Dependencies
       run: |
         cd fission
-        rm package-lock.json
         npm install
 
     - name: Get package info
