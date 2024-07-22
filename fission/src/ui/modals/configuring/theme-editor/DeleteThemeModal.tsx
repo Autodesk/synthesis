@@ -1,6 +1,6 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { GrFormClose } from "react-icons/gr"
+import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { useTheme } from "@/ui/ThemeContext"
 
@@ -12,7 +12,7 @@ const DeleteThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={`Delete ${currentTheme}?`}
-            icon={<GrFormClose />}
+            icon={<FaXmark />}
             modalId={modalId}
             onAccept={() => {
                 deleteTheme(currentTheme)

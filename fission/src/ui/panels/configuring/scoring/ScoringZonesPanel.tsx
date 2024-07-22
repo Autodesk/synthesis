@@ -13,6 +13,7 @@ import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { Box } from "@mui/material"
+import { FaBasketball } from "react-icons/fa6"
 
 const AddIcon = <AiOutlinePlus size={"1.25rem"} />
 const DeleteIcon = <IoTrashBin size={"1.25rem"} />
@@ -115,6 +116,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
     return (
         <Panel
             name="Scoring Zones"
+            icon={<FaBasketball />}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}

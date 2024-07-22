@@ -1,8 +1,18 @@
 import React, { useEffect, useState } from "react"
-import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
+import {
+    FaCar,
+    FaGear,
+    FaMagnifyingGlass,
+    FaPlus,
+    FaGamepad,
+    FaBasketball,
+    FaFileImport,
+    FaWrench,
+    FaScrewdriverWrench,
+} from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
-import { GrFormClose } from "react-icons/gr"
-import { IoBasketball, IoGameControllerOutline, IoPeople } from "react-icons/io5"
+import { FaXmark } from "react-icons/fa6"
+import { IoPeople } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -11,7 +21,6 @@ import { ToastType, useToastContext } from "@/ui/ToastContext"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import { Button } from "@mui/base/Button"
-import { AiOutlineTool } from "react-icons/ai"
 
 type ButtonProps = {
     value: string
@@ -79,7 +88,7 @@ const MainHUD: React.FC = () => {
                         onClick={() => setIsOpen(false)}
                         className={`bg-none border-none focus-visible:outline-0 focus:outline-0 select-none`}
                     >
-                        <GrFormClose color="bg-icon" size={20} className="text-main-hud-close-icon" />
+                        <FaXmark color="bg-icon" size={20} className="text-main-hud-close-icon" />
                     </Button>
                 </div>
                 <MainHUDButton
@@ -91,27 +100,23 @@ const MainHUD: React.FC = () => {
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
                         value={"Manage Assemblies"}
-                        icon={<FaGear />}
+                        icon={<FaWrench />}
                         onClick={() => openModal("manage-assemblies")}
                     />
                     <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
                     <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
-                    <MainHUDButton
-                        value={"Controls"}
-                        icon={<IoGameControllerOutline />}
-                        onClick={() => openModal("change-inputs")}
-                    />
+                    <MainHUDButton value={"Controls"} icon={<FaGamepad />} onClick={() => openModal("change-inputs")} />
                     <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
                     <MainHUDButton
                         value={"Import Local Mira"}
-                        icon={<IoPeople />}
+                        icon={<FaFileImport />}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
                         value={"Edit Scoring Zones"}
-                        icon={<IoBasketball />}
+                        icon={<FaBasketball />}
                         onClick={() => {
                             openPanel("scoring-zones")
                         }}
@@ -120,7 +125,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                     <MainHUDButton
                         value={"Debug Tools"}
-                        icon={<AiOutlineTool />}
+                        icon={<FaScrewdriverWrench />}
                         onClick={() => {
                             openPanel("debug")
                         }}

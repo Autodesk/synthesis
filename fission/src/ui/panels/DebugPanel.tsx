@@ -1,4 +1,3 @@
-import { AiOutlineTool } from "react-icons/ai"
 import Panel, { PanelPropsImpl } from "../components/Panel"
 import Button from "../components/Button"
 import World from "@/systems/World"
@@ -16,6 +15,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import Jolt from "@barclah/jolt-physics"
 import Label from "../components/Label"
 import { colorNameToVar } from "../ThemeContext"
+import { FaScrewdriverWrench } from "react-icons/fa6"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -55,7 +55,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="center"
             name={"The Poker"}
-            icon={<AiOutlineTool />}
+            icon={<FaScrewdriverWrench />}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"

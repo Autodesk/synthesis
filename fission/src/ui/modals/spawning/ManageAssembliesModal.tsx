@@ -1,6 +1,6 @@
 import React, { useReducer } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaPlus } from "react-icons/fa6"
+import { FaWrench } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import World from "@/systems/World"
@@ -45,7 +45,7 @@ const ManageAssembliesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Manage Assemblies"}
-            icon={<FaPlus />}
+            icon={<FaWrench />}
             modalId={modalId}
             onAccept={() => {
                 // showTooltip("controls", [

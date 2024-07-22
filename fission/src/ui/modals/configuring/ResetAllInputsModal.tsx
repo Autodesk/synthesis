@@ -1,6 +1,6 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { GrFormClose } from "react-icons/gr"
+import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -11,7 +11,7 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Reset all Inputs??"
-            icon={<GrFormClose />}
+            icon={<FaXmark />}
             modalId={modalId}
             onAccept={() => {
                 const roboPrefs = PreferencesSystem.getAllRobotPreferences()
