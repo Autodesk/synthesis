@@ -13,6 +13,7 @@ import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import ArcadeDriveBehavior from "../behavior/synthesis/ArcadeDriveBehavior"
 import WPILibArcadeDriveBehavior from "../behavior/wpilib/WPILibArcadeDriveBehavior"
+import { mirabuf } from "@/proto/mirabuf"
 
 const worker = new WPILibWSWorker()
 
@@ -260,7 +261,9 @@ class WPILibBrain extends Brain {
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
 
-    private _driverDevices: Map<SimType, Map<string, Driver>> = new Map()
+    private _simDevices: SimDevice[] = []
+
+    // private _driverDevices: Map<SimType, Map<string, Driver>> = new Map()
 
     public static robotsSpawned: string[] = []
 
@@ -281,11 +284,12 @@ class WPILibBrain extends Brain {
         // }
 
         // WPILibBrain._currentRobotIndex++
-        this.configureArcadeDriveBehavior()
+        // this.configureArcadeDriveBehavior()
     }
 
     public Update(deltaT: number): void {
-        this._behaviors.forEach(b => b.Update(deltaT))
+        // this._behaviors.forEach(b => b.Update(deltaT))
+        this._simDevices.forEach(d => d.Update(deltaT))
     }
 
     public Enable(): void {
@@ -296,63 +300,63 @@ class WPILibBrain extends Brain {
         worker.postMessage({ command: "disconnect" })
     }
     
-    public configureArcadeDriveBehavior() {
-        const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
-            driver => driver instanceof WheelDriver
-        ) as WheelDriver[]
-        wheelDrivers.forEach((wheel, idx) => {
-            wheel.deviceType = 'SimDevice'
-            wheel.device = `SYN CANSparkMax[${idx}]`
-        })
-        const wheelStimuli: WheelRotationStimulus[] = this._simLayer.stimuli.filter(
-            stimulus => stimulus instanceof WheelRotationStimulus
-        ) as WheelRotationStimulus[]
+    // public configureArcadeDriveBehavior() {
+    //     const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
+    //         driver => driver instanceof WheelDriver
+    //     ) as WheelDriver[]
+    //     wheelDrivers.forEach((wheel, idx) => {
+    //         wheel.deviceType = 'SimDevice'
+    //         wheel.device = `SYN CANSparkMax[${idx}]`
+    //     })
+    //     const wheelStimuli: WheelRotationStimulus[] = this._simLayer.stimuli.filter(
+    //         stimulus => stimulus instanceof WheelRotationStimulus
+    //     ) as WheelRotationStimulus[]
 
-        // Two body constraints are part of wheels and are used to determine which way a wheel is facing
-        const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints
-            .filter(mechConstraint => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint)
-            .map(mechConstraint => mechConstraint.constraint as Jolt.TwoBodyConstraint)
+    //     // Two body constraints are part of wheels and are used to determine which way a wheel is facing
+    //     const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints
+    //         .filter(mechConstraint => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint)
+    //         .map(mechConstraint => mechConstraint.constraint as Jolt.TwoBodyConstraint)
 
-        const leftWheels: WheelDriver[] = []
-        const leftStimuli: WheelRotationStimulus[] = []
+    //     const leftWheels: WheelDriver[] = []
+    //     const leftStimuli: WheelRotationStimulus[] = []
 
-        const rightWheels: WheelDriver[] = []
-        const rightStimuli: WheelRotationStimulus[] = []
+    //     const rightWheels: WheelDriver[] = []
+    //     const rightStimuli: WheelRotationStimulus[] = []
 
-        // Determines which wheels and stimuli belong to which side of the robot
-        for (let i = 0; i < wheelDrivers.length; i++) {
-            const wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
+    //     // Determines which wheels and stimuli belong to which side of the robot
+    //     for (let i = 0; i < wheelDrivers.length; i++) {
+    //         const wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
 
-            const robotCOM = World.PhysicsSystem.GetBody(
-                this._mechanism.constraints[0].childBody
-            ).GetCenterOfMassPosition() as Jolt.Vec3
-            const rightVector = new JOLT.Vec3(1, 0, 0)
+    //         const robotCOM = World.PhysicsSystem.GetBody(
+    //             this._mechanism.constraints[0].childBody
+    //         ).GetCenterOfMassPosition() as Jolt.Vec3
+    //         const rightVector = new JOLT.Vec3(1, 0, 0)
 
-            const dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
+    //         const dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
 
-            if (dotProduct < 0) {
-                rightWheels.push(wheelDrivers[i])
-                rightStimuli.push(wheelStimuli[i])
-            } else {
-                leftWheels.push(wheelDrivers[i])
-                leftStimuli.push(wheelStimuli[i])
-            }
-        }
+    //         if (dotProduct < 0) {
+    //             rightWheels.push(wheelDrivers[i])
+    //             rightStimuli.push(wheelStimuli[i])
+    //         } else {
+    //             leftWheels.push(wheelDrivers[i])
+    //             leftStimuli.push(wheelStimuli[i])
+    //         }
+    //     }
 
-        // TODO: all this is very temporary
-        this._driverDevices.set("CANMotor", new Map<string, Driver>());
-        leftWheels.forEach(wheel => this._driverDevices.get(wheel.deviceType!)!.set(wheel.device!, wheel))
-        rightWheels.forEach(wheel => this._driverDevices.get(wheel.deviceType!)!.set(wheel.device!, wheel))
+    //     // TODO: all this is very temporary
+    //     this._driverDevices.set("CANMotor", new Map<string, Driver>());
+    //     leftWheels.forEach(wheel => this._driverDevices.get(wheel.deviceType!)!.set(wheel.device!, wheel))
+    //     rightWheels.forEach(wheel => this._driverDevices.get(wheel.deviceType!)!.set(wheel.device!, wheel))
 
-        this._behaviors.push(
-            new WPILibArcadeDriveBehavior(
-                leftWheels,
-                rightWheels,
-                leftStimuli,
-                rightStimuli
-            )
-        )
-    }
+    //     this._behaviors.push(
+    //         new WPILibArcadeDriveBehavior(
+    //             leftWheels,
+    //             rightWheels,
+    //             leftStimuli,
+    //             rightStimuli
+    //         )
+    //     )
+    // }
 }
 
 export class SimMapUpdateEvent extends Event {
@@ -372,3 +376,21 @@ export class SimMapUpdateEvent extends Event {
 }
 
 export default WPILibBrain
+
+export class SimDevice {
+    public name: string
+    public ports: number[]
+    public drivers: Driver[]
+    public type: SimType
+
+    public constructor(name: string, ports: number[], drivers: Driver[], type: SimType) {
+        this.name = name
+        this.ports = ports
+        this.drivers = drivers
+        this.type = type
+    }
+
+    public Update(deltaT: number) {
+        console.log('SimDevice update...')
+    }
+}

@@ -8,15 +8,30 @@ import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
+import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import Driver from "@/systems/simulation/driver/Driver"
 
 const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
     const [name, setName] = useState<string>("")
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
-    const [checkedSignals, setCheckedSignals] = useState<string[]>([])
+    const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([])
 
     const numPorts = 8
-    const signals = ["Rev0 (uuid)", "Rev1 (uuid)", "Rev2 (uuid)", "Rev3 (uuid)"]
+    let drivers: Driver[] = []
+
+    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
+        x => x[1] instanceof MirabufSceneObject
+    )
+    console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
+    if (miraObjs.length > 0) {
+        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+        const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        drivers = simLayer?.drivers ?? []
+        simLayer?.SetBrain(new WPILibBrain(mechanism))
+    }
 
     return (
         <Modal
@@ -26,7 +41,7 @@ const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 // no eslint complain
-                console.log(name, checkedPorts, checkedSignals)
+                console.log(name, checkedPorts, checkedDrivers)
             }}
             onCancel={() => {
                 openModal("roborio")
@@ -57,16 +72,16 @@ const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Container className="w-max">
                     <Label>Signals</Label>
                     <ScrollView className="h-full px-2">
-                        {signals.map(p => (
+                        {drivers.map((driver, idx) => (
                             <Checkbox
-                                key={p}
-                                label={p.toString()}
+                                key={`${driver.constructor.name}-${idx}`}
+                                label={driver.constructor.name}
                                 defaultState={false}
                                 onClick={checked => {
-                                    if (checked && !checkedSignals.includes(p)) {
-                                        setCheckedSignals([...checkedSignals, p])
-                                    } else if (!checked && checkedSignals.includes(p)) {
-                                        setCheckedSignals(checkedSignals.filter(a => a != p))
+                                    if (checked && !checkedDrivers.includes(driver)) {
+                                        setCheckedDrivers([...checkedDrivers, driver])
+                                    } else if (!checked && checkedDrivers.includes(driver)) {
+                                        setCheckedDrivers(checkedDrivers.filter(a => a != driver))
                                     }
                                 }}
                             />
