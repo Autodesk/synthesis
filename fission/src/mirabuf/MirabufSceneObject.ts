@@ -9,7 +9,6 @@ import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -19,6 +18,8 @@ import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import Brain from "@/systems/simulation/Brain"
+import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 
 const DEBUG_BODIES = false
 
@@ -31,7 +32,7 @@ class MirabufSceneObject extends SceneObject {
     private _assemblyName: string
     private _mirabufInstance: MirabufInstance
     private _mechanism: Mechanism
-    private _brain: SynthesisBrain | undefined
+    private _brain: Brain | undefined
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
@@ -143,7 +144,7 @@ class MirabufSceneObject extends SceneObject {
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-        this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
+        this._brain = new WPILibBrain(this._mechanism)
         simLayer.SetBrain(this._brain)
 
         // Intake

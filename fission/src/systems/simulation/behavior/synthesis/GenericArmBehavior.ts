@@ -1,6 +1,6 @@
-import HingeDriver from "../driver/HingeDriver"
-import HingeStimulus from "../stimulus/HingeStimulus"
-import Behavior from "./Behavior"
+import HingeDriver from "@/systems/simulation/driver/HingeDriver"
+import HingeStimulus from "@/systems/simulation/stimulus/HingeStimulus"
+import Behavior from "@/systems/simulation/behavior/Behavior"
 import InputSystem from "@/systems/input/InputSystem"
 
 class GenericArmBehavior extends Behavior {
