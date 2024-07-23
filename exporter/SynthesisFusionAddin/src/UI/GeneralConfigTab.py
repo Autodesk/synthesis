@@ -9,13 +9,18 @@ from ..Parser.ExporterOptions import ExporterOptions, ExportMode, PreferredUnits
 from ..TypesTmp import KG, toKg, toLbs
 from . import IconPaths
 from .CreateCommandInputsHelper import createBooleanInput, createTableInput
+from .GamepieceConfigTab import GamepieceConfigTab
+from .JointConfigTab import JointConfigTab
 
 
 class GeneralConfigTab:
     generalOptionsTab: adsk.core.TabCommandInput
     previousAutoCalcWeightCheckboxState: bool
     previousSelectedUnitDropdownIndex: int
+    previousSelectedModeDropdownIndex: int
     currentUnits: PreferredUnits
+    jointConfigTab: JointConfigTab
+    gamepieceConfigTab: GamepieceConfigTab
 
     def __init__(self, args: adsk.core.CommandCreatedEventArgs, exporterOptions: ExporterOptions) -> None:
         try:
@@ -35,6 +40,7 @@ class GeneralConfigTab:
             dropdownExportMode.listItems.add("Static", not dynamic)
             dropdownExportMode.tooltip = "Export Mode"
             dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
+            self.previousSelectedModeDropdownIndex = int(not dynamic)
 
             weightTableInput = createTableInput(
                 "weightTable",
@@ -171,7 +177,22 @@ class GeneralConfigTab:
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs) -> None:
         try:
             commandInput = args.input
-            if commandInput.id == "weightUnitDropdown":
+            if commandInput.id == "exportModeDropdown":
+                modeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
+                if modeDropdown.selectedItem.index == self.previousSelectedModeDropdownIndex:
+                    return
+
+                if modeDropdown.selectedItem.index == 0:
+                    self.jointConfigTab.isVisible = True
+                    self.gamepieceConfigTab.isVisible = False
+                else:
+                    assert modeDropdown.selectedItem.index == 1
+                    self.jointConfigTab.isVisible = False
+                    self.gamepieceConfigTab.isVisible = True
+
+                self.previousSelectedModeDropdownIndex = modeDropdown.selectedItem.index
+
+            elif commandInput.id == "weightUnitDropdown":
                 weightUnitDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
                 weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
                 weightInput: adsk.core.ValueCommandInput = weightTable.getInputAtPosition(0, 1)

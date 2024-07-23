@@ -135,7 +135,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             global gamepieceConfigTab
             gamepieceConfigTab = GamepieceConfigTab(args, exporterOptions)
-            gamepieceConfigTab.isVisible = True  # TODO: Should not be visible by default.
+            generalConfigTab.gamepieceConfigTab = gamepieceConfigTab
 
             # ~~~~~~~~~~~~~~~~ HELP FILE ~~~~~~~~~~~~~~~~
             """
@@ -146,7 +146,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             global jointConfigTab
             jointConfigTab = JointConfigTab(args)
-            jointConfigTab.isVisible = False
+            generalConfigTab.jointConfigTab = jointConfigTab
 
             # Transition: AARD-1685
             # There remains some overlap between adding joints as wheels.
