@@ -50,7 +50,7 @@ class Joint:
 @dataclass
 class Gamepiece:
     occurrenceToken: str = field(default=None)
-    weight: float = field(default=None)
+    weight: KG = field(default=None)
     friction: float = field(default=None)
 
 
@@ -98,7 +98,8 @@ class ExporterOptions:
 
     # Always stored in kg regardless of 'preferredUnits'
     robotWeight: KG = field(default=0.0)
-    autoCalcWeight: bool = field(default=False)
+    autoCalcRobotWeight: bool = field(default=False)
+    autoCalcGamepieceWeight: bool = field(default=False)
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)

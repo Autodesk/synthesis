@@ -117,6 +117,14 @@ class JointConfigTab:
         except BaseException:
             logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
 
+    @property
+    def isVisible(self) -> bool:
+        return self.jointConfigTab.isVisible
+
+    @isVisible.setter
+    def isVisible(self, value: bool) -> None:
+        self.jointConfigTab.isVisible = value
+
     def addJoint(self, fusionJoint: adsk.fusion.Joint, synJoint: Joint | None = None) -> bool:
         try:
             if fusionJoint in self.selectedJointList:
@@ -316,6 +324,9 @@ class JointConfigTab:
             signalType.tooltip = "Wheel signal type is linked with the respective joint signal type."
             i = self.selectedJointList.index(joint)
             jointSignalType = SignalType(self.jointConfigTable.getInputAtPosition(i + 1, 3).selectedItem.index + 1)
+
+            # Invisible white space characters are required in the list item name field to make this work.
+            # I have no idea why, Fusion API needs some special education help - Brandon
             signalType.listItems.add("‎", jointSignalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
             signalType.listItems.add("‎", jointSignalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
             signalType.listItems.add("‎", jointSignalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
@@ -342,7 +353,7 @@ class JointConfigTab:
             i = self.selectedJointList.index(joint)
             self.selectedJointList.remove(joint)
             self.previousWheelCheckboxState.pop(i)
-            self.jointConfigTable.deleteRow(i + 1)
+            self.jointConfigTable.deleteRow(i + 1)  # Row is 1 indexed
             for row in range(1, self.jointConfigTable.rowCount):  # Row is 1 indexed
                 # TODO: Step through this in the debugger and figure out if this is all necessary.
                 listItems = self.jointConfigTable.getInputAtPosition(row, 2).listItems
@@ -534,11 +545,9 @@ class JointConfigTab:
             jointSelectCancelButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointSelectCancelButton")
             jointSelection: adsk.core.SelectionCommandInput = commandInputs.itemById("jointSelection")
 
-            if self.jointConfigTable.rowCount <= 1:
-                jointRemoveButton.isEnabled = False
-
+            jointRemoveButton.isEnabled = self.jointConfigTable.rowCount > 1
             if not jointSelection.isEnabled:
-                jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
+                jointAddButton.isEnabled = True
                 jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = False
         except BaseException:
             logging.getLogger("{INTERNAL_ID}.UI.JointConfigTab").error("Failed:\n{}".format(traceback.format_exc()))

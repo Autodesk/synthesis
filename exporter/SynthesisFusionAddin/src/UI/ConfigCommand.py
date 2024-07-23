@@ -18,6 +18,7 @@ from ..Parser.ExporterOptions import ExporterOptions
 from ..Parser.SynthesisParser.Parser import Parser
 from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
 from .Configuration.SerialCommand import SerialCommand
+from .GamepieceConfigTab import GamepieceConfigTab
 from .GeneralConfigTab import GeneralConfigTab
 
 # Transition: AARD-1685
@@ -29,6 +30,7 @@ from .JointConfigTab import JointConfigTab
 
 generalConfigTab: GeneralConfigTab
 jointConfigTab: JointConfigTab
+gamepieceConfigTab: GamepieceConfigTab
 
 """
 INPUTS_ROOT (adsk.fusion.CommandInputs):
@@ -131,6 +133,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             global generalConfigTab
             generalConfigTab = GeneralConfigTab(args, exporterOptions)
 
+            global gamepieceConfigTab
+            gamepieceConfigTab = GamepieceConfigTab(args, exporterOptions)
+            gamepieceConfigTab.isVisible = True  # TODO: Should not be visible by default.
+
             # ~~~~~~~~~~~~~~~~ HELP FILE ~~~~~~~~~~~~~~~~
             """
             Sets the small "i" icon in bottom left of the panel.
@@ -140,6 +146,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             global jointConfigTab
             jointConfigTab = JointConfigTab(args)
+            jointConfigTab.isVisible = False
 
             # Transition: AARD-1685
             # There remains some overlap between adding joints as wheels.
@@ -437,7 +444,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 exportMode=generalConfigTab.exportMode,
                 compressOutput=generalConfigTab.compress,
                 exportAsPart=generalConfigTab.exportAsPart,
-                autoCalcWeight=generalConfigTab.autoCalculateWeight,
+                autoCalcRobotWeight=generalConfigTab.autoCalculateWeight,
             )
 
             Parser(exporterOptions).export()
@@ -481,19 +488,20 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
             # Transition: AARD-1685
             # This is how all preview handles should be done in the future
             jointConfigTab.handlePreviewEvent(args)
+            gamepieceConfigTab.handlePreviewEvent(args)
 
-            gamepieceTableInput = gamepieceTable()
-            if gamepieceTableInput.rowCount <= 1:
-                removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = False
-            else:
-                removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = True
+            # gamepieceTableInput = gamepieceTable()
+            # if gamepieceTableInput.rowCount <= 1:
+            #     removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = False
+            # else:
+            #     removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = True
 
-            if not addFieldInput.isEnabled or not removeFieldInput:
-                for gamepiece in GamepieceListGlobal:
-                    gamepiece.component.opacity = 0.25
-                    CustomGraphics.createTextGraphics(gamepiece, GamepieceListGlobal)
-            else:
-                gm.app.activeDocument.design.rootComponent.opacity = 1
+            # if not addFieldInput.isEnabled or not removeFieldInput:
+            #     for gamepiece in GamepieceListGlobal:
+            #         gamepiece.component.opacity = 0.25
+            #         CustomGraphics.createTextGraphics(gamepiece, GamepieceListGlobal)
+            # else:
+            #     gm.app.activeDocument.design.rootComponent.opacity = 1
         except AttributeError:
             pass
         except:
@@ -665,11 +673,15 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             #         selectionInput.isEnabled = False
             #         selectionInput.isVisible = False
 
+            if gamepieceConfigTab.isVisible:
+                self.cmd.setCursor("", 0, 0)  # Reset select cursor back to normal cursor.
+                gamepieceConfigTab.handleSelectionEvent(args, args.selection.entity)
+
             # Transition: AARD-1685
             # This is how all handle selection events should be done in the future although it will look
             # slightly differently for each type of handle.
-            if self.selectedJoint:
-                jointConfigTab.handleSelectionEvent(args, self.selectedJoint)
+            if jointConfigTab.isVisible:
+                jointConfigTab.handleSelectionEvent(args, args.selection.entity)
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -807,8 +819,13 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
             # Transition: AARD-1685
             # Should be how all input changed handles are done in the future
-            jointConfigTab.handleInputChanged(args, INPUTS_ROOT)
             generalConfigTab.handleInputChanged(args)
+
+            if jointConfigTab.isVisible:
+                jointConfigTab.handleInputChanged(args, INPUTS_ROOT)
+
+            if gamepieceConfigTab.isVisible:
+                gamepieceConfigTab.handleInputChanged(args, INPUTS_ROOT)
 
             MySelectHandler.lastInputCmd = cmdInput
             inputs = cmdInput.commandInputs

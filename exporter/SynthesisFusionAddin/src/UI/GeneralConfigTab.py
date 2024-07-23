@@ -15,6 +15,7 @@ class GeneralConfigTab:
     generalOptionsTab: adsk.core.TabCommandInput
     previousAutoCalcWeightCheckboxState: bool
     previousSelectedUnitDropdownIndex: int
+    currentUnits: PreferredUnits
 
     def __init__(self, args: adsk.core.CommandCreatedEventArgs, exporterOptions: ExporterOptions) -> None:
         try:
@@ -53,11 +54,10 @@ class GeneralConfigTab:
                 "autoCalcWeightButton",
                 "Auto Calculate Robot Weight",
                 generalTabInputs,
-                checked=exporterOptions.autoCalcWeight,
+                checked=exporterOptions.autoCalcRobotWeight,
                 tooltip="Approximate the weight of your robot assembly.",
-                enabled=True,
             )
-            self.previousAutoCalcWeightCheckboxState = exporterOptions.autoCalcWeight
+            self.previousAutoCalcWeightCheckboxState = exporterOptions.autoCalcRobotWeight
 
             self.currentUnits = exporterOptions.preferredUnits
             imperialUnits = self.currentUnits == PreferredUnits.IMPERIAL
@@ -78,7 +78,7 @@ class GeneralConfigTab:
                 f"<tt>(in {'pounds' if self.currentUnits == PreferredUnits.IMPERIAL else 'kilograms'})"
                 "</tt><hr>This is the weight of the entire robot assembly."
             )
-            weightInput.isEnabled = not exporterOptions.autoCalcWeight
+            weightInput.isEnabled = not exporterOptions.autoCalcRobotWeight
 
             weightUnitDropdown = generalTabInputs.addDropDownCommandInput(
                 "weightUnitDropdown",
@@ -148,14 +148,7 @@ class GeneralConfigTab:
 
     @property
     def selectedUnits(self) -> PreferredUnits:
-        weightUnitDropdown: adsk.core.DropDownCommandInput = self.generalOptionsTab.children.itemById(
-            "weightTable"
-        ).getInputAtPosition(0, 2)
-        if weightUnitDropdown.selectedItem.index == 0:
-            return PreferredUnits.IMPERIAL
-        else:
-            assert weightUnitDropdown.selectedItem.index == 1
-            return PreferredUnits.METRIC
+        return self.currentUnits
 
     @property
     def robotWeight(self) -> KG:
