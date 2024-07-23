@@ -9,6 +9,7 @@ import SceneObject from "@/systems/scene/SceneObject"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { DeltaFieldTransforms_PhysicalProp } from "@/util/threejs/MeshCreation"
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
@@ -77,16 +78,11 @@ class ScoringZoneSceneObject extends SceneObject {
                 // Position/rotate/scale sensor to settings
                 this._deltaTransformation = Array_ThreeMatrix4(this._prefs.deltaTransformation)
                 const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
-                const zoneTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
+                const props = DeltaFieldTransforms_PhysicalProp(this._deltaTransformation, fieldTransformation)
 
-                const translation = new THREE.Vector3(0, 0, 0)
-                const rotation = new THREE.Quaternion(0, 0, 0, 1)
-                const scale = new THREE.Vector3(1, 1, 1)
-                zoneTransformation.decompose(translation, rotation, scale)
-
-                World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(translation))
-                World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
-                const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(scale.x / 2, scale.y / 2, scale.z / 2))
+                World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(props.translation))
+                World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(props.rotation))
+                const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2))
                 const shape = shapeSettings.Create()
                 World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
 
@@ -98,9 +94,9 @@ class ScoringZoneSceneObject extends SceneObject {
                 World.SceneRenderer.scene.add(this._mesh)
 
                 if (this._toRender) {
-                    this._mesh.position.set(translation.x, translation.y, translation.z)
-                    this._mesh.rotation.setFromQuaternion(rotation)
-                    this._mesh.scale.set(scale.x, scale.y, scale.z)
+                    this._mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
+                    this._mesh.rotation.setFromQuaternion(props.rotation)
+                    this._mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
                 }
 
                 // Detect new gamepiece listener
@@ -142,16 +138,11 @@ class ScoringZoneSceneObject extends SceneObject {
         if (this._parentBodyId && this._deltaTransformation && this._joltBodyId&& this._prefs) {
             // Update translation, rotation, and scale
             const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(this._parentBodyId).GetWorldTransform())
-            const gizmoTransformation = this._deltaTransformation.clone().premultiply(fieldTransformation)
+                const props = DeltaFieldTransforms_PhysicalProp(this._deltaTransformation, fieldTransformation)
 
-            const translation = new THREE.Vector3(0, 0, 0)
-            const rotation = new THREE.Quaternion(0, 0, 0, 1)
-            const scale = new THREE.Vector3(1, 1, 1)
-            gizmoTransformation.decompose(translation, rotation, scale)
-
-            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(translation))
-            World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
-            const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(scale.x / 2, scale.y / 2, scale.z / 2))
+            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(props.translation))
+            World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(props.rotation))
+            const shapeSettings = new JOLT.BoxShapeSettings(new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2))
             const shape = shapeSettings.Create()
             World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate);
 
@@ -159,9 +150,9 @@ class ScoringZoneSceneObject extends SceneObject {
             this._toRender = PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
             if (this._mesh)
                 if (this._toRender) {
-                    this._mesh.position.set(translation.x, translation.y, translation.z)
-                    this._mesh.rotation.setFromQuaternion(rotation)
-                    this._mesh.scale.set(scale.x, scale.y, scale.z)
+                    this._mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
+                    this._mesh.rotation.setFromQuaternion(props.rotation)
+                    this._mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
                     this._mesh.material = this._prefs.alliance == "red" ? ScoringZoneSceneObject.redMaterial : ScoringZoneSceneObject.blueMaterial
                 } else {
                     this._mesh.material = ScoringZoneSceneObject.transparentMaterial

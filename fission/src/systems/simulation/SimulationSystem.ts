@@ -53,7 +53,7 @@ class SimulationSystem extends WorldSystem {
         }
     }
 
-    public ResetScores(): void {
+    public static ResetScores(): void {
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
     }

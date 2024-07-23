@@ -19,6 +19,7 @@ import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGro
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
 import { RgbaColor } from "react-colorful"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
 
 /**
  * Saves ejector configuration to selected field.
@@ -93,6 +94,19 @@ function save(
 }
 
 const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+    //Official FIRST hex
+    const redMaterial =  new THREE.MeshPhongMaterial({
+        color: 0xED1C24,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })
+    const blueMaterial = new THREE.MeshPhongMaterial({
+        color: 0x0066B3,
+        shininess: 0.0,
+        opacity: 0.7,
+        transparent: true,
+    })  //0x0000ff
     const { openPanel, closePanel } = usePanelControlContext()
 
     const [name, setName] = useState<string>(SelectedZone.zone.name)
@@ -132,13 +146,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         const gizmo = new TransformGizmos(
             new THREE.Mesh(
                 new THREE.BoxGeometry(1, 1, 1),
-                new THREE.MeshPhongMaterial({
-                    color: colorToNumber(theme.HighlightHover.color),
-                    shininess: 0.0,
-                    opacity: 0.7,
-                    transparent: true,
-                })
-                /* World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color)) */
+                zone.alliance == "blue" ? blueMaterial : redMaterial
             )
         );
 
@@ -156,17 +164,12 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
 
         /** W = L x R. See save() for math details */
         const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
-        const gizmoTransformation = deltaTransformation.premultiply(fieldTransformation)
+        const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
 
-        // This step seems useless, but keeps the scale from messing up the rotation
-        const translation = new THREE.Vector3(0, 0, 0)
-        const rotation = new THREE.Quaternion(0, 0, 0, 1)
-        const scale = new THREE.Vector3(1, 1, 1)
-        gizmoTransformation.decompose(translation, rotation, scale)
 
-        gizmo.mesh.position.set(translation.x, translation.y, translation.z)
-        gizmo.mesh.rotation.setFromQuaternion(rotation)
-        gizmo.mesh.scale.set(scale.x, scale.y, scale.z)
+        gizmo.mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
+        gizmo.mesh.rotation.setFromQuaternion(props.rotation)
+        gizmo.mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
 
         setTransformGizmo(gizmo)
 
@@ -219,13 +222,18 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                 {/** Set the alliance color */}
                 <Button
                     value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
-                    onClick={() => setAlliance(alliance == "blue" ? "red" : "blue")}
+                    onClick={() => {
+                        setAlliance(alliance == "blue" ? "red" : "blue")
+                        if (transformGizmo) {
+                            transformGizmo.mesh.material = alliance == "blue" ? redMaterial : blueMaterial
+                        }
+                    }}
                     colorOverrideClass={`bg-match-${alliance}-alliance`}
                 />
 
                 {/** Select a parent node */}
                 <SelectButton
-                    placeholder="Select pickup node"
+                    placeholder="Select parent node"
                     value={selectedNode}
                     onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
                 />
