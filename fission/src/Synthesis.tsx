@@ -240,8 +240,6 @@ const initialModals = [
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
-    <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
-    <ZoneConfigPanel panelId="zone-config" openLocation="right" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
