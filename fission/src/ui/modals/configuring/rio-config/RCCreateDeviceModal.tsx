@@ -15,9 +15,14 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptName="Next"
             onAccept={() => {
+                console.log(type)
                 switch (type) {
                     case "PWM":
+                        console.log('opening pwm')
                         openModal("config-pwm")
+                        break
+                    case "CAN":
+                        openModal("config-can")
                         break
                     case "Encoder":
                         openModal("config-encoder")
@@ -32,7 +37,7 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Dropdown
                 label={"Type"}
-                options={["PWM", "Encoder"]}
+                options={["PWM", "CAN", "Encoder"]}
                 onSelect={selected => {
                     setType(selected)
                 }}

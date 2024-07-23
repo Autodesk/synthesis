@@ -8,12 +8,12 @@ import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
-import WPILibBrain, { PWMGroup } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { CANGroup, simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver from "@/systems/simulation/driver/Driver"
 
-const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
     const [name, setName] = useState<string>("")
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
@@ -44,8 +44,16 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 // no eslint complain
-                brain.addSimOutputGroup(new PWMGroup(name, checkedPorts, checkedDrivers))
+                brain.addSimOutputGroup(new CANGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
+                const replacer = (key, value) => {
+                    if (value instanceof Map) {
+                        return Object.fromEntries(value)
+                    } else {
+                        return value
+                    }
+                }
+                console.log(JSON.stringify(simMap, replacer))
             }}
             onCancel={() => {
                 openModal("roborio")
@@ -97,4 +105,4 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 }
 
-export default RCConfigPWMGroupModal
+export default RCConfigCANGroupModal

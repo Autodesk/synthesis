@@ -152,21 +152,22 @@ export class SimPWM {
 export class SimCAN {
     private constructor() { }
 
-    public static GetDeviceWithID(id: number): any {
+    public static GetDeviceWithID(id: number, type: SimType): any {
         const id_exp = /.*\[(\d+)\]/g;
-        const entries = [...simMap.entries()].filter(([simType, _data]) => simType.startsWith("CAN"))
-        entries.forEach(([_simType, data]) => {
-            [...data.keys()].forEach(key => {
+        const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type || simType == "SimDevice")
+        for (const [_simType, data] of entries) {
+            for (const key of data.keys()) {
                 let result;
                 if ((result = [...key.matchAll(id_exp)]) != undefined) {
                     if (result.length > 0 && result[0].length > 1) {
                         const parsed_id = parseInt(result[0][1]);
-                        if (parsed_id == id)
+                        if (parsed_id == id) {
                             return data.get(key)
+                        }
                     }
                 }
-            })
-        })
+            }
+        }
         return undefined
     }
 }
@@ -261,9 +262,7 @@ class WPILibBrain extends Brain {
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
 
-    private _simDevices: SimDevice[] = []
-
-    // private _driverDevices: Map<SimType, Map<string, Driver>> = new Map()
+    private _simDevices: SimOutputGroup[] = []
 
     public static robotsSpawned: string[] = []
 
@@ -287,6 +286,10 @@ class WPILibBrain extends Brain {
         // this.configureArcadeDriveBehavior()
     }
 
+    public addSimOutputGroup(device: SimOutputGroup) {
+        this._simDevices.push(device)
+    }
+
     public Update(deltaT: number): void {
         // this._behaviors.forEach(b => b.Update(deltaT))
         this._simDevices.forEach(d => d.Update(deltaT))
@@ -299,64 +302,6 @@ class WPILibBrain extends Brain {
     public Disable(): void {
         worker.postMessage({ command: "disconnect" })
     }
-    
-    // public configureArcadeDriveBehavior() {
-    //     const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
-    //         driver => driver instanceof WheelDriver
-    //     ) as WheelDriver[]
-    //     wheelDrivers.forEach((wheel, idx) => {
-    //         wheel.deviceType = 'SimDevice'
-    //         wheel.device = `SYN CANSparkMax[${idx}]`
-    //     })
-    //     const wheelStimuli: WheelRotationStimulus[] = this._simLayer.stimuli.filter(
-    //         stimulus => stimulus instanceof WheelRotationStimulus
-    //     ) as WheelRotationStimulus[]
-
-    //     // Two body constraints are part of wheels and are used to determine which way a wheel is facing
-    //     const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints
-    //         .filter(mechConstraint => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint)
-    //         .map(mechConstraint => mechConstraint.constraint as Jolt.TwoBodyConstraint)
-
-    //     const leftWheels: WheelDriver[] = []
-    //     const leftStimuli: WheelRotationStimulus[] = []
-
-    //     const rightWheels: WheelDriver[] = []
-    //     const rightStimuli: WheelRotationStimulus[] = []
-
-    //     // Determines which wheels and stimuli belong to which side of the robot
-    //     for (let i = 0; i < wheelDrivers.length; i++) {
-    //         const wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
-
-    //         const robotCOM = World.PhysicsSystem.GetBody(
-    //             this._mechanism.constraints[0].childBody
-    //         ).GetCenterOfMassPosition() as Jolt.Vec3
-    //         const rightVector = new JOLT.Vec3(1, 0, 0)
-
-    //         const dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
-
-    //         if (dotProduct < 0) {
-    //             rightWheels.push(wheelDrivers[i])
-    //             rightStimuli.push(wheelStimuli[i])
-    //         } else {
-    //             leftWheels.push(wheelDrivers[i])
-    //             leftStimuli.push(wheelStimuli[i])
-    //         }
-    //     }
-
-    //     // TODO: all this is very temporary
-    //     this._driverDevices.set("CANMotor", new Map<string, Driver>());
-    //     leftWheels.forEach(wheel => this._driverDevices.get(wheel.deviceType!)!.set(wheel.device!, wheel))
-    //     rightWheels.forEach(wheel => this._driverDevices.get(wheel.deviceType!)!.set(wheel.device!, wheel))
-
-    //     this._behaviors.push(
-    //         new WPILibArcadeDriveBehavior(
-    //             leftWheels,
-    //             rightWheels,
-    //             leftStimuli,
-    //             rightStimuli
-    //         )
-    //     )
-    // }
 }
 
 export class SimMapUpdateEvent extends Event {
@@ -377,7 +322,7 @@ export class SimMapUpdateEvent extends Event {
 
 export default WPILibBrain
 
-export class SimDevice {
+abstract class SimOutputGroup {
     public name: string
     public ports: number[]
     public drivers: Driver[]
@@ -390,7 +335,39 @@ export class SimDevice {
         this.type = type
     }
 
+    public abstract Update(deltaT: number): void
+}
+
+export class PWMGroup extends SimOutputGroup {
+    public constructor(name: string, ports: number[], drivers: Driver[]) {
+        super(name, ports, drivers, "PWM")
+    }
+
     public Update(deltaT: number) {
-        console.log('SimDevice update...')
+        // let average = 0;
+        for (const port of this.ports) {
+            const speed = SimPWM.GetSpeed(`${port}`) ?? 0;
+            // average += speed;
+            console.log(port, speed)
+        }
+        // average /= this.ports.length
+
+        // this.drivers.forEach(d => {
+        //     (d as WheelDriver).targetWheelSpeed = average * 40
+        //     d.Update(deltaT)
+        // })
+    }
+}
+
+export class CANGroup extends SimOutputGroup {
+    public constructor(name: string, ports: number[], drivers: Driver[]) {
+        super(name, ports, drivers, "CANMotor")
+    }
+
+    public Update(_deltaT: number) {
+        for (const port of this.ports) {
+            const device = SimCAN.GetDeviceWithID(port, this.type);
+            console.log(port, device)
+        }
     }
 }
