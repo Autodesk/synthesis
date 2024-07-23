@@ -6,6 +6,7 @@ import InputSystem from "@/systems/input/InputSystem"
 class GenericArmBehavior extends Behavior {
     private _hingeDriver: HingeDriver
     private _inputName: string
+    private _jointIndex: number
     private _assemblyName: string
     private _assemblyIndex: number
 
@@ -13,6 +14,10 @@ class GenericArmBehavior extends Behavior {
 
     public get hingeDriver(): HingeDriver {
         return this._hingeDriver
+    }
+
+    public get jointIndex(): number {
+        return this._jointIndex
     }
 
     constructor(
@@ -26,6 +31,7 @@ class GenericArmBehavior extends Behavior {
 
         this._hingeDriver = hingeDriver
         this._inputName = "joint " + jointIndex
+        this._jointIndex = jointIndex
         this._assemblyName = assemblyName
         this._assemblyIndex = assemblyIndex
     }

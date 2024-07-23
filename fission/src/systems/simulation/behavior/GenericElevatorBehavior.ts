@@ -6,6 +6,7 @@ import InputSystem from "@/systems/input/InputSystem"
 class GenericElevatorBehavior extends Behavior {
     private _sliderDriver: SliderDriver
     private _inputName: string
+    private _jointIndex: number
     private _assemblyName: string
     private _assemblyIndex: number
 
@@ -13,6 +14,10 @@ class GenericElevatorBehavior extends Behavior {
 
     public get sliderDriver(): SliderDriver {
         return this._sliderDriver
+    }
+
+    public get jointIndex(): number {
+        return this._jointIndex
     }
 
     constructor(
@@ -26,6 +31,7 @@ class GenericElevatorBehavior extends Behavior {
 
         this._sliderDriver = sliderDriver
         this._inputName = "joint " + jointIndex
+        this._jointIndex = jointIndex
         this._assemblyName = assemblyName
         this._assemblyIndex = assemblyIndex
     }

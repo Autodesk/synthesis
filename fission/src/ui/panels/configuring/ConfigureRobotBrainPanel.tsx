@@ -77,8 +77,7 @@ function GetJoints(robot: MirabufSceneObject): JSX.Element[] {
             })
             output.push(<DividerStyled key={`divider-${elementKey}`} />)
         } else if (behavior instanceof GenericArmBehavior) {
-
-        /* Adds the joints that the arm is associated with */
+            /* Adds the joints that the arm is associated with */
             // Get the rigid node associates for the two bodies
             const assoc1 = World.PhysicsSystem.GetBodyAssociation(
                 behavior.hingeDriver.constraint.GetBody1().GetID()
@@ -111,8 +110,7 @@ function GetJoints(robot: MirabufSceneObject): JSX.Element[] {
             )
             elementKey++
         } else if (behavior instanceof GenericElevatorBehavior) {
-
-        /* Adds the joints that the elevator is associated with */
+            /* Adds the joints that the elevator is associated with */
             // Get the rigid node associates for the two bodies
             const assoc1 = World.PhysicsSystem.GetBodyAssociation(
                 behavior.sliderDriver.constraint.GetBody1().GetID()
