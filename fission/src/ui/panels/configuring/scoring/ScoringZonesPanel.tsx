@@ -105,6 +105,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
 
     useEffect(() => {
         closePanel("zone-config")
+        saveZones(zones, selectedField)
 
         World.PhysicsSystem.HoldPause()
 
