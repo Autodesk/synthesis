@@ -99,6 +99,8 @@ class GamepieceConfigTab:
         self.gamepieceTable.addToolbarCommandInput(gamepieceRemoveButton)
         self.gamepieceTable.addToolbarCommandInput(gamepieceSelectCancelButton)
 
+        self.reset()
+
     @property
     def isVisible(self) -> bool:
         return self.gamepieceConfigTab.isVisible
@@ -194,6 +196,10 @@ class GamepieceConfigTab:
         i = self.selectedGamepieceList.index(gamepiece)
         self.selectedGamepieceList.remove(gamepiece)
         self.gamepieceTable.deleteRow(i + 1)  # Row is 1 indexed
+
+    def reset(self) -> None:
+        self.selectedGamepieceEntityIDs.clear()
+        self.selectedGamepieceList.clear()
 
     def updateWeightTableToUnits(self, units: PreferredUnits) -> None:
         assert units in {PreferredUnits.METRIC, PreferredUnits.IMPERIAL}
