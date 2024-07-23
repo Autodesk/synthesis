@@ -23,6 +23,7 @@ WheelType = Enum("WheelType", ["STANDARD", "OMNI", "MECANUM"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
 PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
+ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
 
 
 @dataclass
@@ -84,7 +85,10 @@ class ModelHierarchy(Enum):
 
 @dataclass
 class ExporterOptions:
-    fileLocation: str = field(
+    # Python's `os` module can return `None` when attempting to find the home directory if the
+    # user's computer has conflicting configs of some sort. This has happened and should be accounted
+    # for accordingly.
+    fileLocation: str | None = field(
         default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~"))
     )
     name: str = field(default=None)
@@ -103,6 +107,8 @@ class ExporterOptions:
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
+
+    exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
     visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)

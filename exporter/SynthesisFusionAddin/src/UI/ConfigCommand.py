@@ -14,7 +14,13 @@ from ..Analytics.alert import showAnalyticsAlert
 from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
 from ..configure import NOTIFIED, write_configuration
 from ..general_imports import *
-from ..Parser.ExporterOptions import ExporterOptions
+from ..Parser.ExporterOptions import (
+    ExporterOptions,
+    ExportLocation,
+    ExportMode,
+    Gamepiece,
+    PreferredUnits,
+)
 from ..Parser.SynthesisParser.Parser import Parser
 from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
 from .Configuration.SerialCommand import SerialCommand
@@ -143,6 +149,105 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 - This is an HTML file that has a script to redirect to exporter workflow tutorial.
             """
             cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
+
+            # ~~~~~~~~~~~~~~~~ EXPORT MODE ~~~~~~~~~~~~~~~~
+            """
+            Dropdown to choose whether to export robot or field element
+            """
+            # TODO: Integration with GH-1004
+            # dropdownExportMode = inputs.addDropDownCommandInput(
+            #     "mode",
+            #     "Export Mode",
+            #     dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            # )
+
+            # dynamic = exporterOptions.exportMode == ExportMode.ROBOT
+            # dropdownExportMode.listItems.add("Dynamic", dynamic)
+            # dropdownExportMode.listItems.add("Static", not dynamic)
+
+            # dropdownExportMode.tooltip = "Export Mode"
+            # dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
+
+            # ~~~~~~~~~~~~~~~~ EXPORT LOCATION ~~~~~~~~~~~~~~~~~~
+
+            # dropdownExportLocation = inputs.addDropDownCommandInput(
+            #     "location", "Export Location", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
+            # )
+
+            # upload: bool = exporterOptions.exportLocation == ExportLocation.UPLOAD
+            # dropdownExportLocation.listItems.add("Upload", upload)
+            # dropdownExportLocation.listItems.add("Download", not upload)
+
+            # dropdownExportLocation.tooltip = "Export Location"
+            # dropdownExportLocation.tooltipDescription = (
+            #     "<hr>Do you want to upload this mirabuf file to APS, or download it to your local machine?"
+            # )
+
+            # ~~~~~~~~~~~~~~~~ WEIGHT CONFIGURATION ~~~~~~~~~~~~~~~~
+            """
+            Table for weight config.
+                - Used this to align multiple commandInputs on the same row
+            """
+            # weightTableInput = self.createTableInput(
+            #     "weight_table",
+            #     "Weight Table",
+            #     inputs,
+            #     4,
+            #     "3:2:2:1",
+            #     1,
+            # )
+            # weightTableInput.tablePresentationStyle = 2  # set transparent background for table
+
+            # weight_name = inputs.addStringValueInput("weight_name", "Weight")
+            # weight_name.value = "Weight"
+            # weight_name.isReadOnly = True
+
+            # auto_calc_weight = self.createBooleanInput(
+            #     "auto_calc_weight",
+            #     "‎",
+            #     inputs,
+            #     checked=False,
+            #     tooltip="Approximate the weight of your robot assembly.",
+            #     tooltipadvanced="<i>This may take a moment...</i>",
+            #     enabled=True,
+            #     isCheckBox=False,
+            # )
+            # auto_calc_weight.resourceFolder = IconPaths.stringIcons["calculate-enabled"]
+            # auto_calc_weight.isFullWidth = True
+
+            # imperialUnits = exporterOptions.preferredUnits == PreferredUnits.IMPERIAL
+            # if imperialUnits:
+            #     # ExporterOptions always contains the metric value
+            #     displayWeight = exporterOptions.robotWeight * 2.2046226218
+            # else:
+            #     displayWeight = exporterOptions.robotWeight
+
+            # weight_input = inputs.addValueInput(
+            #     "weight_input",
+            #     "Weight Input",
+            #     "",
+            #     adsk.core.ValueInput.createByReal(displayWeight),
+            # )
+            # weight_input.tooltip = "Robot weight"
+            # weight_input.tooltipDescription = (
+            #     """<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."""
+            # )
+
+            # weight_unit = inputs.addDropDownCommandInput(
+            #     "weight_unit",
+            #     "Weight Unit",
+            #     adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            # )
+
+            # weight_unit.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
+            # weight_unit.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
+            # weight_unit.tooltip = "Unit of mass"
+            # weight_unit.tooltipDescription = "<hr>Configure the unit of mass for the weight calculation."
+
+            # weightTableInput.addCommandInput(weight_name, 0, 0)  # add command inputs to table
+            # weightTableInput.addCommandInput(auto_calc_weight, 0, 1)  # add command inputs to table
+            # weightTableInput.addCommandInput(weight_input, 0, 2)  # add command inputs to table
+            # weightTableInput.addCommandInput(weight_unit, 0, 3)  # add command inputs to table
 
             global jointConfigTab
             jointConfigTab = JointConfigTab(args)
@@ -297,8 +402,111 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             #     3,
             # )
 
-            # Transition: AARD-1683
-            # Needed to comment this out because it throws if you don't login preventing anything from working
+            # ~~~~~~~~~~~~~~~~ PHYSICS SETTINGS ~~~~~~~~~~~~~~~~
+            """
+            Physics settings group command
+            """
+            # physicsSettings: adsk.core.GroupCommandInput = a_input.addGroupCommandInput(
+            #     "physics_settings", "Physics Settings"
+            # )
+
+            # physicsSettings.isExpanded = True
+            # physicsSettings.isEnabled = True
+            # physicsSettings.tooltip = "Settings relating to the custom physics of the robot, like the wheel friction"
+            # physics_settings: adsk.core.CommandInputs = physicsSettings.children
+
+            # frictionOverrideInput = self.createBooleanInput(
+            #     "friction_override",
+            #     "Friction Override",
+            #     physics_settings,
+            #     checked=True,  # object is missing attribute
+            #     tooltip="Manually override the default friction values on the bodies in the assembly.",
+            #     enabled=True,
+            #     isCheckBox=False,
+            # )
+            # frictionOverrideInput.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
+            # frictionOverrideInput.isFullWidth = True
+
+            # valueList = [1]
+            # for i in range(20):
+            #     valueList.append(i / 20)
+
+            # frictionCoeffSlider: adsk.core.FloatSliderCommandInput = physics_settings.addFloatSliderListCommandInput(
+            #     "friction_override_coeff", "Friction Coefficient", "", valueList
+            # )
+            # frictionCoeffSlider.isVisible = True
+            # frictionCoeffSlider.valueOne = 0.5
+            # frictionCoeffSlider.tooltip = "Friction coefficient of field element."
+            # frictionCoeffSlider.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
+
+            # ~~~~~~~~~~~~~~~~ JOINT SETTINGS ~~~~~~~~~~~~~~~~
+            """
+            Joint settings group command
+            """
+
+            # Transition: AARD-1689
+            # Should possibly be implemented later?
+
+            # jointsSettings = a_input.addGroupCommandInput(
+            #     "joints_settings", "Joints Settings"
+            # )
+            # jointsSettings.isExpanded = False
+            # jointsSettings.isEnabled = True
+            # jointsSettings.tooltip = "tooltip"  # TODO: update tooltip
+            # joints_settings = jointsSettings.children
+
+            # self.createBooleanInput(
+            #     "kinematic_only",
+            #     "Kinematic Only",
+            #     joints_settings,
+            #     checked=False,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
+
+            # self.createBooleanInput(
+            #     "calculate_limits",
+            #     "Calculate Limits",
+            #     joints_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
+
+            # self.createBooleanInput(
+            #     "auto_assign_ids",
+            #     "Auto-Assign ID's",
+            #     joints_settings,
+            #     checked=True,
+            #     tooltip="tooltip",  # TODO: update tooltip
+            #     enabled=True,
+            # )
+
+            # ~~~~~~~~~~~~~~~~ CONTROLLER SETTINGS ~~~~~~~~~~~~~~~~
+            """
+            Controller settings group command
+            """
+
+            # Transition: AARD-1689
+            # Should possibly be implemented later?
+
+            # controllerSettings = a_input.addGroupCommandInput(
+            #     "controller_settings", "Controller Settings"
+            # )
+
+            # controllerSettings.isExpanded = False
+            # controllerSettings.isEnabled = True
+            # controllerSettings.tooltip = "tooltip"  # TODO: update tooltip
+            # controller_settings = controllerSettings.children
+
+            # self.createBooleanInput(  # export signals checkbox
+            #     "export_signals",
+            #     "Export Signals",
+            #     controller_settings,
+            #     checked=True,
+            #     tooltip="tooltip",
+            #     enabled=True,
+            # )
 
             # getAuth()
             # user_info = getUserInfo()
@@ -385,15 +593,32 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 self.log.error("Could not execute configuration due to failure")
                 return
 
-            savepath = FileDialogConfig.SaveFileDialog(defaultPath=exporterOptions.fileLocation)
+            processedFileName = gm.app.activeDocument.name.replace(" ", "_")
+            dropdownExportMode = INPUTS_ROOT.itemById("mode")
+            if dropdownExportMode.selectedItem.index == 0:
+                isRobot = True
+            elif dropdownExportMode.selectedItem.index == 1:
+                isRobot = False
 
-            if not savepath:
-                # save was canceled
-                return
+            processedFileName = gm.app.activeDocument.name.replace(" ", "_")
+            dropdownExportMode = INPUTS_ROOT.itemById("mode")
+            if dropdownExportMode.selectedItem.index == 0:
+                isRobot = True
+            elif dropdownExportMode.selectedItem.index == 1:
+                isRobot = False
+            dropdownExportLocation = INPUTS_ROOT.itemById("location")
+            if dropdownExportLocation.selectedItem.index == 1:  # Download
+                savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
 
-            updatedPath = pathlib.Path(savepath).parent
-            if updatedPath != self.current.filePath:
-                self.current.filePath = str(updatedPath)
+                if savepath == False:
+                    # save was canceled
+                    return
+
+                updatedPath = pathlib.Path(savepath).parent
+                if updatedPath != self.current.filePath:
+                    self.current.filePath = str(updatedPath)
+            else:
+                savepath = processedFileName
 
             adsk.doEvents()
             # get active document
@@ -402,6 +627,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             version = design.rootComponent.name.rsplit(" ", 1)[1]
 
             _exportGamepieces = []  # TODO work on the code to populate Gamepiece
+            # _location: ExportLocation
 
             # Transition: AARD-1683
             # TODO: Implement gamepiece things
@@ -421,13 +647,22 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
             #     frictionValue = gamepieceTableInput.getInputAtPosition(row, 3).valueOne  # friction value, float
 
-            #     _exportGamepieces.append(
-            #         Gamepiece(
-            #             guid_occurrence(GamepieceListGlobal[row - 1]),
-            #             weightValue,
-            #             frictionValue,
-            #         )
+            # _exportGamepieces.append(
+            #     Gamepiece(
+            #         guid_occurrence(GamepieceListGlobal[row - 1]),
+            #         weightValue,
+            #         frictionValue,
             #     )
+            # )
+
+            """
+            Export Location
+            """
+            # dropdownExportLocation = INPUTS_ROOT.itemById("location")
+            # if dropdownExportLocation.selectedItem.index == 0:
+            #     _location = ExportLocation.UPLOAD
+            # elif dropdownExportLocation.selectedItem.index == 1:
+            #     _location = ExportLocation.DOWNLOAD
 
             selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
 
@@ -442,12 +677,13 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 preferredUnits=generalConfigTab.selectedUnits,
                 robotWeight=generalConfigTab.robotWeight,
                 exportMode=generalConfigTab.exportMode,
+                exportLocation=generalConfigTab.exportLocation,
                 compressOutput=generalConfigTab.compress,
                 exportAsPart=generalConfigTab.exportAsPart,
                 autoCalcRobotWeight=generalConfigTab.autoCalculateWeight,
             )
 
-            Parser(exporterOptions).export()
+            _: bool = Parser(exporterOptions).export()
             exporterOptions.writeToDesign()
 
             # All selections should be reset AFTER a successful export and save.
@@ -681,6 +917,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
             # This is how all handle selection events should be done in the future although it will look
             # slightly differently for each type of handle.
             if jointConfigTab.isVisible:
+                self.cmd.setCursor("", 0, 0)  # Reset select cursor back to normal cursor.
                 jointConfigTab.handleSelectionEvent(args, args.selection.entity)
         except:
             if gm.ui:
@@ -831,7 +1068,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
             inputs = cmdInput.commandInputs
             onSelect = gm.handlers[3]
 
-            frictionCoeff = INPUTS_ROOT.itemById("friction_coeff_override")
+            frictionCoeff = INPUTS_ROOT.itemById("friction_override_coeff")
 
             gamepieceSelect = inputs.itemById("gamepiece_select")
             gamepieceTableInput = gamepieceTable()

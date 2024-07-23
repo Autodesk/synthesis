@@ -5,7 +5,12 @@ import adsk.core
 import adsk.fusion
 
 from ..general_imports import INTERNAL_ID
-from ..Parser.ExporterOptions import ExporterOptions, ExportMode, PreferredUnits
+from ..Parser.ExporterOptions import (
+    ExporterOptions,
+    ExportLocation,
+    ExportMode,
+    PreferredUnits,
+)
 from ..TypesTmp import KG, toKg, toLbs
 from . import IconPaths
 from .CreateCommandInputsHelper import createBooleanInput, createTableInput
@@ -41,6 +46,18 @@ class GeneralConfigTab:
             dropdownExportMode.tooltip = "Export Mode"
             dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
             self.previousSelectedModeDropdownIndex = int(not dynamic)
+
+            dropdownExportLocation = generalTabInputs.addDropDownCommandInput(
+                "exportLocation", "Export Location", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
+            )
+
+            upload: bool = exporterOptions.exportLocation == ExportLocation.UPLOAD
+            dropdownExportLocation.listItems.add("Upload", upload)
+            dropdownExportLocation.listItems.add("Download", not upload)
+            dropdownExportLocation.tooltip = "Export Location"
+            dropdownExportLocation.tooltipDescription = (
+                "<hr>Do you want to upload this mirabuf file to APS, or download it to your local machine?"
+            )
 
             weightTableInput = createTableInput(
                 "weightTable",
@@ -173,6 +190,17 @@ class GeneralConfigTab:
             "autoCalcWeightButton"
         )
         return autoCalcWeightButton.value
+
+    @property
+    def exportLocation(self) -> ExportLocation:
+        exportLocationDropdown: adsk.core.DropDownCommandInput = self.generalOptionsTab.children.itemById(
+            "exportLocation"
+        )
+        if exportLocationDropdown.selectedItem.index == 0:
+            return ExportLocation.UPLOAD
+        else:
+            assert exportLocationDropdown.selectedItem.index == 1
+            return ExportLocation.DOWNLOAD
 
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs) -> None:
         try:

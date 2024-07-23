@@ -24,7 +24,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
             global palette
             palette = gm.ui.palettes.itemById("authPalette")
             if not palette:
-                callbackUrl = "http://localhost:80/api/aps/exporter/"
+                callbackUrl = "https://synthesis.autodesk.com/api/aps/exporter/"
                 challenge = getCodeChallenge()
                 if challenge is None:
                     logging.getLogger(f"{INTERNAL_ID}").error(
@@ -35,7 +35,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                     "response_type": "code",
                     "client_id": CLIENT_ID,
                     "redirect_uri": urllib.parse.quote_plus(callbackUrl),
-                    "scope": "data:read",
+                    "scope": "data:create data:write data:search data:read",
                     "nonce": time.time(),
                     "prompt": "login",
                     "code_challenge": challenge,
@@ -132,7 +132,7 @@ class MyHTMLEventHandler(adsk.core.HTMLEventHandler):
 
             convertAuthToken(data["code"])
         except:
-            gm.ui.messageBox("Failed:\n".format(traceback.format_exc()))
-            logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n".format(traceback.format_exc()))
+            gm.ui.messageBox("Failed:{}\n".format(traceback.format_exc()))
+            logging.getLogger(f"{INTERNAL_ID}").error("Failed:{}\n".format(traceback.format_exc()))
         if palette:
             palette.deleteMe()

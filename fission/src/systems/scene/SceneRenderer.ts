@@ -1,16 +1,22 @@
 import * as THREE from "three"
+import SceneObject from "./SceneObject"
+import WorldSystem from "../WorldSystem"
+
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import SceneObject from "@/systems/scene/SceneObject"
-import WorldSystem from "@/systems/WorldSystem"
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 
 import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
 
+import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
+import {} from "@/ui/components/SceneOverlayEvents"
+import PreferencesSystem from "../preferences/PreferencesSystem"
+
 const CLEAR_COLOR = 0x121212
-const GROUND_COLOR = 0x73937e
+const GROUND_COLOR = 0x4066c7
 
 let nextSceneObjectId = 1
 
@@ -19,6 +25,9 @@ class SceneRenderer extends WorldSystem {
     private _scene: THREE.Scene
     private _renderer: THREE.WebGLRenderer
     private _skybox: THREE.Mesh
+    private _composer: EffectComposer
+
+    private _antiAliasPass: EffectPass
 
     private _sceneObjects: Map<number, SceneObject>
 
@@ -52,7 +61,13 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
-        this._renderer = new THREE.WebGLRenderer()
+        this._renderer = new THREE.WebGLRenderer({
+            // Following parameters are used to optimize post-processing
+            powerPreference: "high-performance",
+            antialias: false,
+            stencil: false,
+            depth: false,
+        })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
         this._renderer.shadowMap.enabled = true
@@ -98,10 +113,19 @@ class SceneRenderer extends WorldSystem {
                 bColor: { value: 1.0 },
             },
         })
+
         this._skybox = new THREE.Mesh(geometry, material)
         this._skybox.receiveShadow = false
         this._skybox.castShadow = false
         this.scene.add(this._skybox)
+
+        // POST PROCESSING: https://github.com/pmndrs/postprocessing
+        this._composer = new EffectComposer(this._renderer)
+        this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
+
+        const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+        this._antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
+        this._composer.addPass(this._antiAliasPass)
 
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
@@ -115,12 +139,11 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
-    public Update(_: number): void {
+    public Update(deltaT: number): void {
         this._sceneObjects.forEach(obj => {
             obj.Update()
         })
 
-        // controls.update(deltaTime); // TODO: Add controls?
         this._skybox.position.copy(this._mainCamera.position)
 
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
@@ -132,7 +155,11 @@ class SceneRenderer extends WorldSystem {
             )
         })
 
-        this._renderer.render(this._scene, this._mainCamera)
+        // Update the tags each frame if they are enabled in preferences
+        if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
+            new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
+
+        this._composer.render(deltaT)
     }
 
     public Destroy(): void {
@@ -200,12 +227,24 @@ class SceneRenderer extends WorldSystem {
         return screenSpace.unproject(this.mainCamera)
     }
 
-    /*
+    /**
+     * Convert world space coordinates to screen space coordinates
+     *
+     * @param world World space coordinates
+     * @returns Pixel space coordinates
+     */
+    public WorldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
+        this._mainCamera.updateMatrixWorld()
+        const screenSpace = world.project(this._mainCamera)
+        return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
+    }
+
+    /** 
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
      */
-    public updateSkyboxColors(currentTheme: Theme) {
+    public UpdateSkyboxColors(currentTheme: Theme) {
         if (!this._skybox) return
         if (this._skybox.material instanceof THREE.ShaderMaterial) {
             this._skybox.material.uniforms.rColor.value = currentTheme["Background"]["color"]["r"]
@@ -228,9 +267,7 @@ class SceneRenderer extends WorldSystem {
         transformControl.attach(obj)
 
         // allowing the transform gizmos to rotate with the object
-        if (mode === "translate") {
-            transformControl.space = "local"
-        }
+        transformControl.space = "local"
 
         transformControl.addEventListener(
             "dragging-changed",

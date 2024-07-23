@@ -46,19 +46,30 @@ import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
 import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
 import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
 import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
-import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
+import PokerPanel from "@/panels/PokerPanel.tsx"
 import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
-import ImportMirabufModal from "@/modals/mirabuf/ImportMirabufModal.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import APS from "./aps/APS.ts"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
-import PokerPanel from "@/panels/PokerPanel.tsx"
+import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
+import { ProgressHandle } from "./ui/components/ProgressNotificationData.ts"
+import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
+import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
+import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
+import SceneOverlay from "./ui/components/SceneOverlay.tsx"
+
+import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
+import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
+import Lazy from "./util/Lazy.ts"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
+
+const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
@@ -75,7 +86,7 @@ function Synthesis() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
-    const { currentTheme, applyTheme } = useTheme()
+    const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
     useEffect(() => {
         applyTheme(currentTheme)
@@ -89,6 +100,8 @@ function Synthesis() {
 
         World.InitWorld()
 
+        worker.getValue()
+
         let mira_path = DEFAULT_MIRA_PATH
 
         if (urlParams.has("mira")) {
@@ -97,11 +110,16 @@ function Synthesis() {
         }
 
         const setup = async () => {
+            const setupProgress = new ProgressHandle("Spawning Default Robot")
+            setupProgress.Update("Checking cache...", 0.1)
+
             const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
                 .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
 
             const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
+
+            setupProgress.Update("Parsing assembly...", 0.5)
 
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
@@ -111,11 +129,16 @@ function Synthesis() {
                 const parser = new MirabufParser(miraAssembly)
                 if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
                     console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+                    setupProgress.Fail("Failed to parse assembly")
                     return
                 }
 
+                setupProgress.Update("Creating scene object...", 0.9)
+
                 const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
+
+                setupProgress.Done()
             })()
         }
 
@@ -128,6 +151,9 @@ function Synthesis() {
             World.UpdateWorld()
         }
         mainLoop()
+
+        World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
+
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
@@ -162,9 +188,11 @@ function Synthesis() {
                         closePanel={(id: string) => {
                             closePanel(id)
                         }}
+                        closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
+                            <SceneOverlay />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
@@ -172,6 +200,7 @@ function Synthesis() {
                                     {modalElement}
                                 </div>
                             )}
+                            <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>
@@ -207,11 +236,13 @@ const initialModals = [
     <RCConfigPwmGroupModal key="config-pwm" modalId="config-pwm" />,
     <RCConfigEncoderModal key="config-encoder" modalId="config-encoder" />,
     <MatchModeModal key="match-mode" modalId="match-mode" />,
-    <SpawningModal key="spawning-2" modalId="spawning" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
-    <ImportMirabufModal key="import-mirabuf" modalId="import-mirabuf" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
+    <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
+    <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
+    <ZoneConfigPanel panelId="zone-config" openLocation="right" />,
+    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
 const initialPanels: ReactElement[] = [
@@ -219,11 +250,23 @@ const initialPanels: ReactElement[] = [
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" />,
-    <ConfigureGamepiecePickupPanel key="config-gamepiece-pickup" panelId="config-gamepiece-pickup" />,
-    <ConfigureShotTrajectoryPanel key="config-shot-trajectory" panelId="config-shot-trajectory" />,
-    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
-    <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
+    <ConfigureGamepiecePickupPanel
+        key="config-gamepiece-pickup"
+        panelId="config-gamepiece-pickup"
+        openLocation="right"
+        sidePadding={8}
+    />,
+    <ConfigureShotTrajectoryPanel
+        key="config-shot-trajectory"
+        panelId="config-shot-trajectory"
+        openLocation="right"
+        sidePadding={8}
+    />,
+    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
+    <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
+    <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
+    <WSViewPanel key="ws-view" panelId="ws-view" />,
 ]
 
 export default Synthesis

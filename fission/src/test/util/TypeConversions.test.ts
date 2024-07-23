@@ -1,9 +1,11 @@
 import { test, expect, describe } from "vitest"
 import * as THREE from "three"
 import {
+    Array_ThreeMatrix4,
     JoltMat44_ThreeMatrix4,
     MirabufTransform_ThreeMatrix4,
     ThreeEuler_JoltQuat,
+    ThreeMatrix4_Array,
     ThreeMatrix4_JoltMat44,
     ThreeQuaternion_JoltQuat,
     ThreeVector3_JoltVec3,
@@ -147,21 +149,19 @@ describe("Three to Jolt Conversions", async () => {
     })
 })
 
-// function matToString(mat: THREE.Matrix4) {
-//     const arr = mat.toArray();
-//     return `[\n${arr[0].toFixed(4)}, ${arr[4].toFixed(4)}, ${arr[8].toFixed(4)}, ${arr[12].toFixed(4)},\n`
-//         + `${arr[1].toFixed(4)}, ${arr[5].toFixed(4)}, ${arr[9].toFixed(4)}, ${arr[13].toFixed(4)},\n`
-//         + `${arr[2].toFixed(4)}, ${arr[6].toFixed(4)}, ${arr[10].toFixed(4)}, ${arr[14].toFixed(4)},\n`
-//         + `${arr[3].toFixed(4)}, ${arr[7].toFixed(4)}, ${arr[11].toFixed(4)}, ${arr[15].toFixed(4)},\n]`
-// }
+describe("Three Storage Conversion", () => {
+    test("Array -> THREE.Matrix4 -> Array", () => {
+        const originalArr = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16]
 
-// function miraMatToString(mat: mirabuf.ITransform) {
-//     const arr = mat.spatialMatrix!;
-//     return `[\n${arr[0].toFixed(4)}, ${arr[1].toFixed(4)}, ${arr[2].toFixed(4)}, ${arr[3].toFixed(4)},\n`
-//         + `${arr[4].toFixed(4)}, ${arr[5].toFixed(4)}, ${arr[6].toFixed(4)}, ${arr[7].toFixed(4)},\n`
-//         + `${arr[8].toFixed(4)}, ${arr[9].toFixed(4)}, ${arr[10].toFixed(4)}, ${arr[11].toFixed(4)},\n`
-//         + `${arr[12].toFixed(4)}, ${arr[13].toFixed(4)}, ${arr[14].toFixed(4)}, ${arr[15].toFixed(4)},\n]`
-// }
+        const threeMat = Array_ThreeMatrix4(originalArr)
+        const arr = ThreeMatrix4_Array(threeMat)
+
+        expect(arr.length).toBe(originalArr.length)
+        for (let i = 0; i < arr.length; ++i) {
+            expect(arr[i]).toBe(originalArr[i])
+        }
+    })
+})
 
 describe("Mirabuf to Three Conversions", () => {
     test("Mirabuf.Transform [Identity] -> THREE.Matrix4", () => {
