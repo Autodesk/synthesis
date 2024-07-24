@@ -413,11 +413,8 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
         Args:
             args (CommandEventArgs): command event argument
         """
-        try:
-            jointConfigTab.handlePreviewEvent(args)
-            gamepieceConfigTab.handlePreviewEvent(args)
-        except AttributeError:
-            pass
+        jointConfigTab.handlePreviewEvent(args)
+        gamepieceConfigTab.handlePreviewEvent(args)
 
 
 class MySelectHandler(adsk.core.SelectionEventHandler):
