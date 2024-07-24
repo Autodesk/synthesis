@@ -154,17 +154,20 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 fusionJoint = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
                 jointConfigTab.addWheel(fusionJoint, wheel)
 
-        # frictionOverrideInput = self.createBooleanInput(
-        #     "friction_override",
-        #     "Friction Override",
-        #     physics_settings,
-        #     checked=True,  # object is missing attribute
-        #     tooltip="Manually override the default friction values on the bodies in the assembly.",
-        #     enabled=True,
-        #     isCheckBox=False,
+        # Transition: AARD-1769
+        # Waiting for GH-1014 to merge
+        # ~~~~~~~~~~~~~~~~ PHYSICS SETTINGS ~~~~~~~~~~~~~~~~
+        """
+        Physics settings group command
+        """
+        # physicsSettings: adsk.core.GroupCommandInput = a_input.addGroupCommandInput(
+        #     "physics_settings", "Physics Settings"
         # )
-        # frictionOverrideInput.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
-        # frictionOverrideInput.isFullWidth = True
+
+        # physicsSettings.isExpanded = True
+        # physicsSettings.isEnabled = True
+        # physicsSettings.tooltip = "Settings relating to the custom physics of the robot, like the wheel friction"
+        # physics_settings: adsk.core.CommandInputs = physicsSettings.children
 
         # frictionOverrideInput = self.createBooleanInput(
         #     "friction_override",
@@ -177,6 +180,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         # )
         # frictionOverrideInput.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
         # frictionOverrideInput.isFullWidth = True
+
+        # valueList = [1]
+        # for i in range(20):
+        #     valueList.append(i / 20)
 
         # frictionCoeffSlider: adsk.core.FloatSliderCommandInput = physics_settings.addFloatSliderListCommandInput(
         #     "friction_override_coeff", "Friction Coefficient", "", valueList
@@ -185,6 +192,54 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         # frictionCoeffSlider.valueOne = 0.5
         # frictionCoeffSlider.tooltip = "Friction coefficient of field element."
         # frictionCoeffSlider.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
+
+        # ~~~~~~~~~~~~~~~~ JOINT SETTINGS ~~~~~~~~~~~~~~~~
+        """
+        Joint settings group command
+        """
+
+        # Transition: AARD-1689
+        # Should possibly be implemented later?
+
+        # jointsSettings = a_input.addGroupCommandInput(
+        #     "joints_settings", "Joints Settings"
+        # )
+        # jointsSettings.isExpanded = False
+        # jointsSettings.isEnabled = True
+        # jointsSettings.tooltip = "tooltip"  # TODO: update tooltip
+        # joints_settings = jointsSettings.children
+
+        # self.createBooleanInput(
+        #     "kinematic_only",
+        #     "Kinematic Only",
+        #     joints_settings,
+        #     checked=False,
+        #     tooltip="tooltip",  # TODO: update tooltip
+        #     enabled=True,
+        # )
+
+        # self.createBooleanInput(
+        #     "calculate_limits",
+        #     "Calculate Limits",
+        #     joints_settings,
+        #     checked=True,
+        #     tooltip="tooltip",  # TODO: update tooltip
+        #     enabled=True,
+        # )
+
+        # self.createBooleanInput(
+        #     "auto_assign_ids",
+        #     "Auto-Assign ID's",
+        #     joints_settings,
+        #     checked=True,
+        #     tooltip="tooltip",  # TODO: update tooltip
+        #     enabled=True,
+        # )
+
+        # ~~~~~~~~~~~~~~~~ CONTROLLER SETTINGS ~~~~~~~~~~~~~~~~
+        """
+        Controller settings group command
+        """
 
         # Transition: AARD-1689
         # Should possibly be implemented later?
@@ -238,14 +293,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         onSelect = MySelectHandler(cmd)
         cmd.select.add(onSelect)
         gm.handlers.append(onSelect)  # 3
-
-        # getAuth()
-        # user_info = getUserInfo()
-        # apsSettings = INPUTS_ROOT.addTabCommandInput(
-        #     "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-        # )
-        # apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
-        # aps_input = apsSettings.children
 
         onPreSelect = MyPreSelectHandler(cmd)
         cmd.preSelect.add(onPreSelect)
