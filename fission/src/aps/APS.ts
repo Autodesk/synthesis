@@ -126,7 +126,7 @@ class APS {
      * Logs the user out by setting their auth data to undefined and revoking their auth token.
      */
     static async logout() {
-        await this.revokeTokenPublic() 
+        await this.revokeTokenPublic()
         this.auth = undefined
     }
 
@@ -175,7 +175,7 @@ class APS {
                     response_type: "code",
                     client_id: CLIENT_ID,
                     redirect_uri: callbackUrl,
-                    scope: "data:create",
+                    scope: "data:read",
                     nonce: Date.now().toString(),
                     prompt: "login",
                     code_challenge: challenge,
