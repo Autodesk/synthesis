@@ -386,6 +386,7 @@ class PhysicsSystem extends WorldSystem {
                         parentBody: bodyIdA,
                         childBody: bodyIdB,
                         constraint: x,
+                        info: jInst.info ?? undefined // remove possibility for null
                     })
                 )
             }

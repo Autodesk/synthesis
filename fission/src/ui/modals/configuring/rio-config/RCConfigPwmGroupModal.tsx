@@ -36,7 +36,11 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         simLayer?.SetBrain(brain)
     }
 
-    const devices = [...simMap.get("PWM")!.entries()].filter(([_, data]) => data["<init"])
+    let devices: [string, unknown][] = []
+    let pwms;
+    if ((pwms = simMap.get("PWM")) != undefined) {
+        devices = [...pwms.entries()].filter(([_, data]) => data["<init"])
+    }
 
     return (
         <Modal
@@ -82,7 +86,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {drivers.map((driver, idx) => (
                             <Checkbox
                                 key={`${driver.constructor.name}-${idx}`}
-                                label={driver.constructor.name}
+                                label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
                                 defaultState={false}
                                 onClick={checked => {
                                     if (checked && !checkedDrivers.includes(driver)) {
