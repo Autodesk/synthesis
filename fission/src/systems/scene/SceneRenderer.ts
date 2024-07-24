@@ -17,6 +17,10 @@ import { MainHUD_AddToast } from "@/ui/components/MainHUD"
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
+import World from "../World"
+import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -470,6 +474,40 @@ class SceneRenderer extends WorldSystem {
      */
     public SetupMaterial(material: THREE.Material) {
         if (this._light instanceof CSM) this._light.setupMaterial(material)
+    }
+
+    /**
+     * Context Menu handler for the scene canvas.
+     * 
+     * @param e Mouse event data.
+     */
+    public OnContextMenu(e: MouseEvent) {
+        e.preventDefault()
+
+        // Cast ray into physics scene.
+        const origin = World.SceneRenderer.mainCamera.position
+
+        const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
+        const dir = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
+
+        const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
+
+        // Use any associations to determine ContextData.
+        let miraSupplierData: ContextData | undefined = undefined
+        if (res) {
+            const assoc = World.PhysicsSystem.GetBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
+            if (assoc?.sceneObject) {
+                miraSupplierData = assoc.sceneObject.getSupplierData()
+            }
+        }
+        
+        // All else fails, present default options.
+        if (!miraSupplierData) {
+            miraSupplierData = { title: "The scene", items: [] }
+            miraSupplierData.items.push({ name: "Spawn something", func: () => { console.debug("Uggh how do i do this") } })
+        }
+
+        ContextSupplierEvent.Dispatch(miraSupplierData, e)
     }
 }
 

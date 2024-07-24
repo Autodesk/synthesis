@@ -21,6 +21,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 
 const DEBUG_BODIES = false
 
@@ -29,7 +30,7 @@ interface RnDebugMeshes {
     comMesh: THREE.Mesh
 }
 
-class MirabufSceneObject extends SceneObject {
+class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _assemblyName: string
     private _mirabufInstance: MirabufInstance
     private _mechanism: Mechanism
@@ -438,6 +439,19 @@ class MirabufSceneObject extends SceneObject {
     public LoadFocusTransform(mat: THREE.Matrix4) {
         const com = World.PhysicsSystem.GetBody(this._mechanism.nodeToBody.get(this.rootNodeId)!).GetCenterOfMassTransform()
         mat.copy(JoltMat44_ThreeMatrix4(com))
+    }
+    
+    public getSupplierData(): ContextData {
+        const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A robot" : "A field", items: [] }
+
+        data.items.push({
+            name: "Remove",
+            func: () => {
+                World.SceneRenderer.RemoveSceneObject(this.id)
+            }
+        })
+
+        return data
     }
 }
 

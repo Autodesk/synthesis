@@ -61,6 +61,7 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
+import ContextMenu from "./ui/components/ContextMenu.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -165,6 +166,7 @@ function Synthesis() {
                         <ToastProvider key="toast-provider">
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
+                            <ContextMenu />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
