@@ -8,7 +8,7 @@ import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
-import WPILibBrain, { PWMGroup } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { PWMGroup, simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver from "@/systems/simulation/driver/Driver"
@@ -19,7 +19,6 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
     const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([])
 
-    const numPorts = 8
     let drivers: Driver[] = []
     let simLayer;
     let brain: WPILibBrain;
@@ -32,9 +31,12 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
         simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
+        // TODO: set brain elsewhere when sim mode is better
         brain = new WPILibBrain(mechanism)
         simLayer?.SetBrain(brain)
     }
+
+    const devices = [...simMap.get("PWM")!.entries()].filter(([_, data]) => data["<init"])
 
     return (
         <Modal
@@ -57,16 +59,17 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Container className="w-max">
                     <Label>Ports</Label>
                     <ScrollView className="h-full px-2">
-                        {[...Array(numPorts).keys()].map(p => (
+                        {devices.map(([p, _]) => (
                             <Checkbox
                                 key={p}
-                                label={p.toString()}
+                                label={p}
                                 defaultState={false}
                                 onClick={checked => {
-                                    if (checked && !checkedPorts.includes(p)) {
-                                        setCheckedPorts([...checkedPorts, p])
-                                    } else if (!checked && checkedPorts.includes(p)) {
-                                        setCheckedPorts(checkedPorts.filter(a => a != p))
+                                    const port = parseInt(p)
+                                    if (checked && !checkedPorts.includes(port)) {
+                                        setCheckedPorts([...checkedPorts, port])
+                                    } else if (!checked && checkedPorts.includes(port)) {
+                                        setCheckedPorts(checkedPorts.filter(a => a != port))
                                     }
                                 }}
                             />
