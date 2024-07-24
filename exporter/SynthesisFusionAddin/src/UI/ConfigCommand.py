@@ -511,18 +511,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         #     enabled=True,
         # )
 
-        frictionOverrideInput = self.createBooleanInput(
-            "friction_override",
-            "Friction Override",
-            physics_settings,
-            checked=exporterOptions.frictionOverride,  # object is missing attribute
-            tooltip="Manually override the default friction values on the bodies in the assembly.",
-            enabled=True,
-            isCheckBox=False,
-        )
-        frictionOverrideInput.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
-        frictionOverrideInput.isFullWidth = True
-        # self.createBooleanInput(
+                # self.createBooleanInput(
         #     "calculate_limits",
         #     "Calculate Limits",
         #     joints_settings,

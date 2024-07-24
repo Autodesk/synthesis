@@ -93,11 +93,11 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
     strengthProperties = proto_material.strength
 
     if options.frictionOverride:
-        physical_material.dynamic_friction = options.frictionOverrideCoeff
-        physical_material.static_friction = options.frictionOverrideCoeff
+        proto_material.dynamic_friction = options.frictionOverrideCoeff
+        proto_material.static_friction = options.frictionOverrideCoeff
     else:
-        physical_material.dynamic_friction = dynamic_friction_coeffs.get(fusion_material.name, 0.5)
-        physical_material.static_friction = static_friction_coeffs.get(fusion_material.name, 0.5)
+        proto_material.dynamic_friction = dynamic_friction_coeffs.get(fusion_material.name, 0.5)
+        proto_material.static_friction = static_friction_coeffs.get(fusion_material.name, 0.5)
 
     proto_material.restitution = 0.5
     proto_material.dynamic_friction = 0.5
