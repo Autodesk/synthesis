@@ -4,6 +4,7 @@ import World from '../World'
 import { ThreeVector3_JoltVec3 } from '@/util/TypeConversions'
 import { MiraType } from '@/mirabuf/MirabufLoader'
 import { MainHUD_AddToast } from '@/ui/components/MainHUD'
+import ScreenInteractionHandler, { InteractionEnd, InteractionMove, InteractionStart, PRIMARY_MOUSE_INTERACTION, MIDDLE_MOUSE_INTERACTION, SECONDARY_MOUSE_INTERACTION } from './ScreenInteractionHandler'
 
 export type CameraControlsType =
     "Orbit"
@@ -28,57 +29,6 @@ export abstract class CameraControls {
     public abstract dispose(): void
 }
 
-class PointerHandler {
-
-    private _pointerMove: (ev: PointerEvent) => void
-    private _wheelMove: (ev: WheelEvent) => void
-    private _pointerDown: (ev: PointerEvent) => void
-    private _pointerUp: (ev: PointerEvent) => void
-    private _contextMenu: (ev: MouseEvent) => unknown
-
-    private _domElement: HTMLElement
-
-    public constructor(
-        domElement: HTMLElement,
-        pointerDown: (ev: PointerEvent) => void,
-        pointerUp: (ev: PointerEvent) => void,
-        pointerMove: (ev: PointerEvent) => void,
-        wheelMove: (ev: WheelEvent) => void,
-        onContextMenu?: (ev: MouseEvent) => unknown
-    ) {
-        this._pointerMove = pointerMove
-        this._wheelMove = wheelMove
-        this._domElement = domElement
-
-        this._pointerDown = pointerDown
-        this._pointerUp = pointerUp
-
-        this._contextMenu = onContextMenu ?? ((ev: MouseEvent) => {
-            ev.preventDefault()
-        }) 
-        
-        this._domElement.addEventListener("pointermove", this._pointerMove)
-        this._domElement.addEventListener("wheel", this._wheelMove, { passive: false })
-        this._domElement.addEventListener("contextmenu", this._contextMenu)
-        
-        this._domElement.addEventListener("pointerdown", this._pointerDown)
-        this._domElement.addEventListener("pointerup", this._pointerUp)
-        this._domElement.addEventListener("pointercancel", this._pointerUp)
-        this._domElement.addEventListener("pointerleave", this._pointerUp)
-    }
-
-    public dispose() {
-        this._domElement.removeEventListener("pointermove", this._pointerMove)
-        this._domElement.removeEventListener("wheel", this._wheelMove)
-        this._domElement.removeEventListener("contextmenu", this._contextMenu)
-
-        this._domElement.removeEventListener("pointerdown", this._pointerDown)
-        this._domElement.removeEventListener("pointerup", this._pointerUp)
-        this._domElement.removeEventListener("pointercancel", this._pointerUp)
-        this._domElement.removeEventListener("pointerleave", this._pointerUp)
-    }
-}
-
 interface SphericalCoords {
     theta: number
     phi: number
@@ -86,10 +36,6 @@ interface SphericalCoords {
 }
 
 type PointerType = -1 | 0 | 1 | 2
-
-const PRIMARY_POINTER_TYPE = 0
-const MIDDLE_POINTER_TYPE = 1
-const SECONDARY_POINTER_TYPE = 2
 
 const CO_MAX_ZOOM = 40.0
 const CO_MIN_ZOOM = 0.1
@@ -115,13 +61,18 @@ const DEG2RAD = Math.PI / 180.0
  * @returns Augmented movement to scale to the scenes relative dimensions
  */
 function augmentMovement(camera: THREE.Camera, distanceFromFocus: number, originalMovement: [number, number]): [number, number] {
-    const aspect = window.innerWidth / window.innerHeight
-    const fov: number | undefined = (camera as THREE.PerspectiveCamera)?.fov
+    const aspect = (camera as THREE.PerspectiveCamera)?.aspect ?? 1.0
+    // const aspect = 1.0
+    const fov: number | undefined = (camera as THREE.PerspectiveCamera)?.getEffectiveFOV()
     if (fov) {
-        return [
-            (2 * distanceFromFocus * Math.tan(DEG2RAD * fov * aspect / 2) * originalMovement[0]) / window.innerWidth,
+        console.debug(`${fov}, ${aspect.toFixed(3)}, ${originalMovement[0].toFixed(1)}`)
+        console.debug(DEG2RAD * fov * aspect / 2)
+        const res: [number, number] = [
+            (2 * distanceFromFocus * Math.tan(Math.min(Math.PI * 0.9 / 2, DEG2RAD * fov * aspect / 2)) * originalMovement[0]) / window.innerWidth,
             (2 * distanceFromFocus * Math.tan(DEG2RAD * fov / 2) * originalMovement[1]) / window.innerHeight
         ]
+        // console.debug(res[0].toFixed(3))
+        return res
     } else {
         return originalMovement
     }
@@ -132,8 +83,6 @@ export class CustomOrbitControls extends CameraControls {
     
     private _mainCamera: THREE.Camera
 
-    private _pointerHandler: PointerHandler
-
     private _activePointerType: PointerType
     private _nextCoords: SphericalCoords
     private _coords: SphericalCoords
@@ -142,6 +91,8 @@ export class CustomOrbitControls extends CameraControls {
     private _focusProvider: MirabufSceneObject | undefined
     public locked: boolean
 
+    private _interactionHandler: ScreenInteractionHandler
+
     public set enabled(val: boolean) {
         this._enabled = val
     }
@@ -149,10 +100,11 @@ export class CustomOrbitControls extends CameraControls {
         return this._enabled
     }
 
-    public constructor(mainCamera: THREE.Camera, domElement: HTMLElement) {
+    public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
         super("Orbit")
 
         this._mainCamera = mainCamera
+        this._interactionHandler = interactionHandler
 
         this.locked = false
 
@@ -163,41 +115,33 @@ export class CustomOrbitControls extends CameraControls {
         // Identity
         this._focus = new THREE.Matrix4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)
 
-        this._pointerHandler = new PointerHandler(domElement,
-            (ev) => this.pointerDown(ev),
-            (ev) => this.pointerUp(ev),
-            (ev) => this.pointerMove(ev),
-            (ev) => this.wheelMove(ev)
-        )
+        this._interactionHandler.interactionStart = e => this.interactionStart(e)
+        this._interactionHandler.interactionEnd = e => this.interactionEnd(e)
+        this._interactionHandler.interactionMove = e => this.interactionMove(e)
     }
 
-    public wheelMove(ev: WheelEvent) {
-        // Something to just scale the scrolling delta to something more reasonable.
-        this._nextCoords.r += ev.deltaY * 0.01
-    }
-
-    public pointerUp(ev: PointerEvent) {
+    public interactionEnd(end: InteractionEnd) {
         /**
          * If Pointer is already down, and the button that is being
          * released is the primary button, make Pointer not be down
          */
-        if (ev.button == this._activePointerType) {
+        if (end.interactionType == this._activePointerType) {
             this._activePointerType = -1
         }
     }
 
-    public pointerDown(ev: PointerEvent) {
+    public interactionStart(start: InteractionStart) {
         // If primary button, make Pointer be down
         if (this._activePointerType < 0) {
-            switch (ev.button) {
-                case PRIMARY_POINTER_TYPE:
-                    this._activePointerType = PRIMARY_POINTER_TYPE
+            switch (start.interactionType) {
+                case PRIMARY_MOUSE_INTERACTION:
+                    this._activePointerType = PRIMARY_MOUSE_INTERACTION
                     break
-                case MIDDLE_POINTER_TYPE:
-                    this._activePointerType = MIDDLE_POINTER_TYPE
+                case MIDDLE_MOUSE_INTERACTION:
+                    this._activePointerType = MIDDLE_MOUSE_INTERACTION
                     break
-                case SECONDARY_POINTER_TYPE:
-                    this.tryFindFocusProvider(ev)
+                case SECONDARY_MOUSE_INTERACTION:
+                    this.tryFindFocusProvider(start.position)
                     break
                 default:
                     break
@@ -205,26 +149,32 @@ export class CustomOrbitControls extends CameraControls {
         }
     }
 
-    public pointerMove(ev: PointerEvent) {
-        if (this._activePointerType == PRIMARY_POINTER_TYPE) {
-            // Add the movement of the mouse to the _currentPos
-            this._nextCoords.theta -= ev.movementX
-            this._nextCoords.phi -= ev.movementY
-        } else if (this._activePointerType == MIDDLE_POINTER_TYPE && !this.locked) {
-            this._focusProvider = undefined
+    public interactionMove(move: InteractionMove) {
+        if (move.movement) {
+            if (this._activePointerType == PRIMARY_MOUSE_INTERACTION) {
+                // Add the movement of the mouse to the _currentPos
+                this._nextCoords.theta -= move.movement[0]
+                this._nextCoords.phi -= move.movement[1]
+            } else if (this._activePointerType == MIDDLE_MOUSE_INTERACTION && !this.locked) {
+                this._focusProvider = undefined
+    
+                const orientation = (new THREE.Quaternion()).setFromEuler(this._mainCamera.rotation)
+    
+                const augmentedMovement = augmentMovement(
+                    this._mainCamera,
+                    this._coords.r,
+                    [move.movement[0], move.movement[1]]
+                )
+    
+                const pan = (new THREE.Vector3(-augmentedMovement[0], augmentedMovement[1], 0)).applyQuaternion(orientation)
+                const newPos = (new THREE.Vector3()).setFromMatrixPosition(this._focus)
+                newPos.add(pan)
+                this._focus.setPosition(newPos)
+            }
+        }
 
-            const orientation = (new THREE.Quaternion()).setFromEuler(this._mainCamera.rotation)
-
-            const augmentedMovement = augmentMovement(
-                this._mainCamera,
-                this._coords.r,
-                [ev.movementX, ev.movementY]
-            )
-
-            const pan = (new THREE.Vector3(-augmentedMovement[0], augmentedMovement[1], 0)).applyQuaternion(orientation)
-            const newPos = (new THREE.Vector3()).setFromMatrixPosition(this._focus)
-            newPos.add(pan)
-            this._focus.setPosition(newPos)
+        if (move.scale) {
+            this._nextCoords.r += move.scale
         }
     }
 
@@ -255,7 +205,6 @@ export class CustomOrbitControls extends CameraControls {
             const focusPosition = (new THREE.Matrix4()).copyPosition(this._focus)
             deltaTransform.premultiply(focusPosition)
         }
-        
 
         this._mainCamera.position.setFromMatrixPosition(deltaTransform)
         this._mainCamera.rotation.setFromRotationMatrix(deltaTransform)
@@ -263,8 +212,8 @@ export class CustomOrbitControls extends CameraControls {
         this._nextCoords = { theta: this._coords.theta, phi: this._coords.phi, r: this._coords.r }
     }
 
-    private tryFindFocusProvider(ev: PointerEvent) {
-        const dir = World.SceneRenderer.PixelToWorldSpace(ev.clientX, ev.clientY, 1.0).normalize().multiplyScalar(40.0)
+    private tryFindFocusProvider(screenPos: [number, number]) {
+        const dir = World.SceneRenderer.PixelToWorldSpace(screenPos[0], screenPos[1], 1.0).normalize().multiplyScalar(40.0)
         const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(this._mainCamera.position), ThreeVector3_JoltVec3(dir))
         if (res) {
             const assoc = World.PhysicsSystem.GetBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
@@ -278,8 +227,6 @@ export class CustomOrbitControls extends CameraControls {
         }
     }
 
-    public dispose(): void {
-        this._pointerHandler.dispose()
-    }
+    public dispose(): void { }
 
 }
