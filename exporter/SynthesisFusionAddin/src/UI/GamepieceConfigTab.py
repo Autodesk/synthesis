@@ -1,6 +1,7 @@
 import adsk.core
 import adsk.fusion
 
+from ..Logging import logFailure
 from ..Parser.ExporterOptions import ExporterOptions, Gamepiece, PreferredUnits
 from ..TypesTmp import toKg, toLbs
 from . import IconPaths
@@ -20,6 +21,7 @@ class GamepieceConfigTab:
     previousSelectedUnitDropdownIndex: int
     currentUnits: PreferredUnits
 
+    @logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs, exporterOptions: ExporterOptions) -> None:
         inputs = args.command.commandInputs
         self.gamepieceConfigTab = inputs.addTabCommandInput("gamepieceSettings", "Gamepiece Settings")
@@ -117,6 +119,7 @@ class GamepieceConfigTab:
         )
         return autoCalcWeightButton.value
 
+    @logFailure
     @property
     def weightInputs(self) -> list[adsk.core.ValueCommandInput]:
         gamepieceWeightInputs = []
@@ -125,6 +128,7 @@ class GamepieceConfigTab:
 
         return gamepieceWeightInputs
 
+    @logFailure
     def addGamepiece(self, gamepiece: adsk.fusion.Occurrence, synGamepiece: Gamepiece | None = None) -> bool:
         if gamepiece.entityToken in self.selectedGamepieceEntityIDs:
             return False
@@ -186,9 +190,11 @@ class GamepieceConfigTab:
 
         return True
 
+    @logFailure
     def removeIndexedGamepiece(self, index: int) -> None:
         self.removeGamepiece(self.selectedGamepieceList[index])
 
+    @logFailure
     def removeGamepiece(self, gamepiece: adsk.fusion.Occurrence) -> None:
         def removeChildOccurrences(childOccurrences: adsk.fusion.OccurrenceList) -> None:
             for occ in childOccurrences:
@@ -206,6 +212,7 @@ class GamepieceConfigTab:
         self.selectedGamepieceList.remove(gamepiece)
         self.gamepieceTable.deleteRow(i + 1)  # Row is 1 indexed
 
+    @logFailure
     def getGamepieces(self) -> list[Gamepiece]:
         gamepieces: list[Gamepiece] = []
         for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
@@ -220,6 +227,7 @@ class GamepieceConfigTab:
         self.selectedGamepieceEntityIDs.clear()
         self.selectedGamepieceList.clear()
 
+    @logFailure
     def updateWeightTableToUnits(self, units: PreferredUnits) -> None:
         assert units in {PreferredUnits.METRIC, PreferredUnits.IMPERIAL}
         conversionFunc = toKg if units == PreferredUnits.METRIC else toLbs
@@ -227,6 +235,7 @@ class GamepieceConfigTab:
             weightInput: adsk.core.ValueCommandInput = self.gamepieceTable.getInputAtPosition(row, 1)
             weightInput.value = conversionFunc(weightInput.value)
 
+    @logFailure
     def calcGamepieceWeights(self) -> None:
         for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
             weightInput: adsk.core.ValueCommandInput = self.gamepieceTable.getInputAtPosition(row, 1)
@@ -238,6 +247,7 @@ class GamepieceConfigTab:
             else:
                 weightInput.value = round(physical.mass, 2)
 
+    @logFailure
     def handleInputChanged(
         self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
     ) -> None:
@@ -315,6 +325,7 @@ class GamepieceConfigTab:
             gamepieceSelectCancelButton.isEnabled = gamepieceSelectCancelButton.isVisible = False
             gamepieceAddButton.isEnabled = gamepieceRemoveButton.isEnabled = True
 
+    @logFailure
     def handleSelectionEvent(self, args: adsk.core.SelectionEventArgs, selectedOcc: adsk.fusion.Occurrence) -> None:
         selectionInput = args.activeInput
         rootComponent = adsk.core.Application.get().activeDocument.design.rootComponent
@@ -334,6 +345,7 @@ class GamepieceConfigTab:
 
         selectionInput.isEnabled = selectionInput.isVisible = False
 
+    @logFailure
     def handlePreviewEvent(self, args: adsk.core.CommandEventArgs) -> None:
         commandInputs = args.command.commandInputs
         gamepieceAddButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("gamepieceAddButton")

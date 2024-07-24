@@ -1,10 +1,7 @@
-import logging
-import traceback
-
 import adsk.core
 import adsk.fusion
 
-from ..general_imports import INTERNAL_ID
+from ..Logging import logFailure
 from ..Parser.ExporterOptions import (
     ExporterOptions,
     ExportLocation,
@@ -27,127 +24,124 @@ class GeneralConfigTab:
     jointConfigTab: JointConfigTab
     gamepieceConfigTab: GamepieceConfigTab
 
+    @logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs, exporterOptions: ExporterOptions) -> None:
-        try:
-            inputs = args.command.commandInputs
-            self.generalOptionsTab = inputs.addTabCommandInput("generalSettings", "General Settings")
-            self.generalOptionsTab.tooltip = "General configuration options for your robot export."
-            generalTabInputs = self.generalOptionsTab.children
+        inputs = args.command.commandInputs
+        self.generalOptionsTab = inputs.addTabCommandInput("generalSettings", "General Settings")
+        self.generalOptionsTab.tooltip = "General configuration options for your robot export."
+        generalTabInputs = self.generalOptionsTab.children
 
-            dropdownExportMode = generalTabInputs.addDropDownCommandInput(
-                "exportModeDropdown",
-                "Export Mode",
-                dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-            )
+        dropdownExportMode = generalTabInputs.addDropDownCommandInput(
+            "exportModeDropdown",
+            "Export Mode",
+            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+        )
 
-            dynamic = exporterOptions.exportMode == ExportMode.ROBOT
-            dropdownExportMode.listItems.add("Dynamic", dynamic)
-            dropdownExportMode.listItems.add("Static", not dynamic)
-            dropdownExportMode.tooltip = "Export Mode"
-            dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
-            self.previousSelectedModeDropdownIndex = int(not dynamic)
+        dynamic = exporterOptions.exportMode == ExportMode.ROBOT
+        dropdownExportMode.listItems.add("Dynamic", dynamic)
+        dropdownExportMode.listItems.add("Static", not dynamic)
+        dropdownExportMode.tooltip = "Export Mode"
+        dropdownExportMode.tooltipDescription = "<hr>Does this object move dynamically?"
+        self.previousSelectedModeDropdownIndex = int(not dynamic)
 
-            dropdownExportLocation = generalTabInputs.addDropDownCommandInput(
-                "exportLocation", "Export Location", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
-            )
+        dropdownExportLocation = generalTabInputs.addDropDownCommandInput(
+            "exportLocation", "Export Location", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
+        )
 
-            upload: bool = exporterOptions.exportLocation == ExportLocation.UPLOAD
-            dropdownExportLocation.listItems.add("Upload", upload)
-            dropdownExportLocation.listItems.add("Download", not upload)
-            dropdownExportLocation.tooltip = "Export Location"
-            dropdownExportLocation.tooltipDescription = (
-                "<hr>Do you want to upload this mirabuf file to APS, or download it to your local machine?"
-            )
+        upload: bool = exporterOptions.exportLocation == ExportLocation.UPLOAD
+        dropdownExportLocation.listItems.add("Upload", upload)
+        dropdownExportLocation.listItems.add("Download", not upload)
+        dropdownExportLocation.tooltip = "Export Location"
+        dropdownExportLocation.tooltipDescription = (
+            "<hr>Do you want to upload this mirabuf file to APS, or download it to your local machine?"
+        )
 
-            weightTableInput = createTableInput(
-                "weightTable",
-                "Weight Table",
-                generalTabInputs,
-                4,
-                "2:1:1",
-                1,
-            )
-            weightTableInput.tablePresentationStyle = 2  # Transparent background
+        weightTableInput = createTableInput(
+            "weightTable",
+            "Weight Table",
+            generalTabInputs,
+            4,
+            "2:1:1",
+            1,
+        )
+        weightTableInput.tablePresentationStyle = 2  # Transparent background
 
-            weightName = generalTabInputs.addStringValueInput("weightName", "Weight")
-            weightName.value = "Weight"
-            weightName.isReadOnly = True
+        weightName = generalTabInputs.addStringValueInput("weightName", "Weight")
+        weightName.value = "Weight"
+        weightName.isReadOnly = True
 
-            autoCalcWeightButton = createBooleanInput(
-                "autoCalcWeightButton",
-                "Auto Calculate Robot Weight",
-                generalTabInputs,
-                checked=exporterOptions.autoCalcRobotWeight,
-                tooltip="Approximate the weight of your robot assembly.",
-            )
-            self.previousAutoCalcWeightCheckboxState = exporterOptions.autoCalcRobotWeight
+        autoCalcWeightButton = createBooleanInput(
+            "autoCalcWeightButton",
+            "Auto Calculate Robot Weight",
+            generalTabInputs,
+            checked=exporterOptions.autoCalcRobotWeight,
+            tooltip="Approximate the weight of your robot assembly.",
+        )
+        self.previousAutoCalcWeightCheckboxState = exporterOptions.autoCalcRobotWeight
 
-            self.currentUnits = exporterOptions.preferredUnits
-            imperialUnits = self.currentUnits == PreferredUnits.IMPERIAL
-            if imperialUnits:
-                # ExporterOptions always contains the metric value
-                displayWeight = exporterOptions.robotWeight * 2.2046226218
-            else:
-                displayWeight = exporterOptions.robotWeight
+        self.currentUnits = exporterOptions.preferredUnits
+        imperialUnits = self.currentUnits == PreferredUnits.IMPERIAL
+        if imperialUnits:
+            # ExporterOptions always contains the metric value
+            displayWeight = exporterOptions.robotWeight * 2.2046226218
+        else:
+            displayWeight = exporterOptions.robotWeight
 
-            weightInput = generalTabInputs.addValueInput(
-                "weightInput",
-                "Weight Input",
-                "",
-                adsk.core.ValueInput.createByReal(displayWeight),
-            )
-            weightInput.tooltip = "Robot weight"
-            weightInput.tooltipDescription = (
-                f"<tt>(in {'pounds' if self.currentUnits == PreferredUnits.IMPERIAL else 'kilograms'})"
-                "</tt><hr>This is the weight of the entire robot assembly."
-            )
-            weightInput.isEnabled = not exporterOptions.autoCalcRobotWeight
+        weightInput = generalTabInputs.addValueInput(
+            "weightInput",
+            "Weight Input",
+            "",
+            adsk.core.ValueInput.createByReal(displayWeight),
+        )
+        weightInput.tooltip = "Robot weight"
+        weightInput.tooltipDescription = (
+            f"<tt>(in {'pounds' if self.currentUnits == PreferredUnits.IMPERIAL else 'kilograms'})"
+            "</tt><hr>This is the weight of the entire robot assembly."
+        )
+        weightInput.isEnabled = not exporterOptions.autoCalcRobotWeight
 
-            weightUnitDropdown = generalTabInputs.addDropDownCommandInput(
-                "weightUnitDropdown",
-                "Weight Unit",
-                adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-            )
+        weightUnitDropdown = generalTabInputs.addDropDownCommandInput(
+            "weightUnitDropdown",
+            "Weight Unit",
+            adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+        )
 
-            # Invisible white space characters are required in the list item name field to make this work.
-            # I have no idea why, Fusion API needs some special education help - Brandon
-            weightUnitDropdown.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
-            weightUnitDropdown.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
-            weightUnitDropdown.tooltip = "Unit of Mass"
-            weightUnitDropdown.tooltipDescription = "<hr>Configure the unit of mass for the weight calculation."
-            self.previousSelectedUnitDropdownIndex = int(not imperialUnits)
+        # Invisible white space characters are required in the list item name field to make this work.
+        # I have no idea why, Fusion API needs some special education help - Brandon
+        weightUnitDropdown.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
+        weightUnitDropdown.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
+        weightUnitDropdown.tooltip = "Unit of Mass"
+        weightUnitDropdown.tooltipDescription = "<hr>Configure the unit of mass for the weight calculation."
+        self.previousSelectedUnitDropdownIndex = int(not imperialUnits)
 
-            weightTableInput.addCommandInput(weightName, 0, 0)
-            weightTableInput.addCommandInput(weightInput, 0, 1)
-            weightTableInput.addCommandInput(weightUnitDropdown, 0, 2)
+        weightTableInput.addCommandInput(weightName, 0, 0)
+        weightTableInput.addCommandInput(weightInput, 0, 1)
+        weightTableInput.addCommandInput(weightUnitDropdown, 0, 2)
 
-            createBooleanInput(
-                "compressOutputButton",
-                "Compress Output",
-                generalTabInputs,
-                checked=exporterOptions.compressOutput,
-                tooltip="Compress the output file for a smaller file size.",
-                tooltipadvanced="<hr>Use the GZIP compression system to compress the resulting file, "
-                "perfect if you want to share your robot design around.<br>",
-                enabled=True,
-            )
+        createBooleanInput(
+            "compressOutputButton",
+            "Compress Output",
+            generalTabInputs,
+            checked=exporterOptions.compressOutput,
+            tooltip="Compress the output file for a smaller file size.",
+            tooltipadvanced="<hr>Use the GZIP compression system to compress the resulting file, "
+            "perfect if you want to share your robot design around.<br>",
+            enabled=True,
+        )
 
-            exportAsPartButton = createBooleanInput(
-                "exportAsPartButton",
-                "Export As Part",
-                generalTabInputs,
-                checked=exporterOptions.exportAsPart,
-                tooltip="Use to export as a part for Mix And Match",
-                enabled=True,
-            )
+        exportAsPartButton = createBooleanInput(
+            "exportAsPartButton",
+            "Export As Part",
+            generalTabInputs,
+            checked=exporterOptions.exportAsPart,
+            tooltip="Use to export as a part for Mix And Match",
+            enabled=True,
+        )
 
-            if exporterOptions.exportMode == ExportMode.FIELD:
-                autoCalcWeightButton.isVisible = False
-                exportAsPartButton.isVisible = False
-                weightInput.isVisible = weightTableInput.isVisible = False
-
-        except BaseException:
-            logging.getLogger("{INTERNAL_ID}.UI.GeneralConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
+        if exporterOptions.exportMode == ExportMode.FIELD:
+            autoCalcWeightButton.isVisible = False
+            exportAsPartButton.isVisible = False
+            weightInput.isVisible = weightTableInput.isVisible = False
 
     @property
     def exportMode(self) -> ExportMode:
@@ -207,81 +201,78 @@ class GeneralConfigTab:
             assert exportLocationDropdown.selectedItem.index == 1
             return ExportLocation.DOWNLOAD
 
+    @logFailure
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs) -> None:
-        try:
-            commandInput = args.input
-            if commandInput.id == "exportModeDropdown":
-                modeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
-                autoCalcWeightButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("autoCalcWeightButton")
-                weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
-                exportAsPartButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("exportAsPartButton")
-                if modeDropdown.selectedItem.index == self.previousSelectedModeDropdownIndex:
-                    return
+        commandInput = args.input
+        if commandInput.id == "exportModeDropdown":
+            modeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
+            autoCalcWeightButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("autoCalcWeightButton")
+            weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
+            exportAsPartButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("exportAsPartButton")
+            if modeDropdown.selectedItem.index == self.previousSelectedModeDropdownIndex:
+                return
 
-                if modeDropdown.selectedItem.index == 0:
-                    self.jointConfigTab.isVisible = True
-                    self.gamepieceConfigTab.isVisible = False
+            if modeDropdown.selectedItem.index == 0:
+                self.jointConfigTab.isVisible = True
+                self.gamepieceConfigTab.isVisible = False
 
-                    autoCalcWeightButton.isVisible = True
-                    weightTable.isVisible = True
-                    exportAsPartButton.isVisible = True
-                else:
-                    assert modeDropdown.selectedItem.index == 1
-                    self.jointConfigTab.isVisible = False
-                    self.gamepieceConfigTab.isVisible = True
+                autoCalcWeightButton.isVisible = True
+                weightTable.isVisible = True
+                exportAsPartButton.isVisible = True
+            else:
+                assert modeDropdown.selectedItem.index == 1
+                self.jointConfigTab.isVisible = False
+                self.gamepieceConfigTab.isVisible = True
 
-                    autoCalcWeightButton.isVisible = False
-                    weightTable.isVisible = False
-                    exportAsPartButton.isVisible = False
+                autoCalcWeightButton.isVisible = False
+                weightTable.isVisible = False
+                exportAsPartButton.isVisible = False
 
-                self.previousSelectedModeDropdownIndex = modeDropdown.selectedItem.index
+            self.previousSelectedModeDropdownIndex = modeDropdown.selectedItem.index
 
-            elif commandInput.id == "weightUnitDropdown":
-                weightUnitDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
-                weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
-                weightInput: adsk.core.ValueCommandInput = weightTable.getInputAtPosition(0, 1)
-                if weightUnitDropdown.selectedItem.index == self.previousSelectedUnitDropdownIndex:
-                    return
+        elif commandInput.id == "weightUnitDropdown":
+            weightUnitDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
+            weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
+            weightInput: adsk.core.ValueCommandInput = weightTable.getInputAtPosition(0, 1)
+            if weightUnitDropdown.selectedItem.index == self.previousSelectedUnitDropdownIndex:
+                return
 
-                if weightUnitDropdown.selectedItem.index == 0:
-                    self.currentUnits = PreferredUnits.IMPERIAL
-                    weightInput.value = toLbs(weightInput.value)
-                    weightInput.tooltipDescription = (
-                        "<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."
-                    )
-                else:
-                    assert weightUnitDropdown.selectedItem.index == 1
-                    self.currentUnits = PreferredUnits.METRIC
-                    weightInput.value = toKg(weightInput.value)
-                    weightInput.tooltipDescription = (
-                        "<tt>(in kilograms)</tt><hr>This is the weight of the entire robot assembly."
-                    )
+            if weightUnitDropdown.selectedItem.index == 0:
+                self.currentUnits = PreferredUnits.IMPERIAL
+                weightInput.value = toLbs(weightInput.value)
+                weightInput.tooltipDescription = (
+                    "<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."
+                )
+            else:
+                assert weightUnitDropdown.selectedItem.index == 1
+                self.currentUnits = PreferredUnits.METRIC
+                weightInput.value = toKg(weightInput.value)
+                weightInput.tooltipDescription = (
+                    "<tt>(in kilograms)</tt><hr>This is the weight of the entire robot assembly."
+                )
 
-                self.previousSelectedUnitDropdownIndex = weightUnitDropdown.selectedItem.index
+            self.previousSelectedUnitDropdownIndex = weightUnitDropdown.selectedItem.index
 
-            elif commandInput.id == "autoCalcWeightButton":
-                autoCalcWeightButton = adsk.core.BoolValueCommandInput.cast(commandInput)
-                if autoCalcWeightButton.value == self.previousAutoCalcWeightCheckboxState:
-                    return
+        elif commandInput.id == "autoCalcWeightButton":
+            autoCalcWeightButton = adsk.core.BoolValueCommandInput.cast(commandInput)
+            if autoCalcWeightButton.value == self.previousAutoCalcWeightCheckboxState:
+                return
 
-                weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
-                weightInput: adsk.core.ValueCommandInput = weightTable.getInputAtPosition(0, 1)
+            weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
+            weightInput: adsk.core.ValueCommandInput = weightTable.getInputAtPosition(0, 1)
 
-                if autoCalcWeightButton.value:
-                    robotMass = designMassCalculation()
-                    weightInput.value = robotMass if self.currentUnits is PreferredUnits.METRIC else toLbs(robotMass)
-                    weightInput.isEnabled = False
-                else:
-                    weightInput.isEnabled = True
+            if autoCalcWeightButton.value:
+                robotMass = designMassCalculation()
+                weightInput.value = robotMass if self.currentUnits is PreferredUnits.METRIC else toLbs(robotMass)
+                weightInput.isEnabled = False
+            else:
+                weightInput.isEnabled = True
 
-                self.previousAutoCalcWeightCheckboxState = autoCalcWeightButton.value
-
-        except BaseException:
-            logging.getLogger(f"{INTERNAL_ID}.UI.GeneralConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
+            self.previousAutoCalcWeightCheckboxState = autoCalcWeightButton.value
 
 
-# TODO: GH-1010 for failure logging with message box
 # TODO: Perhaps move this into a different module
+@logFailure
 def designMassCalculation() -> KG:
     app = adsk.core.Application.get()
     mass = 0.0
