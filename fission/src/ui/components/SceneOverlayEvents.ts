@@ -24,7 +24,7 @@ export const enum SceneOverlayEventKey {
  */
 export class SceneOverlayTag {
     private _id: number
-    public text: string
+    public text: () => string
     public position: PixelSpaceCoord // Screen Space
 
     public get id() {
@@ -32,7 +32,7 @@ export class SceneOverlayTag {
     }
 
     /** Create a new tag */
-    public constructor(text: string, position?: PixelSpaceCoord) {
+    public constructor(text: () => string, position?: PixelSpaceCoord) {
         this._id = nextTagId++
 
         this.text = text
