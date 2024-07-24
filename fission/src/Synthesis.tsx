@@ -65,8 +65,6 @@ import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGr
 import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 
-const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
-
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
