@@ -20,12 +20,10 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([])
 
     let drivers: Driver[] = []
-    let simLayer;
-    let brain: WPILibBrain;
+    let simLayer
+    let brain: WPILibBrain
 
-    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
-        x => x[1] instanceof MirabufSceneObject
-    )
+    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
     console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
     if (miraObjs.length > 0) {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
@@ -37,7 +35,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     let devices: [string, unknown][] = []
-    let pwms;
+    let pwms
     if ((pwms = simMap.get("PWM")) != undefined) {
         devices = [...pwms.entries()].filter(([_, data]) => data["<init"])
     }

@@ -7,13 +7,6 @@ import Behavior from "../behavior/Behavior"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 import Driver from "../driver/Driver"
-import WheelDriver from "../driver/WheelDriver"
-import WheelRotationStimulus from "../stimulus/WheelStimulus"
-import Jolt from "@barclah/jolt-physics"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import ArcadeDriveBehavior from "../behavior/synthesis/ArcadeDriveBehavior"
-import WPILibArcadeDriveBehavior from "../behavior/wpilib/WPILibArcadeDriveBehavior"
-import { mirabuf } from "@/proto/mirabuf"
 
 const worker = new WPILibWSWorker()
 
@@ -47,36 +40,10 @@ function GetFieldType(field: string): FieldType {
     }
 }
 
-const defaultSimMap: Map<SimType, Map<string, any>> = new Map(
-    Object.entries({
-        "CANMotor": {
-            "CANSparkMax[0]": {
-                "<percentOutput": 0.75
-            },
-            "CANSparkMax[1]": {
-                "<percentOutput": 0.75
-            },
-            "CANSparkMax[2]": {
-                "<percentOutput": 0.75
-            },
-            "CANSparkMax[3]": {
-                "<percentOutput": -0.75
-            },
-            "CANSparkMax[4]": {
-                "<percentOutput": -0.75
-            },
-            "CANSparkMax[5]": {
-                "<percentOutput": -0.75
-            },
-        }
-    })
-        .map(([key, value]) => [key as SimType, new Map(Object.entries(value))])
-)
-
 export const simMap = new Map<SimType, Map<string, any>>()
 
 export class SimGeneric {
-    private constructor() { }
+    private constructor() {}
 
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
         const fieldType = GetFieldType(field)
@@ -138,7 +105,7 @@ export class SimGeneric {
 }
 
 export class SimPWM {
-    private constructor() { }
+    private constructor() {}
 
     public static GetSpeed(device: string): number | undefined {
         return SimGeneric.Get("PWM", device, PWM_SPEED, 0.0)
@@ -150,17 +117,17 @@ export class SimPWM {
 }
 
 export class SimCAN {
-    private constructor() { }
+    private constructor() {}
 
     public static GetDeviceWithID(id: number, type: SimType): any {
-        const id_exp = /.*\[(\d+)\]/g;
+        const id_exp = /.*\[(\d+)\]/g
         const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type || simType == "SimDevice")
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
-                let result;
+                let result
                 if ((result = [...key.matchAll(id_exp)]) != undefined) {
                     if (result.length > 0 && result[0].length > 1) {
-                        const parsed_id = parseInt(result[0][1]);
+                        const parsed_id = parseInt(result[0][1])
                         if (parsed_id == id) {
                             return data.get(key)
                         }
@@ -173,7 +140,7 @@ export class SimCAN {
 }
 
 export class SimCANMotor {
-    private constructor() { }
+    private constructor() {}
 
     public static GetDutyCycle(device: string): number | undefined {
         return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
@@ -185,7 +152,7 @@ export class SimCANMotor {
 }
 
 export class SimCANEncoder {
-    private constructor() { }
+    private constructor() {}
 
     public static SetRawInputPosition(device: string, rawInputPosition: number): boolean {
         return SimGeneric.Set("CANEncoder", device, CANENCODER_RAW_INPUT_POSITION, rawInputPosition)
@@ -343,10 +310,10 @@ export class PWMGroup extends SimOutputGroup {
         super(name, ports, drivers, "PWM")
     }
 
-    public Update(deltaT: number) {
+    public Update(_deltaT: number) {
         // let average = 0;
         for (const port of this.ports) {
-            const speed = SimPWM.GetSpeed(`${port}`) ?? 0;
+            const speed = SimPWM.GetSpeed(`${port}`) ?? 0
             // average += speed;
             console.log(port, speed)
         }
@@ -354,7 +321,7 @@ export class PWMGroup extends SimOutputGroup {
 
         // this.drivers.forEach(d => {
         //     (d as WheelDriver).targetWheelSpeed = average * 40
-        //     d.Update(deltaT)
+        //     d.Update(_deltaT)
         // })
     }
 }
@@ -366,7 +333,7 @@ export class CANGroup extends SimOutputGroup {
 
     public Update(_deltaT: number) {
         for (const port of this.ports) {
-            const device = SimCAN.GetDeviceWithID(port, this.type);
+            const device = SimCAN.GetDeviceWithID(port, this.type)
             console.log(port, device)
         }
     }

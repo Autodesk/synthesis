@@ -27,7 +27,13 @@ class WheelDriver extends Driver {
         return this._constraint
     }
 
-    public constructor(constraint: Jolt.VehicleConstraint, info?: mirabuf.IInfo, deviceType?: SimType, device?: string, reversed: boolean = false) {
+    public constructor(
+        constraint: Jolt.VehicleConstraint,
+        info?: mirabuf.IInfo,
+        deviceType?: SimType,
+        device?: string,
+        reversed: boolean = false
+    ) {
         super(info)
 
         this._constraint = constraint
