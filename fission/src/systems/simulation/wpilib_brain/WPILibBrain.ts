@@ -3,7 +3,6 @@ import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
 import WPILibWSWorker from "./WPILibWSWorker?worker"
-import Behavior from "../behavior/Behavior"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 import Driver from "../driver/Driver"
@@ -226,14 +225,11 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
 }
 
 class WPILibBrain extends Brain {
-    private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
 
     private _simDevices: SimOutputGroup[] = []
 
     public static robotsSpawned: string[] = []
-
-    private static _currentRobotIndex: number = 0
 
     constructor(mechanism: Mechanism) {
         super(mechanism)

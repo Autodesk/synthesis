@@ -20,6 +20,7 @@ import Brain from "@/systems/simulation/Brain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 const DEBUG_BODIES = false
 
@@ -243,7 +244,7 @@ class MirabufSceneObject extends SceneObject {
         }
 
         this._mechanism.nodeToBody.forEach(bodyId => {
-            World.PhysicsSystem.RemoveBodyAssocation(bodyId)
+            World.PhysicsSystem.RemoveBodyAssociation(bodyId)
         })
 
         this._nameTag?.Dispose()
@@ -261,7 +262,8 @@ class MirabufSceneObject extends SceneObject {
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
 
-        this._brain?.clearControls()
+        if (this._brain && this._brain instanceof SynthesisBrain)
+            this._brain?.clearControls()
     }
 
     public Eject() {

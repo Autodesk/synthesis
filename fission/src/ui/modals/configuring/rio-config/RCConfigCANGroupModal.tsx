@@ -44,7 +44,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 // no eslint complain
                 brain.addSimOutputGroup(new CANGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
-                const replacer = (key, value) => {
+                const replacer = (_: unknown, value: unknown) => {
                     if (value instanceof Map) {
                         return Object.fromEntries(value)
                     } else {
