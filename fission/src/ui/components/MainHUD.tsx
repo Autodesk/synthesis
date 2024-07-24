@@ -160,6 +160,11 @@ const MainHUD: React.FC = () => {
                         icon={<GiSteeringWheel />}
                         onClick={() => openPanel("driver-station")}
                     />
+                    <MainHUDButton
+                        value={"Sequential Joints"}
+                        icon={<FaGear />}
+                        onClick={() => openPanel("sequential-joints")}
+                    />
                     {/* MiraMap and OPFS Temp Buttons */}
                     <MainHUDButton
                         value={"Print Mira Maps"}
@@ -181,7 +186,7 @@ const MainHUD: React.FC = () => {
                             openPanel("scoring-zones")
                         }}
                     />
-                    {/* <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
+                    <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton
                         value={"WS Test"}
                         icon={<FaCar />}
@@ -205,13 +210,8 @@ const MainHUD: React.FC = () => {
                             const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
                             addToast(type, type, "This is a test toast to test the toast system")
                         }}
-                    /> */}
-                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
-                    <MainHUDButton
-                        value={"Sequential Joints"}
-                        icon={<FaGear />}
-                        onClick={() => openPanel("sequential-joints")}
                     />
+                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                     <MainHUDButton
                         value={"Configure Brain"}
                         icon={<FaGear />}

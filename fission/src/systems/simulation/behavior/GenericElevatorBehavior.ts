@@ -1,9 +1,9 @@
 import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
-import Behavior from "./Behavior"
+import Behavior, { SequenceableBehavior } from "./Behavior"
 import InputSystem from "@/systems/input/InputSystem"
 
-class GenericElevatorBehavior extends Behavior {
+class GenericElevatorBehavior extends Behavior implements SequenceableBehavior {
     private _sliderDriver: SliderDriver
     private _inputName: string
     private _jointIndex: number

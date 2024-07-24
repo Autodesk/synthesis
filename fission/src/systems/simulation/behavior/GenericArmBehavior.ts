@@ -1,9 +1,9 @@
 import HingeDriver from "../driver/HingeDriver"
 import HingeStimulus from "../stimulus/HingeStimulus"
-import Behavior from "./Behavior"
+import Behavior, { SequenceableBehavior } from "./Behavior"
 import InputSystem from "@/systems/input/InputSystem"
 
-class GenericArmBehavior extends Behavior {
+class GenericArmBehavior extends Behavior implements SequenceableBehavior {
     private _hingeDriver: HingeDriver
     private _inputName: string
     private _jointIndex: number
