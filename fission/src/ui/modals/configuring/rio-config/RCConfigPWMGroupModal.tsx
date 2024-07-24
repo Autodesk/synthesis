@@ -35,7 +35,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     let devices: [string, unknown][] = []
-    let pwms = simMap.get("PWM")
+    const pwms = simMap.get("PWM")
     if (pwms) {
         devices = [...pwms.entries()].filter(([_, data]) => data["<init"])
     }

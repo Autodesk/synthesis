@@ -127,7 +127,7 @@ export class SimCAN {
                 if (result?.length <= 0 || result[0].length <= 1) continue
                 const parsed_id = parseInt(result[0][1])
                 if (parsed_id != id) continue
-                
+
                 return data.get(key)
             }
         }
