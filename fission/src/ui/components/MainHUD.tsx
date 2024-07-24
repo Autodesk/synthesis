@@ -5,7 +5,7 @@ import { BiMenuAltLeft } from "react-icons/bi"
 import { GrConnect, GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
+import { IoBasketball, IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -173,6 +173,13 @@ const MainHUD: React.FC = () => {
                         value={"Clear Mira"}
                         icon={<GiSteeringWheel />}
                         onClick={() => MirabufCachingService.RemoveAll()}
+                    />
+                    <MainHUDButton
+                        value={"Edit Scoring Zones"}
+                        icon={<IoBasketball />}
+                        onClick={() => {
+                            openPanel("scoring-zones")
+                        }}
                     />
                     <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton

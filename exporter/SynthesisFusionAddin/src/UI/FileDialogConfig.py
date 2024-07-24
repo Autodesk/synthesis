@@ -9,7 +9,7 @@ from ..general_imports import *
 from ..Types.OString import OString
 
 
-def SaveFileDialog(defaultPath="", defaultName="", ext="MiraBuf Package (*.mira)") -> Union[str, bool]:
+def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | bool:
     """Function to generate the Save File Dialog for the Hellion Data files
 
     Args:
@@ -21,22 +21,18 @@ def SaveFileDialog(defaultPath="", defaultName="", ext="MiraBuf Package (*.mira)
         str: full file path
     """
 
-    ext = "MiraBuf Package (*.mira)"
-
     fileDialog: adsk.core.FileDialog = gm.ui.createFileDialog()
     fileDialog.isMultiSelectEnabled = False
 
     fileDialog.title = "Save Export Result"
-    fileDialog.filter = f"{ext}"
+    fileDialog.filter = "MiraBuf Package (*.mira)"
 
-    if defaultPath == "":
+    if not defaultPath:
         defaultPath = generateFilePath()
 
     fileDialog.initialDirectory = defaultPath
 
-    # print(defaultPath)
-
-    if defaultName == "":
+    if not defaultName:
         defaultName = generateFileName()
 
     fileDialog.initialFilename = defaultName

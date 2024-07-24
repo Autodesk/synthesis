@@ -46,7 +46,6 @@ import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
 import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
 import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
 import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
-import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
@@ -57,8 +56,12 @@ import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.ts
 import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
+import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
+import { ProgressHandle } from "./ui/components/ProgressNotificationData.ts"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
+import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
+import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
@@ -108,11 +111,16 @@ function Synthesis() {
         }
 
         const setup = async () => {
+            const setupProgress = new ProgressHandle("Spawning Default Robot")
+            setupProgress.Update("Checking cache...", 0.1)
+
             const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
                 .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
                 .catch(console.error)
 
             const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
+
+            setupProgress.Update("Parsing assembly...", 0.5)
 
             await (async () => {
                 if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
@@ -122,11 +130,16 @@ function Synthesis() {
                 const parser = new MirabufParser(miraAssembly)
                 if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
                     console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
+                    setupProgress.Fail("Failed to parse assembly")
                     return
                 }
 
+                setupProgress.Update("Creating scene object...", 0.9)
+
                 const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
                 World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
+
+                setupProgress.Done()
             })()
         }
 
@@ -176,9 +189,11 @@ function Synthesis() {
                         closePanel={(id: string) => {
                             closePanel(id)
                         }}
+                        closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
+                            <SceneOverlay />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
@@ -186,6 +201,7 @@ function Synthesis() {
                                     {modalElement}
                                 </div>
                             )}
+                            <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>
@@ -226,6 +242,8 @@ const initialModals = [
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
+    <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
+    <ZoneConfigPanel panelId="zone-config" openLocation="right" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
@@ -246,8 +264,8 @@ const initialPanels: ReactElement[] = [
         openLocation="right"
         sidePadding={8}
     />,
-    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
-    <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
+    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
+    <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
