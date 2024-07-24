@@ -13,6 +13,7 @@ from typing import get_origin
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
+from ..Logging import logFailure, timed
 from ..strings import INTERNAL_ID
 
 # Not 100% sure what this is for - Brandon
@@ -112,6 +113,7 @@ class ExporterOptions:
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
     physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
 
+    @timed
     def readFromDesign(self) -> "ExporterOptions":
         try:
             designAttributes = adsk.core.Application.get().activeProduct.attributes
@@ -128,6 +130,8 @@ class ExporterOptions:
         except:
             return ExporterOptions()
 
+    @logFailure
+    @timed
     def writeToDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
