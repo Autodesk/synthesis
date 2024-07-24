@@ -154,6 +154,7 @@ class ScreenInteractionHandler {
             if (!this._primaryTouch) {
                 this._primaryTouch = e.pointerId
                 this._primaryTouchPosition = [e.clientX, e.clientY]
+                this._movementThresholdMet = false
                 this.interactionStart({ interactionType: PRIMARY_MOUSE_INTERACTION, position: this._primaryTouchPosition })
             } else if (!this._secondaryTouch) {
                 this._secondaryTouch = e.pointerId
@@ -162,6 +163,7 @@ class ScreenInteractionHandler {
             }
         } else {
             if (e.button >= 0 && e.button <= 2) {
+                this._movementThresholdMet = false
                 this.interactionStart({ interactionType: e.button as InteractionType, position: [e.clientX, e.clientY] })
             }
         }
@@ -179,9 +181,10 @@ class ScreenInteractionHandler {
                 if (!this._primaryTouch) {
                     const end: InteractionEnd = { interactionType: PRIMARY_MOUSE_INTERACTION, position: [e.clientX, e.clientY] }
                     this.interactionEnd(end)
-                    if (this._doubleTapInteraction && this.contextMenu) {
+                    if (this._doubleTapInteraction && !this._movementThresholdMet && this.contextMenu) {
                         this.contextMenu(end)
                     }
+                    this._doubleTapInteraction = false
                 }
                 // Reset continuous tracking
             } else if (e.pointerId == this._secondaryTouch) {
@@ -190,7 +193,11 @@ class ScreenInteractionHandler {
             }
         } else {
             if (e.button >= 0 && e.button <= 2) {
-                this.interactionEnd({ interactionType: e.button as InteractionType, position: [e.clientX, e.clientY] })
+                const end: InteractionEnd = { interactionType: e.button as InteractionType, position: [e.clientX, e.clientY] }
+                this.interactionEnd(end)
+                if (e.button == SECONDARY_MOUSE_INTERACTION && this.contextMenu) {
+                    this.contextMenu(end)
+                }
             }
         }
     }

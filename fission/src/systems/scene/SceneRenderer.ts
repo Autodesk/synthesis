@@ -12,6 +12,7 @@ import Jolt from "@barclah/jolt-physics"
 import InputSystem from "@/systems/input/InputSystem"
 import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import ScreenInteractionHandler from "./ScreenInteractionHandler"
+import { MainHUD_AddToast } from "@/ui/components/MainHUD"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -123,6 +124,7 @@ class SceneRenderer extends WorldSystem {
 
         // Orbit controls
         this._screenInteractionHandler = new ScreenInteractionHandler(this._renderer.domElement)
+        this._screenInteractionHandler.contextMenu = _ => MainHUD_AddToast("info", "Context Menu", "tmp tmp tmp tmptmptm ptm ")
 
         this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler);
     }
