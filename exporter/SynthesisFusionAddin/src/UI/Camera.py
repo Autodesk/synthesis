@@ -4,7 +4,7 @@ from adsk.core import SaveImageFileOptions
 
 from ..general_imports import *
 from ..Logging import logFailure, timed
-from ..Types.OString import OString
+from ..Types import OString
 from . import Helper
 
 
