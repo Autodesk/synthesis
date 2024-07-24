@@ -20,8 +20,4 @@ abstract class Behavior {
     public abstract Update(deltaT: number): void
 }
 
-export interface SequenceableBehavior {
-    get jointIndex(): number
-}
-
 export default Behavior

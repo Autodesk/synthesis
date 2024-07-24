@@ -39,10 +39,29 @@ export type EjectorPreferences = {
     parentNode: string | undefined
 }
 
+export type BehaviorType = "Elevator" | "Arm"
+
+export type SequentialBehaviorPreferences = {
+    jointIndex: number
+    parentJointIndex: number | undefined
+    type: BehaviorType
+    inverted: boolean
+}
+
+export function DefaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
+    return {
+        jointIndex: index,
+        parentJointIndex: undefined,
+        type: type,
+        inverted: false,
+    }
+}
+
 export type RobotPreferences = {
     inputsSchemes: InputScheme[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    sequentialConfig?: SequentialBehaviorPreferences[]
 }
 
 export type Alliance = "red" | "blue"
@@ -56,7 +75,6 @@ export type ScoringZonePreferences = {
     persistentPoints: boolean
 
     deltaTransformation: number[]
-    //scale: [number, number, number]
 }
 
 export type FieldPreferences = {

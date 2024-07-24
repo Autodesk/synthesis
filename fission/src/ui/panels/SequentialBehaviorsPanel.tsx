@@ -4,25 +4,31 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Label, { LabelSize } from "../components/Label"
 import World from "@/systems/World"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import { FaGear, FaXmark } from "react-icons/fa6"
-import { Box, Button as MUIButton, Divider, styled, alpha } from "@mui/material"
+import { FaArrowRightArrowLeft, FaGear, FaXmark } from "react-icons/fa6"
+import { Box, Button as MUIButton, Divider, styled, alpha, Icon } from "@mui/material"
 import Button, { ButtonSize } from "../components/Button"
 import GenericArmBehavior from "@/systems/simulation/behavior/GenericArmBehavior"
-import { SequenceableBehavior } from "@/systems/simulation/behavior/Behavior"
+import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import SequenceableBehavior from "@/systems/simulation/behavior/SequenceableBehavior"
+import Checkbox from "../components/Checkbox"
 
-const UnselectParent = <FaXmark size={"1.25rem"} />
+const UnselectParentIcon = <FaXmark size={"1.25rem"} />
+const InvertIcon = <FaArrowRightArrowLeft size={"1.25rem"} style={{ transform: "rotate(90deg)" }} />
 
 /** White label for a behavior name */
 const LabelStyled = styled(Label)({
     fontWeight: 700,
     margin: "0pt",
+    textWrap: "nowrap",
 })
 
 /** Grey label for a child behavior name */
 const ChildLabelStyled = styled(Label)({
     fontWeight: 700,
     margin: "0pt",
-    color: "grey",
+    color: "#bbbbbb",
+    textWrap: "nowrap",
 })
 
 const DividerStyled = styled(Divider)({
@@ -45,18 +51,13 @@ const CustomButton = styled(MUIButton)({
     },
 })
 
-type BehaviorConfiguration = {
-    behavior: SequenceableBehavior
-    parent: BehaviorConfiguration | undefined
-}
-
 interface BehaviorCardProps {
     elementKey: number
     name: string
     // The behavior displayed in this card
-    behavior: BehaviorConfiguration
+    behavior: SequentialBehaviorPreferences
     // The behavior whose 'set' button was just pressed
-    lookingForParent: BehaviorConfiguration | undefined
+    lookingForParent: SequentialBehaviorPreferences | undefined
     update: () => void
     onSetPressed: () => void
     onBehaviorSelected: () => void
@@ -79,9 +80,9 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
             {/* Box containing the label */}
             <Box position="absolute" alignSelf={"center"} display="flex">
                 {/* Indentation before the name */}
-                <Box width={behavior.parent != undefined || lookingForParent == behavior ? "25px" : "8px"} />
+                <Box width={behavior.parentJointIndex != undefined || lookingForParent == behavior ? "25px" : "8px"} />
                 {/* Label for joint index and type (grey if child) */}
-                {behavior.parent != undefined ? (
+                {behavior.parentJointIndex != undefined ? (
                     <ChildLabelStyled
                         key={`arm-nodes-notation ${elementKey}`}
                         size={LabelSize.Small}
@@ -107,31 +108,54 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                     onBehaviorSelected()
                     update()
                 }}
-                disabled={lookingForParent == undefined || lookingForParent == behavior || behavior.parent != undefined}
+                disabled={
+                    lookingForParent == undefined ||
+                    lookingForParent == behavior ||
+                    behavior.parentJointIndex != undefined
+                }
                 sx={{
                     borderColor:
-                        lookingForParent == undefined || lookingForParent == behavior || behavior.parent != undefined
+                        lookingForParent == undefined ||
+                        lookingForParent == behavior ||
+                        behavior.parentJointIndex != undefined
                             ? "transparent"
                             : "#888888",
                 }}
             />
 
-            {/* Spacer between the CustomButton and 'set' button */}
-            <Box width={"8px"} />
+            {/* Spacer between the CustomButton and invert button */}
+            <Box width={"16px"} />
 
-            {/* Button to set the parent of this behavior */}
-            <Button
-                key="set"
-                size={ButtonSize.Small}
-                value={lookingForParent == behavior || behavior.parent != undefined ? UnselectParent : "set"}
-                onClick={() => {
-                    if (hasChild) return
+            <Box display="flex" position="relative" alignSelf={"center"} alignItems={"center"}>
+                {/* Invert joint icon & checkbox */}
+                <Icon>{InvertIcon}</Icon>
+                <Checkbox
+                    label={""}
+                    defaultState={behavior.inverted}
+                    onClick={val => (behavior.inverted = val)}
+                    hideLabel={true}
+                />
+            </Box>
 
-                    onSetPressed()
-                    update()
-                }}
-                colorOverrideClass={hasChild ? "bg-background-secondary hover:brightness-100" : undefined}
-            />
+            <Box display="flex" position="relative" alignSelf={"center"} alignItems={"center"}>
+                {/* Button to set the parent of this behavior */}
+                <Button
+                    key="set"
+                    size={ButtonSize.Small}
+                    value={
+                        lookingForParent == behavior || behavior.parentJointIndex != undefined
+                            ? UnselectParentIcon
+                            : "set"
+                    }
+                    onClick={() => {
+                        if (hasChild) return
+
+                        onSetPressed()
+                        update()
+                    }}
+                    colorOverrideClass={hasChild ? "bg-background hover:brightness-100" : undefined}
+                />
+            </Box>
         </Box>
     )
 }
@@ -149,19 +173,21 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
  * Joint 4
  * * Joint 2 (child of 4)
  */
-function sortBehaviors(behaviors: BehaviorConfiguration[] | undefined): BehaviorConfiguration[] | undefined {
+function sortBehaviors(
+    behaviors: SequentialBehaviorPreferences[] | undefined
+): SequentialBehaviorPreferences[] | undefined {
     if (behaviors == undefined) return undefined
 
     // Sort the behaviors in order of joint index
     behaviors.sort((a, b) => {
-        return a.behavior.jointIndex - b.behavior.jointIndex
+        return a.jointIndex - b.jointIndex
     })
 
-    const sortedBehaviors: BehaviorConfiguration[] = []
+    const sortedBehaviors: SequentialBehaviorPreferences[] = []
 
     // Append all parent behaviors to the sorted list
     behaviors.forEach(b => {
-        if (b.parent == undefined) sortedBehaviors.push(b)
+        if (b.parentJointIndex == undefined) sortedBehaviors.push(b)
     })
 
     // Append all child behaviors to the sorted list directly after their parent
@@ -170,9 +196,9 @@ function sortBehaviors(behaviors: BehaviorConfiguration[] | undefined): Behavior
         const b = behaviors[i]
 
         // Skip parent behaviors (they were added to the array in the previous step)
-        if (b.parent == undefined) continue
+        if (b.parentJointIndex == undefined) continue
 
-        const parentIndex = sortedBehaviors.findIndex(sb => b.parent == sb)
+        const parentIndex = sortedBehaviors.findIndex(sb => b.parentJointIndex == sb.jointIndex)
 
         if (parentIndex == -1) throw new Error("Parent behavior not found!")
 
@@ -184,8 +210,8 @@ function sortBehaviors(behaviors: BehaviorConfiguration[] | undefined): Behavior
 
 const SequentialBehaviorsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
-    const [behaviors, setBehaviors] = useState<BehaviorConfiguration[] | undefined>(undefined)
-    const [lookingForParent, setLookingForParent] = useState<BehaviorConfiguration | undefined>(undefined)
+    const [behaviors, setBehaviors] = useState<SequentialBehaviorPreferences[] | undefined>(undefined)
+    const [lookingForParent, setLookingForParent] = useState<SequentialBehaviorPreferences | undefined>(undefined)
 
     const robots = useMemo(() => {
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
@@ -208,8 +234,12 @@ const SequentialBehaviorsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             name={"Sequential Joints"}
             icon={<FaGear />}
             panelId={panelId}
-            acceptEnabled={false}
-            cancelName="Close"
+            cancelEnabled={false}
+            onAccept={() => {
+                if (selectedRobot == undefined || behaviors == undefined) return
+                PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
+                PreferencesSystem.savePreferences()
+            }}
         >
             {selectedRobot == undefined || behaviors == undefined ? (
                 <>
@@ -222,16 +252,24 @@ const SequentialBehaviorsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     value={mirabufSceneObject.assemblyName}
                                     onClick={() => {
                                         setSelectedRobot(mirabufSceneObject)
-                                        setBehaviors(
-                                            mirabufSceneObject.brain?.behaviors
-                                                .filter(b => "jointIndex" in b)
-                                                .map(b => {
-                                                    return {
-                                                        behavior: b as SequenceableBehavior,
-                                                        parent: undefined,
-                                                    }
-                                                })
+
+                                        const prefs = PreferencesSystem.getRobotPreferences(
+                                            mirabufSceneObject.assemblyName
                                         )
+                                        if (prefs.sequentialConfig) setBehaviors(prefs.sequentialConfig)
+                                        else {
+                                            setBehaviors(
+                                                mirabufSceneObject.brain?.behaviors
+                                                    .filter(b => b instanceof SequenceableBehavior)
+                                                    .map(b => {
+                                                        return DefaultSequentialConfig(
+                                                            b.jointIndex,
+                                                            b instanceof GenericArmBehavior ? "Arm" : "Elevator"
+                                                        )
+                                                    })
+                                            )
+                                        }
+
                                         update()
                                     }}
                                     key={mirabufSceneObject.id}
@@ -241,18 +279,18 @@ const SequentialBehaviorsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     </div>
                 </>
             ) : (
-                <>
+                <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[40vh] bg-background-secondary rounded-md p-2">
                     <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         Set Parent Behaviors
                     </LabelStyled>
                     <DividerStyled />
                     {behaviors.map(behavior => {
-                        const jointIndex = behavior.behavior.jointIndex
+                        const jointIndex = behavior.jointIndex
                         return (
                             <BehaviorCard
                                 elementKey={jointIndex}
                                 name={
-                                    behavior.behavior instanceof GenericArmBehavior
+                                    behavior.type == "Arm"
                                         ? `Joint ${jointIndex} (Arm)`
                                         : `Joint ${jointIndex} (Elevator)`
                                 }
@@ -260,8 +298,8 @@ const SequentialBehaviorsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 key={jointIndex}
                                 update={update}
                                 onSetPressed={() => {
-                                    if (behavior.parent != undefined) {
-                                        behavior.parent = undefined
+                                    if (behavior.parentJointIndex != undefined) {
+                                        behavior.parentJointIndex = undefined
                                         update()
                                     } else {
                                         setLookingForParent(lookingForParent == behavior ? undefined : behavior)
@@ -270,15 +308,15 @@ const SequentialBehaviorsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 }}
                                 lookingForParent={lookingForParent}
                                 onBehaviorSelected={() => {
-                                    if (lookingForParent) lookingForParent.parent = behavior
+                                    if (lookingForParent) lookingForParent.parentJointIndex = behavior.jointIndex
                                     setLookingForParent(undefined)
                                     update()
                                 }}
-                                hasChild={behaviors.some(b => b.parent == behavior)}
+                                hasChild={behaviors.some(b => b.parentJointIndex == behavior.jointIndex)}
                             />
                         )
                     })}
-                </>
+                </div>
             )}
         </Panel>
     )

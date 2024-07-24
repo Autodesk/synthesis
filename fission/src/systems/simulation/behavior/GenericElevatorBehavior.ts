@@ -1,23 +1,15 @@
+import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
-import Behavior, { SequenceableBehavior } from "./Behavior"
-import InputSystem from "@/systems/input/InputSystem"
+import SequenceableBehavior from "./SequenceableBehavior"
 
-class GenericElevatorBehavior extends Behavior implements SequenceableBehavior {
+class GenericElevatorBehavior extends SequenceableBehavior {
     private _sliderDriver: SliderDriver
-    private _inputName: string
-    private _jointIndex: number
-    private _assemblyName: string
-    private _assemblyIndex: number
 
-    private _linearSpeed = 2.5
+    maxVelocity = 6
 
     public get sliderDriver(): SliderDriver {
         return this._sliderDriver
-    }
-
-    public get jointIndex(): number {
-        return this._jointIndex
     }
 
     constructor(
@@ -25,26 +17,16 @@ class GenericElevatorBehavior extends Behavior implements SequenceableBehavior {
         sliderStimulus: SliderStimulus,
         jointIndex: number,
         assemblyName: string,
-        assemblyIndex: number
+        assemblyIndex: number,
+        sequentialConfig: SequentialBehaviorPreferences | undefined
     ) {
-        super([sliderDriver], [sliderStimulus])
+        super(jointIndex, assemblyName, assemblyIndex, [sliderDriver], [sliderStimulus], sequentialConfig)
 
         this._sliderDriver = sliderDriver
-        this._inputName = "joint " + jointIndex
-        this._jointIndex = jointIndex
-        this._assemblyName = assemblyName
-        this._assemblyIndex = assemblyIndex
     }
 
-    // Changes the elevators target position
-    moveElevator(linearVelocity: number) {
-        this._sliderDriver.targetVelocity = linearVelocity
-    }
-
-    public Update(_: number): void {
-        this.moveElevator(
-            InputSystem.getInput(this._inputName, this._assemblyName, this._assemblyIndex) * this._linearSpeed
-        )
+    applyInput = (velocity: number) => {
+        this._sliderDriver.targetVelocity = velocity
     }
 }
 

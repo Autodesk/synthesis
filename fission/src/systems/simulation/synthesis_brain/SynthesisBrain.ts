@@ -17,6 +17,7 @@ import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior"
 import { AxisInput, ButtonInput, Input } from "@/systems/input/InputSystem"
 import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { DefaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 
 class SynthesisBrain extends Brain {
     private _behaviors: Behavior[] = []
@@ -153,13 +154,28 @@ class SynthesisBrain extends Brain {
         ) as HingeStimulus[]
 
         for (let i = 0; i < hingeDrivers.length; i++) {
+            let sequentialConfig = PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.find(
+                sc => sc.jointIndex == this._currentJointIndex
+            )
+
+            if (sequentialConfig == undefined) {
+                sequentialConfig = DefaultSequentialConfig(this._currentJointIndex, "Arm")
+
+                if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
+                    PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
+
+                PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.push(sequentialConfig)
+                PreferencesSystem.savePreferences()
+            }
+
             this._behaviors.push(
                 new GenericArmBehavior(
                     hingeDrivers[i],
                     hingeStimuli[i],
                     this._currentJointIndex,
                     this._assemblyName,
-                    this._assemblyIndex
+                    this._assemblyIndex,
+                    sequentialConfig
                 )
             )
             this._currentJointIndex++
@@ -176,13 +192,28 @@ class SynthesisBrain extends Brain {
         ) as SliderStimulus[]
 
         for (let i = 0; i < sliderDrivers.length; i++) {
+            let sequentialConfig = PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.find(
+                sc => sc.jointIndex == this._currentJointIndex
+            )
+
+            if (sequentialConfig == undefined) {
+                sequentialConfig = DefaultSequentialConfig(this._currentJointIndex, "Elevator")
+
+                if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
+                    PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
+
+                PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.push(sequentialConfig)
+                PreferencesSystem.savePreferences()
+            }
+
             this._behaviors.push(
                 new GenericElevatorBehavior(
                     sliderDrivers[i],
                     sliderStimuli[i],
                     this._currentJointIndex,
                     this._assemblyName,
-                    this._assemblyIndex
+                    this._assemblyIndex,
+                    sequentialConfig
                 )
             )
             this._currentJointIndex++
