@@ -168,6 +168,7 @@ class GamepieceConfigTab:
             "gamepieceWeight", "Weight Input", "", adsk.core.ValueInput.createByString(str(gamepieceMass))
         )
         weight.tooltip = "Weight of field element"
+        weight.isEnabled = not self.previousAutoCalcWeightCheckboxState
 
         weightUnitDropdown: adsk.core.DropDownCommandInput = self.gamepieceConfigTab.children.itemById(
             "gamepieceWeightUnit"
