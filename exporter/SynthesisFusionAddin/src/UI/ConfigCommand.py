@@ -11,8 +11,8 @@ import adsk.fusion
 
 from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
 from ..general_imports import *
-from ..Parser.ExporterOptions import ExporterOptions, ExportMode
 from ..Logging import getLogger, logFailure
+from ..Parser.ExporterOptions import ExporterOptions, ExportLocation, ExportMode
 from ..Parser.SynthesisParser.Parser import Parser
 from . import FileDialogConfig, Helper
 from .Configuration.SerialCommand import SerialCommand
@@ -99,33 +99,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         global INPUTS_ROOT  # Global CommandInputs arg
         INPUTS_ROOT = cmd.commandInputs
 
-        # ====================================== GENERAL TAB ======================================
-        """
-        Creates the general tab.
-            - Parent container for all the command inputs in the tab.
-        """
-        inputs = INPUTS_ROOT.addTabCommandInput("general_settings", "General").children
-
         # ~~~~~~~~~~~~~~~~ HELP FILE ~~~~~~~~~~~~~~~~
         """
         Sets the small "i" icon in bottom left of the panel.
             - This is an HTML file that has a script to redirect to exporter workflow tutorial.
         """
         cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
-
-        # ~~~~~~~~~~~~~~~~ EXPORT MODE ~~~~~~~~~~~~~~~~
-        """
-        Dropdown to choose whether to export robot or field element
-        """
-        dropdownExportMode = inputs.addDropDownCommandInput(
-            "mode",
-            "Export Mode",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-        )
-
-        dynamic = exporterOptions.exportMode == ExportMode.ROBOT
-        dropdownExportMode.listItems.add("Dynamic", dynamic)
-        dropdownExportMode.listItems.add("Static", not dynamic)
 
         global generalConfigTab
         generalConfigTab = GeneralConfigTab(args, exporterOptions)
@@ -148,6 +127,32 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
         if not exporterOptions.exportMode == ExportMode.ROBOT:
             jointConfigTab.isVisible = False
+
+        # Transition: AARD-1685
+        # There remains some overlap between adding joints as wheels.
+        # Should investigate changes to improve performance.
+        if exporterOptions.joints:
+            for synJoint in exporterOptions.joints:
+                fusionJoint = gm.app.activeDocument.design.findEntityByToken(synJoint.jointToken)[0]
+                jointConfigTab.addJoint(fusionJoint, synJoint)
+        else:
+            for joint in [
+                *gm.app.activeDocument.design.rootComponent.allJoints,
+                *gm.app.activeDocument.design.rootComponent.allAsBuiltJoints,
+            ]:
+                if (
+                    joint.jointMotion.jointType in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value)
+                    and not joint.isSuppressed
+                ):
+                    jointConfigTab.addJoint(joint)
+
+        # Adding saved wheels must take place after joints are added as a result of how the two types are connected.
+        # Transition: AARD-1685
+        # Should consider changing how the parser handles wheels and joints to avoid overlap
+        if exporterOptions.wheels:
+            for wheel in exporterOptions.wheels:
+                fusionJoint = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
+                jointConfigTab.addWheel(fusionJoint, wheel)
 
         # frictionOverrideInput = self.createBooleanInput(
         #     "friction_override",
@@ -202,13 +207,13 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         #     enabled=True,
         # )
 
-        getAuth()
-        user_info = getUserInfo()
-        apsSettings = INPUTS_ROOT.addTabCommandInput(
-            "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-        )
-        apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
-        aps_input = apsSettings.children
+        # getAuth()
+        # user_info = getUserInfo()
+        # apsSettings = INPUTS_ROOT.addTabCommandInput(
+        #     "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
+        # )
+        # apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
+        # aps_input = apsSettings.children
 
         # clear all selections before instantiating handlers.
         gm.ui.activeSelections.clear()
@@ -287,32 +292,24 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             logger.error("Could not execute configuration due to failure")
             return
 
-        # processedFileName = gm.app.activeDocument.name.replace(" ", "_")
-        # dropdownExportLocation = INPUTS_ROOT.itemById("location")
-        # if dropdownExportLocation.selectedItem.index == 1:  # Download
-        #     savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
+        processedFileName = gm.app.activeDocument.name.replace(" ", "_")
+        if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
+            savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
 
-        #     if savepath == False:
-        #         # save was canceled
-        #         return
+            if savepath == False:
+                # save was canceled
+                return
 
-        #     if True:
-        #         savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
-        #     processedFileName = gm.app.activeDocument.name.replace(" ", "_")
-        #     dropdownExportLocation = INPUTS_ROOT.itemById("location")
-        #     if dropdownExportLocation.selectedItem.index == 1:  # Download
-        #         savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
+            updatedPath = pathlib.Path(savepath).parent
+            if updatedPath != self.current.filePath:
+                self.current.filePath = str(updatedPath)
+        else:
+            savepath = processedFileName
 
         adsk.doEvents()
-        # get active document
         design = gm.app.activeDocument.design
         name = design.rootComponent.name.rsplit(" ", 1)[0]
         version = design.rootComponent.name.rsplit(" ", 1)[1]
-
-        _exportGamepieces = []  # TODO work on the code to populate Gamepiece
-        _robotWeight = float
-        _mode: ExportMode
-        _location: ExportLocation
 
         selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
         selectedGamepieces = gamepieceConfigTab.getGamepieces()
@@ -333,12 +330,16 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             gamepieces=selectedGamepieces,
             preferredUnits=units,
             robotWeight=generalConfigTab.robotWeight,
+            autoCalcRobotWeight=generalConfigTab.autoCalculateWeight,
+            autoCalcGamepieceWeight=gamepieceConfigTab.autoCalculateWeight,
             exportMode=generalConfigTab.exportMode,
             exportLocation=generalConfigTab.exportLocation,
             compressOutput=generalConfigTab.compress,
             exportAsPart=generalConfigTab.exportAsPart,
-            autoCalcRobotWeight=generalConfigTab.autoCalculateWeight,
         )
+
+        Parser(exporterOptions).export()
+        exporterOptions.writeToDesign()
 
         # All selections should be reset AFTER a successful export and save.
         # If we run into an exporting error we should return back to the panel with all current options

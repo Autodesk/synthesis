@@ -111,6 +111,13 @@ class GamepieceConfigTab:
         return self.currentUnits
 
     @property
+    def autoCalculateWeight(self) -> bool:
+        autoCalcWeightButton: adsk.core.BoolValueCommandInput = self.gamepieceConfigTab.children.itemById(
+            "autoCalcGamepieceWeight"
+        )
+        return autoCalcWeightButton.value
+
+    @property
     def weightInputs(self) -> list[adsk.core.ValueCommandInput]:
         gamepieceWeightInputs = []
         for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed

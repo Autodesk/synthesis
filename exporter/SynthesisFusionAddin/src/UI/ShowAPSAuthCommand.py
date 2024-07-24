@@ -10,13 +10,6 @@ import adsk.core
 
 from src.APS.APS import CLIENT_ID, auth_path, convertAuthToken, getCodeChallenge
 from src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, my_addin_path
-from src.general_imports import (
-    APP_NAME,
-    DESCRIPTION,
-    INTERNAL_ID,
-    gm,
-    my_addin_path,
-)
 from src.Logging import getLogger
 
 logger = getLogger()
