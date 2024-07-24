@@ -14,15 +14,9 @@ from ..Analytics.alert import showAnalyticsAlert
 from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
 from ..configure import NOTIFIED, write_configuration
 from ..general_imports import *
-from ..Parser.ExporterOptions import (
-    ExporterOptions,
-    ExportLocation,
-    ExportMode,
-    Gamepiece,
-    PreferredUnits,
-)
+from ..Parser.ExporterOptions import ExporterOptions, ExportMode
 from ..Parser.SynthesisParser.Parser import Parser
-from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
+from . import FileDialogConfig, Helper
 from .Configuration.SerialCommand import SerialCommand
 from .GamepieceConfigTab import GamepieceConfigTab
 from .GeneralConfigTab import GeneralConfigTab
@@ -44,12 +38,6 @@ INPUTS_ROOT (adsk.fusion.CommandInputs):
 """
 INPUTS_ROOT = None
 
-"""
-These lists are crucial, and contain all of the relevant object selections.
-- GamepieceListGlobal: list of gamepieces (adsk.fusion.Occurrence)
-"""
-GamepieceListGlobal = []
-
 
 def GUID(arg):
     """### Will return command object when given a string GUID, or the string GUID of an object (depending on arg value)
@@ -65,15 +53,6 @@ def GUID(arg):
         return object
     else:  # type(obj)
         return arg.entityToken
-
-
-def gamepieceTable():
-    """### Returns the gamepiece table command input
-
-    Returns:
-        adsk.fusion.TableCommandInput
-    """
-    return INPUTS_ROOT.itemById("gamepiece_table")
 
 
 class JointMotions(Enum):
@@ -134,8 +113,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             global INPUTS_ROOT  # Global CommandInputs arg
             INPUTS_ROOT = cmd.commandInputs
 
-            # Transition: AARD-1683
-            # Working on replacing all of the general tab stuff
             global generalConfigTab
             generalConfigTab = GeneralConfigTab(args, exporterOptions)
 
@@ -164,7 +141,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             if not exporterOptions.exportMode == ExportMode.ROBOT:
                 jointConfigTab.isVisible = False
-                # INPUTS_ROOT.itemById("weightTable").isVisible = False
 
             # Transition: AARD-1685
             # There remains some overlap between adding joints as wheels.
@@ -417,34 +393,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             name = design.rootComponent.name.rsplit(" ", 1)[0]
             version = design.rootComponent.name.rsplit(" ", 1)[1]
 
-            # _exportGamepieces = []  # TODO work on the code to populate Gamepiece
-
-            # Transition: AARD-1683
-            # TODO: Implement gamepiece things
-            """
-            Loops through all rows in the gamepiece table to extract the input values
-            """
-            # gamepieceTableInput = gamepieceTable()
-            # weight_unit_f = INPUTS_ROOT.itemById("weight_unit_f")
-            # for row in range(gamepieceTableInput.rowCount):
-            #     if row == 0:
-            #         continue
-
-            #     weightValue = gamepieceTableInput.getInputAtPosition(row, 2).value  # weight/mass input, float
-
-            #     if weight_unit_f.selectedItem.index == 0:
-            #         weightValue /= 2.2046226218
-
-            #     frictionValue = gamepieceTableInput.getInputAtPosition(row, 3).valueOne  # friction value, float
-
-            # _exportGamepieces.append(
-            #     Gamepiece(
-            #         guid_occurrence(GamepieceListGlobal[row - 1]),
-            #         weightValue,
-            #         frictionValue,
-            #     )
-            # )
-
             selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
             selectedGamepieces = gamepieceConfigTab.getGamepieces()
 
@@ -502,31 +450,8 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
             args (CommandEventArgs): command event argument
         """
         try:
-            eventArgs = adsk.core.CommandEventArgs.cast(args)
-            # inputs = eventArgs.command.commandInputs # equivalent to INPUTS_ROOT global
-
-            auto_calc_weight_f = INPUTS_ROOT.itemById("auto_calc_weight_f")
-
-            addFieldInput = INPUTS_ROOT.itemById("field_add")
-            removeFieldInput = INPUTS_ROOT.itemById("field_delete")
-
-            # Transition: AARD-1685
-            # This is how all preview handles should be done in the future
             jointConfigTab.handlePreviewEvent(args)
             gamepieceConfigTab.handlePreviewEvent(args)
-
-            # gamepieceTableInput = gamepieceTable()
-            # if gamepieceTableInput.rowCount <= 1:
-            #     removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = False
-            # else:
-            #     removeFieldInput.isEnabled = auto_calc_weight_f.isEnabled = True
-
-            # if not addFieldInput.isEnabled or not removeFieldInput:
-            #     for gamepiece in GamepieceListGlobal:
-            #         gamepiece.component.opacity = 0.25
-            #         CustomGraphics.createTextGraphics(gamepiece, GamepieceListGlobal)
-            # else:
-            #     gm.app.activeDocument.design.rootComponent.opacity = 1
         except AttributeError:
             pass
         except:
@@ -717,41 +642,8 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
                 return
 
             preSelected = preSelectedOcc if preSelectedOcc else preSelectedJoint
-
-            # Transition: AARD-1683
-            # Leaving this section of commented code here to be used in the `ConfigCommand.py` refactor.
-
-            # dropdownExportMode = INPUTS_ROOT.itemById("mode")
-            # if preSelected and design:
-            #     if dropdownExportMode.selectedItem.index == 0:  # Dynamic
-            #         if preSelected.entityToken in onSelect.allWheelPreselections:
-            #             self.cmd.setCursor(
-            #                 IconPaths.mouseIcons["remove"],
-            #                 0,
-            #                 0,
-            #             )
-            #         else:
-            #             self.cmd.setCursor(
-            #                 IconPaths.mouseIcons["add"],
-            #                 0,
-            #                 0,
-            #             )
-
-            #     elif dropdownExportMode.selectedItem.index == 1:  # Static
-            #         if preSelected.entityToken in onSelect.allGamepiecePreselections:
-            #             self.cmd.setCursor(
-            #                 IconPaths.mouseIcons["remove"],
-            #                 0,
-            #                 0,
-            #             )
-            #         else:
-            #             self.cmd.setCursor(
-            #                 IconPaths.mouseIcons["add"],
-            #                 0,
-            #                 0,
-            #             )
-            # else:  # Should literally be impossible? - Brandon
-            #     self.cmd.setCursor("", 0, 0)
+            if not preSelected:
+                self.cmd.setCursor("", 0, 0)
         except:
             if gm.ui:
                 gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
@@ -835,70 +727,6 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
             frictionCoeff = INPUTS_ROOT.itemById("friction_override_coeff")
 
-            # gm.ui.messageBox(cmdInput.id) # DEBUG statement, displays CommandInput user-defined id
-
-            # position = int
-
-            # if cmdInput.id == "mode":
-            #     modeDropdown = adsk.core.DropDownCommandInput.cast(cmdInput)
-
-            #     if modeDropdown.selectedItem.index == 0:
-            #         if gamepieceConfig:
-            #             gm.ui.activeSelections.clear()
-            #             gm.app.activeDocument.design.rootComponent.opacity = 1
-
-            #             gamepieceConfig.isVisible = False
-            #             weightTableInput.isVisible = True
-
-            #             addFieldInput.isEnabled = True
-
-            #     elif modeDropdown.selectedItem.index == 1:
-            #         if gamepieceConfig:
-            #             gm.ui.activeSelections.clear()
-            #             gm.app.activeDocument.design.rootComponent.opacity = 1
-
-            # elif cmdInput.id == "blank_gp" or cmdInput.id == "name_gp" or cmdInput.id == "weight_gp":
-            #     self.reset()
-
-            #     gamepieceSelect.isEnabled = False
-            #     addFieldInput.isEnabled = True
-
-            #     cmdInput_str = cmdInput.id
-
-            #     if cmdInput_str == "name_gp":
-            #         position = gamepieceTableInput.getPosition(adsk.core.TextBoxCommandInput.cast(cmdInput))[1] - 1
-            #     elif cmdInput_str == "weight_gp":
-            #         position = gamepieceTableInput.getPosition(adsk.core.ValueCommandInput.cast(cmdInput))[1] - 1
-            #     elif cmdInput_str == "blank_gp":
-            #         position = gamepieceTableInput.getPosition(adsk.core.ImageCommandInput.cast(cmdInput))[1] - 1
-            #     else:
-            #         position = gamepieceTableInput.getPosition(adsk.core.FloatSliderCommandInput.cast(cmdInput))[1] - 1
-
-            #     gm.ui.activeSelections.add(GamepieceListGlobal[position])
-
-            # elif cmdInput.id == "field_add":
-            #     self.reset()
-
-            #     gamepieceSelect.isVisible = True
-            #     gamepieceSelect.isEnabled = True
-            #     gamepieceSelect.clearSelection()
-            #     addFieldInput.isEnabled = False
-
-            # elif cmdInput.id == "field_delete":
-            #     gm.ui.activeSelections.clear()
-
-            #     addFieldInput.isEnabled = True
-
-            #     if gamepieceTableInput.selectedRow == -1 or gamepieceTableInput.selectedRow == 0:
-            #         gamepieceTableInput.selectedRow = gamepieceTableInput.rowCount - 1
-            #         gm.ui.messageBox("Select a row to delete.")
-            #     else:
-            #         index = gamepieceTableInput.selectedRow - 1
-            #         removeGamePieceFromTable(index)
-
-            # elif cmdInput.id == "gamepiece_select":
-            #     addFieldInput.isEnabled = True
-
             if cmdInput.id == "friction_override":
                 boolValue = adsk.core.BoolValueCommandInput.cast(cmdInput)
 
@@ -926,12 +754,8 @@ class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
 
     def notify(self, args):
         try:
-            onSelect = gm.handlers[3]
-
             jointConfigTab.reset()
-            GamepieceListGlobal.clear()
-            onSelect.allWheelPreselections.clear()
-            onSelect.wheelJointList.clear()
+            gamepieceConfigTab.reset()
 
             for group in gm.app.activeDocument.design.rootComponent.customGraphicsGroups:
                 group.deleteMe()
