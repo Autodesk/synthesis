@@ -80,6 +80,14 @@ public class CANMotor {
     }
 
     /**
+     * Sets the supply current, simulated.
+     * 
+     */
+    public void setSupplyCurrent(int current) {
+        m_supplyCurrent.set(current);
+    }
+
+    /**
      * Get the supply current, simulated.
      * 
      * @return Supply Current.

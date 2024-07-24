@@ -39,5 +39,4 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
 
         return super.setIdleMode(mode);
     }
-
 }

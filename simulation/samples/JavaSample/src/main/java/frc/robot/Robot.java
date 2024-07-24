@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
+import com.autodesk.synthesis.ctre.TalonFX;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
