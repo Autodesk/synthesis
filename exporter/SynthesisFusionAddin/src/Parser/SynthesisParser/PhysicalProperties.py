@@ -25,8 +25,10 @@ import adsk
 from proto.proto_out import types_pb2
 
 from ...general_imports import INTERNAL_ID
+from ...Logging import logFailure
 
 
+@logFailure
 def GetPhysicalProperties(
     fusionObject: Union[adsk.fusion.BRepBody, adsk.fusion.Occurrence, adsk.fusion.Component],
     physicalProperties: types_pb2.PhysicalProperties,
@@ -39,22 +41,17 @@ def GetPhysicalProperties(
         physicalProperties (any): Unity Joint object for now
         level (int): Level of accurracy
     """
-    try:
-        physical = fusionObject.getPhysicalProperties(level)
+    physical = fusionObject.getPhysicalProperties(level)
 
-        physicalProperties.density = physical.density
-        physicalProperties.mass = physical.mass
-        physicalProperties.volume = physical.volume
-        physicalProperties.area = physical.area
+    physicalProperties.density = physical.density
+    physicalProperties.mass = physical.mass
+    physicalProperties.volume = physical.volume
+    physicalProperties.area = physical.area
 
-        _com = physicalProperties.com
-        com = physical.centerOfMass.asVector()
+    _com = physicalProperties.com
+    com = physical.centerOfMass.asVector()
 
-        if com is not None:
-            _com.x = com.x
-            _com.y = com.y
-            _com.z = com.z
-    except:
-        logging.getLogger(f"{INTERNAL_ID}.Parser.PhysicalProperties").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+    if com is not None:
+        _com.x = com.x
+        _com.y = com.y
+        _com.z = com.z

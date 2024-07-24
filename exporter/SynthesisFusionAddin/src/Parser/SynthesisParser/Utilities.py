@@ -54,7 +54,7 @@ def construct_info(name: str, proto_obj, version=5, fus_object=None, GUID=None) 
         try:
             # attempt to get entity token
             proto_obj.info.GUID = fus_object.entityToken
-        except:
+        except AttributeError:
             # fails and gets new uuid
             proto_obj.info.GUID = str(uuid.uuid4())
 

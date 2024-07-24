@@ -5,14 +5,6 @@ from ..general_imports import *
 from . import HUI, Events
 
 
-def check_solid_open() -> bool:
-    """### Checks to see if the current design open is Fusion Solid
-    - Supplied as callback
-    WARN - THIS NO LONGER FUNCTIONS
-    """
-    return True
-
-
 def getDocName() -> str or None:
     """### Gets the active Document Name
     - If it can't find one then it will return None
