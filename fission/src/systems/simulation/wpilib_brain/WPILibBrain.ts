@@ -123,15 +123,12 @@ export class SimCAN {
         const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type || simType == "SimDevice")
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
-                let result
-                if ((result = [...key.matchAll(id_exp)]) != undefined) {
-                    if (result.length > 0 && result[0].length > 1) {
-                        const parsed_id = parseInt(result[0][1])
-                        if (parsed_id == id) {
-                            return data.get(key)
-                        }
-                    }
-                }
+                let result = [...key.matchAll(id_exp)]
+                if (result?.length <= 0 || result?[0].length <= 1) continue
+                const parsed_id = parseInt(result[0][1])
+                if (parsed_id != id) continue
+                
+                return data.get(key)
             }
         }
         return undefined
