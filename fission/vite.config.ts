@@ -9,7 +9,7 @@ const serverPort = 3000
 const dockerServerPort = 80
 
 const useLocal = false
-const useSsl = false
+const useSsl = true
 
 const plugins = [
     react(), glsl({
