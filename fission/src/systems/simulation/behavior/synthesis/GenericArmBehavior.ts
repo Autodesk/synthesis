@@ -6,24 +6,16 @@ import InputSystem from "@/systems/input/InputSystem"
 class GenericArmBehavior extends Behavior {
     private _hingeDriver: HingeDriver
     private _inputName: string
-    private _assemblyName: string
-    private _assemblyIndex: number
+    private _brainIndex: number
 
     private _rotationalSpeed = 6
 
-    constructor(
-        hingeDriver: HingeDriver,
-        hingeStimulus: HingeStimulus,
-        jointIndex: number,
-        assemblyName: string,
-        assemblyIndex: number
-    ) {
+    constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number, brainIndex: number) {
         super([hingeDriver], [hingeStimulus])
 
         this._hingeDriver = hingeDriver
         this._inputName = "joint " + jointIndex
-        this._assemblyName = assemblyName
-        this._assemblyIndex = assemblyIndex
+        this._brainIndex = brainIndex
     }
 
     // Sets the arms target rotational velocity
@@ -32,9 +24,7 @@ class GenericArmBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.rotateArm(
-            InputSystem.getInput(this._inputName, this._assemblyName, this._assemblyIndex) * this._rotationalSpeed
-        )
+        this.rotateArm(InputSystem.getInput(this._inputName, this._brainIndex) * this._rotationalSpeed)
     }
 }
 

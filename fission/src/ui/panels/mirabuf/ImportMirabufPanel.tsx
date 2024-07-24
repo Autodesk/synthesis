@@ -153,7 +153,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 
 const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { showTooltip } = useTooltipControlContext()
-    const { closePanel } = usePanelControlContext()
+    const { closePanel, openPanel } = usePanelControlContext()
 
     const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(GetCacheInfo(MiraType.FIELD))
@@ -237,8 +237,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             ])
 
             closePanel(panelId)
+
+            if (type == MiraType.ROBOT) openPanel("choose-scheme")
         },
-        [showTooltip, closePanel, panelId]
+        [showTooltip, closePanel, panelId, openPanel]
     )
 
     // Cache a selected remote mirabuf assembly, load from cache.
@@ -258,8 +260,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .catch(() => status.Fail())
 
             closePanel(panelId)
+
+            if (type == MiraType.ROBOT) openPanel("choose-scheme")
         },
-        [closePanel, panelId]
+        [closePanel, panelId, openPanel]
     )
 
     const selectAPS = useCallback(
