@@ -12,9 +12,9 @@ import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import {} from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
-import CascadingShadows from "./CascadingShadows"
+import { CSM } from "three/examples/jsm/csm/CSM.js"
+import { CSMHelper } from "three/examples/jsm/csm/CSMHelper.js"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -35,7 +35,8 @@ class SceneRenderer extends WorldSystem {
     private _orbitControls: OrbitControls
     private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
 
-    private _light: CascadingShadows
+    private _csm: CSM
+    // private _csmHelper: CSMHelper
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -77,7 +78,35 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        this._light = new CascadingShadows(this._mainCamera, this._scene, this._renderer)
+        // this._light = new CascadingShadows(this._mainCamera, this._scene, this._renderer)
+        const shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
+        this._csm = new CSM({
+            maxFar: 30,
+            cascades: 3,
+            mode: 'custom',
+            parent: this._scene,
+            shadowMapSize: shadowMapSize,
+            lightDirection: new THREE.Vector3( 0.5, -0.5, 0.5 ).normalize(),
+            lightIntensity: 3,
+            camera: this._mainCamera,
+            customSplitsCallback: (cascades: number, near: number, far: number, breaks: number[]) => {
+                const blend = 0.4;
+                for (let i = 1; i < cascades; i++) {
+                    const uniformFactor = (near + (far - near) * i / cascades) / far;
+                    const logarithmicFactor = (near * (far / near) ** (i / cascades)) / far;
+                    const combinedFactor = uniformFactor * (1 - blend) + logarithmicFactor * blend;
+                    
+                    breaks.push(combinedFactor);
+                }
+            
+                breaks.push(1);
+            }
+        })
+        this._csm.fade = true
+        
+        // this._csmHelper = new CSMHelper(this._csm)
+        // this._csmHelper.visible = true
+        // this._scene.add(this._csmHelper)
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
         this._scene.add(ambientLight)
@@ -85,7 +114,7 @@ class SceneRenderer extends WorldSystem {
         const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR))
         ground.position.set(0.0, -2.0, 0.0)
         ground.receiveShadow = true
-        ground.castShadow = true
+        ground.castShadow = false
         this._scene.add(ground)
 
         // Adding spherical skybox mesh
@@ -117,6 +146,11 @@ class SceneRenderer extends WorldSystem {
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this._orbitControls.update()
+
+        const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.CreateToonMaterial())
+        cube.castShadow = true
+        cube.receiveShadow = true
+        this._scene.add(cube)
     }
 
     public UpdateCanvasSize() {
@@ -130,7 +164,11 @@ class SceneRenderer extends WorldSystem {
         this._sceneObjects.forEach(obj => {
             obj.Update()
         })
-        this._light.Update()
+
+        this._mainCamera.updateMatrixWorld()
+
+        this._csm.update()
+        // this._csmHelper.update()
 
         this._skybox.position.copy(this._mainCamera.position)
 
@@ -177,6 +215,7 @@ class SceneRenderer extends WorldSystem {
     public CreateSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
+            this._csm.setupMaterial(material)
             return new THREE.Mesh(geo, material)
         } else {
             return new THREE.Mesh(geo, this.CreateToonMaterial())
@@ -191,10 +230,12 @@ class SceneRenderer extends WorldSystem {
         }
         const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format)
         gradientMap.needsUpdate = true
-        return new THREE.MeshToonMaterial({
+        const material = new THREE.MeshToonMaterial({
             color: color,
             gradientMap: gradientMap,
         })
+        this._csm.setupMaterial(material)
+        return material
     }
 
     /**
@@ -336,6 +377,10 @@ class SceneRenderer extends WorldSystem {
      */
     public RemoveObject(obj: THREE.Object3D) {
         this._scene.remove(obj)
+    }
+
+    public SetupMaterial(material: THREE.Material) {
+        this._csm.setupMaterial(material)
     }
 }
 

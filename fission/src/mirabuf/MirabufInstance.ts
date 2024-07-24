@@ -149,8 +149,10 @@ class MirabufInstance {
                         opacity: opacity,
                         transparent: opacity < 1.0,
                     })
+                    World.SceneRenderer.SetupMaterial(material)
                 } else if (materialStyle == MaterialStyle.Normals) {
                     material = new THREE.MeshNormalMaterial()
+                    World.SceneRenderer.SetupMaterial(material)
                 } else if (materialStyle == MaterialStyle.Toon) {
                     material = World.SceneRenderer.CreateToonMaterial(hex, 5)
                     console.debug("Toon Material")
