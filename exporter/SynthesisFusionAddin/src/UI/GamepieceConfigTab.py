@@ -26,9 +26,6 @@ class GamepieceConfigTab:
         self.gamepieceConfigTab.tooltip = "Field gamepiece configuration options."
         gamepieceTabInputs = self.gamepieceConfigTab.children
 
-        # Invisible by default, only becomes visible when the current export mode is static or 'field'.
-        self.gamepieceConfigTab.isVisible = False
-
         createBooleanInput(
             "autoCalcGamepieceWeight",
             "Auto Calculate Gamepiece Weight",
@@ -108,6 +105,10 @@ class GamepieceConfigTab:
     @isVisible.setter
     def isVisible(self, value: bool) -> None:
         self.gamepieceConfigTab.isVisible = value
+
+    @property
+    def selectedUnits(self) -> PreferredUnits:
+        return self.currentUnits
 
     @property
     def weightInputs(self) -> list[adsk.core.ValueCommandInput]:
@@ -196,6 +197,16 @@ class GamepieceConfigTab:
         i = self.selectedGamepieceList.index(gamepiece)
         self.selectedGamepieceList.remove(gamepiece)
         self.gamepieceTable.deleteRow(i + 1)  # Row is 1 indexed
+
+    def getGamepieces(self) -> list[Gamepiece]:
+        gamepieces: list[Gamepiece] = []
+        for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
+            gamepieceEntityToken = self.selectedGamepieceList[row - 1].entityToken
+            gamepieceWeight = self.gamepieceTable.getInputAtPosition(row, 1).value
+            gamepieceFrictionCoefficient = self.gamepieceTable.getInputAtPosition(row, 2).valueOne
+            gamepieces.append(Gamepiece(gamepieceEntityToken, gamepieceWeight, gamepieceFrictionCoefficient))
+
+        return gamepieces
 
     def reset(self) -> None:
         self.selectedGamepieceEntityIDs.clear()
