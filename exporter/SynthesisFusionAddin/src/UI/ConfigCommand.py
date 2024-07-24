@@ -511,7 +511,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         #     enabled=True,
         # )
 
-                # self.createBooleanInput(
+        # self.createBooleanInput(
         #     "calculate_limits",
         #     "Calculate Limits",
         #     joints_settings,
