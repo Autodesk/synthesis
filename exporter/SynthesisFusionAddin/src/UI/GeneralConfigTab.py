@@ -73,7 +73,7 @@ class GeneralConfigTab:
             weightName.value = "Weight"
             weightName.isReadOnly = True
 
-            createBooleanInput(
+            autoCalcWeightButton = createBooleanInput(
                 "autoCalcWeightButton",
                 "Auto Calculate Robot Weight",
                 generalTabInputs,
@@ -132,7 +132,7 @@ class GeneralConfigTab:
                 enabled=True,
             )
 
-            createBooleanInput(
+            exportAsPartButton = createBooleanInput(
                 "exportAsPartButton",
                 "Export As Part",
                 generalTabInputs,
@@ -140,6 +140,11 @@ class GeneralConfigTab:
                 tooltip="Use to export as a part for Mix And Match",
                 enabled=True,
             )
+
+            if exporterOptions.exportMode == ExportMode.FIELD:
+                autoCalcWeightButton.isVisible = False
+                exportAsPartButton.isVisible = False
+                weightInput.isVisible = weightTableInput.isVisible = False
 
         except BaseException:
             logging.getLogger("{INTERNAL_ID}.UI.GeneralConfigTab").error("Failed:\n{}".format(traceback.format_exc()))
@@ -207,16 +212,27 @@ class GeneralConfigTab:
             commandInput = args.input
             if commandInput.id == "exportModeDropdown":
                 modeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
+                autoCalcWeightButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("autoCalcWeightButton")
+                weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
+                exportAsPartButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("exportAsPartButton")
                 if modeDropdown.selectedItem.index == self.previousSelectedModeDropdownIndex:
                     return
 
                 if modeDropdown.selectedItem.index == 0:
                     self.jointConfigTab.isVisible = True
                     self.gamepieceConfigTab.isVisible = False
+
+                    autoCalcWeightButton.isVisible = True
+                    weightTable.isVisible = True
+                    exportAsPartButton.isVisible = True
                 else:
                     assert modeDropdown.selectedItem.index == 1
                     self.jointConfigTab.isVisible = False
                     self.gamepieceConfigTab.isVisible = True
+
+                    autoCalcWeightButton.isVisible = False
+                    weightTable.isVisible = False
+                    exportAsPartButton.isVisible = False
 
                 self.previousSelectedModeDropdownIndex = modeDropdown.selectedItem.index
 

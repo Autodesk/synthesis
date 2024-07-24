@@ -164,6 +164,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
             if not exporterOptions.exportMode == ExportMode.ROBOT:
                 jointConfigTab.isVisible = False
+                # INPUTS_ROOT.itemById("weightTable").isVisible = False
 
             # Transition: AARD-1685
             # There remains some overlap between adding joints as wheels.
