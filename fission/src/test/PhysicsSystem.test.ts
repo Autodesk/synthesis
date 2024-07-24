@@ -91,7 +91,9 @@ describe("Mirabuf Physics Loading", () => {
         const assembly = await MirabufCachingService.CacheRemote(
             "/api/mira/Robots/Team 2471 (2018)_v7.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
+        ).then(x => {
+            return MirabufCachingService.Get(x!.id, MiraType.ROBOT)
+        })
 
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()

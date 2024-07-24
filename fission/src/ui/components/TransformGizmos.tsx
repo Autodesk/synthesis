@@ -6,6 +6,8 @@ import { ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeCon
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { RigidNodeReadOnly } from "@/mirabuf/MirabufParser"
 
+export type GizmoTransformMode = "translate" | "rotate" | "scale"
+
 class TransformGizmos {
     private _mesh: THREE.Mesh
     private _gizmos: TransformControls[] = []
@@ -38,7 +40,7 @@ class TransformGizmos {
      *
      * @param mode The type of gizmo to create
      */
-    public CreateGizmo(mode: "translate" | "rotate" | "scale", size: number = 1.5) {
+    public CreateGizmo(mode: GizmoTransformMode, size: number = 1.5) {
         const gizmo = World.SceneRenderer.AddTransformGizmo(this._mesh, mode, size)
         this._gizmos.push(gizmo)
     }
@@ -49,6 +51,16 @@ class TransformGizmos {
     public RemoveGizmos() {
         World.SceneRenderer.RemoveTransformGizmos(this._mesh)
         World.SceneRenderer.RemoveObject(this._mesh)
+    }
+
+    /**
+     * Removes active gizmos and creates a new one
+     *
+     * @param mode The type of gizmo to create
+     */
+    public SwitchGizmo(mode: GizmoTransformMode, size: number = 1.5) {
+        World.SceneRenderer.RemoveTransformGizmos(this._mesh)
+        this.CreateGizmo(mode, size)
     }
 
     /**

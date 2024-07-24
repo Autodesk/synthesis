@@ -2,16 +2,17 @@ import React, { useEffect, useState } from "react"
 import { BsCodeSquare } from "react-icons/bs"
 import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
-import { GrFormClose } from "react-icons/gr"
+import { GrConnect, GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
+import { IoBasketball, IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
 import logo from "@/assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "@/ui/ToastContext"
 import { Random } from "@/util/Random"
+import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import World from "@/systems/World"
@@ -145,6 +146,7 @@ const MainHUD: React.FC = () => {
                             }
                         }}
                     />
+                    <MainHUDButton value={"WS Viewer"} icon={<GrConnect />} onClick={() => openPanel("ws-view")} />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
@@ -172,7 +174,30 @@ const MainHUD: React.FC = () => {
                         icon={<GiSteeringWheel />}
                         onClick={() => MirabufCachingService.RemoveAll()}
                     />
+                    <MainHUDButton
+                        value={"Edit Scoring Zones"}
+                        icon={<IoBasketball />}
+                        onClick={() => {
+                            openPanel("scoring-zones")
+                        }}
+                    />
                     <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
+                    <MainHUDButton
+                        value={"WS Test"}
+                        icon={<FaCar />}
+                        onClick={() => {
+                            // worker?.postMessage({ command: 'connect' });
+                            const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
+                                x => x[1] instanceof MirabufSceneObject
+                            )
+                            console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
+                            if (miraObjs.length > 0) {
+                                const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+                                const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+                                simLayer?.SetBrain(new WPILibBrain(mechanism))
+                            }
+                        }}
+                    />
                     <MainHUDButton
                         value={"Toasts"}
                         icon={<FaCar />}

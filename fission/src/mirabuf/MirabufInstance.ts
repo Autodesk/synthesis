@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { mirabuf } from "../proto/mirabuf"
 import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
 
 type MirabufPartInstanceGUID = string
 
@@ -107,7 +108,7 @@ class MirabufInstance {
         return this._batches
     }
 
-    public constructor(parser: MirabufParser, materialStyle?: MaterialStyle) {
+    public constructor(parser: MirabufParser, materialStyle?: MaterialStyle, progressHandle?: ProgressHandle) {
         if (parser.errors.some(x => x[0] >= ParseErrorSeverity.Unimportable)) {
             throw new Error("Parser has significant errors...")
         }
@@ -117,7 +118,10 @@ class MirabufInstance {
         this._meshes = new Map()
         this._batches = new Array<THREE.BatchedMesh>()
 
+        progressHandle?.Update("Loading materials...", 0.4)
         this.LoadMaterials(materialStyle ?? MaterialStyle.Regular)
+
+        progressHandle?.Update("Creating meshes...", 0.5)
         this.CreateMeshes()
     }
 
@@ -236,8 +240,6 @@ class MirabufInstance {
             const batchedMesh = new THREE.BatchedMesh(count.maxInstances, count.maxVertices, count.maxIndices)
             this._batches.push(batchedMesh)
 
-            console.debug(`${count.maxInstances}, ${count.maxVertices}, ${count.maxIndices}`)
-
             batchedMesh.material = material
             batchedMesh.castShadow = true
             batchedMesh.receiveShadow = true
@@ -252,8 +254,6 @@ class MirabufInstance {
                     const geoId = batchedMesh.addGeometry(geometry)
 
                     batchedMesh.setMatrixAt(geoId, mat)
-
-                    console.debug(geoId)
 
                     let bodies = this._meshes.get(instance.info!.GUID!)
                     if (!bodies) {
