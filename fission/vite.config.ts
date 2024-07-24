@@ -27,9 +27,9 @@ const plugins = [
     })
 ]
 
-if (useSsl) [
+if (useSsl) {
     plugins.push(basicSsl())
-]
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({

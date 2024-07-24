@@ -35,6 +35,8 @@ class ScreenInteractionHandler {
     private _secondaryTouch: number | undefined
     private _primaryTouchPosition: [number, number] | undefined
     private _secondaryTouchPosition: [number, number] | undefined
+    private _movementThresholdMet: boolean = false
+    private _doubleTapInteraction: boolean = false
 
     private _pointerMove: (ev: PointerEvent) => void
     private _wheelMove: (ev: WheelEvent) => void
@@ -48,6 +50,7 @@ class ScreenInteractionHandler {
     public interactionStart: ((i: InteractionStart) => void) | undefined
     public interactionEnd: ((i: InteractionEnd) => void) | undefined
     public interactionMove: ((i: InteractionMove) => void) | undefined
+    public contextMenu: ((i: InteractionEnd) => void) | undefined
 
     public constructor(domElement: HTMLElement) {
         this._domElement = domElement
@@ -91,12 +94,32 @@ class ScreenInteractionHandler {
             this.interactionMove({ interactionType: e.button as InteractionType, movement: [e.movementX, e.movementY] })
         } else {
             if (e.pointerId == this._primaryTouch) {
+
+                if (!this._movementThresholdMet) {
+                    const delta = [Math.abs(e.clientX - this._primaryTouchPosition![0]), Math.abs(e.clientY - this._primaryTouchPosition![1])]
+                    if (delta[0] > e.width || delta[1] > e.height) {
+                        this._movementThresholdMet = true
+                    } else {
+                        return
+                    }
+                }
+
                 this._primaryTouchPosition = [e.clientX, e.clientY]
                 this.interactionMove({
                     interactionType: PRIMARY_MOUSE_INTERACTION,
                     movement: [e.movementX, e.movementY]
                 })
             } else if (e.pointerId == this._secondaryTouch) {
+                
+                if (!this._movementThresholdMet) {
+                    const delta = [Math.abs(e.clientX - this._secondaryTouchPosition![0]), Math.abs(e.clientY - this._secondaryTouchPosition![1])]
+                    if (delta[0] > e.width || delta[1] > e.height) {
+                        this._movementThresholdMet = true
+                    } else {
+                        return
+                    }
+                }
+
                 this._secondaryTouchPosition = [e.clientX, e.clientY]
                 if (this._primaryTouchPosition) { // This shouldn't happen, but you never know
                     const scalingDir = (new THREE.Vector2(this._secondaryTouchPosition[0], this._secondaryTouchPosition[1])).sub(
@@ -135,6 +158,7 @@ class ScreenInteractionHandler {
             } else if (!this._secondaryTouch) {
                 this._secondaryTouch = e.pointerId
                 this._secondaryTouchPosition = [e.clientX, e.clientY]
+                this._doubleTapInteraction = true
             }
         } else {
             if (e.button >= 0 && e.button <= 2) {
@@ -153,7 +177,11 @@ class ScreenInteractionHandler {
                 this._primaryTouch = this._secondaryTouch
                 this._secondaryTouch = undefined
                 if (!this._primaryTouch) {
-                    this.interactionEnd({ interactionType: PRIMARY_MOUSE_INTERACTION, position: [e.clientX, e.clientY] })
+                    const end: InteractionEnd = { interactionType: PRIMARY_MOUSE_INTERACTION, position: [e.clientX, e.clientY] }
+                    this.interactionEnd(end)
+                    if (this._doubleTapInteraction && this.contextMenu) {
+                        this.contextMenu(end)
+                    }
                 }
                 // Reset continuous tracking
             } else if (e.pointerId == this._secondaryTouch) {
