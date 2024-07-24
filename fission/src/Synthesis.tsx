@@ -67,7 +67,7 @@ import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
-import SequentialJointsPanel from "./ui/panels/SequentialJointsPanel.tsx"
+import SequentialBehaviorsPanel from "./ui/panels/SequentialBehaviorsPanel.tsx"
 
 const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
 
@@ -275,7 +275,7 @@ const initialPanels: ReactElement[] = [
         sidePadding={8}
     />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
-    <SequentialJointsPanel key="sequential-joints" panelId="sequential-joints" />,
+    <SequentialBehaviorsPanel key="sequential-joints" panelId="sequential-joints" />,
 ]
 
 export default Synthesis
