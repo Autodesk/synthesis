@@ -5,8 +5,11 @@ import traceback
 import uuid
 from configparser import ConfigParser
 
+from .Logging import getLogger
 from .strings import INTERNAL_ID
 from .Types.OString import OString
+
+logger = getLogger()
 
 try:
     config = ConfigParser()
@@ -38,11 +41,11 @@ try:
             CID = uuid.uuid4()
             config.set("analytics", "c_id", str(CID))  # default values - add exception handling
 except:
-    logging.getLogger(f"{INTERNAL_ID}.import_manager").error("Failed\n{}".format(traceback.format_exc()))
+    logger.error(f"Failed\n{traceback.format_exc()}")
 
 
 def setAnalytics(enabled: bool):
-    logging.getLogger(f"{INTERNAL_ID}.configure.setAnalytics").info(f"First run , Analytics set to {enabled}")
+    logger.info(f"First run , Analytics set to {enabled}")
     ANALYTICS = enabled
     ans = "yes" if ANALYTICS else "no"
     write_configuration("analytics", "analytics", ans)

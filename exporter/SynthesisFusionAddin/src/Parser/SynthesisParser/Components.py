@@ -9,7 +9,7 @@ import adsk.fusion
 
 from proto.proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
 
-from ...Analyzer.timer import TimeThis
+from ...Logging import logFailure, timed
 from ..ExporterOptions import ExporterOptions, ExportMode
 from . import PhysicalProperties
 from .PDMessage import PDMessage
@@ -18,7 +18,6 @@ from .Utilities import *
 # TODO: Impelement Material overrides
 
 
-@TimeThis
 def _MapAllComponents(
     design: adsk.fusion.Design,
     options: ExporterOptions,
@@ -74,7 +73,6 @@ def _MapAllComponents(
             processBody(body)
 
 
-@TimeThis
 def _ParseComponentRoot(
     component: adsk.fusion.Component,
     progressDialog: PDMessage,
@@ -183,49 +181,45 @@ def GetMatrixWorld(occurrence):
     return matrix
 
 
+@logFailure
 def _ParseBRep(
     body: adsk.fusion.BRepBody,
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
 ) -> any:
-    try:
-        meshManager = body.meshManager
-        calc = meshManager.createMeshCalculator()
-        calc.setQuality(options.visualQuality)
-        mesh = calc.calculate()
+    meshManager = body.meshManager
+    calc = meshManager.createMeshCalculator()
+    calc.setQuality(options.visualQuality)
+    mesh = calc.calculate()
 
-        fill_info(trimesh, body)
-        trimesh.has_volume = True
+    fill_info(trimesh, body)
+    trimesh.has_volume = True
 
-        plainmesh_out = trimesh.mesh
+    plainmesh_out = trimesh.mesh
 
-        plainmesh_out.verts.extend(mesh.nodeCoordinatesAsFloat)
-        plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
-        plainmesh_out.indices.extend(mesh.nodeIndices)
-        plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
-    except:
-        logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error("Failed:\n{}".format(traceback.format_exc()))
+    plainmesh_out.verts.extend(mesh.nodeCoordinatesAsFloat)
+    plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
+    plainmesh_out.indices.extend(mesh.nodeIndices)
+    plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
 
 
+@logFailure
 def _ParseMesh(
     meshBody: adsk.fusion.MeshBody,
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
 ) -> any:
-    try:
-        mesh = meshBody.displayMesh
+    mesh = meshBody.displayMesh
 
-        fill_info(trimesh, meshBody)
-        trimesh.has_volume = True
+    fill_info(trimesh, meshBody)
+    trimesh.has_volume = True
 
-        plainmesh_out = trimesh.mesh
+    plainmesh_out = trimesh.mesh
 
-        plainmesh_out.verts.extend(mesh.nodeCoordinatesAsFloat)
-        plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
-        plainmesh_out.indices.extend(mesh.nodeIndices)
-        plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
-    except:
-        logging.getLogger("{INTERNAL_ID}.Parser.BrepBody").error("Failed:\n{}".format(traceback.format_exc()))
+    plainmesh_out.verts.extend(mesh.nodeCoordinatesAsFloat)
+    plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
+    plainmesh_out.indices.extend(mesh.nodeIndices)
+    plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
 
 
 def _MapRigidGroups(rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints) -> None:
