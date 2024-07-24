@@ -10,6 +10,7 @@ import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "@/systems/input/InputSystem"
 import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import ScreenInteractionHandler from "./ScreenInteractionHandler"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import {} from "@/ui/components/SceneOverlayEvents"
@@ -33,6 +34,8 @@ class SceneRenderer extends WorldSystem {
 
     private _cameraControls: CameraControls
     private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
+
+    private _screenInteractionHandler: ScreenInteractionHandler
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -132,14 +135,16 @@ class SceneRenderer extends WorldSystem {
         this._composer.addPass(this._antiAliasPass)
 
         // Orbit controls
-        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement);
+        this._screenInteractionHandler = new ScreenInteractionHandler(this._renderer.domElement)
+
+        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler);
     }
 
     public SetCameraControls(controlsType: CameraControlsType) {
         this._cameraControls.dispose()
         switch (controlsType) {
             case "Orbit":
-                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._renderer.domElement)
+                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
                 break
         }
     }
@@ -149,6 +154,7 @@ class SceneRenderer extends WorldSystem {
         // No idea why height would be zero, but just incase.
         this._mainCamera.aspect = window.innerWidth / window.innerHeight
         this._mainCamera.updateProjectionMatrix()
+        console.debug("Update")
     }
 
     public Update(deltaT: number): void {
@@ -178,6 +184,7 @@ class SceneRenderer extends WorldSystem {
 
     public Destroy(): void {
         this.RemoveAllSceneObjects()
+        this._screenInteractionHandler.dispose()
     }
 
     public RegisterSceneObject<T extends SceneObject>(obj: T): number {

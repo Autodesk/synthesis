@@ -4,6 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
+    "host": "vite --open --host",
     "dev": "vite --open",
     "build": "tsc && vite build",
     "build:prod": "tsc && vite build --base=/fission/ --outDir dist/prod",
@@ -51,6 +52,7 @@
     "@types/three": "^0.160.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vitejs/plugin-react": "^4.0.3",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.14",
