@@ -54,7 +54,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             openLocation="center"
-            name={"The Poker"}
+            name={"Debug Panel"}
             icon={<FaScrewdriverWrench />}
             panelId={panelId}
             acceptEnabled={false}
