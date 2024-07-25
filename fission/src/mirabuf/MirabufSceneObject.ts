@@ -86,6 +86,10 @@ class MirabufSceneObject extends SceneObject {
         return this._mirabufInstance.parser.rootNode
     }
 
+    public get brain() {
+        return this._brain
+    }
+
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
         super()
 
@@ -155,7 +159,7 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Update(): void {
-        if (InputSystem.currentModifierState.ctrl && InputSystem.currentModifierState.shift && this._ejectable) {
+        if (InputSystem.getInput("eject", this._brain?.brainIndex ?? -1)) {
             this.Eject()
         }
 
@@ -351,8 +355,12 @@ class MirabufSceneObject extends SceneObject {
         this._scoringZones = []
 
         if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
-            for (let i = 0; i < this._fieldPreferences.scoringZones.length;  i++) {
-                const newZone = new ScoringZoneSceneObject(this, i, render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones"))
+            for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
+                const newZone = new ScoringZoneSceneObject(
+                    this,
+                    i,
+                    render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
+                )
                 this._scoringZones.push(newZone)
                 World.SceneRenderer.RegisterSceneObject(newZone)
             }

@@ -53,7 +53,7 @@ class IntakeSensorSceneObject extends SceneObject {
             World.SceneRenderer.scene.add(this._mesh)
 
             this._collision = (event: OnContactPersistedEvent) => {
-                if (InputSystem.isKeyPressed("KeyQ")) {
+                if (InputSystem.getInput("intake", this._parentAssembly.brain?.brainIndex ?? -1)) {
                     if (this._joltBodyId && !World.PhysicsSystem.isPaused) {
                         const body1 = event.message.body1
                         const body2 = event.message.body2
