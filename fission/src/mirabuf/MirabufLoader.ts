@@ -1,5 +1,6 @@
 import { Data, downloadData } from "@/aps/APSDataManagement"
 import { mirabuf } from "@/proto/mirabuf"
+import World from "@/systems/World"
 import Pako from "pako"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
@@ -248,9 +249,11 @@ class MirabufCachingService {
             const dir = miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
             await dir.removeEntry(id)
 
+            World.AnalyticsSystem.Event("Removed mirabuf from cache", { key: key, type: miraType == MiraType.ROBOT ? "robot" : "field" })
             return true
         } catch (e) {
             console.error(`Failed to remove\n${e}`)
+            World.AnalyticsSystem.Exception("Failed to remove mirabuf from cache")
             return false
         }
     }
@@ -304,9 +307,11 @@ class MirabufCachingService {
             map[key] = info
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
 
+            World.AnalyticsSystem.Event("Cache Load", { name: name ?? '-', key: key, type: miraType == MiraType.ROBOT ? "robot" : "field" })
             return info
         } catch (e) {
             console.error("Failed to cache mira " + e)
+            World.AnalyticsSystem.Exception("Failed to store in cache")
             return undefined
         }
     }

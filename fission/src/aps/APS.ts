@@ -1,3 +1,4 @@
+import World from "@/systems/World"
 import { MainHUD_AddToast } from "@/ui/components/MainHUD"
 import { Mutex } from "async-mutex"
 
@@ -49,6 +50,7 @@ class APS {
         window.localStorage.removeItem(APS_AUTH_KEY)
         if (a) {
             window.localStorage.setItem(APS_AUTH_KEY, JSON.stringify(a))
+            World.AnalyticsSystem.Event('APS Login')
         }
         this.userInfo = undefined
     }
@@ -191,6 +193,7 @@ class APS {
                 window.open(url, "_self")
             } catch (e) {
                 console.error(e)
+                World.AnalyticsSystem.Exception("APS Login Failure")
                 MainHUD_AddToast("error", "Error signing in.", "Please try again.")
             }
         })
@@ -239,6 +242,7 @@ class APS {
                 }
                 return true
             } catch (e) {
+                World.AnalyticsSystem.Exception("APS Login Failure")
                 MainHUD_AddToast("error", "Error signing in.", "Please try again.")
                 this.auth = undefined
                 await this.requestAuthCode()
@@ -257,6 +261,7 @@ class APS {
             const res = await fetch(`${ENDPOINT_SYNTHESIS_CODE}?code=${code}`)
             const json = await res.json()
             if (!res.ok) {
+                World.AnalyticsSystem.Exception("APS Login Failure")
                 MainHUD_AddToast("error", "Error signing in.", json.userMessage)
                 this.auth = undefined
                 return
@@ -281,6 +286,7 @@ class APS {
         }
         if (retry_login) {
             this.auth = undefined
+            World.AnalyticsSystem.Exception("APS Login Failure")
             MainHUD_AddToast("error", "Error signing in.", "Please try again.")
         }
     }
@@ -300,6 +306,7 @@ class APS {
             })
             const json = await res.json()
             if (!res.ok) {
+                World.AnalyticsSystem.Exception("APS Failure: User Info")
                 MainHUD_AddToast("error", "Error fetching user data.", json.userMessage)
                 this.auth = undefined
                 await this.requestAuthCode()
@@ -315,6 +322,7 @@ class APS {
             this.userInfo = info
         } catch (e) {
             console.error(e)
+            World.AnalyticsSystem.Exception("APS Login Failure: User Info")
             MainHUD_AddToast("error", "Error signing in.", "Please try again.")
             this.auth = undefined
         }
@@ -330,6 +338,7 @@ class APS {
             return json["challenge"]
         } catch (e) {
             console.error(e)
+            World.AnalyticsSystem.Exception("APS Login Failure: Code Challenge")
             MainHUD_AddToast("error", "Error signing in.", "Please try again.")
         }
     }
