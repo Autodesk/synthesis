@@ -556,7 +556,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
         )
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
-        aps_input = apsSettings.children
 
         # clear all selections before instantiating handlers.
         gm.ui.activeSelections.clear()
