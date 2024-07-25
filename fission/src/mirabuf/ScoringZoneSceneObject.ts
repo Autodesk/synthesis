@@ -175,8 +175,7 @@ class ScoringZoneSceneObject extends SceneObject {
                     this._mesh.material = ScoringZoneSceneObject.transparentMaterial
                 }
 
-            // console.log(`gp: ${this._gpContacted.length} prev: ${this._prevGP.length}`)
-
+            // If persistent points, update points based on how many gamepieces in zone
             if (this._prefs.persistentPoints)
                 if (this._gpContacted.length != this._prevGP.length) {
                     if (this._prefs.alliance == "red") {
@@ -212,6 +211,7 @@ class ScoringZoneSceneObject extends SceneObject {
     private ZoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece && this._prefs) {
+            // If persistent, Update() will handle points
             if (this._prefs.persistentPoints) {
                 this._gpContacted.push(gpID)
             } else {
@@ -220,28 +220,29 @@ class ScoringZoneSceneObject extends SceneObject {
                 } else {
                     SimulationSystem.blueScore += this._prefs.points
                 }
+                const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
+                event.Dispatch()
             }                
-
-            const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
-            event.Dispatch()
         }
     }
 
+    // Private gamepiece removal called anytime collision removed from zone. Score update in Update()
     private ZoneCollisionRemoved(gpID: Jolt.BodyID) {
-        console.debug(`Scoring zone ${gpID.GetIndex()} removed from ${this._joltBodyId?.GetIndex()}`)
-
-        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
-        if (associate?.isGamePiece) {
-            const temp = this._gpContacted.filter(x => {
-                return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
-            })
-            if (this._gpContacted != temp) this._gpContacted = Object.assign([], temp)
+        if (this._prefs?.persistentPoints) {
+            const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+            if (associate?.isGamePiece) {
+                const temp = this._gpContacted.filter(x => {
+                    return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
+                })
+                if (this._gpContacted != temp) this._gpContacted = Object.assign([], temp)
+            }
         }
     }
 
+    // Public gamepiece removal called anytime EjectableSceneObject created in case gamepiece was in persistent zone
+    // Score update in Update()
     public static RemoveGamepiece(zone: ScoringZoneSceneObject, gpID: Jolt.BodyID) {
         if (zone._prefs && zone._prefs.persistentPoints) {
-            console.debug(`Removing ${gpID.GetIndex()} from ${zone.id}`)
             const temp = zone._gpContacted.filter(x => {
                 return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
             })
