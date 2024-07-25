@@ -76,8 +76,6 @@ class GamepieceConfigTab:
             0,
             2,
         )
-        gamepieceTabInputs.addTextBoxCommandInput("gamepieceTabBlankSpacer", "", "", 1, True)
-
         gamepieceSelectCancelButton = gamepieceTabInputs.addBoolValueInput(
             "gamepieceSelectCancelButton", "Cancel", False
         )
@@ -97,6 +95,8 @@ class GamepieceConfigTab:
         self.gamepieceTable.addToolbarCommandInput(gamepieceAddButton)
         self.gamepieceTable.addToolbarCommandInput(gamepieceRemoveButton)
         self.gamepieceTable.addToolbarCommandInput(gamepieceSelectCancelButton)
+
+        gamepieceTabInputs.addTextBoxCommandInput("gamepieceTabSpacer", "", "", 1, True)
 
         self.reset()
 
@@ -292,11 +292,13 @@ class GamepieceConfigTab:
             gamepieceSelection: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById(
                 "gamepieceSelect"
             )
+            spacer: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById("gamepieceTabSpacer")
 
             gamepieceSelection.isVisible = gamepieceSelection.isEnabled = True
             gamepieceSelection.clearSelection()
             gamepieceAddButton.isEnabled = gamepieceRemoveButton.isEnabled = False
             gamepieceSelectCancelButton.isVisible = gamepieceSelectCancelButton.isEnabled = True
+            spacer.isVisible = False
 
         elif commandInput.id == "gamepieceRemoveButton":
             gamepieceAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("gamepieceAddButton")
@@ -320,10 +322,12 @@ class GamepieceConfigTab:
             gamepieceSelection: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById(
                 "gamepieceSelect"
             )
+            spacer: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById("gamepieceTabSpacer")
 
             gamepieceSelection.isEnabled = gamepieceSelection.isVisible = False
             gamepieceSelectCancelButton.isEnabled = gamepieceSelectCancelButton.isVisible = False
             gamepieceAddButton.isEnabled = gamepieceRemoveButton.isEnabled = True
+            spacer.isVisible = True
 
     @logFailure
     def handleSelectionEvent(self, args: adsk.core.SelectionEventArgs, selectedOcc: adsk.fusion.Occurrence) -> None:
@@ -334,7 +338,7 @@ class GamepieceConfigTab:
             if not self.addGamepiece(occ):
                 ui = adsk.core.Application.get().userInterface
                 result = ui.messageBox(
-                    "You have already selected this Gamepiece.\n" "Would you like to remove it?",
+                    "You have already selected this Gamepiece.\nWould you like to remove it?",
                     "Synthesis: Remove Gamepiece Confirmation",
                     adsk.core.MessageBoxButtonTypes.YesNoButtonType,
                     adsk.core.MessageBoxIconTypes.QuestionIconType,
@@ -356,8 +360,10 @@ class GamepieceConfigTab:
         gamepieceSelection: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById(
             "gamepieceSelect"
         )
+        spacer: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById("gamepieceTabSpacer")
 
         gamepieceRemoveButton.isEnabled = self.gamepieceTable.rowCount > 1
         if not gamepieceSelection.isEnabled:
             gamepieceAddButton.isEnabled = True
             gamepieceSelectCancelButton.isVisible = gamepieceSelectCancelButton.isEnabled = False
+            spacer.isVisible = True
