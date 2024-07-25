@@ -264,13 +264,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         #     enabled=True,
         # )
 
-        # getAuth()
-        # user_info = getUserInfo()
-        # apsSettings = INPUTS_ROOT.addTabCommandInput(
-        #     "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-        # )
-        # apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
-        # aps_input = apsSettings.children
+        getAuth()
+        user_info = getUserInfo()
+        apsSettings = INPUTS_ROOT.addTabCommandInput(
+            "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
+        )
+        apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 
         # clear all selections before instantiating handlers.
         gm.ui.activeSelections.clear()
