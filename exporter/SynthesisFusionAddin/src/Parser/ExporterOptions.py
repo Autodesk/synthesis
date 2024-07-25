@@ -15,73 +15,17 @@ from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
 from ..Logging import logFailure, timed
 from ..strings import INTERNAL_ID
-from ..TypesTmp import KG
-
-# Not 100% sure what this is for - Brandon
-JointParentType = Enum("JointParentType", ["ROOT", "END"])
-
-WheelType = Enum("WheelType", ["STANDARD", "OMNI", "MECANUM"])
-SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
-ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
-PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
-ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
-
-
-@dataclass
-class Wheel:
-    jointToken: str = field(default=None)
-    wheelType: WheelType = field(default=None)
-    signalType: SignalType = field(default=None)
-
-
-@dataclass
-class Joint:
-    jointToken: str = field(default=None)
-    parent: JointParentType = field(default=None)
-    signalType: SignalType = field(default=None)
-    speed: float = field(default=None)
-    force: float = field(default=None)
-
-    # Transition: AARD-1865
-    # Should consider changing how the parser handles wheels and joints as there is overlap between
-    # `Joint` and `Wheel` that should be avoided
-    # This overlap also presents itself in 'ConfigCommand.py' and 'JointConfigTab.py'
-    isWheel: bool = field(default=False)
-
-
-@dataclass
-class Gamepiece:
-    occurrenceToken: str = field(default=None)
-    weight: KG = field(default=None)
-    friction: float = field(default=None)
-
-
-class PhysicalDepth(Enum):
-    # No Physical Properties are generated
-    NoPhysical = 0
-
-    # Only Body Physical Objects are generated
-    Body = 1
-
-    # Only Occurrence that contain Bodies and Bodies have Physical Properties
-    SurfaceOccurrence = 2
-
-    # Every Single Occurrence has Physical Properties even if empty
-    AllOccurrence = 3
-
-
-class ModelHierarchy(Enum):
-    # Model exactly as it is shown in Fusion in the model view tree
-    FusionAssembly = 0
-
-    # Flattened Assembly with all bodies as children of the root object
-    FlatAssembly = 1
-
-    # A Model represented with parented objects that are part of a jointed tree
-    PhysicalAssembly = 2
-
-    # Generates the root assembly as a single mesh and stores the associated data
-    SingleMesh = 3
+from ..Types import (
+    KG,
+    ExportLocation,
+    ExportMode,
+    Gamepiece,
+    Joint,
+    ModelHierarchy,
+    PhysicalDepth,
+    PreferredUnits,
+    Wheel,
+)
 
 
 @dataclass

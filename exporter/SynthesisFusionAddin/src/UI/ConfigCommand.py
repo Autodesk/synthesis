@@ -12,9 +12,11 @@ import adsk.fusion
 from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
 from ..general_imports import *
 from ..Logging import getLogger, logFailure
-from ..Parser.ExporterOptions import ExporterOptions, ExportLocation, ExportMode
+from ..Parser.ExporterOptions import ExporterOptions
 from ..Parser.SynthesisParser.Parser import Parser
-from . import FileDialogConfig, Helper
+from ..Parser.SynthesisParser.Utilities import guid_occurrence
+from ..Types import ExportLocation, ExportMode
+from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
 from .Configuration.SerialCommand import SerialCommand
 from .GamepieceConfigTab import GamepieceConfigTab
 from .GeneralConfigTab import GeneralConfigTab

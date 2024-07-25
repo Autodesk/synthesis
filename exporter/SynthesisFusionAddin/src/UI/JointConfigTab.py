@@ -6,13 +6,7 @@ import adsk.fusion
 
 from ..general_imports import INTERNAL_ID
 from ..Logging import logFailure
-from ..Parser.ExporterOptions import (
-    Joint,
-    JointParentType,
-    SignalType,
-    Wheel,
-    WheelType,
-)
+from ..Types import Joint, JointParentType, SignalType, Wheel, WheelType
 from . import IconPaths
 from .CreateCommandInputsHelper import (
     createBooleanInput,
