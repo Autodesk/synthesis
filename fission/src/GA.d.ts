@@ -1,7 +1,6 @@
 declare module "@haensl/google-analytics" {
-
-    type GaEvent = { name: string, params: { [key: string]: (string | number) } }
-    type GaException = { description: string, fatal: boolean }
+    type GaEvent = { name: string; params: { [key: string]: string | number } }
+    type GaException = { description: string; fatal: boolean }
 
     function init(params: { [key: string]: unknown }): void
     function consent(granted: boolean): void

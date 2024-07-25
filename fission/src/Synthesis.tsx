@@ -85,7 +85,7 @@ function Synthesis() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
-    const [ consentPopupDisable, setConsentPopupDisable ] = useState<boolean>(true)
+    const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
     const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
@@ -186,10 +186,11 @@ function Synthesis() {
                             <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
 
-                            { !consentPopupDisable 
-                                ? <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} /> 
-                                : <></>
-                            }
+                            {!consentPopupDisable ? (
+                                <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
+                            ) : (
+                                <></>
+                            )}
                         </ToastProvider>
                     </PanelControlProvider>
                 </ModalControlProvider>

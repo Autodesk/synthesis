@@ -14,7 +14,7 @@ class World {
     private static _physicsSystem: PhysicsSystem
     private static _simulationSystem: SimulationSystem
     private static _inputSystem: InputSystem
-    private static _analyticsSystem: AnalyticsSystem
+    private static _analyticsSystem: AnalyticsSystem | undefined
 
     public static get isAlive() {
         return World._isAlive
@@ -46,7 +46,11 @@ class World {
         World._physicsSystem = new PhysicsSystem()
         World._simulationSystem = new SimulationSystem()
         World._inputSystem = new InputSystem()
-        World._analyticsSystem = new AnalyticsSystem()
+        try {
+            World._analyticsSystem = new AnalyticsSystem()
+        } catch (_) {
+            World._analyticsSystem = undefined
+        }
     }
 
     public static DestroyWorld() {
@@ -58,7 +62,7 @@ class World {
         World._sceneRenderer.Destroy()
         World._simulationSystem.Destroy()
         World._inputSystem.Destroy()
-        World._analyticsSystem.Destroy()
+        World._analyticsSystem?.Destroy()
     }
 
     public static UpdateWorld() {
@@ -67,7 +71,7 @@ class World {
         World._physicsSystem.Update(deltaT)
         World._inputSystem.Update(deltaT)
         World._sceneRenderer.Update(deltaT)
-        World._analyticsSystem.Update(deltaT)
+        World._analyticsSystem?.Update(deltaT)
     }
 }
 

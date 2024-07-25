@@ -1,10 +1,9 @@
-import { consent, event, exception, init } from '@haensl/google-analytics'
+import { consent, event, exception, init } from "@haensl/google-analytics"
 
-import WorldSystem from "../WorldSystem";
-import PreferencesSystem from '../preferences/PreferencesSystem';
+import WorldSystem from "../WorldSystem"
+import PreferencesSystem from "../preferences/PreferencesSystem"
 
 class AnalyticsSystem extends WorldSystem {
-
     public constructor() {
         super()
 
@@ -12,13 +11,15 @@ class AnalyticsSystem extends WorldSystem {
             measurementId: "G-6XNCRD7QNC",
             debug: import.meta.env.DEV,
             sendPageViews: true,
-            trackingConsent: PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")
+            trackingConsent: PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics"),
         })
 
-        PreferencesSystem.addEventListener(e => (e.prefName == "ReportAnalytics") && this.ConsentUpdate(e.prefValue as boolean))
+        PreferencesSystem.addEventListener(
+            e => e.prefName == "ReportAnalytics" && this.ConsentUpdate(e.prefValue as boolean)
+        )
     }
 
-    public Event(name: string, params?: { [key: string]: (string | number) }) {
+    public Event(name: string, params?: { [key: string]: string | number }) {
         event({ name: name, params: params ?? {} })
     }
 
@@ -30,9 +31,8 @@ class AnalyticsSystem extends WorldSystem {
         consent(granted)
     }
 
-    public Update(_: number): void { }
-    public Destroy(): void { }
-
+    public Update(_: number): void {}
+    public Destroy(): void {}
 }
 
 export default AnalyticsSystem
