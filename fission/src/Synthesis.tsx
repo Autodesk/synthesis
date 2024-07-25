@@ -1,9 +1,4 @@
 import Scene from "@/components/Scene.tsx"
-import MirabufSceneObject from "./mirabuf/MirabufSceneObject.ts"
-import MirabufCachingService, { MiraType } from "./mirabuf/MirabufLoader.ts"
-import { mirabuf } from "./proto/mirabuf"
-import MirabufParser, { ParseErrorSeverity } from "./mirabuf/MirabufParser.ts"
-import MirabufInstance from "./mirabuf/MirabufInstance.ts"
 import { AnimatePresence } from "framer-motion"
 import { ReactElement, useEffect } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
@@ -56,8 +51,8 @@ import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.ts
 import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
+import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import { ProgressHandle } from "./ui/components/ProgressNotificationData.ts"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
@@ -66,8 +61,8 @@ import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
-
-const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
+import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
+import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -101,48 +96,6 @@ function Synthesis() {
         World.InitWorld()
 
         worker.getValue()
-
-        let mira_path = DEFAULT_MIRA_PATH
-
-        if (urlParams.has("mira")) {
-            mira_path = `test_mira/${urlParams.get("mira")!}`
-            console.debug(`Selected Mirabuf File: ${mira_path}`)
-        }
-
-        const setup = async () => {
-            const setupProgress = new ProgressHandle("Spawning Default Robot")
-            setupProgress.Update("Checking cache...", 0.1)
-
-            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
-                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
-                .catch(console.error)
-
-            const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
-
-            setupProgress.Update("Parsing assembly...", 0.5)
-
-            await (async () => {
-                if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-                    return
-                }
-
-                const parser = new MirabufParser(miraAssembly)
-                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
-                    setupProgress.Fail("Failed to parse assembly")
-                    return
-                }
-
-                setupProgress.Update("Creating scene object...", 0.9)
-
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
-                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
-
-                setupProgress.Done()
-            })()
-        }
-
-        setup()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -231,6 +184,8 @@ const initialModals = [
     <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
     <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,
     <DeleteThemeModal key="delete-theme" modalId="delete-theme" />,
+    <NewInputSchemeModal key="new-scheme" modalId="new-scheme" />,
+    <AssignNewSchemeModal key="assign-new-scheme" modalId="assign-new-scheme" />,
     <DeleteAllThemesModal key="delete-all-themes" modalId="delete-all-themes" />,
     <NewThemeModal key="new-theme" modalId="new-theme" />,
     <RCCreateDeviceModal key="create-device" modalId="create-device" />,
@@ -267,6 +222,7 @@ const initialPanels: ReactElement[] = [
     <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
+    <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
 ]
 

@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import time
 import traceback
@@ -10,15 +9,10 @@ import webbrowser
 import adsk.core
 
 from src.APS.APS import CLIENT_ID, auth_path, convertAuthToken, getCodeChallenge
-from src.general_imports import (
-    APP_NAME,
-    DESCRIPTION,
-    INTERNAL_ID,
-    gm,
-    my_addin_path,
-    root_logger,
-)
+from src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, my_addin_path
+from src.Logging import getLogger
 
+logger = getLogger()
 palette = None
 
 
@@ -34,9 +28,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                 callbackUrl = "https://synthesis.autodesk.com/api/aps/exporter/"
                 challenge = getCodeChallenge()
                 if challenge is None:
-                    logging.getLogger(f"{INTERNAL_ID}").error(
-                        "Code challenge is None when attempting to authorize for APS."
-                    )
+                    logger.error("Code challenge is None when attempting to authorize for APS.")
                     return
                 params = {
                     "response_type": "code",
@@ -64,7 +56,7 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                 palette.isVisible = True
         except:
             gm.ui.messageBox("Command executed failed: {}".format(traceback.format_exc()))
-            logging.getLogger(f"{INTERNAL_ID}").error("Command executed failed: {}".format(traceback.format_exc()))
+            logger.error("Command executed failed: {}".format(traceback.format_exc()))
             if palette:
                 palette.deleteMe()
 
@@ -81,7 +73,7 @@ class ShowAPSAuthCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             gm.handlers.append(onExecute)
         except:
             gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-            logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+            logger.error("Failed:\n{}".format(traceback.format_exc()))
             if palette:
                 palette.deleteMe()
 
@@ -106,7 +98,7 @@ class SendInfoCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             gm.handlers.append(onExecute)
         except:
             gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-            logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+            logger.error("Failed:\n{}".format(traceback.format_exc()))
             if palette:
                 palette.deleteMe()
 
@@ -122,7 +114,7 @@ class MyCloseEventHandler(adsk.core.UserInterfaceGeneralEventHandler):
             # gm.ui.messageBox('Close button is clicked')
         except:
             gm.ui.messageBox("Failed:\n{}".format(traceback.format_exc()))
-            logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+            logger.error("Failed:\n{}".format(traceback.format_exc()))
             if palette:
                 palette.deleteMe()
 
@@ -140,6 +132,6 @@ class MyHTMLEventHandler(adsk.core.HTMLEventHandler):
             convertAuthToken(data["code"])
         except:
             gm.ui.messageBox("Failed:{}\n".format(traceback.format_exc()))
-            logging.getLogger(f"{INTERNAL_ID}").error("Failed:{}\n".format(traceback.format_exc()))
+            logger.error("Failed:{}\n".format(traceback.format_exc()))
         if palette:
             palette.deleteMe()
