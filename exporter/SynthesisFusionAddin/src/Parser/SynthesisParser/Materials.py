@@ -18,16 +18,18 @@ OPACITY_RAMPING_CONSTANT = 14.0
 # Update tables as needed for UX and needed materials
 static_friction_coeffs = {
     "Aluminum": 1.1,
-    "Steel": 0.75,
-    "Rubber": 1.0,
-    "Plastic": 0.7,
+    "Steel, Cast": 0.75,
+    "Steel, Mild": 0.75,
+    "Rubber, Nitrile": 1.0,
+    "ABS Plastic": 0.7,
 }
 
 dynamic_friction_coeffs = {
     "Aluminum": 1.1,
-    "Steel": 0.75,
-    "Rubber": 1.0,
-    "Plastic": 0.7,
+    "Steel, Cast": 0.75,
+    "Steel, Mild": 0.75,
+    "Rubber, Nitrile": 1.0,
+    "ABS Plastic": 0.7,
 }
 
 
@@ -37,6 +39,7 @@ def _MapAllPhysicalMaterials(
     options: ExporterOptions,
     progressDialog: PDMessage,
 ) -> None:
+    logging.getLogger(INTERNAL_ID).info("In Materials")
     setDefaultMaterial(materials.physicalMaterials["default"], options)
 
     for material in physicalMaterials:
@@ -76,11 +79,6 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         options (parseoptions): parse options
     """
     string: str = ""
-
-    for prop in fusion_material.materialProperties:
-        string += " " + prop.name + " type: " + str(type(prop)) + "\n\n"
-
-    logging.getLogger(INTERNAL_ID).info(string)
 
     construct_info("", proto_material, fus_object=fusion_material)
 
