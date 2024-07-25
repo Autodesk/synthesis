@@ -19,6 +19,7 @@ import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGro
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
 import { RgbaColor } from "react-colorful"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import { FaBasketball } from "react-icons/fa6"
 
 /**
  * Saves ejector configuration to selected field.
@@ -195,6 +196,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         <Panel
             name="Scoring Zone Config"
             panelId={panelId}
+            icon={<FaBasketball />}
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {
