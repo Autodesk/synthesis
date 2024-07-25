@@ -65,20 +65,23 @@ def getAuth() -> APSAuth | None:
     global APS_AUTH
     if APS_AUTH is not None:
         return APS_AUTH
-    try:
-        curr_time = time.time()
+
+    currTime = time.time()
+    if os.path.exists(auth_path):
         with open(auth_path, "rb") as f:
             p: APSAuth = pickle.load(f)
             logging.getLogger(f"{INTERNAL_ID}").info(msg=f"{json.dumps(p.__dict__)}")
             APS_AUTH = p
-    except Exception as arg:
-        gm.ui.messageBox(f"ERROR:\n{arg}", "Please Sign In")
+    else:
         return None
-    curr_time = int(time.time() * 1000)
-    if curr_time >= APS_AUTH.expires_at:
+
+    currTime = int(time.time() * 1000)
+    if currTime >= APS_AUTH.expires_at:
         refreshAuthToken()
+
     if APS_USER_INFO is None:
         _ = loadUserInfo()
+
     return APS_AUTH
 
 
