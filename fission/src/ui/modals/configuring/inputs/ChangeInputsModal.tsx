@@ -3,21 +3,15 @@ import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaGamepad } from "react-icons/fa6"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import Label, { LabelSize } from "@/ui/components/Label"
-import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
+import LabeledButton, { LabelPlacement } from "../../../components/LabeledButton"
 import InputSystem, { AxisInput, ButtonInput, ModifierState, EmptyModifierState } from "@/systems/input/InputSystem"
 import Dropdown from "@/ui/components/Dropdown"
 import Checkbox from "@/ui/components/Checkbox"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
-import { Box, Divider, styled } from "@mui/material"
-import { AiOutlinePlus } from "react-icons/ai"
-
-const AddIcon = <AiOutlinePlus size={"1.25rem"} />
-
-const DividerStyled = styled(Divider)({
-    borderColor: "white",
-})
+import { Box } from "@mui/material"
+import { AddButtonInteractiveColor, SectionDivider } from "@/ui/components/StyledComponents"
 
 // capitalize first letter
 const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
@@ -378,13 +372,9 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     InputSystem.selectedScheme = schemeData
                                 }}
                             />
-                            <Button
-                                value={AddIcon}
-                                onClick={() => {
-                                    openModal("new-scheme")
-                                }}
-                            />
-
+                            {AddButtonInteractiveColor(() => {
+                                openModal("new-scheme")
+                            })}
                             {selectedScheme ? (
                                 <>
                                     <Checkbox
@@ -396,7 +386,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                         }}
                                     />
                                     <Box height={10} />
-                                    <DividerStyled />
+                                    <SectionDivider />
                                     <Box height={15}></Box>
 
                                     <Box display="flex" justifyContent="center" alignItems="center">
