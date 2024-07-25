@@ -61,6 +61,7 @@ import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
+import DebugPanel from "./ui/panels/DebugPanel.tsx"
 import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 
@@ -224,6 +225,7 @@ const initialPanels: ReactElement[] = [
     <PokerPanel key="poker" panelId="poker" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
+    <DebugPanel key="debug" panelId="debug" />,
 ]
 
 export default Synthesis

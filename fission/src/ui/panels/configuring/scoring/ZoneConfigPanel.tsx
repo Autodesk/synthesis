@@ -17,9 +17,9 @@ import { useTheme } from "@/ui/ThemeContext"
 import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
-import { RgbaColor } from "react-colorful"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
+import { FaBasketball } from "react-icons/fa6"
 
 /**
  * Saves ejector configuration to selected field.
@@ -95,18 +95,18 @@ function save(
 
 const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     //Official FIRST hex
-    const redMaterial =  new THREE.MeshPhongMaterial({
-        color: 0xED1C24,
+    const redMaterial = new THREE.MeshPhongMaterial({
+        color: 0xed1c24,
         shininess: 0.0,
         opacity: 0.7,
         transparent: true,
     })
     const blueMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0066B3,
+        color: 0x0066b3,
         shininess: 0.0,
         opacity: 0.7,
         transparent: true,
-    })  //0x0000ff
+    }) //0x0000ff
     const { openPanel, closePanel } = usePanelControlContext()
 
     const [name, setName] = useState<string>(SelectedZone.zone.name)
@@ -144,13 +144,10 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         }
 
         const gizmo = new TransformGizmos(
-            new THREE.Mesh(
-                new THREE.BoxGeometry(1, 1, 1),
-                zone.alliance == "blue" ? blueMaterial : redMaterial
-            )
-        );
+            new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), zone.alliance == "blue" ? blueMaterial : redMaterial)
+        )
 
-        (gizmo.mesh.material as THREE.Material).depthTest = false
+        ;(gizmo.mesh.material as THREE.Material).depthTest = false
         gizmo.AddMeshToScene()
         gizmo.CreateGizmo("translate", 1.5)
 
@@ -165,7 +162,6 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         /** W = L x R. See save() for math details */
         const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
         const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
-
 
         gizmo.mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
         gizmo.mesh.rotation.setFromQuaternion(props.rotation)
@@ -198,6 +194,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         <Panel
             name="Scoring Zone Config"
             panelId={panelId}
+            icon={<FaBasketball />}
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {
@@ -282,10 +279,6 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             </div>
         </Panel>
     )
-}
-
-const colorToNumber = (color: RgbaColor) => {
-    return color.r * 10000 + color.g * 100 + color.b
 }
 
 export default ZoneConfigPanel
