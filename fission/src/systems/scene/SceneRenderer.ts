@@ -20,6 +20,10 @@ import PreferencesSystem from "../preferences/PreferencesSystem"
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
 
+const STANDARD_ASPECT = 16.0 / 9.0
+const STANDARD_CAMERA_FOV_X = 110.0
+const STANDARD_CAMERA_FOV_Y = STANDARD_CAMERA_FOV_X / STANDARD_ASPECT
+
 let nextSceneObjectId = 1
 
 class SceneRenderer extends WorldSystem {
@@ -64,7 +68,8 @@ class SceneRenderer extends WorldSystem {
         this._sceneObjects = new Map()
         this._transformControls = new Map()
 
-        this._mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+        const aspect = window.innerWidth / window.innerHeight
+        this._mainCamera = new THREE.PerspectiveCamera(STANDARD_CAMERA_FOV_Y, aspect, 0.1, 1000)
         this._mainCamera.position.set(-2.5, 2, 2.5)
 
         this._scene = new THREE.Scene()
@@ -152,11 +157,21 @@ class SceneRenderer extends WorldSystem {
     }
 
     public UpdateCanvasSize() {
-        this._renderer.setSize(window.innerWidth, window.innerHeight)
+        this._renderer.setSize(window.innerWidth, window.innerHeight, true)
+
+        const vec = new THREE.Vector2(0,0)
+        this._renderer.getSize(vec)
+        console.debug(`${vec.x.toFixed(2)}, ${vec.y.toFixed(2)}`)
         // No idea why height would be zero, but just incase.
         this._mainCamera.aspect = window.innerWidth / window.innerHeight
+
+        if (this._mainCamera.aspect < STANDARD_ASPECT) {
+            this._mainCamera.fov = STANDARD_CAMERA_FOV_Y
+        } else {
+            this._mainCamera.fov = STANDARD_CAMERA_FOV_X / this._mainCamera.aspect
+        }
+
         this._mainCamera.updateProjectionMatrix()
-        console.debug("Update")
     }
 
     public Update(deltaT: number): void {
@@ -182,6 +197,7 @@ class SceneRenderer extends WorldSystem {
         this._cameraControls.update(deltaT)
 
         this._composer.render(deltaT)
+        // this._renderer.render(this._scene, this._mainCamera)
     }
 
     public Destroy(): void {
