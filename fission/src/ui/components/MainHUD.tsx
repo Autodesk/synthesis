@@ -181,7 +181,7 @@ const MainHUD: React.FC = () => {
                             openPanel("scoring-zones")
                         }}
                     />
-                    <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
+                    {/* <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} /> */}
                     <MainHUDButton
                         value={"WS Test"}
                         icon={<FaCar />}

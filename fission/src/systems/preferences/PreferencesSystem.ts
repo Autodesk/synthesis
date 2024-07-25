@@ -25,7 +25,7 @@ class PreferencesSystem {
     private static _localStorageKey = "Preferences"
 
     /** Event dispatched when any global preference is updated */
-    public static addEventListener(callback: (e: PreferenceEvent) => unknown) {
+    public static addEventListener(callback: (e: PreferenceEvent) => void) {
         window.addEventListener("preferenceChanged", callback as EventListener)
     }
 
