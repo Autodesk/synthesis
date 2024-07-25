@@ -8,7 +8,7 @@ from ..Parser.ExporterOptions import (
     ExportMode,
     PreferredUnits,
 )
-from ..TypesTmp import KG, toKg, toLbs
+from ..Types import KG, toKg, toLbs
 from . import IconPaths
 from .CreateCommandInputsHelper import createBooleanInput, createTableInput
 from .GamepieceConfigTab import GamepieceConfigTab

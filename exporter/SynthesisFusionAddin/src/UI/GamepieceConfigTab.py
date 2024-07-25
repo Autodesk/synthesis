@@ -3,7 +3,7 @@ import adsk.fusion
 
 from ..Logging import logFailure
 from ..Parser.ExporterOptions import ExporterOptions, Gamepiece, PreferredUnits
-from ..TypesTmp import toKg, toLbs
+from ..Types import toKg, toLbs
 from . import IconPaths
 from .CreateCommandInputsHelper import (
     createBooleanInput,
