@@ -63,9 +63,9 @@ def setDefaultMaterial(physical_material: material_pb2.PhysicalMaterial, options
     else:
         physical_material.dynamic_friction = 0.5
         physical_material.static_friction = 0.5
+
     physical_material.restitution = 0.5
     physical_material.deformable = False
-
     physical_material.matType = 0
 
 
@@ -99,10 +99,6 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material.static_friction = static_friction_coeffs.get(fusion_material.name, 0.5)
 
     proto_material.restitution = 0.5
-    proto_material.dynamic_friction = 0.5
-    proto_material.static_friction = 0.5
-    proto_material.restitution = 0.5
-
     proto_material.description = f"{fusion_material.name} exported from FUSION"
 
     """
