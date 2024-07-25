@@ -9,7 +9,7 @@ from proto.proto_out import material_pb2
 
 from ...general_imports import INTERNAL_ID
 from ...Logging import logFailure, timed
-from .. import ExporterOptions
+from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
 from .Utilities import *
 

@@ -1,13 +1,11 @@
 """ Stores data and fields from config.ini """
 
-import logging.handlers
 import traceback
 import uuid
 from configparser import ConfigParser
 
 from .Logging import getLogger
-from .strings import INTERNAL_ID
-from .Types.OString import OString
+from .Types import OString
 
 logger = getLogger()
 
