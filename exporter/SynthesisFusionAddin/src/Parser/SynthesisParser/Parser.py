@@ -50,8 +50,6 @@ class Parser:
 
         # Physical Props here when ready
 
-        # ts = time()
-
         progressDialog = app.userInterface.createProgressDialog()
         progressDialog.cancelButtonText = "Cancel"
         progressDialog.isBackgroundTranslucent = False
