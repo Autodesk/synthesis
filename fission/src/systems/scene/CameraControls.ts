@@ -140,9 +140,6 @@ export class CustomOrbitControls extends CameraControls {
                 case MIDDLE_MOUSE_INTERACTION:
                     this._activePointerType = MIDDLE_MOUSE_INTERACTION
                     break
-                case SECONDARY_MOUSE_INTERACTION:
-                    this.tryFindFocusProvider(start.position)
-                    break
                 default:
                     break
             }

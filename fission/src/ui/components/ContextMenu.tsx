@@ -1,7 +1,8 @@
-import { Box } from "@mui/material"
-import { useEffect, useState } from "react"
+import { Box, Grid } from "@mui/material"
+import { useEffect, useRef, useState } from "react"
 import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
 import { colorNameToVar } from "../ThemeContext"
+import Button from "./Button"
 
 interface ContextMenuStateData {
     data: ContextData
@@ -17,7 +18,7 @@ function ContextMenu() {
 
     useEffect(() => {
         const func = (e: ContextSupplierEvent) => {
-            setState({ data: e.data, location: [e.mouseEvent.clientX, e.mouseEvent.clientY] })
+            setState({ data: e.data, location: [e.mousePosition[0], e.mousePosition[1]] })
         }
 
         ContextSupplierEvent.Listen(func)
@@ -26,6 +27,7 @@ function ContextMenu() {
 
     return (!state ? <></> :
         <Box
+            id="CANCEL"
             component="div"
             display="flex"
             sx={{
@@ -35,10 +37,11 @@ function ContextMenu() {
                 width: "100vw",
                 height: "100vh",
             }}
-            onPointerDown={() => setState(undefined)}
+            onPointerDown={() =>  setState(undefined)}
             onContextMenu={(e) => e.preventDefault()}
         >
             <Box
+                id="MENU"
                 component="div"
                 display="flex"
                 sx={{
@@ -46,11 +49,14 @@ function ContextMenu() {
                     left: state.location[0],
                     top: state.location[1],
                     padding: "1rem",
+                    borderRadius: "0.5rem",
                     backgroundColor: colorNameToVar("Background"),
                     color: colorNameToVar("InteractiveElementText")
                 }}
+                // Why, why, why do I need to do this. This is absurd
+                onPointerDown={e => e.stopPropagation()}
             >
-                {state.data.title}
+                <Button value="Sample" />
             </Box>
         </Box>
     )

@@ -11,8 +11,7 @@ import { Theme } from "@/ui/ThemeContext"
 import Jolt from "@barclah/jolt-physics"
 import InputSystem from "@/systems/input/InputSystem"
 import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import ScreenInteractionHandler from "./ScreenInteractionHandler"
-import { MainHUD_AddToast } from "@/ui/components/MainHUD"
+import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -133,7 +132,7 @@ class SceneRenderer extends WorldSystem {
 
         // Orbit controls
         this._screenInteractionHandler = new ScreenInteractionHandler(this._renderer.domElement)
-        this._screenInteractionHandler.contextMenu = _ => MainHUD_AddToast("info", "Context Menu", "tmp tmp tmp tmptmptm ptm ")
+        this._screenInteractionHandler.contextMenu = e => this.OnContextMenu(e)
 
         this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler);
     }
@@ -481,13 +480,11 @@ class SceneRenderer extends WorldSystem {
      * 
      * @param e Mouse event data.
      */
-    public OnContextMenu(e: MouseEvent) {
-        e.preventDefault()
-
+    public OnContextMenu(e: InteractionEnd) {
         // Cast ray into physics scene.
         const origin = World.SceneRenderer.mainCamera.position
 
-        const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
+        const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.position[0], e.position[1])
         const dir = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
 
         const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
@@ -507,7 +504,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({ name: "Spawn something", func: () => { console.debug("Uggh how do i do this") } })
         }
 
-        ContextSupplierEvent.Dispatch(miraSupplierData, e)
+        ContextSupplierEvent.Dispatch(miraSupplierData, e.position)
     }
 }
 
