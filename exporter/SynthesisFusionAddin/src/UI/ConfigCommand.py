@@ -156,45 +156,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 fusionJoint = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
                 jointConfigTab.addWheel(fusionJoint, wheel)
 
-        # Transition: AARD-1769
-        # Waiting for GH-1014 to merge
-        # ~~~~~~~~~~~~~~~~ PHYSICS SETTINGS ~~~~~~~~~~~~~~~~
-        """
-        Physics settings group command
-        """
-        # physicsSettings: adsk.core.GroupCommandInput = a_input.addGroupCommandInput(
-        #     "physics_settings", "Physics Settings"
-        # )
-
-        # physicsSettings.isExpanded = True
-        # physicsSettings.isEnabled = True
-        # physicsSettings.tooltip = "Settings relating to the custom physics of the robot, like the wheel friction"
-        # physics_settings: adsk.core.CommandInputs = physicsSettings.children
-
-        # frictionOverrideInput = self.createBooleanInput(
-        #     "friction_override",
-        #     "Friction Override",
-        #     physics_settings,
-        #     checked=True,  # object is missing attribute
-        #     tooltip="Manually override the default friction values on the bodies in the assembly.",
-        #     enabled=True,
-        #     isCheckBox=False,
-        # )
-        # frictionOverrideInput.resourceFolder = IconPaths.stringIcons["friction_override-enabled"]
-        # frictionOverrideInput.isFullWidth = True
-
-        # valueList = [1]
-        # for i in range(20):
-        #     valueList.append(i / 20)
-
-        # frictionCoeffSlider: adsk.core.FloatSliderCommandInput = physics_settings.addFloatSliderListCommandInput(
-        #     "friction_override_coeff", "Friction Coefficient", "", valueList
-        # )
-        # frictionCoeffSlider.isVisible = True
-        # frictionCoeffSlider.valueOne = 0.5
-        # frictionCoeffSlider.tooltip = "Friction coefficient of field element."
-        # frictionCoeffSlider.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
-
         # ~~~~~~~~~~~~~~~~ JOINT SETTINGS ~~~~~~~~~~~~~~~~
         """
         Joint settings group command
@@ -384,6 +345,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             exportLocation=generalConfigTab.exportLocation,
             compressOutput=generalConfigTab.compress,
             exportAsPart=generalConfigTab.exportAsPart,
+            frictionOverride=generalConfigTab.overrideFriction,
+            frictionOverrideCoeff=generalConfigTab.frictionOverrideCoeff,
         )
 
         Parser(exporterOptions).export()

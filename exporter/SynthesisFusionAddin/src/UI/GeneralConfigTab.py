@@ -18,6 +18,7 @@ from .JointConfigTab import JointConfigTab
 class GeneralConfigTab:
     generalOptionsTab: adsk.core.TabCommandInput
     previousAutoCalcWeightCheckboxState: bool
+    previousFrictionOverrideCheckboxState: bool
     previousSelectedUnitDropdownIndex: int
     previousSelectedModeDropdownIndex: int
     currentUnits: PreferredUnits
@@ -138,10 +139,26 @@ class GeneralConfigTab:
             enabled=True,
         )
 
+        frictionOverrideButton = createBooleanInput(
+            "frictionOverride",
+            "Friction Override",
+            generalTabInputs,
+            checked=exporterOptions.frictionOverride,
+            tooltip="Manually override the default friction values on the bodies in the assembly.",
+        )
+        self.previousFrictionOverrideCheckboxState = exporterOptions.frictionOverride
+
+        valueList = [1] + [i / 20 for i in range(20)]
+        frictionCoefficient = generalTabInputs.addFloatSliderListCommandInput("frictionCoefficient", "", "", valueList)
+        frictionCoefficient.valueOne = exporterOptions.frictionOverrideCoeff
+        frictionCoefficient.tooltip = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
+        frictionCoefficient.isVisible = exporterOptions.frictionOverride
+
         if exporterOptions.exportMode == ExportMode.FIELD:
             autoCalcWeightButton.isVisible = False
             exportAsPartButton.isVisible = False
             weightInput.isVisible = weightTableInput.isVisible = False
+            frictionOverrideButton.isVisible = frictionCoefficient.isVisible = False
 
     @property
     def exportMode(self) -> ExportMode:
@@ -201,6 +218,20 @@ class GeneralConfigTab:
             assert exportLocationDropdown.selectedItem.index == 1
             return ExportLocation.DOWNLOAD
 
+    @property
+    def overrideFriction(self) -> bool:
+        overrideFrictionButton: adsk.core.BoolValueCommandInput = self.generalOptionsTab.children.itemById(
+            "frictionOverride"
+        )
+        return overrideFrictionButton.value
+
+    @property
+    def frictionOverrideCoeff(self) -> float:
+        frictionSlider: adsk.core.FloatSliderCommandInput = self.generalOptionsTab.children.itemById(
+            "frictionCoefficient"
+        )
+        return frictionSlider.valueOne
+
     @logFailure
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs) -> None:
         commandInput = args.input
@@ -209,6 +240,8 @@ class GeneralConfigTab:
             autoCalcWeightButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("autoCalcWeightButton")
             weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
             exportAsPartButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("exportAsPartButton")
+            overrideFrictionButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("frictionOverride")
+            frictionSlider: adsk.core.FloatSliderCommandInput = args.inputs.itemById("frictionCoefficient")
             if modeDropdown.selectedItem.index == self.previousSelectedModeDropdownIndex:
                 return
 
@@ -219,6 +252,8 @@ class GeneralConfigTab:
                 autoCalcWeightButton.isVisible = True
                 weightTable.isVisible = True
                 exportAsPartButton.isVisible = True
+                overrideFrictionButton.isVisible = True
+                frictionSlider.isVisible = overrideFrictionButton.value
             else:
                 assert modeDropdown.selectedItem.index == 1
                 self.jointConfigTab.isVisible = False
@@ -227,6 +262,7 @@ class GeneralConfigTab:
                 autoCalcWeightButton.isVisible = False
                 weightTable.isVisible = False
                 exportAsPartButton.isVisible = False
+                overrideFrictionButton.isVisible = frictionSlider.isVisible = False
 
             self.previousSelectedModeDropdownIndex = modeDropdown.selectedItem.index
 
@@ -269,6 +305,16 @@ class GeneralConfigTab:
                 weightInput.isEnabled = True
 
             self.previousAutoCalcWeightCheckboxState = autoCalcWeightButton.value
+
+        elif commandInput.id == "frictionOverride":
+            frictionOverrideButton = adsk.core.BoolValueCommandInput.cast(commandInput)
+            frictionSlider: adsk.core.FloatSliderCommandInput = args.inputs.itemById("frictionCoefficient")
+            if frictionOverrideButton.value == self.previousFrictionOverrideCheckboxState:
+                return
+
+            frictionSlider.isVisible = frictionOverrideButton.value
+
+            self.previousFrictionOverrideCheckboxState = frictionOverrideButton.value
 
 
 # TODO: Perhaps move this into a different module
