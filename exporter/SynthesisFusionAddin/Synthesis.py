@@ -7,7 +7,6 @@ import adsk.core
 
 from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
 from .src.Logging import getLogger, logFailure, setupLogger
-from .src.Types.OString import OString
 from .src.UI import (
     HUI,
     Camera,
@@ -24,7 +23,6 @@ from .src.UI.Toolbar import Toolbar
 # Transition: AARD-1721
 # Should attempt to fix this ordering scheme within AARD-1741
 from .src.APS import APS  # isort:skip
-from .src.configure import setAnalytics, unload_config  # isort:skip
 
 
 @logFailure
@@ -66,8 +64,6 @@ def stop(_):
 
     logger = getLogger(INTERNAL_ID)
     logger.cleanupHandlers()
-
-    unload_config()
 
     for file in gm.files:
         try:

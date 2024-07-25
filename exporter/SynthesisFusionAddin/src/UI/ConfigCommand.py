@@ -12,15 +12,10 @@ import adsk.fusion
 from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
 from ..general_imports import *
 from ..Logging import getLogger, logFailure
-from ..Parser.ExporterOptions import (
-    ExporterOptions,
-    ExportLocation,
-    ExportMode,
-    Gamepiece,
-    PreferredUnits,
-)
+from ..Parser.ExporterOptions import ExporterOptions
 from ..Parser.SynthesisParser.Parser import Parser
 from ..Parser.SynthesisParser.Utilities import guid_occurrence
+from ..Types import ExportLocation, ExportMode, Gamepiece, PreferredUnits
 from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
 from .Configuration.SerialCommand import SerialCommand
 
@@ -903,7 +898,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             compressOutput=compress,
             exportAsPart=export_as_part_boolean,
             frictionOverride=frictionOverride,
-            frictionOverrideCoeff=frictionOverrideCoeff
+            frictionOverrideCoeff=frictionOverrideCoeff,
         )
 
         Parser(exporterOptions).export()

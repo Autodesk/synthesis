@@ -1,15 +1,16 @@
 # Should contain Physical and Apperance materials ?
+import json
 import logging
 import math
 import traceback
-import json
+
 import adsk
 
 from proto.proto_out import material_pb2
 
 from ...general_imports import *
-from ..ExporterOptions import ExporterOptions
 from ...Logging import logFailure, timed
+from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
 from .Utilities import *
 
