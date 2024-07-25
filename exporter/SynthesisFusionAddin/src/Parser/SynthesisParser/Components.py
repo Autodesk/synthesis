@@ -10,7 +10,8 @@ import adsk.fusion
 from proto.proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
 
 from ...Logging import logFailure, timed
-from ..ExporterOptions import ExporterOptions, ExportMode
+from ...Types import ExportMode
+from ..ExporterOptions import ExporterOptions
 from . import PhysicalProperties
 from .PDMessage import PDMessage
 from .Utilities import *

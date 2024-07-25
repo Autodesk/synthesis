@@ -7,7 +7,6 @@ import adsk.core
 
 from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
 from .src.Logging import getLogger, logFailure, setupLogger
-from .src.Types.OString import OString
 from .src.UI import (
     HUI,
     Camera,
