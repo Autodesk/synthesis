@@ -244,11 +244,11 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                 />
 
                 {/** When checked, the zone will destroy gamepieces it comes in contact with */}
-                <Checkbox
+                {/** <Checkbox
                     label="Destroy Gamepiece"
                     defaultState={SelectedZone.zone.destroyGamepiece}
                     onClick={setDestroy}
-                />
+                /> */}
 
                 {/** When checked, points will stay even when a gamepiece leaves the zone */}
                 <Checkbox
