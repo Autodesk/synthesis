@@ -49,6 +49,7 @@ class ScoringZoneSceneObject extends SceneObject {
     private _collisionRemoved?: (event: OnContactRemovedEvent) => void
 
     private _gpContacted: Jolt.BodyID[] = []
+    private _prevGP: Jolt.BodyID[] = []
 
     public get gpContacted() {
         return this._gpContacted
@@ -173,6 +174,20 @@ class ScoringZoneSceneObject extends SceneObject {
                 } else {
                     this._mesh.material = ScoringZoneSceneObject.transparentMaterial
                 }
+
+            // console.log(`gp: ${this._gpContacted.length} prev: ${this._prevGP.length}`)
+
+            if (this._prefs.persistentPoints)
+                if (this._gpContacted.length != this._prevGP.length) {
+                    if (this._prefs.alliance == "red") {
+                        SimulationSystem.redScore += (this._gpContacted.length - this._prevGP.length) * this._prefs.points
+                    } else {
+                        SimulationSystem.blueScore += (this._gpContacted.length - this._prevGP.length) * this._prefs.points
+                    }
+                    const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
+                    event.Dispatch()
+                    this._prevGP = Object.assign([], this._gpContacted)
+                }
         } else {
             console.debug("Failed to update scoring zone")
         }
@@ -197,13 +212,15 @@ class ScoringZoneSceneObject extends SceneObject {
     private ZoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece && this._prefs) {
-            if (this._prefs.persistentPoints) this._gpContacted.push(gpID)
-
-            if (this._prefs.alliance == "red") {
-                SimulationSystem.redScore += this._prefs.points
+            if (this._prefs.persistentPoints) {
+                this._gpContacted.push(gpID)
             } else {
-                SimulationSystem.blueScore += this._prefs.points
-            }
+                if (this._prefs.alliance == "red") {
+                    SimulationSystem.redScore += this._prefs.points
+                } else {
+                    SimulationSystem.blueScore += this._prefs.points
+                }
+            }                
 
             const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
             event.Dispatch()
@@ -218,25 +235,7 @@ class ScoringZoneSceneObject extends SceneObject {
             const temp = this._gpContacted.filter(x => {
                 return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
             })
-            if (this._gpContacted != temp) {
-                this._gpContacted = temp
-                this.RemoveScore()
-            }
-        }
-    }
-
-    private RemoveScore() {
-        if (this._prefs) {
-            if (this._prefs.alliance == "red") {
-                SimulationSystem.redScore -= this._prefs.points
-                if (SimulationSystem.redScore < 1) SimulationSystem.redScore = 0
-            } else {
-                SimulationSystem.blueScore -= this._prefs.points
-                if (SimulationSystem.blueScore < 1) SimulationSystem.blueScore = 0
-            }
-            const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
-            event.Dispatch()
-            console.log(`Red: ${SimulationSystem.redScore} Blue: ${SimulationSystem.blueScore}`)
+            if (this._gpContacted != temp) this._gpContacted = Object.assign([], temp)
         }
     }
 
@@ -246,10 +245,7 @@ class ScoringZoneSceneObject extends SceneObject {
             const temp = zone._gpContacted.filter(x => {
                 return x.GetIndexAndSequenceNumber() != gpID.GetIndexAndSequenceNumber()
             })
-            if (zone._gpContacted != temp) {
-                zone._gpContacted = temp
-                zone.RemoveScore()
-            }
+            if (zone._gpContacted != temp) zone._gpContacted = Object.assign([], temp)
         }
     }
 }

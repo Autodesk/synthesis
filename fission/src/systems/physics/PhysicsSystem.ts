@@ -445,7 +445,7 @@ class PhysicsSystem extends WorldSystem {
         let axis: Jolt.Vec3
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z! ?? 0)
+            axis = new JOLT.Vec3(miraAxis.x ? -miraAxis.x : 0, miraAxis.y ?? 0, miraAxis.z! ?? 0)
         } else {
             axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0)
         }
@@ -568,7 +568,7 @@ class PhysicsSystem extends WorldSystem {
         let axis: Jolt.Vec3
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
+            axis = new JOLT.Vec3(miraAxis.x ? -miraAxis.x : 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
         } else {
             axis = new JOLT.Vec3(miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
         }
@@ -1090,7 +1090,8 @@ class PhysicsSystem extends WorldSystem {
         contactListener.OnContactRemoved = subShapePairPtr => {
             const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
 
-            this._physicsEventQueue.push(new OnContactRemovedEvent(shapePair))
+            const event = new OnContactRemovedEvent(shapePair)
+            event.Dispatch()
         }
 
         contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {
