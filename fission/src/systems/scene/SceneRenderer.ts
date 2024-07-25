@@ -79,18 +79,14 @@ class SceneRenderer extends WorldSystem {
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
         // this._light = new CascadingShadows(this._mainCamera, this._scene, this._renderer)
-        const shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
         this._csm = new CSM({
-            maxFar: 30,
-            cascades: 3,
-            mode: 'custom',
             parent: this._scene,
-            shadowMapSize: shadowMapSize,
+            camera: this._mainCamera,
+            cascades: 3,
             lightDirection: new THREE.Vector3( 0.5, -0.5, 0.5 ).normalize(),
             lightIntensity: 3,
-            camera: this._mainCamera,
             customSplitsCallback: (cascades: number, near: number, far: number, breaks: number[]) => {
-                const blend = 0.4;
+                const blend = 0.7;
                 for (let i = 1; i < cascades; i++) {
                     const uniformFactor = (near + (far - near) * i / cascades) / far;
                     const logarithmicFactor = (near * (far / near) ** (i / cascades)) / far;
@@ -103,7 +99,9 @@ class SceneRenderer extends WorldSystem {
             }
         })
         this._csm.fade = true
-        
+
+        this.ChangeQuality(PreferencesSystem.getGlobalPreference<string>("QualitySettings"))
+
         // this._csmHelper = new CSMHelper(this._csm)
         // this._csmHelper.visible = true
         // this._scene.add(this._csmHelper)
@@ -168,6 +166,7 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateMatrixWorld()
 
         this._csm.update()
+        console.log(this._csm.shadowMapSize)
         // this._csmHelper.update()
 
         this._skybox.position.copy(this._mainCamera.position)
@@ -190,6 +189,38 @@ class SceneRenderer extends WorldSystem {
 
     public Destroy(): void {
         this.RemoveAllSceneObjects()
+    }
+
+    public ChangeQuality(quality: string): void {
+        console.log("Changing quality to", quality)
+
+        if (quality === "Low") {
+            
+            this._csm.shadowMapSize = Math.min(1024, this._renderer.capabilities.maxTextureSize)
+            this._csm.mode = "uniform"
+            this._csm.maxFar = 10
+
+        } else if (quality === "Medium") {
+
+            this.renderer.setPixelRatio(window.devicePixelRatio)
+
+            this._csm.shadowMapSize = Math.min(2048, this._renderer.capabilities.maxTextureSize)
+            this._csm.mode = "practical"
+            this._csm.maxFar = 20
+
+        } else if (quality === "High") {
+            
+            this.renderer.setPixelRatio(window.devicePixelRatio)
+
+            this._csm.shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
+            this._csm.mode = "custom"
+            this._csm.maxFar = 30
+
+        }
+
+        this._csm.initCascades()
+        this._csm.updateShadowBounds()
+        this._csm.updateFrustums()
     }
 
     public RegisterSceneObject<T extends SceneObject>(obj: T): number {

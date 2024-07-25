@@ -9,6 +9,7 @@ import Slider from "@/components/Slider"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
+import World from "@/systems/World"
 
 const moveElementToTop = (arr: string[], element: string | undefined) => {
     if (element == undefined) {
@@ -20,7 +21,7 @@ const moveElementToTop = (arr: string[], element: string | undefined) => {
 }
 
 const screenModeOptions = ["Windowed", "Fullscreen"]
-const qualitySettingsOptions = ["Low", "Medium", "High", "Ultra"]
+const qualitySettingsOptions = ["Low", "Medium", "High"]
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -91,6 +92,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 )}
                 onSelect={selected => {
                     setQualitySettings(selected)
+                    World.SceneRenderer.ChangeQuality(selected)
                 }}
             />
             <Button value="Theme Editor" onClick={() => openModal("theme-editor")} />
