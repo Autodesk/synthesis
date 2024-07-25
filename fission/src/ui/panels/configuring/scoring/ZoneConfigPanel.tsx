@@ -113,7 +113,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     const [alliance, setAlliance] = useState<Alliance>(SelectedZone.zone.alliance)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(SelectedZone.zone.parentNode)
     const [points, setPoints] = useState<number>(SelectedZone.zone.points)
-    const [destroy, setDestroy] = useState<boolean>(SelectedZone.zone.destroyGamepiece)
+    const [destroy] = useState<boolean>(SelectedZone.zone.destroyGamepiece)
     const [persistent, setPersistent] = useState<boolean>(SelectedZone.zone.persistentPoints)
 
     const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)

@@ -179,9 +179,11 @@ class ScoringZoneSceneObject extends SceneObject {
             if (this._prefs.persistentPoints)
                 if (this._gpContacted.length != this._prevGP.length) {
                     if (this._prefs.alliance == "red") {
-                        SimulationSystem.redScore += (this._gpContacted.length - this._prevGP.length) * this._prefs.points
+                        SimulationSystem.redScore +=
+                            (this._gpContacted.length - this._prevGP.length) * this._prefs.points
                     } else {
-                        SimulationSystem.blueScore += (this._gpContacted.length - this._prevGP.length) * this._prefs.points
+                        SimulationSystem.blueScore +=
+                            (this._gpContacted.length - this._prevGP.length) * this._prefs.points
                     }
                     const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
                     event.Dispatch()
@@ -222,7 +224,7 @@ class ScoringZoneSceneObject extends SceneObject {
                 }
                 const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
                 event.Dispatch()
-            }                
+            }
         }
     }
 
