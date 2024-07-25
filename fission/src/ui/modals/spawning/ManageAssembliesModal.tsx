@@ -7,21 +7,21 @@ import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 interface AssemblyCardProps {
-    id: number
+    mira: MirabufSceneObject
     update: React.DispatchWithoutAction
 }
 
-const AssemblyCard: React.FC<AssemblyCardProps> = ({ id, update }) => {
+const AssemblyCard: React.FC<AssemblyCardProps> = ({ mira, update }) => {
     return (
         <div
-            key={id}
+            key={mira.id}
             className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2"
         >
-            <Label className="text-wrap break-all">{id}</Label>
+            <Label className="text-wrap break-all">{mira.assemblyName}</Label>
             <Button
                 value="Delete"
                 onClick={() => {
-                    World.SceneRenderer.RemoveSceneObject(id)
+                    World.SceneRenderer.RemoveSceneObject(mira.id)
                     update()
                 }}
             />
@@ -40,7 +40,7 @@ const ManageAssembliesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             const y = x[1] instanceof MirabufSceneObject
             return y
         })
-        .map(x => x[0])
+        .map(x => x[1] as MirabufSceneObject)
 
     return (
         <Modal
@@ -59,7 +59,7 @@ const ManageAssembliesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {assemblies ? `${assemblies.length} Assemblies` : "No Assemblies"}
                 </Label>
-                {assemblies.map(x => AssemblyCard({ id: x, update: update }))}
+                {assemblies.map(x => AssemblyCard({ mira: x, update: update }))}
             </div>
         </Modal>
     )
