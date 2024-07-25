@@ -7,8 +7,8 @@ import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [redScore, setRedScore] = useState<number>(0)
     const [blueScore, setBlueScore] = useState<number>(0)
-    const [initialTime, ] = useState<number>(-1)
-    const [startTime, ] = useState<number>(Date.now())
+    const [initialTime] = useState<number>(-1)
+    const [startTime] = useState<number>(Date.now())
     const [time, setTime] = useState<number>(-1)
 
     // probably useless code because the time left should be sent by Synthesis and not calculated here
@@ -25,8 +25,9 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         (e: OnScoreChangedEvent) => {
             setRedScore(e.red)
             setBlueScore(e.blue)
-    }, [setRedScore, setBlueScore])
-
+        },
+        [setRedScore, setBlueScore]
+    )
 
     useEffect(() => {
         const interval: NodeJS.Timeout = setInterval(() => {

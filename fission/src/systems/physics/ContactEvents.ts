@@ -1,4 +1,4 @@
-import Jolt from "@barclah/jolt-physics";
+import Jolt from "@barclah/jolt-physics"
 
 export interface CurrentContactData {
     body1: Jolt.BodyID
@@ -19,7 +19,7 @@ export abstract class PhysicsEvent extends Event {
 }
 
 export class OnContactAddedEvent extends PhysicsEvent {
-    public static readonly EVENT_KEY = 'OnContactAddedEvent'
+    public static readonly EVENT_KEY = "OnContactAddedEvent"
 
     public message: CurrentContactData
 
@@ -43,7 +43,7 @@ export class OnContactAddedEvent extends PhysicsEvent {
 }
 
 export class OnContactPersistedEvent extends PhysicsEvent {
-    public static readonly EVENT_KEY = 'OnContactPersistedEvent'
+    public static readonly EVENT_KEY = "OnContactPersistedEvent"
 
     public message: CurrentContactData
 
@@ -67,7 +67,7 @@ export class OnContactPersistedEvent extends PhysicsEvent {
 }
 
 export class OnContactRemovedEvent extends PhysicsEvent {
-    public static readonly EVENT_KEY = 'OnContactRemovedEvent'
+    public static readonly EVENT_KEY = "OnContactRemovedEvent"
 
     public message: Jolt.SubShapeIDPair
 
@@ -91,7 +91,7 @@ export class OnContactRemovedEvent extends PhysicsEvent {
 }
 
 export class OnContactValidateEvent extends PhysicsEvent {
-    public static readonly EVENT_KEY = 'OnContactValidateEvent'
+    public static readonly EVENT_KEY = "OnContactValidateEvent"
 
     public message: OnContactValidateData
 

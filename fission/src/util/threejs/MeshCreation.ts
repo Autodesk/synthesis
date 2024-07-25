@@ -115,7 +115,10 @@ export interface VisualProperties {
     scale: THREE.Vector3
 }
 
-export function DeltaFieldTransforms_PhysicalProp(deltaTransform: THREE.Matrix4, fieldTransform: THREE.Matrix4): VisualProperties {
+export function DeltaFieldTransforms_PhysicalProp(
+    deltaTransform: THREE.Matrix4,
+    fieldTransform: THREE.Matrix4
+): VisualProperties {
     const zoneTransformation = deltaTransform.clone().premultiply(fieldTransform)
 
     const translation = new THREE.Vector3(0, 0, 0)
@@ -125,6 +128,6 @@ export function DeltaFieldTransforms_PhysicalProp(deltaTransform: THREE.Matrix4,
     return {
         translation: translation,
         rotation: rotation,
-        scale: scale
+        scale: scale,
     }
 }

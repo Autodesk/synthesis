@@ -58,8 +58,7 @@ class EjectableSceneObject extends SceneObject {
                 .map(x => x[1]) as ScoringZoneSceneObject[]
 
             zones.forEach(x => {
-                if (this._gamePieceBodyId)
-                    ScoringZoneSceneObject.RemoveGamepiece(x, this._gamePieceBodyId)
+                if (this._gamePieceBodyId) ScoringZoneSceneObject.RemoveGamepiece(x, this._gamePieceBodyId)
             })
 
             console.debug("Ejectable created successfully!")

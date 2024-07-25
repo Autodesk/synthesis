@@ -205,7 +205,6 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-
     public CreateToonMaterial(color: THREE.ColorRepresentation = 0xff00aa, steps: number = 5): THREE.MeshToonMaterial {
         const format = this._renderer.capabilities.isWebGL2 ? THREE.RedFormat : THREE.LuminanceFormat
         const colors = new Uint8Array(steps)

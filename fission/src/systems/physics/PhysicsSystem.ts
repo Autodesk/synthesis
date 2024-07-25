@@ -14,7 +14,15 @@ import { mirabuf } from "../../proto/mirabuf"
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
-import { OnContactAddedEvent, CurrentContactData, OnContactPersistedEvent, OnContactRemovedEvent, OnContactValidateEvent, OnContactValidateData, PhysicsEvent } from "./ContactEvents"
+import {
+    OnContactAddedEvent,
+    CurrentContactData,
+    OnContactPersistedEvent,
+    OnContactRemovedEvent,
+    OnContactValidateEvent,
+    OnContactValidateData,
+    PhysicsEvent,
+} from "./ContactEvents"
 
 export type JoltBodyIndexAndSequence = number
 
@@ -1018,35 +1026,34 @@ class PhysicsSystem extends WorldSystem {
     /**
      * Exposes SetShape method on the _joltBodyInterface
      * Sets the shape of the body
-     * 
+     *
      * @param id The id of the body
      * @param shape The new shape of the body
      * @param massProperties The mass properties of the new body
      * @param activationMode The activation mode of the new body
      */
-    public SetShape(id: Jolt.BodyID, shape: Jolt.Shape, massProperties: boolean, activationMode: Jolt.EActivation): void {
+    public SetShape(
+        id: Jolt.BodyID,
+        shape: Jolt.Shape,
+        massProperties: boolean,
+        activationMode: Jolt.EActivation
+    ): void {
         if (!this.IsBodyAdded(id)) {
             return
         }
 
-        this._joltBodyInterface.SetShape(
-            id,
-            shape,
-            massProperties,
-            activationMode
-        )
+        this._joltBodyInterface.SetShape(id, shape, massProperties, activationMode)
     }
 
     /**
      * Creates and assigns Jolt contact listener that dispatches events.
-     * 
+     *
      * @param physSystem The physics system the contact listener will attach to
      */
     private SetUpContactListener(physSystem: Jolt.PhysicsSystem) {
         const contactListener = new JOLT.ContactListenerJS()
 
         contactListener.OnContactAdded = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
-
             const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
             const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
 
@@ -1057,11 +1064,11 @@ class PhysicsSystem extends WorldSystem {
                 body1: body1Id,
                 body2: body2Id,
                 manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
-                settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings
-            };
+                settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
+            }
 
             this._physicsEventQueue.push(new OnContactAddedEvent(message))
-        };
+        }
 
         contactListener.OnContactPersisted = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
             const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
@@ -1074,24 +1081,27 @@ class PhysicsSystem extends WorldSystem {
                 body1: body1Id,
                 body2: body2Id,
                 manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
-                settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings
-            };
+                settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
+            }
 
             this._physicsEventQueue.push(new OnContactPersistedEvent(message))
         }
 
-        contactListener.OnContactRemoved = (subShapePairPtr) => {
+        contactListener.OnContactRemoved = subShapePairPtr => {
             const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
-            
+
             this._physicsEventQueue.push(new OnContactRemovedEvent(shapePair))
         }
 
-        contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {        
+        contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {
             const message: OnContactValidateData = {
                 body1: JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body,
                 body2: JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body,
                 baseOffset: JOLT.wrapPointer(inBaseOffsetPtr, JOLT.RVec3) as Jolt.RVec3,
-                collisionResult: JOLT.wrapPointer(inCollisionResultPtr, JOLT.CollideShapeResult) as Jolt.CollideShapeResult
+                collisionResult: JOLT.wrapPointer(
+                    inCollisionResultPtr,
+                    JOLT.CollideShapeResult
+                ) as Jolt.CollideShapeResult,
             }
 
             this._physicsEventQueue.push(new OnContactValidateEvent(message))
