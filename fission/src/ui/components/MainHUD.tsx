@@ -120,7 +120,7 @@ const MainHUD: React.FC = () => {
                             openPanel("scoring-zones")
                         }}
                     />
-                    <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
+                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                     <MainHUDButton
                         value={"Debug Tools"}
                         icon={<FaScrewdriverWrench />}
