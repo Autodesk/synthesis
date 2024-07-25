@@ -2,8 +2,12 @@ import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
-import DefaultInputs from "@/systems/input/DefaultInputs"
+import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 
 const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -14,28 +18,25 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={<FaXmark />}
             modalId={modalId}
             onAccept={() => {
-                const roboPrefs = PreferencesSystem.getAllRobotPreferences()
+                // Wipe global input scheme prefs
+                PreferencesSystem.setGlobalPreference("InputSchemes", [])
+                InputSystem.brainIndexSchemeMap.clear()
+                InputSchemeManager.resetDefaultSchemes()
+                PreferencesSystem.savePreferences()
 
-                // TODO: This will be improved to make more sense to a user in the "named inputs" PR
-                Object.values(roboPrefs).forEach(roboPref => {
-                    roboPref.inputsSchemes.forEach(currentScheme => {
-                        const resetScheme = DefaultInputs.ALL_INPUT_SCHEMES[0]
-                        if (!currentScheme || !resetScheme) return
-
-                        resetScheme.inputs.forEach(newInput => {
-                            const currentInput = currentScheme.inputs.find(i => i.inputName == newInput.inputName)
-
-                            if (currentInput) {
-                                const inputIndex = currentScheme.inputs.indexOf(currentInput)
-
-                                currentScheme.inputs[inputIndex] = newInput.getCopy()
-                            }
-                        })
-                        currentScheme.usesGamepad = resetScheme.usesGamepad
+                // Remove all robot assemblies
+                const assemblies = [...World.SceneRenderer.sceneObjects.entries()]
+                    .filter(x => {
+                        const y =
+                            x[1] instanceof MirabufSceneObject &&
+                            (x[1] as MirabufSceneObject).miraType == MiraType.ROBOT
+                        return y
                     })
-                })
+                    .map(x => x[0])
 
-                openModal("change-inputs")
+                assemblies.forEach(a => {
+                    World.SceneRenderer.RemoveSceneObject(a)
+                })
             }}
             onCancel={() => {
                 openModal("change-inputs")

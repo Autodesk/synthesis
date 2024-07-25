@@ -13,72 +13,27 @@ from typing import get_origin
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
+from ..Logging import logFailure, timed
 from ..strings import INTERNAL_ID
-
-# Not 100% sure what this is for - Brandon
-JointParentType = Enum("JointParentType", ["ROOT", "END"])
-
-WheelType = Enum("WheelType", ["STANDARD", "OMNI"])
-SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
-ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
-PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
-ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
-
-
-@dataclass
-class Wheel:
-    jointToken: str = field(default=None)
-    wheelType: WheelType = field(default=None)
-    signalType: SignalType = field(default=None)
-
-
-@dataclass
-class Joint:
-    jointToken: str = field(default=None)
-    parent: JointParentType = field(default=None)
-    signalType: SignalType = field(default=None)
-    speed: float = field(default=None)
-    force: float = field(default=None)
-
-
-@dataclass
-class Gamepiece:
-    occurrenceToken: str = field(default=None)
-    weight: float = field(default=None)
-    friction: float = field(default=None)
-
-
-class PhysicalDepth(Enum):
-    # No Physical Properties are generated
-    NoPhysical = 0
-
-    # Only Body Physical Objects are generated
-    Body = 1
-
-    # Only Occurrence that contain Bodies and Bodies have Physical Properties
-    SurfaceOccurrence = 2
-
-    # Every Single Occurrence has Physical Properties even if empty
-    AllOccurrence = 3
-
-
-class ModelHierarchy(Enum):
-    # Model exactly as it is shown in Fusion in the model view tree
-    FusionAssembly = 0
-
-    # Flattened Assembly with all bodies as children of the root object
-    FlatAssembly = 1
-
-    # A Model represented with parented objects that are part of a jointed tree
-    PhysicalAssembly = 2
-
-    # Generates the root assembly as a single mesh and stores the associated data
-    SingleMesh = 3
+from ..Types import (
+    KG,
+    ExportLocation,
+    ExportMode,
+    Gamepiece,
+    Joint,
+    ModelHierarchy,
+    PhysicalDepth,
+    PreferredUnits,
+    Wheel,
+)
 
 
 @dataclass
 class ExporterOptions:
-    fileLocation: str = field(
+    # Python's `os` module can return `None` when attempting to find the home directory if the
+    # user's computer has conflicting configs of some sort. This has happened and should be accounted
+    # for accordingly.
+    fileLocation: str | None = field(
         default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~"))
     )
     name: str = field(default=None)
@@ -91,7 +46,7 @@ class ExporterOptions:
     preferredUnits: PreferredUnits = field(default=PreferredUnits.IMPERIAL)
 
     # Always stored in kg regardless of 'preferredUnits'
-    robotWeight: float = field(default=0.0)
+    robotWeight: KG = field(default=0.0)
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
@@ -103,19 +58,25 @@ class ExporterOptions:
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
     physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
 
-    def readFromDesign(self) -> None:
-        designAttributes = adsk.core.Application.get().activeProduct.attributes
-        for field in fields(self):
-            attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
-            if attribute:
-                setattr(
-                    self,
-                    field.name,
-                    self._makeObjectFromJson(field.type, json.loads(attribute.value)),
-                )
+    @timed
+    def readFromDesign(self) -> "ExporterOptions":
+        try:
+            designAttributes = adsk.core.Application.get().activeProduct.attributes
+            for field in fields(self):
+                attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
+                if attribute:
+                    setattr(
+                        self,
+                        field.name,
+                        self._makeObjectFromJson(field.type, json.loads(attribute.value)),
+                    )
 
-        return self
+            return self
+        except:
+            return ExporterOptions()
 
+    @logFailure
+    @timed
     def writeToDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
