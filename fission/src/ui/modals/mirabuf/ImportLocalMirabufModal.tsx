@@ -1,6 +1,6 @@
 import Button, { ButtonSize } from "@/components/Button"
 import Modal, { ModalPropsImpl } from "../../components/Modal"
-import { FaPlus } from "react-icons/fa6"
+import { FaFileImport } from "react-icons/fa6"
 import { ChangeEvent, useRef, useState } from "react"
 import Label, { LabelSize } from "@/components/Label"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
@@ -45,7 +45,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Import Local Assemblies"}
-            icon={<FaPlus />}
+            icon={<FaFileImport />}
             modalId={modalId}
             acceptEnabled={selectedFile !== undefined && miraType !== undefined}
             onAccept={async () => {
