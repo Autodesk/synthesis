@@ -4,8 +4,8 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.hardware.TalonFX;
-import com.revrobotics.CANSparkBase.IdleMode;
+// import com.ctre.phoenix6.hardware.TalonFX;
+// import com.revrobotics.CANSparkBase.IdleMode;
 // import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
