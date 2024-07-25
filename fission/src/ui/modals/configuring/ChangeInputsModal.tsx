@@ -7,11 +7,17 @@ import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
 import InputSystem, { AxisInput, ButtonInput, ModifierState, EmptyModifierState } from "@/systems/input/InputSystem"
 import Dropdown from "@/ui/components/Dropdown"
 import Checkbox from "@/ui/components/Checkbox"
-import DefaultInputs, { InputScheme } from "@/systems/input/DefaultInputs"
+import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { Box, Divider, styled } from "@mui/material"
+import { AiOutlinePlus } from "react-icons/ai"
+
+const AddIcon = <AiOutlinePlus size={"1.25rem"} />
+
+const DividerStyled = styled(Divider)({
+    borderColor: "white",
+})
 
 // capitalize first letter
 const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
@@ -106,16 +112,14 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [modifierState, setModifierState] = useState<ModifierState>(EmptyModifierState)
 
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
-    const [chosenResetScheme, setChosenResetScheme] = useState<string>("WASD")
     const [useButtons, setUseButtons] = useState<UseButtonsState>({})
 
     // If there is a robot spawned, set it as the selected robot
-    if (selectedScheme == null && Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0) {
+    if (selectedScheme == null && InputSchemeManager.allInputSchemes.length > 0) {
         setTimeout(() => {
-            if (!InputSystem.selectedScheme)
-                InputSystem.selectedScheme = Object.values(
-                    PreferencesSystem.getAllRobotPreferences()
-                )[0].inputsSchemes[0]
+            if (!InputSystem.selectedScheme) {
+                InputSystem.selectedScheme = InputSchemeManager.allInputSchemes[0]
+            }
 
             setUseButtons({})
             setSelectedScheme(InputSystem.selectedScheme)
@@ -137,7 +141,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     // Assign keyboard inputs when a key is pressed
-    if (!useGamepad && selectedInput && chosenKey) {
+    if (!useGamepad && selectedInput && chosenKey && selectedScheme) {
         if (selectedInput.startsWith("pos")) {
             const input = selectedScheme?.inputs.find(
                 input => input.inputName == selectedInput.substring(3)
@@ -156,12 +160,14 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             input.keyModifiers = modifierState
         }
 
+        selectedScheme.customized = true
+
         setChosenKey("")
         setSelectedInput("")
         setModifierState(EmptyModifierState)
     }
     // Assign gamepad button inputs when a button is pressed
-    else if (useGamepad && selectedInput && chosenButton != -1) {
+    else if (selectedScheme && useGamepad && selectedInput && chosenButton != -1) {
         if (selectedInput.startsWith("pos")) {
             const input = selectedScheme?.inputs.find(
                 input => input.inputName == selectedInput.substring(3)
@@ -178,14 +184,18 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             input.gamepadButton = chosenButton
         }
 
+        selectedScheme.customized = true
+
         setChosenButton(-1)
         setSelectedInput("")
     }
 
     // Assign gamepad axis inputs when a gamepad axis is selected
-    if (useGamepad && selectedInput && chosenGamepadAxis != -1) {
+    if (useGamepad && selectedInput && chosenGamepadAxis != -1 && selectedScheme) {
         const selected = selectedScheme?.inputs.find(input => input.inputName == selectedInput) as AxisInput
         selected.gamepadAxisNumber = chosenGamepadAxis - 1
+
+        selectedScheme.customized = true
 
         setChosenGamepadAxis(-1)
         setSelectedInput("")
@@ -343,173 +353,139 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={<FaGamepad />}
             modalId={modalId}
             onAccept={() => {
-                PreferencesSystem.savePreferences()
+                InputSchemeManager.saveSchemes()
                 InputSystem.selectedScheme = undefined
             }}
         >
-            {Object.keys(PreferencesSystem.getAllRobotPreferences()).length > 0 ? (
-                <>
-                    <Stack direction={StackDirection.Horizontal} spacing={25}>
-                        <div>
-                            <Stack direction={StackDirection.Vertical} spacing={10}>
-                                <Dropdown
-                                    label={"Select Robot"}
-                                    // Moves the selected option to the start of the array
-                                    options={moveElementToTop(
-                                        SynthesisBrain.robotsSpawned,
-                                        InputSystem?.selectedScheme?.schemeName
-                                    )}
-                                    onSelect={value => {
-                                        const roboName = value.substring(4)
-                                        const controlSchemeIndex: number = +value.charAt(1)
+            <>
+                <Stack direction={StackDirection.Horizontal} spacing={25}>
+                    <div>
+                        <Stack direction={StackDirection.Vertical} spacing={10}>
+                            <Dropdown
+                                label={"Select Robot"}
+                                // Moves the selected option to the start of the array
+                                options={moveElementToTop(
+                                    InputSchemeManager.allInputSchemes.map(s => s.schemeName),
+                                    InputSystem?.selectedScheme?.schemeName
+                                )}
+                                onSelect={value => {
+                                    const schemeData = InputSchemeManager.allInputSchemes.find(
+                                        s => s.schemeName == value
+                                    )
+                                    if (!schemeData || schemeData == selectedScheme) return
 
-                                        const newScheme =
-                                            PreferencesSystem.getAllRobotPreferences()[roboName].inputsSchemes[
-                                                controlSchemeIndex
-                                            ]
-                                        if (newScheme == selectedScheme) return
+                                    setSelectedScheme(undefined)
+                                    InputSystem.selectedScheme = schemeData
+                                }}
+                            />
+                            <Button
+                                value={AddIcon}
+                                onClick={() => {
+                                    openModal("new-scheme")
+                                }}
+                            />
 
-                                        setSelectedScheme(undefined)
-                                        InputSystem.selectedScheme = newScheme
-                                    }}
-                                />
-                                {selectedScheme ? (
-                                    <>
-                                        <Checkbox
-                                            label="Use Controller"
-                                            defaultState={selectedScheme?.usesGamepad ?? false}
-                                            onClick={val => {
-                                                setUseGamepad(val)
-                                                if (selectedScheme) selectedScheme.usesGamepad = val
-                                            }}
-                                        />
-                                        <Label size={LabelSize.Medium}>Default Control Schemes</Label>
-                                        {/* <Stack direction={StackDirection.Horizontal} justify="center" align="stretch"> */}
-                                        <div>
-                                            <Dropdown
-                                                label={""}
-                                                // Moves the selected option to the start of the array
-                                                options={DefaultInputs.ALL_INPUT_SCHEMES.map(
-                                                    scheme => scheme.schemeName
-                                                )}
-                                                onSelect={value => {
-                                                    setChosenResetScheme(value)
-                                                }}
-                                            />
-                                        </div>
-                                        <Button
-                                            value={"Apply"}
-                                            onClick={() => {
-                                                const scheme = DefaultInputs.ALL_INPUT_SCHEMES.find(
-                                                    s => s.schemeName == chosenResetScheme
-                                                )
-                                                if (!selectedScheme || !scheme) return
+                            {selectedScheme ? (
+                                <>
+                                    <Checkbox
+                                        label="Use Controller"
+                                        defaultState={selectedScheme?.usesGamepad ?? false}
+                                        onClick={val => {
+                                            setUseGamepad(val)
+                                            if (selectedScheme) selectedScheme.usesGamepad = val
+                                        }}
+                                    />
+                                    <Box height={10} />
+                                    <DividerStyled />
+                                    <Box height={15}></Box>
 
-                                                scheme.inputs.forEach(newInput => {
-                                                    const currentInput = selectedScheme.inputs.find(
-                                                        i => i.inputName == newInput.inputName
-                                                    )
-
-                                                    if (currentInput) {
-                                                        const inputIndex = selectedScheme.inputs.indexOf(currentInput)
-
-                                                        selectedScheme.inputs[inputIndex] = newInput.getCopy()
-                                                    }
-                                                })
-                                                selectedScheme.usesGamepad = scheme.usesGamepad
-
-                                                setSelectedScheme(undefined)
-                                            }}
-                                        />
+                                    <Box display="flex" justifyContent="center" alignItems="center">
                                         <Button
                                             value={"Reset all to Defaults"}
                                             onClick={() => {
                                                 openModal("reset-inputs")
                                             }}
                                         />
-                                        {/* </Stack> */}
-                                    </>
-                                ) : (
-                                    <Label>No robot selected.</Label>
-                                )}
-                            </Stack>
-                        </div>
-                        <div
-                            className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[60vh] bg-background-secondary rounded-md p-2"
-                            onKeyUp={e => {
-                                setChosenKey(selectedInput ? e.code : "")
-                                setModifierState({
-                                    ctrl: e.ctrlKey,
-                                    alt: e.altKey,
-                                    shift: e.shiftKey,
-                                    meta: e.metaKey,
-                                })
-                            }}
-                        >
-                            {selectedScheme ? (
-                                <>
-                                    <Stack direction={StackDirection.Vertical} spacing={20}>
-                                        {selectedScheme.inputs.map(c => {
-                                            if (!useGamepad) {
-                                                // Keyboard button
-                                                if (c instanceof ButtonInput) {
-                                                    return KeyboardButtonSelection(c)
-                                                }
-                                                // Keyboard Axis
-                                                else if (c instanceof AxisInput) {
-                                                    return KeyboardAxisSelection(c)
-                                                }
-                                            } else {
-                                                // Joystick Button
-                                                if (c instanceof ButtonInput) {
-                                                    return JoystickButtonSelection(c)
-                                                }
-
-                                                // Gamepad axis
-                                                else if (c instanceof AxisInput) {
-                                                    return (
-                                                        <div key={c.inputName}>
-                                                            {useButtons[c.inputName]
-                                                                ? GamepadButtonAxisSelection(c)
-                                                                : // Gamepad joystick axis
-                                                                  JoystickAxisSelection(c)}
-
-                                                            {/* // Button to switch between two buttons and a joystick axis */}
-                                                            <Checkbox
-                                                                label="Use Buttons"
-                                                                defaultState={c.useGamepadButtons}
-                                                                onClick={val => {
-                                                                    setUseButtons(prevState => ({
-                                                                        ...prevState,
-                                                                        [c.inputName]: val,
-                                                                    }))
-                                                                    c.useGamepadButtons = val
-                                                                }}
-                                                            />
-                                                            {/* // Button to invert the joystick axis */}
-                                                            <Checkbox
-                                                                label="Joystick Inverted"
-                                                                defaultState={c.joystickInverted}
-                                                                onClick={val => {
-                                                                    c.joystickInverted = val
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    )
-                                                }
-                                            }
-                                        })}
-                                    </Stack>
+                                    </Box>
                                 </>
                             ) : (
                                 <Label>No robot selected.</Label>
                             )}
-                        </div>
-                    </Stack>
-                </>
-            ) : (
-                <Label size={LabelSize.Medium}>Spawn a robot to edit controls</Label>
-            )}
+                        </Stack>
+                    </div>
+                    <div
+                        className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[60vh] bg-background-secondary rounded-md p-2"
+                        onKeyUp={e => {
+                            setChosenKey(selectedInput ? e.code : "")
+                            setModifierState({
+                                ctrl: e.ctrlKey,
+                                alt: e.altKey,
+                                shift: e.shiftKey,
+                                meta: e.metaKey,
+                            })
+                        }}
+                    >
+                        {selectedScheme ? (
+                            <>
+                                <Stack direction={StackDirection.Vertical} spacing={20}>
+                                    {selectedScheme.inputs.map(c => {
+                                        if (!useGamepad) {
+                                            // Keyboard button
+                                            if (c instanceof ButtonInput) {
+                                                return KeyboardButtonSelection(c)
+                                            }
+                                            // Keyboard Axis
+                                            else if (c instanceof AxisInput) {
+                                                return KeyboardAxisSelection(c)
+                                            }
+                                        } else {
+                                            // Joystick Button
+                                            if (c instanceof ButtonInput) {
+                                                return JoystickButtonSelection(c)
+                                            }
+
+                                            // Gamepad axis
+                                            else if (c instanceof AxisInput) {
+                                                return (
+                                                    <div key={c.inputName}>
+                                                        {useButtons[c.inputName]
+                                                            ? GamepadButtonAxisSelection(c)
+                                                            : // Gamepad joystick axis
+                                                              JoystickAxisSelection(c)}
+
+                                                        {/* // Button to switch between two buttons and a joystick axis */}
+                                                        <Checkbox
+                                                            label="Use Buttons"
+                                                            defaultState={c.useGamepadButtons}
+                                                            onClick={val => {
+                                                                setUseButtons(prevState => ({
+                                                                    ...prevState,
+                                                                    [c.inputName]: val,
+                                                                }))
+                                                                c.useGamepadButtons = val
+                                                            }}
+                                                        />
+                                                        {/* // Button to invert the joystick axis */}
+                                                        <Checkbox
+                                                            label="Joystick Inverted"
+                                                            defaultState={c.joystickInverted}
+                                                            onClick={val => {
+                                                                c.joystickInverted = val
+                                                            }}
+                                                        />
+                                                    </div>
+                                                )
+                                            }
+                                        }
+                                    })}
+                                </Stack>
+                            </>
+                        ) : (
+                            <Label>No robot selected.</Label>
+                        )}
+                    </div>
+                </Stack>
+            </>
         </Modal>
     )
 }

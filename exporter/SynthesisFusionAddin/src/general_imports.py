@@ -1,5 +1,4 @@
 import json
-import logging.handlers
 import os
 import pathlib
 import sys
@@ -12,19 +11,15 @@ from types import FunctionType
 import adsk.core
 import adsk.fusion
 
+from .GlobalManager import *
+from .Logging import getLogger
+from .strings import *
+
+logger = getLogger()
+
 # hard coded to bypass errors for now
 PROTOBUF = True
 DEBUG = True
-
-try:
-    from .GlobalManager import *
-    from .logging import setupLogger
-    from .strings import *
-
-    (root_logger, log_handler) = setupLogger()
-except ImportError as e:
-    # nothing to really do here
-    print(e)
 
 try:
     path = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
@@ -42,15 +37,11 @@ try:
     deps.installDependencies()
 
 except:
-    logging.getLogger(f"{INTERNAL_ID}.import_manager").error("Failed\n{}".format(traceback.format_exc()))
-try:
-    # simple analytics endpoint
-    # A_EP = AnalyticsEndpoint("UA-188467590-1", 1)
-    A_EP = None
+    logger.error("Failed:\n{}".format(traceback.format_exc()))
 
+try:
     # Setup the global state
     gm: GlobalManager = GlobalManager()
     my_addin_path = os.path.dirname(os.path.realpath(__file__))
 except:
-    # should also log this
-    logging.getLogger(f"{INTERNAL_ID}.import_manager").error("Failed\n{}".format(traceback.format_exc()))
+    logger.error("Failed:\n{}".format(traceback.format_exc()))

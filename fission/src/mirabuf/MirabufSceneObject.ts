@@ -106,7 +106,7 @@ class MirabufSceneObject extends SceneObject {
 
         // creating nametag for robots
         if (this.miraType === MiraType.ROBOT) {
-            this._nameTag = new SceneOverlayTag("Ernie")
+            this._nameTag = new SceneOverlayTag(() => (this._brain ? this._brain.inputSchemeName : "Not Configured"))
         }
     }
 

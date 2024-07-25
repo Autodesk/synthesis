@@ -1,11 +1,9 @@
-import logging
-import traceback
-
 import adsk.core
 
-from ..general_imports import INTERNAL_ID
+from ..Logging import logFailure
 
 
+@logFailure
 def createTableInput(
     id: str,
     name: str,
@@ -17,20 +15,16 @@ def createTableInput(
     columnSpacing: int = 0,
     rowSpacing: int = 0,
 ) -> adsk.core.TableCommandInput:
-    try:
-        input = inputs.addTableCommandInput(id, name, columns, ratio)
-        input.minimumVisibleRows = minRows
-        input.maximumVisibleRows = maxRows
-        input.columnSpacing = columnSpacing
-        input.rowSpacing = rowSpacing
+    input = inputs.addTableCommandInput(id, name, columns, ratio)
+    input.minimumVisibleRows = minRows
+    input.maximumVisibleRows = maxRows
+    input.columnSpacing = columnSpacing
+    input.rowSpacing = rowSpacing
 
-        return input
-    except BaseException:
-        logging.getLogger("{INTERNAL_ID}.UI.CreateCommandInputsHelper").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+    return input
 
 
+@logFailure
 def createBooleanInput(
     id: str,
     name: str,
@@ -41,20 +35,16 @@ def createBooleanInput(
     enabled: bool = True,
     isCheckBox: bool = True,
 ) -> adsk.core.BoolValueCommandInput:
-    try:
-        input = inputs.addBoolValueInput(id, name, isCheckBox)
-        input.value = checked
-        input.isEnabled = enabled
-        input.tooltip = tooltip
-        input.tooltipDescription = tooltipadvanced
+    input = inputs.addBoolValueInput(id, name, isCheckBox)
+    input.value = checked
+    input.isEnabled = enabled
+    input.tooltip = tooltip
+    input.tooltipDescription = tooltipadvanced
 
-        return input
-    except BaseException:
-        logging.getLogger("{INTERNAL_ID}.UI.CreateCommandInputsHelper").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+    return input
 
 
+@logFailure
 def createTextBoxInput(
     id: str,
     name: str,
@@ -70,27 +60,22 @@ def createTextBoxInput(
     tooltip: str = "",
     advanced_tooltip: str = "",
 ) -> adsk.core.TextBoxCommandInput:
-    try:
-        if bold:
-            text = f"<b>{text}</b>"
+    if bold:
+        text = f"<b>{text}</b>"
 
-        if italics:
-            text = f"<i>{text}</i>"
+    if italics:
+        text = f"<i>{text}</i>"
 
-        outputText = f"""<body style='background-color:{background};'>
-            <div align='{alignment}'>
-            <p style='font-size:{fontSize}px'>
-            {text}
-            </p>
-            </body>
-        """
+    outputText = f"""<body style='background-color:{background};'>
+        <div align='{alignment}'>
+        <p style='font-size:{fontSize}px'>
+        {text}
+        </p>
+        </body>
+    """
 
-        input = inputs.addTextBoxCommandInput(id, name, outputText, rowCount, read)
-        input.tooltip = tooltip
-        input.tooltipDescription = advanced_tooltip
+    input = inputs.addTextBoxCommandInput(id, name, outputText, rowCount, read)
+    input.tooltip = tooltip
+    input.tooltipDescription = advanced_tooltip
 
-        return input
-    except BaseException:
-        logging.getLogger("{INTERNAL_ID}.UI.CreateCommandInputsHelper").error(
-            "Failed:\n{}".format(traceback.format_exc())
-        )
+    return input
