@@ -6,9 +6,7 @@ These options are saved per-design and are passed to the parser upon design expo
 import json
 import os
 import platform
-from dataclasses import dataclass, field, fields, is_dataclass
-from enum import Enum, EnumType
-from typing import get_origin
+from dataclasses import dataclass, field, fields
 
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
@@ -25,6 +23,8 @@ from ..Types import (
     PhysicalDepth,
     PreferredUnits,
     Wheel,
+    encodeNestedObjects,
+    makeObjectFromJson,
 )
 
 
@@ -77,37 +77,3 @@ class ExporterOptions:
         for field in fields(self):
             data = json.dumps(getattr(self, field.name), default=encodeNestedObjects, indent=4)
             designAttributes.add(INTERNAL_ID, field.name, data)
-
-
-# Transition: AARD-####
-# Should be added into the refactored type module.
-PRIMITIVES = (bool, str, int, float, type(None))
-
-
-def encodeNestedObjects(obj: any) -> any:
-    if isinstance(obj, Enum):
-        return obj.value
-    elif hasattr(obj, "__dict__"):
-        return {key: encodeNestedObjects(value) for key, value in obj.__dict__.items()}
-    else:
-        assert isinstance(obj, PRIMITIVES)
-        return obj
-
-
-def makeObjectFromJson(objType: type, data: any) -> any:
-    if isinstance(objType, EnumType):
-        return objType(data)
-    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
-        return data
-    elif get_origin(objType) is list:
-        return [makeObjectFromJson(objType.__args__[0], item) for item in data]
-
-    obj = objType()
-    assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
-    for field in fields(obj):
-        if field.name in data:
-            setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
-        else:
-            setattr(obj, field.name, field.default)
-
-    return obj
