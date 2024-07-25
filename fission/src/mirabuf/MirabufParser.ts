@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
 import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { transcode } from "buffer"
 
 export type RigidNodeId = string
 
@@ -233,6 +234,7 @@ class MirabufParser {
         }
         this._directedGraph = directedGraph
 
+        // Transition: GH-1014
         const partDefinitions: { [k: string]: mirabuf.IPartDefinition } | null | undefined =
             this.assembly.data?.parts?.partDefinitions
         if (!partDefinitions) {

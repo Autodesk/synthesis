@@ -17,7 +17,7 @@ from .Utilities import *
 OPACITY_RAMPING_CONSTANT = 14.0
 
 # Update tables as needed for UX and needed materials
-static_friction_coeffs = {
+STATIC_FRICTION_COEFFS = {
     "Aluminum": 1.1,
     "Steel, Cast": 0.75,
     "Steel, Mild": 0.75,
@@ -25,7 +25,7 @@ static_friction_coeffs = {
     "ABS Plastic": 0.7,
 }
 
-dynamic_friction_coeffs = {
+DYNAMIC_FRICTION_COEFFS = {
     "Aluminum": 1.1,
     "Steel, Cast": 0.75,
     "Steel, Mild": 0.75,
@@ -40,11 +40,9 @@ def _MapAllPhysicalMaterials(
     options: ExporterOptions,
     progressDialog: PDMessage,
 ) -> None:
-    logging.getLogger(INTERNAL_ID).info("In Materials")
     setDefaultMaterial(materials.physicalMaterials["default"], options)
 
     for material in physicalMaterials:
-
         progressDialog.addMaterial(material.name)
 
         if progressDialog.wasCancelled():
@@ -79,8 +77,6 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material (protomaterial): proto material mirabuf
         options (parseoptions): parse options
     """
-    string: str = ""
-
     construct_info("", proto_material, fus_object=fusion_material)
 
     proto_material.deformable = False
@@ -96,8 +92,8 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material.dynamic_friction = options.frictionOverrideCoeff
         proto_material.static_friction = options.frictionOverrideCoeff
     else:
-        proto_material.dynamic_friction = dynamic_friction_coeffs.get(fusion_material.name, 0.5)
-        proto_material.static_friction = static_friction_coeffs.get(fusion_material.name, 0.5)
+        proto_material.dynamic_friction = DYNAMIC_FRICTION_COEFFS.get(fusion_material.name, 0.5)
+        proto_material.static_friction = STATIC_FRICTION_COEFFS.get(fusion_material.name, 0.5)
 
     proto_material.restitution = 0.5
     proto_material.description = f"{fusion_material.name} exported from FUSION"
