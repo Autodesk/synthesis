@@ -137,7 +137,7 @@ function Synthesis() {
             openPanel("scoreboard")
         }
     })
-    
+
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", true)
