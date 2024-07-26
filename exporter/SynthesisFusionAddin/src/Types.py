@@ -1,7 +1,123 @@
 import os
 import pathlib
 import platform
-from typing import Union
+from dataclasses import dataclass, field, fields, is_dataclass
+from enum import Enum, EnumType
+from typing import Union, get_origin
+
+# Not 100% sure what this is for - Brandon
+JointParentType = Enum("JointParentType", ["ROOT", "END"])
+
+WheelType = Enum("WheelType", ["STANDARD", "OMNI", "MECANUM"])
+SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
+ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
+PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
+ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
+
+
+@dataclass
+class Wheel:
+    jointToken: str = field(default=None)
+    wheelType: WheelType = field(default=None)
+    signalType: SignalType = field(default=None)
+
+
+@dataclass
+class Joint:
+    jointToken: str = field(default=None)
+    parent: JointParentType = field(default=None)
+    signalType: SignalType = field(default=None)
+    speed: float = field(default=None)
+    force: float = field(default=None)
+
+    # Transition: AARD-1865
+    # Should consider changing how the parser handles wheels and joints as there is overlap between
+    # `Joint` and `Wheel` that should be avoided
+    # This overlap also presents itself in 'ConfigCommand.py' and 'JointConfigTab.py'
+    isWheel: bool = field(default=False)
+
+
+@dataclass
+class Gamepiece:
+    occurrenceToken: str = field(default=None)
+    weight: float = field(default=None)
+    friction: float = field(default=None)
+
+
+class PhysicalDepth(Enum):
+    # No Physical Properties are generated
+    NoPhysical = 0
+
+    # Only Body Physical Objects are generated
+    Body = 1
+
+    # Only Occurrence that contain Bodies and Bodies have Physical Properties
+    SurfaceOccurrence = 2
+
+    # Every Single Occurrence has Physical Properties even if empty
+    AllOccurrence = 3
+
+
+class ModelHierarchy(Enum):
+    # Model exactly as it is shown in Fusion in the model view tree
+    FusionAssembly = 0
+
+    # Flattened Assembly with all bodies as children of the root object
+    FlatAssembly = 1
+
+    # A Model represented with parented objects that are part of a jointed tree
+    PhysicalAssembly = 2
+
+    # Generates the root assembly as a single mesh and stores the associated data
+    SingleMesh = 3
+
+
+class LBS(float):
+    """Mass Unit in Pounds."""
+
+
+class KG(float):
+    """Mass Unit in Kilograms."""
+
+
+def toLbs(kgs: float) -> LBS:
+    return LBS(round(kgs * 2.2062, 2))
+
+
+def toKg(pounds: float) -> KG:
+    return KG(round(pounds / 2.2062, 2))
+
+
+PRIMITIVES = (bool, str, int, float, type(None))
+
+
+def encodeNestedObjects(obj: any) -> any:
+    if isinstance(obj, Enum):
+        return obj.value
+    elif hasattr(obj, "__dict__"):
+        return {key: encodeNestedObjects(value) for key, value in obj.__dict__.items()}
+    else:
+        assert isinstance(obj, PRIMITIVES)
+        return obj
+
+
+def makeObjectFromJson(objType: type, data: any) -> any:
+    if isinstance(objType, EnumType):
+        return objType(data)
+    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
+        return data
+    elif get_origin(objType) is list:
+        return [makeObjectFromJson(objType.__args__[0], item) for item in data]
+
+    obj = objType()
+    assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
+    for field in fields(obj):
+        if field.name in data:
+            setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
+        else:
+            setattr(obj, field.name, field.default)
+
+    return obj
 
 
 class OString:
@@ -62,7 +178,6 @@ class OString:
             return "Linux"
         else:
             raise OSError(2, "No Operating System Recognized", f"{osName}")
-            return None
 
     def AssertEquals(self, comparing: object):
         """Compares the two OString objects
