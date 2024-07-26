@@ -1,5 +1,4 @@
 import importlib.machinery
-import logging
 import os
 import platform
 import subprocess
@@ -9,19 +8,20 @@ from pathlib import Path
 import adsk.core
 import adsk.fusion
 
-from .general_imports import INTERNAL_ID
+from .Logging import getLogger, logFailure
 
-logger = logging.getLogger(INTERNAL_ID)
+logger = getLogger()
 system = platform.system()
 
 # Since the Fusion python runtime is separate from the system python runtime we need to do some funky things
 # in order to download and install python packages separate from the standard library.
 PIP_DEPENDENCY_VERSION_MAP: dict[str, str] = {
     "protobuf": "5.27.2",
+    "requests": "2.32.3",
 }
 
 
-# TODO: Waiting on GH-1010 for failure logging.
+@logFailure
 def getInternalFusionPythonInstillationFolder() -> str:
     # Thank you Kris Kaplan
     # Find the folder location where the Autodesk python instillation keeps the 'os' standard library module.
@@ -60,7 +60,7 @@ def verifyCompiledProtoImports() -> bool:
 
         return True
     except ImportError:
-        # TODO: Add logging from GH-1010
+        logger.warn("Could not resolve compiled proto dependencies")
         return False
 
 
@@ -79,15 +79,19 @@ def packagesOutOfDate(installedPackages: dict[str, str]) -> bool:
     return False
 
 
-# TODO: GH-1010 for log failure
+@logFailure
 def resolveDependencies() -> bool | None:
     app = adsk.core.Application.get()
     ui = app.userInterface
+    if not verifyCompiledProtoImports():
+        ui.messageBox("Missing required compiled protobuf files.")
+        return False
+
     if app.isOffLine:
         # If we have gotten this far that means that an import error was thrown for possible missing
         # dependencies... And we can't try to download them because we have no internet... ¯\_(ツ)_/¯
         ui.messageBox("Unable to resolve dependencies while not connected to the internet.")
-        raise RuntimeError("Internet required to check dependencies")
+        return False
 
     # This is important to reduce the chance of hang on startup.
     adsk.doEvents()
@@ -131,16 +135,9 @@ def resolveDependencies() -> bool | None:
         progressBar.message = f"Installing {dep}..."
         adsk.doEvents()
 
-        # TODO: Will need to update logging after GH-1010
         result = executeCommand(pythonExecutablePath, "-m", "pip", "install", f"{dep}=={version}").returncode
         if result:
-            logging.getLogger(f"{INTERNAL_ID}").warn(f'Dep installation "{dep}" exited with code "{result}"')
+            logger.warn(f'Dep installation "{dep}" exited with code "{result}"')
 
     progressBar.hide()
-
-    # TODO: Will need to update logging after GH-1010
-    if not verifyCompiledProtoImports():
-        ui.messageBox("Missing required compiled protobuf files.")
-        return False
-
     return True

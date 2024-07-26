@@ -8,6 +8,7 @@ import adsk.core
 from .src.Dependencies import resolveDependencies
 
 try:
+    from .src.APS import APS
     from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
     from .src.Logging import getLogger, logFailure, setupLogger
     from .src.UI import (
@@ -20,12 +21,7 @@ try:
         ShowAPSAuthCommand,
     )
     from .src.UI.Toolbar import Toolbar
-
-    # END OF RESTRICTION
-    # Transition: AARD-1721
-    # Should attempt to fix this ordering scheme within AARD-1741
-    from .src.APS import APS  # isort:skip
-except:
+except (ImportError, ModuleNotFoundError):
     result = resolveDependencies()
     if result:
         adsk.core.Application.get().userInterface.messageBox("Installed required dependencies, please restart Fusion.")
