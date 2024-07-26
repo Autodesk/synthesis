@@ -76,7 +76,7 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, field, open
                     value={DeleteIcon}
                     onClick={() => {
                         deleteZone()
-                        save()
+                        // Saves in the delete function instead because zones isn't updated in time
                     }}
                     colorOverrideClass="bg-cancel-button hover:brightness-90"
                 />
@@ -163,6 +163,10 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                                     save={() => saveZones(zones, selectedField)}
                                     deleteZone={() => {
                                         setZones(zones.filter((_, idx) => idx !== i))
+                                        saveZones(
+                                            zones.filter((_, idx) => idx !== i),
+                                            selectedField
+                                        )
                                     }}
                                 />
                             ))}
@@ -187,7 +191,6 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
 
                             saveZones(zones, selectedField)
 
-                            //zones.push(newZone)
                             SelectedZone.zone = newZone
                             SelectedZone.field = selectedField
 

@@ -216,7 +216,7 @@ const initialPanels: ReactElement[] = [
     <RobotSwitchPanel key="multibot" panelId="multibot" openLocation="right" sidePadding={8} />,
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
-    <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8}/>,
+    <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
     <ConfigureGamepiecePickupPanel
         key="config-gamepiece-pickup"
         panelId="config-gamepiece-pickup"
