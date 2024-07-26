@@ -263,7 +263,9 @@ class APS {
             : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
 
         try {
-            const res = await fetch(`${ENDPOINT_SYNTHESIS_CODE}?code=${code}&redirect_uri=${encodeURIComponent(callbackUrl)}`)
+            const res = await fetch(
+                `${ENDPOINT_SYNTHESIS_CODE}?code=${code}&redirect_uri=${encodeURIComponent(callbackUrl)}`
+            )
             const json = await res.json()
             if (!res.ok) {
                 World.AnalyticsSystem?.Exception("APS Login Failure")

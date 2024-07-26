@@ -91,7 +91,7 @@ class MirabufCachingService {
             .then(x => x.arrayBuffer())
         World.AnalyticsSystem?.Event("Remote Download", {
             type: miraType == MiraType.ROBOT ? "robot" : "field",
-            fileSize: miraBuff.byteLength
+            fileSize: miraBuff.byteLength,
         })
         return await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
     }
@@ -117,7 +117,7 @@ class MirabufCachingService {
 
         World.AnalyticsSystem?.Event("APS Download", {
             type: miraType == MiraType.ROBOT ? "robot" : "field",
-            fileSize: miraBuff.byteLength
+            fileSize: miraBuff.byteLength,
         })
 
         return await MirabufCachingService.StoreInCache(data.id, miraBuff, miraType)
@@ -228,7 +228,7 @@ class MirabufCachingService {
                     key: id,
                     type: miraType == MiraType.ROBOT ? "robot" : "field",
                     assemblyName: assembly.info!.name!,
-                    fileSize: buff.byteLength
+                    fileSize: buff.byteLength,
                 })
                 return assembly
             } else {
