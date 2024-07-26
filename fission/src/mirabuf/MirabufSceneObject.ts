@@ -9,7 +9,6 @@ import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -17,9 +16,12 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
+import Brain from "@/systems/simulation/Brain"
+import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 const DEBUG_BODIES = false
 
@@ -32,7 +34,7 @@ class MirabufSceneObject extends SceneObject {
     private _assemblyName: string
     private _mirabufInstance: MirabufInstance
     private _mechanism: Mechanism
-    private _brain: SynthesisBrain | undefined
+    private _brain: Brain | undefined
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
@@ -111,7 +113,9 @@ class MirabufSceneObject extends SceneObject {
 
         // creating nametag for robots
         if (this.miraType === MiraType.ROBOT) {
-            this._nameTag = new SceneOverlayTag(() => (this._brain ? this._brain.inputSchemeName : "Not Configured"))
+            this._nameTag = new SceneOverlayTag(() =>
+                this._brain instanceof SynthesisBrain ? this._brain.inputSchemeName : "Not Configured"
+            )
         }
     }
 
@@ -149,7 +153,7 @@ class MirabufSceneObject extends SceneObject {
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-        this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
+        this._brain = new WPILibBrain(this._mechanism)
         simLayer.SetBrain(this._brain)
 
         // Intake
@@ -159,7 +163,8 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Update(): void {
-        if (InputSystem.getInput("eject", this._brain?.brainIndex ?? -1)) {
+        const brainIndex = this._brain instanceof SynthesisBrain ? this._brain.brainIndex ?? -1 : -1
+        if (InputSystem.getInput("eject", brainIndex)) {
             this.Eject()
         }
 
@@ -253,7 +258,7 @@ class MirabufSceneObject extends SceneObject {
         this._scoringZones = []
 
         this._mechanism.nodeToBody.forEach(bodyId => {
-            World.PhysicsSystem.RemoveBodyAssocation(bodyId)
+            World.PhysicsSystem.RemoveBodyAssociation(bodyId)
         })
 
         this._nameTag?.Dispose()
@@ -271,7 +276,7 @@ class MirabufSceneObject extends SceneObject {
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
 
-        this._brain?.clearControls()
+        if (this._brain && this._brain instanceof SynthesisBrain) this._brain?.clearControls()
     }
 
     public Eject() {

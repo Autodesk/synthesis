@@ -29,7 +29,6 @@ import PracticeSettingsModal from "@/modals/configuring/PracticeSettingsModal"
 import RoboRIOModal from "@/modals/configuring/RoboRIOModal"
 import SettingsModal from "@/modals/configuring/SettingsModal"
 import RCConfigEncoderModal from "@/modals/configuring/rio-config/RCConfigEncoderModal"
-import RCConfigPwmGroupModal from "@/modals/configuring/rio-config/RCConfigPwmGroupModal"
 import RCCreateDeviceModal from "@/modals/configuring/rio-config/RCCreateDeviceModal"
 import DeleteAllThemesModal from "@/modals/configuring/theme-editor/DeleteAllThemesModal"
 import DeleteThemeModal from "@/modals/configuring/theme-editor/DeleteThemeModal"
@@ -61,6 +60,8 @@ import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
+import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
+import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
 import DebugPanel from "./ui/panels/DebugPanel.tsx"
 import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
@@ -200,7 +201,8 @@ const initialModals = [
     <DeleteAllThemesModal key="delete-all-themes" modalId="delete-all-themes" />,
     <NewThemeModal key="new-theme" modalId="new-theme" />,
     <RCCreateDeviceModal key="create-device" modalId="create-device" />,
-    <RCConfigPwmGroupModal key="config-pwm" modalId="config-pwm" />,
+    <RCConfigPWMGroupModal key="config-pwm" modalId="config-pwm" />,
+    <RCConfigCANGroupModal key="config-can" modalId="config-can" />,
     <RCConfigEncoderModal key="config-encoder" modalId="config-encoder" />,
     <MatchModeModal key="match-mode" modalId="match-mode" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,

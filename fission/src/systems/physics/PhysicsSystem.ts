@@ -135,7 +135,7 @@ class PhysicsSystem extends WorldSystem {
         this._bodyAssociations.set(assocation.associatedBody, assocation)
     }
 
-    public RemoveBodyAssocation(bodyId: Jolt.BodyID) {
+    public RemoveBodyAssociation(bodyId: Jolt.BodyID) {
         this._bodyAssociations.delete(bodyId.GetIndexAndSequenceNumber())
     }
 
@@ -399,6 +399,7 @@ class PhysicsSystem extends WorldSystem {
                         parentBody: bodyIdA,
                         childBody: bodyIdB,
                         constraint: x,
+                        info: jInst.info ?? undefined, // remove possibility for null
                     })
                 )
             }
