@@ -6,9 +6,7 @@ import sys
 def main(args: list[str] = sys.argv[1:]) -> None:
     dir = args[0] if len(args) else "."
     if "pyproject.toml" not in os.listdir(dir):
-        print(
-            "WARNING: Configuration file for autoformatters was not found. Are you sure you specified the root DIR?"
-        )
+        print("WARNING: Configuration file for autoformatters was not found. Are you sure you specified the root DIR?")
 
     for command in ["isort", "black"]:
         try:

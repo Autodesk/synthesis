@@ -30,9 +30,7 @@ from ...Logging import logFailure
 
 @logFailure
 def GetPhysicalProperties(
-    fusionObject: Union[
-        adsk.fusion.BRepBody, adsk.fusion.Occurrence, adsk.fusion.Component
-    ],
+    fusionObject: Union[adsk.fusion.BRepBody, adsk.fusion.Occurrence, adsk.fusion.Component],
     physicalProperties: types_pb2.PhysicalProperties,
     level=1,
 ):

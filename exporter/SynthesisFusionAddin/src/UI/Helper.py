@@ -25,9 +25,7 @@ def checkAttribute() -> bool:
             return connected.value
         return False
     except:
-        app.userInterface.messageBox(
-            f"Could not access the attributes of the file \n -- {traceback.format_exc()}."
-        )
+        app.userInterface.messageBox(f"Could not access the attributes of the file \n -- {traceback.format_exc()}.")
         return False
 
 
@@ -48,9 +46,7 @@ def addUnityAttribute() -> bool or None:
         return None
 
     except:
-        app.userInterface.messageBox(
-            f"Could not access the attributes of the file \n -- {traceback.format_exc()}."
-        )
+        app.userInterface.messageBox(f"Could not access the attributes of the file \n -- {traceback.format_exc()}.")
         return False
 
 
@@ -71,9 +67,7 @@ def openPanel() -> None:
             gm.app.data.isDataPanelVisible = False
     else:
         func_list = [o for o in getmembers(Events, isfunction)]
-        palette_new = HUI.HPalette(
-            name, APP_TITLE, True, True, False, 400, 500, func_list
-        )
+        palette_new = HUI.HPalette(name, APP_TITLE, True, True, False, 400, 500, func_list)
         gm.elements.append(palette_new)
 
     return

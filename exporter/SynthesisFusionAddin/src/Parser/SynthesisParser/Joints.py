@@ -88,9 +88,7 @@ def populateJoints(
 
     # Add the rest of the dynamic objects
 
-    for joint in list(design.rootComponent.allJoints) + list(
-        design.rootComponent.allAsBuiltJoints
-    ):
+    for joint in list(design.rootComponent.allJoints) + list(design.rootComponent.allAsBuiltJoints):
         if joint.isSuppressed:
             continue
 
@@ -124,10 +122,7 @@ def populateJoints(
                     signal.io = signal_pb2.IOType.OUTPUT
 
                     # really could just map the enum to a friggin string
-                    if (
-                        parse_joints.signalType != SignalType.PASSIVE
-                        and assembly.dynamic
-                    ):
+                    if parse_joints.signalType != SignalType.PASSIVE and assembly.dynamic:
                         if parse_joints.signalType == SignalType.CAN:
                             signal.device_type = signal_pb2.DeviceType.CANBUS
                         elif parse_joints.signalType == SignalType.PWM:
@@ -214,9 +209,7 @@ def _addJointInstance(
                 joint_definition.user_data.data["wheel"] = "true"
 
                 # Must convert type 'enum' to int to store wheelType in mirabuf
-                joint_definition.user_data.data["wheelType"] = str(
-                    wheel.wheelType.value - 1
-                )
+                joint_definition.user_data.data["wheelType"] = str(wheel.wheelType.value - 1)
 
                 # if it exists get it and overwrite the signal type
                 if joint_instance.signal_reference:
@@ -250,9 +243,7 @@ def _addRigidGroup(joint: adsk.fusion.Joint, assembly: assembly_pb2.Assembly):
     assembly.data.joints.rigid_groups.append(mira_group)
 
 
-def _motionFromJoint(
-    fusionMotionDefinition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint
-) -> None:
+def _motionFromJoint(fusionMotionDefinition: adsk.fusion.JointMotion, proto_joint: joint_pb2.Joint) -> None:
     # if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
     # create the DOF depending on what kind of information the joint has
 
@@ -266,16 +257,12 @@ def _motionFromJoint(
         6: noop,  # TODO: Implement
     }
 
-    fillJointMotionFunc = fillJointMotionFuncSwitcher.get(
-        fusionMotionDefinition.jointType, lambda: None
-    )
+    fillJointMotionFunc = fillJointMotionFuncSwitcher.get(fusionMotionDefinition.jointType, lambda: None)
 
     fillJointMotionFunc(fusionMotionDefinition, proto_joint)
 
 
-def fillRevoluteJointMotion(
-    revoluteMotion: adsk.fusion.RevoluteJointMotion, proto_joint: joint_pb2.Joint
-):
+def fillRevoluteJointMotion(revoluteMotion: adsk.fusion.RevoluteJointMotion, proto_joint: joint_pb2.Joint):
     """#### Fill Protobuf revolute joint motion data
 
     Args:
@@ -317,9 +304,7 @@ def fillRevoluteJointMotion(
         dof.axis.z = int(rotationAxis == 1)
 
 
-def fillSliderJointMotion(
-    sliderMotion: adsk.fusion.SliderJointMotion, proto_joint: joint_pb2.Joint
-) -> None:
+def fillSliderJointMotion(sliderMotion: adsk.fusion.SliderJointMotion, proto_joint: joint_pb2.Joint) -> None:
     """#### Fill Protobuf slider joint motion data
 
     Args:
@@ -390,9 +375,7 @@ def _searchForGrounded(
     return None
 
 
-def _jointOrigin(
-    fusionJoint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]
-) -> adsk.core.Point3D:
+def _jointOrigin(fusionJoint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]) -> adsk.core.Point3D:
     """#### Joint Origin Internal Finder that was orignally created for Synthesis by Liam Wang
 
     Args:
@@ -404,8 +387,7 @@ def _jointOrigin(
     geometryOrOrigin = (
         (
             fusionJoint.geometryOrOriginOne
-            if fusionJoint.geometryOrOriginOne.objectType
-            == "adsk::fusion::JointGeometry"
+            if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
             else fusionJoint.geometryOrOriginTwo
         )
         if fusionJoint.objectType == "adsk::fusion::Joint"
@@ -424,9 +406,7 @@ def _jointOrigin(
                 newEnt = ent.createForAssemblyContext(fusionJoint.occurrenceOne)
                 min = newEnt.boundingBox.minPoint
                 max = newEnt.boundingBox.maxPoint
-                org = adsk.core.Point3D.create(
-                    (max.x + min.x) / 2.0, (max.y + min.y) / 2.0, (max.z + min.z) / 2.0
-                )
+                org = adsk.core.Point3D.create((max.x + min.x) / 2.0, (max.y + min.y) / 2.0, (max.z + min.z) / 2.0)
                 return org  # ent.startVertex.geometry
             else:
                 return geometryOrOrigin.origin
@@ -441,19 +421,11 @@ def _jointOrigin(
     else:  # adsk::fusion::JointOrigin
         origin = geometryOrOrigin.geometry.origin
         # todo: Is this the correct way to calculate a joint origin's true location? Why isn't this exposed in the API?
-        offsetX = (
-            0 if geometryOrOrigin.offsetX is None else geometryOrOrigin.offsetX.value
-        )
-        offsetY = (
-            0 if geometryOrOrigin.offsetY is None else geometryOrOrigin.offsetY.value
-        )
-        offsetZ = (
-            0 if geometryOrOrigin.offsetZ is None else geometryOrOrigin.offsetZ.value
-        )
+        offsetX = 0 if geometryOrOrigin.offsetX is None else geometryOrOrigin.offsetX.value
+        offsetY = 0 if geometryOrOrigin.offsetY is None else geometryOrOrigin.offsetY.value
+        offsetZ = 0 if geometryOrOrigin.offsetZ is None else geometryOrOrigin.offsetZ.value
         # noinspection PyArgumentList
-        return adsk.core.Point3D.create(
-            origin.x + offsetX, origin.y + offsetY, origin.z + offsetZ
-        )
+        return adsk.core.Point3D.create(origin.x + offsetX, origin.y + offsetY, origin.z + offsetZ)
 
 
 def createJointGraph(
@@ -489,26 +461,17 @@ def createJointGraph(
         current_node = node_map[supplied_joint.jointToken]
         if supplied_joint.parent == JointParentType.ROOT:
             node_map["ground"].children.append(node_map[supplied_joint.jointToken])
-        elif (
-            node_map[supplied_joint.parent.value] is not None
-            and node_map[supplied_joint.jointToken] is not None
-        ):
-            node_map[supplied_joint.parent].children.append(
-                node_map[supplied_joint.jointToken]
-            )
+        elif node_map[supplied_joint.parent.value] is not None and node_map[supplied_joint.jointToken] is not None:
+            node_map[supplied_joint.parent].children.append(node_map[supplied_joint.jointToken])
         else:
-            logger.error(
-                f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.jointToken}"
-            )
+            logger.error(f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.jointToken}")
 
     for node in node_map.values():
         # append everything at top level to isolate kinematics
         joint_tree.nodes.append(node)
 
 
-def addWheelsToGraph(
-    wheels: list, rootNode: types_pb2.Node, joint_tree: types_pb2.GraphContainer
-):
+def addWheelsToGraph(wheels: list, rootNode: types_pb2.Node, joint_tree: types_pb2.GraphContainer):
     for wheel in wheels:
         # wheel name
         # wheel signal

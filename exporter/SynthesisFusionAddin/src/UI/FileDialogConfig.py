@@ -9,9 +9,7 @@ from ..general_imports import *
 from ..Types import OString
 
 
-def saveFileDialog(
-    defaultPath: str | None = None, defaultName: str | None = None
-) -> str | bool:
+def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | bool:
     """Function to generate the Save File Dialog for the Hellion Data files
 
     Args:

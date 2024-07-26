@@ -35,9 +35,7 @@ class Parser:
         design: adsk.fusion.Design = app.activeDocument.design
 
         if not getAuth():
-            app.userInterface.messageBox(
-                "APS Login Required for Uploading.", "APS Login"
-            )
+            app.userInterface.messageBox("APS Login Required for Uploading.", "APS Login")
             return
 
         assembly_out = assembly_pb2.Assembly()
@@ -62,9 +60,7 @@ class Parser:
         progressDialog.title = "Exporting to Synthesis Format"
         progressDialog.minimumValue = 0
         progressDialog.maximumValue = totalIterations
-        progressDialog.show(
-            "Synthesis Export", "Currently on %v of %m", 0, totalIterations
-        )
+        progressDialog.show("Synthesis Export", "Currently on %v of %m", 0, totalIterations)
 
         # this is the formatter for the progress dialog now
         self.pdMessage = PDMessage.PDMessage(
@@ -134,9 +130,7 @@ class Parser:
             self.pdMessage,
         )
 
-        JointHierarchy.BuildJointPartHierarchy(
-            design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
-        )
+        JointHierarchy.BuildJointPartHierarchy(design, assembly_out.data.joints, self.exporterOptions, self.pdMessage)
 
         # These don't have an effect, I forgot how this is suppose to work
         # progressDialog.message = "Taking Photo for thumbnail..."
@@ -185,12 +179,7 @@ class Parser:
             project_id = project.id
             folder_id = project.rootFolder.id
             file_name = f"{self.exporterOptions.fileLocation}.mira"
-            if (
-                upload_mirabuf(
-                    project_id, folder_id, file_name, assembly_out.SerializeToString()
-                )
-                is None
-            ):
+            if upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString()) is None:
                 raise RuntimeError("Could not upload to APS")
         else:
             assert self.exporterOptions.exportLocation == ExportLocation.DOWNLOAD
@@ -225,15 +214,9 @@ class Parser:
                 joint_hierarchy_out = f"{joint_hierarchy_out}  |- ground\n"
             else:
                 newNode = assembly_out.data.joints.joint_instances[node.value]
-                jointDefinition = assembly_out.data.joints.joint_definitions[
-                    newNode.joint_reference
-                ]
+                jointDefinition = assembly_out.data.joints.joint_definitions[newNode.joint_reference]
 
-                wheel_ = (
-                    " wheel : true"
-                    if (jointDefinition.user_data.data["wheel"] != "")
-                    else ""
-                )
+                wheel_ = " wheel : true" if (jointDefinition.user_data.data["wheel"] != "") else ""
 
                 joint_hierarchy_out = (
                     f"{joint_hierarchy_out}  |---> {jointDefinition.info.name} "
@@ -244,14 +227,8 @@ class Parser:
                     joint_hierarchy_out = f"{joint_hierarchy_out} |---> ground\n"
                 else:
                     newNode = assembly_out.data.joints.joint_instances[child.value]
-                    jointDefinition = assembly_out.data.joints.joint_definitions[
-                        newNode.joint_reference
-                    ]
-                    wheel_ = (
-                        " wheel : true"
-                        if (jointDefinition.user_data.data["wheel"] != "")
-                        else ""
-                    )
+                    jointDefinition = assembly_out.data.joints.joint_definitions[newNode.joint_reference]
+                    wheel_ = " wheel : true" if (jointDefinition.user_data.data["wheel"] != "") else ""
                     joint_hierarchy_out = (
                         f"{joint_hierarchy_out}  |- {jointDefinition.info.name} "
                         f"type: {jointDefinition.joint_motion_type} {wheel_}\n"

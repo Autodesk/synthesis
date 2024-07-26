@@ -52,9 +52,7 @@ def _MapAllPhysicalMaterials(
         getPhysicalMaterialData(material, newmaterial, options)
 
 
-def setDefaultMaterial(
-    physical_material: material_pb2.PhysicalMaterial, options: ExporterOptions
-):
+def setDefaultMaterial(physical_material: material_pb2.PhysicalMaterial, options: ExporterOptions):
     construct_info("default", physical_material)
 
     physical_material.description = "A default physical material"
@@ -94,12 +92,8 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
         proto_material.dynamic_friction = options.frictionOverrideCoeff
         proto_material.static_friction = options.frictionOverrideCoeff
     else:
-        proto_material.dynamic_friction = DYNAMIC_FRICTION_COEFFS.get(
-            fusion_material.name, 0.5
-        )
-        proto_material.static_friction = STATIC_FRICTION_COEFFS.get(
-            fusion_material.name, 0.5
-        )
+        proto_material.dynamic_friction = DYNAMIC_FRICTION_COEFFS.get(fusion_material.name, 0.5)
+        proto_material.static_friction = STATIC_FRICTION_COEFFS.get(fusion_material.name, 0.5)
 
     proto_material.restitution = 0.5
     proto_material.description = f"{fusion_material.name} exported from FUSION"
@@ -133,31 +127,17 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
     """
     Mechanical Properties
     """
-    mechanicalProperties.young_mod = materialProperties.itemById(
-        "structural_Young_modulus"
-    ).value
-    mechanicalProperties.poisson_ratio = materialProperties.itemById(
-        "structural_Poisson_ratio"
-    ).value
-    mechanicalProperties.shear_mod = materialProperties.itemById(
-        "structural_Shear_modulus"
-    ).value
-    mechanicalProperties.density = materialProperties.itemById(
-        "structural_Density"
-    ).value
-    mechanicalProperties.damping_coefficient = materialProperties.itemById(
-        "structural_Damping_coefficient"
-    ).value
+    mechanicalProperties.young_mod = materialProperties.itemById("structural_Young_modulus").value
+    mechanicalProperties.poisson_ratio = materialProperties.itemById("structural_Poisson_ratio").value
+    mechanicalProperties.shear_mod = materialProperties.itemById("structural_Shear_modulus").value
+    mechanicalProperties.density = materialProperties.itemById("structural_Density").value
+    mechanicalProperties.damping_coefficient = materialProperties.itemById("structural_Damping_coefficient").value
 
     """
     Strength Properties
     """
-    strengthProperties.yield_strength = materialProperties.itemById(
-        "structural_Minimum_yield_stress"
-    ).value
-    strengthProperties.tensile_strength = materialProperties.itemById(
-        "structural_Minimum_tensile_strength"
-    ).value
+    strengthProperties.yield_strength = materialProperties.itemById("structural_Minimum_yield_stress").value
+    strengthProperties.tensile_strength = materialProperties.itemById("structural_Minimum_tensile_strength").value
     """
     strengthProperties.thermal_treatment = materialProperties.itemById(
         "structural_Thermally_treated"
@@ -255,9 +235,7 @@ def getMaterialAppearance(
             baseColor = properties.itemById("transparent_color").value
             transparent_distance = properties.itemById("transparent_distance").value
 
-            opac = (255.0 * transparent_distance) / (
-                transparent_distance + OPACITY_RAMPING_CONSTANT
-            )
+            opac = (255.0 * transparent_distance) / (transparent_distance + OPACITY_RAMPING_CONSTANT)
             if opac > 255:
                 opac = 255
             elif opac < 0:
@@ -273,11 +251,7 @@ def getMaterialAppearance(
             color.A = baseColor.opacity
         else:
             for prop in fusionAppearance.appearanceProperties:
-                if (
-                    (prop.name == "Color")
-                    and (prop.value is not None)
-                    and (prop.id != "surface_albedo")
-                ):
+                if (prop.name == "Color") and (prop.value is not None) and (prop.id != "surface_albedo"):
                     baseColor = prop.value
                     color.R = baseColor.red
                     color.G = baseColor.green

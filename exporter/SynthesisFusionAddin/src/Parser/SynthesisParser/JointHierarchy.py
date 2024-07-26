@@ -91,9 +91,7 @@ class JointRelationship(enum.Enum):
 
 
 class DynamicOccurrenceNode(GraphNode):
-    def __init__(
-        self, occurrence: adsk.fusion.Occurrence, isGround=False, previous=None
-    ):
+    def __init__(self, occurrence: adsk.fusion.Occurrence, isGround=False, previous=None):
         super().__init__(occurrence)
         self.isGround = isGround
         self.name = occurrence.name
@@ -133,9 +131,7 @@ class DynamicOccurrenceNode(GraphNode):
 
 
 class DynamicEdge(GraphEdge):
-    def __init__(
-        self, relationship: OccurrenceRelationship, node: DynamicOccurrenceNode
-    ):
+    def __init__(self, relationship: OccurrenceRelationship, node: DynamicOccurrenceNode):
         super().__init__(relationship, node)
 
     # should print all in this class
@@ -215,9 +211,7 @@ class JointParser:
         self.grounded = searchForGrounded(design.rootComponent)
 
         if self.grounded is None:
-            gm.ui.messageBox(
-                "There is not currently a Grounded Component in the assembly, stopping kinematic export."
-            )
+            gm.ui.messageBox("There is not currently a Grounded Component in the assembly, stopping kinematic export.")
             raise RuntimeWarning("There is no grounded component")
 
         self.currentTraversal = dict()
@@ -253,9 +247,7 @@ class JointParser:
 
     @logFailure
     def __getAllJoints(self):
-        for joint in list(self.design.rootComponent.allJoints) + list(
-            self.design.rootComponent.allAsBuiltJoints
-        ):
+        for joint in list(self.design.rootComponent.allJoints) + list(self.design.rootComponent.allAsBuiltJoints):
             if joint and joint.occurrenceOne and joint.occurrenceTwo:
                 occurrenceOne = joint.occurrenceOne
                 occurrenceTwo = joint.occurrenceTwo
@@ -311,8 +303,7 @@ class JointParser:
 
     def _recurseLink(self, simNode: SimulationNode):
         connectedAxisNodes = [
-            self.simulationNodesRef.get(componentKeys, None)
-            for componentKeys in simNode.data.getConnectedAxisTokens()
+            self.simulationNodesRef.get(componentKeys, None) for componentKeys in simNode.data.getConnectedAxisTokens()
         ]
         for connectedAxis in connectedAxisNodes:
             # connected is the occurrence
@@ -362,9 +353,9 @@ class JointParser:
             edge = DynamicEdge(relationship, node)
             prev.edges.append(edge)
             return
-        elif (
-            (occ.entityToken in self.dynamicJoints.keys()) and (prev is not None)
-        ) or self.currentTraversal.get(occ.entityToken) is not None:
+        elif ((occ.entityToken in self.dynamicJoints.keys()) and (prev is not None)) or self.currentTraversal.get(
+            occ.entityToken
+        ) is not None:
             return
 
         node = DynamicOccurrenceNode(occ)
@@ -372,9 +363,7 @@ class JointParser:
         self.currentTraversal[occ.entityToken] = True
 
         for occurrence in occ.childOccurrences:
-            self._populateNode(
-                occurrence, node, OccurrenceRelationship.TRANSFORM, is_ground=is_ground
-            )
+            self._populateNode(occurrence, node, OccurrenceRelationship.TRANSFORM, is_ground=is_ground)
 
         # if not is_ground:  # THIS IS A BUG - OCCURRENCE ACCESS VIOLATION
         try:
@@ -395,18 +384,11 @@ class JointParser:
                             connection = joint.occurrenceOne
 
                     if connection is not None:
-                        if (
-                            prev is None
-                            or connection.entityToken != prev.data.entityToken
-                        ):
+                        if prev is None or connection.entityToken != prev.data.entityToken:
                             self._populateNode(
                                 connection,
                                 node,
-                                (
-                                    OccurrenceRelationship.CONNECTION
-                                    if rigid
-                                    else OccurrenceRelationship.NEXT
-                                ),
+                                (OccurrenceRelationship.CONNECTION if rigid else OccurrenceRelationship.NEXT),
                                 is_ground=is_ground,
                             )
                 else:
@@ -509,9 +491,7 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
     root = types_pb2.Node()
 
     # construct body tree if possible
-    createTreeParts(
-        simNode.data, OccurrenceRelationship.CONNECTION, root, progressDialog
-    )
+    createTreeParts(simNode.data, OccurrenceRelationship.CONNECTION, root, progressDialog)
 
     proto_joint.parts.nodes.append(root)
 
@@ -530,10 +510,7 @@ def createTreeParts(
         raise RuntimeError("User canceled export")
 
     # if it's the next part just exit early for our own sanity
-    if (
-        relationship == OccurrenceRelationship.NEXT
-        or dynNode.data.isLightBulbOn == False
-    ):
+    if relationship == OccurrenceRelationship.NEXT or dynNode.data.isLightBulbOn == False:
         return
 
     # set the occurrence / component id to reference the part

@@ -125,9 +125,7 @@ def refreshAuthToken():
             "scope": "data:create data:write data:search data:read",
         }
     ).encode("utf-8")
-    req = urllib.request.Request(
-        "https://developer.api.autodesk.com/authentication/v2/token", data=body
-    )
+    req = urllib.request.Request("https://developer.api.autodesk.com/authentication/v2/token", data=body)
     req.method = "POST"
     req.add_header(key="Content-Type", val="application/x-www-form-urlencoded")
     try:
@@ -188,9 +186,7 @@ def getUserInfo() -> APSUserInfo | None:
     return loadUserInfo()
 
 
-def create_folder(
-    auth: str, project_id: str, parent_folder_id: str, folder_display_name: str
-) -> str | None:
+def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_display_name: str) -> str | None:
     """
     creates a folder on an APS project
 
@@ -215,9 +211,7 @@ def create_folder(
                 "name": folder_display_name,
                 "extension": {"type": "folders:autodesk.core:Folder", "version": "1.0"},
             },
-            "relationships": {
-                "parent": {"data": {"type": "folders", "id": f"{parent_folder_id}"}}
-            },
+            "relationships": {"parent": {"data": {"type": "folders", "id": f"{parent_folder_id}"}}},
         },
     }
 
@@ -238,9 +232,7 @@ def file_path_to_file_name(file_path: str) -> str:
     return file_path.split("/").pop()
 
 
-def upload_mirabuf(
-    project_id: str, folder_id: str, file_name: str, file_contents: str
-) -> str | None:
+def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_contents: str) -> str | None:
     """
     uploads mirabuf file to a specific folder in an APS project
     the folder and project must be created and valid
@@ -280,18 +272,14 @@ def upload_mirabuf(
         folder_id = create_folder(auth, project_id, folder_id, "MirabufDir")
     else:
         folder_id = new_folder_id
-    (lineage_id, file_id, file_version) = get_file_id(
-        auth, project_id, folder_id, file_name
-    )
+    (lineage_id, file_id, file_version) = get_file_id(auth, project_id, folder_id, file_name)
 
     """
     Create APS Storage Location
     """
     object_id = create_storage_location(auth, project_id, folder_id, file_name)
     if object_id is None:
-        gm.ui.messageBox(
-            "UPLOAD ERROR", "Object id is none; check create storage location"
-        )
+        gm.ui.messageBox("UPLOAD ERROR", "Object id is none; check create storage location")
         return None
     (prefix, object_key) = str(object_id).split("/", 1)
     bucket_key = prefix.split(":", 3)[3]  # gets the last element smth like: wip.dm.prod
@@ -325,9 +313,7 @@ def upload_mirabuf(
             object_id,
         )
     else:
-        _lineage_info = create_first_file_version(
-            auth, str(object_id), project_id, str(folder_id), file_name
-        )
+        _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
     return ""
 
 
@@ -345,13 +331,9 @@ def get_hub_id(auth: str, hub_name: str) -> str | None:
     """
 
     headers = {"Authorization": f"Bearer {auth}"}
-    hub_list_res = requests.get(
-        "https://developer.api.autodesk.com/project/v1/hubs", headers=headers
-    )
+    hub_list_res = requests.get("https://developer.api.autodesk.com/project/v1/hubs", headers=headers)
     if not hub_list_res.ok:
-        gm.ui.messageBox(
-            "UPLOAD ERROR", f"Failed to retrieve hubs: {hub_list_res.text}"
-        )
+        gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {hub_list_res.text}")
         return None
     hub_list: list[dict[str, Any]] = hub_list_res.json()
     for hub in hub_list:
@@ -384,9 +366,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
         headers=headers,
     )
     if not project_list_res.ok:
-        gm.ui.messageBox(
-            "UPLOAD ERROR", f"Failed to retrieve hubs: {project_list_res.text}"
-        )
+        gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {project_list_res.text}")
         return None
     project_list: list[dict[str, Any]] = project_list_res.json()
     for project in project_list:
@@ -396,9 +376,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
     return ""
 
 
-def get_item_id(
-    auth: str, project_id: str, parent_folder_id: str, folder_name: str, item_type: str
-) -> str | None:
+def get_item_id(auth: str, project_id: str, parent_folder_id: str, folder_name: str, item_type: str) -> str | None:
     headers = {"Authorization": f"Bearer {auth}"}
     res = requests.get(
         f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders/{parent_folder_id}/contents",
@@ -501,9 +479,7 @@ def update_file_version(
         json=data,
     )
     if not update_res.ok:
-        gm.ui.messageBox(
-            f"UPLOAD ERROR:\n{update_res.text}", "Updating file to new version failed"
-        )
+        gm.ui.messageBox(f"UPLOAD ERROR:\n{update_res.text}", "Updating file to new version failed")
         return None
     gm.ui.messageBox(
         f"Successfully updated file {file_name} to version {int(curr_file_version) + 1} on APS",
@@ -513,9 +489,7 @@ def update_file_version(
     return new_id
 
 
-def get_file_id(
-    auth: str, project_id: str, folder_id: str, file_name: str
-) -> tuple[str, str, str] | None:
+def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> tuple[str, str, str] | None:
     """
     gets the file id given a file name
 
@@ -559,9 +533,7 @@ def get_file_id(
     return (lineage, id, version)
 
 
-def create_storage_location(
-    auth: str, project_id: str, folder_id: str, file_name: str
-) -> str | None:
+def create_storage_location(auth: str, project_id: str, folder_id: str, file_name: str) -> str | None:
     """
     creates a storage location (a bucket)
     the bucket can be used to upload a file to
@@ -588,9 +560,7 @@ def create_storage_location(
         "data": {
             "type": "objects",
             "attributes": {"name": file_name},
-            "relationships": {
-                "target": {"data": {"type": "folders", "id": f"{folder_id}"}}
-            },
+            "relationships": {"target": {"data": {"type": "folders", "id": f"{folder_id}"}}},
         },
     }
     headers = {
@@ -613,9 +583,7 @@ def create_storage_location(
     return object_id
 
 
-def generate_signed_url(
-    auth: str, bucket_key: str, object_key: str
-) -> tuple[str, str] | None:
+def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> tuple[str, str] | None:
     """
     generates a signed_url for a bucket, given a bucket_key and object_key
 
@@ -641,9 +609,7 @@ def generate_signed_url(
         headers=headers,
     )
     if not signed_url_res.ok:
-        gm.ui.messageBox(
-            f"UPLOAD ERROR: {signed_url_res.text}", "Failed to get signed url"
-        )
+        gm.ui.messageBox(f"UPLOAD ERROR: {signed_url_res.text}", "Failed to get signed url")
         return None
     signed_url_json: dict[str, str] = signed_url_res.json()
     return (signed_url_json["uploadKey"], signed_url_json["urls"][0])
@@ -666,16 +632,12 @@ def upload_file(signed_url: str, file_contents: str) -> str | None:
     """
     upload_response = requests.put(url=signed_url, data=file_contents)
     if not upload_response.ok:
-        gm.ui.messageBox(
-            "UPLOAD ERROR", f"Failed to upload to signed url: {upload_response.text}"
-        )
+        gm.ui.messageBox("UPLOAD ERROR", f"Failed to upload to signed url: {upload_response.text}")
         return None
     return ""
 
 
-def complete_upload(
-    auth: str, upload_key: str, object_key: str, bucket_key: str
-) -> str | None:
+def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str) -> str | None:
     """
     completes and verifies the APS file upload given the upload_key
 
@@ -764,9 +726,7 @@ def create_first_file_version(
             "type": "versions",
             "id": "1",
             "attributes": included_attributes,
-            "relationships": {
-                "storage": {"data": {"type": "objects", "id": object_id}}
-            },
+            "relationships": {"storage": {"data": {"type": "objects", "id": object_id}}},
         },
     ]
 
