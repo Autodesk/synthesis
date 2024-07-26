@@ -36,6 +36,11 @@ class APS {
     static authCode: string | undefined = undefined
     static requestMutex: Mutex = new Mutex()
 
+    private static _numApsCalls = new Map<string, number>()
+    public static get numApsCalls() { return this._numApsCalls }
+    public static incApsCalls(endpoint: string) { this._numApsCalls.set(endpoint, (this._numApsCalls.get(endpoint) ?? 0) + 1) }
+    public static resetNumApsCalls() { this._numApsCalls.clear() }
+
     private static get auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
         try {
@@ -209,6 +214,7 @@ class APS {
     static async refreshAuthToken(refresh_token: string, shouldRelog: boolean): Promise<boolean> {
         return this.requestMutex.runExclusive(async () => {
             try {
+                APS.incApsCalls("authentication-v2-token")
                 const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN, {
                     method: "POST",
                     headers: {
@@ -305,6 +311,7 @@ class APS {
     static async loadUserInfo(auth: APSAuth) {
         console.log("Loading user information")
         try {
+            APS.incApsCalls("userinfo")
             const res = await fetch(ENDPOINT_AUTODESK_USERINFO, {
                 method: "GET",
                 headers: {
