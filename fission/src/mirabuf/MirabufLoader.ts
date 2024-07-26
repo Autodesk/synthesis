@@ -89,6 +89,10 @@ class MirabufCachingService {
         const miraBuff = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
             .then(x => x.blob())
             .then(x => x.arrayBuffer())
+        World.AnalyticsSystem?.Event("Remote Download", {
+            type: miraType == MiraType.ROBOT ? "robot" : "field",
+            fileSize: miraBuff.byteLength
+        })
         return await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
     }
 
@@ -110,6 +114,11 @@ class MirabufCachingService {
             console.error("Failed to download file")
             return undefined
         }
+
+        World.AnalyticsSystem?.Event("APS Download", {
+            type: miraType == MiraType.ROBOT ? "robot" : "field",
+            fileSize: miraBuff.byteLength
+        })
 
         return await MirabufCachingService.StoreInCache(data.id, miraBuff, miraType)
     }
@@ -215,6 +224,12 @@ class MirabufCachingService {
             if (fileHandle) {
                 const buff = await fileHandle.getFile().then(x => x.arrayBuffer())
                 const assembly = this.AssemblyFromBuffer(buff)
+                World.AnalyticsSystem?.Event("Cache Get", {
+                    key: id,
+                    type: miraType == MiraType.ROBOT ? "robot" : "field",
+                    assemblyName: assembly.info!.name!,
+                    fileSize: buff.byteLength
+                })
                 return assembly
             } else {
                 console.error(`Failed to get file handle for ID: ${id}`)
@@ -249,7 +264,7 @@ class MirabufCachingService {
             const dir = miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
             await dir.removeEntry(id)
 
-            World.AnalyticsSystem?.Event("Removed mirabuf from cache", {
+            World.AnalyticsSystem?.Event("Cache Remove", {
                 key: key,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
             })
@@ -310,7 +325,7 @@ class MirabufCachingService {
             map[key] = info
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
 
-            World.AnalyticsSystem?.Event("Cache Load", {
+            World.AnalyticsSystem?.Event("Cache Store", {
                 name: name ?? "-",
                 key: key,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
