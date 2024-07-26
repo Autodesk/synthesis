@@ -12,6 +12,7 @@ export type GlobalPreference =
     | "RenderScoringZones"
     | "InputSchemes"
     | "RenderSceneTags"
+    | "RenderScoreboard"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -27,6 +28,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderScoringZones: true,
     InputSchemes: [],
     RenderSceneTags: true,
+    RenderScoreboard: true,
 }
 
 export type IntakePreferences = {

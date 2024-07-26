@@ -64,6 +64,7 @@ import Lazy from "./util/Lazy.ts"
 import DebugPanel from "./ui/panels/DebugPanel.tsx"
 import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
+import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -119,6 +120,16 @@ function Synthesis() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
+    useEffect(() => {
+        let scoreboardExists = false
+        panelElements.forEach(x => {
+            if (x.key == "scoreboard") scoreboardExists = true
+        })
+        if (PreferencesSystem.getGlobalPreference("RenderScoreboard") && !scoreboardExists) {
+            openPanel("scoreboard")
+        }
+    })
+
     return (
         <AnimatePresence key={"animate-presence"}>
             <Skybox key={"skybox"} />
@@ -148,7 +159,6 @@ function Synthesis() {
                             <Scene useStats={true} key="scene-in-toast-provider" />
                             <SceneOverlay />
                             <MainHUD key={"main-hud"} />
-                            <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
                                 <div className="absolute w-full h-full left-0 top-0" key={"modal-element"}>
@@ -206,7 +216,7 @@ const initialPanels: ReactElement[] = [
     <RobotSwitchPanel key="multibot" panelId="multibot" openLocation="right" sidePadding={8} />,
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
-    <ScoreboardPanel key="scoreboard" panelId="scoreboard" />,
+    <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8}/>,
     <ConfigureGamepiecePickupPanel
         key="config-gamepiece-pickup"
         panelId="config-gamepiece-pickup"

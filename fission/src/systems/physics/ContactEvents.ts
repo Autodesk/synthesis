@@ -66,7 +66,8 @@ export class OnContactPersistedEvent extends PhysicsEvent {
     }
 }
 
-export class OnContactRemovedEvent extends PhysicsEvent {
+// This one is special because having it in the queue in PhysicsSystem causes issues with scoring
+export class OnContactRemovedEvent extends Event {
     public static readonly EVENT_KEY = "OnContactRemovedEvent"
 
     public message: Jolt.SubShapeIDPair
@@ -75,9 +76,7 @@ export class OnContactRemovedEvent extends PhysicsEvent {
         super(OnContactRemovedEvent.EVENT_KEY)
 
         this.message = data
-    }
 
-    public Dispatch(): void {
         window.dispatchEvent(this)
     }
 

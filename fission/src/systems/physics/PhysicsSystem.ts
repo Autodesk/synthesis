@@ -1090,8 +1090,7 @@ class PhysicsSystem extends WorldSystem {
         contactListener.OnContactRemoved = subShapePairPtr => {
             const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
 
-            const event = new OnContactRemovedEvent(shapePair)
-            event.Dispatch()
+            new OnContactRemovedEvent(shapePair)
         }
 
         contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {

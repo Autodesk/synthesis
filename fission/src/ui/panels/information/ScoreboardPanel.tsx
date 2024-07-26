@@ -3,6 +3,8 @@ import Label, { LabelSize } from "@/components/Label"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Stack, { StackDirection } from "@/components/Stack"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
+import { usePanelControlContext } from "@/ui/PanelContext"
+import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 
 const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [redScore, setRedScore] = useState<number>(0)
@@ -10,6 +12,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     const [initialTime] = useState<number>(-1)
     const [startTime] = useState<number>(Date.now())
     const [time, setTime] = useState<number>(-1)
+    const { closePanel } = usePanelControlContext()
 
     // probably useless code because the time left should be sent by Synthesis and not calculated here
     // const startTimer = useCallback(
@@ -29,6 +32,15 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         [setRedScore, setBlueScore]
     )
 
+    const onRenderChange = useCallback(
+        (e: PreferenceEvent) => {
+            if (e.prefName == "RenderScoreboard" && e.prefValue == false) {
+                closePanel("scoreboard")
+            }
+        },
+        [closePanel]
+    )
+
     useEffect(() => {
         const interval: NodeJS.Timeout = setInterval(() => {
             const elapsed = Math.round((Date.now() - startTime) / 1_000)
@@ -43,6 +55,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
 
     useEffect(() => {
         OnScoreChangedEvent.AddListener(onScoreChange)
+        PreferencesSystem.addEventListener(onRenderChange)
     })
 
     // useEffect(() => {
