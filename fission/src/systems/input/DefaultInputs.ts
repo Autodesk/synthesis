@@ -207,6 +207,9 @@ class DefaultInputs {
                 new AxisInput("arcadeDrive"),
                 new AxisInput("arcadeTurn"),
 
+                new ButtonInput("intake"),
+                new ButtonInput("eject"),
+
                 new AxisInput("joint 1"),
                 new AxisInput("joint 2"),
                 new AxisInput("joint 3"),

@@ -48,6 +48,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [renderSceneTags, setRenderSceneTags] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")
     )
+    const [renderScoreboard, setRenderScoreboard] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")
+    )
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<string>("ScreenMode", screenMode)
@@ -59,6 +62,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("UseMetric", useMetric)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
+        PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
 
         PreferencesSystem.savePreferences()
     }
@@ -148,6 +152,13 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     setRenderSceneTags(checked)
                     if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE)
                     else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
+                }}
+            />
+            <Checkbox
+                label="Render Scoreboard"
+                defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")}
+                onClick={checked => {
+                    setRenderScoreboard(checked)
                 }}
             />
         </Modal>

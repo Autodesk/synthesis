@@ -108,3 +108,26 @@ export function removeFromScene(
     const idx = dynamicObjects.indexOf(threeObject)
     dynamicObjects.splice(idx, 1)
 }
+
+export interface VisualProperties {
+    translation: THREE.Vector3
+    rotation: THREE.Quaternion
+    scale: THREE.Vector3
+}
+
+export function DeltaFieldTransforms_PhysicalProp(
+    deltaTransform: THREE.Matrix4,
+    fieldTransform: THREE.Matrix4
+): VisualProperties {
+    const zoneTransformation = deltaTransform.clone().premultiply(fieldTransform)
+
+    const translation = new THREE.Vector3(0, 0, 0)
+    const rotation = new THREE.Quaternion(0, 0, 0, 1)
+    const scale = new THREE.Vector3(1, 1, 1)
+    zoneTransformation.decompose(translation, rotation, scale)
+    return {
+        translation: translation,
+        rotation: rotation,
+        scale: scale,
+    }
+}
