@@ -117,11 +117,6 @@ class SceneRenderer extends WorldSystem {
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this._orbitControls.update()
-
-        // const cube = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), this.CreateToonMaterial())
-        // cube.castShadow = true
-        // cube.receiveShadow = true
-        // this._scene.add(cube)
     }
 
     public UpdateCanvasSize() {
@@ -163,13 +158,12 @@ class SceneRenderer extends WorldSystem {
         this.RemoveAllSceneObjects()
     }
 
-    /** 
+    /**
      * Changes the quality of lighting between cascading shadows and directional lights
-     * 
+     *
      * @param quality: string representing the quality of lighting - "Low", "Medium", "High"
      */
     public ChangeLighting(quality: string): void {
-
         // removing the previous lighting method
         if (this._light instanceof THREE.DirectionalLight) {
             this._scene.remove(this._light)
@@ -196,39 +190,38 @@ class SceneRenderer extends WorldSystem {
             this._light.shadow.blurSamples = 16
             this._light.shadow.bias = 0.0
             this._scene.add(this._light)
-        } 
-        
+        }
+
         // setting light to cascading shadows
         else if (quality === "High") {
             this._light = new CSM({
                 parent: this._scene,
                 camera: this._mainCamera,
                 cascades: 3,
-                lightDirection: new THREE.Vector3( 0.5, -0.5, 0.5 ).normalize(),
+                lightDirection: new THREE.Vector3(0.5, -0.5, 0.5).normalize(),
                 lightIntensity: 5,
                 shadowMapSize: shadowMapSize,
                 mode: "custom",
                 maxFar: 30,
                 customSplitsCallback: (cascades: number, near: number, far: number, breaks: number[]) => {
-                    const blend = 0.7;
+                    const blend = 0.7
                     for (let i = 1; i < cascades; i++) {
-                        const uniformFactor = (near + (far - near) * i / cascades) / far;
-                        const logarithmicFactor = (near * (far / near) ** (i / cascades)) / far;
-                        const combinedFactor = uniformFactor * (1 - blend) + logarithmicFactor * blend;
-                        
-                        breaks.push(combinedFactor);
+                        const uniformFactor = (near + ((far - near) * i) / cascades) / far
+                        const logarithmicFactor = (near * (far / near) ** (i / cascades)) / far
+                        const combinedFactor = uniformFactor * (1 - blend) + logarithmicFactor * blend
+
+                        breaks.push(combinedFactor)
                     }
-                
-                    breaks.push(1);
-                }
+
+                    breaks.push(1)
+                },
             })
 
             // setting up the materials for all objects in the scene
             this._light.fade = true
             this._scene.children.forEach(child => {
                 if (child instanceof THREE.Mesh) {
-                    if (this._light instanceof CSM)
-                        this._light.setupMaterial(child.material)
+                    if (this._light instanceof CSM) this._light.setupMaterial(child.material)
                 }
             })
         }
@@ -421,6 +414,11 @@ class SceneRenderer extends WorldSystem {
         this._scene.remove(obj)
     }
 
+    /**
+     * Sets up the threejs material for cascading shadows if the CSM is enabled
+     *
+     * @param material
+     */
     public SetupMaterial(material: THREE.Material) {
         if (this._light instanceof CSM) this._light.setupMaterial(material)
     }
