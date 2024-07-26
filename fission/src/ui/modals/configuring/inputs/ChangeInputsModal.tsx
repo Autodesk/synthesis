@@ -84,15 +84,6 @@ const keyCodeToCharacter = (code: string) => {
     return code
 }
 
-const moveElementToTop = (arr: string[], element: string | undefined) => {
-    if (element == undefined) {
-        return arr
-    }
-
-    arr = arr.includes(element) ? [element, ...arr.filter(item => item !== element)] : arr
-    return arr
-}
-
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
 
@@ -289,8 +280,8 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Dropdown
                 key={c.inputName}
                 label={toTitleCase(c.inputName)}
-                // Moves the selected option to the start of the array
-                options={moveElementToTop(gamepadAxes, gamepadAxes[c.gamepadAxisNumber + 1])}
+                defaultValue={gamepadAxes[c.gamepadAxisNumber + 1]}
+                options={gamepadAxes}
                 onSelect={value => {
                     setSelectedInput(c.inputName)
                     setChosenGamepadAxis(gamepadAxes.indexOf(value))
@@ -357,11 +348,8 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <Stack direction={StackDirection.Vertical} spacing={10}>
                             <Dropdown
                                 label={"Select Robot"}
-                                // Moves the selected option to the start of the array
-                                options={moveElementToTop(
-                                    InputSchemeManager.allInputSchemes.map(s => s.schemeName),
-                                    InputSystem?.selectedScheme?.schemeName
-                                )}
+                                defaultValue={InputSystem?.selectedScheme?.schemeName}
+                                options={InputSchemeManager.allInputSchemes.map(s => s.schemeName)}
                                 onSelect={value => {
                                     const schemeData = InputSchemeManager.allInputSchemes.find(
                                         s => s.schemeName == value

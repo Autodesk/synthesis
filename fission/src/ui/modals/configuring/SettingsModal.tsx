@@ -3,21 +3,12 @@ import { useModalControlContext } from "@/ui/ModalContext"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaGear } from "react-icons/fa6"
 import Label, { LabelSize } from "@/components/Label"
-import Dropdown from "@/components/Dropdown"
 import Button from "@/components/Button"
 import Slider from "@/components/Slider"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-
-const moveElementToTop = (arr: string[], element: string | undefined) => {
-    if (element == undefined) {
-        return arr
-    }
-
-    arr = arr.includes(element) ? [element, ...arr.filter(item => item !== element)] : arr
-    return arr
-}
+import Dropdown from "@/ui/components/Dropdown"
 
 const screenModeOptions = ["Windowed", "Fullscreen"]
 const qualitySettingsOptions = ["Low", "Medium", "High", "Ultra"]
@@ -75,20 +66,16 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Label size={LabelSize.Medium}>Screen Settings</Label>
             <Dropdown
                 label="Screen Mode"
-                options={moveElementToTop(
-                    screenModeOptions,
-                    PreferencesSystem.getGlobalPreference<string>("ScreenMode")
-                )}
+                defaultValue={PreferencesSystem.getGlobalPreference<string>("ScreenMode")}
+                options={screenModeOptions}
                 onSelect={selected => {
                     setScreenMode(selected)
                 }}
             />
             <Dropdown
                 label="Quality Settings"
-                options={moveElementToTop(
-                    qualitySettingsOptions,
-                    PreferencesSystem.getGlobalPreference<string>("QualitySettings")
-                )}
+                defaultValue={PreferencesSystem.getGlobalPreference<string>("QualitySettings")}
+                options={qualitySettingsOptions}
                 onSelect={selected => {
                     setQualitySettings(selected)
                 }}
