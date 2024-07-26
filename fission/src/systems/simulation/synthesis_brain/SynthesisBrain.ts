@@ -20,13 +20,6 @@ import InputSystem from "@/systems/input/InputSystem"
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
 
-    public get inputSchemeName(): string {
-        const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
-        if (scheme == undefined) return "Not Configured"
-
-        return scheme.schemeName
-    }
-
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
     private _assemblyName: string
@@ -34,6 +27,17 @@ class SynthesisBrain extends Brain {
 
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
+
+    public get inputSchemeName(): string {
+        const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
+        if (scheme == undefined) return "Not Configured"
+
+        return scheme.schemeName
+    }
+
+    public get brainIndex(): number {
+        return this._brainIndex
+    }
 
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)

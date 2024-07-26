@@ -1,6 +1,6 @@
 import React, { ReactElement, useEffect } from "react"
 import { ToastData, useToastContext } from "@/ui/ToastContext"
-import { GrFormClose } from "react-icons/gr"
+import { FaXmark } from "react-icons/fa6"
 import { BsFillWrenchAdjustableCircleFill } from "react-icons/bs"
 import { AiFillWarning } from "react-icons/ai"
 import { BiSolidErrorCircle } from "react-icons/bi"
@@ -51,7 +51,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
                             onClick={handleClose}
                             className="toast-close bg-[rgba(0,0,0,0)] h-min aspect-square p-0"
                         >
-                            <GrFormClose size={20} className="text-main-text" />
+                            <FaXmark size={20} className="text-main-text" />
                         </button>
                         <p className="font-medium uppercase h-min">{title}</p>
                     </div>

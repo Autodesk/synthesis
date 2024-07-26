@@ -62,8 +62,10 @@ import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
 import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
 import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
+import DebugPanel from "./ui/panels/DebugPanel.tsx"
 import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
+import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -118,6 +120,16 @@ function Synthesis() {
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
+
+    useEffect(() => {
+        let scoreboardExists = false
+        panelElements.forEach(x => {
+            if (x.key == "scoreboard") scoreboardExists = true
+        })
+        if (PreferencesSystem.getGlobalPreference("RenderScoreboard") && !scoreboardExists) {
+            openPanel("scoreboard")
+        }
+    })
 
     return (
         <AnimatePresence key={"animate-presence"}>
@@ -197,8 +209,6 @@ const initialModals = [
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
-    <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
-    <ZoneConfigPanel panelId="zone-config" openLocation="right" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
@@ -206,7 +216,7 @@ const initialPanels: ReactElement[] = [
     <RobotSwitchPanel key="multibot" panelId="multibot" openLocation="right" sidePadding={8} />,
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
-    <ScoreboardPanel key="scoreboard" panelId="scoreboard" />,
+    <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
     <ConfigureGamepiecePickupPanel
         key="config-gamepiece-pickup"
         panelId="config-gamepiece-pickup"
@@ -225,6 +235,7 @@ const initialPanels: ReactElement[] = [
     <PokerPanel key="poker" panelId="poker" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
+    <DebugPanel key="debug" panelId="debug" />,
 ]
 
 export default Synthesis

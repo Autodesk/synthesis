@@ -6,7 +6,7 @@ import adsk.fusion
 from ..general_imports import *
 
 # from ..proto_out import Configuration_pb2
-from ..Types.OString import OString
+from ..Types import OString
 
 
 def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | bool:

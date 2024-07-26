@@ -9,7 +9,7 @@ import {
     RobotPreferencesKey,
 } from "./PreferenceTypes"
 
-class PreferenceEvent extends Event {
+export class PreferenceEvent extends Event {
     public prefName: GlobalPreference
     public prefValue: unknown
 

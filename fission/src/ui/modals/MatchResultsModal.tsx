@@ -1,6 +1,6 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { GrFormClose } from "react-icons/gr"
+import { FaXmark } from "react-icons/fa6"
 import Stack, { StackDirection } from "@/components/Stack"
 import Label from "@/components/Label"
 
@@ -18,7 +18,7 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Match Results"}
-            icon={<GrFormClose />}
+            icon={<FaXmark />}
             modalId={modalId}
             cancelName="Exit"
             middleName="Configure"

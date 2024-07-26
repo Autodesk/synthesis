@@ -396,7 +396,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             cancelName="Back"
             openLocation="right"
         >
-            <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
                 <ToggleButtonGroup
                     value={viewType}
                     exclusive

@@ -10,6 +10,7 @@ import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
+import Jolt from "@barclah/jolt-physics"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import {} from "@/ui/components/SceneOverlayEvents"
@@ -188,6 +189,15 @@ class SceneRenderer extends WorldSystem {
 
     public CreateSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
         const geo = new THREE.SphereGeometry(radius)
+        if (material) {
+            return new THREE.Mesh(geo, material)
+        } else {
+            return new THREE.Mesh(geo, this.CreateToonMaterial())
+        }
+    }
+
+    public CreateBox(halfExtent: Jolt.Vec3, material?: THREE.Material | undefined): THREE.Mesh {
+        const geo = new THREE.BoxGeometry(halfExtent.GetX(), halfExtent.GetY(), halfExtent.GetZ())
         if (material) {
             return new THREE.Mesh(geo, material)
         } else {
