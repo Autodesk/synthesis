@@ -257,8 +257,13 @@ class APS {
      */
     static async convertAuthToken(code: string) {
         let retry_login = false
+
+        const callbackUrl = import.meta.env.DEV
+            ? `http://localhost:3000${import.meta.env.BASE_URL}`
+            : `https://synthesis.autodesk.com${import.meta.env.BASE_URL}`
+
         try {
-            const res = await fetch(`${ENDPOINT_SYNTHESIS_CODE}?code=${code}`)
+            const res = await fetch(`${ENDPOINT_SYNTHESIS_CODE}?code=${code}&redirect_uri=${encodeURIComponent(callbackUrl)}`)
             const json = await res.json()
             if (!res.ok) {
                 World.AnalyticsSystem?.Exception("APS Login Failure")
