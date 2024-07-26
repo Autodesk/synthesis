@@ -39,6 +39,7 @@ const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSc
     if (fieldPrefs) fieldPrefs.scoringZones = zones
 
     PreferencesSystem.savePreferences()
+    field.UpdateScoringZones()
 }
 
 const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, field, openPanel, deleteZone }) => {
@@ -75,7 +76,7 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, field, open
                     value={DeleteIcon}
                     onClick={() => {
                         deleteZone()
-                        save()
+                        // Saves in the delete function instead because zones isn't updated in time
                     }}
                     colorOverrideClass="bg-cancel-button hover:brightness-90"
                 />
@@ -105,6 +106,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
 
     useEffect(() => {
         closePanel("zone-config")
+        saveZones(zones, selectedField)
 
         World.PhysicsSystem.HoldPause()
 
@@ -161,6 +163,10 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                                     save={() => saveZones(zones, selectedField)}
                                     deleteZone={() => {
                                         setZones(zones.filter((_, idx) => idx !== i))
+                                        saveZones(
+                                            zones.filter((_, idx) => idx !== i),
+                                            selectedField
+                                        )
                                     }}
                                 />
                             ))}
@@ -185,7 +191,6 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
 
                             saveZones(zones, selectedField)
 
-                            //zones.push(newZone)
                             SelectedZone.zone = newZone
                             SelectedZone.field = selectedField
 

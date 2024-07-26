@@ -17,6 +17,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
+import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 
@@ -45,6 +46,7 @@ class MirabufSceneObject extends SceneObject {
 
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
+    private _scoringZones: ScoringZoneSceneObject[] = []
 
     private _nameTag: SceneOverlayTag | undefined
 
@@ -82,6 +84,10 @@ class MirabufSceneObject extends SceneObject {
 
     public get rootNodeId(): string {
         return this._mirabufInstance.parser.rootNode
+    }
+
+    public get brain() {
+        return this._brain
     }
 
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
@@ -148,10 +154,12 @@ class MirabufSceneObject extends SceneObject {
 
         // Intake
         this.UpdateIntakeSensor()
+
+        this.UpdateScoringZones()
     }
 
     public Update(): void {
-        if (InputSystem.currentModifierState.ctrl && InputSystem.currentModifierState.shift && this._ejectable) {
+        if (InputSystem.getInput("eject", this._brain?.brainIndex ?? -1)) {
             this.Eject()
         }
 
@@ -240,6 +248,9 @@ class MirabufSceneObject extends SceneObject {
             World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
             this._ejectable = undefined
         }
+
+        this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._scoringZones = []
 
         this._mechanism.nodeToBody.forEach(bodyId => {
             World.PhysicsSystem.RemoveBodyAssocation(bodyId)
@@ -330,12 +341,30 @@ class MirabufSceneObject extends SceneObject {
         }
 
         if (!this._ejectorPreferences || !this._ejectorPreferences.parentNode || !bodyId) {
+            console.log(`Configure an ejectable first.`)
             return false
         }
 
         this._ejectable = new EjectableSceneObject(this, bodyId)
         World.SceneRenderer.RegisterSceneObject(this._ejectable)
         return true
+    }
+
+    public UpdateScoringZones(render?: boolean) {
+        this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._scoringZones = []
+
+        if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
+            for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
+                const newZone = new ScoringZoneSceneObject(
+                    this,
+                    i,
+                    render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
+                )
+                this._scoringZones.push(newZone)
+                World.SceneRenderer.RegisterSceneObject(newZone)
+            }
+        }
     }
 
     /**
