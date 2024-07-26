@@ -7,6 +7,7 @@ import APS from "@/aps/APS"
 
 const SAMPLE_INTERVAL = 60000 // 1 minute
 const BETA_CODE_COOKIE_REGEX = /access_code=.*(;|$)/
+const MOBILE_USER_AGENT_REGEX = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
 
 export interface AccumTimes {
     frames: number
@@ -43,7 +44,7 @@ class AnalyticsSystem extends WorldSystem {
             console.debug("No code match")
         }
 
-        if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        if (MOBILE_USER_AGENT_REGEX.test(navigator.userAgent)) {
             this.SetUserProperty("Is Mobile", "true")
         } else {
             this.SetUserProperty("Is Mobile", "false")
