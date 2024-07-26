@@ -92,7 +92,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 )}
                 onSelect={selected => {
                     setQualitySettings(selected)
-                    World.SceneRenderer.ChangeQuality(selected)
+                    World.SceneRenderer.ChangeLighting(selected)
                 }}
             />
             <Button value="Theme Editor" onClick={() => openModal("theme-editor")} />
