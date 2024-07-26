@@ -1,5 +1,5 @@
-import { Vector3Tuple, Vector4Tuple } from "three"
-import { InputScheme } from "../input/DefaultInputs"
+import { InputScheme } from "../input/InputSchemeManager"
+import { Vector3Tuple } from "three"
 
 export type GlobalPreference =
     | "ScreenMode"
@@ -10,6 +10,8 @@ export type GlobalPreference =
     | "ReportAnalytics"
     | "UseMetric"
     | "RenderScoringZones"
+    | "InputSchemes"
+    | "RenderSceneTags"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -23,6 +25,8 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
+    InputSchemes: [],
+    RenderSceneTags: true,
 }
 
 export type IntakePreferences = {
@@ -43,18 +47,17 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
 }
 
-export type Alliance = "Blue" | "Red"
+export type Alliance = "red" | "blue"
 
 export type ScoringZonePreferences = {
     name: string
     alliance: Alliance
-    parent: string
+    parentNode: string | undefined
     points: number
     destroyGamepiece: boolean
     persistentPoints: boolean
-    localPosition: Vector3Tuple
-    localRotation: Vector4Tuple
-    localScale: Vector3Tuple
+
+    deltaTransformation: number[]
 }
 
 export type FieldPreferences = {

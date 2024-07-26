@@ -13,6 +13,7 @@ export const ENDPOINT_SYNTHESIS_CHALLENGE = `/api/aps/challenge`
 
 const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
 const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
+const ENDPOINT_AUTODESK_REVOKE_TOKEN = "https://developer.api.autodesk.com/authentication/v2/revoke"
 const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
 
 export interface APSAuth {
@@ -122,10 +123,40 @@ class APS {
     }
 
     /**
-     * Logs the user out by setting their auth data to undefined.
+     * Logs the user out by setting their auth data to undefined and revoking their auth token.
      */
     static async logout() {
+        await this.revokeTokenPublic()
         this.auth = undefined
+    }
+
+    /*
+     * Revokes the users token
+     *
+     * The client should be public since we're an spa
+     * Endpoint documentation:
+     * https://aps.autodesk.com/en/docs/oauth/v2/reference/http/revoke-POST/
+     */
+    static async revokeTokenPublic(): Promise<boolean> {
+        const headers = {
+            "Content-Type": "application/x-www-form-urlencoded",
+        }
+        const opts = {
+            method: "POST",
+            headers: headers,
+            body: new URLSearchParams([
+                ["token", this.auth?.access_token],
+                ["token_type_hint", "access_token"],
+                ["client_id", CLIENT_ID],
+            ] as string[][]),
+        }
+        const res = await fetch(ENDPOINT_AUTODESK_REVOKE_TOKEN, opts)
+        if (!res.ok) {
+            console.log("Failed to revoke auth token:\n")
+            return false
+        }
+        console.log("Revoked auth token")
+        return true
     }
 
     /**

@@ -17,13 +17,7 @@ function SelectNode(e: MouseEvent) {
 
     const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
 
-    if (res) {
-        const body = World.PhysicsSystem.GetBody(res.data.mBodyID)
-        if (!body.IsDynamic()) {
-            return null
-        }
-        return body
-    }
+    if (res) return World.PhysicsSystem.GetBody(res.data.mBodyID)
 
     return null
 }

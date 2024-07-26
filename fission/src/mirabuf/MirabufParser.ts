@@ -1,6 +1,7 @@
 import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
 import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 
 export type RigidNodeId = string
 
@@ -72,10 +73,12 @@ class MirabufParser {
         return this._rootNode
     }
 
-    public constructor(assembly: mirabuf.Assembly) {
+    public constructor(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle) {
         this._assembly = assembly
         this._errors = new Array<ParseError>()
         this._globalTransforms = new Map()
+
+        progressHandle?.Update("Parsing assembly...", 0.3)
 
         this.GenerateTreeValues()
         this.LoadGlobalTransforms()
@@ -229,6 +232,15 @@ class MirabufParser {
             directedRecursive(this._rigidNodes[0].id)
         }
         this._directedGraph = directedGraph
+
+        // Transition: GH-1014
+        const partDefinitions: { [k: string]: mirabuf.IPartDefinition } | null | undefined =
+            this.assembly.data?.parts?.partDefinitions
+        if (!partDefinitions) {
+            console.log("Failed to get part definitions")
+            return
+        }
+        console.log(partDefinitions)
     }
 
     private NewRigidNode(suffix?: string): RigidNode {

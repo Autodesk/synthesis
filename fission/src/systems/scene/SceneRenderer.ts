@@ -11,6 +11,10 @@ import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
 import InputSystem from "../input/InputSystem"
 
+import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
+import {} from "@/ui/components/SceneOverlayEvents"
+import PreferencesSystem from "../preferences/PreferencesSystem"
+
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
 
@@ -151,6 +155,10 @@ class SceneRenderer extends WorldSystem {
             )
         })
 
+        // Update the tags each frame if they are enabled in preferences
+        if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
+            new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
+
         this._composer.render(deltaT)
     }
 
@@ -217,6 +225,18 @@ class SceneRenderer extends WorldSystem {
         )
 
         return screenSpace.unproject(this.mainCamera)
+    }
+
+    /**
+     * Convert world space coordinates to screen space coordinates
+     *
+     * @param world World space coordinates
+     * @returns Pixel space coordinates
+     */
+    public WorldToPixelSpace(world: THREE.Vector3): PixelSpaceCoord {
+        this._mainCamera.updateMatrixWorld()
+        const screenSpace = world.project(this._mainCamera)
+        return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
 
     /** 

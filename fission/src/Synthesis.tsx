@@ -1,9 +1,4 @@
 import Scene from "@/components/Scene.tsx"
-import MirabufSceneObject from "./mirabuf/MirabufSceneObject.ts"
-import MirabufCachingService, { MiraType } from "./mirabuf/MirabufLoader.ts"
-import { mirabuf } from "./proto/mirabuf"
-import MirabufParser, { ParseErrorSeverity } from "./mirabuf/MirabufParser.ts"
-import MirabufInstance from "./mirabuf/MirabufInstance.ts"
 import { AnimatePresence } from "framer-motion"
 import { ReactElement, useEffect } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
@@ -46,7 +41,6 @@ import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
 import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
 import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
 import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
-import ZoneConfigPanel from "@/panels/configuring/scoring/ZoneConfigPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
@@ -57,10 +51,21 @@ import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.ts
 import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
+import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
+import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
+import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
+import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
-const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
+import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
+import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
+import Lazy from "./util/Lazy.ts"
+import DebugPanel from "./ui/panels/DebugPanel.tsx"
+import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
+import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
+
+const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
@@ -91,37 +96,7 @@ function Synthesis() {
 
         World.InitWorld()
 
-        let mira_path = DEFAULT_MIRA_PATH
-
-        if (urlParams.has("mira")) {
-            mira_path = `test_mira/${urlParams.get("mira")!}`
-            console.debug(`Selected Mirabuf File: ${mira_path}`)
-        }
-
-        const setup = async () => {
-            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
-                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
-                .catch(console.error)
-
-            const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
-
-            await (async () => {
-                if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-                    return
-                }
-
-                const parser = new MirabufParser(miraAssembly)
-                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
-                    return
-                }
-
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
-                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
-            })()
-        }
-
-        setup()
+        worker.getValue()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -167,9 +142,11 @@ function Synthesis() {
                         closePanel={(id: string) => {
                             closePanel(id)
                         }}
+                        closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
+                            <SceneOverlay />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
@@ -177,6 +154,7 @@ function Synthesis() {
                                     {modalElement}
                                 </div>
                             )}
+                            <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                         </ToastProvider>
                     </PanelControlProvider>
@@ -206,6 +184,8 @@ const initialModals = [
     <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
     <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,
     <DeleteThemeModal key="delete-theme" modalId="delete-theme" />,
+    <NewInputSchemeModal key="new-scheme" modalId="new-scheme" />,
+    <AssignNewSchemeModal key="assign-new-scheme" modalId="assign-new-scheme" />,
     <DeleteAllThemesModal key="delete-all-themes" modalId="delete-all-themes" />,
     <NewThemeModal key="new-theme" modalId="new-theme" />,
     <RCCreateDeviceModal key="create-device" modalId="create-device" />,
@@ -236,10 +216,13 @@ const initialPanels: ReactElement[] = [
         openLocation="right"
         sidePadding={8}
     />,
-    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" />,
-    <ZoneConfigPanel key="zone-config" panelId="zone-config" />,
+    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
+    <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
+    <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
+    <WSViewPanel key="ws-view" panelId="ws-view" />,
+    <DebugPanel key="debug" panelId="debug" />,
 ]
 
 export default Synthesis
