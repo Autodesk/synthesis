@@ -1,18 +1,30 @@
 import {
     JoltVec3_ThreeVector3,
+    MirabufFloatArr_JoltFloat3,
     MirabufFloatArr_JoltVec3,
     MirabufVector3_JoltVec3,
     ThreeMatrix4_JoltMat44,
     ThreeVector3_JoltVec3,
     _JoltQuat,
 } from "../../util/TypeConversions"
-import JOLT from "../../util/loading/JoltSyncLoader"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import Jolt from "@barclah/jolt-physics"
 import * as THREE from "three"
 import { mirabuf } from "../../proto/mirabuf"
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
+import {
+    OnContactAddedEvent,
+    CurrentContactData,
+    OnContactPersistedEvent,
+    OnContactRemovedEvent,
+    OnContactValidateEvent,
+    OnContactValidateData,
+    PhysicsEvent,
+} from "./ContactEvents"
+
+export type JoltBodyIndexAndSequence = number
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -61,6 +73,16 @@ class PhysicsSystem extends WorldSystem {
     private _bodies: Array<Jolt.BodyID>
     private _constraints: Array<Jolt.Constraint>
 
+    private _physicsEventQueue: PhysicsEvent[] = []
+
+    private _pauseCounter = 0
+
+    private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
+
+    public get isPaused(): boolean {
+        return this._pauseCounter > 0
+    }
+
     /**
      * Creates a PhysicsSystem object.
      */
@@ -78,17 +100,103 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltPhysSystem = this._joltInterface.GetPhysicsSystem()
         this._joltBodyInterface = this._joltPhysSystem.GetBodyInterface()
+        this.SetUpContactListener(this._joltPhysSystem)
 
         this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0))
 
         const ground = this.CreateBox(
             new THREE.Vector3(5.0, 0.5, 5.0),
             undefined,
-            new THREE.Vector3(0.0, -2.0, 0.0),
+            new THREE.Vector3(0.0, -2.05, 0.0),
             undefined
         )
         ground.SetFriction(FLOOR_FRICTION)
         this._joltBodyInterface.AddBody(ground.GetID(), JOLT.EActivation_Activate)
+
+        this._bodyAssociations = new Map()
+    }
+
+    /**
+     * Get association to a given Jolt Body.
+     *
+     * @param bodyId BodyID to check for association
+     * @returns Association for given Body
+     */
+    public GetBodyAssociation(bodyId: Jolt.BodyID): BodyAssociate | undefined {
+        return this._bodyAssociations.get(bodyId.GetIndexAndSequenceNumber())
+    }
+
+    /**
+     * Sets assocation for a body
+     *
+     * @param assocation Assocation. See {@link BodyAssociate}
+     */
+    public SetBodyAssociation<T extends BodyAssociate>(assocation: T) {
+        this._bodyAssociations.set(assocation.associatedBody, assocation)
+    }
+
+    public RemoveBodyAssocation(bodyId: Jolt.BodyID) {
+        this._bodyAssociations.delete(bodyId.GetIndexAndSequenceNumber())
+    }
+
+    /**
+     * Holds a pause.
+     *
+     * The pause works off of a request counter.
+     */
+    public HoldPause() {
+        this._pauseCounter++
+    }
+
+    /**
+     * Forces all holds on the pause to be released.
+     */
+    public ForceUnpause() {
+        this._pauseCounter = 0
+    }
+
+    /**
+     * Releases a pause.
+     *
+     * The pause works off of a request counter.
+     */
+    public ReleasePause() {
+        if (this._pauseCounter > 0) {
+            this._pauseCounter--
+        }
+    }
+
+    /**
+     * Disabling physics for a single body
+     *
+     * @param bodyId
+     */
+    public DisablePhysicsForBody(bodyId: Jolt.BodyID) {
+        if (!this.IsBodyAdded(bodyId)) {
+            return
+        }
+
+        this._joltBodyInterface.DeactivateBody(bodyId)
+
+        this.GetBody(bodyId).SetIsSensor(true)
+    }
+
+    /**
+     * Enabing physics for a single body
+     *
+     * @param bodyId
+     */
+    public EnablePhysicsForBody(bodyId: Jolt.BodyID) {
+        if (!this.IsBodyAdded(bodyId)) {
+            return
+        }
+
+        this._joltBodyInterface.ActivateBody(bodyId)
+        this.GetBody(bodyId).SetIsSensor(false)
+    }
+
+    public IsBodyAdded(bodyId: Jolt.BodyID) {
+        return this._joltBodyInterface.IsAdded(bodyId)
     }
 
     /**
@@ -168,6 +276,13 @@ class PhysicsSystem extends WorldSystem {
         return body
     }
 
+    public AddBodyToSystem(bodyId: Jolt.BodyID, shouldActivate: boolean) {
+        this._joltBodyInterface.AddBody(
+            bodyId,
+            shouldActivate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
+    }
+
     /**
      * Utility function for creating convex hulls. Mostly used for Unit test validation.
      *
@@ -191,11 +306,11 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
         const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
-        const bodyMap = this.CreateBodiesFromParser(parser, layer);
-        const rootBody = parser.rootNode;
-        const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer);
-        this.CreateJointsFromParser(parser, mechanism);
-        return mechanism;
+        const bodyMap = this.CreateBodiesFromParser(parser, layer)
+        const rootBody = parser.rootNode
+        const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)
+        this.CreateJointsFromParser(parser, mechanism)
+        return mechanism
     }
 
     /**
@@ -330,7 +445,7 @@ class PhysicsSystem extends WorldSystem {
         let axis: Jolt.Vec3
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z! ?? 0)
+            axis = new JOLT.Vec3(miraAxis.x ? -miraAxis.x : 0, miraAxis.y ?? 0, miraAxis.z! ?? 0)
         } else {
             axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0)
         }
@@ -453,7 +568,7 @@ class PhysicsSystem extends WorldSystem {
         let axis: Jolt.Vec3
         // No scaling, these are unit vectors
         if (versionNum < 5) {
-            axis = new JOLT.Vec3(-miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
+            axis = new JOLT.Vec3(miraAxis.x ? -miraAxis.x : 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
         } else {
             axis = new JOLT.Vec3(miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
         }
@@ -525,7 +640,7 @@ class PhysicsSystem extends WorldSystem {
 
         const reservedLayer: number | undefined = layerReserve?.layer
 
-        filterNonPhysicsNodes(parser.rigidNodes, parser.assembly).forEach(rn => {
+        filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly).forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
             let shapesAdded = 0
 
@@ -551,7 +666,9 @@ class PhysicsSystem extends WorldSystem {
                     const partDefinition =
                         parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
 
-                    const partShapeResult = this.CreateShapeSettingsFromPart(partDefinition)
+                    const partShapeResult = rn.isDynamic
+                        ? this.CreateConvexShapeSettingsFromPart(partDefinition)
+                        : this.CreateConcaveShapeSettingsFromPart(partDefinition)
 
                     if (partShapeResult) {
                         const [shapeSettings, partMin, partMax] = partShapeResult
@@ -612,6 +729,7 @@ class PhysicsSystem extends WorldSystem {
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Little testing components
+                this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
             }
             // Cleanup
@@ -627,7 +745,7 @@ class PhysicsSystem extends WorldSystem {
      * @param   partDefinition  Definition of the part to create.
      * @returns If successful, the created convex hull shape settings from the given Part Definition.
      */
-    private CreateShapeSettingsFromPart(
+    private CreateConvexShapeSettingsFromPart(
         partDefinition: mirabuf.IPartDefinition
     ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
         const settings = new JOLT.ConvexHullShapeSettings()
@@ -656,6 +774,88 @@ class PhysicsSystem extends WorldSystem {
         } else {
             return [settings, min, max]
         }
+    }
+
+    /**
+     * Creates the Jolt ShapeSettings for a given part using the Part Definition of said part.
+     *
+     * @param   partDefinition  Definition of the part to create.
+     * @returns If successful, the created convex hull shape settings from the given Part Definition.
+     */
+    private CreateConcaveShapeSettingsFromPart(
+        partDefinition: mirabuf.IPartDefinition
+    ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
+        const settings = new JOLT.MeshShapeSettings()
+
+        settings.mMaxTrianglesPerLeaf = 8
+
+        settings.mTriangleVertices = new JOLT.VertexList()
+        settings.mIndexedTriangles = new JOLT.IndexedTriangleList()
+        settings.mMaterials = new JOLT.PhysicsMaterialList()
+
+        settings.mMaterials.push_back(new JOLT.PhysicsMaterial())
+
+        const min = new JOLT.Vec3(Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY, Number.POSITIVE_INFINITY)
+        const max = new JOLT.Vec3(Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY, Number.NEGATIVE_INFINITY)
+
+        partDefinition.bodies!.forEach(body => {
+            const vertArr = body.triangleMesh?.mesh?.verts
+            const indexArr = body.triangleMesh?.mesh?.indices
+            if (!vertArr || !indexArr) return
+            for (let i = 0; i < vertArr.length; i += 3) {
+                const vert = MirabufFloatArr_JoltFloat3(vertArr, i)
+                settings.mTriangleVertices.push_back(vert)
+                this.UpdateMinMaxBounds(new JOLT.Vec3(vert), min, max)
+                JOLT.destroy(vert)
+            }
+            for (let i = 0; i < indexArr.length; i += 3) {
+                settings.mIndexedTriangles.push_back(
+                    new JOLT.IndexedTriangle(indexArr.at(i)!, indexArr.at(i + 1)!, indexArr.at(i + 2)!, 0)
+                )
+            }
+        })
+
+        if (settings.mTriangleVertices.size() < 4) {
+            JOLT.destroy(settings)
+            JOLT.destroy(min)
+            JOLT.destroy(max)
+            return
+        } else {
+            settings.Sanitize()
+            return [settings, min, max]
+        }
+    }
+
+    /**
+     * Raycast a ray into the physics scene.
+     *
+     * @param from Originating point of the ray
+     * @param dir Direction of the ray. Note: Length of dir specifies the maximum length it will check.
+     * @returns Either the hit results of the closest object in the ray's path, or undefined if nothing was hit.
+     */
+    public RayCast(from: Jolt.Vec3, dir: Jolt.Vec3, ...ignoreBodies: Jolt.BodyID[]): RayCastHit | undefined {
+        const ray = new JOLT.RayCast(from, dir)
+
+        const raySettings = new JOLT.RayCastSettings()
+        raySettings.mTreatConvexAsSolid = false
+        const collector = new JOLT.CastRayClosestHitCollisionCollector()
+        const bp_filter = new JOLT.BroadPhaseLayerFilter()
+        const object_filter = new JOLT.ObjectLayerFilter()
+        const body_filter = new JOLT.IgnoreMultipleBodiesFilter()
+        const shape_filter = new JOLT.ShapeFilter() // We don't want to filter out any shapes
+
+        ignoreBodies.forEach(x => body_filter.IgnoreBody(x))
+
+        this._joltPhysSystem
+            .GetNarrowPhaseQuery()
+            .CastRay(ray, raySettings, collector, bp_filter, object_filter, body_filter, shape_filter)
+
+        if (collector.HadHit()) {
+            const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
+            return { data: collector.mHit, point: hitPoint, ray: ray }
+        }
+
+        return undefined
     }
 
     /**
@@ -712,6 +912,10 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public Update(deltaT: number): void {
+        if (this._pauseCounter > 0) {
+            return
+        }
+
         const diffDeltaT = deltaT - lastDeltaT
 
         lastDeltaT = lastDeltaT + Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
@@ -721,6 +925,9 @@ class PhysicsSystem extends WorldSystem {
         substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))
 
         this._joltInterface.Step(lastDeltaT, substeps)
+
+        this._physicsEventQueue.forEach(x => x.Dispatch())
+        this._physicsEventQueue = []
     }
 
     public Destroy(): void {
@@ -736,6 +943,7 @@ class PhysicsSystem extends WorldSystem {
 
         JOLT.destroy(this._joltBodyInterface)
         JOLT.destroy(this._joltInterface)
+        JOLT.destroy(this._joltPhysSystem.GetContactListener())
     }
 
     /**
@@ -771,6 +979,19 @@ class PhysicsSystem extends WorldSystem {
         return [ghostBody, constraint]
     }
 
+    public CreateSensor(shapeSettings: Jolt.ShapeSettings): Jolt.BodyID | undefined {
+        const shape = shapeSettings.Create()
+        if (shape.HasError()) {
+            console.error(`Failed to create sensor body\n${shape.GetError().c_str}`)
+            return undefined
+        }
+        const body = this.CreateBody(shape.Get(), undefined, undefined, undefined)
+        this._bodies.push(body.GetID())
+        body.SetIsSensor(true)
+        this._joltBodyInterface.AddBody(body.GetID(), JOLT.EActivation_Activate)
+        return body.GetID()
+    }
+
     /**
      * Exposes the SetPosition method on the _joltBodyInterface
      * Sets the position of the body
@@ -778,8 +999,117 @@ class PhysicsSystem extends WorldSystem {
      * @param id The id of the body
      * @param position The new position of the body
      */
-    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3): void {
-        this._joltBodyInterface.SetPosition(id, position, JOLT.EActivation_Activate)
+    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3, activate: boolean = true): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetPosition(
+            id,
+            position,
+            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
+    }
+
+    public SetBodyRotation(id: Jolt.BodyID, rotation: Jolt.Quat, activate: boolean = true): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetRotation(
+            id,
+            rotation,
+            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
+    }
+
+    /**
+     * Exposes SetShape method on the _joltBodyInterface
+     * Sets the shape of the body
+     *
+     * @param id The id of the body
+     * @param shape The new shape of the body
+     * @param massProperties The mass properties of the new body
+     * @param activationMode The activation mode of the new body
+     */
+    public SetShape(
+        id: Jolt.BodyID,
+        shape: Jolt.Shape,
+        massProperties: boolean,
+        activationMode: Jolt.EActivation
+    ): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetShape(id, shape, massProperties, activationMode)
+    }
+
+    /**
+     * Creates and assigns Jolt contact listener that dispatches events.
+     *
+     * @param physSystem The physics system the contact listener will attach to
+     */
+    private SetUpContactListener(physSystem: Jolt.PhysicsSystem) {
+        const contactListener = new JOLT.ContactListenerJS()
+
+        contactListener.OnContactAdded = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
+            const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
+            const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
+
+            const body1Id = new JOLT.BodyID(body1.GetID().GetIndexAndSequenceNumber())
+            const body2Id = new JOLT.BodyID(body2.GetID().GetIndexAndSequenceNumber())
+
+            const message: CurrentContactData = {
+                body1: body1Id,
+                body2: body2Id,
+                manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
+                settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
+            }
+
+            this._physicsEventQueue.push(new OnContactAddedEvent(message))
+        }
+
+        contactListener.OnContactPersisted = (bodyPtr1, bodyPtr2, manifoldPtr, settingsPtr) => {
+            const body1 = JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body
+            const body2 = JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body
+
+            const body1Id = body1.GetID()
+            const body2Id = body2.GetID()
+
+            const message: CurrentContactData = {
+                body1: body1Id,
+                body2: body2Id,
+                manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
+                settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
+            }
+
+            this._physicsEventQueue.push(new OnContactPersistedEvent(message))
+        }
+
+        contactListener.OnContactRemoved = subShapePairPtr => {
+            const shapePair = JOLT.wrapPointer(subShapePairPtr, JOLT.SubShapeIDPair) as Jolt.SubShapeIDPair
+
+            new OnContactRemovedEvent(shapePair)
+        }
+
+        contactListener.OnContactValidate = (bodyPtr1, bodyPtr2, inBaseOffsetPtr, inCollisionResultPtr) => {
+            const message: OnContactValidateData = {
+                body1: JOLT.wrapPointer(bodyPtr1, JOLT.Body) as Jolt.Body,
+                body2: JOLT.wrapPointer(bodyPtr2, JOLT.Body) as Jolt.Body,
+                baseOffset: JOLT.wrapPointer(inBaseOffsetPtr, JOLT.RVec3) as Jolt.RVec3,
+                collisionResult: JOLT.wrapPointer(
+                    inCollisionResultPtr,
+                    JOLT.CollideShapeResult
+                ) as Jolt.CollideShapeResult,
+            }
+
+            this._physicsEventQueue.push(new OnContactValidateEvent(message))
+
+            return JOLT.ValidateResult_AcceptAllContactsForThisBodyPair
+        }
+
+        physSystem.SetContactListener(contactListener)
     }
 }
 
@@ -886,6 +1216,23 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
         toCheck.GetY() - vec.GetY() * a,
         toCheck.GetZ() - vec.GetZ() * a
     ).Normalized()
+}
+
+export type RayCastHit = {
+    data: Jolt.RayCastResult
+    point: Jolt.Vec3
+    ray: Jolt.RayCast
+}
+
+/**
+ * An interface to create an association between a body and anything.
+ */
+export class BodyAssociate {
+    readonly associatedBody: JoltBodyIndexAndSequence
+
+    public constructor(bodyId: Jolt.BodyID) {
+        this.associatedBody = bodyId.GetIndexAndSequenceNumber()
+    }
 }
 
 export default PhysicsSystem

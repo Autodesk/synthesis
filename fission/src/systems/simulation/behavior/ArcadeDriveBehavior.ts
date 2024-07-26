@@ -4,19 +4,25 @@ import Behavior from "./Behavior"
 import InputSystem from "@/systems/input/InputSystem"
 
 class ArcadeDriveBehavior extends Behavior {
-    private leftWheels: WheelDriver[];
-    private rightWheels: WheelDriver[];
-    private _assemblyName: string;
+    private leftWheels: WheelDriver[]
+    private rightWheels: WheelDriver[]
+    private _brainIndex: number
 
     private _driveSpeed = 30
     private _turnSpeed = 30
 
-    constructor(leftWheels: WheelDriver[], rightWheels: WheelDriver[], leftStimuli: WheelRotationStimulus[], rightStimuli: WheelRotationStimulus[], assemblyName: string) {
-        super(leftWheels.concat(rightWheels), leftStimuli.concat(rightStimuli));
-        
-        this.leftWheels = leftWheels;
-        this.rightWheels = rightWheels;
-        this._assemblyName = assemblyName;
+    constructor(
+        leftWheels: WheelDriver[],
+        rightWheels: WheelDriver[],
+        leftStimuli: WheelRotationStimulus[],
+        rightStimuli: WheelRotationStimulus[],
+        brainIndex: number
+    ) {
+        super(leftWheels.concat(rightWheels), leftStimuli.concat(rightStimuli))
+
+        this.leftWheels = leftWheels
+        this.rightWheels = rightWheels
+        this._brainIndex = brainIndex
     }
 
     // Sets the drivetrains target linear and rotational velocity
@@ -29,10 +35,10 @@ class ArcadeDriveBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        const driveInput = InputSystem.getInput("arcadeDrive", this._assemblyName);
-        const turnInput = InputSystem.getInput("arcadeTurn", this._assemblyName);
+        const driveInput = InputSystem.getInput("arcadeDrive", this._brainIndex)
+        const turnInput = InputSystem.getInput("arcadeTurn", this._brainIndex)
 
-        this.DriveSpeeds(driveInput*this._driveSpeed, turnInput*this._turnSpeed);
+        this.DriveSpeeds(driveInput * this._driveSpeed, turnInput * this._turnSpeed)
     }
 }
 

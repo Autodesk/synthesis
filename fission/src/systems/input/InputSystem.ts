@@ -1,5 +1,5 @@
 import WorldSystem from "../WorldSystem"
-import { InputScheme } from "./DefaultInputs"
+import { InputScheme } from "./InputSchemeManager"
 
 export type ModifierState = {
     alt: boolean
@@ -12,11 +12,9 @@ export const EmptyModifierState: ModifierState = { ctrl: false, alt: false, shif
 // Represents any input
 abstract class Input {
     public inputName: string
-    public isGlobal: boolean
 
-    constructor(inputName: string, isGlobal: boolean) {
+    constructor(inputName: string) {
         this.inputName = inputName
-        this.isGlobal = isGlobal
     }
 
     // Returns the current value of the input. Range depends on input type
@@ -33,14 +31,8 @@ class ButtonInput extends Input {
 
     public gamepadButton: number
 
-    public constructor(
-        inputName: string,
-        keyCode?: string,
-        gamepadButton?: number,
-        isGlobal?: boolean,
-        keyModifiers?: ModifierState
-    ) {
-        super(inputName, isGlobal ?? false)
+    public constructor(inputName: string, keyCode?: string, gamepadButton?: number, keyModifiers?: ModifierState) {
+        super(inputName)
         this.keyCode = keyCode ?? ""
         this.keyModifiers = keyModifiers ?? EmptyModifierState
         this.gamepadButton = gamepadButton ?? -1
@@ -58,7 +50,7 @@ class ButtonInput extends Input {
     }
 
     getCopy(): Input {
-        return new ButtonInput(this.inputName, this.keyCode, this.gamepadButton, this.isGlobal, this.keyModifiers)
+        return new ButtonInput(this.inputName, this.keyCode, this.gamepadButton, this.keyModifiers)
     }
 }
 
@@ -84,11 +76,10 @@ class AxisInput extends Input {
         useGamepadButtons?: boolean,
         posGamepadButton?: number,
         negGamepadButton?: number,
-        isGlobal?: boolean,
         posKeyModifiers?: ModifierState,
         negKeyModifiers?: ModifierState
     ) {
-        super(inputName, isGlobal ?? false)
+        super(inputName)
 
         this.posKeyCode = posKeyCode ?? ""
         this.posKeyModifiers = posKeyModifiers ?? EmptyModifierState
@@ -135,7 +126,6 @@ class AxisInput extends Input {
             this.useGamepadButtons,
             this.posGamepadButton,
             this.negGamepadButton,
-            this.isGlobal,
             this.posKeyModifiers,
             this.negKeyModifiers
         )
@@ -143,8 +133,6 @@ class AxisInput extends Input {
 }
 
 class InputSystem extends WorldSystem {
-    public static allInputs: Map<string, InputScheme> = new Map()
-
     public static currentModifierState: ModifierState
 
     // A list of keys currently being pressed
@@ -155,6 +143,9 @@ class InputSystem extends WorldSystem {
 
     // The scheme most recently selected in the controls modal
     public static selectedScheme: InputScheme | undefined
+
+    // Maps a brain index to a certain input scheme
+    public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
 
     constructor() {
         super()
@@ -241,11 +232,11 @@ class InputSystem extends WorldSystem {
         return !!InputSystem._keysPressed[key]
     }
 
-    // If an input exists, return true if it is pressed
-    public static getInput(inputName: string, assemblyId: string): number {
-        // Looks for an input assigned to this action
-        const targetScheme = this.allInputs.get(assemblyId)
-        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName)
+    // If an input exists, return it's value
+    public static getInput(inputName: string, brainIndex: number): number {
+        const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+
+        const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
 
         if (targetScheme == null || targetInput == null) return 0
 

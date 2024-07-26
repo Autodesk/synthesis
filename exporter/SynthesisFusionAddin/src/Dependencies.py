@@ -80,7 +80,7 @@ def packagesOutOfDate(installedPackages: dict[str, str]) -> bool:
 
 
 # TODO: GH-1010 for log failure
-def resolveDependencies() -> None:
+def resolveDependencies() -> bool | None:
     app = adsk.core.Application.get()
     ui = app.userInterface
     if app.isOffLine:
@@ -141,3 +141,6 @@ def resolveDependencies() -> None:
     # TODO: Will need to update logging after GH-1010
     if not verifyCompiledProtoImports():
         ui.messageBox("Missing required compiled protobuf files.")
+        return False
+
+    return True

@@ -1,7 +1,6 @@
-import importlib.util
-import logging.handlers
+# DO NOT CHANGE ORDER, OR ADD IMPORTS BEFORE UNTIL END COMMENT
+
 import os
-import traceback
 from shutil import rmtree
 
 import adsk.core
@@ -9,112 +8,108 @@ import adsk.core
 from .src.Dependencies import resolveDependencies
 
 try:
-    from .src.configure import setAnalytics, unload_config
-    from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm, root_logger
-    from .src.Types.OString import OString
-    from .src.UI import HUI, Camera, ConfigCommand, Handlers, Helper, MarkingMenu
+    from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
+    from .src.Logging import getLogger, logFailure, setupLogger
+    from .src.UI import (
+        HUI,
+        Camera,
+        ConfigCommand,
+        Handlers,
+        Helper,
+        MarkingMenu,
+        ShowAPSAuthCommand,
+    )
     from .src.UI.Toolbar import Toolbar
-except (ImportError, ModuleNotFoundError):
-    # Dependency likely has not been installed OR protobuf files were not compiled and could not be found.
-    resolveDependencies()
-    adsk.core.Application.get().userInterface.messageBox("Installed required dependencies, please restart Fusion.")
+
+    # END OF RESTRICTION
+    # Transition: AARD-1721
+    # Should attempt to fix this ordering scheme within AARD-1741
+    from .src.APS import APS  # isort:skip
+except:
+    result = resolveDependencies()
+    if result:
+        adsk.core.Application.get().userInterface.messageBox("Installed required dependencies, please restart Fusion.")
 
 
+@logFailure
 def run(_):
     """## Entry point to application from Fusion.
 
     Arguments:
         **context** *context* -- Fusion context to derive app and UI.
     """
+    setupLogger()
 
-    try:
-        # Remove all items prior to start just to make sure
-        unregister_all()
+    # Remove all items prior to start just to make sure
+    unregister_all()
 
-        # creates the UI elements
-        register_ui()
+    # creates the UI elements
+    register_ui()
 
-        app = adsk.core.Application.get()
-        ui = app.userInterface
+    app = adsk.core.Application.get()
+    ui = app.userInterface
 
-        MarkingMenu.setupMarkingMenu(ui)
-
-    except:
-        logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+    MarkingMenu.setupMarkingMenu(ui)
 
 
+@logFailure
 def stop(_):
     """## Fusion exit point - deconstructs buttons and handlers
 
     Arguments:
         **context** *context* -- Fusion Data.
     """
-    try:
-        unregister_all()
+    unregister_all()
 
-        app = adsk.core.Application.get()
-        ui = app.userInterface
+    app = adsk.core.Application.get()
+    ui = app.userInterface
 
-        MarkingMenu.stopMarkingMenu(ui)
+    MarkingMenu.stopMarkingMenu(ui)
 
-        # nm.deleteMe()
+    # nm.deleteMe()
 
-        # should make a logger class
-        handlers = root_logger.handlers[:]
-        for handler in handlers:
-            handler.close()
-            # I think this will clear the file completely
-            # root_logger.removeHandler(handler)
+    logger = getLogger(INTERNAL_ID)
+    logger.cleanupHandlers()
 
-        unload_config()
+    for file in gm.files:
+        try:
+            os.remove(file)
+        except OSError:
+            pass
 
-        for file in gm.files:
-            try:
-                os.remove(file)
-            except OSError:
-                pass
+    # removes path so that proto files don't get confused
 
-        # removes path so that proto files don't get confused
+    import sys
 
-        import sys
+    path = os.path.abspath(os.path.dirname(__file__))
 
-        path = os.path.abspath(os.path.dirname(__file__))
+    path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out"))
 
-        path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out"))
+    if path in sys.path:
+        sys.path.remove(path)
 
-        if path in sys.path:
-            sys.path.remove(path)
-
-        if path_proto_files in sys.path:
-            sys.path.remove(path_proto_files)
-
-    except:
-        logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+    if path_proto_files in sys.path:
+        sys.path.remove(path_proto_files)
 
 
+@logFailure
 def unregister_all() -> None:
     """Unregisters all UI elements in case any still exist.
 
     - Good place to unregister custom app events that may repeat.
     """
-    try:
-        Camera.clearIconCache()
+    Camera.clearIconCache()
 
-        for element in gm.elements:
-            element.deleteMe()
+    for element in gm.elements:
+        element.deleteMe()
 
-        for tab in gm.tabs:
-            tab.deleteMe()
-
-    except:
-        logging.getLogger(f"{INTERNAL_ID}").error("Failed:\n{}".format(traceback.format_exc()))
+    for tab in gm.tabs:
+        tab.deleteMe()
 
 
+@logFailure
 def register_ui() -> None:
     """#### Generic Function to add all UI objects in a simple non destructive way."""
-
-    # if A_EP:
-    #     A_EP.send_view("open")
 
     # toolbar = Toolbar('SketchFab')
     work_panel = Toolbar.getNewPanel(f"{APP_NAME}", f"{INTERNAL_ID}", "ToolsTab")
@@ -122,10 +117,21 @@ def register_ui() -> None:
     commandButton = HUI.HButton(
         "Synthesis Exporter",
         work_panel,
-        Helper.check_solid_open,
+        lambda *_: True,  # TODO: Should be redone with various refactors.
         ConfigCommand.ConfigureCommandCreatedHandler,
         description=f"{DESCRIPTION}",
         command=True,
     )
 
     gm.elements.append(commandButton)
+
+    apsButton = HUI.HButton(
+        "APS",
+        work_panel,
+        lambda *_: True,  # TODO: Should be redone with various refactors.
+        ShowAPSAuthCommand.ShowAPSAuthCommandCreatedHandler,
+        description=f"APS",
+        command=True,
+    )
+
+    gm.elements.append(apsButton)
