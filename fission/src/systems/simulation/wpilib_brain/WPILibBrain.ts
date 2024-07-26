@@ -172,34 +172,26 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         return
     }
 
-    // console.debug(data)
-
     const device = data.device
     const updateData = data.data
 
     switch (data.type) {
         case "PWM":
-            console.debug("pwm")
             UpdateSimMap("PWM", device, updateData)
             break
         case "Solenoid":
-            console.debug("solenoid")
             UpdateSimMap("Solenoid", device, updateData)
             break
         case "SimDevice":
-            console.debug("simdevice")
             UpdateSimMap("SimDevice", device, updateData)
             break
         case "CANMotor":
-            console.debug("canmotor")
             UpdateSimMap("CANMotor", device, updateData)
             break
         case "CANEncoder":
-            console.debug("canencoder")
             UpdateSimMap("CANEncoder", device, updateData)
             break
         default:
-            // console.debug(`Unrecognized Message:\n${data}`)
             break
     }
 })
@@ -226,8 +218,6 @@ class WPILibBrain extends Brain {
 
     private _simDevices: SimOutputGroup[] = []
 
-    public static robotsSpawned: string[] = []
-
     constructor(mechanism: Mechanism) {
         super(mechanism)
 
@@ -237,13 +227,6 @@ class WPILibBrain extends Brain {
             console.warn("SimulationLayer is undefined")
             return
         }
-
-        // if (mechanism.controllable) {
-        //     WPILibBrain.robotsSpawned.push(this.getNumberedAssemblyName())
-        // }
-
-        // WPILibBrain._currentRobotIndex++
-        // this.configureArcadeDriveBehavior()
     }
 
     public addSimOutputGroup(device: SimOutputGroup) {
@@ -251,7 +234,6 @@ class WPILibBrain extends Brain {
     }
 
     public Update(deltaT: number): void {
-        // this._behaviors.forEach(b => b.Update(deltaT))
         this._simDevices.forEach(d => d.Update(deltaT))
     }
 
