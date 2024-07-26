@@ -19,11 +19,27 @@ const worker = new WPILibWSWorker()
 
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
-const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
-const CANMOTOR_SUPPLY_VOLTAGE = ">supplyVoltage"
-const CANENCODER_RAW_INPUT_POSITION = ">rawPositionInput"
 
-export type SimType = "PWM" | "CANMotor" | "Solenoid" | "SimDevice" | "CANEncoder"
+const CANMOTOR_PERCENT_OUTPUT = "<percentOutput"
+const CANMOTOR_BRAKE_MODE = "<brakeMode"
+const CANMOTOR_NEUTRAL_DEADBAND = "<neutralDeadband"
+
+const CANMOTOR_SUPPLY_CURRENT = ">supplyCurrent"
+const CANMOTOR_MOTOR_CURRENT = ">motorCurrent"
+const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
+
+// const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
+// const CANENCODER_RAW_INPUT_POSITION = ">rawPositionInput"
+const CANENCODER_POSITION = ">position"
+const CANENCODER_VELOCITY = ">velocity"
+
+export enum SimType {
+    PWM = "PWM",
+    CANMOTOR = "CANMotor",
+    SOLENOID = "Solenoid",
+    SIMDEVICE = "SimDevice",
+    CANENCODER = "CANEncoder"
+}
 
 enum FieldType {
     Read = 0,
@@ -49,34 +65,33 @@ function GetFieldType(field: string): FieldType {
 
 const defaultSimMap: Map<SimType, Map<string, any>> = new Map(
     Object.entries({
-        "CANMotor": {
+        CANMotor: {
             "CANSparkMax[0]": {
-                "<percentOutput": 0.75
+                "<percentOutput": 0.75,
             },
             "CANSparkMax[1]": {
-                "<percentOutput": 0.75
+                "<percentOutput": 0.75,
             },
             "CANSparkMax[2]": {
-                "<percentOutput": 0.75
+                "<percentOutput": 0.75,
             },
             "CANSparkMax[3]": {
-                "<percentOutput": -0.75
+                "<percentOutput": -0.75,
             },
             "CANSparkMax[4]": {
-                "<percentOutput": -0.75
+                "<percentOutput": -0.75,
             },
             "CANSparkMax[5]": {
-                "<percentOutput": -0.75
+                "<percentOutput": -0.75,
             },
-        }
-    })
-        .map(([key, value]) => [key as SimType, new Map(Object.entries(value))])
+        },
+    }).map(([key, value]) => [key as SimType, new Map(Object.entries(value))])
 )
 
 export const simMap = new Map<SimType, Map<string, any>>()
 
 export class SimGeneric {
-    private constructor() { }
+    private constructor() {}
 
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
         const fieldType = GetFieldType(field)
@@ -138,34 +153,30 @@ export class SimGeneric {
 }
 
 export class SimPWM {
-    private constructor() { }
+    private constructor() {}
 
     public static GetSpeed(device: string): number | undefined {
-        return SimGeneric.Get("PWM", device, PWM_SPEED, 0.0)
+        return SimGeneric.Get(SimType.PWM, device, PWM_SPEED, 0.0)
     }
 
     public static GetPosition(device: string): number | undefined {
-        return SimGeneric.Get("PWM", device, PWM_POSITION, 0.0)
+        return SimGeneric.Get(SimType.PWM, device, PWM_POSITION, 0.0)
     }
 }
 
 export class SimCAN {
-    private constructor() { }
+    private constructor() {}
 
     public static GetDeviceWithID(id: number, type: SimType): any {
-        const id_exp = /.*\[(\d+)\]/g;
+        const id_exp = /.*\[(\d+)\]/g
         const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type || simType == "SimDevice")
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
-                let result;
-                if ((result = [...key.matchAll(id_exp)]) != undefined) {
-                    if (result.length > 0 && result[0].length > 1) {
-                        const parsed_id = parseInt(result[0][1]);
-                        if (parsed_id == id) {
-                            return data.get(key)
-                        }
-                    }
-                }
+                let result = [...key.matchAll(id_exp)]
+                if (result?.length <= 0 || result[0].length <= 1) continue
+
+                const parsed_id = parseInt(result[0][1])
+                if (parsed_id == id) return data.get(key)
             }
         }
         return undefined
@@ -173,35 +184,63 @@ export class SimCAN {
 }
 
 export class SimCANMotor {
-    private constructor() { }
+    private constructor() {}
 
-    public static GetDutyCycle(device: string): number | undefined {
-        return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
+    // public static GetDutyCycle(device: string): number | undefined {
+    //     return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
+    // }
+    //
+    // public static SetSupplyVoltage(device: string, voltage: number): boolean {
+    //     return SimGeneric.Set("CANMotor", device, CANMOTOR_SUPPLY_VOLTAGE, voltage)
+    // }
+
+    public static GetPercentOutput(device: string): number | undefined {
+        return SimGeneric.Get(SimType.CANMOTOR, device, CANMOTOR_PERCENT_OUTPUT, 0.0)
     }
 
-    public static SetSupplyVoltage(device: string, voltage: number): boolean {
-        return SimGeneric.Set("CANMotor", device, CANMOTOR_SUPPLY_VOLTAGE, voltage)
+    public static GetBrakeMode(device: string): number | undefined {
+        return SimGeneric.Get(SimType.CANMOTOR, device, CANMOTOR_BRAKE_MODE, 0.0)
+    }
+
+    public static GetNeutralDeadband(device: string): number | undefined {
+        return SimGeneric.Get(SimType.CANMOTOR, device, CANMOTOR_NEUTRAL_DEADBAND, 0.0)
+    }
+
+    public static SetSupplyCurrent(device: string, current: number): boolean {
+        return SimGeneric.Set(SimType.CANMOTOR, device, CANMOTOR_SUPPLY_CURRENT, current)
+    }
+
+    public static SetMotorCurrent(device: string, current: number): boolean {
+        return SimGeneric.Set(SimType.CANMOTOR, device, CANMOTOR_MOTOR_CURRENT, current)
+    }
+    
+    public static SetBusVoltage(device: string, voltage: number): boolean {
+        return SimGeneric.Set(SimType.CANMOTOR, device, CANMOTOR_BUS_VOLTAGE, voltage)
     }
 }
 
 export class SimCANEncoder {
-    private constructor() { }
+    private constructor() {}
 
-    public static SetRawInputPosition(device: string, rawInputPosition: number): boolean {
-        return SimGeneric.Set("CANEncoder", device, CANENCODER_RAW_INPUT_POSITION, rawInputPosition)
+    public static SetVelocity(device: string, velocity: number): boolean {
+        return SimGeneric.Set(SimType.CANENCODER, device, CANENCODER_VELOCITY, velocity)
+    }
+
+    public static SetPosition(device: string, position: number): boolean {
+        return SimGeneric.Set(SimType.CANENCODER, device, CANENCODER_POSITION, position)
     }
 }
 
 worker.addEventListener("message", (eventData: MessageEvent) => {
     let data: any | undefined
-    try {
-        if (typeof eventData.data == "object") {
-            data = eventData.data
-        } else {
+    if (typeof eventData.data == "object") {
+        data = eventData.data
+    } else {
+        try {
             data = JSON.parse(eventData.data)
+        } catch (e) {
+            console.warn(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
         }
-    } catch (e) {
-        console.warn(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
     }
 
     if (!data || !data.type) {
@@ -209,36 +248,17 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         return
     }
 
-    // console.debug(data)
-
     const device = data.device
     const updateData = data.data
 
-    switch (data.type) {
-        case "PWM":
-            console.debug("pwm")
-            UpdateSimMap("PWM", device, updateData)
-            break
-        case "Solenoid":
-            console.debug("solenoid")
-            UpdateSimMap("Solenoid", device, updateData)
-            break
-        case "SimDevice":
-            console.debug("simdevice")
-            UpdateSimMap("SimDevice", device, updateData)
-            break
-        case "CANMotor":
-            console.debug("canmotor")
-            UpdateSimMap("CANMotor", device, updateData)
-            break
-        case "CANEncoder":
-            console.debug("canencoder")
-            UpdateSimMap("CANEncoder", device, updateData)
-            break
-        default:
-            // console.debug(`Unrecognized Message:\n${data}`)
-            break
+    if (!(data.type in SimType)) {
+        console.error(`Unrecognized SimType: ${data.type}\n${data.data}`)
+        return
     }
+
+    console.debug(data.type);
+
+    UpdateSimMap(data.type, device, updateData)
 })
 
 function UpdateSimMap(type: SimType, device: string, updateData: any) {
@@ -286,7 +306,7 @@ class WPILibBrain extends Brain {
         // this.configureArcadeDriveBehavior()
     }
 
-    public addSimOutputGroup(device: SimOutputGroup) {
+    public addSimOutputGroup(device: SimOutputGroup): void {
         this._simDevices.push(device)
     }
 
@@ -343,10 +363,10 @@ export class PWMGroup extends SimOutputGroup {
         super(name, ports, drivers, "PWM")
     }
 
-    public Update(deltaT: number) {
+    public Update(_deltaT: number) {
         // let average = 0;
         for (const port of this.ports) {
-            const speed = SimPWM.GetSpeed(`${port}`) ?? 0;
+            const speed = SimPWM.GetSpeed(`${port}`) ?? 0
             // average += speed;
             console.log(port, speed)
         }
@@ -366,7 +386,7 @@ export class CANGroup extends SimOutputGroup {
 
     public Update(_deltaT: number) {
         for (const port of this.ports) {
-            const device = SimCAN.GetDeviceWithID(port, this.type);
+            const device = SimCAN.GetDeviceWithID(port, this.type)
             console.log(port, device)
         }
     }

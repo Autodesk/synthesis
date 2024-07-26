@@ -75,25 +75,27 @@ class SimulationLayer {
         this._drivers = []
         this._stimuli = []
         this._mechanism.constraints.forEach(x => {
+            let stim: Stimulus
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint)
                 const driver = new HingeDriver(hinge)
                 this._drivers.push(driver)
-                const stim = new HingeStimulus(hinge)
+                stim = new HingeStimulus(hinge)
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
                 const driver = new WheelDriver(vehicle)
                 this._drivers.push(driver)
-                const stim = new WheelRotationStimulus(vehicle.GetWheel(0))
+                stim = new WheelRotationStimulus(vehicle.GetWheel(0))
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
                 const driver = new SliderDriver(slider)
                 this._drivers.push(driver)
-                const stim = new SliderStimulus(slider)
+                stim = new SliderStimulus(slider)
                 this._stimuli.push(stim)
             }
+            this._stimuli.push(stim)
         })
         this._stimuli.push(new ChassisStimulus(mechanism.nodeToBody.get(mechanism.rootBody)!))
     }
@@ -109,9 +111,7 @@ class SimulationLayer {
 
         this._brain = brain
 
-        if (this._brain) {
-            this._brain.Enable()
-        }
+        if (this._brain) this._brain.Enable()
     }
 }
 
