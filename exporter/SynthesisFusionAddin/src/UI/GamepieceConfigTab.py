@@ -2,8 +2,8 @@ import adsk.core
 import adsk.fusion
 
 from ..Logging import logFailure
-from ..Parser.ExporterOptions import ExporterOptions, Gamepiece, PreferredUnits
-from ..Types import toKg, toLbs
+from ..Parser.ExporterOptions import ExporterOptions
+from ..Types import Gamepiece, PreferredUnits, toKg, toLbs
 from . import IconPaths
 from .CreateCommandInputsHelper import (
     createBooleanInput,
@@ -120,7 +120,6 @@ class GamepieceConfigTab:
         return autoCalcWeightButton.value
 
     @logFailure
-    @property
     def weightInputs(self) -> list[adsk.core.ValueCommandInput]:
         gamepieceWeightInputs = []
         for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
@@ -161,6 +160,8 @@ class GamepieceConfigTab:
         frictionCoefficient.tooltipDescription = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
         if synGamepiece:
             frictionCoefficient.valueOne = synGamepiece.friction
+        else:
+            frictionCoefficient.valueOne = 0.5
 
         physical = gamepiece.component.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
         if self.currentUnits == PreferredUnits.IMPERIAL:
@@ -231,7 +232,7 @@ class GamepieceConfigTab:
     def updateWeightTableToUnits(self, units: PreferredUnits) -> None:
         assert units in {PreferredUnits.METRIC, PreferredUnits.IMPERIAL}
         conversionFunc = toKg if units == PreferredUnits.METRIC else toLbs
-        for row in range(1, self.gamepieceTable.rowCount):
+        for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
             weightInput: adsk.core.ValueCommandInput = self.gamepieceTable.getInputAtPosition(row, 1)
             weightInput.value = conversionFunc(weightInput.value)
 
@@ -259,10 +260,10 @@ class GamepieceConfigTab:
 
             if autoCalcWeightButton.value:
                 self.calcGamepieceWeights()
-                for weightInput in self.weightInputs:
+                for weightInput in self.weightInputs():
                     weightInput.isEnabled = False
             else:
-                for weightInput in self.weightInputs:
+                for weightInput in self.weightInputs():
                     weightInput.isEnabled = True
 
             self.previousAutoCalcWeightCheckboxState = autoCalcWeightButton.value
