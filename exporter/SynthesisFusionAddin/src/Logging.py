@@ -31,7 +31,11 @@ def setupLogger() -> None:
     now = datetime.now().strftime("%H-%M-%S")
     today = date.today()
     logFileFolder = getOSPath(f"{pathlib.Path(__file__).parent.parent}", "logs")
-    logFiles = [os.path.join(logFileFolder, file) for file in os.listdir(logFileFolder) if file.endswith(".log")]
+    logFiles = [
+        os.path.join(logFileFolder, file)
+        for file in os.listdir(logFileFolder)
+        if file.endswith(".log")
+    ]
     logFiles.sort()
     if len(logFiles) >= MAX_LOG_FILES_TO_KEEP:
         for file in logFiles[: len(logFiles) - MAX_LOG_FILES_TO_KEEP]:
@@ -66,15 +70,21 @@ def logFailure(func: callable = None, /, *, messageBox: bool = False) -> callabl
             except BaseException:
                 excType, excValue, excTrace = sys.exc_info()
                 tb = traceback.TracebackException(excType, excValue, excTrace)
-                formattedTb = "".join(list(tb.format())[2:])  # Remove the wrapper func from the traceback.
+                formattedTb = "".join(
+                    list(tb.format())[2:]
+                )  # Remove the wrapper func from the traceback.
                 clsName = ""
                 if args and hasattr(args[0], "__class__"):
                     clsName = args[0].__class__.__name__ + "."
 
-                getLogger(f"{INTERNAL_ID}.{clsName}{func.__name__}").error(f"Failed:\n{formattedTb}")
+                getLogger(f"{INTERNAL_ID}.{clsName}{func.__name__}").error(
+                    f"Failed:\n{formattedTb}"
+                )
                 if messageBox:
                     ui = adsk.core.Application.get().userInterface
-                    ui.messageBox(f"Internal Failure: {formattedTb}", "Synthesis: Error")
+                    ui.messageBox(
+                        f"Internal Failure: {formattedTb}", "Synthesis: Error"
+                    )
 
         return wrapper
 

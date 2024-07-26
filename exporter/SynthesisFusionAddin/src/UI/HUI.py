@@ -44,7 +44,9 @@ class HPalette:
             self.events.append(arg)
 
         if self.uid in gm.uniqueIds:
-            raise ValueError(f"Cannot create two UI Elements with the same ID {self.uid}\n")
+            raise ValueError(
+                f"Cannot create two UI Elements with the same ID {self.uid}\n"
+            )
 
         if gm.ui.palettes is None:
             raise RuntimeError(f"No Palette object exists yet")
@@ -52,7 +54,9 @@ class HPalette:
         self.palette = gm.ui.palettes.itemById(self.uid)
 
         if self.palette is None:
-            path = OsHelper.getOSPathPalette("src", "Resources", "Palette", f'{self.name.replace(" ", "")}')
+            path = OsHelper.getOSPathPalette(
+                "src", "Resources", "Palette", f'{self.name.replace(" ", "")}'
+            )
 
             self.palette = gm.ui.palettes.add(
                 self.uid,
@@ -65,7 +69,9 @@ class HPalette:
                 height,
             )
 
-            self.palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateLeft
+            self.palette.dockingState = (
+                adsk.core.PaletteDockingStates.PaletteDockStateLeft
+            )
 
             onHTML = Handlers.HPaletteHTMLEventHandler(self)
             self.palette.incomingFromHTML.add(onHTML)
@@ -112,7 +118,9 @@ class HButton:
         self.uid = name.replace(" ", "") + f"_{INTERNAL_ID}"
 
         if self.uid in gm.uniqueIds:
-            raise ValueError(f"Cannot create two UI Elements with the same ID {self.uid}\n")
+            raise ValueError(
+                f"Cannot create two UI Elements with the same ID {self.uid}\n"
+            )
 
         self.name = name
 
@@ -130,7 +138,9 @@ class HButton:
             self.uid,
             f"{name}",
             f"{description}",
-            OsHelper.getOSPath(".", "src", "Resources", f'{self.name.replace(" ", "")}'),
+            OsHelper.getOSPath(
+                ".", "src", "Resources", f'{self.name.replace(" ", "")}'
+            ),
         )
         """ Button Command Definition stored as a member """
 
@@ -180,7 +190,9 @@ class HButton:
         if cmdDef:
             cmdDef.deleteMe()
 
-        ctrl = gm.ui.allToolbarPanels.itemById(self.location).controls.itemById(self.uid)
+        ctrl = gm.ui.allToolbarPanels.itemById(self.location).controls.itemById(
+            self.uid
+        )
         if ctrl:
             ctrl.deleteMe()
 

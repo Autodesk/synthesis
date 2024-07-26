@@ -22,14 +22,20 @@ def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels) -> None:
         matrix = adsk.core.Matrix3D.create()
         matrix.translation = adsk.core.Vector3D.create(min[0], min[1] - 5, min[2])
 
-        billBoard = adsk.fusion.CustomGraphicsBillBoard.create(adsk.core.Point3D.create(0, 0, 0))
-        billBoard.billBoardStyle = adsk.fusion.CustomGraphicsBillBoardStyles.ScreenBillBoardStyle
+        billBoard = adsk.fusion.CustomGraphicsBillBoard.create(
+            adsk.core.Point3D.create(0, 0, 0)
+        )
+        billBoard.billBoardStyle = (
+            adsk.fusion.CustomGraphicsBillBoardStyles.ScreenBillBoardStyle
+        )
 
         text = str(_wheels.index(wheel) + 1)
         graphicsText = graphics.addText(text, "Arial Black", 6, matrix)
         graphicsText.billBoarding = billBoard  # make the text follow the camera
         graphicsText.isSelectable = False  # make it non-selectable
-        graphicsText.cullMode = adsk.fusion.CustomGraphicsCullModes.CustomGraphicsCullBack
+        graphicsText.cullMode = (
+            adsk.fusion.CustomGraphicsCullModes.CustomGraphicsCullBack
+        )
         graphicsText.color = adsk.fusion.CustomGraphicsShowThroughColorEffect.create(
             adsk.core.Color.create(230, 146, 18, 255), 1
         )  # orange/synthesis theme

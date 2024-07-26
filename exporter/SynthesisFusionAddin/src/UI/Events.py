@@ -53,8 +53,12 @@ def openDocument(json_data: str) -> str:
     """
     data = json.loads(json_data)
     data = data["arguments"]
-    gm.ui.messageBox(f"Attempting to open and focus on a given document: {data}\n TODO: Implement")
-    logger.info(f"Attempting to open and focus on a given document: {data}\n TODO: Implement")
+    gm.ui.messageBox(
+        f"Attempting to open and focus on a given document: {data}\n TODO: Implement"
+    )
+    logger.info(
+        f"Attempting to open and focus on a given document: {data}\n TODO: Implement"
+    )
     return ""
 
 

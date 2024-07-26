@@ -44,10 +44,14 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
 
             if occ:
                 if occ.attributes.itemByName("synthesis", "collision_off") == None:
-                    cmdDisableCollision = ui.commandDefinitions.itemById("DisableCollision")
+                    cmdDisableCollision = ui.commandDefinitions.itemById(
+                        "DisableCollision"
+                    )
                     synthDropDown.controls.addCommand(cmdDisableCollision)
                 else:
-                    cmdEnableCollision = ui.commandDefinitions.itemById("EnableCollision")
+                    cmdEnableCollision = ui.commandDefinitions.itemById(
+                        "EnableCollision"
+                    )
                     synthDropDown.controls.addCommand(cmdEnableCollision)
 
     def setCollisionAttribute(occ: adsk.fusion.Occurrence, isEnabled: bool = True):
@@ -114,7 +118,9 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                     if design:
                         attrs = design.findAttributes("synthesis", "collision_off")
                         for attr in attrs:
-                            for b in adsk.fusion.Occurrence.cast(attr.parent).bRepBodies:
+                            for b in adsk.fusion.Occurrence.cast(
+                                attr.parent
+                            ).bRepBodies:
                                 ui.activeSelections.add(b)
                 elif cmdDef.id == "EnableAllCollision":
                     app = adsk.core.Application.get()

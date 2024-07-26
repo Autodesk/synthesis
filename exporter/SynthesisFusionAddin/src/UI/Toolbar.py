@@ -51,7 +51,9 @@ class Toolbar:
 
     @logFailure
     @staticmethod
-    def getNewPanel(name: str, tab_id: str, toolbar_id: str, visibility: bool = True) -> str | None:
+    def getNewPanel(
+        name: str, tab_id: str, toolbar_id: str, visibility: bool = True
+    ) -> str | None:
         """# Gets a control for a panel to the tabbed toolbar visibility"""
         designWorkspace = gm.ui.workspaces.itemById("FusionSolidEnvironment")
         allDesignTabs = designWorkspace.toolbarTabs

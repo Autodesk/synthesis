@@ -34,7 +34,9 @@ def getPythonFolder() -> str:
     elif system == "Darwin":
         pythonFolder = f"{Path(osPath).parents[2]}/bin"
     else:
-        raise ImportError("Unsupported platform! This add-in only supports windows and macos")
+        raise ImportError(
+            "Unsupported platform! This add-in only supports windows and macos"
+        )
 
     logger.debug(f"Python Folder -> {pythonFolder}")
     return pythonFolder
@@ -127,7 +129,9 @@ def installCross(pipDeps: list) -> bool:
             ]
         )
         if installResult != 0:
-            logger.warn(f'Dep installation "{depName}" exited with code "{installResult}"')
+            logger.warn(
+                f'Dep installation "{depName}" exited with code "{installResult}"'
+            )
 
     if system == "Darwin":
         pipAntiDeps = ["dataclasses", "typing"]
@@ -148,7 +152,9 @@ def installCross(pipDeps: list) -> bool:
                 ]
             )
             if uninstallResult != 0:
-                logger.warn(f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"')
+                logger.warn(
+                    f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"'
+                )
 
     progressBar.hide()
 

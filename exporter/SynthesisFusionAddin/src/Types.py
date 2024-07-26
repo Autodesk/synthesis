@@ -110,7 +110,9 @@ def makeObjectFromJson(objType: type, data: any) -> any:
         return [makeObjectFromJson(objType.__args__[0], item) for item in data]
 
     obj = objType()
-    assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
+    assert is_dataclass(obj) and isinstance(
+        data, dict
+    ), "Found unsupported type to decode."
     for field in fields(obj):
         if field.name in data:
             setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
@@ -154,7 +156,11 @@ class OString:
             bool: Did the OString objects match?
         """
         if isinstance(value, OString):
-            if self.path == value.path and self.fileName == value.fileName and self.platform == value.platform:
+            if (
+                self.path == value.path
+                and self.fileName == value.fileName
+                and self.platform == value.platform
+            ):
                 return True
         return False
 

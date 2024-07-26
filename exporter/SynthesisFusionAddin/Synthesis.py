@@ -15,7 +15,7 @@ from .src.UI import (
     Helper,
     MarkingMenu,
     ShowAPSAuthCommand,
-    ShowWebsiteCommand
+    ShowWebsiteCommand,
 )
 from .src.UI.Toolbar import Toolbar
 
@@ -78,7 +78,9 @@ def stop(_):
 
     path = os.path.abspath(os.path.dirname(__file__))
 
-    path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out"))
+    path_proto_files = os.path.abspath(
+        os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out")
+    )
 
     if path in sys.path:
         sys.path.remove(path)
@@ -131,13 +133,12 @@ def register_ui() -> None:
 
     gm.elements.append(apsButton)
 
-
     websiteButton = HUI.HButton(
-        "Synthesis Website", 
+        "Synthesis Website",
         work_panel,
         lambda *_: True,
         ShowWebsiteCommand.ShowWebsiteCommandCreatedHandler,
         description=f"Website Test",
-        command=True
+        command=True,
     )
     gm.elements.append(websiteButton)

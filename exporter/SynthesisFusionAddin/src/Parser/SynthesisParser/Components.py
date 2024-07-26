@@ -40,7 +40,9 @@ def _MapAllComponents(
 
         fill_info(partDefinition, component, comp_ref)
 
-        PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
+        PhysicalProperties.GetPhysicalProperties(
+            component, partDefinition.physical_data
+        )
 
         if options.exportMode == ExportMode.FIELD:
             partDefinition.dynamic = False
@@ -60,7 +62,9 @@ def _MapAllComponents(
                 else:
                     _ParseMesh(body, options, part_body.triangle_mesh)
 
-                appearance_key = "{}_{}".format(body.appearance.name, body.appearance.id)
+                appearance_key = "{}_{}".format(
+                    body.appearance.name, body.appearance.id
+                )
                 # this should be appearance
                 if appearance_key in materials.appearances:
                     part_body.appearance_override = appearance_key
@@ -101,7 +105,9 @@ def _ParseComponentRoot(
 
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
-            __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+            __parseChildOccurrence(
+                occur, progressDialog, options, partsData, material_map, child_node
+            )
             node.children.append(child_node)
 
 
@@ -134,7 +140,9 @@ def __parseChildOccurrence(
 
     if occurrence.appearance:
         try:
-            part.appearance = "{}_{}".format(occurrence.appearance.name, occurrence.appearance.id)
+            part.appearance = "{}_{}".format(
+                occurrence.appearance.name, occurrence.appearance.id
+            )
         except:
             part.appearance = "default"
         # TODO: Add phyical_material parser
@@ -151,7 +159,9 @@ def __parseChildOccurrence(
     if options.exportMode == ExportMode.FIELD:
         for x in options.gamepieces:
             if x.occurrenceToken == mapConstant:
-                partsData.part_definitions[part.part_definition_reference].dynamic = True
+                partsData.part_definitions[part.part_definition_reference].dynamic = (
+                    True
+                )
                 break
 
     part.transform.spatial_matrix.extend(occurrence.transform.asArray())
@@ -167,7 +177,9 @@ def __parseChildOccurrence(
 
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
-            __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+            __parseChildOccurrence(
+                occur, progressDialog, options, partsData, material_map, child_node
+            )
             node.children.append(child_node)
 
 
@@ -223,7 +235,9 @@ def _ParseMesh(
     plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
 
 
-def _MapRigidGroups(rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints) -> None:
+def _MapRigidGroups(
+    rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints
+) -> None:
     groups = rootComponent.allRigidGroups
     for group in groups:
         mira_group = joint_pb2.RigidGroup()

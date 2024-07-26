@@ -34,7 +34,11 @@ class ExporterOptions:
     # user's computer has conflicting configs of some sort. This has happened and should be accounted
     # for accordingly.
     fileLocation: str | None = field(
-        default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~"))
+        default=(
+            os.getenv("HOME")
+            if platform.system() == "Windows"
+            else os.path.expanduser("~")
+        )
     )
     name: str = field(default=None)
     version: str = field(default=None)
@@ -57,9 +61,13 @@ class ExporterOptions:
     exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
-    visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)
+    visualQuality: TriangleMeshQualityOptions = field(
+        default=TriangleMeshQualityOptions.LowQualityTriangleMesh
+    )
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
-    physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
+    physicalCalculationLevel: CalculationAccuracy = field(
+        default=CalculationAccuracy.LowCalculationAccuracy
+    )
 
     @logFailure
     @timed
@@ -68,7 +76,9 @@ class ExporterOptions:
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
             if attribute:
-                attrJsonData = makeObjectFromJson(field.type, json.loads(attribute.value))
+                attrJsonData = makeObjectFromJson(
+                    field.type, json.loads(attribute.value)
+                )
                 setattr(self, field.name, attrJsonData)
 
         return self
@@ -78,5 +88,7 @@ class ExporterOptions:
     def writeToDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
-            data = json.dumps(getattr(self, field.name), default=encodeNestedObjects, indent=4)
+            data = json.dumps(
+                getattr(self, field.name), default=encodeNestedObjects, indent=4
+            )
             designAttributes.add(INTERNAL_ID, field.name, data)

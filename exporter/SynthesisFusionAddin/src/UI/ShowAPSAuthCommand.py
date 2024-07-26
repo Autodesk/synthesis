@@ -28,7 +28,9 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                 callbackUrl = "https://synthesis.autodesk.com/api/aps/exporter/"
                 challenge = getCodeChallenge()
                 if challenge is None:
-                    logger.error("Code challenge is None when attempting to authorize for APS.")
+                    logger.error(
+                        "Code challenge is None when attempting to authorize for APS."
+                    )
                     return
                 params = {
                     "response_type": "code",
@@ -40,10 +42,19 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
                     "code_challenge": challenge,
                     "code_challenge_method": "S256",
                 }
-                query = "&".join(map(lambda pair: f"{pair[0]}={pair[1]}", params.items()))
-                url = "https://developer.api.autodesk.com/authentication/v2/authorize?" + query
-                palette = gm.ui.palettes.add("authPalette", "APS Authentication", url, True, True, True, 400, 400)
-                palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
+                query = "&".join(
+                    map(lambda pair: f"{pair[0]}={pair[1]}", params.items())
+                )
+                url = (
+                    "https://developer.api.autodesk.com/authentication/v2/authorize?"
+                    + query
+                )
+                palette = gm.ui.palettes.add(
+                    "authPalette", "APS Authentication", url, True, True, True, 400, 400
+                )
+                palette.dockingState = (
+                    adsk.core.PaletteDockingStates.PaletteDockStateRight
+                )
                 # register events
                 onHTMLEvent = MyHTMLEventHandler()
                 palette.incomingFromHTML.add(onHTMLEvent)
@@ -55,7 +66,9 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
             else:
                 palette.isVisible = True
         except:
-            gm.ui.messageBox("Command executed failed: {}".format(traceback.format_exc()))
+            gm.ui.messageBox(
+                "Command executed failed: {}".format(traceback.format_exc())
+            )
             logger.error("Command executed failed: {}".format(traceback.format_exc()))
             if palette:
                 palette.deleteMe()
