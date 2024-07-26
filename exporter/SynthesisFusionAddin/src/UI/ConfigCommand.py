@@ -3,7 +3,7 @@
 """
 
 import os
-import pathlib
+import traceback
 from enum import Enum
 
 import adsk.core
@@ -461,7 +461,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             "friction_override",
             "Friction Override",
             physics_settings,
-            checked=True,  # object is missing attribute
+            checked=True,
             tooltip="Manually override the default friction values on the bodies in the assembly.",
             enabled=True,
             isCheckBox=False,
@@ -556,7 +556,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
         )
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
-        aps_input = apsSettings.children
 
         # clear all selections before instantiating handlers.
         gm.ui.activeSelections.clear()
@@ -874,6 +873,15 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             .children.itemById("export_as_part")
         ).value
 
+        frictionOverrideSlider = (
+            eventArgs.command.commandInputs.itemById("advanced_settings")
+            .children.itemById("physics_settings")
+            .children.itemById("friction_override_coeff")
+        )
+
+        frictionOverride = frictionOverrideSlider.isVisible
+        frictionOverrideCoeff = frictionOverrideSlider.valueOne
+
         exporterOptions = ExporterOptions(
             savepath,
             name,
@@ -888,6 +896,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             exportLocation=_location,
             compressOutput=compress,
             exportAsPart=export_as_part_boolean,
+            frictionOverride=frictionOverride,
+            frictionOverrideCoeff=frictionOverrideCoeff,
         )
 
         Parser(exporterOptions).export()

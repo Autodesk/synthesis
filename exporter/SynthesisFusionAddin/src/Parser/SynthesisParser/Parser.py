@@ -7,7 +7,7 @@ from google.protobuf.json_format import MessageToJson
 
 from proto.proto_out import assembly_pb2, types_pb2
 
-from ...APS.APS import upload_mirabuf  # This line causes everything to break
+from ...APS.APS import getAuth, upload_mirabuf
 from ...general_imports import *
 from ...Logging import getLogger, logFailure, timed
 from ...Types import ExportLocation, ExportMode
@@ -34,6 +34,10 @@ class Parser:
         app = adsk.core.Application.get()
         design: adsk.fusion.Design = app.activeDocument.design
 
+        if not getAuth():
+            app.userInterface.messageBox("APS Login Required for Uploading.", "APS Login")
+            return
+
         assembly_out = assembly_pb2.Assembly()
         fill_info(
             assembly_out,
@@ -45,8 +49,6 @@ class Parser:
         assembly_out.dynamic = self.exporterOptions.exportMode == ExportMode.ROBOT
 
         # Physical Props here when ready
-
-        # ts = time()
 
         progressDialog = app.userInterface.createProgressDialog()
         progressDialog.cancelButtonText = "Cancel"
@@ -178,9 +180,9 @@ class Parser:
             folder_id = project.rootFolder.id
             file_name = f"{self.exporterOptions.fileLocation}.mira"
             if upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString()) is None:
-                gm.ui.messageBox("FAILED TO UPLOAD FILE TO APS", "ERROR")  # add throw later
-        # Download Mirabuf File
+                raise RuntimeError("Could not upload to APS")
         else:
+            assert self.exporterOptions.exportLocation == ExportLocation.DOWNLOAD
             # check if entire path exists and create if not since gzip doesn't do that.
             path = pathlib.Path(self.exporterOptions.fileLocation).parent
             path.mkdir(parents=True, exist_ok=True)

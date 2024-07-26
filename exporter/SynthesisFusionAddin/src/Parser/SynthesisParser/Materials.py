@@ -1,4 +1,5 @@
 # Should contain Physical and Apperance materials ?
+import json
 import logging
 import math
 import traceback
@@ -7,13 +8,30 @@ import adsk
 
 from proto.proto_out import material_pb2
 
-from ...general_imports import INTERNAL_ID
+from ...general_imports import *
 from ...Logging import logFailure, timed
 from ..ExporterOptions import ExporterOptions
 from .PDMessage import PDMessage
 from .Utilities import *
 
 OPACITY_RAMPING_CONSTANT = 14.0
+
+# Update tables as needed for UX and needed materials
+STATIC_FRICTION_COEFFS = {
+    "Aluminum": 1.1,
+    "Steel, Cast": 0.75,
+    "Steel, Mild": 0.75,
+    "Rubber, Nitrile": 1.0,
+    "ABS Plastic": 0.7,
+}
+
+DYNAMIC_FRICTION_COEFFS = {
+    "Aluminum": 1.1,
+    "Steel, Cast": 0.75,
+    "Steel, Mild": 0.75,
+    "Rubber, Nitrile": 1.0,
+    "ABS Plastic": 0.7,
+}
 
 
 def _MapAllPhysicalMaterials(
@@ -22,7 +40,7 @@ def _MapAllPhysicalMaterials(
     options: ExporterOptions,
     progressDialog: PDMessage,
 ) -> None:
-    setDefaultMaterial(materials.physicalMaterials["default"])
+    setDefaultMaterial(materials.physicalMaterials["default"], options)
 
     for material in physicalMaterials:
         progressDialog.addMaterial(material.name)
@@ -34,15 +52,19 @@ def _MapAllPhysicalMaterials(
         getPhysicalMaterialData(material, newmaterial, options)
 
 
-def setDefaultMaterial(physical_material: material_pb2.PhysicalMaterial):
+def setDefaultMaterial(physical_material: material_pb2.PhysicalMaterial, options: ExporterOptions):
     construct_info("default", physical_material)
 
     physical_material.description = "A default physical material"
-    physical_material.dynamic_friction = 0.5
-    physical_material.static_friction = 0.5
+    if options.frictionOverride:
+        physical_material.dynamic_friction = options.frictionOverrideCoeff
+        physical_material.static_friction = options.frictionOverrideCoeff
+    else:
+        physical_material.dynamic_friction = 0.5
+        physical_material.static_friction = 0.5
+
     physical_material.restitution = 0.5
     physical_material.deformable = False
-
     physical_material.matType = 0
 
 
@@ -66,10 +88,14 @@ def getPhysicalMaterialData(fusion_material, proto_material, options):
     mechanicalProperties = proto_material.mechanical
     strengthProperties = proto_material.strength
 
-    proto_material.dynamic_friction = 0.5
-    proto_material.static_friction = 0.5
-    proto_material.restitution = 0.5
+    if options.frictionOverride:
+        proto_material.dynamic_friction = options.frictionOverrideCoeff
+        proto_material.static_friction = options.frictionOverrideCoeff
+    else:
+        proto_material.dynamic_friction = DYNAMIC_FRICTION_COEFFS.get(fusion_material.name, 0.5)
+        proto_material.static_friction = STATIC_FRICTION_COEFFS.get(fusion_material.name, 0.5)
 
+    proto_material.restitution = 0.5
     proto_material.description = f"{fusion_material.name} exported from FUSION"
 
     """
