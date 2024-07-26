@@ -93,6 +93,7 @@ class MirabufCachingService {
             type: miraType == MiraType.ROBOT ? "robot" : "field",
             fileSize: miraBuff.byteLength,
         })
+        console.debug("wut")
         return await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
     }
 
@@ -329,6 +330,7 @@ class MirabufCachingService {
                 name: name ?? "-",
                 key: key,
                 type: miraType == MiraType.ROBOT ? "robot" : "field",
+                fileSize: miraBuff.byteLength,
             })
             return info
         } catch (e) {

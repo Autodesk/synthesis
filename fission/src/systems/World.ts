@@ -22,7 +22,7 @@ class World {
         physicsTime: 0,
         simulationTime: 0,
         inputTime: 0,
-        totalTime: 0
+        totalTime: 0,
     }
 
     public static get accumTimes() {
@@ -56,7 +56,7 @@ class World {
             physicsTime: 0,
             simulationTime: 0,
             inputTime: 0,
-            totalTime: 0
+            totalTime: 0,
         }
     }
 
@@ -86,7 +86,7 @@ class World {
         World._sceneRenderer.Destroy()
         World._simulationSystem.Destroy()
         World._inputSystem.Destroy()
-        
+
         World._analyticsSystem?.Destroy()
     }
 

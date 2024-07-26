@@ -6,4 +6,6 @@ declare module "@haensl/google-analytics" {
     function consent(granted: boolean): void
     function event(e: GaEvent)
     function exception(e: GaException)
+    function setUserId({ id: string })
+    function setUserProperty({ name: string, value: string })
 }

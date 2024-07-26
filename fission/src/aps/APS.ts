@@ -37,9 +37,15 @@ class APS {
     static requestMutex: Mutex = new Mutex()
 
     private static _numApsCalls = new Map<string, number>()
-    public static get numApsCalls() { return this._numApsCalls }
-    public static incApsCalls(endpoint: string) { this._numApsCalls.set(endpoint, (this._numApsCalls.get(endpoint) ?? 0) + 1) }
-    public static resetNumApsCalls() { this._numApsCalls.clear() }
+    public static get numApsCalls() {
+        return this._numApsCalls
+    }
+    public static incApsCalls(endpoint: string) {
+        this._numApsCalls.set(endpoint, (this._numApsCalls.get(endpoint) ?? 0) + 1)
+    }
+    public static resetNumApsCalls() {
+        this._numApsCalls.clear()
+    }
 
     private static get auth(): APSAuth | undefined {
         const res = window.localStorage.getItem(APS_AUTH_KEY)
@@ -331,6 +337,10 @@ class APS {
                 givenName: json.given_name,
                 picture: json.picture,
                 email: json.email,
+            }
+
+            if (json.sub) {
+                World.AnalyticsSystem?.SetUserId(json.sub as string)
             }
 
             this.userInfo = info
