@@ -135,7 +135,7 @@ def register_ui() -> None:
     websiteButton = HUI.HButton(
         "Synthesis Website", 
         work_panel,
-        Helper.check_solid_open,
+        lambda *_: True,
         ShowWebsiteCommand.ShowWebsiteCommandCreatedHandler,
         description=f"Website Test",
         command=True
