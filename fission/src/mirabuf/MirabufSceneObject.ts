@@ -17,7 +17,6 @@ import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import Brain from "@/systems/simulation/Brain"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
@@ -153,7 +152,7 @@ class MirabufSceneObject extends SceneObject {
         // Simulation
         World.SimulationSystem.RegisterMechanism(this._mechanism)
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-        this._brain = new WPILibBrain(this._mechanism)
+        this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
         simLayer.SetBrain(this._brain)
 
         // Intake
