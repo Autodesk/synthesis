@@ -13,7 +13,7 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 
 The Synthesis Fusion 360 exporter is the tool used by both developers and users to export their CAD models into the Synthesis simulator. The exporter comes as an optional install component of every version of synthesis and requires Fusion 360 to be installed.
 
-For information regarding the manual install process visit the [Synthesis Fusion 360 Exporter](https://github.com/Autodesk/synthesis/tree/master/exporter) source code for more information.
+For information regarding the manual install process visit the [Synthesis Fusion 360 Exporter](https://github.com/Autodesk/synthesis/tree/prod/exporter) source code for more information.
 
 ### Getting Started
 
