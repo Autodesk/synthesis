@@ -73,14 +73,16 @@ const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 function Synthesis() {
     const urlParams = new URLSearchParams(document.location.search)
     const has_code = urlParams.has("code")
-    if (has_code) {
-        const code = urlParams.get("code")
-        if (code) {
-            APS.convertAuthToken(code).then(() => {
-                document.location.search = ""
-            })
+    useEffect(() => {
+        if (has_code) {
+            const code = urlParams.get("code")
+            if (code) {
+                APS.convertAuthToken(code).then(() => {
+                    document.location.search = ""
+                })
+            }
         }
-    }
+    }, [])
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
