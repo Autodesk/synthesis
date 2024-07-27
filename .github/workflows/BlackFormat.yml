@@ -3,9 +3,9 @@ name: Fusion - Black Format Validation
 on:
   workflow_dispatch: {}
   push:
-    branches: [ master, dev ]
+    branches: [ prod, dev ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ prod, dev ]
 
 jobs:
   blackFormatChecker:
