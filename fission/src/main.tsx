@@ -2,6 +2,7 @@ import ReactDOM from "react-dom/client"
 import { Theme, ThemeProvider } from "@/ui/ThemeContext"
 import Synthesis from "./Synthesis"
 import "./index.css"
+import APS from "./aps/APS"
 
 const initialThemeName = "Default"
 const defaultColors: Theme = {
@@ -71,6 +72,8 @@ const defaultColors: Theme = {
 const themes = {
     Default: defaultColors,
 }
+
+window.convertAuthToken = code => APS.convertAuthToken(code)
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
     <ThemeProvider initialThemeName={initialThemeName} themes={themes} defaultTheme={defaultColors}>
