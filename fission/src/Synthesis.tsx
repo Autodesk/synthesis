@@ -1,6 +1,6 @@
 import Scene from "@/components/Scene.tsx"
 import { AnimatePresence } from "framer-motion"
-import { ReactElement, useEffect } from "react"
+import { ReactElement, useCallback, useEffect, useState } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
 import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
 import { useTheme } from "@/ui/ThemeContext"
@@ -65,6 +65,7 @@ import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGr
 import DebugPanel from "./ui/panels/DebugPanel.tsx"
 import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
+import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
@@ -84,6 +85,8 @@ function Synthesis() {
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
+    const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
+
     const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
     useEffect(() => {
@@ -97,6 +100,10 @@ function Synthesis() {
         if (has_code) return
 
         World.InitWorld()
+
+        if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")) {
+            setConsentPopupDisable(false)
+        }
 
         worker.getValue()
 
@@ -130,6 +137,16 @@ function Synthesis() {
             openPanel("scoreboard")
         }
     })
+
+    const onConsent = useCallback(() => {
+        setConsentPopupDisable(true)
+        PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", true)
+        PreferencesSystem.savePreferences()
+    }, [])
+
+    const onDisableConsent = useCallback(() => {
+        setConsentPopupDisable(true)
+    }, [])
 
     return (
         <AnimatePresence key={"animate-presence"}>
@@ -168,6 +185,12 @@ function Synthesis() {
                             )}
                             <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
+
+                            {!consentPopupDisable ? (
+                                <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
+                            ) : (
+                                <></>
+                            )}
                         </ToastProvider>
                     </PanelControlProvider>
                 </ModalControlProvider>
