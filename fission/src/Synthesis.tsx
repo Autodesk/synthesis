@@ -47,7 +47,6 @@ import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
-import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
@@ -71,18 +70,6 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
-    const urlParams = new URLSearchParams(document.location.search)
-    const has_code = urlParams.has("code")
-    useEffect(() => {
-        if (has_code) {
-            const code = urlParams.get("code")
-            if (code) {
-                APS.convertAuthToken(code).then(() => {
-                    document.location.search = ""
-                })
-            }
-        }
-    }, [])
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
@@ -99,7 +86,12 @@ function Synthesis() {
     const modalElement = getActiveModalElement()
 
     useEffect(() => {
-        if (has_code) return
+        const urlParams = new URLSearchParams(document.location.search)
+        if (urlParams.has("code")) {
+            window.opener.convertAuthToken(urlParams.get("code"))
+            window.close()
+            return
+        }
 
         World.InitWorld()
 

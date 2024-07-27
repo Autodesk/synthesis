@@ -201,7 +201,7 @@ class APS {
 
                 const url = `${ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE}?${params.toString()}`
 
-                window.open(url, "_self")
+                window.open(url)
             } catch (e) {
                 console.error(e)
                 World.AnalyticsSystem?.Exception("APS Login Failure")
