@@ -344,53 +344,49 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <>
                 <Stack direction={StackDirection.Horizontal} spacing={25}>
-                    <div>
-                        <Stack direction={StackDirection.Vertical} spacing={10}>
-                            <Dropdown
-                                label={"Select Robot"}
-                                defaultValue={InputSystem?.selectedScheme?.schemeName}
-                                options={InputSchemeManager.allInputSchemes.map(s => s.schemeName)}
-                                onSelect={value => {
-                                    const schemeData = InputSchemeManager.allInputSchemes.find(
-                                        s => s.schemeName == value
-                                    )
-                                    if (!schemeData || schemeData == selectedScheme) return
+                    <Box display="flex" flexDirection={"column"} gap={"10px"}>
+                        <Dropdown
+                            label={"Select a Control Scheme"}
+                            defaultValue={InputSystem?.selectedScheme?.schemeName}
+                            options={InputSchemeManager.allInputSchemes.map(s => s.schemeName)}
+                            onSelect={value => {
+                                const schemeData = InputSchemeManager.allInputSchemes.find(s => s.schemeName == value)
+                                if (!schemeData || schemeData == selectedScheme) return
 
-                                    setSelectedScheme(undefined)
-                                    InputSystem.selectedScheme = schemeData
-                                }}
-                            />
-                            {AddButtonInteractiveColor(() => {
-                                openModal("new-scheme")
-                            })}
-                            {selectedScheme ? (
-                                <>
-                                    <Checkbox
-                                        label="Use Controller"
-                                        defaultState={selectedScheme?.usesGamepad ?? false}
-                                        onClick={val => {
-                                            setUseGamepad(val)
-                                            if (selectedScheme) selectedScheme.usesGamepad = val
+                                setSelectedScheme(undefined)
+                                InputSystem.selectedScheme = schemeData
+                            }}
+                        />
+                        {AddButtonInteractiveColor(() => {
+                            openModal("new-scheme")
+                        })}
+                        {selectedScheme ? (
+                            <>
+                                <Checkbox
+                                    label="Use Controller"
+                                    defaultState={selectedScheme?.usesGamepad ?? false}
+                                    onClick={val => {
+                                        setUseGamepad(val)
+                                        if (selectedScheme) selectedScheme.usesGamepad = val
+                                    }}
+                                />
+                                <Box height={10} />
+                                <SectionDivider />
+                                <Box height={15}></Box>
+
+                                <Box display="flex" justifyContent="center" alignItems="center">
+                                    <Button
+                                        value={"Reset all to Defaults"}
+                                        onClick={() => {
+                                            openModal("reset-inputs")
                                         }}
                                     />
-                                    <Box height={10} />
-                                    <SectionDivider />
-                                    <Box height={15}></Box>
-
-                                    <Box display="flex" justifyContent="center" alignItems="center">
-                                        <Button
-                                            value={"Reset all to Defaults"}
-                                            onClick={() => {
-                                                openModal("reset-inputs")
-                                            }}
-                                        />
-                                    </Box>
-                                </>
-                            ) : (
-                                <Label>No robot selected.</Label>
-                            )}
-                        </Stack>
-                    </div>
+                                </Box>
+                            </>
+                        ) : (
+                            <Label>No robot selected.</Label>
+                        )}
+                    </Box>
                     <div
                         className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[60vh] bg-background-secondary rounded-md p-2"
                         onKeyUp={e => {

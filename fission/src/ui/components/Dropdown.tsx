@@ -65,7 +65,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, defaultValue, onSelect, la
         if (buttonRef.current) {
             setMenuWidth(buttonRef.current.clientWidth)
         }
-    }, [buttonRef.current])
+    }, [])
 
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget)
