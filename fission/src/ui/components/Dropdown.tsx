@@ -1,47 +1,52 @@
 import React, { useEffect, useRef, useState } from "react"
 import { styled } from "@mui/system"
 import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
+import { colorNameToVar } from "../ThemeContext"
 
 const CustomButton = styled(Button)({
-    "border": "2px solid #da6659",
-    "color": "white",
+    "border": `2px solid ${colorNameToVar("InteractiveElementRight")}`,
+    "color": colorNameToVar("InteractiveElementText"),
+    "backgroundColor": colorNameToVar("BackgroundSecondary"),
     "width": "100%",
     "&:focus": {
         outline: "none !important",
-        border: "2px solid #da6659 !important",
+        border: `2px solid ${colorNameToVar("InteractiveElementRight")} !important`,
         boxShadow: "none !important",
     },
     "&:hover": {
         outline: "none !important",
-        border: "2px solid #da6659 !important",
+        border: `2px solid ${colorNameToVar("InteractiveElementLeft")} !important`,
         boxShadow: "none !important",
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
     },
     "&:focus-visible": {
         outline: "none !important",
-        border: "2px solid #da6659 !important",
+        border: `2px solid ${colorNameToVar("InteractiveElementLeft")} !important`,
         boxShadow: "none !important",
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
     },
     "&:active": {
         outline: "none !important",
-        border: "2px solid #da6659 !important",
+        border: `2px solid ${colorNameToVar("InteractiveElementLeft")} !important`,
         boxShadow: "none !important",
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
     },
     "&::-moz-focus-inner": {
         border: "0 !important",
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
     },
 })
 
 const CustomMenu = styled(Menu)({
     "& .MuiPaper-root": {
-        backgroundColor: "#333",
-        color: "white",
-        border: "1px solid #da6659",
-        minWidth: "unset", // Ensure minWidth is unset so it can be overridden
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
+        color: colorNameToVar("MainText"),
+        border: `2px solid ${colorNameToVar("InteractiveElementRight")} !important`,
+        minWidth: "unset",
     },
     "& .MuiMenuItem-root": {
         "transition": "background-color 0.3s ease, color 0.3s ease",
         "&:hover": {
-            backgroundColor: "#444",
             color: "#da6659",
         },
     },

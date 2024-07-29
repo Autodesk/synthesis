@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from "react"
-import { BsCodeSquare } from "react-icons/bs"
 import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
 import { GrConnect, GrFormClose } from "react-icons/gr"
 import { GiSteeringWheel } from "react-icons/gi"
 import { HiDownload } from "react-icons/hi"
-import { IoBasketball, IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -23,6 +21,15 @@ import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Jolt from "@barclah/jolt-physics"
 import { AiOutlineDoubleRight } from "react-icons/ai"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import {
+    BasketballIcon,
+    BugIcon,
+    CodeSquare,
+    ControllerIcon,
+    PeopleIcon,
+    RefreshIcon,
+    TimerIcon,
+} from "./StyledComponents"
 
 type ButtonProps = {
     value: string
@@ -109,13 +116,13 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
                     <MainHUDButton
                         value={"Controls"}
-                        icon={<IoGameControllerOutline />}
+                        icon={ControllerIcon}
                         onClick={() => openModal("change-inputs")}
                     />
-                    <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
+                    <MainHUDButton value={"MultiBot"} icon={PeopleIcon} onClick={() => openPanel("multibot")} />
                     <MainHUDButton
                         value={"Import Local Mira"}
-                        icon={<IoPeople />}
+                        icon={PeopleIcon}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
                     <MainHUDButton
@@ -123,22 +130,22 @@ const MainHUD: React.FC = () => {
                         icon={<AiOutlineDoubleRight />}
                         onClick={() => openPanel("poker")}
                     />
-                    <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
+                    <MainHUDButton value={"Test God Mode"} icon={ControllerIcon} onClick={TestGodMode} />
                     <MainHUDButton
                         value={"Clear Prefs"}
-                        icon={<IoBug />}
+                        icon={BugIcon}
                         onClick={() => PreferencesSystem.clearPreferences()}
                     />
                     <MainHUDButton
                         value={"Refresh APS Token"}
-                        icon={<IoRefresh />}
+                        icon={RefreshIcon}
                         onClick={async () =>
                             APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
                         }
                     />
                     <MainHUDButton
                         value={"Expire APS Token"}
-                        icon={<IoTimer />}
+                        icon={TimerIcon}
                         onClick={() => {
                             if (APS.isSignedIn()) {
                                 APS.setExpiresAt(Date.now())
@@ -154,7 +161,7 @@ const MainHUD: React.FC = () => {
                         icon={<HiDownload />}
                         onClick={() => openModal("download-assets")}
                     />
-                    <MainHUDButton value={"RoboRIO"} icon={<BsCodeSquare />} onClick={() => openModal("roborio")} />
+                    <MainHUDButton value={"RoboRIO"} icon={CodeSquare} onClick={() => openModal("roborio")} />
                     <MainHUDButton
                         value={"Driver Station"}
                         icon={<GiSteeringWheel />}
@@ -163,7 +170,7 @@ const MainHUD: React.FC = () => {
                     {/* MiraMap and OPFS Temp Buttons */}
                     <MainHUDButton
                         value={"Print Mira Maps"}
-                        icon={<BsCodeSquare />}
+                        icon={CodeSquare}
                         onClick={() => {
                             console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
                             console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
@@ -176,7 +183,7 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton
                         value={"Edit Scoring Zones"}
-                        icon={<IoBasketball />}
+                        icon={BasketballIcon}
                         onClick={() => {
                             openPanel("scoring-zones")
                         }}
@@ -218,7 +225,7 @@ const MainHUD: React.FC = () => {
                 ) : (
                     <MainHUDButton
                         value={`APS Login`}
-                        icon={<IoPeople />}
+                        icon={PeopleIcon}
                         larger={true}
                         onClick={() => APS.requestAuthCode()}
                     />

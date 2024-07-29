@@ -5,13 +5,25 @@ import { IoCheckmark, IoPencil, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
 import { AiOutlinePlus } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
+import { BsCodeSquare } from "react-icons/bs"
 
-export const DeleteIcon = <IoTrashBin size={"1.25rem"} />
-export const DownloadIcon = <HiDownload size={"1.25rem"} />
-export const AddIcon = <AiOutlinePlus size={"1.25rem"} />
-export const RefreshIcon = <BiRefresh size={"1.25rem"} />
-export const SelectIcon = <IoCheckmark size={"1.25rem"} />
-export const EditIcon = <IoPencil size={"1.25rem"} />
+import { IoBasketball, IoBug, IoGameControllerOutline, IoPeople, IoTimer } from "react-icons/io5"
+
+export const DeleteIconLarge = <IoTrashBin size={"1.25rem"} />
+export const DownloadIconLarge = <HiDownload size={"1.25rem"} />
+export const AddIconLarge = <AiOutlinePlus size={"1.25rem"} />
+export const RefreshIconLarge = <BiRefresh size={"1.25rem"} />
+export const SelectIconLarge = <IoCheckmark size={"1.25rem"} />
+export const EditIconLarge = <IoPencil size={"1.25rem"} />
+
+export const RefreshIcon = <BiRefresh />
+export const BasketballIcon = <IoBasketball />
+export const BugIcon = <IoBug />
+export const ControllerIcon = <IoGameControllerOutline />
+export const PeopleIcon = <IoPeople />
+export const TimerIcon = <IoTimer />
+
+export const CodeSquare = <BsCodeSquare />
 
 export const SectionDivider = styled(Divider)({
     borderColor: "white",
@@ -34,19 +46,19 @@ export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick }) => {
 }
 
 export const DownloadButton = (onClick: () => void) => {
-    return <PositiveButton value={DeleteIcon} onClick={onClick} />
+    return <PositiveButton value={DeleteIconLarge} onClick={onClick} />
 }
 
 export const AddButton = (onClick: () => void) => {
-    return <PositiveButton value={DeleteIcon} onClick={onClick} />
+    return <PositiveButton value={DeleteIconLarge} onClick={onClick} />
 }
 
 export const SelectButton = (onClick: () => void) => {
-    return <PositiveButton value={SelectIcon} onClick={onClick} />
+    return <PositiveButton value={SelectIconLarge} onClick={onClick} />
 }
 
 export const EditButton = (onClick: () => void) => {
-    return <PositiveButton value={EditIcon} onClick={onClick} />
+    return <PositiveButton value={EditIconLarge} onClick={onClick} />
 }
 
 export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick }) => {
@@ -61,7 +73,7 @@ export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick }) => {
 }
 
 export const DeleteButton = (onClick: () => void) => {
-    return <NegativeButton value={DeleteIcon} onClick={onClick} />
+    return <NegativeButton value={DeleteIconLarge} onClick={onClick} />
 }
 
 export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick }) => {
@@ -76,9 +88,9 @@ export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick }) => {
 }
 
 export const RefreshButton = (onClick: () => void) => {
-    return <ButtonIcon value={RefreshIcon} onClick={onClick} />
+    return <ButtonIcon value={RefreshIconLarge} onClick={onClick} />
 }
 
 export const AddButtonInteractiveColor = (onClick: () => void) => {
-    return <Button value={AddIcon} onClick={onClick} />
+    return <Button value={AddIconLarge} onClick={onClick} />
 }
