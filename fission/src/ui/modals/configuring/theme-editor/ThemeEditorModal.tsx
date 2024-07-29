@@ -49,6 +49,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <Dropdown
                             label="Select a Theme"
                             options={[currentTheme, ...Object.keys(themes).filter(t => t != currentTheme)]}
+                            defaultValue="Default"
                             onSelect={setSelectedTheme}
                             className="h-min"
                         />
