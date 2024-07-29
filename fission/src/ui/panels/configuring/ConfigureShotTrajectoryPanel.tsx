@@ -216,7 +216,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                 <>
                     {/* Button for user to select the parent node */}
                     <SelectButton
-                        placeholder="Select pickup node"
+                        placeholder="Select parent node"
                         value={selectedNode}
                         onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
                     />

@@ -10,6 +10,7 @@ import {
     ThreeVector3_JoltVec3,
 } from "@/util/TypeConversions"
 import * as THREE from "three"
+import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 class EjectableSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -21,6 +22,10 @@ class EjectableSceneObject extends SceneObject {
 
     public get gamePieceBodyId() {
         return this._gamePieceBodyId
+    }
+
+    public get parentBodyId() {
+        return this._parentBodyId
     }
 
     public constructor(parentAssembly: MirabufSceneObject, gamePieceBody: Jolt.BodyID) {
@@ -42,6 +47,19 @@ class EjectableSceneObject extends SceneObject {
             this._ejectVelocity = this._parentAssembly.ejectorPreferences.ejectorVelocity
 
             World.PhysicsSystem.DisablePhysicsForBody(this._gamePieceBodyId)
+
+            // Checks if the gamepiece comes from a zone for persistent point score updates
+            // because gamepieces removed by intake are not detected in the collision listener
+            const zones = [...World.SceneRenderer.sceneObjects.entries()]
+                .filter(x => {
+                    const y = x[1] instanceof ScoringZoneSceneObject
+                    return y
+                })
+                .map(x => x[1]) as ScoringZoneSceneObject[]
+
+            zones.forEach(x => {
+                if (this._gamePieceBodyId) ScoringZoneSceneObject.RemoveGamepiece(x, this._gamePieceBodyId)
+            })
 
             console.debug("Ejectable created successfully!")
         }

@@ -3,43 +3,19 @@ import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
 import WPILibWSWorker from "./WPILibWSWorker?worker"
-import Behavior from "../behavior/Behavior"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 import Driver from "../driver/Driver"
-import WheelDriver from "../driver/WheelDriver"
-import WheelRotationStimulus from "../stimulus/WheelStimulus"
-import Jolt from "@barclah/jolt-physics"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import ArcadeDriveBehavior from "../behavior/synthesis/ArcadeDriveBehavior"
-import WPILibArcadeDriveBehavior from "../behavior/wpilib/WPILibArcadeDriveBehavior"
-import { mirabuf } from "@/proto/mirabuf"
 
 const worker = new WPILibWSWorker()
 
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
+const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
+const CANMOTOR_SUPPLY_VOLTAGE = ">supplyVoltage"
+const CANENCODER_RAW_INPUT_POSITION = ">rawPositionInput"
 
-const CANMOTOR_PERCENT_OUTPUT = "<percentOutput"
-const CANMOTOR_BRAKE_MODE = "<brakeMode"
-const CANMOTOR_NEUTRAL_DEADBAND = "<neutralDeadband"
-
-const CANMOTOR_SUPPLY_CURRENT = ">supplyCurrent"
-const CANMOTOR_MOTOR_CURRENT = ">motorCurrent"
-const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
-
-// const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
-// const CANENCODER_RAW_INPUT_POSITION = ">rawPositionInput"
-const CANENCODER_POSITION = ">position"
-const CANENCODER_VELOCITY = ">velocity"
-
-export enum SimType {
-    PWM = "PWM",
-    CANMOTOR = "CANMotor",
-    SOLENOID = "Solenoid",
-    SIMDEVICE = "SimDevice",
-    CANENCODER = "CANEncoder"
-}
+export type SimType = "PWM" | "CANMotor" | "Solenoid" | "SimDevice" | "CANEncoder"
 
 enum FieldType {
     Read = 0,
@@ -62,31 +38,6 @@ function GetFieldType(field: string): FieldType {
             return FieldType.Unknown
     }
 }
-
-const defaultSimMap: Map<SimType, Map<string, any>> = new Map(
-    Object.entries({
-        CANMotor: {
-            "CANSparkMax[0]": {
-                "<percentOutput": 0.75,
-            },
-            "CANSparkMax[1]": {
-                "<percentOutput": 0.75,
-            },
-            "CANSparkMax[2]": {
-                "<percentOutput": 0.75,
-            },
-            "CANSparkMax[3]": {
-                "<percentOutput": -0.75,
-            },
-            "CANSparkMax[4]": {
-                "<percentOutput": -0.75,
-            },
-            "CANSparkMax[5]": {
-                "<percentOutput": -0.75,
-            },
-        },
-    }).map(([key, value]) => [key as SimType, new Map(Object.entries(value))])
-)
 
 export const simMap = new Map<SimType, Map<string, any>>()
 
@@ -156,11 +107,11 @@ export class SimPWM {
     private constructor() {}
 
     public static GetSpeed(device: string): number | undefined {
-        return SimGeneric.Get(SimType.PWM, device, PWM_SPEED, 0.0)
+        return SimGeneric.Get("PWM", device, PWM_SPEED, 0.0)
     }
 
     public static GetPosition(device: string): number | undefined {
-        return SimGeneric.Get(SimType.PWM, device, PWM_POSITION, 0.0)
+        return SimGeneric.Get("PWM", device, PWM_POSITION, 0.0)
     }
 }
 
@@ -172,11 +123,12 @@ export class SimCAN {
         const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type || simType == "SimDevice")
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
-                let result = [...key.matchAll(id_exp)]
+                const result = [...key.matchAll(id_exp)]
                 if (result?.length <= 0 || result[0].length <= 1) continue
-
                 const parsed_id = parseInt(result[0][1])
-                if (parsed_id == id) return data.get(key)
+                if (parsed_id != id) continue
+
+                return data.get(key)
             }
         }
         return undefined
@@ -186,61 +138,33 @@ export class SimCAN {
 export class SimCANMotor {
     private constructor() {}
 
-    // public static GetDutyCycle(device: string): number | undefined {
-    //     return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
-    // }
-    //
-    // public static SetSupplyVoltage(device: string, voltage: number): boolean {
-    //     return SimGeneric.Set("CANMotor", device, CANMOTOR_SUPPLY_VOLTAGE, voltage)
-    // }
-
-    public static GetPercentOutput(device: string): number | undefined {
-        return SimGeneric.Get(SimType.CANMOTOR, device, CANMOTOR_PERCENT_OUTPUT, 0.0)
+    public static GetDutyCycle(device: string): number | undefined {
+        return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
     }
 
-    public static GetBrakeMode(device: string): number | undefined {
-        return SimGeneric.Get(SimType.CANMOTOR, device, CANMOTOR_BRAKE_MODE, 0.0)
-    }
-
-    public static GetNeutralDeadband(device: string): number | undefined {
-        return SimGeneric.Get(SimType.CANMOTOR, device, CANMOTOR_NEUTRAL_DEADBAND, 0.0)
-    }
-
-    public static SetSupplyCurrent(device: string, current: number): boolean {
-        return SimGeneric.Set(SimType.CANMOTOR, device, CANMOTOR_SUPPLY_CURRENT, current)
-    }
-
-    public static SetMotorCurrent(device: string, current: number): boolean {
-        return SimGeneric.Set(SimType.CANMOTOR, device, CANMOTOR_MOTOR_CURRENT, current)
-    }
-    
-    public static SetBusVoltage(device: string, voltage: number): boolean {
-        return SimGeneric.Set(SimType.CANMOTOR, device, CANMOTOR_BUS_VOLTAGE, voltage)
+    public static SetSupplyVoltage(device: string, voltage: number): boolean {
+        return SimGeneric.Set("CANMotor", device, CANMOTOR_SUPPLY_VOLTAGE, voltage)
     }
 }
 
 export class SimCANEncoder {
     private constructor() {}
 
-    public static SetVelocity(device: string, velocity: number): boolean {
-        return SimGeneric.Set(SimType.CANENCODER, device, CANENCODER_VELOCITY, velocity)
-    }
-
-    public static SetPosition(device: string, position: number): boolean {
-        return SimGeneric.Set(SimType.CANENCODER, device, CANENCODER_POSITION, position)
+    public static SetRawInputPosition(device: string, rawInputPosition: number): boolean {
+        return SimGeneric.Set("CANEncoder", device, CANENCODER_RAW_INPUT_POSITION, rawInputPosition)
     }
 }
 
 worker.addEventListener("message", (eventData: MessageEvent) => {
     let data: any | undefined
-    if (typeof eventData.data == "object") {
-        data = eventData.data
-    } else {
-        try {
+    try {
+        if (typeof eventData.data == "object") {
+            data = eventData.data
+        } else {
             data = JSON.parse(eventData.data)
-        } catch (e) {
-            console.warn(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
         }
+    } catch (e) {
+        console.warn(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
     }
 
     if (!data || !data.type) {
@@ -251,14 +175,25 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
     const device = data.device
     const updateData = data.data
 
-    if (!(data.type in SimType)) {
-        console.error(`Unrecognized SimType: ${data.type}\n${data.data}`)
-        return
+    switch (data.type) {
+        case "PWM":
+            UpdateSimMap("PWM", device, updateData)
+            break
+        case "Solenoid":
+            UpdateSimMap("Solenoid", device, updateData)
+            break
+        case "SimDevice":
+            UpdateSimMap("SimDevice", device, updateData)
+            break
+        case "CANMotor":
+            UpdateSimMap("CANMotor", device, updateData)
+            break
+        case "CANEncoder":
+            UpdateSimMap("CANEncoder", device, updateData)
+            break
+        default:
+            break
     }
-
-    console.debug(data.type);
-
-    UpdateSimMap(data.type, device, updateData)
 })
 
 function UpdateSimMap(type: SimType, device: string, updateData: any) {
@@ -279,14 +214,9 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
 }
 
 class WPILibBrain extends Brain {
-    private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
 
     private _simDevices: SimOutputGroup[] = []
-
-    public static robotsSpawned: string[] = []
-
-    private static _currentRobotIndex: number = 0
 
     constructor(mechanism: Mechanism) {
         super(mechanism)
@@ -297,21 +227,13 @@ class WPILibBrain extends Brain {
             console.warn("SimulationLayer is undefined")
             return
         }
-
-        // if (mechanism.controllable) {
-        //     WPILibBrain.robotsSpawned.push(this.getNumberedAssemblyName())
-        // }
-
-        // WPILibBrain._currentRobotIndex++
-        // this.configureArcadeDriveBehavior()
     }
 
-    public addSimOutputGroup(device: SimOutputGroup): void {
+    public addSimOutputGroup(device: SimOutputGroup) {
         this._simDevices.push(device)
     }
 
     public Update(deltaT: number): void {
-        // this._behaviors.forEach(b => b.Update(deltaT))
         this._simDevices.forEach(d => d.Update(deltaT))
     }
 
@@ -374,7 +296,7 @@ export class PWMGroup extends SimOutputGroup {
 
         // this.drivers.forEach(d => {
         //     (d as WheelDriver).targetWheelSpeed = average * 40
-        //     d.Update(deltaT)
+        //     d.Update(_deltaT)
         // })
     }
 }

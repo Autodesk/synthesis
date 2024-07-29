@@ -2,6 +2,7 @@ import Jolt from "@barclah/jolt-physics"
 import Driver from "./Driver"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { SimType } from "../wpilib_brain/WPILibBrain"
+import { mirabuf } from "@/proto/mirabuf"
 
 const LATERIAL_FRICTION = 0.6
 const LONGITUDINAL_FRICTION = 0.8
@@ -26,8 +27,14 @@ class WheelDriver extends Driver {
         return this._constraint
     }
 
-    public constructor(constraint: Jolt.VehicleConstraint, deviceType?: SimType, device?: string, reversed: boolean = false) {
-        super()
+    public constructor(
+        constraint: Jolt.VehicleConstraint,
+        info?: mirabuf.IInfo,
+        deviceType?: SimType,
+        device?: string,
+        reversed: boolean = false
+    ) {
+        super(info)
 
         this._constraint = constraint
         this._reversed = reversed

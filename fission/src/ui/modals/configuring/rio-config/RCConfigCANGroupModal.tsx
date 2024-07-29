@@ -21,12 +21,10 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const numPorts = 8
     let drivers: Driver[] = []
-    let simLayer;
-    let brain: WPILibBrain;
+    let simLayer
+    let brain: WPILibBrain
 
-    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
-        x => x[1] instanceof MirabufSceneObject
-    )
+    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
     console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
     if (miraObjs.length > 0) {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
@@ -46,7 +44,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 // no eslint complain
                 brain.addSimOutputGroup(new CANGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
-                const replacer = (key, value) => {
+                const replacer = (_: unknown, value: unknown) => {
                     if (value instanceof Map) {
                         return Object.fromEntries(value)
                     } else {
