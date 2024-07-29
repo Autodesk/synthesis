@@ -66,6 +66,7 @@ import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSc
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
+import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -227,6 +228,7 @@ const initialModals = [
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
+    <APSManagementModal key="aps-management" modalId="aps-management" />,
 ]
 
 const initialPanels: ReactElement[] = [
