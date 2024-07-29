@@ -12,6 +12,7 @@ import {
     AddButtonInteractiveColor,
     SectionLabel,
     SectionDivider,
+    SynthesisIcons,
 } from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
@@ -50,6 +51,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             sidePadding={8}
             acceptEnabled={false}
             cancelEnabled={false}
+            icon={SynthesisIcons.Gamepad}
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[45vh] bg-background-secondary rounded-md p-2">

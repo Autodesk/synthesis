@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from "react"
-import {
-    FaGear,
-    FaMagnifyingGlass,
-    FaPlus,
-    FaGamepad,
-    FaBasketball,
-    FaFileImport,
-    FaWrench,
-    FaScrewdriverWrench,
-} from "react-icons/fa6"
+
 import { BiMenuAltLeft } from "react-icons/bi"
 import { FaXmark } from "react-icons/fa6"
-import { IoPeople } from "react-icons/io5"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
@@ -20,7 +10,7 @@ import { ToastType, useToastContext } from "@/ui/ToastContext"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import { Button } from "@mui/base/Button"
-import { ButtonIcon } from "./StyledComponents"
+import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 
 type ButtonProps = {
     value: string
@@ -91,37 +81,53 @@ const MainHUD: React.FC = () => {
                 </div>
                 <MainHUDButton
                     value={"Spawn Asset"}
-                    icon={<FaPlus />}
+                    icon={SynthesisIcons.Add}
                     larger={true}
                     onClick={() => openPanel("import-mirabuf")}
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
                         value={"Manage Assemblies"}
-                        icon={<FaWrench />}
+                        icon={SynthesisIcons.Wrench}
                         onClick={() => openModal("manage-assemblies")}
                     />
-                    <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
-                    <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
-                    <MainHUDButton value={"Controls"} icon={<FaGamepad />} onClick={() => openModal("change-inputs")} />
+                    <MainHUDButton
+                        value={"Settings"}
+                        icon={SynthesisIcons.Gear}
+                        onClick={() => openModal("settings")}
+                    />
+                    <MainHUDButton
+                        value={"View"}
+                        icon={SynthesisIcons.MagnifyingGlass}
+                        onClick={() => openModal("view")}
+                    />
+                    <MainHUDButton
+                        value={"Controls"}
+                        icon={SynthesisIcons.Gamepad}
+                        onClick={() => openModal("change-inputs")}
+                    />
                     <MainHUDButton
                         value={"Import Local Mira"}
-                        icon={<FaFileImport />}
+                        icon={SynthesisIcons.Import}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
                         value={"Edit Scoring Zones"}
-                        icon={<FaBasketball />}
+                        icon={SynthesisIcons.Basketball}
                         onClick={() => {
                             openPanel("scoring-zones")
                         }}
                     />
-                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
+                    <MainHUDButton
+                        value={"Configure"}
+                        icon={SynthesisIcons.Gear}
+                        onClick={() => openModal("config-robot")}
+                    />
                     <MainHUDButton
                         value={"Debug Tools"}
-                        icon={<FaScrewdriverWrench />}
+                        icon={SynthesisIcons.ScrewdriverWrench}
                         onClick={() => {
                             openPanel("debug")
                         }}
@@ -137,7 +143,7 @@ const MainHUD: React.FC = () => {
                 ) : (
                     <MainHUDButton
                         value={`APS Login`}
-                        icon={<IoPeople />}
+                        icon={SynthesisIcons.People}
                         larger={true}
                         onClick={() => APS.requestAuthCode()}
                     />

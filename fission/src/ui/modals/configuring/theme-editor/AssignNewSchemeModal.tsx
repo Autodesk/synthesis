@@ -1,11 +1,11 @@
 import React, { useState } from "react"
 import Input from "@/components/Input"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { GrFormClose } from "react-icons/gr"
 import { useModalControlContext } from "@/ui/ModalContext"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const AssignNewSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -15,7 +15,7 @@ const AssignNewSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="New Input Scheme"
-            icon={<GrFormClose />}
+            icon={SynthesisIcons.Xmark}
             modalId={modalId}
             onAccept={() => {
                 const scheme = InputSystem.brainIndexSchemeMap.get(SynthesisBrain.brainIndexMap.size - 1)

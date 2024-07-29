@@ -15,7 +15,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import Jolt from "@barclah/jolt-physics"
 import Label from "../components/Label"
 import { colorNameToVar } from "../ThemeContext"
-import { FaScrewdriverWrench } from "react-icons/fa6"
+import { SynthesisIcons } from "../components/StyledComponents"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -55,7 +55,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="center"
             name={"Debug Panel"}
-            icon={<FaScrewdriverWrench />}
+            icon={SynthesisIcons.ScrewdriverWrench}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"

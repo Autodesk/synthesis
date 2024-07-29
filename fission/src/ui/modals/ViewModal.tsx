@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaMagnifyingGlass } from "react-icons/fa6"
 import { TooltipControl, useTooltipControlContext } from "@/ui/TooltipContext"
 import Dropdown from "../components/Dropdown"
+import { SynthesisIcons } from "../components/StyledComponents"
 
 type ViewType = "Orbit" | "Freecam" | "Overview" | "Driver Station"
 
@@ -31,7 +31,7 @@ const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Camera View"}
-            icon={<FaMagnifyingGlass />}
+            icon={SynthesisIcons.MagnifyingGlass}
             modalId={modalId}
             onAccept={() => showTooltip("controls", controls[view])}
         >

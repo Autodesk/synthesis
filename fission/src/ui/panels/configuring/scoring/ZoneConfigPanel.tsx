@@ -19,7 +19,7 @@ import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGro
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
-import { FaBasketball } from "react-icons/fa6"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 /**
  * Saves ejector configuration to selected field.
@@ -194,7 +194,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         <Panel
             name="Scoring Zone Config"
             panelId={panelId}
-            icon={<FaBasketball />}
+            icon={SynthesisIcons.Basketball}
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {

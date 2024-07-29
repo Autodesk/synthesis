@@ -1,7 +1,7 @@
-import { FaGear } from "react-icons/fa6"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Dropdown from "@/components/Dropdown"
 import Label, { LabelSize } from "@/components/Label"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const MatchModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const robotsPerAlliance = 3
@@ -17,7 +17,7 @@ const MatchModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Field and Robot Selection"
-            icon={<FaGear />}
+            icon={SynthesisIcons.Gear}
             modalId={modalId}
             acceptName="Load"
             cancelEnabled={false}

@@ -1,9 +1,9 @@
 import React, { useState } from "react"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { GiSteeringWheel } from "react-icons/gi"
 import Stack, { StackDirection } from "@/components/Stack"
 import Button from "@/components/Button"
 import Dropdown from "@/components/Dropdown"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [enabled, setEnabled] = useState(false)
@@ -11,7 +11,7 @@ const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, s
     return (
         <Panel
             name="Driver Station (Not Connected)"
-            icon={<GiSteeringWheel />}
+            icon={SynthesisIcons.SteeringWheel}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}

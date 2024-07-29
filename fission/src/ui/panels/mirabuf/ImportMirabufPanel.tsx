@@ -20,10 +20,9 @@ import {
     PositiveButton,
     SectionDivider,
     SectionLabel,
-    AddIconLarge,
     DeleteButton,
-    DownloadIconLarge,
     RefreshButton,
+    SynthesisIcons,
 } from "@/ui/components/StyledComponents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
@@ -240,7 +239,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: info.name || info.cacheKey || "Unnamed Robot",
                     id: info.id,
-                    primaryButtonNode: AddIconLarge,
+                    primaryButtonNode: SynthesisIcons.AddLarge,
                     primaryOnClick: () => {
                         console.log(`Selecting cached robot: ${info.cacheKey}`)
                         selectCache(info, MiraType.ROBOT)
@@ -263,7 +262,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: info.name || info.cacheKey || "Unnamed Field",
                     id: info.id,
-                    primaryButtonNode: AddIconLarge,
+                    primaryButtonNode: SynthesisIcons.AddLarge,
                     primaryOnClick: () => {
                         console.log(`Selecting cached field: ${info.cacheKey}`)
                         selectCache(info, MiraType.FIELD)
@@ -288,7 +287,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             ItemCard({
                 name: path.displayName,
                 id: path.src,
-                primaryButtonNode: DownloadIconLarge,
+                primaryButtonNode: SynthesisIcons.DownloadLarge,
                 primaryOnClick: () => {
                     console.log(`Selecting remote: ${path}`)
                     selectRemote(path, MiraType.ROBOT)
@@ -306,7 +305,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             ItemCard({
                 name: path.displayName,
                 id: path.src,
-                primaryButtonNode: DownloadIconLarge,
+                primaryButtonNode: SynthesisIcons.DownloadLarge,
                 primaryOnClick: () => {
                     console.log(`Selecting remote: ${path}`)
                     selectRemote(path, MiraType.FIELD)
@@ -322,7 +321,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: file.attributes.displayName!,
                     id: file.id,
-                    primaryButtonNode: DownloadIconLarge,
+                    primaryButtonNode: SynthesisIcons.DownloadLarge,
                     primaryOnClick: () => {
                         console.debug(file.raw)
                         selectAPS(file, viewType)
@@ -335,7 +334,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             name={"Select Mirabuf"}
-            icon={AddIconLarge}
+            icon={SynthesisIcons.AddLarge}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Back"

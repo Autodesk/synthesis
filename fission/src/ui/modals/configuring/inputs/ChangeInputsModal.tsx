@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaGamepad } from "react-icons/fa6"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import Label, { LabelSize } from "@/ui/components/Label"
 import LabeledButton, { LabelPlacement } from "../../../components/LabeledButton"
@@ -11,7 +10,7 @@ import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeMana
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { Box } from "@mui/material"
-import { AddButtonInteractiveColor, SectionDivider } from "@/ui/components/StyledComponents"
+import { AddButtonInteractiveColor, SectionDivider, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 // capitalize first letter
 const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
@@ -335,7 +334,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Keybinds"
-            icon={<FaGamepad />}
+            icon={SynthesisIcons.Gamepad}
             modalId={modalId}
             onAccept={() => {
                 InputSchemeManager.saveSchemes()

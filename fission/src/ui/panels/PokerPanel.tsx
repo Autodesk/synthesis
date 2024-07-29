@@ -4,7 +4,7 @@ import World from "@/systems/World"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
-import { AiOutlineDoubleRight } from "react-icons/ai"
+import { SynthesisIcons } from "../components/StyledComponents"
 
 const RAY_MAX_LENGTH = 20.0
 
@@ -89,7 +89,7 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="bottom-right"
             name={"The Poker"}
-            icon={<AiOutlineDoubleRight />}
+            icon={SynthesisIcons.OutlineDoubleRight}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"

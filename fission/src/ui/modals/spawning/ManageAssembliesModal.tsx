@@ -1,10 +1,10 @@
 import React, { useReducer } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaWrench } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 interface AssemblyCardProps {
     mira: MirabufSceneObject
@@ -45,7 +45,7 @@ const ManageAssembliesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Manage Assemblies"}
-            icon={<FaWrench />}
+            icon={SynthesisIcons.Wrench}
             modalId={modalId}
             onAccept={() => {
                 // showTooltip("controls", [

@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import { useModalControlContext } from "@/ui/ModalContext"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaGear } from "react-icons/fa6"
 import Label, { LabelSize } from "@/components/Label"
 import Button from "@/components/Button"
 import Slider from "@/components/Slider"
@@ -9,6 +8,7 @@ import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import Dropdown from "@/ui/components/Dropdown"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const screenModeOptions = ["Windowed", "Fullscreen"]
 const qualitySettingsOptions = ["Low", "Medium", "High", "Ultra"]
@@ -61,7 +61,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Settings"
-            icon={<FaGear />}
+            icon={SynthesisIcons.Gear}
             modalId={modalId}
             onAccept={() => {
                 saveSettings()
