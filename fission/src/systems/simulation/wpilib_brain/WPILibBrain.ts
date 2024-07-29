@@ -3,6 +3,9 @@ import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
 import WPILibWSWorker from "./WPILibWSWorker?worker"
+import { SimulationLayer } from "../SimulationSystem"
+import World from "@/systems/World"
+import Driver from "../driver/Driver"
 
 const worker = new WPILibWSWorker()
 
@@ -112,6 +115,26 @@ export class SimPWM {
     }
 }
 
+export class SimCAN {
+    private constructor() {}
+
+    public static GetDeviceWithID(id: number, type: SimType): any {
+        const id_exp = /.*\[(\d+)\]/g
+        const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type || simType == "SimDevice")
+        for (const [_simType, data] of entries) {
+            for (const key of data.keys()) {
+                const result = [...key.matchAll(id_exp)]
+                if (result?.length <= 0 || result[0].length <= 1) continue
+                const parsed_id = parseInt(result[0][1])
+                if (parsed_id != id) continue
+
+                return data.get(key)
+            }
+        }
+        return undefined
+    }
+}
+
 export class SimCANMotor {
     private constructor() {}
 
@@ -149,34 +172,26 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         return
     }
 
-    // console.debug(data)
-
     const device = data.device
     const updateData = data.data
 
     switch (data.type) {
         case "PWM":
-            console.debug("pwm")
             UpdateSimMap("PWM", device, updateData)
             break
         case "Solenoid":
-            console.debug("solenoid")
             UpdateSimMap("Solenoid", device, updateData)
             break
         case "SimDevice":
-            console.debug("simdevice")
             UpdateSimMap("SimDevice", device, updateData)
             break
         case "CANMotor":
-            console.debug("canmotor")
             UpdateSimMap("CANMotor", device, updateData)
             break
         case "CANEncoder":
-            console.debug("canencoder")
             UpdateSimMap("CANEncoder", device, updateData)
             break
         default:
-            // console.debug(`Unrecognized Message:\n${data}`)
             break
     }
 })
@@ -193,17 +208,34 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
         currentData = {}
         typeMap.set(device, currentData)
     }
-    Object.entries(updateData).forEach(kvp => (currentData[kvp[0]] = kvp[1]))
+    Object.entries(updateData).forEach(([key, value]) => (currentData[key] = value))
 
     window.dispatchEvent(new SimMapUpdateEvent(false))
 }
 
 class WPILibBrain extends Brain {
-    constructor(mech: Mechanism) {
-        super(mech)
+    private _simLayer: SimulationLayer
+
+    private _simDevices: SimOutputGroup[] = []
+
+    constructor(mechanism: Mechanism) {
+        super(mechanism)
+
+        this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
+
+        if (!this._simLayer) {
+            console.warn("SimulationLayer is undefined")
+            return
+        }
     }
 
-    public Update(_: number): void {}
+    public addSimOutputGroup(device: SimOutputGroup) {
+        this._simDevices.push(device)
+    }
+
+    public Update(deltaT: number): void {
+        this._simDevices.forEach(d => d.Update(deltaT))
+    }
 
     public Enable(): void {
         worker.postMessage({ command: "connect" })
@@ -231,3 +263,53 @@ export class SimMapUpdateEvent extends Event {
 }
 
 export default WPILibBrain
+
+abstract class SimOutputGroup {
+    public name: string
+    public ports: number[]
+    public drivers: Driver[]
+    public type: SimType
+
+    public constructor(name: string, ports: number[], drivers: Driver[], type: SimType) {
+        this.name = name
+        this.ports = ports
+        this.drivers = drivers
+        this.type = type
+    }
+
+    public abstract Update(deltaT: number): void
+}
+
+export class PWMGroup extends SimOutputGroup {
+    public constructor(name: string, ports: number[], drivers: Driver[]) {
+        super(name, ports, drivers, "PWM")
+    }
+
+    public Update(_deltaT: number) {
+        // let average = 0;
+        for (const port of this.ports) {
+            const speed = SimPWM.GetSpeed(`${port}`) ?? 0
+            // average += speed;
+            console.log(port, speed)
+        }
+        // average /= this.ports.length
+
+        // this.drivers.forEach(d => {
+        //     (d as WheelDriver).targetWheelSpeed = average * 40
+        //     d.Update(_deltaT)
+        // })
+    }
+}
+
+export class CANGroup extends SimOutputGroup {
+    public constructor(name: string, ports: number[], drivers: Driver[]) {
+        super(name, ports, drivers, "CANMotor")
+    }
+
+    public Update(_deltaT: number) {
+        for (const port of this.ports) {
+            const device = SimCAN.GetDeviceWithID(port, this.type)
+            console.log(port, device)
+        }
+    }
+}

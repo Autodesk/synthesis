@@ -1,5 +1,5 @@
 import { TooltipControl, TooltipType } from "@/ui/TooltipContext"
-import { FaInfoCircle } from "react-icons/fa"
+import { FaCircleInfo } from "react-icons/fa6"
 import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
 
@@ -12,7 +12,7 @@ const Tooltip: React.FC<TooltipProps> = ({ type, controls }) => {
     if (type === "controls") {
         return (
             <div className="absolute flex flex-col gap-1 px-8 pt-2 pb-4 rounded-lg left-1/2 -translate-x-1/2 top-2 bg-background">
-                <FaInfoCircle className="text-main-text mx-auto pt-1 pb-2 w-8 h-8" />
+                <FaCircleInfo className="text-main-text mx-auto pt-1 pb-2 w-8 h-8" />
                 {controls?.map(c => (
                     <Stack
                         direction={StackDirection.Horizontal}

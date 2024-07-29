@@ -232,6 +232,15 @@ class MirabufParser {
             directedRecursive(this._rigidNodes[0].id)
         }
         this._directedGraph = directedGraph
+
+        // Transition: GH-1014
+        const partDefinitions: { [k: string]: mirabuf.IPartDefinition } | null | undefined =
+            this.assembly.data?.parts?.partDefinitions
+        if (!partDefinitions) {
+            console.log("Failed to get part definitions")
+            return
+        }
+        console.log(partDefinitions)
     }
 
     private NewRigidNode(suffix?: string): RigidNode {

@@ -1,6 +1,6 @@
-import SliderDriver from "../driver/SliderDriver"
-import SliderStimulus from "../stimulus/SliderStimulus"
-import Behavior from "./Behavior"
+import SliderDriver from "@/systems/simulation/driver/SliderDriver"
+import SliderStimulus from "@/systems/simulation/stimulus/SliderStimulus"
+import Behavior from "@/systems/simulation/behavior/Behavior"
 import InputSystem from "@/systems/input/InputSystem"
 
 class GenericElevatorBehavior extends Behavior {

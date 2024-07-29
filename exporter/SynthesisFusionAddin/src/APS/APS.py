@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import pathlib
 import pickle
@@ -12,6 +11,9 @@ from typing import Any
 import requests
 
 from ..general_imports import INTERNAL_ID, gm, my_addin_path
+from ..Logging import getLogger
+
+logger = getLogger()
 
 CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
 auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
@@ -65,20 +67,22 @@ def getAuth() -> APSAuth | None:
     global APS_AUTH
     if APS_AUTH is not None:
         return APS_AUTH
-    try:
-        curr_time = time.time()
+
+    currTime = time.time()
+    if os.path.exists(auth_path):
         with open(auth_path, "rb") as f:
             p: APSAuth = pickle.load(f)
-            logging.getLogger(f"{INTERNAL_ID}").info(msg=f"{json.dumps(p.__dict__)}")
             APS_AUTH = p
-    except Exception as arg:
-        gm.ui.messageBox(f"ERROR:\n{arg}", "Please Sign In")
+    else:
         return None
-    curr_time = int(time.time() * 1000)
-    if curr_time >= APS_AUTH.expires_at:
+
+    currTime = int(time.time() * 1000)
+    if currTime >= APS_AUTH.expires_at:
         refreshAuthToken()
+
     if APS_USER_INFO is None:
         _ = loadUserInfo()
+
     return APS_AUTH
 
 
@@ -140,7 +144,7 @@ def refreshAuthToken():
             f.close()
     except urllib.request.HTTPError as e:
         removeAuth()
-        logging.getLogger(f"{INTERNAL_ID}").error(f"Refresh Error:\n{e.code} - {e.reason}")
+        logger.error(f"Refresh Error:\n{e.code} - {e.reason}")
         gm.ui.messageBox("Please sign in again.")
 
 
@@ -172,7 +176,7 @@ def loadUserInfo() -> APSUserInfo | None:
         return APS_USER_INFO
     except urllib.request.HTTPError as e:
         removeAuth()
-        logging.getLogger(f"{INTERNAL_ID}").error(f"User Info Error:\n{e.code} - {e.reason}")
+        logger.error(f"User Info Error:\n{e.code} - {e.reason}")
         gm.ui.messageBox("Please sign in again.")
 
 

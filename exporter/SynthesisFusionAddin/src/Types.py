@@ -1,9 +1,9 @@
 import os
 import pathlib
 import platform
-from dataclasses import dataclass, field
-from enum import Enum
-from typing import Union
+from dataclasses import dataclass, field, fields, is_dataclass
+from enum import Enum, EnumType
+from typing import Union, get_origin
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
@@ -86,6 +86,38 @@ def toLbs(kgs: float) -> LBS:
 
 def toKg(pounds: float) -> KG:
     return KG(round(pounds / 2.2062, 2))
+
+
+PRIMITIVES = (bool, str, int, float, type(None))
+
+
+def encodeNestedObjects(obj: any) -> any:
+    if isinstance(obj, Enum):
+        return obj.value
+    elif hasattr(obj, "__dict__"):
+        return {key: encodeNestedObjects(value) for key, value in obj.__dict__.items()}
+    else:
+        assert isinstance(obj, PRIMITIVES)
+        return obj
+
+
+def makeObjectFromJson(objType: type, data: any) -> any:
+    if isinstance(objType, EnumType):
+        return objType(data)
+    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
+        return data
+    elif get_origin(objType) is list:
+        return [makeObjectFromJson(objType.__args__[0], item) for item in data]
+
+    obj = objType()
+    assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
+    for field in fields(obj):
+        if field.name in data:
+            setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
+        else:
+            setattr(obj, field.name, field.default)
+
+    return obj
 
 
 class OString:
