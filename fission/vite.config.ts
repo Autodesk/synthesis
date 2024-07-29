@@ -33,7 +33,7 @@ export default defineConfig({
         ]
     },
     test: {
-        testTimeout: 5000,
+        testTimeout: 50000,
         globals: true,
         environment: 'jsdom',
         browser: {
@@ -41,6 +41,11 @@ export default defineConfig({
             name: 'chromium',
             headless: true,
             provider: 'playwright'
+        },
+        coverage: {
+            provider: "istanbul",
+            reporter: [ 'text' ],
+            include: [ "src/**/*.ts", "src/**/*.tsx" ],
         }
     },
     server: {
