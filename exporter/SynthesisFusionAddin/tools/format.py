@@ -11,12 +11,7 @@ def main(args: list[str] = sys.argv[1:]) -> None:
     for command in ["isort", "black"]:
         try:
             print(f"Formatting with {command}...")
-            subprocess.call(
-                [command, dir],
-                shell=False,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE,
-            )
+            subprocess.call([command, dir], shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         except FileNotFoundError:
             print(f'"{command}" could not be found. Please resolve dependencies.')
             return

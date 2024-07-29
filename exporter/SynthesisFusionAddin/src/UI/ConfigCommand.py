@@ -179,9 +179,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         # ~~~~~~~~~~~~~~~~ EXPORT LOCATION ~~~~~~~~~~~~~~~~~~
 
         dropdownExportLocation = inputs.addDropDownCommandInput(
-            "location",
-            "Export Location",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            "location", "Export Location", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
         )
 
         upload: bool = exporterOptions.exportLocation == ExportLocation.UPLOAD
@@ -555,8 +553,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         getAuth()
         user_info = getUserInfo()
         apsSettings = INPUTS_ROOT.addTabCommandInput(
-            "aps_settings",
-            f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})",
+            "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
         )
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 

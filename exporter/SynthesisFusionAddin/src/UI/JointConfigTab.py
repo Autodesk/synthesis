@@ -31,73 +31,33 @@ class JointConfigTab:
         jointConfigTabInputs = self.jointConfigTab.children
         self.jointConfigTable = createTableInput("jointTable", "Joint Table", jointConfigTabInputs, 7, "1:2:2:2:2:2:2")
         self.jointConfigTable.addCommandInput(
-            createTextBoxInput(
-                "jointMotionHeader",
-                "Motion",
-                jointConfigTabInputs,
-                "Motion",
-                bold=False,
-            ),
-            0,
-            0,
+            createTextBoxInput("jointMotionHeader", "Motion", jointConfigTabInputs, "Motion", bold=False), 0, 0
         )
         self.jointConfigTable.addCommandInput(
-            createTextBoxInput("nameHeader", "Name", jointConfigTabInputs, "Joint name", bold=False),
-            0,
-            1,
+            createTextBoxInput("nameHeader", "Name", jointConfigTabInputs, "Joint name", bold=False), 0, 1
         )
         self.jointConfigTable.addCommandInput(
-            createTextBoxInput(
-                "parentHeader",
-                "Parent",
-                jointConfigTabInputs,
-                "Parent joint",
-                background="#d9d9d9",
-            ),
+            createTextBoxInput("parentHeader", "Parent", jointConfigTabInputs, "Parent joint", background="#d9d9d9"),
             0,
             2,
         )
         self.jointConfigTable.addCommandInput(
-            createTextBoxInput(
-                "signalHeader",
-                "Signal",
-                jointConfigTabInputs,
-                "Signal type",
-                background="#d9d9d9",
-            ),
+            createTextBoxInput("signalHeader", "Signal", jointConfigTabInputs, "Signal type", background="#d9d9d9"),
             0,
             3,
         )
         self.jointConfigTable.addCommandInput(
-            createTextBoxInput(
-                "speedHeader",
-                "Speed",
-                jointConfigTabInputs,
-                "Joint Speed",
-                background="#d9d9d9",
-            ),
+            createTextBoxInput("speedHeader", "Speed", jointConfigTabInputs, "Joint Speed", background="#d9d9d9"),
             0,
             4,
         )
         self.jointConfigTable.addCommandInput(
-            createTextBoxInput(
-                "forceHeader",
-                "Force",
-                jointConfigTabInputs,
-                "Joint Force",
-                background="#d9d9d9",
-            ),
+            createTextBoxInput("forceHeader", "Force", jointConfigTabInputs, "Joint Force", background="#d9d9d9"),
             0,
             5,
         )
         self.jointConfigTable.addCommandInput(
-            createTextBoxInput(
-                "wheelHeader",
-                "Is Wheel",
-                jointConfigTabInputs,
-                "Is Wheel",
-                background="#d9d9d9",
-            ),
+            createTextBoxInput("wheelHeader", "Is Wheel", jointConfigTabInputs, "Is Wheel", background="#d9d9d9"),
             0,
             6,
         )
@@ -113,39 +73,21 @@ class JointConfigTab:
 
         self.wheelConfigTable = createTableInput("wheelTable", "Wheel Table", jointConfigTabInputs, 4, "1:2:2:2")
         self.wheelConfigTable.addCommandInput(
-            createTextBoxInput(
-                "wheelMotionHeader",
-                "Motion",
-                jointConfigTabInputs,
-                "Motion",
-                bold=False,
-            ),
-            0,
-            0,
+            createTextBoxInput("wheelMotionHeader", "Motion", jointConfigTabInputs, "Motion", bold=False), 0, 0
         )
         self.wheelConfigTable.addCommandInput(
-            createTextBoxInput("name_header", "Name", jointConfigTabInputs, "Joint name", bold=False),
-            0,
-            1,
+            createTextBoxInput("name_header", "Name", jointConfigTabInputs, "Joint name", bold=False), 0, 1
         )
         self.wheelConfigTable.addCommandInput(
             createTextBoxInput(
-                "wheelTypeHeader",
-                "WheelType",
-                jointConfigTabInputs,
-                "Wheel type",
-                background="#d9d9d9",
+                "wheelTypeHeader", "WheelType", jointConfigTabInputs, "Wheel type", background="#d9d9d9"
             ),
             0,
             2,
         )
         self.wheelConfigTable.addCommandInput(
             createTextBoxInput(
-                "signalTypeHeader",
-                "SignalType",
-                jointConfigTabInputs,
-                "Signal type",
-                background="#d9d9d9",
+                "signalTypeHeader", "SignalType", jointConfigTabInputs, "Signal type", background="#d9d9d9"
             ),
             0,
             3,
@@ -237,11 +179,7 @@ class JointConfigTab:
         if synJoint:
             signalType.listItems.add("‎", synJoint.signalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
             signalType.listItems.add("‎", synJoint.signalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
-            signalType.listItems.add(
-                "‎",
-                synJoint.signalType is SignalType.PASSIVE,
-                IconPaths.signalIcons["PASSIVE"],
-            )
+            signalType.listItems.add("‎", synJoint.signalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
         else:
             signalType.listItems.add("‎", True, IconPaths.signalIcons["PWM"])
             signalType.listItems.add("‎", False, IconPaths.signalIcons["CAN"])
@@ -292,10 +230,7 @@ class JointConfigTab:
             jointForceValue = 5
 
         jointForce = commandInputs.addValueInput(
-            "jointForce",
-            "Force",
-            "N",
-            adsk.core.ValueInput.createByReal(jointForceValue),
+            "jointForce", "Force", "N", adsk.core.ValueInput.createByReal(jointForceValue)
         )
         jointForce.tooltip = "Newtons"
         self.jointConfigTable.addCommandInput(jointForce, row, 5)
@@ -338,9 +273,7 @@ class JointConfigTab:
         wheelName = commandInputs.addTextBoxCommandInput("wheelName", "Joint Name", joint.name, 1, True)
         wheelName.tooltip = joint.name  # TODO: Should this be the same?
         wheelType = commandInputs.addDropDownCommandInput(
-            "wheelType",
-            "Wheel Type",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            "wheelType", "Wheel Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
         )
 
         selectedWheelType = wheel.wheelType if wheel else WheelType.STANDARD
@@ -357,9 +290,7 @@ class JointConfigTab:
         )
 
         signalType = commandInputs.addDropDownCommandInput(
-            "wheelSignalType",
-            "Signal Type",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle,
+            "wheelSignalType", "Signal Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
         )
         signalType.isFullWidth = True
         signalType.isEnabled = False
@@ -462,9 +393,7 @@ class JointConfigTab:
     # commandInput in a input changed handle for some reason.
     @logFailure
     def handleInputChanged(
-        self,
-        args: adsk.core.InputChangedEventArgs,
-        globalCommandInputs: adsk.core.CommandInputs,
+        self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
     ) -> None:
         commandInput = args.input
         if commandInput.id == "wheelType":

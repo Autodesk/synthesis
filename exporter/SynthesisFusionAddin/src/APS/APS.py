@@ -199,10 +199,7 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
     success - the href of the new folder ; might be changed to the id in the future
     failure - none if the API request fails ; the failure text will be printed
     """
-    headers = {
-        "Authorization": f"Bearer {auth}",
-        "Content-Type": "application/vnd.api+json",
-    }
+    headers = {"Authorization": f"Bearer {auth}", "Content-Type": "application/vnd.api+json"}
     data: dict[str, Any] = {
         "jsonapi": {"version": "1.0"},
         "data": {
@@ -216,9 +213,7 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
     }
 
     res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders",
-        headers=headers,
-        json=data,
+        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders", headers=headers, json=data
     )
     if not res.ok:
         gm.ui.messageBox(f"Failed to create new folder: {res.text}", "ERROR")
@@ -302,15 +297,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
         return None
     if file_id != "":
         update_file_version(
-            auth,
-            project_id,
-            folder_id,
-            lineage_id,
-            file_id,
-            file_name,
-            file_contents,
-            file_version,
-            object_id,
+            auth, project_id, folder_id, lineage_id, file_id, file_name, file_contents, file_version, object_id
         )
     else:
         _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
@@ -362,8 +349,7 @@ def get_project_id(auth: str, hub_id: str, project_name: str) -> str | None:
 
     headers = {"Authorization": f"Bearer {auth}"}
     project_list_res = requests.get(
-        f"https://developer.api.autodesk.com/project/v1/hubs/{hub_id}/projects",
-        headers=headers,
+        f"https://developer.api.autodesk.com/project/v1/hubs/{hub_id}/projects", headers=headers
     )
     if not project_list_res.ok:
         gm.ui.messageBox("UPLOAD ERROR", f"Failed to retrieve hubs: {project_list_res.text}")
@@ -445,10 +431,7 @@ def update_file_version(
         "Content-Type": "application/vnd.api+json",
     }
 
-    attributes = {
-        "name": file_name,
-        "extension": {"type": "versions:autodesk.core:File", "version": f"1.0"},
-    }
+    attributes = {"name": file_name, "extension": {"type": "versions:autodesk.core:File", "version": f"1.0"}}
 
     relationships: dict[str, Any] = {
         "item": {
@@ -467,23 +450,16 @@ def update_file_version(
 
     data = {
         "jsonapi": {"version": "1.0"},
-        "data": {
-            "type": "versions",
-            "attributes": attributes,
-            "relationships": relationships,
-        },
+        "data": {"type": "versions", "attributes": attributes, "relationships": relationships},
     }
     update_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/versions",
-        headers=headers,
-        json=data,
+        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/versions", headers=headers, json=data
     )
     if not update_res.ok:
         gm.ui.messageBox(f"UPLOAD ERROR:\n{update_res.text}", "Updating file to new version failed")
         return None
     gm.ui.messageBox(
-        f"Successfully updated file {file_name} to version {int(curr_file_version) + 1} on APS",
-        "UPLOAD SUCCESS",
+        f"Successfully updated file {file_name} to version {int(curr_file_version) + 1} on APS", "UPLOAD SUCCESS"
     )
     new_id: str = update_res.json()["data"]["id"]
     return new_id
@@ -568,15 +544,10 @@ def create_storage_location(auth: str, project_id: str, folder_id: str, file_nam
         "Content-Type": "application/vnd.api+json",
     }
     storage_location_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/storage",
-        json=data,
-        headers=headers,
+        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/storage", json=data, headers=headers
     )
     if not storage_location_res.ok:
-        gm.ui.messageBox(
-            f"UPLOAD ERROR: {storage_location_res.text}",
-            f"Failed to create storage location",
-        )
+        gm.ui.messageBox(f"UPLOAD ERROR: {storage_location_res.text}", f"Failed to create storage location")
         return None
     storage_location_json: dict[str, Any] = storage_location_res.json()
     object_id: str = storage_location_json["data"]["id"]
@@ -664,8 +635,7 @@ def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str
     )
     if not completed_res.ok:
         gm.ui.messageBox(
-            f"UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}",
-            "Failed to complete upload",
+            f"UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}", "Failed to complete upload"
         )
         return None
     return ""
@@ -703,10 +673,7 @@ def create_first_file_version(
         "Accept": "application/vnd.api+json",
     }
 
-    included_attributes = {
-        "name": file_name,
-        "extension": {"type": "versions:autodesk.core:File", "version": "1.0"},
-    }
+    included_attributes = {"name": file_name, "extension": {"type": "versions:autodesk.core:File", "version": "1.0"}}
 
     attributes = {
         "displayName": file_name,
@@ -732,24 +699,15 @@ def create_first_file_version(
 
     data = {
         "jsonapi": {"version": "1.0"},
-        "data": {
-            "type": "items",
-            "attributes": attributes,
-            "relationships": relationships,
-        },
+        "data": {"type": "items", "attributes": attributes, "relationships": relationships},
         "included": included,
     }
 
     first_version_res = requests.post(
-        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/items",
-        json=data,
-        headers=headers,
+        f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/items", json=data, headers=headers
     )
     if not first_version_res.ok:
-        gm.ui.messageBox(
-            f"Failed to create first file version: {first_version_res.text}",
-            "UPLOAD ERROR",
-        )
+        gm.ui.messageBox(f"Failed to create first file version: {first_version_res.text}", "UPLOAD ERROR")
         return None
     first_version_json: dict[str, Any] = first_version_res.json()
 
