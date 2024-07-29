@@ -8,6 +8,8 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { setSelectedBrainIndexGlobal } from "@/ui/panels/configuring/ChooseInputSchemePanel"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { useModalControlContext } from "@/ui/ModalContext"
+import InputSystem from "@/systems/input/InputSystem"
 
 interface AssemblyCardProps {
     mira: MirabufSceneObject
@@ -15,8 +17,8 @@ interface AssemblyCardProps {
 }
 
 const AssemblyCard: React.FC<AssemblyCardProps> = ({ mira, update }) => {
-
     const { openPanel } = usePanelControlContext()
+    const { closeModal } = useModalControlContext()
 
     const brain = useMemo(() => (mira.brain as SynthesisBrain)?.brainIndex, [mira])
 
@@ -25,41 +27,24 @@ const AssemblyCard: React.FC<AssemblyCardProps> = ({ mira, update }) => {
             key={mira.id}
             className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2"
         >
-            <Label className="text-wrap break-all">{mira.assemblyName}</Label>
-            {/* <Dropdown
-                // label={}
-                // Moves the selected option to the start of the array
-                options={moveElementToTop(
-                    InputSchemeManager.allInputSchemes.map(s => s.schemeName),
-                    selectedScheme?.schemeName
-                )}
-                onSelect={value => {
-                    const schemeData = InputSchemeManager.allInputSchemes.find(
-                        s => s.schemeName == value
-                    )
-                    if (!schemeData || schemeData == selectedScheme) return
-
-                    setSelectedScheme(schemeData)
-                    if (brain != undefined) {
-                        console.debug(schemeData.schemeName)
-                        InputSystem.brainIndexSchemeMap.set(brain, schemeData)
-                    }
-                }}
-            /> */}
-            <Button
-                value="Set Scheme"
-                onClick={() => {
-                    setSelectedBrainIndexGlobal(brain)
-                    openPanel('change-scheme')
-                }}
-            />
-            <Button
-                value="Delete"
-                onClick={() => {
-                    World.SceneRenderer.RemoveSceneObject(mira.id)
-                    update()
-                }}
-            />
+            <Label className="text-wrap break-all">{`[${InputSystem.brainIndexSchemeMap.get(brain)?.schemeName ?? "-"}] ${mira.assemblyName}`}</Label>
+            <div className="flex flex-row gap-4">
+                <Button
+                    value="Set Scheme"
+                    onClick={() => {
+                        setSelectedBrainIndexGlobal(brain)
+                        openPanel("choose-scheme")
+                        closeModal()
+                    }}
+                />
+                <Button
+                    value="Delete"
+                    onClick={() => {
+                        World.SceneRenderer.RemoveSceneObject(mira.id)
+                        update()
+                    }}
+                />
+            </div>
         </div>
     )
 }
@@ -78,18 +63,7 @@ const ManageAssembliesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         .map(x => x[1] as MirabufSceneObject)
 
     return (
-        <Modal
-            name={"Manage Assemblies"}
-            icon={<FaWrench />}
-            modalId={modalId}
-            onAccept={() => {
-                // showTooltip("controls", [
-                //     { control: "WASD", description: "Drive" },
-                //     { control: "E", description: "Intake" },
-                //     { control: "Q", description: "Dispense" },
-                // ]);
-            }}
-        >
+        <Modal name={"Manage Assemblies"} icon={<FaWrench />} modalId={modalId}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {assemblies ? `${assemblies.length} Assemblies` : "No Assemblies"}

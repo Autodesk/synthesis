@@ -9,23 +9,23 @@ import Label, { LabelSize } from "@/ui/components/Label"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { Box, Divider, styled } from "@mui/material"
-import { useEffect, useMemo, useReducer } from "react"
+import { useEffect, useReducer } from "react"
 import { AiOutlinePlus } from "react-icons/ai"
 import { IoCheckmark, IoPencil, IoTrashBin } from "react-icons/io5"
 
-// eslint-disable-next-line react-refresh/only-export-components
 let selectedBrainIndexGlobal: number | undefined = undefined
+// eslint-disable-next-line react-refresh/only-export-components
 export function setSelectedBrainIndexGlobal(index: number | undefined) {
     selectedBrainIndexGlobal = index
+}
+
+function getBrainIndex() {
+    return selectedBrainIndexGlobal != undefined ? selectedBrainIndexGlobal : SynthesisBrain.brainIndexMap.size - 1
 }
 
 const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
-
-    const selectedBrainIndex = useMemo(() => {
-        return selectedBrainIndexGlobal != undefined ? selectedBrainIndexGlobal : SynthesisBrain.brainIndexMap.size - 1
-    }, [])
 
     const [_, update] = useReducer(x => !x, false)
 
@@ -48,7 +48,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
         /** If the panel is closed before a scheme is selected, defaults to the top of the list */
         return () => {
-            const brainIndex = selectedBrainIndex
+            const brainIndex = getBrainIndex()
             console.log(brainIndex)
 
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
@@ -60,8 +60,8 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             openModal("change-inputs")
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [closePanel, openModal])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     useEffect(() => {
         return () => {
@@ -112,10 +112,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 <Button
                                     value={SelectIcon}
                                     onClick={() => {
-                                        InputSystem.brainIndexSchemeMap.set(
-                                            selectedBrainIndex,
-                                            scheme
-                                        )
+                                        InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
                                         closePanel(panelId)
                                     }}
                                     colorOverrideClass="bg-accept-button hover:brightness-90"
@@ -124,10 +121,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 <Button
                                     value={EditIcon}
                                     onClick={() => {
-                                        InputSystem.brainIndexSchemeMap.set(
-                                            selectedBrainIndex,
-                                            scheme
-                                        )
+                                        InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
                                         InputSystem.selectedScheme = scheme
                                         openModal("change-inputs")
                                     }}
@@ -170,10 +164,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             <Button
                 value={AddIcon}
                 onClick={() => {
-                    InputSystem.brainIndexSchemeMap.set(
-                        selectedBrainIndex,
-                        DefaultInputs.newBlankScheme
-                    )
+                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), DefaultInputs.newBlankScheme)
                     openModal("assign-new-scheme")
                 }}
             />
