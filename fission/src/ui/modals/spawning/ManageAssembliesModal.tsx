@@ -1,10 +1,13 @@
-import React, { useReducer } from "react"
+import React, { useMemo, useReducer } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaWrench } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { usePanelControlContext } from "@/ui/PanelContext"
+import { setSelectedBrainIndexGlobal } from "@/ui/panels/configuring/ChooseInputSchemePanel"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 interface AssemblyCardProps {
     mira: MirabufSceneObject
@@ -12,12 +15,44 @@ interface AssemblyCardProps {
 }
 
 const AssemblyCard: React.FC<AssemblyCardProps> = ({ mira, update }) => {
+
+    const { openPanel } = usePanelControlContext()
+
+    const brain = useMemo(() => (mira.brain as SynthesisBrain)?.brainIndex, [mira])
+
     return (
         <div
             key={mira.id}
             className="flex flex-row align-middle justify-between items-center bg-background rounded-sm p-2 gap-2"
         >
             <Label className="text-wrap break-all">{mira.assemblyName}</Label>
+            {/* <Dropdown
+                // label={}
+                // Moves the selected option to the start of the array
+                options={moveElementToTop(
+                    InputSchemeManager.allInputSchemes.map(s => s.schemeName),
+                    selectedScheme?.schemeName
+                )}
+                onSelect={value => {
+                    const schemeData = InputSchemeManager.allInputSchemes.find(
+                        s => s.schemeName == value
+                    )
+                    if (!schemeData || schemeData == selectedScheme) return
+
+                    setSelectedScheme(schemeData)
+                    if (brain != undefined) {
+                        console.debug(schemeData.schemeName)
+                        InputSystem.brainIndexSchemeMap.set(brain, schemeData)
+                    }
+                }}
+            /> */}
+            <Button
+                value="Set Scheme"
+                onClick={() => {
+                    setSelectedBrainIndexGlobal(brain)
+                    openPanel('change-scheme')
+                }}
+            />
             <Button
                 value="Delete"
                 onClick={() => {

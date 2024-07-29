@@ -45,7 +45,7 @@ const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
                     ) => typeof value === "string" && onSelect && onSelect(value)}
                 >
                     {optionList.map(option => (
-                        <Option value={option} key={option}>
+                        <Option className={"z-[10000]"} value={option} key={option}>
                             {option}
                         </Option>
                     ))}
