@@ -28,3 +28,7 @@ dist-ssr
 *.sw?
 
 yarn.lock
+
+# Coverage
+coverage/
+
