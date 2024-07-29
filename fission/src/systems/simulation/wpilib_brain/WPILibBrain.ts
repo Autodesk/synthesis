@@ -289,11 +289,12 @@ export class PWMGroup extends SimOutputGroup {
     }
 
     public Update(_deltaT: number) {
-        const average = this.ports.reduce((sum, port) => {
-            const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-            console.debug(port, speed)
-            return sum + speed
-        }, 0) / this.ports.length;
+        const average =
+            this.ports.reduce((sum, port) => {
+                const speed = SimPWM.GetSpeed(`${port}`) ?? 0
+                console.debug(port, speed)
+                return sum + speed
+            }, 0) / this.ports.length
 
         this.drivers.forEach(d => {
             if (d instanceof WheelDriver) {
