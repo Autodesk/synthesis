@@ -289,20 +289,16 @@ export class PWMGroup extends SimOutputGroup {
     }
 
     public Update(_deltaT: number) {
-        let average = 0
-        for (const port of this.ports) {
+        const average = this.ports.reduce((sum, port) => {
             const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-            average += speed
-            console.log(port, speed)
-        }
-        average /= this.ports.length
+            console.debug(port, speed)
+            return sum + speed
+        }, 0) / this.ports.length;
 
         this.drivers.forEach(d => {
             if (d instanceof WheelDriver) {
                 d.targetWheelSpeed = average * 40
-            } else if (d instanceof HingeDriver) {
-                d.targetVelocity = average * 40
-            } else if (d instanceof SliderDriver) {
+            } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
                 d.targetVelocity = average * 40
             }
             d.Update(_deltaT)
