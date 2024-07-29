@@ -289,10 +289,10 @@ export class PWMGroup extends SimOutputGroup {
     }
 
     public Update(_deltaT: number) {
-        let average = 0;
+        let average = 0
         for (const port of this.ports) {
             const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-            average += speed;
+            average += speed
             console.log(port, speed)
         }
         average /= this.ports.length

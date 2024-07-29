@@ -132,14 +132,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         }
                     }}
                 />
-                <Button
-                    value={"WS Viewer"}
-                    onClick={() => openPanel("ws-view")}
-                />
-                <Button
-                    value={"RoboRIO"}
-                    onClick={() => openModal("roborio")}
-                />
+                <Button value={"WS Viewer"} onClick={() => openPanel("ws-view")} />
+                <Button value={"RoboRIO"} onClick={() => openModal("roborio")} />
             </Box>
         </Panel>
     )
