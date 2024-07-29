@@ -16,6 +16,7 @@ import Jolt from "@barclah/jolt-physics"
 import Label from "../components/Label"
 import { colorNameToVar } from "../ThemeContext"
 import { FaScrewdriverWrench } from "react-icons/fa6"
+import { useModalControlContext } from "../ModalContext"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -50,6 +51,7 @@ async function TestGodMode() {
 
 const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { openPanel } = usePanelControlContext()
+    const { openModal } = useModalControlContext()
 
     return (
         <Panel
@@ -132,9 +134,11 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 />
                 <Button
                     value={"WS Viewer"}
-                    onClick={() => {
-                        openPanel("ws-view")
-                    }}
+                    onClick={() => openPanel("ws-view")}
+                />
+                <Button
+                    value={"RoboRIO"}
+                    onClick={() => openModal("roborio")}
                 />
             </Box>
         </Panel>

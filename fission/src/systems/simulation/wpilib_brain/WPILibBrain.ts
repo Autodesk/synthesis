@@ -6,6 +6,9 @@ import WPILibWSWorker from "./WPILibWSWorker?worker"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 import Driver from "../driver/Driver"
+import WheelDriver from "../driver/WheelDriver"
+import HingeDriver from "../driver/HingeDriver"
+import SliderDriver from "../driver/SliderDriver"
 
 const worker = new WPILibWSWorker()
 
@@ -286,18 +289,24 @@ export class PWMGroup extends SimOutputGroup {
     }
 
     public Update(_deltaT: number) {
-        // let average = 0;
+        let average = 0;
         for (const port of this.ports) {
             const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-            // average += speed;
+            average += speed;
             console.log(port, speed)
         }
-        // average /= this.ports.length
+        average /= this.ports.length
 
-        // this.drivers.forEach(d => {
-        //     (d as WheelDriver).targetWheelSpeed = average * 40
-        //     d.Update(_deltaT)
-        // })
+        this.drivers.forEach(d => {
+            if (d instanceof WheelDriver) {
+                d.targetWheelSpeed = average * 40
+            } else if (d instanceof HingeDriver) {
+                d.targetVelocity = average * 40
+            } else if (d instanceof SliderDriver) {
+                d.targetVelocity = average * 40
+            }
+            d.Update(_deltaT)
+        })
     }
 }
 
