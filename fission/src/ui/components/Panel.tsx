@@ -70,7 +70,6 @@ export type PanelPropsImpl = {
     panelId: string
     openLocation?: OpenLocation
     sidePadding?: number
-    args?: unknown[]
 }
 
 type PanelProps = {
