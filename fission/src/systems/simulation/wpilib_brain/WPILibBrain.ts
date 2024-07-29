@@ -5,7 +5,8 @@ import Brain from "../Brain"
 import WPILibWSWorker from "./WPILibWSWorker?worker"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
-import Driver from "../driver/Driver"
+
+import { SimOutputGroup } from "./SimOutput"
 
 const worker = new WPILibWSWorker()
 
@@ -263,53 +264,3 @@ export class SimMapUpdateEvent extends Event {
 }
 
 export default WPILibBrain
-
-abstract class SimOutputGroup {
-    public name: string
-    public ports: number[]
-    public drivers: Driver[]
-    public type: SimType
-
-    public constructor(name: string, ports: number[], drivers: Driver[], type: SimType) {
-        this.name = name
-        this.ports = ports
-        this.drivers = drivers
-        this.type = type
-    }
-
-    public abstract Update(deltaT: number): void
-}
-
-export class PWMGroup extends SimOutputGroup {
-    public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, "PWM")
-    }
-
-    public Update(_deltaT: number) {
-        // let average = 0;
-        for (const port of this.ports) {
-            const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-            // average += speed;
-            console.log(port, speed)
-        }
-        // average /= this.ports.length
-
-        // this.drivers.forEach(d => {
-        //     (d as WheelDriver).targetWheelSpeed = average * 40
-        //     d.Update(_deltaT)
-        // })
-    }
-}
-
-export class CANGroup extends SimOutputGroup {
-    public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, "CANMotor")
-    }
-
-    public Update(_deltaT: number) {
-        for (const port of this.ports) {
-            const device = SimCAN.GetDeviceWithID(port, this.type)
-            console.log(port, device)
-        }
-    }
-}

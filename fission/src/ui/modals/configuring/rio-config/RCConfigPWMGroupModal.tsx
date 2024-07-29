@@ -8,7 +8,8 @@ import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
-import WPILibBrain, { PWMGroup, simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { PWMOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver from "@/systems/simulation/driver/Driver"
@@ -24,7 +25,6 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     let brain: WPILibBrain
 
     const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-    console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
     if (miraObjs.length > 0) {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
         simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
@@ -48,7 +48,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 // no eslint complain
-                brain.addSimOutputGroup(new PWMGroup(name, checkedPorts, checkedDrivers))
+                brain.addSimOutputGroup(new PWMOutputGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
             }}
             onCancel={() => {
