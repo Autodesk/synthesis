@@ -1,7 +1,7 @@
 import React, { useMemo, useReducer } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaWrench } from "react-icons/fa6"
-import Button, { ButtonProps, ButtonSize } from "@/components/Button"
+import Button, { ButtonProps } from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -10,7 +10,6 @@ import { setSelectedBrainIndexGlobal } from "@/ui/panels/configuring/ChooseInput
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { useModalControlContext } from "@/ui/ModalContext"
 import InputSystem from "@/systems/input/InputSystem"
-import { HiDownload } from "react-icons/hi"
 import { IoTrashBin } from "react-icons/io5"
 
 interface AssemblyCardProps {
@@ -79,7 +78,9 @@ const ManageAssembliesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {assemblies ? `${assemblies.length} Assemblies` : "No Assemblies"}
                 </Label>
-                {assemblies.map(x => <AssemblyCard key={x.id} mira={x} update={update} />)}
+                {assemblies.map(x => (
+                    <AssemblyCard key={x.id} mira={x} update={update} />
+                ))}
             </div>
         </Modal>
     )
