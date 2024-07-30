@@ -79,13 +79,13 @@ class SceneRenderer extends WorldSystem {
         // Adding the lighting uisng quality preferences
         this.ChangeLighting(PreferencesSystem.getGlobalPreference<string>("QualitySettings"))
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
 
         const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR))
         ground.position.set(0.0, -2.0, 0.0)
         ground.receiveShadow = true
-        ground.castShadow = false
+        ground.castShadow = true
         this._scene.add(ground)
 
         // Adding spherical skybox mesh
@@ -189,20 +189,19 @@ class SceneRenderer extends WorldSystem {
             this._light.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize)
             this._light.shadow.blurSamples = 16
             this._light.shadow.bias = 0.0
+            this._light.shadow.normalBias = 0.01
             this._scene.add(this._light)
-        }
-
-        // setting light to cascading shadows
-        else if (quality === "High") {
+        } else if (quality === "High") { // setting light to cascading shadows
             this._light = new CSM({
                 parent: this._scene,
                 camera: this._mainCamera,
                 cascades: 3,
-                lightDirection: new THREE.Vector3(0.5, -0.5, 0.5).normalize(),
+                lightDirection: new THREE.Vector3(1.0, -3.0, -2.0).normalize(),
                 lightIntensity: 5,
                 shadowMapSize: shadowMapSize,
                 mode: "custom",
                 maxFar: 30,
+                shadowBias: -0.00001,
                 customSplitsCallback: (cascades: number, near: number, far: number, breaks: number[]) => {
                     const blend = 0.7
                     for (let i = 1; i < cascades; i++) {
@@ -267,6 +266,7 @@ class SceneRenderer extends WorldSystem {
         gradientMap.needsUpdate = true
         const material = new THREE.MeshToonMaterial({
             color: color,
+            shadowSide: THREE.DoubleSide,
             gradientMap: gradientMap,
         })
         if (this._light instanceof CSM) this._light.setupMaterial(material)
