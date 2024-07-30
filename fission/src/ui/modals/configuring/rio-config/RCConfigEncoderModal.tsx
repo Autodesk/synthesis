@@ -6,12 +6,11 @@ import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
 import NumberInput from "@/components/NumberInput"
-import Driver from "@/systems/simulation/driver/Driver"
 import WPILibBrain, { simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import Stimulus from "@/systems/simulation/stimulus/Stimulus"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
+import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput"
 
 const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -36,7 +35,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         devices = [...encoders.entries()]
     }
 
-    const stimMap: { [key: string]: Stimulus } = {}
+    const stimMap: { [key: string]: EncoderStimulus } = {}
 
     stimuli.forEach(stim => {
         const label = `${stim.constructor.name} ${stim.info?.name && "(" + stim.info!.name + ")"}`
@@ -44,7 +43,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     })
 
     const [selectedDevice, setSelectedDevice] = useState<string>(devices[0] && devices[0][0])
-    const [selectedStimulus, setSelectedStimulus] = useState<Stimulus | undefined>(stimuli[0])
+    const [selectedStimulus, setSelectedStimulus] = useState<EncoderStimulus | undefined>(stimuli[0])
     const [conversionFactor, setConversionFactor] = useState<number>(1)
 
     return (
@@ -54,7 +53,8 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {
-                console.log(name, selectedDevice, selectedStimulus)
+                if (selectedDevice && selectedStimulus)
+                    brain.addSimInput(new SimEncoderInput(selectedDevice, selectedStimulus, conversionFactor))
             }}
             onCancel={() => {
                 openModal("roborio")

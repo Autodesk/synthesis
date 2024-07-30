@@ -1,4 +1,7 @@
 import Driver from "../driver/Driver"
+import HingeDriver from "../driver/HingeDriver"
+import SliderDriver from "../driver/SliderDriver"
+import WheelDriver from "../driver/WheelDriver"
 import { SimCAN, SimPWM, SimType } from "./WPILibBrain"
 
 export abstract class SimOutputGroup {
@@ -23,18 +26,21 @@ export class PWMOutputGroup extends SimOutputGroup {
     }
 
     public Update(_deltaT: number) {
-        // let average = 0;
-        for (const port of this.ports) {
-            const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-            // average += speed;
-            console.log(port, speed)
-        }
-        // average /= this.ports.length
+        const average =
+            this.ports.reduce((sum, port) => {
+                const speed = SimPWM.GetSpeed(`${port}`) ?? 0
+                console.debug(port, speed)
+                return sum + speed
+            }, 0) / this.ports.length
 
-        // this.drivers.forEach(d => {
-        //     (d as WheelDriver).targetWheelSpeed = average * 40
-        //     d.Update(_deltaT)
-        // })
+        this.drivers.forEach(d => {
+            if (d instanceof WheelDriver) {
+                d.targetWheelSpeed = average * 40
+            } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
+                d.targetVelocity = average * 40
+            }
+            d.Update(_deltaT)
+        })
     }
 }
 

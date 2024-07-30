@@ -5,16 +5,18 @@ export interface SimInput {
     Update: (deltaT: number) => void
 }
 
-export class Encoder implements SimInput {
-    private _device: number
+export class SimEncoderInput implements SimInput {
+    private _device: string
     private _stimulus: EncoderStimulus
+    private _conversionFactor: number
 
-    constructor(device: number, stimulus: EncoderStimulus) {
+    constructor(device: string, stimulus: EncoderStimulus, conversionFactor: number) {
         this._device = device
         this._stimulus = stimulus
+        this._conversionFactor = conversionFactor
     }
 
     public Update(_deltaT: number) {
-        SimCANEncoder.SetRawInputPosition(`${this._device}`, this._stimulus.positionValue)
+        SimCANEncoder.SetRawInputPosition(`${this._device}`, this._stimulus.positionValue * this._conversionFactor)
     }
 }

@@ -7,10 +7,7 @@ import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
 import { SimOutputGroup } from "./SimOutput"
-import Driver from "../driver/Driver"
-import WheelDriver from "../driver/WheelDriver"
-import HingeDriver from "../driver/HingeDriver"
-import SliderDriver from "../driver/SliderDriver"
+import { SimInput } from "./SimInput"
 
 const worker = new WPILibWSWorker()
 
@@ -222,6 +219,7 @@ class WPILibBrain extends Brain {
     private _simLayer: SimulationLayer
 
     private _simDevices: SimOutputGroup[] = []
+    private _simInputs: SimInput[] = []
 
     constructor(mechanism: Mechanism) {
         super(mechanism)
@@ -238,8 +236,13 @@ class WPILibBrain extends Brain {
         this._simDevices.push(device)
     }
 
+    public addSimInput(input: SimInput) {
+        this._simInputs.push(input)
+    }
+
     public Update(deltaT: number): void {
         this._simDevices.forEach(d => d.Update(deltaT))
+        this._simInputs.forEach(i => i.Update(deltaT))
     }
 
     public Enable(): void {
