@@ -17,7 +17,7 @@ export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
 
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
-    QualitySettings: "High",
+    QualitySettings: "High" as QualitySetting,
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,

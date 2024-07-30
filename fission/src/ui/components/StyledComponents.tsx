@@ -1,4 +1,4 @@
-import { Divider, styled } from "@mui/material"
+import { Box, Divider, styled } from "@mui/material"
 import Label from "./Label"
 import Button, { ButtonProps, ButtonSize } from "./Button"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
@@ -64,6 +64,10 @@ export const SectionLabel = styled(Label)({
     fontWeight: 700,
     margin: "0pt",
 })
+
+export const Spacer = (widthPx: number) => {
+    return <Box minHeight={`${widthPx}px`} />
+}
 
 export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick }) => {
     return (

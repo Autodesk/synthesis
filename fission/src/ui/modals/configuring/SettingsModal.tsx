@@ -11,8 +11,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
-
-const qualitySettingsOptions: QualitySetting[] = ["Low", "Medium", "High"]
+import { Spacer } from "@/ui/components/StyledComponents"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -70,17 +69,17 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Label size={LabelSize.Medium}>Screen Settings</Label>
                 <Dropdown
                     label="Quality Settings"
-                    options={qualitySettingsOptions}
-                    defaultValue={PreferencesSystem.getGlobalPreference<string>("QualitySettings")}
+                    options={["Low", "Medium", "High"] as QualitySetting[]}
+                    defaultValue={PreferencesSystem.getGlobalPreference<QualitySetting>("QualitySettings")}
                     onSelect={selected => {
                         setQualitySettings(selected)
                     }}
                 />
-                <Box minHeight={"5px"} />
+                {Spacer(5)}
                 <Box alignSelf={"center"}>
                     <Button value="Theme Editor" onClick={() => openModal("theme-editor")} />
                 </Box>
-                <Box minHeight={"5px"} />
+                {Spacer(5)}
                 <Label size={LabelSize.Medium}>Camera Settings</Label>
                 <Slider
                     min={1}
@@ -106,7 +105,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setYawSensitivity(value as number)}
                 />
-                <Box minHeight={"20px"} />
+                {Spacer(20)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
                     <Checkbox
