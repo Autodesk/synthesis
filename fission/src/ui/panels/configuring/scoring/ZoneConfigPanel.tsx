@@ -19,7 +19,7 @@ import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGro
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
-import { FaBasketball } from "react-icons/fa6"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 /**
  * Saves ejector configuration to selected field.
@@ -132,6 +132,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -173,6 +174,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             gizmo.RemoveGizmos()
             setTransformGizmo(undefined)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [theme])
 
     /** Sets the selected node if it is a part of the currently loaded field */
@@ -194,7 +196,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         <Panel
             name="Scoring Zone Config"
             panelId={panelId}
-            icon={<FaBasketball />}
+            icon={SynthesisIcons.Basketball}
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {

@@ -1,6 +1,5 @@
 import * as THREE from "three"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaGear } from "react-icons/fa6"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
 import TransformGizmos from "@/ui/components/TransformGizmos"
@@ -21,6 +20,7 @@ import {
 import { useTheme } from "@/ui/ThemeContext"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -178,7 +178,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
     return (
         <Panel
             name="Configure Ejector"
-            icon={<FaGear />}
+            icon={SynthesisIcons.Gear}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}

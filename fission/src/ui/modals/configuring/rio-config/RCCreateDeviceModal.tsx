@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { useModalControlContext } from "@/ui/ModalContext"
-import { FaPlus } from "react-icons/fa6"
 import Dropdown from "@/components/Dropdown"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 type DeviceType = "PWM" | "CAN" | "Encoder"
 
@@ -13,7 +13,7 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Create Device"
-            icon={<FaPlus />}
+            icon={SynthesisIcons.Add}
             modalId={modalId}
             acceptName="Next"
             onAccept={() => {
