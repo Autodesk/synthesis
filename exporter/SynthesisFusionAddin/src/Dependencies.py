@@ -106,7 +106,7 @@ def resolveDependencies() -> bool | None:
     progressBar = ui.createProgressDialog()
     progressBar.isCancelButtonShown = False
     progressBar.reset()
-    progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP) * 2 + 2, 0)
+    progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP * 2 + 2), 0)
 
     # TODO: Is this really true? Do we need this? waheusnta eho? - Brandon
     # Install pip manually on macos as it is not included by default? Really?
@@ -144,15 +144,3 @@ def resolveDependencies() -> bool | None:
 
     progressBar.hide()
     return True
-
-
-# Transition: AARD-1741
-# Extra function included here for debugging purposes, this function can be deleted upon verification
-# that everything is working correctly as it can be easily constructed later.
-def uninstallPipDependencies() -> None:
-    pythonFolder = getInternalFusionPythonInstillationFolder()
-    pythonExecutableFile = "python.exe" if system == "Windows" else "python"  # Confirming 110% everything is fine.
-    pythonExecutablePath = os.path.join(pythonFolder, pythonExecutableFile)
-    for dep in PIP_DEPENDENCY_VERSION_MAP.keys():
-        executeCommand(pythonExecutablePath, "-m", "pip", "uninstall", "-y", dep)
-        logger.debug(f"Uninstalled {dep}")

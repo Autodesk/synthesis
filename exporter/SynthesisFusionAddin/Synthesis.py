@@ -6,7 +6,7 @@ import adsk.core
 # Currently required for `resolveDependencies()`, will be required for absolute imports.
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from .src.Dependencies import resolveDependencies, uninstallPipDependencies  # isort:skip
+from .src.Dependencies import resolveDependencies  # isort:skip
 
 # Transition: AARD-1741
 # Import order should be removed in AARD-1737 and `setupLogger()` moved to `__init__.py`
