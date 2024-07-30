@@ -15,16 +15,14 @@ from .src.Logging import getLogger, logFailure, setupLogger  # isort:skip
 setupLogger()
 
 try:
-    from .src.APS import APS
     from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
     from .src.UI import (
         HUI,
         Camera,
         ConfigCommand,
-        Handlers,
-        Helper,
         MarkingMenu,
         ShowAPSAuthCommand,
+        ShowWebsiteCommand,
     )
     from .src.UI.Toolbar import Toolbar
 except (ImportError, ModuleNotFoundError) as error:
@@ -137,3 +135,13 @@ def register_ui() -> None:
     )
 
     gm.elements.append(apsButton)
+
+    websiteButton = HUI.HButton(
+        "Synthesis Website",
+        work_panel,
+        lambda *_: True,
+        ShowWebsiteCommand.ShowWebsiteCommandCreatedHandler,
+        description=f"Website Test",
+        command=True,
+    )
+    gm.elements.append(websiteButton)
