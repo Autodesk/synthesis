@@ -27,7 +27,12 @@ const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 const CANENCODER_POSITION = ">position"
 const CANENCODER_VELOCITY = ">velocity"
 export enum SimType {
-PWM , CANMotor, Solenoid, SimDevice, CANEncoder} 
+    PWM,
+    CANMotor,
+    Solenoid,
+    SimDevice,
+    CANEncoder,
+}
 
 enum FieldType {
     Read = 0,
@@ -132,7 +137,9 @@ export class SimCAN {
 
     public static GetDeviceWithID(id: number, type: SimType): any {
         const id_exp = /.*\[(\d+)\]/g
-        const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type || simType == SimType.SimDevice)
+        const entries = [...simMap.entries()].filter(
+            ([simType, _data]) => simType == type || simType == SimType.SimDevice
+        )
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
                 const result = [...key.matchAll(id_exp)]
@@ -177,7 +184,7 @@ export class SimCANMotor {
     public static SetMotorCurrent(device: string, current: number): boolean {
         return SimGeneric.Set(SimType.CANMotor, device, CANMOTOR_MOTOR_CURRENT, current)
     }
-    
+
     public static SetBusVoltage(device: string, voltage: number): boolean {
         return SimGeneric.Set(SimType.CANMotor, device, CANMOTOR_BUS_VOLTAGE, voltage)
     }
@@ -191,11 +198,12 @@ export class SimCANEncoder {
 
     public static SetPosition(device: string, position: number): boolean {
         return SimGeneric.Set(SimType.CANEncoder, device, CANENCODER_POSITION, position)
-    }}
+    }
+}
 
 worker.addEventListener("message", (eventData: MessageEvent) => {
     let data: any | undefined
-           
+
     if (typeof eventData.data == "object") {
         data = eventData.data
     } else {
@@ -205,7 +213,6 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
             console.warn(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
         }
     }
-            
 
     if (!data || !data.type) {
         console.log("No data, bailing out")
@@ -215,8 +222,8 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
     const device = data.device
     const updateData = data.data
 
-    if (!Object.values(SimType).includes(data.type)) return;
-    
+    if (!Object.values(SimType).includes(data.type)) return
+
     UpdateSimMap(data.type, device, updateData)
 })
 

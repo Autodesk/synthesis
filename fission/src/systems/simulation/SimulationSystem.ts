@@ -83,27 +83,25 @@ class SimulationLayer {
         this._drivers = []
         this._stimuli = []
         this._mechanism.constraints.forEach(x => {
-            let stim: Stimulus
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint)
                 const driver = new HingeDriver(hinge, x.info)
                 this._drivers.push(driver)
-                stim = new HingeStimulus(hinge)
+                const stim = new HingeStimulus(hinge)
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
                 const driver = new WheelDriver(vehicle, x.info)
                 this._drivers.push(driver)
-                stim = new WheelRotationStimulus(vehicle.GetWheel(0))
+                const stim = new WheelRotationStimulus(vehicle.GetWheel(0))
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
                 const driver = new SliderDriver(slider, x.info)
                 this._drivers.push(driver)
-                stim = new SliderStimulus(slider)
+                const stim = new SliderStimulus(slider)
                 this._stimuli.push(stim)
             }
-            this._stimuli.push(stim)
         })
         this._stimuli.push(new ChassisStimulus(mechanism.nodeToBody.get(mechanism.rootBody)!))
     }
