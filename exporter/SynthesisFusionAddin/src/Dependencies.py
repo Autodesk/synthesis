@@ -59,6 +59,7 @@ def executeCommand(*args: str) -> subprocess.CompletedProcess:
 def verifyCompiledProtoImports() -> bool:
     protoModules = ["assembly_pb2", "joint_pb2", "material_pb2", "types_pb2"]
     for module in protoModules:
+        # Absolute imports must be set up by this point for importlib to be able to find each module.
         spec = importlib.util.find_spec(f"proto.proto_out.{module}")
         if spec is None:
             return False
@@ -105,7 +106,7 @@ def resolveDependencies() -> bool | None:
     progressBar = ui.createProgressDialog()
     progressBar.isCancelButtonShown = False
     progressBar.reset()
-    progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP), 0)
+    progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP) * 2 + 2, 0)
 
     # TODO: Is this really true? Do we need this? waheusnta eho? - Brandon
     # Install pip manually on macos as it is not included by default? Really?
@@ -113,23 +114,23 @@ def resolveDependencies() -> bool | None:
         pipInstallScriptPath = os.path.join(pythonFolder, "get-pip.py")
         if not os.path.exists(pipInstallScriptPath):
             executeCommand("curl", "https://bootstrap.pypa.io/get-pip.py", "-o", pipInstallScriptPath)
-            progressBar.maximumValue += 2
-            progressBar.progressValue += 1
             progressBar.message = "Downloading PIP Installer..."
 
         progressBar.progressValue += 1
         progressBar.message = "Installing PIP..."
         executeCommand(pythonExecutablePath, pipInstallScriptPath)
+        progressBar.progressValue += 1
 
     installedPackages = getInstalledPipPackages(pythonExecutablePath)
     if packagesOutOfDate(installedPackages):
         # Uninstall and reinstall everything to confirm updated versions.
         progressBar.message = "Uninstalling out-of-date Dependencies..."
-        progressBar.maximumValue += len(PIP_DEPENDENCY_VERSION_MAP)
 
         for dep in PIP_DEPENDENCY_VERSION_MAP.keys():
             progressBar.progressValue += 1
             executeCommand(pythonExecutablePath, "-m", "pip", "uninstall", "-y", dep)
+    else:
+        progressBar.progressValue += len(PIP_DEPENDENCY_VERSION_MAP)
 
     progressBar.message = "Installing Dependencies..."
     for dep, version in PIP_DEPENDENCY_VERSION_MAP.items():
