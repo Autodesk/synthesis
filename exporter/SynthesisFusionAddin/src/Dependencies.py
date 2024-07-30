@@ -1,4 +1,5 @@
 import importlib.machinery
+import importlib.util
 import os
 import platform
 import subprocess
@@ -54,14 +55,15 @@ def executeCommand(*args: str) -> subprocess.CompletedProcess:
         raise error
 
 
+@logFailure
 def verifyCompiledProtoImports() -> bool:
-    try:
-        from ..proto.proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
+    protoModules = ["assembly_pb2", "joint_pb2", "material_pb2", "types_pb2"]
+    for module in protoModules:
+        spec = importlib.util.find_spec(f"proto.proto_out.{module}")
+        if spec is None:
+            return False
 
-        return True
-    except ImportError:
-        logger.warn("Could not resolve compiled proto dependencies")
-        return False
+    return True
 
 
 def getInstalledPipPackages(pythonExecutablePath: str) -> dict[str, str]:
@@ -141,3 +143,15 @@ def resolveDependencies() -> bool | None:
 
     progressBar.hide()
     return True
+
+
+# Transition: AARD-1741
+# Extra function included here for debugging purposes, this function can be deleted upon verification
+# that everything is working correctly as it can be easily constructed later.
+def uninstallPipDependencies() -> None:
+    pythonFolder = getInternalFusionPythonInstillationFolder()
+    pythonExecutableFile = "python.exe" if system == "Windows" else "python"  # Confirming 110% everything is fine.
+    pythonExecutablePath = os.path.join(pythonFolder, pythonExecutableFile)
+    for dep in PIP_DEPENDENCY_VERSION_MAP.keys():
+        executeCommand(pythonExecutablePath, "-m", "pip", "uninstall", "-y", dep)
+        logger.debug(f"Uninstalled {dep}")

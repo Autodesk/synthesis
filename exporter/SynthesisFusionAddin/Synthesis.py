@@ -1,16 +1,21 @@
-# DO NOT CHANGE ORDER, OR ADD IMPORTS BEFORE UNTIL END COMMENT
-
 import os
-from shutil import rmtree
 
 import adsk.core
 
-from .src.Dependencies import resolveDependencies
+# Currently required for `resolveDependencies()`, will be required for absolute imports.
+# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+
+from .src.Dependencies import resolveDependencies  # isort:skip
+
+# Transition: AARD-1741
+# Import order should be removed in AARD-1737 and `setupLogger()` moved to `__init__.py`
+from .src.Logging import getLogger, logFailure, setupLogger  # isort:skip
+
+setupLogger()
 
 try:
     from .src.APS import APS
     from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
-    from .src.Logging import getLogger, logFailure, setupLogger
     from .src.UI import (
         HUI,
         Camera,
@@ -21,10 +26,11 @@ try:
         ShowAPSAuthCommand,
     )
     from .src.UI.Toolbar import Toolbar
-except (ImportError, ModuleNotFoundError):
+except (ImportError, ModuleNotFoundError) as error:
+    getLogger().warn(f"Running resolve dependencies with error of:\n{error}")
     result = resolveDependencies()
     if result:
-        adsk.core.Application.get().userInterface.messageBox("Installed required dependencies, please restart Fusion.")
+        adsk.core.Application.get().userInterface.messageBox("Installed required dependencies.\nPlease restart Fusion.")
 
 
 @logFailure
@@ -34,7 +40,6 @@ def run(_):
     Arguments:
         **context** *context* -- Fusion context to derive app and UI.
     """
-    setupLogger()
 
     # Remove all items prior to start just to make sure
     unregister_all()
