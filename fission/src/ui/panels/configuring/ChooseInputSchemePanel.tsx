@@ -19,6 +19,16 @@ import { usePanelControlContext } from "@/ui/PanelContext"
 import { Box } from "@mui/material"
 import { useEffect, useReducer } from "react"
 
+let selectedBrainIndexGlobal: number | undefined = undefined
+// eslint-disable-next-line react-refresh/only-export-components
+export function setSelectedBrainIndexGlobal(index: number | undefined) {
+    selectedBrainIndexGlobal = index
+}
+
+function getBrainIndex() {
+    return selectedBrainIndexGlobal != undefined ? selectedBrainIndexGlobal : SynthesisBrain.brainIndexMap.size - 1
+}
+
 const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
@@ -30,7 +40,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
         /** If the panel is closed before a scheme is selected, defaults to the top of the list */
         return () => {
-            const brainIndex = SynthesisBrain.brainIndexMap.size - 1
+            const brainIndex = getBrainIndex()
 
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
@@ -41,6 +51,13 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             openModal("change-inputs")
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+        return () => {
+            selectedBrainIndexGlobal = undefined
+        }
     }, [])
 
     return (
@@ -50,8 +67,9 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             openLocation={"right"}
             sidePadding={8}
             acceptEnabled={false}
-            cancelEnabled={false}
             icon={SynthesisIcons.Gamepad}
+            cancelEnabled={selectedBrainIndexGlobal != undefined}
+            cancelName="Close"
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[45vh] bg-background-secondary rounded-md p-2">
@@ -85,15 +103,16 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             >
                                 {/** Select button */}
                                 {SelectButton(() => {
-                                    InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, scheme)
+                                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
                                     closePanel(panelId)
                                 })}
                                 {/** Edit button - same as select but opens the inputs modal */}
                                 {EditButton(() => {
-                                    InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, scheme)
+                                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
                                     InputSystem.selectedScheme = scheme
                                     openModal("change-inputs")
                                 })}
+
                                 {/** Delete button (only if the scheme is customized) */}
                                 {scheme.customized ? (
                                     DeleteButton(() => {
@@ -123,7 +142,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             </div>
             {/** New scheme with a randomly assigned name button */}
             {AddButtonInteractiveColor(() => {
-                InputSystem.brainIndexSchemeMap.set(SynthesisBrain.brainIndexMap.size - 1, DefaultInputs.newBlankScheme)
+                InputSystem.brainIndexSchemeMap.set(getBrainIndex(), DefaultInputs.newBlankScheme)
                 openModal("assign-new-scheme")
             })}
 

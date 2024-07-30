@@ -95,7 +95,7 @@ function Synthesis() {
 
         World.InitWorld()
 
-        if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")) {
+        if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
             setConsentPopupDisable(false)
         }
 

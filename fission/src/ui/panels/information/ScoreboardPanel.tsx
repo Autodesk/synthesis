@@ -5,10 +5,11 @@ import Stack, { StackDirection } from "@/components/Stack"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
-    const [redScore, setRedScore] = useState<number>(0)
-    const [blueScore, setBlueScore] = useState<number>(0)
+    const [redScore, setRedScore] = useState<number>(SimulationSystem.redScore)
+    const [blueScore, setBlueScore] = useState<number>(SimulationSystem.blueScore)
     const [initialTime] = useState<number>(-1)
     const [startTime] = useState<number>(Date.now())
     const [time, setTime] = useState<number>(-1)

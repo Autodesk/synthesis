@@ -25,16 +25,16 @@ const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, sizeOverride
     if (!sizeClassNames) {
         switch (size) {
             case ButtonSize.Small:
-                sizeClassNames = "px-4 py-1"
+                sizeClassNames = "w-fit h-fit px-4 py-1"
                 break
             case ButtonSize.Medium:
-                sizeClassNames = "px-6 py-1.5"
+                sizeClassNames = "w-fit h-fit px-6 py-1.5"
                 break
             case ButtonSize.Large:
-                sizeClassNames = "px-8 py-2"
+                sizeClassNames = "w-fit h-fit px-8 py-2"
                 break
             case ButtonSize.XL:
-                sizeClassNames = "px-10 py-2"
+                sizeClassNames = "w-fit h-fit px-10 py-2"
                 break
         }
     }
@@ -46,7 +46,7 @@ const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, sizeOverride
                 colorOverrideClass
                     ? colorOverrideClass
                     : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
-            } w-fit h-fit ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 focus:outline-0 ${
+            }  ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 focus:outline-0 ${
                 className || ""
             }`}
         >

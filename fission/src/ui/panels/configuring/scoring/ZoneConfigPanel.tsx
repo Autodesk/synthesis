@@ -132,6 +132,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -173,6 +174,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             gizmo.RemoveGizmos()
             setTransformGizmo(undefined)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [theme])
 
     /** Sets the selected node if it is a part of the currently loaded field */

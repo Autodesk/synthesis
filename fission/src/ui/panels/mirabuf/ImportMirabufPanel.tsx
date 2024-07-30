@@ -228,8 +228,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .catch(() => status.Fail())
 
             closePanel(panelId)
+
+            if (type == MiraType.ROBOT) openPanel("choose-scheme")
         },
-        [closePanel, panelId]
+        [closePanel, panelId, openPanel]
     )
 
     // Generate Item cards for cached robots.

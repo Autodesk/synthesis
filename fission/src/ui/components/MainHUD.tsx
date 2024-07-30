@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-
 import { BiMenuAltLeft } from "react-icons/bi"
 import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
@@ -96,11 +95,11 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
                     />
-                    <MainHUDButton
+                    {/* <MainHUDButton
                         value={"View"}
                         icon={SynthesisIcons.MagnifyingGlass}
                         onClick={() => openModal("view")}
-                    />
+                    /> */}
                     <MainHUDButton
                         value={"Controls"}
                         icon={SynthesisIcons.Gamepad}
