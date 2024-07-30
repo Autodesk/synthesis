@@ -76,7 +76,8 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             openLocation={"right"}
             sidePadding={8}
             acceptEnabled={false}
-            cancelEnabled={false}
+            cancelEnabled={selectedBrainIndexGlobal != undefined}
+            cancelName="Close"
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[45vh] bg-background-secondary rounded-md p-2">
