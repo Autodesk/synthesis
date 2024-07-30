@@ -84,7 +84,7 @@ class GeneralConfigTab:
         imperialUnits = self.currentUnits == PreferredUnits.IMPERIAL
         if imperialUnits:
             # ExporterOptions always contains the metric value
-            displayWeight = exporterOptions.robotWeight * 2.2046226218
+            displayWeight = toLbs(exporterOptions.robotWeight)
         else:
             displayWeight = exporterOptions.robotWeight
 
