@@ -1,8 +1,8 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { useTheme } from "@/ui/ThemeContext"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const DeleteAllThemesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -11,7 +11,7 @@ const DeleteAllThemesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Delete All Themes?"
-            icon={<FaXmark />}
+            icon={SynthesisIcons.Xmark}
             modalId={modalId}
             onAccept={() => {
                 deleteAllThemes()

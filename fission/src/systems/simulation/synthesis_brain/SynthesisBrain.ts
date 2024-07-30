@@ -4,28 +4,21 @@ import Behavior from "../behavior/Behavior"
 import World from "@/systems/World"
 import WheelDriver from "../driver/WheelDriver"
 import WheelRotationStimulus from "../stimulus/WheelStimulus"
-import ArcadeDriveBehavior from "../behavior/ArcadeDriveBehavior"
+import ArcadeDriveBehavior from "../behavior/synthesis/ArcadeDriveBehavior"
 import { SimulationLayer } from "../SimulationSystem"
 import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import HingeDriver from "../driver/HingeDriver"
 import HingeStimulus from "../stimulus/HingeStimulus"
-import GenericArmBehavior from "../behavior/GenericArmBehavior"
+import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
 import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
-import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior"
+import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import InputSystem from "@/systems/input/InputSystem"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
-
-    public get inputSchemeName(): string {
-        const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
-        if (scheme == undefined) return "Not Configured"
-
-        return scheme.schemeName
-    }
 
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
@@ -34,6 +27,17 @@ class SynthesisBrain extends Brain {
 
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
+
+    public get inputSchemeName(): string {
+        const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
+        if (scheme == undefined) return "Not Configured"
+
+        return scheme.schemeName
+    }
+
+    public get brainIndex(): number {
+        return this._brainIndex
+    }
 
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)

@@ -34,7 +34,7 @@ class Parser:
         app = adsk.core.Application.get()
         design: adsk.fusion.Design = app.activeDocument.design
 
-        if not getAuth():
+        if self.exporterOptions.exportLocation == ExportLocation.UPLOAD and not getAuth():
             app.userInterface.messageBox("APS Login Required for Uploading.", "APS Login")
             return
 

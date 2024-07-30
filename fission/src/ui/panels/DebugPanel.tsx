@@ -15,7 +15,8 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import Jolt from "@barclah/jolt-physics"
 import Label from "../components/Label"
 import { colorNameToVar } from "../ThemeContext"
-import { FaScrewdriverWrench } from "react-icons/fa6"
+import { SynthesisIcons } from "../components/StyledComponents"
+import { useModalControlContext } from "../ModalContext"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -50,12 +51,13 @@ async function TestGodMode() {
 
 const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { openPanel } = usePanelControlContext()
+    const { openModal } = useModalControlContext()
 
     return (
         <Panel
             openLocation="center"
             name={"Debug Panel"}
-            icon={<FaScrewdriverWrench />}
+            icon={SynthesisIcons.ScrewdriverWrench}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"
@@ -130,12 +132,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         }
                     }}
                 />
-                <Button
-                    value={"WS Viewer"}
-                    onClick={() => {
-                        openPanel("ws-view")
-                    }}
-                />
+                <Button value={"WS Viewer"} onClick={() => openPanel("ws-view")} />
+                <Button value={"RoboRIO"} onClick={() => openModal("roborio")} />
             </Box>
         </Panel>
     )

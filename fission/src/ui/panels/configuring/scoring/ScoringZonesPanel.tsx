@@ -7,17 +7,11 @@ import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { AiOutlinePlus } from "react-icons/ai"
-import { IoPencil, IoTrashBin } from "react-icons/io5"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { Box } from "@mui/material"
-import { FaBasketball } from "react-icons/fa6"
-
-const AddIcon = <AiOutlinePlus size={"1.25rem"} />
-const DeleteIcon = <IoTrashBin size={"1.25rem"} />
-const EditIcon = <IoPencil size={"1.25rem"} />
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 type ScoringZoneRowProps = {
     zone: ScoringZonePreferences
@@ -39,6 +33,7 @@ const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSc
     if (fieldPrefs) fieldPrefs.scoringZones = zones
 
     PreferencesSystem.savePreferences()
+    field.UpdateScoringZones()
 }
 
 const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, field, openPanel, deleteZone }) => {
@@ -62,7 +57,7 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, field, open
                 alignItems={"center"}
             >
                 <Button
-                    value={EditIcon}
+                    value={SynthesisIcons.EditLarge}
                     onClick={() => {
                         SelectedZone.zone = zone
                         SelectedZone.field = field
@@ -72,10 +67,10 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, field, open
                     colorOverrideClass="bg-accept-button hover:brightness-90"
                 />
                 <Button
-                    value={DeleteIcon}
+                    value={SynthesisIcons.DeleteLarge}
                     onClick={() => {
                         deleteZone()
-                        save()
+                        // Saves in the delete function instead because zones isn't updated in time
                     }}
                     colorOverrideClass="bg-cancel-button hover:brightness-90"
                 />
@@ -105,18 +100,20 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
 
     useEffect(() => {
         closePanel("zone-config")
+        saveZones(zones, selectedField)
 
         World.PhysicsSystem.HoldPause()
 
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
         <Panel
             name="Scoring Zones"
-            icon={<FaBasketball />}
+            icon={SynthesisIcons.Basketball}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
@@ -161,6 +158,10 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                                     save={() => saveZones(zones, selectedField)}
                                     deleteZone={() => {
                                         setZones(zones.filter((_, idx) => idx !== i))
+                                        saveZones(
+                                            zones.filter((_, idx) => idx !== i),
+                                            selectedField
+                                        )
                                     }}
                                 />
                             ))}
@@ -169,7 +170,7 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
                         <Label>No scoring zones</Label>
                     )}
                     <Button
-                        value={AddIcon}
+                        value={SynthesisIcons.AddLarge}
                         onClick={() => {
                             if (zones == undefined) return
 
@@ -185,7 +186,6 @@ const ScoringZonesPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, si
 
                             saveZones(zones, selectedField)
 
-                            //zones.push(newZone)
                             SelectedZone.zone = newZone
                             SelectedZone.field = selectedField
 

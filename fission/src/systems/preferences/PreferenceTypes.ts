@@ -2,7 +2,6 @@ import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
 export type GlobalPreference =
-    | "ScreenMode"
     | "QualitySettings"
     | "ZoomSensitivity"
     | "PitchSensitivity"
@@ -12,13 +11,13 @@ export type GlobalPreference =
     | "RenderScoringZones"
     | "InputSchemes"
     | "RenderSceneTags"
+    | "RenderScoreboard"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
 
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
-    ScreenMode: "Windowed",
-    QualitySettings: "High",
+    QualitySettings: "High" as QualitySetting,
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
@@ -27,7 +26,10 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderScoringZones: true,
     InputSchemes: [],
     RenderSceneTags: true,
+    RenderScoreboard: true,
 }
+
+export type QualitySetting = "Low" | "Medium" | "High"
 
 export type IntakePreferences = {
     deltaTransformation: number[]

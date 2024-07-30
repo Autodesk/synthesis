@@ -1,32 +1,57 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { useModalControlContext } from "@/ui/ModalContext"
-import { FaPlus } from "react-icons/fa6"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
 import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
+import WPILibBrain, { CANGroup, simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import Driver from "@/systems/simulation/driver/Driver"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
-const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
     const [name, setName] = useState<string>("")
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
-    const [checkedSignals, setCheckedSignals] = useState<string[]>([])
+    const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([])
 
     const numPorts = 8
-    const signals = ["Rev0 (uuid)", "Rev1 (uuid)", "Rev2 (uuid)", "Rev3 (uuid)"]
+    let drivers: Driver[] = []
+    let simLayer
+    let brain: WPILibBrain
+
+    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
+    if (miraObjs.length > 0) {
+        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+        simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        drivers = simLayer?.drivers ?? []
+        brain = new WPILibBrain(mechanism)
+        simLayer?.SetBrain(brain)
+    }
 
     return (
         <Modal
             name="Create Device"
-            icon={<FaPlus />}
+            icon={SynthesisIcons.Add}
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {
                 // no eslint complain
-                console.log(name, checkedPorts, checkedSignals)
+                brain.addSimOutputGroup(new CANGroup(name, checkedPorts, checkedDrivers))
+                console.log(name, checkedPorts, checkedDrivers)
+                const replacer = (_: unknown, value: unknown) => {
+                    if (value instanceof Map) {
+                        return Object.fromEntries(value)
+                    } else {
+                        return value
+                    }
+                }
+                console.log(JSON.stringify(simMap, replacer))
             }}
             onCancel={() => {
                 openModal("roborio")
@@ -57,16 +82,16 @@ const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Container className="w-max">
                     <Label>Signals</Label>
                     <ScrollView className="h-full px-2">
-                        {signals.map(p => (
+                        {drivers.map((driver, idx) => (
                             <Checkbox
-                                key={p}
-                                label={p.toString()}
+                                key={`${driver.constructor.name}-${idx}`}
+                                label={driver.constructor.name}
                                 defaultState={false}
                                 onClick={checked => {
-                                    if (checked && !checkedSignals.includes(p)) {
-                                        setCheckedSignals([...checkedSignals, p])
-                                    } else if (!checked && checkedSignals.includes(p)) {
-                                        setCheckedSignals(checkedSignals.filter(a => a != p))
+                                    if (checked && !checkedDrivers.includes(driver)) {
+                                        setCheckedDrivers([...checkedDrivers, driver])
+                                    } else if (!checked && checkedDrivers.includes(driver)) {
+                                        setCheckedDrivers(checkedDrivers.filter(a => a != driver))
                                     }
                                 }}
                             />
@@ -78,4 +103,4 @@ const RCConfigPwmGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 }
 
-export default RCConfigPwmGroupModal
+export default RCConfigCANGroupModal

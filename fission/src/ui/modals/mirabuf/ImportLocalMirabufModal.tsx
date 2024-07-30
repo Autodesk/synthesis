@@ -1,6 +1,5 @@
 import Button, { ButtonSize } from "@/components/Button"
 import Modal, { ModalPropsImpl } from "../../components/Modal"
-import { FaFileImport } from "react-icons/fa6"
 import { ChangeEvent, useRef, useState } from "react"
 import Label, { LabelSize } from "@/components/Label"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
@@ -8,6 +7,7 @@ import World from "@/systems/World"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import Dropdown from "@/ui/components/Dropdown"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
@@ -45,7 +45,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Import Local Assemblies"}
-            icon={<FaFileImport />}
+            icon={SynthesisIcons.Import}
             modalId={modalId}
             acceptEnabled={selectedFile !== undefined && miraType !== undefined}
             onAccept={async () => {

@@ -69,8 +69,8 @@ const Modal: React.FC<ModalProps> = ({
                 <div
                     id="content"
                     className={`${contentClassName} ${
-                        !contentClassName?.includes("mx") ? "mx-16" : ""
-                    } flex overflow-y-auto flex-col h-fit gap-4`}
+                        !contentClassName?.includes("mx") ? "mx-[2rem]" : ""
+                    } flex flex-col gap-4 max-h-75vh overflow-y-auto p-4`}
                 >
                     {children}
                 </div>

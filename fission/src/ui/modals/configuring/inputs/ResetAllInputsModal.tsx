@@ -1,6 +1,5 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -8,6 +7,7 @@ import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -15,7 +15,7 @@ const ResetAllInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Reset all Inputs??"
-            icon={<FaXmark />}
+            icon={SynthesisIcons.Xmark}
             modalId={modalId}
             onAccept={() => {
                 // Wipe global input scheme prefs

@@ -1,8 +1,8 @@
-import { FaGear } from "react-icons/fa6"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Slider from "@/components/Slider"
 import Label, { LabelSize } from "@/components/Label"
 import { useState } from "react"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 type Motor = {
     name: string
@@ -31,7 +31,7 @@ const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Motor Configuration"
-            icon={<FaGear />}
+            icon={SynthesisIcons.Gear}
             modalId={modalId}
             middleName="Session Save"
             middleEnabled={true}

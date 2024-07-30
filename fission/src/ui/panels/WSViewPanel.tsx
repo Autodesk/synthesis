@@ -13,10 +13,10 @@ import {
     Typography,
 } from "@mui/material"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { GrConnect } from "react-icons/gr"
 import Dropdown from "../components/Dropdown"
 import Input from "../components/Input"
 import Button from "../components/Button"
+import { SynthesisIcons } from "../components/StyledComponents"
 
 type ValueType = "string" | "number" | "object" | "boolean"
 
@@ -162,7 +162,13 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [onSimMapUpdate])
 
     return (
-        <Panel name={"WS View Panel"} icon={<GrConnect />} panelId={panelId} openLocation="right" sidePadding={4}>
+        <Panel
+            name={"WS View Panel"}
+            icon={SynthesisIcons.Connect}
+            panelId={panelId}
+            openLocation="right"
+            sidePadding={4}
+        >
             <TableContainer
                 sx={{
                     maxWidth: "80vw",
