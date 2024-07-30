@@ -127,7 +127,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
     def __init__(self, configure):
         super().__init__()
-        self.designAttrs = adsk.core.Application.get().activeProduct.attributes
 
     @logFailure(messageBox=True)
     def notify(self, args):
@@ -282,8 +281,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         # Should consider changing how the parser handles wheels and joints to avoid overlap
         if exporterOptions.wheels:
             for wheel in exporterOptions.wheels:
-                fusionJoint = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)[0]
-                jointConfigTab.addWheel(fusionJoint, wheel)
+                fusionJoints = gm.app.activeDocument.design.findEntityByToken(wheel.jointToken)
+                if len(fusionJoints):
+                    jointConfigTab.addWheel(fusionJoints[0], wheel)
 
         # ~~~~~~~~~~~~~~~~ GAMEPIECE CONFIGURATION ~~~~~~~~~~~~~~~~
         """
