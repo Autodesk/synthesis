@@ -263,8 +263,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         # Should investigate changes to improve performance.
         if exporterOptions.joints:
             for synJoint in exporterOptions.joints:
-                fusionJoint = gm.app.activeDocument.design.findEntityByToken(synJoint.jointToken)[0]
-                jointConfigTab.addJoint(fusionJoint, synJoint)
+                fusionJoints = gm.app.activeDocument.design.findEntityByToken(synJoint.jointToken)
+                if len(fusionJoints):
+                    jointConfigTab.addJoint(fusionJoints[0], synJoint)
         else:
             for joint in [
                 *gm.app.activeDocument.design.rootComponent.allJoints,
