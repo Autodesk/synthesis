@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import {
     FaGear,
-    FaMagnifyingGlass,
+    // FaMagnifyingGlass,
     FaPlus,
     FaGamepad,
     FaBasketball,
@@ -103,7 +103,7 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("manage-assemblies")}
                     />
                     <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
-                    <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
+                    {/* <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} /> */}
                     <MainHUDButton value={"Controls"} icon={<FaGamepad />} onClick={() => openModal("change-inputs")} />
                     <MainHUDButton
                         value={"Import Local Mira"}
