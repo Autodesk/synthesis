@@ -1,6 +1,6 @@
-import WheelDriver from "../driver/WheelDriver"
-import WheelRotationStimulus from "../stimulus/WheelStimulus"
-import Behavior from "./Behavior"
+import WheelDriver from "@/systems/simulation/driver/WheelDriver"
+import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus"
+import Behavior from "@/systems/simulation/behavior/Behavior"
 import InputSystem from "@/systems/input/InputSystem"
 
 class ArcadeDriveBehavior extends Behavior {

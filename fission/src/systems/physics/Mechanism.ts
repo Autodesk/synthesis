@@ -1,11 +1,13 @@
 import Jolt from "@barclah/jolt-physics"
 import { LayerReserve } from "./PhysicsSystem"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import { mirabuf } from "@/proto/mirabuf"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID
     childBody: Jolt.BodyID
     constraint: Jolt.Constraint
+    info?: mirabuf.IInfo
 }
 
 class Mechanism {

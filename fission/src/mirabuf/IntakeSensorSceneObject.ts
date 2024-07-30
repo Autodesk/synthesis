@@ -12,6 +12,7 @@ import {
 } from "@/util/TypeConversions"
 import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
 import InputSystem from "@/systems/input/InputSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -53,7 +54,9 @@ class IntakeSensorSceneObject extends SceneObject {
             World.SceneRenderer.scene.add(this._mesh)
 
             this._collision = (event: OnContactPersistedEvent) => {
-                if (InputSystem.getInput("intake", this._parentAssembly.brain?.brainIndex ?? -1)) {
+                const brain = this._parentAssembly.brain
+                const brainIndex = brain instanceof SynthesisBrain ? brain.brainIndex ?? -1 : -1
+                if (InputSystem.getInput("intake", brainIndex)) {
                     if (this._joltBodyId && !World.PhysicsSystem.isPaused) {
                         const body1 = event.message.body1
                         const body2 = event.message.body2
