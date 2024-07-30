@@ -13,6 +13,16 @@ import { useEffect, useReducer } from "react"
 import { AiOutlinePlus } from "react-icons/ai"
 import { IoCheckmark, IoPencil, IoTrashBin } from "react-icons/io5"
 
+let selectedBrainIndexGlobal: number | undefined = undefined
+// eslint-disable-next-line react-refresh/only-export-components
+export function setSelectedBrainIndexGlobal(index: number | undefined) {
+    selectedBrainIndexGlobal = index
+}
+
+function getBrainIndex() {
+    return selectedBrainIndexGlobal != undefined ? selectedBrainIndexGlobal : SynthesisBrain.brainIndexMap.size - 1
+}
+
 const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
@@ -38,7 +48,8 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
         /** If the panel is closed before a scheme is selected, defaults to the top of the list */
         return () => {
-            const brainIndex = SynthesisBrain.brainIndexMap.size - 1
+            const brainIndex = getBrainIndex()
+            console.log(brainIndex)
 
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
@@ -49,6 +60,13 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             openModal("change-inputs")
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+        return () => {
+            selectedBrainIndexGlobal = undefined
+        }
     }, [])
 
     return (
@@ -58,7 +76,8 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             openLocation={"right"}
             sidePadding={8}
             acceptEnabled={false}
-            cancelEnabled={false}
+            cancelEnabled={selectedBrainIndexGlobal != undefined}
+            cancelName="Close"
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[45vh] bg-background-secondary rounded-md p-2">
@@ -94,10 +113,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 <Button
                                     value={SelectIcon}
                                     onClick={() => {
-                                        InputSystem.brainIndexSchemeMap.set(
-                                            SynthesisBrain.brainIndexMap.size - 1,
-                                            scheme
-                                        )
+                                        InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
                                         closePanel(panelId)
                                     }}
                                     colorOverrideClass="bg-accept-button hover:brightness-90"
@@ -106,10 +122,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 <Button
                                     value={EditIcon}
                                     onClick={() => {
-                                        InputSystem.brainIndexSchemeMap.set(
-                                            SynthesisBrain.brainIndexMap.size - 1,
-                                            scheme
-                                        )
+                                        InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
                                         InputSystem.selectedScheme = scheme
                                         openModal("change-inputs")
                                     }}
@@ -152,10 +165,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             <Button
                 value={AddIcon}
                 onClick={() => {
-                    InputSystem.brainIndexSchemeMap.set(
-                        SynthesisBrain.brainIndexMap.size - 1,
-                        DefaultInputs.newBlankScheme
-                    )
+                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), DefaultInputs.newBlankScheme)
                     openModal("assign-new-scheme")
                 }}
             />

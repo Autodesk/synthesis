@@ -27,7 +27,8 @@ class AnalyticsSystem extends WorldSystem {
         init({
             measurementId: "G-6XNCRD7QNC",
             debug: import.meta.env.DEV,
-            sendPageViews: true,
+            anonymizeIp: true,
+            sendPageViews: false,
             trackingConsent: PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics"),
         })
 
