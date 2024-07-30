@@ -4,9 +4,11 @@ import { useModalControlContext } from "@/ui/ModalContext"
 import { FaPlus } from "react-icons/fa6"
 import Dropdown from "@/components/Dropdown"
 
+type DeviceType = "PWM" | "CAN" | "Encoder"
+
 const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
-    const [type, setType] = useState<string>("")
+    const [type, setType] = useState<DeviceType>("PWM")
 
     return (
         <Modal
@@ -15,9 +17,13 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptName="Next"
             onAccept={() => {
+                console.log(type)
                 switch (type) {
                     case "PWM":
                         openModal("config-pwm")
+                        break
+                    case "CAN":
+                        openModal("config-can")
                         break
                     case "Encoder":
                         openModal("config-encoder")
@@ -32,9 +38,9 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Dropdown
                 label={"Type"}
-                options={["PWM", "Encoder"]}
+                options={["PWM", "CAN", "Encoder"] as DeviceType[]}
                 onSelect={selected => {
-                    setType(selected)
+                    setType(selected as DeviceType)
                 }}
             />
         </Modal>

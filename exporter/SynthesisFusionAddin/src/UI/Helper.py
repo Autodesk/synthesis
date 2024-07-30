@@ -1,16 +1,8 @@
-from ..general_imports import *
 from inspect import getmembers, isfunction
 from typing import Union
 
-from . import Events, HUI
-
-
-def check_solid_open() -> bool:
-    """### Checks to see if the current design open is Fusion Solid
-    - Supplied as callback
-    WARN - THIS NO LONGER FUNCTIONS
-    """
-    return True
+from ..general_imports import *
+from . import HUI, Events
 
 
 def getDocName() -> str or None:
@@ -33,9 +25,7 @@ def checkAttribute() -> bool:
             return connected.value
         return False
     except:
-        app.userInterface.messageBox(
-            f"Could not access the attributes of the file \n -- {traceback.format_exc()}."
-        )
+        app.userInterface.messageBox(f"Could not access the attributes of the file \n -- {traceback.format_exc()}.")
         return False
 
 
@@ -56,9 +46,7 @@ def addUnityAttribute() -> bool or None:
         return None
 
     except:
-        app.userInterface.messageBox(
-            f"Could not access the attributes of the file \n -- {traceback.format_exc()}."
-        )
+        app.userInterface.messageBox(f"Could not access the attributes of the file \n -- {traceback.format_exc()}.")
         return False
 
 
@@ -79,9 +67,7 @@ def openPanel() -> None:
             gm.app.data.isDataPanelVisible = False
     else:
         func_list = [o for o in getmembers(Events, isfunction)]
-        palette_new = HUI.HPalette(
-            name, APP_TITLE, True, True, False, 400, 500, func_list
-        )
+        palette_new = HUI.HPalette(name, APP_TITLE, True, True, False, 400, 500, func_list)
         gm.elements.append(palette_new)
 
     return

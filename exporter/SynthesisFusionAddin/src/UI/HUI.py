@@ -1,7 +1,6 @@
-from . import OsHelper
-from . import Handlers
-
 from ..general_imports import *
+from ..Logging import logFailure
+from . import Handlers, OsHelper
 
 
 # no longer used
@@ -38,8 +37,6 @@ class HPalette:
             ValueError: If the unique ID is used and not be me
             ValueError: If the unique ID is used and it is by me
         """
-        self.logger = logging.getLogger(f"{INTERNAL_ID}.HUI.{self.__class__.__name__}")
-
         self.uid = name.replace(" ", "") + f"_p2_{INTERNAL_ID}"
         self.name = name
 
@@ -47,9 +44,7 @@ class HPalette:
             self.events.append(arg)
 
         if self.uid in gm.uniqueIds:
-            raise ValueError(
-                f"Cannot create two UI Elements with the same ID {self.uid}\n"
-            )
+            raise ValueError(f"Cannot create two UI Elements with the same ID {self.uid}\n")
 
         if gm.ui.palettes is None:
             raise RuntimeError(f"No Palette object exists yet")
@@ -57,9 +52,7 @@ class HPalette:
         self.palette = gm.ui.palettes.itemById(self.uid)
 
         if self.palette is None:
-            path = OsHelper.getOSPathPalette(
-                "src", "Resources", "Palette", f'{self.name.replace(" ", "")}'
-            )
+            path = OsHelper.getOSPathPalette("src", "Resources", "Palette", f'{self.name.replace(" ", "")}')
 
             self.palette = gm.ui.palettes.add(
                 self.uid,
@@ -72,15 +65,11 @@ class HPalette:
                 height,
             )
 
-            self.palette.dockingState = (
-                adsk.core.PaletteDockingStates.PaletteDockStateLeft
-            )
+            self.palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateLeft
 
             onHTML = Handlers.HPaletteHTMLEventHandler(self)
             self.palette.incomingFromHTML.add(onHTML)
             self.handlers.append(onHTML)
-
-        self.logger.info(f"Created Palette {self.uid}")
 
         self.palette.isVisible = True
 
@@ -91,7 +80,6 @@ class HPalette:
             # I hope you like problems because this is nothing but problems
             # self.events.clear()
             # self.handlers.clear()
-            self.logger.debug(f"Deleted Palette {self.uid}")
             palette.deleteMe()
 
 
@@ -99,6 +87,7 @@ class HButton:
     handlers = []
     """ Keeps all handler classes alive which is essential apparently. - used in command events """
 
+    @logFailure
     def __init__(
         self,
         name: str,
@@ -120,13 +109,10 @@ class HButton:
         Raises:
             **ValueError**: if *location* does not exist in the current context
         """
-        self.logger = logging.getLogger(f"{INTERNAL_ID}.HUI.{self.__class__.__name__}")
         self.uid = name.replace(" ", "") + f"_{INTERNAL_ID}"
 
         if self.uid in gm.uniqueIds:
-            raise ValueError(
-                f"Cannot create two UI Elements with the same ID {self.uid}\n"
-            )
+            raise ValueError(f"Cannot create two UI Elements with the same ID {self.uid}\n")
 
         self.name = name
 
@@ -137,8 +123,6 @@ class HButton:
 
         cmdDef = gm.ui.commandDefinitions.itemById(self.uid)
         if cmdDef:
-            # gm.ui.messageBox("Looks like you have experienced a crash we will do cleanup.")
-            self.logger.debug("Looks like there was a crash, doing cleanup in button id")
             self.scrub()
 
         # needs to updated with new OString data
@@ -164,16 +148,12 @@ class HButton:
         self.handlers.append(ccEventHandler)
 
         panel = gm.ui.allToolbarPanels.itemById(f"{location}")
-
-        if panel:
-            self.buttonControl = panel.controls.addCommand(self.button)
-            self.logger.info(f"Created Button {self.uid} in Panel {location}")
-        else:
-            self.logger.error(f"Cannot Create Button {self.uid} in Panel {location}")
+        self.buttonControl = panel.controls.addCommand(self.button)
 
         self.promote(True)
         """ Promote determines whether or not buttons are displayed on toolbar """
 
+    @logFailure
     def promote(self, flag: bool) -> None:
         """## Adds button to toolbar
 
@@ -185,11 +165,8 @@ class HButton:
         Raises:
             **ValueError**: Given type of not bool
         """
-        if self.buttonControl is not None:
-            self.buttonControl.isPromotedByDefault = flag
-            self.buttonControl.isPromoted = flag
-        else:
-            raise RuntimeError("ButtonControl was not defined for {}".format(self.uid))
+        self.buttonControl.isPromotedByDefault = flag
+        self.buttonControl.isPromoted = flag
 
     def deleteMe(self):
         """## Custom deleteMe method to easily deconstruct button data.
@@ -201,12 +178,10 @@ class HButton:
         """
         cmdDef = gm.ui.commandDefinitions.itemById(self.uid)
         if cmdDef:
-            self.logger.debug(f"Removing Button {self.uid}")
             cmdDef.deleteMe()
 
         ctrl = gm.ui.allToolbarPanels.itemById(self.location).controls.itemById(self.uid)
         if ctrl:
-            self.logger.debug(f"Removing Button Control {self.location}:{self.uid}")
             ctrl.deleteMe()
 
     def scrub(self):

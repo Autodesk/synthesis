@@ -1,4 +1,5 @@
 from ..general_imports import *
+from ..Logging import logFailure
 from ..strings import INTERNAL_ID
 
 
@@ -13,34 +14,24 @@ class Toolbar:
     panels = []
     controls = []
 
+    @logFailure
     def __init__(self, name: str):
-        self.logger = logging.getLogger(f"{INTERNAL_ID}.Toolbar")
-
         self.uid = f"{name}_{INTERNAL_ID}_toolbar"
         self.name = name
 
         designWorkspace = gm.ui.workspaces.itemById("FusionSolidEnvironment")
 
         if designWorkspace:
-            try:
-                allDesignTabs = designWorkspace.toolbarTabs
+            allDesignTabs = designWorkspace.toolbarTabs
 
-                self.tab = allDesignTabs.itemById(self.uid)
+            self.tab = allDesignTabs.itemById(self.uid)
 
-                if self.tab is None:
-                    self.tab = allDesignTabs.add(self.uid, name)
+            if self.tab is None:
+                self.tab = allDesignTabs.add(self.uid, name)
 
-                self.tab.activate()
+            self.tab.activate()
 
-                self.logger.debug(f"Created toolbar with {self.uid}")
-
-            except:
-                error = traceback.format_exc()
-                self.logger.error(
-                    f"Failed at creating toolbar with {self.uid} due to {error}"
-                )
-
-    def getPanel(self, name: str, visibility: bool = True) -> str or None:
+    def getPanel(self, name: str, visibility: bool = True) -> str | None:
         """# Gets a control for a panel to the tabbed toolbar
         - optional param for visibility
         """
@@ -54,49 +45,27 @@ class Toolbar:
         if panel:
             #    panel.isVisible = visibility
             self.panels.append(panel_uid)
-            self.logger.debug(f"Created Panel {panel_uid} in Toolbar {self.uid}")
             return panel_uid
         else:
-            self.logger.error(f"Failed to Create Panel {panel_uid} in Toolbar {self.uid}")
             return None
 
+    @logFailure
     @staticmethod
-    def getNewPanel(
-        name: str, tab_id: str, toolbar_id: str, visibility: bool = True
-    ) -> str or None:
+    def getNewPanel(name: str, tab_id: str, toolbar_id: str, visibility: bool = True) -> str | None:
         """# Gets a control for a panel to the tabbed toolbar visibility"""
-        logger = logging.getLogger(f"{INTERNAL_ID}.Toolbar.getNewPanel")
-
         designWorkspace = gm.ui.workspaces.itemById("FusionSolidEnvironment")
-
-        if designWorkspace:
-            allDesignTabs = designWorkspace.toolbarTabs
-            toolbar = allDesignTabs.itemById(toolbar_id)
-
-            if toolbar is None:
-                logger.error(f"Failed to find Toolbar {toolbar_id}")
-                return None
-
-            toolbar.activate()
-        else:
-            logger.error(f"Failed to find Toolbar {toolbar_id}")
-            return None
+        allDesignTabs = designWorkspace.toolbarTabs
+        toolbar = allDesignTabs.itemById(toolbar_id)
+        toolbar.activate()
 
         panel_uid = f"{name}_{INTERNAL_ID}_tooltab"
-
         panel = toolbar.toolbarPanels.itemById(panel_uid)
 
         if panel is None:
             panel = toolbar.toolbarPanels.add(panel_uid, name)
 
-        if panel:
-            #    panel.isVisible = visibility
-            gm.tabs.append(panel)
-            logger.debug(f"Created Panel {panel_uid} in Toolbar {toolbar_id}")
-            return panel_uid
-        else:
-            logger.error(f"Failed to Create Panel {panel_uid} in Toolbar {toolbar_id}")
-            return None
+        gm.tabs.append(panel)
+        return panel_uid
 
     def toggleVisibility(self, visible: bool) -> None:
         """# Toggles the visibility of the toolbar to the visibility param

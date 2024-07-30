@@ -1,3 +1,3 @@
 declare interface Window {
-    setAuthCode(code: string): void
+    convertAuthToken(code: string): void
 }

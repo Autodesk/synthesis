@@ -3,7 +3,7 @@ name: Bug Report
 about: You Found a Bug and we are going to fix it using this info
 title: ''
 labels: bug
-assignees: matthew17754
+assignees: ''
 
 ---
 

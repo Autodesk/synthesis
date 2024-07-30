@@ -15,6 +15,9 @@ import ChassisStimulus from "./stimulus/ChassisStimulus"
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
 
+    public static redScore = 0
+    public static blueScore = 0
+
     constructor() {
         super()
 
@@ -49,6 +52,11 @@ class SimulationSystem extends WorldSystem {
             return false
         }
     }
+
+    public static ResetScores(): void {
+        SimulationSystem.redScore = 0
+        SimulationSystem.blueScore = 0
+    }
 }
 
 class SimulationLayer {
@@ -58,9 +66,15 @@ class SimulationLayer {
     private _drivers: Driver[]
     private _stimuli: Stimulus[]
 
-    public get brain() { return this._brain; }
-    public get drivers() { return this._drivers; }
-    public get stimuli() { return this._stimuli; }
+    public get brain() {
+        return this._brain
+    }
+    public get drivers() {
+        return this._drivers
+    }
+    public get stimuli() {
+        return this._stimuli
+    }
 
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
@@ -71,19 +85,19 @@ class SimulationLayer {
         this._mechanism.constraints.forEach(x => {
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint)
-                const driver = new HingeDriver(hinge)
+                const driver = new HingeDriver(hinge, x.info)
                 this._drivers.push(driver)
                 const stim = new HingeStimulus(hinge)
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
-                const driver = new WheelDriver(vehicle)
+                const driver = new WheelDriver(vehicle, x.info)
                 this._drivers.push(driver)
                 const stim = new WheelRotationStimulus(vehicle.GetWheel(0))
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
-                const driver = new SliderDriver(slider)
+                const driver = new SliderDriver(slider, x.info)
                 this._drivers.push(driver)
                 const stim = new SliderStimulus(slider)
                 this._stimuli.push(stim)
@@ -101,13 +115,13 @@ class SimulationLayer {
     public SetBrain<T extends Brain>(brain: T | undefined) {
         if (this._brain) this._brain.Disable()
 
-        this._brain = brain;
-        
+        this._brain = brain
+
         if (this._brain) {
-            this._brain.Enable();
+            this._brain.Enable()
         }
     }
 }
 
-export default SimulationSystem;
-export {SimulationLayer};
+export default SimulationSystem
+export { SimulationLayer }

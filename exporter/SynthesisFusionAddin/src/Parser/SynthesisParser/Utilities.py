@@ -1,5 +1,7 @@
-import math, uuid
-from adsk.core import Vector3D, Base
+import math
+import uuid
+
+from adsk.core import Base, Vector3D
 from adsk.fusion import Component, Occurrence
 
 # from proto.proto_out import types_pb2
@@ -52,7 +54,7 @@ def construct_info(name: str, proto_obj, version=5, fus_object=None, GUID=None) 
         try:
             # attempt to get entity token
             proto_obj.info.GUID = fus_object.entityToken
-        except:
+        except AttributeError:
             # fails and gets new uuid
             proto_obj.info.GUID = str(uuid.uuid4())
 
@@ -60,18 +62,18 @@ def construct_info(name: str, proto_obj, version=5, fus_object=None, GUID=None) 
 # My previous function was alot more optimized however now I realize the bug was this doesn't work well with degrees
 def euler_to_quaternion(r):
     (yaw, pitch, roll) = (r[0], r[1], r[2])
-    qx = math.sin(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) - math.cos(
-        roll / 2
-    ) * math.sin(pitch / 2) * math.sin(yaw / 2)
-    qy = math.cos(roll / 2) * math.sin(pitch / 2) * math.cos(yaw / 2) + math.sin(
-        roll / 2
-    ) * math.cos(pitch / 2) * math.sin(yaw / 2)
-    qz = math.cos(roll / 2) * math.cos(pitch / 2) * math.sin(yaw / 2) - math.sin(
-        roll / 2
-    ) * math.sin(pitch / 2) * math.cos(yaw / 2)
-    qw = math.cos(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) + math.sin(
-        roll / 2
-    ) * math.sin(pitch / 2) * math.sin(yaw / 2)
+    qx = math.sin(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) - math.cos(roll / 2) * math.sin(
+        pitch / 2
+    ) * math.sin(yaw / 2)
+    qy = math.cos(roll / 2) * math.sin(pitch / 2) * math.cos(yaw / 2) + math.sin(roll / 2) * math.cos(
+        pitch / 2
+    ) * math.sin(yaw / 2)
+    qz = math.cos(roll / 2) * math.cos(pitch / 2) * math.sin(yaw / 2) - math.sin(roll / 2) * math.sin(
+        pitch / 2
+    ) * math.cos(yaw / 2)
+    qw = math.cos(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) + math.sin(roll / 2) * math.sin(
+        pitch / 2
+    ) * math.sin(yaw / 2)
     return [qx, qy, qz, qw]
 
 
@@ -133,9 +135,7 @@ def throwZero():
     Raises:
         RuntimeError: Error describing the issue
     """
-    raise RuntimeError(
-        "While computing the quaternion the trace was reported as 0 which is invalid"
-    )
+    raise RuntimeError("While computing the quaternion the trace was reported as 0 which is invalid")
 
 
 def spatial_to_quaternion(mat):
@@ -193,9 +193,7 @@ def spatial_to_quaternion(mat):
         return round(qx, 13), round(-qy, 13), round(-qz, 13), round(qw, 13)
 
     else:
-        raise RuntimeError(
-            "Supplied matrix to spatial_to_quaternion is not a 1D spatial matrix in size."
-        )
+        raise RuntimeError("Supplied matrix to spatial_to_quaternion is not a 1D spatial matrix in size.")
 
 
 def normalize_quaternion(x, y, z, w):

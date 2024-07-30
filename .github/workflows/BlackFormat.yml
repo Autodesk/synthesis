@@ -3,17 +3,37 @@ name: Fusion - Black Format Validation
 on:
   workflow_dispatch: {}
   push:
-    branches: [ master, dev ]
+    branches: [ prod, dev ]
   pull_request:
-    branches: [ master, dev ]
+    branches: [ prod, dev ]
 
 jobs:
   blackFormatChecker:
-    name: Black Formatter for Python Exporter
+    name: Black Format Validation
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: psf/black@stable
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Python Setup
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+      - name: Setup Isort
+        run: python3 -m pip install isort
+      - name: Validate Isort Formatting
+        run: python3 ./exporter/SynthesisFusionAddin/tools/verifyIsortFormatting.py
+        id: isort-format-validation
+        continue-on-error: true
+      - name: Check Isort Formatting Validation
+        run: |
+          if [ ${{ steps.isort-format-validation.outcome }} == "success" ]; then
+            echo "Isort Formatting Validation Passed"
+          else
+            echo "Isort Formatting Validation Failed"
+            exit 1
+          fi
+      - name: Validate Black Formatting
+        uses: psf/black@stable
         with:
           options: "--check"
           src: "./exporter/SynthesisFusionAddin/"

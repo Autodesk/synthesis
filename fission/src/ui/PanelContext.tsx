@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect, useCallback, useContext, Rea
 type PanelControlContextType = {
     openPanel: (panelId: string) => void
     closePanel: (panelId: string) => void
+    closeAllPanels: () => void
     children?: ReactNode
 }
 

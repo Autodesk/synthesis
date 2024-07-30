@@ -1,15 +1,17 @@
 import os
 import platform
-import logging
 from pathlib import Path
 
-from src.general_imports import INTERNAL_ID
+import adsk.core
+import adsk.fusion
 
-import adsk.core, adsk.fusion
+from src.Logging import getLogger, logFailure
 
 system = platform.system()
+logger = getLogger()
 
 
+@logFailure(messageBox=True)
 def getPythonFolder() -> str:
     """Retreives the folder that contains the Autodesk python executable
 
@@ -21,8 +23,8 @@ def getPythonFolder() -> str:
     """
 
     # Thank you Kris Kaplan
-    import sys
     import importlib.machinery
+    import sys
 
     osPath = importlib.machinery.PathFinder.find_spec("os", sys.path).origin
 
@@ -32,11 +34,9 @@ def getPythonFolder() -> str:
     elif system == "Darwin":
         pythonFolder = f"{Path(osPath).parents[2]}/bin"
     else:
-        raise ImportError(
-            "Unsupported platform! This add-in only supports windows and macos"
-        )
+        raise ImportError("Unsupported platform! This add-in only supports windows and macos")
 
-    logging.getLogger(f"{INTERNAL_ID}").debug(f"Python Folder -> {pythonFolder}")
+    logger.debug(f"Python Folder -> {pythonFolder}")
     return pythonFolder
 
 
@@ -51,12 +51,13 @@ def executeCommand(command: tuple) -> int:
     """
 
     joinedCommand = str.join(" ", command)
-    logging.getLogger(f"{INTERNAL_ID}").debug(f"Command -> {joinedCommand}")
+    logger.debug(f"Command -> {joinedCommand}")
     executionResult = os.system(joinedCommand)
 
     return executionResult
 
 
+@logFailure(messageBox=True)
 def installCross(pipDeps: list) -> bool:
     """Attempts to fetch pip script and resolve dependencies with less user interaction
 
@@ -89,9 +90,7 @@ def installCross(pipDeps: list) -> bool:
     try:
         pythonFolder = getPythonFolder()
     except ImportError as e:
-        logging.getLogger(f"{INTERNAL_ID}").error(
-            f"Failed to download dependencies: {e.msg}"
-        )
+        logger.error(f"Failed to download dependencies: {e.msg}")
         return False
 
     if system == "Darwin":  # macos
@@ -108,9 +107,9 @@ def installCross(pipDeps: list) -> bool:
 
         executeCommand([f'"{pythonFolder}/python"', f'"{pythonFolder}/get-pip.py"'])
 
-    pythonExecutable = 'python'
+    pythonExecutable = "python"
     if system == "Windows":
-        pythonExecutable = 'python.exe'
+        pythonExecutable = "python.exe"
 
     for depName in pipDeps:
         progressBar.progressValue += 1
@@ -120,7 +119,7 @@ def installCross(pipDeps: list) -> bool:
         # os.path.join needed for varying system path separators
         installResult = executeCommand(
             [
-                f"\"{os.path.join(pythonFolder, pythonExecutable)}\"",
+                f'"{os.path.join(pythonFolder, pythonExecutable)}"',
                 "-m",
                 "pip",
                 "install",
@@ -128,9 +127,7 @@ def installCross(pipDeps: list) -> bool:
             ]
         )
         if installResult != 0:
-            logging.getLogger(f"{INTERNAL_ID}").warn(
-                f'Dep installation "{depName}" exited with code "{installResult}"'
-            )
+            logger.warn(f'Dep installation "{depName}" exited with code "{installResult}"')
 
     if system == "Darwin":
         pipAntiDeps = ["dataclasses", "typing"]
@@ -142,7 +139,7 @@ def installCross(pipDeps: list) -> bool:
             adsk.doEvents()
             uninstallResult = executeCommand(
                 [
-                    f"\"{os.path.join(pythonFolder, pythonExecutable)}\"",
+                    f'"{os.path.join(pythonFolder, pythonExecutable)}"',
                     "-m",
                     "pip",
                     "uninstall",
@@ -151,33 +148,44 @@ def installCross(pipDeps: list) -> bool:
                 ]
             )
             if uninstallResult != 0:
-                logging.getLogger(f"{INTERNAL_ID}").warn(
-                    f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"'
-                )
+                logger.warn(f'AntiDep uninstallation "{depName}" exited with code "{uninstallResult}"')
 
     progressBar.hide()
 
     if _checkDeps():
         return True
     else:
-        ui.messageBox("Failed to install dependencies needed")
+        # Will be caught and logged to a message box & log file from `@logFailure`
+        raise RuntimeError("Failed to install dependencies needed")
 
 
 def _checkDeps() -> bool:
     try:
-        from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
+        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
 
         return True
     except ImportError:
         return False
 
 
-try:
-    import logging.handlers
-    import google.protobuf
-    import pkg_resources
+"""
+Checks for, and installs if need be, the dependencies needed by the Synthesis Exporter. Will error if it cannot install the dependencies
+correctly. This should crash the exporter, since most of the exporter needs these dependencies to function in
+the first place.
+"""
 
-    from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
-except ImportError or ModuleNotFoundError:
-    installCross(["protobuf==4.23.3"])
-    from .proto_out import joint_pb2, assembly_pb2, types_pb2, material_pb2
+
+def installDependencies():
+    try:
+        import logging.handlers
+
+        import google.protobuf
+        import pkg_resources
+        from requests import get, post
+
+        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
+    except ImportError or ModuleNotFoundError:
+        installCross(["protobuf==4.23.3", "requests==2.32.3"])
+        from requests import get, post
+
+        from .proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2

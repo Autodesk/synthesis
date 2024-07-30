@@ -1,3 +1,7 @@
+public/Downloadables
+package-lock.json
+bun.lockb
+
 # Logs
 logs
 *.log
@@ -22,3 +26,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+yarn.lock

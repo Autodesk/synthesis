@@ -1,5 +1,5 @@
-import Driver from "../driver/Driver"
-import Stimulus from "../stimulus/Stimulus"
+import Driver from "@/systems/simulation/driver/Driver"
+import Stimulus from "@/systems/simulation/stimulus/Stimulus"
 
 abstract class Behavior {
     private _drivers: Driver[]
@@ -17,7 +17,7 @@ abstract class Behavior {
         this._stimuli = stimuli
     }
 
-    public abstract Update(deltaT: number): void;
+    public abstract Update(deltaT: number): void
 }
 
 export default Behavior

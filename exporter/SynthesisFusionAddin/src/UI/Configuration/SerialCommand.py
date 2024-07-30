@@ -6,7 +6,8 @@ This is used to store in the userdata.
 """
 
 import json
-from ...Types.OString import OString
+
+from ...Types import OString
 
 
 def generateFilePath() -> str:
