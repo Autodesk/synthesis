@@ -7,6 +7,10 @@ import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
 import { SimOutputGroup } from "./SimOutput"
+import Driver from "../driver/Driver"
+import WheelDriver from "../driver/WheelDriver"
+import HingeDriver from "../driver/HingeDriver"
+import SliderDriver from "../driver/SliderDriver"
 
 const worker = new WPILibWSWorker()
 
