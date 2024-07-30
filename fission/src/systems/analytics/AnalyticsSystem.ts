@@ -19,7 +19,6 @@ export interface AccumTimes {
 }
 
 class AnalyticsSystem extends WorldSystem {
-
     private _lastSampleTime = Date.now()
     private _consent: boolean
 
@@ -69,11 +68,11 @@ class AnalyticsSystem extends WorldSystem {
         if (import.meta.env.DEV) {
             this.SetUserProperty("Internal Traffic", "true")
         }
-        
+
         if (!this._consent) {
             return
         }
-        
+
         let betaCode = document.cookie.match(BETA_CODE_COOKIE_REGEX)?.[0]
         if (betaCode) {
             betaCode = betaCode.substring(betaCode.indexOf("=") + 1, betaCode.indexOf(";"))
