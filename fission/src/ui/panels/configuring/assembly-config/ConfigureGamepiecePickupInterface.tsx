@@ -1,17 +1,12 @@
 import * as THREE from "three"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaGear } from "react-icons/fa6"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 import World from "@/systems/World"
 import Slider from "@/ui/components/Slider"
 import Jolt from "@barclah/jolt-physics"
-import Label from "@/ui/components/Label"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import Button from "@/ui/components/Button"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { MiraType } from "@/mirabuf/MirabufLoader"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import {
     Array_ThreeMatrix4,
@@ -21,6 +16,8 @@ import {
 } from "@/util/TypeConversions"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { useTheme } from "@/ui/ThemeContext"
+import React from "react"
+import { ConfigurationSavedEvent } from "./ConfigureAssembliesPanel"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -76,25 +73,34 @@ function save(zoneSize: number, gizmo: TransformGizmos, selectedRobot: MirabufSc
     PreferencesSystem.savePreferences()
 }
 
-const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+interface ConfigPickupProps {
+    selectedRobot: MirabufSceneObject
+}
+
+const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ selectedRobot }) => {
     const { currentTheme, themes } = useTheme()
     const theme = useMemo(() => {
         return themes[currentTheme]
     }, [currentTheme, themes])
 
-    const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
-    const robots = useMemo(() => {
-        const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
-            if (x instanceof MirabufSceneObject) {
-                return x.miraType === MiraType.ROBOT
-            }
-            return false
-        }) as MirabufSceneObject[]
-        return assemblies
-    }, [])
+
+    const saveEvent = useCallback(() => {
+        if (transformGizmo && selectedRobot) {
+            save(zoneSize, transformGizmo, selectedRobot, selectedNode)
+            selectedRobot.UpdateIntakeSensor()
+        }
+    }, [transformGizmo, selectedRobot, selectedNode, zoneSize])
+
+    useEffect(() => {
+        ConfigurationSavedEvent.Listen(saveEvent)
+
+        return () => {
+            ConfigurationSavedEvent.RemoveListener(saveEvent)
+        }
+    }, [saveEvent])
 
     useEffect(() => {
         if (!transformGizmo) {
@@ -142,6 +148,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         setTransformGizmo(gizmo)
 
         return () => {
+            console.log("remove gizmos")
             gizmo.RemoveGizmos()
             setTransformGizmo(undefined)
         }
@@ -182,82 +189,45 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
     )
 
     return (
-        <Panel
-            name="Configure Pickup"
-            icon={<FaGear />}
-            panelId={panelId}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
-            onAccept={() => {
-                if (transformGizmo && selectedRobot) {
-                    save(zoneSize, transformGizmo, selectedRobot, selectedNode)
-                    selectedRobot.UpdateIntakeSensor()
-                }
-            }}
-            onCancel={() => {}}
-            acceptEnabled={selectedRobot?.ejectorPreferences != undefined}
-        >
-            {selectedRobot?.ejectorPreferences == undefined ? (
-                <>
-                    <Label>Select a robot</Label>
-                    {/** Scroll view for selecting a robot to configure */}
-                    <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[40vh] bg-background-secondary rounded-md p-2">
-                        {robots.map(mirabufSceneObject => {
-                            return (
-                                <Button
-                                    value={mirabufSceneObject.assemblyName}
-                                    onClick={() => {
-                                        setSelectedRobot(mirabufSceneObject)
-                                    }}
-                                    key={mirabufSceneObject.id}
-                                ></Button>
-                            )
-                        })}
-                    </div>
-                    {/* TODO: remove the accept button on this version */}
-                </>
-            ) : (
-                <>
-                    {/* Button for user to select the parent node */}
-                    <SelectButton
-                        placeholder="Select parent node"
-                        value={selectedNode}
-                        onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
-                    />
+        <>
+            {/* Button for user to select the parent node */}
+            <SelectButton
+                placeholder="Select parent node"
+                value={selectedNode}
+                onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
+            />
 
-                    {/* Slider for user to set velocity of ejector configuration */}
-                    <Slider
-                        min={MIN_ZONE_SIZE}
-                        max={MAX_ZONE_SIZE}
-                        value={zoneSize}
-                        label="Size"
-                        format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                        onChange={(_, vel: number | number[]) => {
-                            setZoneSize(vel as number)
-                        }}
-                        step={0.01}
-                    />
-                    <LabeledButton
-                        placement={LabelPlacement.Left}
-                        label="Reset"
-                        value="Reset"
-                        buttonClassName="w-min"
-                        onClick={() => {
-                            if (transformGizmo) {
-                                const robotTransformation = JoltMat44_ThreeMatrix4(
-                                    World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
-                                )
-                                transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
-                                transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
-                            }
-                            setZoneSize((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
-                            setSelectedNode(selectedRobot?.rootNodeId)
-                        }}
-                    />
-                </>
-            )}
-        </Panel>
+            {/* Slider for user to set velocity of ejector configuration */}
+            <Slider
+                min={MIN_ZONE_SIZE}
+                max={MAX_ZONE_SIZE}
+                value={zoneSize}
+                label="Size"
+                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={(_, vel: number | number[]) => {
+                    setZoneSize(vel as number)
+                }}
+                step={0.01}
+            />
+            <LabeledButton
+                placement={LabelPlacement.Left}
+                label="Reset"
+                value="Reset"
+                buttonClassName="w-min"
+                onClick={() => {
+                    if (transformGizmo) {
+                        const robotTransformation = JoltMat44_ThreeMatrix4(
+                            World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
+                        )
+                        transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
+                        transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
+                    }
+                    setZoneSize((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
+                    setSelectedNode(selectedRobot?.rootNodeId)
+                }}
+            />
+        </>
     )
 }
 
-export default ConfigureGamepiecePickupPanel
+export default ConfigureGamepiecePickupInterface

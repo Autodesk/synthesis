@@ -37,8 +37,6 @@ import ThemeEditorModal from "@/modals/configuring/theme-editor/ThemeEditorModal
 import MatchModeModal from "@/modals/spawning/MatchModeModal"
 import RobotSwitchPanel from "@/panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
-import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
-import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
 import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
@@ -51,7 +49,6 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
@@ -66,7 +63,7 @@ import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSc
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
-import ConfigureAssembliesPanel from "./ui/panels/configuring/ConfigureAssemblies.tsx"
+import ConfigureAssembliesPanel from "./ui/panels/configuring/assembly-config/ConfigureAssembliesPanel.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -226,7 +223,6 @@ const initialModals = [
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
-    <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
@@ -235,18 +231,6 @@ const initialPanels: ReactElement[] = [
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
-    <ConfigureGamepiecePickupPanel
-        key="config-gamepiece-pickup"
-        panelId="config-gamepiece-pickup"
-        openLocation="right"
-        sidePadding={8}
-    />,
-    <ConfigureShotTrajectoryPanel
-        key="config-shot-trajectory"
-        panelId="config-shot-trajectory"
-        openLocation="right"
-        sidePadding={8}
-    />,
     <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
     <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,

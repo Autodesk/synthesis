@@ -49,7 +49,6 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         /** If the panel is closed before a scheme is selected, defaults to the top of the list */
         return () => {
             const brainIndex = getBrainIndex()
-            console.log(brainIndex)
 
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
