@@ -121,6 +121,12 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                     <MainHUDButton
+                        value={"Configure Assemblies"}
+                        icon={<FaGear />}
+                        onClick={() => openPanel("configure-assemblies")}
+                    />
+
+                    <MainHUDButton
                         value={"Debug Tools"}
                         icon={<FaScrewdriverWrench />}
                         onClick={() => {

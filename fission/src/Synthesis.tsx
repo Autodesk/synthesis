@@ -66,6 +66,7 @@ import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSc
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
+import ConfigureAssembliesPanel from "./ui/panels/configuring/ConfigureAssemblies.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -253,6 +254,7 @@ const initialPanels: ReactElement[] = [
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
+    <ConfigureAssembliesPanel key="configure-assemblies" panelId="configure-assemblies" />,
 ]
 
 export default Synthesis
