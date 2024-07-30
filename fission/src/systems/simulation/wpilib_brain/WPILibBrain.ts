@@ -11,7 +11,6 @@ import HingeDriver from "../driver/HingeDriver"
 import SliderDriver from "../driver/SliderDriver"
 
 const worker = new WPILibWSWorker()
-
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
 
@@ -181,19 +180,18 @@ export class SimCANMotor {
     
     public static SetBusVoltage(device: string, voltage: number): boolean {
         return SimGeneric.Set(SimType.CANMotor, device, CANMOTOR_BUS_VOLTAGE, voltage)
-    }}
-
+    }
+}
 export class SimCANEncoder {
     private constructor() {}
 
     public static SetVelocity(device: string, velocity: number): boolean {
-        return SimGeneric.Set(SimType.CANENCODER, device, CANENCODER_VELOCITY, velocity)
+        return SimGeneric.Set(SimType.CANEncoder, device, CANENCODER_VELOCITY, velocity)
     }
 
     public static SetPosition(device: string, position: number): boolean {
-        return SimGeneric.Set(SimType.CANENCODER, device, CANENCODER_POSITION, position)
-    }
-}
+        return SimGeneric.Set(SimType.CANEncoder, device, CANENCODER_POSITION, position)
+    }}
 
 worker.addEventListener("message", (eventData: MessageEvent) => {
     let data: any | undefined
@@ -207,7 +205,7 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
             console.warn(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
         }
     }
-    
+            
 
     if (!data || !data.type) {
         console.log("No data, bailing out")
@@ -220,7 +218,6 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
     if (!Object.values(SimType).includes(data.type)) return;
     
     UpdateSimMap(data.type, device, updateData)
-
 })
 
 function UpdateSimMap(type: SimType, device: string, updateData: any) {
