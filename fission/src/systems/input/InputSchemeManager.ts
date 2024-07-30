@@ -122,22 +122,8 @@ class InputSchemeManager {
 
     /** Save all schemes that have been customized to local storage via preferences */
     public static saveSchemes() {
-        const customizedSchemes = Array.from(InputSystem.brainIndexSchemeMap.values()).filter(s => {
+        const customizedSchemes = this.allInputSchemes.filter(s => {
             return s.customized
-        })
-
-        // Save default schemes that have been customized if a customized version does not already exist
-        this.defaultInputSchemes.forEach(s => {
-            if (!s.customized) return
-
-            if (
-                customizedSchemes.some(c => {
-                    if (c.schemeName === s.schemeName) return true
-                })
-            )
-                return
-
-            customizedSchemes.push(s)
         })
 
         PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)
