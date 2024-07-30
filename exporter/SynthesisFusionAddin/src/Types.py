@@ -141,7 +141,6 @@ class OString:
         Returns:
             str: OString [ - ['test', 'test2]  - 'test.hell' ]
         """
-        # return f"OString [\n-\t[{self.literals!r} \n-\t{self.fileName}\n]"
         return f"{os.path.join(self.path, self.fileName)}"
 
     def __eq__(self, value: object) -> bool:
