@@ -1,9 +1,10 @@
 import os
+import sys
 
 import adsk.core
 
 # Currently required for `resolveDependencies()`, will be required for absolute imports.
-# sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from .src.Dependencies import resolveDependencies  # isort:skip
 
