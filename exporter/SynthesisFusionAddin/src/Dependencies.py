@@ -106,7 +106,7 @@ def resolveDependencies() -> bool | None:
     progressBar = ui.createProgressDialog()
     progressBar.isCancelButtonShown = False
     progressBar.reset()
-    progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP * 2 + 2), 0)
+    progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP) * 2 + 2, 0)
 
     # TODO: Is this really true? Do we need this? waheusnta eho? - Brandon
     # Install pip manually on macos as it is not included by default? Really?
