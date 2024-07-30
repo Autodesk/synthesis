@@ -239,6 +239,7 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
         currentData = {}
         typeMap.set(device, currentData)
     }
+
     Object.entries(updateData).forEach(([key, value]) => (currentData[key] = value))
 
     window.dispatchEvent(new SimMapUpdateEvent(false))
@@ -311,6 +312,8 @@ abstract class SimOutputGroup {
     public abstract Update(deltaT: number): void
 }
 
+// Averaging is probably not the right solution
+
 export class PWMGroup extends SimOutputGroup {
     public constructor(name: string, ports: number[], drivers: Driver[]) {
         super(name, ports, drivers, SimType.PWM)
@@ -340,7 +343,6 @@ export class CANGroup extends SimOutputGroup {
         super(name, ports, drivers, SimType.CANMotor)
     }
 
-    // See what needs to be done differently here
     public Update(_deltaT: number) {
         for (const port of this.ports) {
             const device = SimCAN.GetDeviceWithID(port, this.type)
