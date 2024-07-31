@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { useModalControlContext } from "@/ui/ModalContext"
+import { usePanelControlContext } from "@/ui/PanelContext"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaGear } from "react-icons/fa6"
 import Label, { LabelSize } from "@/components/Label"
@@ -15,6 +16,7 @@ import { Spacer } from "@/ui/components/StyledComponents"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
+    const { openPanel } = usePanelControlContext()
 
     const [qualitySettings, setQualitySettings] = useState<string>(
         PreferencesSystem.getGlobalPreference<string>("QualitySettings")
@@ -67,6 +69,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
                 <Label size={LabelSize.Medium}>Screen Settings</Label>
+                <Box alignSelf={"center"}>
+                    <Button value="Configure Quality Settings" onClick={() => openPanel("quality-settings")} />
+                </Box>
                 <Dropdown
                     label="Quality Settings"
                     options={["Low", "Medium", "High"] as QualitySetting[]}
