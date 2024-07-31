@@ -1,6 +1,5 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { MechanismConstraint } from "@/systems/physics/Mechanism"
 import Driver from "@/systems/simulation/driver/Driver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import World from "@/systems/World"
@@ -12,7 +11,7 @@ import Slider from "@/ui/components/Slider"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import { useTheme } from "@/ui/ThemeContext"
 import { Box } from "@mui/material"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
 
 type JointRowProps = {
@@ -113,22 +112,6 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                 </>
             ) : (
                 <>
-                    {/* {selectedRobot.mechanism.constraints.filter(x=> x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider).length > 0 ? (
-                        <ScrollView className="flex flex-col gap-4">
-                            {selectedRobot.mechanism.constraints.filter(x=> x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider).map((mechanism: MechanismConstraint, i: number) => (
-
-                                <JointRow
-                                    key={i}
-                                    driver={(() => {
-                                        return driver
-                                    })()}
-                                />
-                            
-                            ))}
-                        </ScrollView>
-                    ) : (
-                        <Label>No SliderDrivers</Label>
-                    )} */}
 
                     {drivers ? (
                         <ScrollView className="flex flex-col gap-4">
