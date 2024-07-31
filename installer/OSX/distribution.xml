@@ -10,6 +10,5 @@
   <choice id="install" title="Install MyApp" description="Installs MyApp">
     <pkg-ref id="com.Autodesk.Synthesis"/>
   </choice>
-
-  <pkg-ref id="com.Autodesk.Synthesis" version="1.0" auth="root">#MyApp.pkg</pkg-ref>
+  <pkg-ref id="com.Autodesk.Synthesis" version="2.0.0" auth="root">#SynthesisExporter.pkg</pkg-ref>
 </installer-gui-script>
