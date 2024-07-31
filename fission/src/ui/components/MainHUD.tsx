@@ -10,6 +10,7 @@ import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import { Button } from "@mui/base/Button"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
+import Synthesis from "@/Synthesis"
 
 type ButtonProps = {
     value: string
@@ -119,8 +120,8 @@ const MainHUD: React.FC = () => {
                             openPanel("scoring-zones")
                         }}
                     />
-                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
-                    <MainHUDButton value={"Joints"} icon={<FaGear />} onClick={() => openPanel("joint-config")} />
+                    <MainHUDButton value={"Configure"} icon={SynthesisIcons.Gear} onClick={() => openModal("config-robot")} />
+                    <MainHUDButton value={"Joints"} icon={SynthesisIcons.Gear} onClick={() => openPanel("joint-config")} />
                     <MainHUDButton
                         value={"Configure"}
                         icon={SynthesisIcons.Gear}
