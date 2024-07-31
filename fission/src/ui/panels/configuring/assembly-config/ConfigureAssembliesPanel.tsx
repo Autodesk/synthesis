@@ -7,8 +7,9 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useMemo, useState } from "react"
 import { AiOutlinePlus } from "react-icons/ai"
-import ConfigureGamepiecePickupInterface from "./ConfigureGamepiecePickupInterface"
-import ConfigureShotTrajectoryInterface from "./ConfigureShotTrajectoryInterface"
+import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
+import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 
 const AddIcon = <AiOutlinePlus size={"1.25rem"} />
 
@@ -122,7 +123,12 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly 
         case ConfigMode.CONTROLS:
             return <Label>interface not set up</Label>
         case ConfigMode.SCORING_ZONES:
-            return <Label>interface not set up</Label>
+            const zones = assembly.fieldPreferences?.scoringZones
+            if (zones == undefined) {
+                console.error("Field does not contain scoring zone preferences!")
+                return <Label>ERROR: Field does not contain scoring zone configuration!</Label>
+            }
+            return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -159,6 +165,7 @@ const ConfigureAssembliesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             onAccept={() => {
                 new ConfigurationSavedEvent()
             }}
+            acceptName="Close"
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
                 <ToggleButtonGroup
@@ -167,7 +174,10 @@ const ConfigureAssembliesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     onChange={(_, v) => {
                         v != null && setAssemblyType(v)
                         setSelectedAssembly(undefined)
-                        setSelectedConfigMode(undefined)
+                        if (selectedConfigMode != undefined) {
+                            new ConfigurationSavedEvent()
+                            setSelectedConfigMode(undefined)
+                        }
                     }}
                     sx={{
                         alignSelf: "center",
@@ -179,7 +189,10 @@ const ConfigureAssembliesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 <AssemblySelection
                     assemblyType={assemblyType}
                     onAssemblySelected={a => {
-                        if (selectedConfigMode != undefined) new ConfigurationSavedEvent()
+                        if (selectedConfigMode != undefined) {
+                            new ConfigurationSavedEvent()
+                            setSelectedConfigMode(undefined)
+                        }
                         setSelectedAssembly(a)
                     }}
                 />

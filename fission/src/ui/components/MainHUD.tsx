@@ -4,7 +4,6 @@ import {
     // FaMagnifyingGlass,
     FaPlus,
     FaGamepad,
-    FaBasketball,
     FaFileImport,
     FaWrench,
     FaScrewdriverWrench,
@@ -112,13 +111,6 @@ const MainHUD: React.FC = () => {
                     />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
-                    <MainHUDButton
-                        value={"Edit Scoring Zones"}
-                        icon={<FaBasketball />}
-                        onClick={() => {
-                            openPanel("scoring-zones")
-                        }}
-                    />
                     <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
                     <MainHUDButton
                         value={"Configure Assemblies"}

@@ -2,26 +2,25 @@ import * as THREE from "three"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import SelectButton from "@/components/SelectButton"
 import TransformGizmos from "@/ui/components/TransformGizmos"
-import World from "@/systems/World"
 import Slider from "@/ui/components/Slider"
 import Jolt from "@barclah/jolt-physics"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import World from "@/systems/World"
 import {
     Array_ThreeMatrix4,
     JoltMat44_ThreeMatrix4,
     ReactRgbaColor_ThreeColor,
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
-import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { useTheme } from "@/ui/ThemeContext"
-import React from "react"
-import { ConfigurationSavedEvent } from "./ConfigureAssembliesPanel"
+import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import { ConfigurationSavedEvent } from "../ConfigureAssembliesPanel"
 
 // slider constants
-const MIN_ZONE_SIZE = 0.1
-const MAX_ZONE_SIZE = 1.0
+const MIN_VELOCITY = 0.0
+const MAX_VELOCITY = 20.0
 
 /**
  * Saves ejector configuration to selected robot.
@@ -46,8 +45,13 @@ const MAX_ZONE_SIZE = 1.0
  * @param selectedRobot Selected robot to save data to.
  * @param selectedNode Selected node that configuration is relative to.
  */
-function save(zoneSize: number, gizmo: TransformGizmos, selectedRobot: MirabufSceneObject, selectedNode?: RigidNodeId) {
-    if (!selectedRobot?.intakePreferences || !gizmo) {
+function save(
+    ejectorVelocity: number,
+    gizmo: TransformGizmos,
+    selectedRobot: MirabufSceneObject,
+    selectedNode?: RigidNodeId
+) {
+    if (!selectedRobot?.ejectorPreferences || !gizmo) {
         return
     }
 
@@ -58,41 +62,39 @@ function save(zoneSize: number, gizmo: TransformGizmos, selectedRobot: MirabufSc
         return
     }
 
-    const translation = new THREE.Vector3(0, 0, 0)
-    const rotation = new THREE.Quaternion(0, 0, 0, 1)
-    gizmo.mesh.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
-
-    const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(1, 1, 1))
+    const gizmoTransformation = gizmo.mesh.matrixWorld
     const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
-    selectedRobot.intakePreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
-    selectedRobot.intakePreferences.parentNode = selectedNode
-    selectedRobot.intakePreferences.zoneDiameter = zoneSize
+    selectedRobot.ejectorPreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
+    selectedRobot.ejectorPreferences.parentNode = selectedNode
+    selectedRobot.ejectorPreferences.ejectorVelocity = ejectorVelocity
 
     PreferencesSystem.savePreferences()
 }
 
-interface ConfigPickupProps {
+interface ConfigEjectorProps {
     selectedRobot: MirabufSceneObject
 }
 
-const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ selectedRobot }) => {
+const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ selectedRobot }) => {
     const { currentTheme, themes } = useTheme()
     const theme = useMemo(() => {
         return themes[currentTheme]
     }, [currentTheme, themes])
 
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
-    const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
+    const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
     const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
         if (transformGizmo && selectedRobot) {
-            save(zoneSize, transformGizmo, selectedRobot, selectedNode)
-            selectedRobot.UpdateIntakeSensor()
+            save(ejectorVelocity, transformGizmo, selectedRobot, selectedNode)
+            const currentGp = selectedRobot.activeEjectable
+            selectedRobot.SetEjectable(undefined, true)
+            selectedRobot.SetEjectable(currentGp)
         }
-    }, [transformGizmo, selectedRobot, selectedNode, zoneSize])
+    }, [transformGizmo, selectedRobot, selectedNode, ejectorVelocity])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -102,24 +104,16 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         }
     }, [saveEvent])
 
-    useEffect(() => {
-        if (!transformGizmo) {
-            return
-        }
-
-        transformGizmo.mesh.scale.set(zoneSize, zoneSize, zoneSize)
-    }, [zoneSize, transformGizmo])
-
     // Not sure I like this, but made it a state and effect rather than a memo to add the cleanup to the end
     useEffect(() => {
-        if (!selectedRobot?.intakePreferences) {
+        if (!selectedRobot?.ejectorPreferences) {
             setTransformGizmo(undefined)
             return
         }
 
         const gizmo = new TransformGizmos(
             new THREE.Mesh(
-                new THREE.SphereGeometry(0.5),
+                new THREE.ConeGeometry(0.1, 0.4, 4).rotateX(Math.PI / 2.0).translate(0, 0, 0.2),
                 World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightSelect.color))
             )
         )
@@ -127,11 +121,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         ;(gizmo.mesh.material as THREE.Material).depthTest = false
         gizmo.AddMeshToScene()
         gizmo.CreateGizmo("translate", 1.5)
+        gizmo.CreateGizmo("rotate", 2.0)
 
-        const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences.deltaTransformation)
+        const deltaTransformation = Array_ThreeMatrix4(selectedRobot.ejectorPreferences.deltaTransformation)
 
         let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
-            selectedRobot.intakePreferences.parentNode ?? selectedRobot.rootNodeId
+            selectedRobot.ejectorPreferences.parentNode ?? selectedRobot.rootNodeId
         )
         if (!nodeBodyId) {
             // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
@@ -148,16 +143,15 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         setTransformGizmo(gizmo)
 
         return () => {
-            console.log("remove gizmos")
             gizmo.RemoveGizmos()
             setTransformGizmo(undefined)
         }
     }, [selectedRobot, theme])
 
     useEffect(() => {
-        if (selectedRobot?.intakePreferences) {
-            setZoneSize(selectedRobot.intakePreferences.zoneDiameter)
-            setSelectedNode(selectedRobot.intakePreferences.parentNode)
+        if (selectedRobot?.ejectorPreferences) {
+            setEjectorVelocity(selectedRobot.ejectorPreferences.ejectorVelocity)
+            setSelectedNode(selectedRobot.ejectorPreferences.parentNode)
         } else {
             setSelectedNode(undefined)
         }
@@ -199,13 +193,13 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
             {/* Slider for user to set velocity of ejector configuration */}
             <Slider
-                min={MIN_ZONE_SIZE}
-                max={MAX_ZONE_SIZE}
-                value={zoneSize}
-                label="Size"
+                min={MIN_VELOCITY}
+                max={MAX_VELOCITY}
+                value={ejectorVelocity}
+                label="Velocity"
                 format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                 onChange={(_, vel: number | number[]) => {
-                    setZoneSize(vel as number)
+                    setEjectorVelocity(vel as number)
                 }}
                 step={0.01}
             />
@@ -222,7 +216,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                         transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
                         transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
                     }
-                    setZoneSize((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
+                    setEjectorVelocity((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
                     setSelectedNode(selectedRobot?.rootNodeId)
                 }}
             />
@@ -230,4 +224,4 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     )
 }
 
-export default ConfigureGamepiecePickupInterface
+export default ConfigureShotTrajectoryInterface

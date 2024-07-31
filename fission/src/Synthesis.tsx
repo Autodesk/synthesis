@@ -37,7 +37,6 @@ import ThemeEditorModal from "@/modals/configuring/theme-editor/ThemeEditorModal
 import MatchModeModal from "@/modals/spawning/MatchModeModal"
 import RobotSwitchPanel from "@/panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
-import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
@@ -50,7 +49,6 @@ import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
-import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
@@ -231,8 +229,6 @@ const initialPanels: ReactElement[] = [
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
-    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
-    <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
