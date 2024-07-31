@@ -50,6 +50,10 @@ class SceneRenderer extends WorldSystem {
     public get renderer(): THREE.WebGLRenderer {
         return this._renderer
     }
+    
+    public set renderer(renderer: THREE.WebGLRenderer) {
+        this._renderer = renderer
+    }
 
     public constructor() {
         super()
@@ -62,18 +66,7 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
-        this._renderer = new THREE.WebGLRenderer({
-            // Following parameters are used to optimize post-processing
-            powerPreference: "high-performance",
-            antialias: false,
-            stencil: false,
-            depth: false,
-        })
-        this._renderer.setClearColor(CLEAR_COLOR)
-        this._renderer.setPixelRatio(window.devicePixelRatio)
-        this._renderer.shadowMap.enabled = true
-        this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
-        this._renderer.setSize(window.innerWidth, window.innerHeight)
+        this._renderer = this.CreateRenderer(PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference"), PreferencesSystem.getGlobalPreference<boolean>("Antialiasing"))
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0)
         directionalLight.position.set(-1.0, 3.0, 2.0)
@@ -138,6 +131,21 @@ class SceneRenderer extends WorldSystem {
         // No idea why height would be zero, but just incase.
         this._mainCamera.aspect = window.innerWidth / window.innerHeight
         this._mainCamera.updateProjectionMatrix()
+    }
+
+    public CreateRenderer(powerPreference: WebGLPowerPreference, antialias: boolean): THREE.WebGLRenderer {
+        const renderer = new THREE.WebGLRenderer({
+            powerPreference: powerPreference,
+            antialias: antialias,
+            stencil: false,
+            depth: false,
+        })
+        renderer.setClearColor(CLEAR_COLOR)
+        renderer.setPixelRatio(window.devicePixelRatio)
+        renderer.shadowMap.enabled = true
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap
+        renderer.setSize(window.innerWidth, window.innerHeight)
+        return renderer
     }
 
     public Update(deltaT: number): void {

@@ -3,6 +3,8 @@ import { Vector3Tuple } from "three"
 
 export type GlobalPreference =
     | "QualitySettings"
+    | "PowerPreference"
+    | "Antialiasing"
     | "ZoomSensitivity"
     | "PitchSensitivity"
     | "YawSensitivity"
@@ -18,6 +20,8 @@ export const FieldPreferencesKey: string = "Fields"
 
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     QualitySettings: "High" as QualitySetting,
+    PowerPreference: "default" as WebGLPowerPreference,
+    Antialiasing: false,
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
