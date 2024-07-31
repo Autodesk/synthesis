@@ -6,9 +6,11 @@ import edu.wpi.first.hal.SimDevice.Direction;
 import edu.wpi.first.hal.SimDouble;
 
 /**
- * CANMotor class for easy implementation of documentation-compliant simulation data.
+ * CANMotor class for easy implementation of documentation-compliant simulation
+ * data.
  * 
- * See https://github.com/wpilibsuite/allwpilib/blob/6478ba6e3fa317ee041b8a41e562d925602b6ea4/simulation/halsim_ws_core/doc/hardware_ws_api.md
+ * See
+ * https://github.com/wpilibsuite/allwpilib/blob/6478ba6e3fa317ee041b8a41e562d925602b6ea4/simulation/halsim_ws_core/doc/hardware_ws_api.md
  * for documentation on the WebSocket API Specification.
  */
 public class CANMotor {
@@ -24,20 +26,26 @@ public class CANMotor {
     private SimDouble m_busVoltage;
 
     /**
-     * Creates a CANMotor sim device in accordance with the WebSocket API Specification.
+     * Creates a CANMotor sim device in accordance with the WebSocket API
+     * Specification.
      * 
-     * @param name Name of the CAN Motor. This is generally the class name of the originating motor, prefixed with something (ie. "SYN CANSparkMax").
-     * @param deviceId CAN Device ID.
-     * @param defaultPercentOutput Default PercentOutput value. [-1.0, 1.0]
-     * @param defaultBrakeMode Default BrakeMode value. (true/false)
-     * @param defaultNeutralDeadband Default Neutral Deadband value. This is used to determine when braking should be enabled. [0.0, 1.0]
+     * @param name                   Name of the CAN Motor. This is generally the
+     *                               class name of the originating motor, prefixed
+     *                               with something (ie. "SYN CANSparkMax").
+     * @param deviceId               CAN Device ID.
+     * @param defaultPercentOutput   Default PercentOutput value. [-1.0, 1.0]
+     * @param defaultBrakeMode       Default BrakeMode value. (true/false)
+     * @param defaultNeutralDeadband Default Neutral Deadband value. This is used to
+     *                               determine when braking should be enabled. [0.0,
+     *                               1.0]
      */
-    public CANMotor(String name, int deviceId, double defaultPercentOutput, boolean defaultBrakeMode, double defaultNeutralDeadband) {
+    public CANMotor(String name, int deviceId, double defaultPercentOutput, boolean defaultBrakeMode,
+            double defaultNeutralDeadband) {
         m_device = SimDevice.create(name, deviceId);
 
         m_percentOutput = m_device.createDouble("percentOutput", Direction.kOutput, 0.0);
         m_brakeMode = m_device.createBoolean("brakeMode", Direction.kOutput, false);
-        m_neutralDeadband = m_device.createDouble("neutralDeadband", Direction.kOutput, deviceId);
+        m_neutralDeadband = m_device.createDouble("neutralDeadband", Direction.kOutput, 0.5);
 
         m_supplyCurrent = m_device.createDouble("supplyCurrent", Direction.kInput, 120.0);
         m_motorCurrent = m_device.createDouble("motorCurrent", Direction.kInput, 120.0);

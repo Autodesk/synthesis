@@ -7,7 +7,7 @@ package frc.robot;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.motorcontrol.Spark;
+//import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -31,7 +31,7 @@ public class Robot extends TimedRobot {
 
     // private Spark m_Spark = new Spark(0);
     private CANSparkMax m_SparkMax = new CANSparkMax(1, MotorType.kBrushless);
-    private TalonFX m_Talon = new TalonFX(2);
+    private com.autodesk.synthesis.ctre.TalonFX m_Talon = new com.autodesk.synthesis.ctre.TalonFX(2);
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -89,9 +89,10 @@ public class Robot extends TimedRobot {
 
         // m_Spark.set(0.5);
         m_SparkMax.set(1.0);
-        // m_SparkMax.setNeutralDeadband(0.01); // FIXME: for some reason I can't set
+        //m_SparkMax.setNeutralDeadband(0.01); // FIXME: for some reason I can't set
         // the deadband even after defining the function in the child
         m_Talon.set(-1.0);
+        m_Talon.configureNeutralDeadband(0.2);
 
         switch (m_autoSelected) {
             case kCustomAuto:

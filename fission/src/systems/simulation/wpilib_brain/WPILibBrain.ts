@@ -210,21 +210,22 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         try {
             data = JSON.parse(eventData.data)
         } catch (e) {
-            console.warn(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
+            console.error(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
+            return
         }
     }
 
-    if (!data || !data.type) {
+    if (!data?.type) {
         console.log("No data, bailing out")
         return
     }
 
-    const device = data.device
-    const updateData = data.data
+    if (!Object.values(SimType).includes(data.type)) {
+        console.log("Unknown data type, bailing out")
+        return
+    }
 
-    if (!Object.values(SimType).includes(data.type)) return
-
-    UpdateSimMap(data.type, device, updateData)
+    UpdateSimMap(data.type, data.device, data.data)
 })
 
 function UpdateSimMap(type: SimType, device: string, updateData: any) {
@@ -240,7 +241,7 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
         typeMap.set(device, currentData)
     }
 
-    Object.entries(updateData).forEach(([key, value]) => (currentData[key] = value))
+    Object.entries(updateData).forEach(([key, value]) => currentData[key] = value)
 
     window.dispatchEvent(new SimMapUpdateEvent(false))
 }
