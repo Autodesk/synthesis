@@ -15,6 +15,7 @@ import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { usePanelControlContext } from "@/ui/PanelContext"
+import { useModalControlContext } from "@/ui/ModalContext"
 import TaskStatus from "@/util/TaskStatus"
 import {
     PositiveButton,
@@ -23,9 +24,11 @@ import {
     DeleteButton,
     RefreshButton,
     SynthesisIcons,
+    Spacer,
 } from "@/ui/components/StyledComponents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import Button from "@/ui/components/Button"
 
 interface ItemCardProps {
     id: string
@@ -100,6 +103,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { showTooltip } = useTooltipControlContext()
     const { closePanel, openPanel } = usePanelControlContext()
+    const { openModal } = useModalControlContext()
 
     const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(GetCacheInfo(MiraType.FIELD))
@@ -363,6 +367,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         </SectionLabel>
                         <SectionDivider />
                         {cachedRobotElements}
+                        {Spacer(5)}
+                        <Box alignSelf={"center"}>
+                            <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
+                        </Box>
                     </>
                 ) : (
                     <>
@@ -373,6 +381,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         </SectionLabel>
                         <SectionDivider />
                         {cachedFieldElements}
+                        {Spacer(5)}
+                        <Box alignSelf={"center"}>
+                            <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
+                        </Box>
                     </>
                 )}
                 <Box

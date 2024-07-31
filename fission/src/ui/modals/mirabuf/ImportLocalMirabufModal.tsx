@@ -44,7 +44,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     return (
         <Modal
-            name={"Import Local Assemblies"}
+            name={"Import From File"}
             icon={SynthesisIcons.Import}
             modalId={modalId}
             acceptEnabled={selectedFile !== undefined && miraType !== undefined}
@@ -69,7 +69,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <div className="flex flex-col items-center gap-5">
                 <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} />
-                <Button value="Upload" size={ButtonSize.Large} onClick={uploadClicked} />
+                <Button value="Upload File" size={ButtonSize.Large} onClick={uploadClicked} />
                 {selectedFile ? (
                     <Label
                         className="text-center"
@@ -79,7 +79,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     <></>
                 )}
                 <Dropdown
-                    label="Type"
+                    label="File Type"
                     options={["None", "Robot", "Field"]}
                     onSelect={(selected: string) => {
                         typeSelected(selected)

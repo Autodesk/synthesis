@@ -105,11 +105,11 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.Gamepad}
                         onClick={() => openModal("change-inputs")}
                     />
-                    <MainHUDButton
+                    {/* <MainHUDButton
                         value={"Import Local Mira"}
                         icon={SynthesisIcons.Import}
                         onClick={() => openModal("import-local-mirabuf")}
-                    />
+                    /> */}
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
