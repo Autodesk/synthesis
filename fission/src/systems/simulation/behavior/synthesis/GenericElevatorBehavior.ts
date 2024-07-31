@@ -8,8 +8,6 @@ class GenericElevatorBehavior extends Behavior {
     private _inputName: string
     private _brainIndex: number
 
-    private _linearSpeed = 2.5
-
     constructor(sliderDriver: SliderDriver, sliderStimulus: SliderStimulus, jointIndex: number, brainIndex: number) {
         super([sliderDriver], [sliderStimulus])
 
@@ -20,11 +18,12 @@ class GenericElevatorBehavior extends Behavior {
 
     // Changes the elevators target position
     moveElevator(linearVelocity: number) {
+        // Multiplied by velocity in driver
         this._sliderDriver.targetVelocity = linearVelocity
     }
 
     public Update(_: number): void {
-        this.moveElevator(InputSystem.getInput(this._inputName, this._brainIndex) * this._linearSpeed)
+        this.moveElevator(InputSystem.getInput(this._inputName, this._brainIndex))
     }
 }
 

@@ -8,6 +8,7 @@ export interface MechanismConstraint {
     childBody: Jolt.BodyID
     constraint: Jolt.Constraint
     info?: mirabuf.IInfo
+    maxVelocity: number
 }
 
 class Mechanism {

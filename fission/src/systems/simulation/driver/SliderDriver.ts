@@ -10,6 +10,15 @@ class SliderDriver extends Driver {
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
     private _targetVelocity: number = 0.0
     private _targetPosition: number = 0.0
+    private _maxVelocity: number = 0.0
+
+    public get maxVelocity(): number {
+        return this._maxVelocity
+    }
+
+    public set maxVelocity(radsPerSec: number) {
+        this._maxVelocity = radsPerSec
+    }
 
     public get targetVelocity(): number {
         return this._targetVelocity
@@ -56,7 +65,7 @@ class SliderDriver extends Driver {
         }
     }
 
-    public constructor(constraint: Jolt.SliderConstraint, info?: mirabuf.IInfo) {
+    public constructor(constraint: Jolt.SliderConstraint, maxVelocity: number, info?: mirabuf.IInfo) {
         super(info)
 
         this._constraint = constraint
@@ -67,8 +76,8 @@ class SliderDriver extends Driver {
         springSettings.mDamping = 0.999
 
         motorSettings.mSpringSettings = springSettings
-        motorSettings.mMinForceLimit = -900.0
-        motorSettings.mMaxForceLimit = 900.0
+
+        this._maxVelocity = maxVelocity
 
         this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
         this.controlMode = DriverControlMode.Velocity
@@ -76,8 +85,9 @@ class SliderDriver extends Driver {
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetVelocity(this._targetVelocity)
+            this._constraint.SetTargetVelocity(this._targetVelocity * this._maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
+            //TODO: MaxVel checks diff
             this._constraint.SetTargetPosition(this._targetPosition)
         }
     }

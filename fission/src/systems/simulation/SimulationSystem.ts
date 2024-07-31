@@ -97,7 +97,7 @@ class SimulationLayer {
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
-                const driver = new SliderDriver(slider, x.info)
+                const driver = new SliderDriver(slider, x.maxVelocity, x.info)
                 this._drivers.push(driver)
                 const stim = new SliderStimulus(slider)
                 this._stimuli.push(stim)

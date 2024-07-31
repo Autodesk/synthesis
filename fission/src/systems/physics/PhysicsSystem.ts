@@ -323,7 +323,7 @@ class PhysicsSystem extends WorldSystem {
         const jointData = parser.assembly.data!.joints!
         for (const [jGuid, jInst] of Object.entries(jointData.jointInstances!) as [
             string,
-            mirabuf.joint.JointInstance,
+            mirabuf.joint.JointInstance
         ][]) {
             if (jGuid == GROUNDED_JOINT_ID) continue
 
@@ -350,8 +350,12 @@ class PhysicsSystem extends WorldSystem {
             const bodyA = this.GetBody(bodyIdA)
             const bodyB = this.GetBody(bodyIdB)
 
-            const constraints: Jolt.Constraint[] = []
+            const constraints: [Jolt.Constraint, number][] = []
             let listener: Jolt.PhysicsStepListener | undefined = undefined
+
+            const motor = jointData.motorDefinitions![jDef.motorReference]
+            
+            const maxVel = parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference].simpleMotor?.maxVelocity
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
@@ -364,8 +368,8 @@ class PhysicsSystem extends WorldSystem {
                                 bodyB,
                                 parser.assembly.info!.version!
                             )
-                            constraints.push(res[0])
-                            constraints.push(res[1])
+                            constraints.push([res[0], maxVel ?? 40])
+                            constraints.push([res[1], maxVel ?? 40])
                             listener = res[2]
                         } else {
                             const res = this.CreateWheelConstraint(
@@ -375,18 +379,18 @@ class PhysicsSystem extends WorldSystem {
                                 bodyA,
                                 parser.assembly.info!.version!
                             )
-                            constraints.push(res[0])
-                            constraints.push(res[1])
+                            constraints.push([res[0], maxVel ?? 40])
+                            constraints.push([res[1], maxVel ?? 40])
                             listener = res[2]
                         }
                     } else {
                         constraints.push(
-                            this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)
+                            [this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!), maxVel ?? 40]
                         )
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
-                    constraints.push(this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB))
+                    constraints.push([this.CreateSliderConstraint(jInst, jDef, motor, bodyA, bodyB), maxVel ?? 40])
                     break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")
@@ -398,8 +402,10 @@ class PhysicsSystem extends WorldSystem {
                     mechanism.AddConstraint({
                         parentBody: bodyIdA,
                         childBody: bodyIdB,
-                        constraint: x,
+                        constraint: x[0],
+                        maxVelocity: x[1],
                         info: jInst.info ?? undefined, // remove possibility for null
+
                     })
                 )
             }
@@ -490,6 +496,7 @@ class PhysicsSystem extends WorldSystem {
     private CreateSliderConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
+        motor: mirabuf.motor.IMotor,
         bodyA: Jolt.Body,
         bodyB: Jolt.Body
     ): Jolt.Constraint {
@@ -533,6 +540,11 @@ class PhysicsSystem extends WorldSystem {
 
             sliderConstraintSettings.mLimitsMax = halfRange
             sliderConstraintSettings.mLimitsMin = -halfRange
+        }
+
+        if (motor.simpleMotor?.stallTorque) {
+            sliderConstraintSettings.mMotorSettings.mMaxForceLimit = motor.simpleMotor?.stallTorque * 5
+            sliderConstraintSettings.mMotorSettings.mMinForceLimit = -sliderConstraintSettings.mMotorSettings.mMaxForceLimit
         }
 
         const constraint = sliderConstraintSettings.Create(bodyA, bodyB)
