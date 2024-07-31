@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="1">
+  <title>Synthesis Exporter Installer</title>
+  <choices-outline>
+    <line choice="default">
+      <line choice="install"/>
+    </line>
+  </choices-outline>
+  <choice id="default"/>
+  <choice id="install" title="Install MyApp" description="Installs MyApp">
+    <pkg-ref id="com.Autodesk.Synthesis"/>
+  </choice>
+
+  <pkg-ref id="com.Autodesk.Synthesis" version="1.0" auth="root">#MyApp.pkg</pkg-ref>
+</installer-gui-script>
