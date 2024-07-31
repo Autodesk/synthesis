@@ -108,7 +108,6 @@ def resolveDependencies() -> bool | None:
     progressBar.reset()
     progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP) * 2 + 2, 0)
 
-    # TODO: Is this really true? Do we need this? waheusnta eho? - Brandon
     # Install pip manually on macos as it is not included by default? Really?
     if system == "Darwin" and not os.path.exists(os.path.join(pythonFolder, "pip")):
         pipInstallScriptPath = os.path.join(pythonFolder, "get-pip.py")
