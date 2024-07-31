@@ -14,10 +14,44 @@ export const ToggleButton = styled(ToggleButtonMUI)({
         borderColor: "transparent",
     },
     "&:focus": {
+        borderColor: "transparent !important",
+        outline: "none",
+    },
+    "&:selected": {
+        outline: "none",
         borderColor: "transparent",
     },
     "&:hover": {
-        borderColor: "white",
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&:focus-visible": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&:active": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&::-moz-focus-inner": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+})
+
+export const ToggleButtonGroup = styled(ToggleButtonGroupMUI)({
+    "backgroundColor": colorNameToVar("Background"),
+    "fontFamily": "Artifakt",
+    "fontWeight": 700,
+    "width": "fit-content",
+    "&:focus": {
+        borderColor: "transparent",
+    },
+    "&:selected": {
+        borderColor: "transparent",
+    },
+    "&:hover": {
+        borderColor: "transparent",
     },
     "&:focus-visible": {
         borderColor: "transparent",
@@ -28,11 +62,4 @@ export const ToggleButton = styled(ToggleButtonMUI)({
     "&::-moz-focus-inner": {
         borderColor: "transparent",
     },
-})
-
-export const ToggleButtonGroup = styled(ToggleButtonGroupMUI)({
-    backgroundColor: colorNameToVar("Background"),
-    fontFamily: "Artifakt",
-    fontWeight: 700,
-    width: "fit-content",
 })
