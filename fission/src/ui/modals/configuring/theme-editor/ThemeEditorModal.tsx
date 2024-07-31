@@ -9,8 +9,7 @@ import { extend as cdExtend, random as cdRandom, colord } from "colord"
 import a11yPlugin from "colord/plugins/a11y"
 import React, { useState } from "react"
 import { HexColorInput, RgbaColor, RgbaColorPicker } from "react-colorful"
-import { AiFillWarning } from "react-icons/ai"
-import { FaChessBoard } from "react-icons/fa6"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 cdExtend([a11yPlugin])
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -28,7 +27,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Theme Editor"
-            icon={<FaChessBoard />}
+            icon={SynthesisIcons.ChessBoard}
             modalId={modalId}
             middleEnabled={true}
             middleName="Preview"
@@ -50,6 +49,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         <Dropdown
                             label="Select a Theme"
                             options={[currentTheme, ...Object.keys(themes).filter(t => t != currentTheme)]}
+                            defaultValue="Default"
                             onSelect={setSelectedTheme}
                             className="h-min"
                         />
@@ -193,7 +193,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                                                 : `This color will not be readable on top of ${conflicting.join(", ")}!`
                                                         }
                                                     >
-                                                        <AiFillWarning />
+                                                        (SynthesisIcons.AiFillWarning)
                                                     </div>
                                                 )
                                             else return <div className="w-6" />

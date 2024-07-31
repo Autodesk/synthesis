@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaGamepad } from "react-icons/fa6"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import Label, { LabelSize } from "@/ui/components/Label"
-import LabeledButton, { LabelPlacement } from "../../components/LabeledButton"
+import LabeledButton, { LabelPlacement } from "../../../components/LabeledButton"
 import InputSystem, { AxisInput, ButtonInput, ModifierState, EmptyModifierState } from "@/systems/input/InputSystem"
 import Dropdown from "@/ui/components/Dropdown"
 import Checkbox from "@/ui/components/Checkbox"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import Button from "@/ui/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
-import { Box, Divider, styled } from "@mui/material"
-import { AiOutlinePlus } from "react-icons/ai"
-
-const AddIcon = <AiOutlinePlus size={"1.25rem"} />
-
-const DividerStyled = styled(Divider)({
-    borderColor: "white",
-})
+import { Box } from "@mui/material"
+import { AddButtonInteractiveColor, SectionDivider, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 // capitalize first letter
 const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
@@ -88,15 +81,6 @@ const keyCodeToCharacter = (code: string) => {
     if (code.startsWith("Gamepad")) return gamepadButtons[parseInt(code.substring(8))]
 
     return code
-}
-
-const moveElementToTop = (arr: string[], element: string | undefined) => {
-    if (element == undefined) {
-        return arr
-    }
-
-    arr = arr.includes(element) ? [element, ...arr.filter(item => item !== element)] : arr
-    return arr
 }
 
 const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -295,8 +279,8 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Dropdown
                 key={c.inputName}
                 label={toTitleCase(c.inputName)}
-                // Moves the selected option to the start of the array
-                options={moveElementToTop(gamepadAxes, gamepadAxes[c.gamepadAxisNumber + 1])}
+                defaultValue={gamepadAxes[c.gamepadAxisNumber + 1]}
+                options={gamepadAxes}
                 onSelect={value => {
                     setSelectedInput(c.inputName)
                     setChosenGamepadAxis(gamepadAxes.indexOf(value))
@@ -350,7 +334,7 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Keybinds"
-            icon={<FaGamepad />}
+            icon={SynthesisIcons.Gamepad}
             modalId={modalId}
             onAccept={() => {
                 InputSchemeManager.saveSchemes()
@@ -359,60 +343,49 @@ const ChangeInputsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <>
                 <Stack direction={StackDirection.Horizontal} spacing={25}>
-                    <div>
-                        <Stack direction={StackDirection.Vertical} spacing={10}>
-                            <Dropdown
-                                label={"Select Robot"}
-                                // Moves the selected option to the start of the array
-                                options={moveElementToTop(
-                                    InputSchemeManager.allInputSchemes.map(s => s.schemeName),
-                                    InputSystem?.selectedScheme?.schemeName
-                                )}
-                                onSelect={value => {
-                                    const schemeData = InputSchemeManager.allInputSchemes.find(
-                                        s => s.schemeName == value
-                                    )
-                                    if (!schemeData || schemeData == selectedScheme) return
+                    <Box display="flex" flexDirection={"column"} gap={"10px"}>
+                        <Dropdown
+                            label={"Select a Control Scheme"}
+                            defaultValue={InputSystem?.selectedScheme?.schemeName}
+                            options={InputSchemeManager.allInputSchemes.map(s => s.schemeName)}
+                            onSelect={value => {
+                                const schemeData = InputSchemeManager.allInputSchemes.find(s => s.schemeName == value)
+                                if (!schemeData || schemeData == selectedScheme) return
 
-                                    setSelectedScheme(undefined)
-                                    InputSystem.selectedScheme = schemeData
-                                }}
-                            />
-                            <Button
-                                value={AddIcon}
-                                onClick={() => {
-                                    openModal("new-scheme")
-                                }}
-                            />
+                                setSelectedScheme(undefined)
+                                InputSystem.selectedScheme = schemeData
+                            }}
+                        />
+                        {AddButtonInteractiveColor(() => {
+                            openModal("new-scheme")
+                        })}
+                        {selectedScheme ? (
+                            <>
+                                <Checkbox
+                                    label="Use Controller"
+                                    defaultState={selectedScheme?.usesGamepad ?? false}
+                                    onClick={val => {
+                                        setUseGamepad(val)
+                                        if (selectedScheme) selectedScheme.usesGamepad = val
+                                    }}
+                                />
+                                <Box height={10} />
+                                <SectionDivider />
+                                <Box height={15}></Box>
 
-                            {selectedScheme ? (
-                                <>
-                                    <Checkbox
-                                        label="Use Controller"
-                                        defaultState={selectedScheme?.usesGamepad ?? false}
-                                        onClick={val => {
-                                            setUseGamepad(val)
-                                            if (selectedScheme) selectedScheme.usesGamepad = val
+                                <Box display="flex" justifyContent="center" alignItems="center">
+                                    <Button
+                                        value={"Reset all to Defaults"}
+                                        onClick={() => {
+                                            openModal("reset-inputs")
                                         }}
                                     />
-                                    <Box height={10} />
-                                    <DividerStyled />
-                                    <Box height={15}></Box>
-
-                                    <Box display="flex" justifyContent="center" alignItems="center">
-                                        <Button
-                                            value={"Reset all to Defaults"}
-                                            onClick={() => {
-                                                openModal("reset-inputs")
-                                            }}
-                                        />
-                                    </Box>
-                                </>
-                            ) : (
-                                <Label>No robot selected.</Label>
-                            )}
-                        </Stack>
-                    </div>
+                                </Box>
+                            </>
+                        ) : (
+                            <Label>No robot selected.</Label>
+                        )}
+                    </Box>
                     <div
                         className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[60vh] bg-background-secondary rounded-md p-2"
                         onKeyUp={e => {
