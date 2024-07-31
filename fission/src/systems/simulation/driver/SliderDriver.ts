@@ -10,7 +10,7 @@ class SliderDriver extends Driver {
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
     private _targetVelocity: number = 0.0
     private _targetPosition: number = 0.0
-    private _maxVelocity: number = 0.0
+    private _maxVelocity: number = 1.0
 
     public get maxVelocity(): number {
         return this._maxVelocity
@@ -37,9 +37,15 @@ class SliderDriver extends Driver {
         )
     }
 
+    public get minForceLimit(): number {
+        return this._constraint.GetMotorSettings().get_mMinForceLimit()
+    }
     public set minForceLimit(newtons: number) {
         const motorSettings = this._constraint.GetMotorSettings()
         motorSettings.mMinForceLimit = newtons
+    }
+    public get maxForceLimit(): number {
+        return this._constraint.GetMotorSettings().get_mMaxForceLimit()
     }
     public set maxForceLimit(newtons: number) {
         const motorSettings = this._constraint.GetMotorSettings()

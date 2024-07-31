@@ -355,7 +355,10 @@ class PhysicsSystem extends WorldSystem {
 
             const motor = jointData.motorDefinitions![jDef.motorReference]
             
-            const maxVel = parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference].simpleMotor?.maxVelocity
+            let maxVel = undefined;
+            if (parser.assembly.data?.joints?.motorDefinitions && parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference] && parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference].simpleMotor) {
+                maxVel = parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference].simpleMotor?.maxVelocity
+            }
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
@@ -385,12 +388,12 @@ class PhysicsSystem extends WorldSystem {
                         }
                     } else {
                         constraints.push(
-                            [this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!), maxVel ?? 40]
+                            [this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!), maxVel ? maxVel /5 : 40]
                         )
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
-                    constraints.push([this.CreateSliderConstraint(jInst, jDef, motor, bodyA, bodyB), maxVel ?? 40])
+                    constraints.push([this.CreateSliderConstraint(jInst, jDef, motor, bodyA, bodyB), maxVel ? maxVel / 5 : 40])
                     break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")

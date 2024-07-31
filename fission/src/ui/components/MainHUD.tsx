@@ -120,6 +120,7 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                     <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
+                    <MainHUDButton value={"Joints"} icon={<FaGear />} onClick={() => openPanel("joint-config")} />
                     <MainHUDButton
                         value={"Debug Tools"}
                         icon={<FaScrewdriverWrench />}
