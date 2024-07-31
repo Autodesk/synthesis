@@ -1,20 +1,14 @@
 import { useCallback, useEffect, useState } from "react"
-import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { AiOutlinePlus } from "react-icons/ai"
-import { IoPencil, IoTrashBin } from "react-icons/io5"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
 import { ConfigurationSavedEvent } from "../../ConfigureAssembliesPanel"
-
-const AddIcon = <AiOutlinePlus size={"1.25rem"} />
-const DeleteIcon = <IoTrashBin size={"1.25rem"} />
-const EditIcon = <IoPencil size={"1.25rem"} />
+import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -53,21 +47,14 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone,
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                <Button
-                    value={EditIcon}
-                    onClick={() => {
-                        selectZone(zone)
-                        save()
-                    }}
-                    colorOverrideClass="bg-accept-button hover:brightness-90"
-                />
-                <Button
-                    value={DeleteIcon}
-                    onClick={() => {
-                        deleteZone()
-                    }}
-                    colorOverrideClass="bg-cancel-button hover:brightness-90"
-                />
+                {EditButton(() => {
+                    selectZone(zone)
+                    save()
+                })}
+
+                {DeleteButton(() => {
+                    deleteZone()
+                })}
             </Box>
         </Box>
     )
@@ -129,26 +116,23 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
             ) : (
                 <Label>No scoring zones</Label>
             )}
-            <Button
-                value={AddIcon}
-                onClick={() => {
-                    if (zones == undefined) return
+            {AddButtonInteractiveColor(() => {
+                if (zones == undefined) return
 
-                    const newZone: ScoringZonePreferences = {
-                        name: "New Scoring Zone",
-                        alliance: "blue",
-                        parentNode: undefined,
-                        points: 0,
-                        destroyGamepiece: false,
-                        persistentPoints: false,
-                        deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-                    }
+                const newZone: ScoringZonePreferences = {
+                    name: "New Scoring Zone",
+                    alliance: "blue",
+                    parentNode: undefined,
+                    points: 0,
+                    destroyGamepiece: false,
+                    persistentPoints: false,
+                    deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                }
 
-                    saveZones(zones, selectedField)
+                saveZones(zones, selectedField)
 
-                    selectZone(newZone)
-                }}
-            />
+                selectZone(newZone)
+            })}
         </>
     )
 }

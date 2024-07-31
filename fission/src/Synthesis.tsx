@@ -20,7 +20,7 @@ import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
 import ViewModal from "@/modals/ViewModal"
 import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "@/modals/aether/ServerHostingModal"
-import ChangeInputsModal from "@/ui/modals/configuring/ChangeInputsModal.tsx"
+import ChangeInputsModal from "@/ui/modals/configuring/inputs/ChangeInputsModal.tsx"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
 import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
@@ -48,7 +48,6 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
@@ -62,6 +61,7 @@ import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNew
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import ConfigureAssembliesPanel from "./ui/panels/configuring/assembly-config/ConfigureAssembliesPanel.tsx"
+import ResetAllInputsModal from "./ui/modals/configuring/inputs/ResetAllInputsModal.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 

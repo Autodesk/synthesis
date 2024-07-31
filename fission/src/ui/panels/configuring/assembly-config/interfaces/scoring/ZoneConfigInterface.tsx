@@ -148,6 +148,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -189,6 +190,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             gizmo.RemoveGizmos()
             setTransformGizmo(undefined)
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [theme])
 
     /** Sets the selected node if it is a part of the currently loaded field */

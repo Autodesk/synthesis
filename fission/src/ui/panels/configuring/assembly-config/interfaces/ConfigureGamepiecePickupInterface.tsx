@@ -16,7 +16,6 @@ import {
 } from "@/util/TypeConversions"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { useTheme } from "@/ui/ThemeContext"
-import React from "react"
 import { ConfigurationSavedEvent } from "../ConfigureAssembliesPanel"
 
 // slider constants
