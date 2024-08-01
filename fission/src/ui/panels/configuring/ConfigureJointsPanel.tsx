@@ -1,6 +1,7 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import Driver from "@/systems/simulation/driver/Driver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
@@ -117,6 +118,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
 const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding}) => {
 
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
+    const [origPref, setOrigPref] = useState<RobotPreferences | undefined>(undefined)
 
     const robots = useMemo(() => {
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
@@ -133,7 +135,56 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
             World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers : undefined
     }, [selectedRobot])
 
-    //origPref: RobotPreferences that just set back to everything.
+    function saveOrigMotors(robot: MirabufSceneObject) {
+        drivers?.forEach(driver => {
+            if (driver.info && driver.info.name) {
+                if (!(driver instanceof WheelDriver)) {
+                    const motors = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
+                    const removedMotor = motors.filter(x => {
+                        if (x.name)
+                            return x.name != driver.info?.name
+                        return false
+                    })
+
+                    if (removedMotor.length == drivers.length) {
+                        removedMotor.push({
+                            name: driver.info?.name ?? "",
+                            maxVelocity: (driver as SliderDriver || driver as HingeDriver).maxVelocity,
+                            maxForce: (driver as SliderDriver || driver as HingeDriver).maxForce
+                        })
+                        PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
+                    }
+                }
+            }
+        })
+        PreferencesSystem.savePreferences()
+        setOrigPref({ ... PreferencesSystem.getRobotPreferences(robot.assemblyName)}) // clone
+    }
+
+    function Cancel() {
+        if (selectedRobot && origPref) {
+            drivers?.forEach(driver => {
+                if (driver instanceof WheelDriver) {
+                    driver.maxVelocity = origPref.driveVelocity
+                    driver.maxForce = origPref.driveAcceleration
+                } else {
+                    if (driver.info && driver.info.name) {
+                        const motor = origPref.motors.filter(x => {
+                            if (x.name)
+                                return x.name == driver.info?.name
+                            return false
+                        })[0];
+                        if (motor) {
+                            (driver as SliderDriver || driver as HingeDriver).maxVelocity = motor.maxVelocity;
+                            (driver as SliderDriver || driver as HingeDriver).maxForce = motor.maxForce
+                        }
+                    }
+                }
+            })
+            PreferencesSystem.setRobotPreferences(selectedRobot.assemblyName, origPref)
+        }
+        PreferencesSystem.savePreferences()
+    }
 
 
     return (
@@ -144,7 +195,7 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => { PreferencesSystem.savePreferences()}}       
-            onCancel={() => {/* TODO: Back to original */ }}
+            onCancel={Cancel}
             acceptEnabled={true}
         >
             {selectedRobot?.ejectorPreferences == undefined ? (
@@ -158,6 +209,7 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                                     value={mirabufSceneObject.assemblyName}
                                     onClick={() => {
                                         setSelectedRobot(mirabufSceneObject)
+                                        saveOrigMotors(mirabufSceneObject)
                                     }}
                                     key={mirabufSceneObject.id}
                                 ></Button>
