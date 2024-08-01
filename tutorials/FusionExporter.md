@@ -22,11 +22,11 @@ For information regarding the manual install process visit the [Synthesis Fusion
 - Navigate to [`synthesis.autodesk.com/download`](https://synthesis.autodesk.com/download.html).
 - Find the Exporter source code zip download.
   - Note that the source code is platform agnostic, it will work for **both** `Windows` and `Mac`.
-- Once the source code for the Exporter is installed unzip the folder.
-- Next, if not done already, install `Autodesk Fusion`.
-- Once Fusion is open navigate to the `Utilities Toolbar`.
+- Once the source code for the Exporter is downloaded unzip the folder.
+- Next, if you haven't already, install `Autodesk Fusion`.
+- Once Fusion is open, navigate to the `Utilities Toolbar`.
 ![image_caption](img/fusion/fusion-empty.png)
-- Click on `Scripts and Add-ins` from the toolbar.
+- Click on `Scripts and Add-ins` in the toolbar.
 ![image_caption](img/fusion/fusion-addins-highlight.png)
 - Navigate to `Add-ins` and select the green plus icon.
 ![image_caption](img/fusion/fusion-addins-panel.png)
