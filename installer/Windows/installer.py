@@ -1,0 +1,57 @@
+import os
+import shutil
+import sys
+import zipfile
+import tempfile
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.dirname(__file__)
+    return os.path.join(base_path, relative_path)
+
+def extract_file(resource_name, dest_folder):
+    resource_full_path = resource_path(resource_name)
+    if not os.path.exists(resource_full_path):
+        raise FileNotFoundError(f"Resource '{resource_name}' not found.")
+    
+    shutil.copy(resource_full_path, os.path.join(dest_folder, resource_name))
+
+def move_folder(src_folder, dest_folder):
+    if not os.path.exists(src_folder):
+        print(f"Source folder '{src_folder}' does not exist.")
+        return
+    
+    if not os.path.exists(dest_folder):
+        print(f"Destination folder '{dest_folder}' does not exist. Creating it.")
+        os.makedirs(dest_folder)
+    
+    try:
+        shutil.move(src_folder, dest_folder)
+        print(f"Successfully moved '{src_folder}' to '{dest_folder}'.")
+    except Exception as e:
+        print(f"Error: {e}")
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: installer.exe <destination_folder>")
+        sys.exit(1)
+    
+    destination_folder = sys.argv[1]
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        try:
+            extract_file('resources.zip', temp_dir)
+            
+            with zipfile.ZipFile(os.path.join(temp_dir, 'resources.zip'), 'r') as zip_ref:
+                zip_ref.extractall(temp_dir)
+            
+            src_folder = os.path.join(temp_dir, 'tmp')
+            move_folder(src_folder, destination_folder)
+        
+        except Exception as e:
+            print(f"Error: {e}")
+
+if __name__ == "__main__":
+    main()
