@@ -40,6 +40,11 @@ from .Utilities import construct_info, fill_info, guid_occurrence
 
 logger = getLogger()
 
+AcceptedJointTypes = [
+    adsk.fusion.JointTypes.RevoluteJointType,
+    adsk.fusion.JointTypes.SliderJointType,
+    adsk.fusion.JointTypes.BallJointType,
+]
 
 # Need to take in a graphcontainer
 # Need to create a new base node for each Joint Instance
@@ -97,57 +102,56 @@ def populateJoints(
             _addRigidGroup(joint, assembly)
             continue
 
-        # for now if it's not a revolute or slider joint ignore it
-        if joint.jointMotion.jointType != 1 and joint.jointMotion.jointType != 2:
-            continue
+        if joint.jointMotion.jointType in AcceptedJointTypes:
+            try:
+                #  Fusion has no instances of joints but lets roll with it anyway
 
-        try:
-            #  Fusion has no instances of joints but lets roll with it anyway
+                # progressDialog.message = f"Exporting Joint configuration {joint.name}"
+                progressDialog.addJoint(joint.name)
 
-            # progressDialog.message = f"Exporting Joint configuration {joint.name}"
-            progressDialog.addJoint(joint.name)
+                # create the definition
+                joint_definition = joints.joint_definitions[joint.entityToken]
+                _addJoint(joint, joint_definition)
 
-            # create the definition
-            joint_definition = joints.joint_definitions[joint.entityToken]
-            _addJoint(joint, joint_definition)
+                # create the instance of the single definition
+                joint_instance = joints.joint_instances[joint.entityToken]
 
-            # create the instance of the single definition
-            joint_instance = joints.joint_instances[joint.entityToken]
+                for parse_joints in options.joints:
+                    if parse_joints.jointToken == joint.entityToken:
+                        guid = str(uuid.uuid4())
+                        signal = signals.signal_map[guid]
+                        construct_info(joint.name, signal, GUID=guid)
+                        signal.io = signal_pb2.IOType.OUTPUT
 
-            for parse_joints in options.joints:
-                if parse_joints.jointToken == joint.entityToken:
-                    guid = str(uuid.uuid4())
-                    signal = signals.signal_map[guid]
-                    construct_info(joint.name, signal, GUID=guid)
-                    signal.io = signal_pb2.IOType.OUTPUT
+                        # really could just map the enum to a friggin string
+                        if parse_joints.signalType != SignalType.PASSIVE and assembly.dynamic:
+                            if parse_joints.signalType == SignalType.CAN:
+                                signal.device_type = signal_pb2.DeviceType.CANBUS
+                            elif parse_joints.signalType == SignalType.PWM:
+                                signal.device_type = signal_pb2.DeviceType.PWM
 
-                    # really could just map the enum to a friggin string
-                    if parse_joints.signalType != SignalType.PASSIVE and assembly.dynamic:
-                        if parse_joints.signalType == SignalType.CAN:
-                            signal.device_type = signal_pb2.DeviceType.CANBUS
-                        elif parse_joints.signalType == SignalType.PWM:
-                            signal.device_type = signal_pb2.DeviceType.PWM
+                            motor = joints.motor_definitions[joint.entityToken]
+                            fill_info(motor, joint)
+                            simple_motor = motor.simple_motor
+                            simple_motor.stall_torque = parse_joints.force
+                            simple_motor.max_velocity = parse_joints.speed
+                            simple_motor.braking_constant = 0.8  # Default for now
+                            joint_definition.motor_reference = joint.entityToken
 
-                        motor = joints.motor_definitions[joint.entityToken]
-                        fill_info(motor, joint)
-                        simple_motor = motor.simple_motor
-                        simple_motor.stall_torque = parse_joints.force
-                        simple_motor.max_velocity = parse_joints.speed
-                        simple_motor.braking_constant = 0.8  # Default for now
-                        joint_definition.motor_reference = joint.entityToken
+                            joint_instance.signal_reference = signal.info.GUID
+                        # else:
+                        #     signals.signal_map.remove(guid)
 
-                        joint_instance.signal_reference = signal.info.GUID
-                    # else:
-                    #     signals.signal_map.remove(guid)
+                _addJointInstance(joint, joint_instance, joint_definition, signals, options)
 
-            _addJointInstance(joint, joint_instance, joint_definition, signals, options)
+                # adds information for joint motion and limits
+                _motionFromJoint(joint.jointMotion, joint_definition)
 
-            # adds information for joint motion and limits
-            _motionFromJoint(joint.jointMotion, joint_definition)
+            except:
+                logger.error("Failed:\n{}".format(traceback.format_exc()))
+                continue
 
-        except:
-            logger.error("Failed:\n{}".format(traceback.format_exc()))
-            continue
+
 
 
 def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
@@ -251,10 +255,10 @@ def _motionFromJoint(fusionMotionDefinition: adsk.fusion.JointMotion, proto_join
         0: noop,  # this should be ignored
         1: fillRevoluteJointMotion,
         2: fillSliderJointMotion,
-        3: noop,  # TODO: Implement - Ball Joint at least
+        3: noop,
         4: noop,  # TODO: Implement
         5: noop,  # TODO: Implement
-        6: noop,  # TODO: Implement
+        6: fillBallJointMotion,  # TODO: Implement
     }
 
     fillJointMotionFunc = fillJointMotionFuncSwitcher.get(fusionMotionDefinition.jointType, lambda: None)
@@ -335,6 +339,81 @@ def fillSliderJointMotion(sliderMotion: adsk.fusion.SliderJointMotion, proto_joi
 
     dof.value = sliderMotion.slideValue
 
+def fillBallJointMotion(ballMotion: adsk.fusion.BallJointMotion, proto_joint: joint_pb2.Joint):
+    """#### Fill Protobuf ball joint motion data
+
+    Args:
+        ballMotion (adsk.fusion.BallJointMotion): Fusion Ball Joint Data
+        protoJoint (joint_pb2.Joint): Protobuf joint that is being modified
+    """
+
+    # proto_joint.joint_motion_type = joint_pb2.JointMotion.REVOLUTE
+    proto_joint.joint_motion_type = joint_pb2.JointMotion.CUSTOM
+    customDofs = proto_joint.custom
+
+    pitchDof = joint_pb2.DOF()
+    pitchDof.name = "pitch"
+    pitchDof.axis.x = ballMotion.pitchDirectionVector.x
+    pitchDof.axis.y = ballMotion.pitchDirectionVector.y
+    pitchDof.axis.z = ballMotion.pitchDirectionVector.z
+    if ballMotion.pitchLimits.isMaximumValueEnabled or ballMotion.pitchLimits.isMinimumValueEnabled:
+        pitchDof.limits.lower = ballMotion.pitchLimits.minimumValue
+        pitchDof.limits.upper = ballMotion.pitchLimits.maximumValue
+    pitchDof.value = ballMotion.pitchValue
+    customDofs.dofs.append(pitchDof)
+
+    yawDof = joint_pb2.DOF()
+    yawDof.name = "yaw"
+    yawDof.axis.x = ballMotion.yawDirectionVector.x
+    yawDof.axis.y = ballMotion.yawDirectionVector.y
+    yawDof.axis.z = ballMotion.yawDirectionVector.z
+    if ballMotion.yawLimits.isMaximumValueEnabled or ballMotion.yawLimits.isMinimumValueEnabled:
+        yawDof.limits.lower = ballMotion.yawLimits.minimumValue
+        yawDof.limits.upper = ballMotion.yawLimits.maximumValue
+    yawDof.value = ballMotion.yawValue
+    customDofs.dofs.append(yawDof)
+
+    rollDof = joint_pb2.DOF()
+    rollDof.name = "roll"
+    rollDof.axis.x = ballMotion.rollDirectionVector.x
+    rollDof.axis.y = ballMotion.rollDirectionVector.y
+    rollDof.axis.z = ballMotion.rollDirectionVector.z
+    if ballMotion.rollLimits.isMaximumValueEnabled or ballMotion.rollLimits.isMinimumValueEnabled:
+        rollDof.limits.lower = ballMotion.rollLimits.minimumValue
+        rollDof.limits.upper = ballMotion.rollLimits.maximumValue
+    rollDof.value = ballMotion.rollValue
+    customDofs.dofs.append(rollDof)
+
+    # ballMotion.
+
+    # dof = proto_joint.rotational.rotational_freedom
+
+    # # name
+    # # axis
+    # # pivot
+    # # dynamics
+    # # limits
+    # # current value
+
+    # dof.name = "Rotational Joint"
+
+    # dof.value = revoluteMotion.rotationValue
+
+    # if revoluteMotion.rotationLimits:
+    #     dof.limits.lower = revoluteMotion.rotationLimits.minimumValue
+    #     dof.limits.upper = revoluteMotion.rotationLimits.maximumValue
+
+    # rotationAxisVector = revoluteMotion.rotationAxisVector
+    # if rotationAxisVector:
+    #     
+    # else:
+    #     rotationAxis = revoluteMotion.rotationAxis
+    #     # don't handle 4 for now
+    #     # There is a bug here https://jira.autodesk.com/browse/FUS-80533
+    #     # I have 0 memory of why this is necessary
+    #     dof.axis.x = int(rotationAxis == 0)
+    #     dof.axis.y = int(rotationAxis == 2)
+    #     dof.axis.z = int(rotationAxis == 1)
 
 def noop(*argv):
     """Easy way to keep track of no-op code that required function pointers"""

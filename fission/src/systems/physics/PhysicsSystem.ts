@@ -23,6 +23,7 @@ import {
     OnContactValidateData,
     PhysicsEvent,
 } from "./ContactEvents"
+import { joltVec3ToString } from "@/util/debug/DebugPrint"
 
 export type JoltBodyIndexAndSequence = number
 
@@ -388,6 +389,9 @@ class PhysicsSystem extends WorldSystem {
                 case mirabuf.joint.JointMotion.SLIDER:
                     constraints.push(this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB))
                     break
+                case mirabuf.joint.JointMotion.CUSTOM:
+                    constraints.push(this.CreateBallConstraint(jInst, jDef, bodyA, bodyB))
+                    break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")
                     break
@@ -616,6 +620,145 @@ class PhysicsSystem extends WorldSystem {
 
         this._constraints.push(fixedConstraint, vehicleConstraint)
         return [fixedConstraint, vehicleConstraint, listener]
+    }
+
+    private CreateBallConstraint(
+        jointInstance: mirabuf.joint.JointInstance,
+        jointDefinition: mirabuf.joint.Joint,
+        bodyA: Jolt.Body,
+        bodyB: Jolt.Body
+    ): Jolt.Constraint {
+
+        const sixDofConstraintSettings = new JOLT.SixDOFConstraintSettings()
+
+        // sixDofConstraintSettings.mSwingType = JOLT.ESwingType_Pyramid
+
+        const jointOrigin = jointDefinition.origin
+            ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
+            : new JOLT.Vec3(0, 0, 0)
+        // TODO: Offset transformation for robot builder.
+        const jointOriginOffset = jointInstance.offset
+            ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
+            : new JOLT.Vec3(0, 0, 0)
+
+        const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        sixDofConstraintSettings.mPosition1 = sixDofConstraintSettings.mPosition2 = anchorPoint
+
+        sixDofConstraintSettings.MakeFixedAxis(JOLT.SixDOFConstraintSettings_EAxis_TranslationX)
+        sixDofConstraintSettings.MakeFixedAxis(JOLT.SixDOFConstraintSettings_EAxis_TranslationY)
+        sixDofConstraintSettings.MakeFixedAxis(JOLT.SixDOFConstraintSettings_EAxis_TranslationZ)
+
+        const pitchDof = jointDefinition.custom!.dofs!.at(0)
+        const yawDof = jointDefinition.custom!.dofs!.at(1)
+        const rollDof = jointDefinition.custom!.dofs!.at(2)
+
+        const pitchAxis = new JOLT.Vec3(pitchDof?.axis?.x ?? 0, pitchDof?.axis?.y ?? 0, pitchDof?.axis?.z ?? 0)
+        const yawAxis = new JOLT.Vec3(yawDof?.axis?.x ?? 0, yawDof?.axis?.y ?? 0, yawDof?.axis?.z ?? 0)
+        const rollAxis = new JOLT.Vec3(rollDof?.axis?.x ?? 0, rollDof?.axis?.y ?? 0, rollDof?.axis?.z ?? 0)
+
+        console.debug(`Pitch Axis: ${joltVec3ToString(pitchAxis)} ${pitchDof?.limits ? `[${pitchDof.limits.lower!.toFixed(3)}, ${pitchDof.limits.upper!.toFixed(3)}]` : ''}`)
+        console.debug(`Yaw Axis: ${joltVec3ToString(yawAxis)} ${yawDof?.limits ? `[${yawDof.limits.lower!.toFixed(3)}, ${yawDof.limits.upper!.toFixed(3)}]` : ''}`)
+        console.debug(`Roll Axis: ${joltVec3ToString(rollAxis)} ${rollDof?.limits ? `[${rollDof.limits.lower!.toFixed(3)}, ${rollDof.limits.upper!.toFixed(3)}]` : ''}`)
+
+        const calculatedRollAxis = pitchAxis.Cross(yawAxis)
+
+        sixDofConstraintSettings.mAxisX1 = sixDofConstraintSettings.mAxisX2 =
+            pitchAxis
+
+        sixDofConstraintSettings.mAxisY1 = sixDofConstraintSettings.mAxisY2 =
+            yawAxis
+
+        sixDofConstraintSettings.mMaxFriction = 0.8
+
+        if (pitchDof?.limits) {
+            if ((pitchDof.limits.upper ?? 0) - (pitchDof.limits.lower ?? 0) < 0.001) {
+                console.debug('Pitch Fixed')
+                sixDofConstraintSettings.MakeFixedAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationX)
+            } else {
+            console.debug('Pitch Limited')
+                sixDofConstraintSettings.SetLimitedAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationX, pitchDof.limits.lower ?? 0, pitchDof.limits.upper ?? 0)
+            }
+        } else {
+            console.debug('Pitch Free')
+            sixDofConstraintSettings.MakeFreeAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationX)
+        }
+
+        if (yawDof?.limits) {
+            if ((yawDof.limits.upper ?? 0) - (yawDof.limits.lower ?? 0) < 0.001) {
+                console.debug('Yaw Fixed')
+                sixDofConstraintSettings.MakeFixedAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationY)
+            } else {
+                console.debug('Yaw Limited')
+                sixDofConstraintSettings.SetLimitedAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationY, yawDof.limits.lower ?? 0, yawDof.limits.upper ?? 0)
+            }
+        } else {
+            console.debug('Yaw Free')
+            sixDofConstraintSettings.MakeFreeAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationY)
+        }
+
+        if (rollDof?.limits) {
+            if ((rollDof.limits.upper ?? 0) - (rollDof.limits.lower ?? 0) < 0.001) {
+                console.debug('Roll Fixed')
+                sixDofConstraintSettings.MakeFixedAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationZ)
+            } else {
+                console.debug('Roll Limited')
+                sixDofConstraintSettings.SetLimitedAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationZ, rollDof.limits.lower ?? 0, rollDof.limits.upper ?? 0)
+            }
+        } else {
+            console.debug('Roll Free')
+            sixDofConstraintSettings.MakeFreeAxis(JOLT.SixDOFConstraintSettings_EAxis_RotationZ)
+        }
+
+        // HINGE CONSTRAINT
+        // const hingeConstraintSettings = new JOLT.HingeConstraintSettings()
+
+        // const jointOrigin = jointDefinition.origin
+        //     ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
+        //     : new JOLT.Vec3(0, 0, 0)
+        // // TODO: Offset transformation for robot builder.
+        // const jointOriginOffset = jointInstance.offset
+        //     ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
+        //     : new JOLT.Vec3(0, 0, 0)
+
+        // const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        // hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
+
+        // const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
+
+        // const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3
+        // let axis: Jolt.Vec3
+        // // No scaling, these are unit vectors
+        // if (versionNum < 5) {
+        //     axis = new JOLT.Vec3(miraAxis.x ? -miraAxis.x : 0, miraAxis.y ?? 0, miraAxis.z! ?? 0)
+        // } else {
+        //     axis = new JOLT.Vec3(miraAxis.x! ?? 0, miraAxis.y! ?? 0, miraAxis.z! ?? 0)
+        // }
+        // hingeConstraintSettings.mHingeAxis1 = hingeConstraintSettings.mHingeAxis2 = axis.Normalized()
+        // hingeConstraintSettings.mNormalAxis1 = hingeConstraintSettings.mNormalAxis2 = getPerpendicular(
+        //     hingeConstraintSettings.mHingeAxis1
+        // )
+
+        // // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
+        // // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
+        // const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
+
+        // if (
+        //     rotationalFreedom.limits &&
+        //     Math.abs((rotationalFreedom.limits.upper ?? 0) - (rotationalFreedom.limits.lower ?? 0)) > 0.001
+        // ) {
+        //     const currentPos = piSafetyCheck(rotationalFreedom.value ?? 0)
+        //     const upper = piSafetyCheck(rotationalFreedom.limits.upper ?? 0) - currentPos
+        //     const lower = piSafetyCheck(rotationalFreedom.limits.lower ?? 0) - currentPos
+
+        //     hingeConstraintSettings.mLimitsMin = -upper
+        //     hingeConstraintSettings.mLimitsMax = -lower
+        // }
+
+        // const constraint = hingeConstraintSettings.Create(bodyA, bodyB)
+        const constraint = sixDofConstraintSettings.Create(bodyA, bodyB)
+        this._joltPhysSystem.AddConstraint(constraint)
+
+        return constraint
     }
 
     private IsWheel(jDef: mirabuf.joint.Joint) {

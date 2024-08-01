@@ -143,7 +143,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 *gm.app.activeDocument.design.rootComponent.allAsBuiltJoints,
             ]:
                 if (
-                    joint.jointMotion.jointType in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value)
+                    joint.jointMotion.jointType in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value, JointMotions.BALL.value)
                     and not joint.isSuppressed
                 ):
                     jointConfigTab.addJoint(joint)
