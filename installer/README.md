@@ -7,7 +7,7 @@
   - Note that the source code is platform agnostic, it will work for **both** `Windows` and `Mac`.
 - Once the source code for the Exporter is downloaded, unzip the folder.
 - Next, if you haven't already, install `Autodesk Fusion`.
-- Once Fusion is open navigate to the `Utilities Toolbar`.
+- Once Fusion is open, navigate to the `Utilities Toolbar`.
 ![image_caption](../tutorials/img/fusion/fusion-empty.png)
 - Click on `Scripts and Add-ins` from the toolbar.
 ![image_caption](../tutorials/img/fusion/fusion-addins-highlight.png)
