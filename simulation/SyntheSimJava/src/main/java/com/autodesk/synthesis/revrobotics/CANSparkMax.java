@@ -2,6 +2,7 @@ package com.autodesk.synthesis.revrobotics;
 
 import com.autodesk.synthesis.CANEncoder;
 import com.autodesk.synthesis.CANMotor;
+import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.REVLibError;
 
@@ -47,10 +48,21 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
     }
 
     @Override
-    public REVLibError follow(CANSparkBase leader) {
-        REVLibError err = super.follow(leader);
-        // figure out how to have primitives follow
-        this.m_motor.m_percentOuput = leader.x;
-        return err;
+    public SparkAbsoluteEncoder getAbsoluteEncoder() {
+        return new SparkAbsoluteEncoder(this.m_encoder, this, com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
     }
+
+    @Override
+    public SparkAbsoluteEncoder getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type type) {
+        return new SparkAbsoluteEncoder(this.m_encoder, this, type);
+    }    
+
+    // TODO: Finish following
+    // @Override
+    // public REVLibError follow(CANSparkBase leader) {
+    //     REVLibError err = super.follow(leader);
+    //     // figure out how to have primitives follow
+    //     this.m_motor.m_percentOuput = leader.x;
+    //     return err;
+    // }
 }

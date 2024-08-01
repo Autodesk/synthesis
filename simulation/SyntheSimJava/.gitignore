@@ -1,6 +1,9 @@
+*.json
 # Ignore Gradle project-specific cache directory
 .gradle
 .vscode
 
 # Ignore Gradle build output directory
-build
+build/
+ctre-sil/
+bin/

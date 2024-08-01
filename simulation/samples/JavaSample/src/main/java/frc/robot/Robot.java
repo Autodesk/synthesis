@@ -92,7 +92,7 @@ public class Robot extends TimedRobot {
         //m_SparkMax.setNeutralDeadband(0.01); // FIXME: for some reason I can't set
         // the deadband even after defining the function in the child
         m_Talon.set(-1.0);
-        m_Talon.configureNeutralDeadband(0.2);
+        //m_Talon.configureNeutralDeadband(0.2);
 
         switch (m_autoSelected) {
             case kCustomAuto:

@@ -11,7 +11,7 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
     /**
      * Creates a new TalonFX, wrapped with simulation support.
      * 
-     * @param deviceId CAN Devic ID.
+     * @param deviceNumber CAN Device ID.
      */
     public TalonFX(int deviceNumber) {
         super(deviceNumber);
