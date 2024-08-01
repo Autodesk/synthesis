@@ -1,5 +1,6 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Driver from "@/systems/simulation/driver/Driver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import World from "@/systems/World"
@@ -11,16 +12,17 @@ import Slider from "@/ui/components/Slider"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import { useTheme } from "@/ui/ThemeContext"
 import { Box } from "@mui/material"
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
 
 type JointRowProps = {
+    robot: MirabufSceneObject
     driver: Driver
 }
 
-const JointRow: React.FC<JointRowProps> = ({ driver }) => {
+const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
     const [velocity, setVelocity] = useState<number>((driver as SliderDriver).maxVelocity)
-    const [force, setForce] = useState<number>((driver as SliderDriver).maxForceLimit)
+    const [force, setForce] = useState<number>((driver as SliderDriver).maxForce)
 
     return (
         <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
@@ -34,7 +36,22 @@ const JointRow: React.FC<JointRowProps> = ({ driver }) => {
                     format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                     onChange={(_, vel: number | number[]) => {
                         setVelocity(vel as number);
-                        (driver as SliderDriver).maxVelocity = velocity
+                        (driver as SliderDriver).maxVelocity = vel as number
+                        if (driver.info && driver.info.name) {
+                            const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors ? PreferencesSystem.getRobotPreferences(robot.assemblyName).motors.filter(x => {
+                                if (x.name)
+                                    return x.name != driver.info?.name
+                                return false
+                            }) : []
+
+                            removedMotor.push({
+                                name: driver.info?.name ?? "",
+                                maxVelocity: vel as number,
+                                maxForce: force})
+
+                            PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
+                            PreferencesSystem.savePreferences()
+                        }
                     }}
                     step={0.01}
                 />
@@ -46,8 +63,22 @@ const JointRow: React.FC<JointRowProps> = ({ driver }) => {
                     format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                     onChange={(_, forc: number | number[]) => {
                         setForce(forc as number);
-                        (driver as SliderDriver).maxForceLimit = force;
-                        (driver as SliderDriver).minForceLimit = -force
+                        (driver as SliderDriver).maxForce = forc as number
+                        if (driver.info && driver.info.name) {
+                            const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors ? PreferencesSystem.getRobotPreferences(robot.assemblyName).motors.filter(x => {
+                                if (x.name)
+                                    return x.name != driver.info?.name
+                                return false
+                            }) : []
+
+                            removedMotor.push({
+                                name: driver.info?.name ?? "",
+                                maxVelocity: velocity,
+                                maxForce: forc as number})
+
+                            PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
+                            PreferencesSystem.savePreferences()
+                        }
                     }}
                     step={0.01}
                 />
@@ -58,10 +89,6 @@ const JointRow: React.FC<JointRowProps> = ({ driver }) => {
 
 
 const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding}) => {
-    const { currentTheme, themes } = useTheme()
-    const theme = useMemo(() => {
-        return themes[currentTheme]
-    }, [currentTheme, themes])
 
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
 
@@ -88,7 +115,7 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
-            onAccept={() => {}}       
+            onAccept={() => { PreferencesSystem.savePreferences()}}       
             onCancel={() => {/* Back to original */ }}
             acceptEnabled={true}
         >
@@ -118,6 +145,9 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                             {drivers.filter(x => x instanceof SliderDriver).map((driver: Driver, i: number) => (
                                 <JointRow
                                     key={i}
+                                    robot={(() => {
+                                        return selectedRobot
+                                    })()}
                                     driver={(() => {
                                         return driver
                                     })()}

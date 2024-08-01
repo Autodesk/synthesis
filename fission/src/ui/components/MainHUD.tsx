@@ -120,7 +120,6 @@ const MainHUD: React.FC = () => {
                             openPanel("scoring-zones")
                         }}
                     />
-                    <MainHUDButton value={"Configure"} icon={SynthesisIcons.Gear} onClick={() => openModal("config-robot")} />
                     <MainHUDButton value={"Joints"} icon={SynthesisIcons.Gear} onClick={() => openPanel("joint-config")} />
                     <MainHUDButton
                         value={"Configure"}

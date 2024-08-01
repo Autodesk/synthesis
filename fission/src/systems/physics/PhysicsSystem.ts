@@ -23,6 +23,7 @@ import {
     OnContactValidateData,
     PhysicsEvent,
 } from "./ContactEvents"
+import PreferencesSystem from "../preferences/PreferencesSystem"
 
 export type JoltBodyIndexAndSequence = number
 
@@ -353,11 +354,19 @@ class PhysicsSystem extends WorldSystem {
             const constraints: [Jolt.Constraint, number][] = []
             let listener: Jolt.PhysicsStepListener | undefined = undefined
 
-            const motor = jointData.motorDefinitions![jDef.motorReference]
-            
+            const motors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
+            let maxForce = jointData.motorDefinitions![jDef.motorReference].simpleMotor?.stallTorque
             let maxVel = undefined;
             if (parser.assembly.data?.joints?.motorDefinitions && parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference] && parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference].simpleMotor) {
                 maxVel = parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference].simpleMotor?.maxVelocity
+            }
+            if (motors) {
+                const thisMotor = motors.filter(x => x.name == jInst.info?.name)
+                if (thisMotor && thisMotor[0]) {
+                    maxVel = thisMotor[0].maxVelocity
+                    maxForce = thisMotor[0].maxForce
+                }
+
             }
 
             switch (jDef.jointMotionType!) {
@@ -388,12 +397,13 @@ class PhysicsSystem extends WorldSystem {
                         }
                     } else {
                         constraints.push(
-                            [this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!), maxVel ? maxVel /5 : 40]
+                            [this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!), maxVel ? maxVel : 40]
                         )
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
-                    constraints.push([this.CreateSliderConstraint(jInst, jDef, motor, bodyA, bodyB), maxVel ? maxVel / 5 : 40])
+                    
+                    constraints.push([this.CreateSliderConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB), maxVel ? maxVel : 40])
                     break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")
@@ -499,7 +509,7 @@ class PhysicsSystem extends WorldSystem {
     private CreateSliderConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
-        motor: mirabuf.motor.IMotor,
+        maxForce: number,
         bodyA: Jolt.Body,
         bodyB: Jolt.Body
     ): Jolt.Constraint {
@@ -545,10 +555,8 @@ class PhysicsSystem extends WorldSystem {
             sliderConstraintSettings.mLimitsMin = -halfRange
         }
 
-        if (motor.simpleMotor?.stallTorque) {
-            sliderConstraintSettings.mMotorSettings.mMaxForceLimit = motor.simpleMotor?.stallTorque * 5
-            sliderConstraintSettings.mMotorSettings.mMinForceLimit = -sliderConstraintSettings.mMotorSettings.mMaxForceLimit
-        }
+        sliderConstraintSettings.mMotorSettings.mMaxForceLimit = maxForce
+        sliderConstraintSettings.mMotorSettings.mMinForceLimit = -sliderConstraintSettings.mMotorSettings.mMaxForceLimit
 
         const constraint = sliderConstraintSettings.Create(bodyA, bodyB)
 

@@ -3,6 +3,7 @@ import Driver, { DriverControlMode } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 class SliderDriver extends Driver {
     private _constraint: Jolt.SliderConstraint
@@ -37,19 +38,13 @@ class SliderDriver extends Driver {
         )
     }
 
-    public get minForceLimit(): number {
-        return this._constraint.GetMotorSettings().get_mMinForceLimit()
+    public get maxForce(): number {
+        return this._constraint.GetMotorSettings().mMaxForceLimit
     }
-    public set minForceLimit(newtons: number) {
-        const motorSettings = this._constraint.GetMotorSettings()
-        motorSettings.mMinForceLimit = newtons
-    }
-    public get maxForceLimit(): number {
-        return this._constraint.GetMotorSettings().get_mMaxForceLimit()
-    }
-    public set maxForceLimit(newtons: number) {
+    public set maxForce(newtons: number) {
         const motorSettings = this._constraint.GetMotorSettings()
         motorSettings.mMaxForceLimit = newtons
+        motorSettings.mMinForceLimit = -newtons
     }
 
     public get controlMode(): DriverControlMode {

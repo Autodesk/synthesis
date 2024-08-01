@@ -45,8 +45,15 @@ export type EjectorPreferences = {
 
 export type RobotPreferences = {
     inputsSchemes: InputScheme[]
+    motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+}
+
+export type MotorPreferences = {
+    name: string
+    maxVelocity: number
+    maxForce: number
 }
 
 export type Alliance = "red" | "blue"
@@ -70,6 +77,7 @@ export type FieldPreferences = {
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
+        motors: [],
         intake: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             zoneDiameter: 0.5,
