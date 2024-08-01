@@ -1,1 +1,6 @@
 * text=auto
+
+# Workaround for a bug it GitHub's language detection,
+# previously half of our code was being counted as JavaScript.. for some reason...
+# and we certainly can't have that. - Brandon
+*.js linguist-detectable=false
