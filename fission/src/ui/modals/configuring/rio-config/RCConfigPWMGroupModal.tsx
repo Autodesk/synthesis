@@ -29,9 +29,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
         simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
-        // TODO: set brain elsewhere when sim mode is better
-        brain = new WPILibBrain(mechanism)
-        simLayer?.SetBrain(brain)
+        brain = simLayer?.brain as WPILibBrain
     }
 
     let devices: [string, unknown][] = []

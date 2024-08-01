@@ -10,11 +10,13 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
+import com.autodesk.synthesis.Joystick;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -28,9 +30,11 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private Spark m_Spark = new Spark(0);
+  private Spark m_Spark1 = new Spark(0);
+  private Spark m_Spark2 = new Spark(1);
   private CANSparkMax m_SparkMax = new CANSparkMax(1, MotorType.kBrushless);
   private TalonFX m_Talon = new TalonFX(2);
+  private XboxController m_Controller = new XboxController(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -74,7 +78,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 
-    m_Spark.set(0.5);
+    m_Spark1.set(0.5);
+    m_Spark2.set(-0.5);
     m_SparkMax.set(1.0);
     m_Talon.set(-1.0);
 
@@ -96,7 +101,10 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    m_Spark.set(0.25);
+    m_Spark1.set(m_Controller.getLeftY());
+    m_Spark2.set(-m_Controller.getRightY());
+    // m_Spark1.set(0.25);
+    // m_Spark2.set(0.25);
     m_SparkMax.set(0.75);
     m_Talon.set(-0.5);
   }
@@ -104,7 +112,8 @@ public class Robot extends TimedRobot {
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    m_Spark.set(0.0);
+    m_Spark1.set(0.0);
+    m_Spark2.set(0.0);
     m_SparkMax.set(0.0);
     m_Talon.set(0.0);
   }

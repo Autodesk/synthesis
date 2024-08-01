@@ -107,6 +107,25 @@ function generateTableBody() {
             ) : (
                 <></>
             )}
+            {simMap.has("Joystick") ? (
+                [...simMap.get("Joystick")!.entries()].map(x => {
+                    return (
+                        <TableRow key={x[0]}>
+                            <TableCell>
+                                <TypoStyled>Joystick</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{x[0]}</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                            </TableCell>
+                        </TableRow>
+                    )
+                })
+            ) : (
+                <></>
+            )}
         </TableBody>
     )
 }

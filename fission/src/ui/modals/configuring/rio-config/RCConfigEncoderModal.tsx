@@ -14,7 +14,7 @@ import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput"
 
 const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
-    const [name, setName] = useState<string>("")
+    const [_name, setName] = useState<string>("")
 
     let stimuli: EncoderStimulus[] = []
     let simLayer
@@ -62,16 +62,8 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Dropdown
-                label="Encoders"
-                options={devices.map(n => n[0])}
-                onSelect={s => setSelectedDevice(s)}
-            />
-            <Dropdown
-                label="Stimuli"
-                options={Object.keys(stimMap)}
-                onSelect={s => setSelectedStimulus(stimMap[s])}
-            />
+            <Dropdown label="Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
+            <Dropdown label="Stimuli" options={Object.keys(stimMap)} onSelect={s => setSelectedStimulus(stimMap[s])} />
             <NumberInput
                 placeholder="Conversion Factor"
                 defaultValue={conversionFactor}

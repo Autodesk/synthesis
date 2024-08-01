@@ -218,7 +218,7 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
 class WPILibBrain extends Brain {
     private _simLayer: SimulationLayer
 
-    private _simDevices: SimOutputGroup[] = []
+    private _simOutputs: SimOutputGroup[] = []
     private _simInputs: SimInput[] = []
 
     constructor(mechanism: Mechanism) {
@@ -233,7 +233,7 @@ class WPILibBrain extends Brain {
     }
 
     public addSimOutputGroup(device: SimOutputGroup) {
-        this._simDevices.push(device)
+        this._simOutputs.push(device)
     }
 
     public addSimInput(input: SimInput) {
@@ -241,7 +241,7 @@ class WPILibBrain extends Brain {
     }
 
     public Update(deltaT: number): void {
-        this._simDevices.forEach(d => d.Update(deltaT))
+        this._simOutputs.forEach(d => d.Update(deltaT))
         this._simInputs.forEach(i => i.Update(deltaT))
     }
 
