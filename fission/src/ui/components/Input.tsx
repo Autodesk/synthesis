@@ -29,25 +29,4 @@ const Input: React.FC<InputProps> = ({ placeholder, defaultValue, label, onInput
     )
 }
 
-// <input
-//     placeholder={placeholder}
-//     defaultValue={defaultValue}
-//     value={value}
-//     onKeyPress={e => {
-//         if (
-//             e.key != null &&
-//             numeric &&
-//             !"1234567890,.".includes(e.key)
-//         ) {
-//             e.preventDefault()
-//         }
-
-//         if (validate && !validate(e.key)) e.preventDefault()
-//     }}
-//     onChange={e => {
-//         if (onInput) onInput(e.target.value)
-//     }}
-//     className={`bg-interactive-background px-2 py-1 bg-[length:200%_100%] w-min rounded-md font-semibold cursor-pointer placeholder:italic ${className || ""
-//         }`}
-// />
 export default Input

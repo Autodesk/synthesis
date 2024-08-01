@@ -15,6 +15,7 @@ from .src.UI import (
     Helper,
     MarkingMenu,
     ShowAPSAuthCommand,
+    ShowWebsiteCommand,
 )
 from .src.UI.Toolbar import Toolbar
 
@@ -129,3 +130,13 @@ def register_ui() -> None:
     )
 
     gm.elements.append(apsButton)
+
+    websiteButton = HUI.HButton(
+        "Synthesis Website",
+        work_panel,
+        lambda *_: True,
+        ShowWebsiteCommand.ShowWebsiteCommandCreatedHandler,
+        description=f"Website Test",
+        command=True,
+    )
+    gm.elements.append(websiteButton)
