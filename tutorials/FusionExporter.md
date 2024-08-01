@@ -15,11 +15,40 @@ The Synthesis Fusion 360 exporter is the tool used by both developers and users 
 
 For information regarding the manual install process visit the [Synthesis Fusion 360 Exporter](https://github.com/Autodesk/synthesis/tree/prod/exporter) source code for more information.
 
-### Getting Started
+## Getting Started
 
-After installing Synthesis, the exporter addin should automatically start up when you open Fusion 360 (given that it was selected during the Synthesis install process). Navigate to the Utilities tab and you should see a Synthesis button.
+### Manual Install
 
-![image_caption](img/fusion/exporter-button.png)
+- Navigate to [`synthesis.autodesk.com/download`](https://synthesis.autodesk.com/download.html).
+- Find the Exporter source code zip download.
+  - Note that the source code is platform agnostic, it will work for **both** `Windows` and `Mac`.
+- Once the source code for the Exporter is installed unzip the folder.
+- Next, if not done already, install `Autodesk Fusion`.
+- Once Fusion is open navigate to the `Utilities Toolbar`.
+![image_caption](img/fusion/fusion-empty.png)
+- Click on `Scripts and Add-ins` from the toolbar.
+![image_caption](img/fusion/fusion-addins-highlight.png)
+- Navigate to `Add-ins` and select the green plus icon.
+![image_caption](img/fusion/fusion-addins-panel.png)
+- Now navigate to wherever you extracted the original `.zip` source code file you downloaded.
+  - Make sure to select the folder that contains the `Synthesis.py` file, this is the entry point to the Exporter.
+![image_caption](img/fusion/fusion-add-addin.png)
+- Once the extension is added you should be able to see it under `My Add-Ins`.
+- Select `Synthesis` from the `My Add-Ins` drop down and click `Run` in the bottom right.
+![image_caption](img/fusion/fusion-addin-synthesis.png)
+- The first time you run the extension it may prompt you to restart Fusion, this is totally normal.
+- Once you restart Fusion the extension will run on startup, you will be able to find it on the right side of the toolbar
+under the `Utilities` tab.
+![image_caption](img/fusion/fusion-utilities-with-synthesis.png)
+
+Thanks for installing the Synthesis Fusion Exporter! For any additional help visit our [Synthesis Community Discord Server](https://www.discord.gg/hHcF9AVgZA) where you can talk directly to our developers.
+
+### Using an Installer
+
+Our automatic installer is still in development, visit the [Synthesis Discord Server](https://www.discord.gg/hHcF9AVgZA) for updates and any manual installing help.
+
+
+### Launching the Exporter
 
 After clicking the button, a panel will open up. This is the exporter. In this panel, you can provide us with most of the extra data we need to properly simulate your robot or field in Synthesis.
 
