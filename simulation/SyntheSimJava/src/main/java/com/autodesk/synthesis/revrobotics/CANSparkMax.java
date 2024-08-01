@@ -12,7 +12,7 @@ import com.revrobotics.REVLibError;
 public class CANSparkMax extends com.revrobotics.CANSparkMax {
 
     private CANMotor m_motor;
-    private CANEncoder m_encoder;
+    public CANEncoder m_encoder;
 
     /**
      * Creates a new CANSparkMax, wrapped with simulation support.
@@ -49,13 +49,13 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
 
     @Override
     public SparkAbsoluteEncoder getAbsoluteEncoder() {
-        return new SparkAbsoluteEncoder(this.m_encoder, this, com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+        return new SparkAbsoluteEncoder(this.m_encoder, com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
     }
 
     @Override
     public SparkAbsoluteEncoder getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type type) {
-        return new SparkAbsoluteEncoder(this.m_encoder, this, type);
-    }    
+        return new SparkAbsoluteEncoder(this.m_encoder, type);
+    }
 
     // TODO: Finish following
     // @Override
