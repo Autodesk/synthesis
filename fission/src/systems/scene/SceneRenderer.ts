@@ -13,7 +13,6 @@ import InputSystem from "../input/InputSystem"
 import Jolt from "@barclah/jolt-physics"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import {} from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 
 const CLEAR_COLOR = 0x121212
@@ -50,7 +49,7 @@ class SceneRenderer extends WorldSystem {
     public get renderer(): THREE.WebGLRenderer {
         return this._renderer
     }
-    
+
     public set renderer(renderer: THREE.WebGLRenderer) {
         this._renderer = renderer
     }
@@ -66,7 +65,9 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
-        this._renderer = this.CreateRenderer(PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference"), PreferencesSystem.getGlobalPreference<boolean>("Antialiasing"))
+        this._renderer = this.CreateRenderer(
+            PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference")
+        )
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0)
         directionalLight.position.set(-1.0, 3.0, 2.0)
@@ -119,7 +120,7 @@ class SceneRenderer extends WorldSystem {
 
         const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
         this._antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
-        this._composer.addPass(this._antiAliasPass)
+        this.SetAntiAliasing(PreferencesSystem.getGlobalPreference<boolean>("AntiAliasing"))
 
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
@@ -133,10 +134,10 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
-    public CreateRenderer(powerPreference: WebGLPowerPreference, antialias: boolean): THREE.WebGLRenderer {
+    public CreateRenderer(powerPreference: WebGLPowerPreference): THREE.WebGLRenderer {
         const renderer = new THREE.WebGLRenderer({
             powerPreference: powerPreference,
-            antialias: antialias,
+            antialias: false,
             stencil: false,
             depth: false,
         })
@@ -146,6 +147,14 @@ class SceneRenderer extends WorldSystem {
         renderer.shadowMap.type = THREE.PCFSoftShadowMap
         renderer.setSize(window.innerWidth, window.innerHeight)
         return renderer
+    }
+
+    public SetAntiAliasing(antiAliasPass: boolean): void {
+        if (antiAliasPass) {
+            this._composer.addPass(this._antiAliasPass)
+        } else if (this._composer.passes.includes(this._antiAliasPass)) {
+            this._composer.removePass(this._antiAliasPass)
+        }
     }
 
     public Update(deltaT: number): void {
@@ -257,7 +266,7 @@ class SceneRenderer extends WorldSystem {
         return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
 
-    /** 
+    /**
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()

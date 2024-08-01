@@ -15,10 +15,10 @@ function OptionsToPowerPreference(): { [key: string]: WebGLPowerPreference } {
 }
 
 function PowerPreferenceToOptions(): { [key: string]: string } {
-    return { 
-        "high-performance": "High Performance", 
-        "default": "Balanced", 
-        "low-power": "Power Saver" 
+    return {
+        "high-performance": "High Performance",
+        "default": "Balanced",
+        "low-power": "Power Saver",
     }
 }
 
@@ -30,20 +30,22 @@ const QualitySettingsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
+            onAccept={() => {
+                PreferencesSystem.savePreferences()
+            }}
         >
             <Dropdown
                 label="Power Preference"
                 options={["High Performance", "Balanced", "Power Saver"]}
-                defaultValue={PowerPreferenceToOptions()[PreferencesSystem.getGlobalPreference<string>("PowerPreference")]}
+                defaultValue={
+                    PowerPreferenceToOptions()[PreferencesSystem.getGlobalPreference<string>("PowerPreference")]
+                }
                 onSelect={value => {
                     // converting the options into WebGLPowerPreference values
                     value = OptionsToPowerPreference()[value as string]
 
                     // recreating the renderer with new preferences
-                    World.SceneRenderer.renderer = World.SceneRenderer.CreateRenderer(
-                        value as WebGLPowerPreference,
-                        PreferencesSystem.getGlobalPreference<boolean>("Antialiasing")
-                    )
+                    World.SceneRenderer.renderer = World.SceneRenderer.CreateRenderer(value as WebGLPowerPreference)
 
                     // saving the new preference
                     PreferencesSystem.setGlobalPreference("PowerPreference", value)
@@ -59,9 +61,13 @@ const QualitySettingsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                 />
                 <Checkbox
                     label="Anti-Aliasing"
-                    defaultState={true}
+                    defaultState={PreferencesSystem.getGlobalPreference<boolean>("AntiAliasing")}
                     onClick={checked => {
-                        console.log("AntiAliasing", checked)
+                        // rupdating anti-aliasing
+                        World.SceneRenderer.SetAntiAliasing(checked)
+
+                        // saving the new preference
+                        PreferencesSystem.setGlobalPreference("AntiAliasing", checked)
                     }}
                 />
                 <Checkbox
