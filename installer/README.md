@@ -9,7 +9,7 @@
 - Next, if you haven't already, install `Autodesk Fusion`.
 - Once Fusion is open, navigate to the `Utilities Toolbar`.
 ![image_caption](../tutorials/img/fusion/fusion-empty.png)
-- Click on `Scripts and Add-ins` from the toolbar.
+- Click on `Scripts and Add-ins` in the toolbar.
 ![image_caption](../tutorials/img/fusion/fusion-addins-highlight.png)
 - Navigate to `Add-ins` and select the green plus icon.
 ![image_caption](../tutorials/img/fusion/fusion-addins-panel.png)
