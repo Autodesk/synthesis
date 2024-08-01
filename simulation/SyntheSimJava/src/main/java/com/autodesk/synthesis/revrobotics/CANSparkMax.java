@@ -48,13 +48,23 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
     }
 
     @Override
-    public SparkAbsoluteEncoder getAbsoluteEncoder() {
-        return new SparkAbsoluteEncoder(this.m_encoder, com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+    public SparkAbsoluteEncoder getAbsoluteEncoder() throws Exception{
+        try {
+            return new SparkAbsoluteEncoder(this.m_encoder, com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     @Override
-    public SparkAbsoluteEncoder getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type type) {
-        return new SparkAbsoluteEncoder(this.m_encoder, type);
+    public SparkAbsoluteEncoder getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type type) throws Exception {
+        try {
+            return new SparkAbsoluteEncoder(this.m_encoder, type);
+        } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     // TODO: Finish following
