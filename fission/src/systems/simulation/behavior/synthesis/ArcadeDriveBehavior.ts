@@ -8,9 +8,6 @@ class ArcadeDriveBehavior extends Behavior {
     private rightWheels: WheelDriver[]
     private _brainIndex: number
 
-    private _driveSpeed = 30
-    private _turnSpeed = 30
-
     constructor(
         leftWheels: WheelDriver[],
         rightWheels: WheelDriver[],
@@ -38,7 +35,7 @@ class ArcadeDriveBehavior extends Behavior {
         const driveInput = InputSystem.getInput("arcadeDrive", this._brainIndex)
         const turnInput = InputSystem.getInput("arcadeTurn", this._brainIndex)
 
-        this.DriveSpeeds(driveInput * this._driveSpeed, turnInput * this._turnSpeed)
+        this.DriveSpeeds(driveInput, turnInput)
     }
 }
 

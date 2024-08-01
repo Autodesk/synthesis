@@ -48,6 +48,8 @@ export type RobotPreferences = {
     motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    driveVelocity: number
+    driveAcceleration: number
 }
 
 export type MotorPreferences = {
@@ -88,6 +90,8 @@ export function DefaultRobotPreferences(): RobotPreferences {
             ejectorVelocity: 1,
             parentNode: undefined,
         },
+        driveVelocity: 0,
+        driveAcceleration: 0
     }
 }
 

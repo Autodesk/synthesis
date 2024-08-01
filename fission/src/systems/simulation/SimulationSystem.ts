@@ -91,7 +91,7 @@ class SimulationLayer {
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
-                const driver = new WheelDriver(vehicle, x.info)
+                const driver = new WheelDriver(vehicle, x.maxVelocity, x.info)
                 this._drivers.push(driver)
                 const stim = new WheelRotationStimulus(vehicle.GetWheel(0))
                 this._stimuli.push(stim)
