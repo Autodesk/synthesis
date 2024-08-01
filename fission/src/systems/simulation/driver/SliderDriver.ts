@@ -12,6 +12,8 @@ class SliderDriver extends Driver {
     private _targetPosition: number = 0.0
     private _maxVelocity: number = 1.0
 
+    private _prevPos: number = 0.0
+
     public get accelerationDirection(): number {
         return this._accelerationDirection
     }
@@ -84,8 +86,12 @@ class SliderDriver extends Driver {
         if (this._controlMode == DriverControlMode.Velocity) {
             this._constraint.SetTargetVelocity(this._accelerationDirection * this._maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
-            //TODO: MaxVel checks diff
-            this._constraint.SetTargetPosition(this._targetPosition)
+            let pos = this._targetPosition
+            
+            if (pos - this._prevPos < -this.maxVelocity) pos = this._prevPos - this._maxVelocity
+            if (pos - this._prevPos > this.maxVelocity) pos = this._prevPos + this._maxVelocity
+            
+            this._constraint.SetTargetPosition(pos)
         }
     }
 }
