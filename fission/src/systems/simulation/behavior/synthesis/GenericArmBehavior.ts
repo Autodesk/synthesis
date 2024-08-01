@@ -16,9 +16,9 @@ class GenericArmBehavior extends Behavior {
         this._brainIndex = brainIndex
     }
 
-    // Sets the arms target rotational velocity
-    rotateArm(rotationalVelocity: number) {
-        this._hingeDriver.targetVelocity = rotationalVelocity
+    // Sets the arm's acceleration direction
+    rotateArm(input: number) {
+        this._hingeDriver.accelerationDirection = input
     }
 
     public Update(_: number): void {

@@ -7,8 +7,8 @@ export interface MechanismConstraint {
     parentBody: Jolt.BodyID
     childBody: Jolt.BodyID
     constraint: Jolt.Constraint
-    info?: mirabuf.IInfo
     maxVelocity: number
+    info?: mirabuf.IInfo
 }
 
 class Mechanism {

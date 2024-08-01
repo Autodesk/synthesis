@@ -351,7 +351,7 @@ class PhysicsSystem extends WorldSystem {
             const bodyA = this.GetBody(bodyIdA)
             const bodyB = this.GetBody(bodyIdB)
 
-            const constraints: [Jolt.Constraint, number][] = []
+            const constraints: Jolt.Constraint[] = []
             let listener: Jolt.PhysicsStepListener | undefined = undefined
 
             // maxForce becomes maxForce for sliders, maxTorque for hinges, and maxAcceleration for wheels
@@ -384,8 +384,8 @@ class PhysicsSystem extends WorldSystem {
                                 bodyB,
                                 parser.assembly.info!.version!
                             )
-                            constraints.push([res[0], maxVel ?? 40])
-                            constraints.push([res[1], maxVel ?? 40])
+                            constraints.push(res[0])
+                            constraints.push(res[1])
                             listener = res[2]
                         } else {
                             const res = this.CreateWheelConstraint(
@@ -396,19 +396,17 @@ class PhysicsSystem extends WorldSystem {
                                 bodyA,
                                 parser.assembly.info!.version!
                             )
-                            constraints.push([res[0], maxVel ?? 40])
-                            constraints.push([res[1], maxVel ?? 40])
+                            constraints.push(res[0])
+                            constraints.push(res[1])
                             listener = res[2]
                         }
                     } else {
-                        constraints.push(
-                            [this.CreateHingeConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB, parser.assembly.info!.version!), maxVel ? maxVel : 40]
-                        )
+                        constraints.push(this.CreateHingeConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB, parser.assembly.info!.version!))
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
                     
-                    constraints.push([this.CreateSliderConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB), maxVel ? maxVel : 40])
+                    constraints.push(this.CreateSliderConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB))
                     break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")
@@ -420,10 +418,9 @@ class PhysicsSystem extends WorldSystem {
                     mechanism.AddConstraint({
                         parentBody: bodyIdA,
                         childBody: bodyIdB,
-                        constraint: x[0],
-                        maxVelocity: x[1],
+                        constraint: x,
+                        maxVelocity: maxVel ?? 30,
                         info: jInst.info ?? undefined, // remove possibility for null
-
                     })
                 )
             }

@@ -8,23 +8,15 @@ class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
 
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
-    private _targetVelocity: number = 0.0
+    private _accelerationDirection: number = 0.0
     private _targetAngle: number
     private _maxVelocity: number
 
-    public get maxVelocity(): number {
-        return this._maxVelocity
+    public get accelerationDirection(): number {
+        return this._accelerationDirection
     }
-
-    public set maxVelocity(radsPerSec: number) {
-        this._maxVelocity = radsPerSec
-    }
-
-    public get targetVelocity(): number {
-        return this._targetVelocity
-    }
-    public set targetVelocity(radsPerSec: number) {
-        this._targetVelocity = radsPerSec
+    public set accelerationDirection(radsPerSec: number) {
+        this._accelerationDirection = radsPerSec
     }
 
     public get targetAngle(): number {
@@ -32,6 +24,13 @@ class HingeDriver extends Driver {
     }
     public set targetAngle(rads: number) {
         this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
+    }
+
+    public get maxVelocity(): number {
+        return this._maxVelocity
+    }
+    public set maxVelocity(radsPerSec: number) {
+        this._maxVelocity = radsPerSec
     }
 
     public get maxForce() {
@@ -67,6 +66,8 @@ class HingeDriver extends Driver {
         super(info)
 
         this._constraint = constraint
+        this._maxVelocity = maxVelocity
+        this._targetAngle = this._constraint.GetCurrentAngle()
 
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
@@ -74,18 +75,14 @@ class HingeDriver extends Driver {
         // These values were selected based on the suggestions of the documentation for stiff control.
         springSettings.mFrequency = 20 * (1.0 / GetLastDeltaT())
         springSettings.mDamping = 0.995
-
         motorSettings.mSpringSettings = springSettings
-
-        this._targetAngle = this._constraint.GetCurrentAngle()
-        this._maxVelocity = maxVelocity
 
         this.controlMode = DriverControlMode.Velocity
     }
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetAngularVelocity(this._targetVelocity * this._maxVelocity)
+            this._constraint.SetTargetAngularVelocity(this._accelerationDirection * this._maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
             //TODO add maxVel to diff
             this._constraint.SetTargetAngle(this._targetAngle)

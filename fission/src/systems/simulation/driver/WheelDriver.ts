@@ -14,22 +14,30 @@ class WheelDriver extends Driver {
     public device?: string
     private _reversed: boolean
 
-    private _targetWheelSpeed: number = 0.0
+    private _accelerationDirection: number = 0.0
     private _prevVel: number = 0.0
     private _maxVelocity = 30.0
     private _maxAcceleration = 1.5
 
-    public get targetWheelSpeed(): number {
-        return this._targetWheelSpeed
+    private _targetVelocity = () => {
+        let vel = this._accelerationDirection * (this._reversed ? -1 : 1) * this._maxVelocity
+
+        if (vel - this._prevVel < -this._maxAcceleration) vel = this._prevVel - this._maxAcceleration
+        if (vel - this._prevVel > this._maxAcceleration) vel = this._prevVel + this._maxAcceleration
+
+        return vel
     }
-    public set targetWheelSpeed(radsPerSec: number) {
-        this._targetWheelSpeed = radsPerSec
+
+    public get accelerationDirection(): number {
+        return this._accelerationDirection
+    }
+    public set accelerationDirection(radsPerSec: number) {
+        this._accelerationDirection = radsPerSec
     }
 
     public get maxVelocity(): number {
         return this._maxVelocity
     }
-
     public set maxVelocity(radsPerSec: number) {
         this._maxVelocity = radsPerSec
     }
@@ -37,7 +45,6 @@ class WheelDriver extends Driver {
     public get maxForce(): number {
         return this._maxAcceleration
     }
-
     public set maxForce(acc: number) {
         this._maxAcceleration = acc
     }
@@ -60,6 +67,7 @@ class WheelDriver extends Driver {
         this._maxVelocity = maxVel
         const controller = JOLT.castObject(this._constraint.GetController(), JOLT.WheeledVehicleController)
         this._maxAcceleration = controller.GetEngine().mMaxTorque
+
         this._reversed = reversed
         this.deviceType = deviceType
         this.device = device
@@ -69,14 +77,7 @@ class WheelDriver extends Driver {
     }
 
     public Update(_: number): void {
-        let vel = this._targetWheelSpeed * (this._reversed ? -1 : 1) * this._maxVelocity
-        // if (InputSystem.isKeyPressed("KeyW")) console.log(`vel 1: ${vel}`)
-
-        if (vel - this._prevVel < -this._maxAcceleration) vel = this._prevVel - this._maxAcceleration
-        if (vel - this._prevVel > this._maxAcceleration) vel = this._prevVel + this._maxAcceleration
-        // if (vel != 0) console.log(`prev: ${this._prevVel}  vel 3: ${vel}`)
-
-
+        const vel = this._targetVelocity()
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
     }

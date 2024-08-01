@@ -8,23 +8,15 @@ class SliderDriver extends Driver {
     private _constraint: Jolt.SliderConstraint
 
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
-    private _targetVelocity: number = 0.0
+    private _accelerationDirection: number = 0.0
     private _targetPosition: number = 0.0
     private _maxVelocity: number = 1.0
 
-    public get maxVelocity(): number {
-        return this._maxVelocity
+    public get accelerationDirection(): number {
+        return this._accelerationDirection
     }
-
-    public set maxVelocity(radsPerSec: number) {
-        this._maxVelocity = radsPerSec
-    }
-
-    public get targetVelocity(): number {
-        return this._targetVelocity
-    }
-    public set targetVelocity(radsPerSec: number) {
-        this._targetVelocity = radsPerSec
+    public set accelerationDirection(radsPerSec: number) {
+        this._accelerationDirection = radsPerSec
     }
 
     public get targetPosition(): number {
@@ -35,6 +27,13 @@ class SliderDriver extends Driver {
             this._constraint.GetLimitsMin(),
             Math.min(this._constraint.GetLimitsMax(), position)
         )
+    }
+
+    public get maxVelocity(): number {
+        return this._maxVelocity
+    }
+    public set maxVelocity(radsPerSec: number) {
+        this._maxVelocity = radsPerSec
     }
 
     public get maxForce(): number {
@@ -69,15 +68,13 @@ class SliderDriver extends Driver {
         super(info)
 
         this._constraint = constraint
+        this._maxVelocity = maxVelocity
 
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
         springSettings.mFrequency = 20 * (1.0 / GetLastDeltaT())
         springSettings.mDamping = 0.999
-
         motorSettings.mSpringSettings = springSettings
-
-        this._maxVelocity = maxVelocity
 
         this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
         this.controlMode = DriverControlMode.Velocity
@@ -85,7 +82,7 @@ class SliderDriver extends Driver {
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetVelocity(this._targetVelocity * this._maxVelocity)
+            this._constraint.SetTargetVelocity(this._accelerationDirection * this._maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
             //TODO: MaxVel checks diff
             this._constraint.SetTargetPosition(this._targetPosition)

@@ -16,10 +16,9 @@ class GenericElevatorBehavior extends Behavior {
         this._brainIndex = brainIndex
     }
 
-    // Changes the elevators target position
-    moveElevator(linearVelocity: number) {
-        // Multiplied by velocity in driver
-        this._sliderDriver.targetVelocity = linearVelocity
+    // Changes the elevator's acceleration direction
+    moveElevator(input: number) {
+        this._sliderDriver.accelerationDirection = input
     }
 
     public Update(_: number): void {
