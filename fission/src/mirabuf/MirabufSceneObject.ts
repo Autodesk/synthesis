@@ -9,7 +9,6 @@ import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import InputSystem from "@/systems/input/InputSystem"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -17,8 +16,11 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
+import Brain from "@/systems/simulation/Brain"
+import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 const DEBUG_BODIES = false
 
@@ -31,7 +33,7 @@ class MirabufSceneObject extends SceneObject {
     private _assemblyName: string
     private _mirabufInstance: MirabufInstance
     private _mechanism: Mechanism
-    private _brain: SynthesisBrain | undefined
+    private _brain: Brain | undefined
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
@@ -45,6 +47,7 @@ class MirabufSceneObject extends SceneObject {
 
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
+    private _scoringZones: ScoringZoneSceneObject[] = []
 
     private _nameTag: SceneOverlayTag | undefined
 
@@ -88,6 +91,10 @@ class MirabufSceneObject extends SceneObject {
         return this._mirabufInstance.parser.rootNode
     }
 
+    public get brain() {
+        return this._brain
+    }
+
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
         super()
 
@@ -109,7 +116,9 @@ class MirabufSceneObject extends SceneObject {
 
         // creating nametag for robots
         if (this.miraType === MiraType.ROBOT) {
-            this._nameTag = new SceneOverlayTag("Ernie")
+            this._nameTag = new SceneOverlayTag(() =>
+                this._brain instanceof SynthesisBrain ? this._brain.inputSchemeName : "Not Configured"
+            )
         }
     }
 
@@ -152,10 +161,13 @@ class MirabufSceneObject extends SceneObject {
 
         // Intake
         this.UpdateIntakeSensor()
+
+        this.UpdateScoringZones()
     }
 
     public Update(): void {
-        if (InputSystem.currentModifierState.ctrl && InputSystem.currentModifierState.shift && this._ejectable) {
+        const brainIndex = this._brain instanceof SynthesisBrain ? this._brain.brainIndex ?? -1 : -1
+        if (InputSystem.getInput("eject", brainIndex)) {
             this.Eject()
         }
 
@@ -245,8 +257,11 @@ class MirabufSceneObject extends SceneObject {
             this._ejectable = undefined
         }
 
+        this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._scoringZones = []
+
         this._mechanism.nodeToBody.forEach(bodyId => {
-            World.PhysicsSystem.RemoveBodyAssocation(bodyId)
+            World.PhysicsSystem.RemoveBodyAssociation(bodyId)
         })
 
         this._nameTag?.Dispose()
@@ -264,7 +279,7 @@ class MirabufSceneObject extends SceneObject {
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
 
-        this._brain?.clearControls()
+        if (this._brain && this._brain instanceof SynthesisBrain) this._brain?.clearControls()
     }
 
     public Eject() {
@@ -334,12 +349,30 @@ class MirabufSceneObject extends SceneObject {
         }
 
         if (!this._ejectorPreferences || !this._ejectorPreferences.parentNode || !bodyId) {
+            console.log(`Configure an ejectable first.`)
             return false
         }
 
         this._ejectable = new EjectableSceneObject(this, bodyId)
         World.SceneRenderer.RegisterSceneObject(this._ejectable)
         return true
+    }
+
+    public UpdateScoringZones(render?: boolean) {
+        this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._scoringZones = []
+
+        if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
+            for (let i = 0; i < this._fieldPreferences.scoringZones.length; i++) {
+                const newZone = new ScoringZoneSceneObject(
+                    this,
+                    i,
+                    render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
+                )
+                this._scoringZones.push(newZone)
+                World.SceneRenderer.RegisterSceneObject(newZone)
+            }
+        }
     }
 
     /**

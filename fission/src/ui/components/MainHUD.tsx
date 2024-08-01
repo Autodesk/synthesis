@@ -1,28 +1,15 @@
 import React, { useEffect, useState } from "react"
-import { BsCodeSquare } from "react-icons/bs"
-import { FaCar, FaGear, FaMagnifyingGlass, FaPlus } from "react-icons/fa6"
 import { BiMenuAltLeft } from "react-icons/bi"
-import { GrConnect, GrFormClose } from "react-icons/gr"
-import { GiSteeringWheel } from "react-icons/gi"
-import { HiDownload } from "react-icons/hi"
-import { IoBasketball, IoBug, IoGameControllerOutline, IoPeople, IoRefresh, IoTimer } from "react-icons/io5"
+import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
 import logo from "@/assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "@/ui/ToastContext"
-import { Random } from "@/util/Random"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
-import World from "@/systems/World"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Button } from "@mui/base/Button"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import Jolt from "@barclah/jolt-physics"
-import { AiOutlineDoubleRight } from "react-icons/ai"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 
 type ButtonProps = {
     value: string
@@ -86,136 +73,63 @@ const MainHUD: React.FC = () => {
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img src={logo} className="w-[80%] h-[100%] object-contain" />
-                    <Button
+                    <ButtonIcon
+                        value={<FaXmark color="bg-icon" size={20} className="text-main-hud-close-icon" />}
                         onClick={() => setIsOpen(false)}
-                        className={`bg-none border-none focus-visible:outline-0 focus:outline-0 select-none`}
-                    >
-                        <GrFormClose color="bg-icon" size={20} className="text-main-hud-close-icon" />
-                    </Button>
+                    />
                 </div>
                 <MainHUDButton
                     value={"Spawn Asset"}
-                    icon={<FaPlus />}
+                    icon={SynthesisIcons.Add}
                     larger={true}
                     onClick={() => openPanel("import-mirabuf")}
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
                         value={"Manage Assemblies"}
-                        icon={<FaGear />}
+                        icon={SynthesisIcons.Wrench}
                         onClick={() => openModal("manage-assemblies")}
                     />
-                    <MainHUDButton value={"Settings"} icon={<FaGear />} onClick={() => openModal("settings")} />
-                    <MainHUDButton value={"View"} icon={<FaMagnifyingGlass />} onClick={() => openModal("view")} />
+                    <MainHUDButton
+                        value={"Settings"}
+                        icon={SynthesisIcons.Gear}
+                        onClick={() => openModal("settings")}
+                    />
+                    {/* <MainHUDButton
+                        value={"View"}
+                        icon={SynthesisIcons.MagnifyingGlass}
+                        onClick={() => openModal("view")}
+                    /> */}
                     <MainHUDButton
                         value={"Controls"}
-                        icon={<IoGameControllerOutline />}
+                        icon={SynthesisIcons.Gamepad}
                         onClick={() => openModal("change-inputs")}
                     />
-                    <MainHUDButton value={"MultiBot"} icon={<IoPeople />} onClick={() => openPanel("multibot")} />
                     <MainHUDButton
                         value={"Import Local Mira"}
-                        icon={<IoPeople />}
+                        icon={SynthesisIcons.Import}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
-                    <MainHUDButton
-                        value={"The Poker"}
-                        icon={<AiOutlineDoubleRight />}
-                        onClick={() => openPanel("poker")}
-                    />
-                    <MainHUDButton value={"Test God Mode"} icon={<IoGameControllerOutline />} onClick={TestGodMode} />
-                    <MainHUDButton
-                        value={"Clear Prefs"}
-                        icon={<IoBug />}
-                        onClick={() => PreferencesSystem.clearPreferences()}
-                    />
-                    <MainHUDButton
-                        value={"Refresh APS Token"}
-                        icon={<IoRefresh />}
-                        onClick={async () =>
-                            APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
-                        }
-                    />
-                    <MainHUDButton
-                        value={"Expire APS Token"}
-                        icon={<IoTimer />}
-                        onClick={() => {
-                            if (APS.isSignedIn()) {
-                                APS.setExpiresAt(Date.now())
-                                APS.getAuthOrLogin()
-                            }
-                        }}
-                    />
-                    <MainHUDButton value={"WS Viewer"} icon={<GrConnect />} onClick={() => openPanel("ws-view")} />
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
-                        value={"Download Asset"}
-                        icon={<HiDownload />}
-                        onClick={() => openModal("download-assets")}
-                    />
-                    <MainHUDButton value={"RoboRIO"} icon={<BsCodeSquare />} onClick={() => openModal("roborio")} />
-                    <MainHUDButton
-                        value={"Driver Station"}
-                        icon={<GiSteeringWheel />}
-                        onClick={() => openPanel("driver-station")}
-                    />
-                    <MainHUDButton
-                        value={"Sequential Joints"}
-                        icon={<FaGear />}
-                        onClick={() => openPanel("sequential-joints")}
-                    />
-                    {/* MiraMap and OPFS Temp Buttons */}
-                    <MainHUDButton
-                        value={"Print Mira Maps"}
-                        icon={<BsCodeSquare />}
-                        onClick={() => {
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
-                        }}
-                    />
-                    <MainHUDButton
-                        value={"Clear Mira"}
-                        icon={<GiSteeringWheel />}
-                        onClick={() => MirabufCachingService.RemoveAll()}
-                    />
-                    <MainHUDButton
                         value={"Edit Scoring Zones"}
-                        icon={<IoBasketball />}
+                        icon={SynthesisIcons.Basketball}
                         onClick={() => {
                             openPanel("scoring-zones")
                         }}
                     />
-                    <MainHUDButton value={"Drivetrain"} icon={<FaCar />} onClick={() => openModal("drivetrain")} />
                     <MainHUDButton
-                        value={"WS Test"}
-                        icon={<FaCar />}
-                        onClick={() => {
-                            // worker?.postMessage({ command: 'connect' });
-                            const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
-                                x => x[1] instanceof MirabufSceneObject
-                            )
-                            console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
-                            if (miraObjs.length > 0) {
-                                const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-                                const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
-                                simLayer?.SetBrain(new WPILibBrain(mechanism))
-                            }
-                        }}
+                        value={"Configure"}
+                        icon={SynthesisIcons.Gear}
+                        onClick={() => openModal("config-robot")}
                     />
                     <MainHUDButton
-                        value={"Toasts"}
-                        icon={<FaCar />}
+                        value={"Debug Tools"}
+                        icon={SynthesisIcons.ScrewdriverWrench}
                         onClick={() => {
-                            const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
-                            addToast(type, type, "This is a test toast to test the toast system")
+                            openPanel("debug")
                         }}
-                    />
-                    <MainHUDButton value={"Configure"} icon={<FaGear />} onClick={() => openModal("config-robot")} />
-                    <MainHUDButton
-                        value={"Configure Brain"}
-                        icon={<FaGear />}
-                        onClick={() => openPanel("config-robot-brain")}
                     />
                 </div>
                 {userInfo ? (
@@ -228,7 +142,7 @@ const MainHUD: React.FC = () => {
                 ) : (
                     <MainHUDButton
                         value={`APS Login`}
-                        icon={<IoPeople />}
+                        icon={SynthesisIcons.People}
                         larger={true}
                         onClick={() => APS.requestAuthCode()}
                     />
@@ -236,31 +150,6 @@ const MainHUD: React.FC = () => {
             </motion.div>
         </>
     )
-}
-
-async function TestGodMode() {
-    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()]
-        .filter(x => {
-            const y = x[1] instanceof MirabufSceneObject
-            return y
-        })
-        .map(x => x[1])[0] as MirabufSceneObject
-    const rootNodeId = robot.GetRootNodeId()
-    if (rootNodeId == undefined) {
-        console.error("Robot root node not found for god mode")
-        return
-    }
-    const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
-    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId, robotPosition as Jolt.Vec3)
-
-    // Move ghostBody to demonstrate godMode movement
-    await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(
-        ghostBody.GetID(),
-        new JOLT.Vec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
-    )
-    await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(2, 2, 2))
 }
 
 export default MainHUD

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react"
 import Modal, { ModalPropsImpl } from "../../components/Modal"
-import { FaPlus } from "react-icons/fa6"
 import Stack, { StackDirection } from "../../components/Stack"
 import Button, { ButtonSize } from "../../components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
@@ -9,6 +8,7 @@ import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import MirabufCachingService, { MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 interface MirabufRemoteInfo {
     displayName: string
@@ -123,7 +123,7 @@ export const AddRobotsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     return (
-        <Modal name={"Robot Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
+        <Modal name={"Robot Selection"} icon={SynthesisIcons.Add} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {cachedRobots ? `${cachedRobots.length} Saved Robots` : "No Saved Robots"}
@@ -207,7 +207,7 @@ export const AddFieldsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     return (
-        <Modal name={"Field Selection"} icon={<FaPlus />} modalId={modalId} acceptEnabled={false}>
+        <Modal name={"Field Selection"} icon={SynthesisIcons.Add} modalId={modalId} acceptEnabled={false}>
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {cachedFields ? `${cachedFields.length} Saved Fields` : "No Saved Fields"}
@@ -226,7 +226,7 @@ export const SpawningModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
 
     return (
-        <Modal name={"Spawning"} icon={<FaPlus />} modalId={modalId}>
+        <Modal name={"Spawning"} icon={SynthesisIcons.Add} modalId={modalId}>
             <Stack direction={StackDirection.Vertical}>
                 <Button
                     value={"Robots"}

@@ -2,6 +2,7 @@ import Jolt from "@barclah/jolt-physics"
 import Driver, { DriverControlMode } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { mirabuf } from "@/proto/mirabuf"
 
 class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
@@ -56,8 +57,8 @@ class HingeDriver extends Driver {
         }
     }
 
-    public constructor(constraint: Jolt.HingeConstraint) {
-        super()
+    public constructor(constraint: Jolt.HingeConstraint, info?: mirabuf.IInfo) {
+        super(info)
 
         this._constraint = constraint
 

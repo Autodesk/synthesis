@@ -1,11 +1,6 @@
 import Scene from "@/components/Scene.tsx"
-import MirabufSceneObject from "./mirabuf/MirabufSceneObject.ts"
-import MirabufCachingService, { MiraType } from "./mirabuf/MirabufLoader.ts"
-import { mirabuf } from "./proto/mirabuf"
-import MirabufParser, { ParseErrorSeverity } from "./mirabuf/MirabufParser.ts"
-import MirabufInstance from "./mirabuf/MirabufInstance.ts"
 import { AnimatePresence } from "framer-motion"
-import { ReactElement, useEffect } from "react"
+import { ReactElement, useCallback, useEffect, useState } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
 import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
 import { useTheme } from "@/ui/ThemeContext"
@@ -25,7 +20,7 @@ import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
 import ViewModal from "@/modals/ViewModal"
 import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "@/modals/aether/ServerHostingModal"
-import ChangeInputsModal from "@/ui/modals/configuring/ChangeInputsModal.tsx"
+import ChangeInputsModal from "@/ui/modals/configuring/inputs/ChangeInputsModal.tsx"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
 import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
@@ -34,7 +29,6 @@ import PracticeSettingsModal from "@/modals/configuring/PracticeSettingsModal"
 import RoboRIOModal from "@/modals/configuring/RoboRIOModal"
 import SettingsModal from "@/modals/configuring/SettingsModal"
 import RCConfigEncoderModal from "@/modals/configuring/rio-config/RCConfigEncoderModal"
-import RCConfigPwmGroupModal from "@/modals/configuring/rio-config/RCConfigPwmGroupModal"
 import RCCreateDeviceModal from "@/modals/configuring/rio-config/RCCreateDeviceModal"
 import DeleteAllThemesModal from "@/modals/configuring/theme-editor/DeleteAllThemesModal"
 import DeleteThemeModal from "@/modals/configuring/theme-editor/DeleteThemeModal"
@@ -53,13 +47,12 @@ import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
-import APS from "./aps/APS.ts"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
+import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import { ProgressHandle } from "./ui/components/ProgressNotificationData.ts"
 import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
-import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
+import ResetAllInputsModal from "./ui/modals/configuring/inputs/ResetAllInputsModal.tsx"
 import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
 import ConfigureRobotBrainPanel from "./ui/panels/configuring/ConfigureRobotBrainPanel.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
@@ -69,24 +62,22 @@ import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
 import SequentialBehaviorsPanel from "./ui/panels/SequentialBehaviorsPanel.tsx"
 
-const DEFAULT_MIRA_PATH = "/api/mira/Robots/Team 2471 (2018)_v7.mira"
+import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
+import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
+import DebugPanel from "./ui/panels/DebugPanel.tsx"
+import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
+import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
+import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
+import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
-    const urlParams = new URLSearchParams(document.location.search)
-    const has_code = urlParams.has("code")
-    if (has_code) {
-        const code = urlParams.get("code")
-        if (code) {
-            APS.convertAuthToken(code).then(() => {
-                document.location.search = ""
-            })
-        }
-    }
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
+
+    const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
     const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
@@ -98,53 +89,20 @@ function Synthesis() {
     const modalElement = getActiveModalElement()
 
     useEffect(() => {
-        if (has_code) return
+        const urlParams = new URLSearchParams(document.location.search)
+        if (urlParams.has("code")) {
+            window.opener.convertAuthToken(urlParams.get("code"))
+            window.close()
+            return
+        }
 
         World.InitWorld()
 
+        if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
+            setConsentPopupDisable(false)
+        }
+
         worker.getValue()
-
-        let mira_path = DEFAULT_MIRA_PATH
-
-        if (urlParams.has("mira")) {
-            mira_path = `test_mira/${urlParams.get("mira")!}`
-            console.debug(`Selected Mirabuf File: ${mira_path}`)
-        }
-
-        const setup = async () => {
-            const setupProgress = new ProgressHandle("Spawning Default Robot")
-            setupProgress.Update("Checking cache...", 0.1)
-
-            const info = await MirabufCachingService.CacheRemote(mira_path, MiraType.ROBOT)
-                .catch(_ => MirabufCachingService.CacheRemote(DEFAULT_MIRA_PATH, MiraType.ROBOT))
-                .catch(console.error)
-
-            const miraAssembly = await MirabufCachingService.Get(info!.id, MiraType.ROBOT)
-
-            setupProgress.Update("Parsing assembly...", 0.5)
-
-            await (async () => {
-                if (!miraAssembly || !(miraAssembly instanceof mirabuf.Assembly)) {
-                    return
-                }
-
-                const parser = new MirabufParser(miraAssembly)
-                if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
-                    console.error(`Assembly Parser produced significant errors for '${miraAssembly.info!.name!}'`)
-                    setupProgress.Fail("Failed to parse assembly")
-                    return
-                }
-
-                setupProgress.Update("Creating scene object...", 0.9)
-
-                const mirabufSceneObject = new MirabufSceneObject(new MirabufInstance(parser), miraAssembly.info!.name!)
-                World.SceneRenderer.RegisterSceneObject(mirabufSceneObject)
-
-                setupProgress.Done()
-            })()
-        }
-
-        setup()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -165,6 +123,26 @@ function Synthesis() {
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    useEffect(() => {
+        let scoreboardExists = false
+        panelElements.forEach(x => {
+            if (x.key == "scoreboard") scoreboardExists = true
+        })
+        if (PreferencesSystem.getGlobalPreference("RenderScoreboard") && !scoreboardExists) {
+            openPanel("scoreboard")
+        }
+    })
+
+    const onConsent = useCallback(() => {
+        setConsentPopupDisable(true)
+        PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", true)
+        PreferencesSystem.savePreferences()
+    }, [])
+
+    const onDisableConsent = useCallback(() => {
+        setConsentPopupDisable(true)
     }, [])
 
     return (
@@ -204,6 +182,12 @@ function Synthesis() {
                             )}
                             <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
+
+                            {!consentPopupDisable ? (
+                                <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
+                            ) : (
+                                <></>
+                            )}
                         </ToastProvider>
                     </PanelControlProvider>
                 </ModalControlProvider>
@@ -232,18 +216,19 @@ const initialModals = [
     <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
     <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,
     <DeleteThemeModal key="delete-theme" modalId="delete-theme" />,
+    <NewInputSchemeModal key="new-scheme" modalId="new-scheme" />,
+    <AssignNewSchemeModal key="assign-new-scheme" modalId="assign-new-scheme" />,
     <DeleteAllThemesModal key="delete-all-themes" modalId="delete-all-themes" />,
     <NewThemeModal key="new-theme" modalId="new-theme" />,
     <RCCreateDeviceModal key="create-device" modalId="create-device" />,
-    <RCConfigPwmGroupModal key="config-pwm" modalId="config-pwm" />,
+    <RCConfigPWMGroupModal key="config-pwm" modalId="config-pwm" />,
+    <RCConfigCANGroupModal key="config-can" modalId="config-can" />,
     <RCConfigEncoderModal key="config-encoder" modalId="config-encoder" />,
     <MatchModeModal key="match-mode" modalId="match-mode" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
-    <ScoringZonesPanel panelId="scoring-zones" openLocation="right" />,
-    <ZoneConfigPanel panelId="zone-config" openLocation="right" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]
 
@@ -251,7 +236,7 @@ const initialPanels: ReactElement[] = [
     <RobotSwitchPanel key="multibot" panelId="multibot" openLocation="right" sidePadding={8} />,
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
-    <ScoreboardPanel key="scoreboard" panelId="scoreboard" />,
+    <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
     <ConfigureGamepiecePickupPanel
         key="config-gamepiece-pickup"
         panelId="config-gamepiece-pickup"
@@ -274,8 +259,10 @@ const initialPanels: ReactElement[] = [
         openLocation="right"
         sidePadding={8}
     />,
-    <WSViewPanel key="ws-view" panelId="ws-view" />,
     <SequentialBehaviorsPanel key="sequential-joints" panelId="sequential-joints" />,
+    <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
+    <WSViewPanel key="ws-view" panelId="ws-view" />,
+    <DebugPanel key="debug" panelId="debug" />,
 ]
 
 export default Synthesis

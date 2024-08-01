@@ -1,6 +1,6 @@
 import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
-import HingeDriver from "../driver/HingeDriver"
-import HingeStimulus from "../stimulus/HingeStimulus"
+import HingeDriver from "../../driver/HingeDriver"
+import HingeStimulus from "../../stimulus/HingeStimulus"
 import SequenceableBehavior from "./SequenceableBehavior"
 
 class GenericArmBehavior extends SequenceableBehavior {
@@ -16,11 +16,10 @@ class GenericArmBehavior extends SequenceableBehavior {
         hingeDriver: HingeDriver,
         hingeStimulus: HingeStimulus,
         jointIndex: number,
-        assemblyName: string,
-        assemblyIndex: number,
+        brainIndex: number,
         sequentialConfig: SequentialBehaviorPreferences | undefined
     ) {
-        super(jointIndex, assemblyName, assemblyIndex, [hingeDriver], [hingeStimulus], sequentialConfig)
+        super(jointIndex, brainIndex, [hingeDriver], [hingeStimulus], sequentialConfig)
 
         this._hingeDriver = hingeDriver
     }

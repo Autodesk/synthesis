@@ -1,14 +1,14 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaGear } from "react-icons/fa6"
 import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import Stack, { StackDirection } from "@/components/Stack"
 import Dropdown from "@/components/Dropdown"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const PracticeSettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
-        <Modal name="Practice Settings" icon={<FaGear />} modalId={modalId}>
+        <Modal name="Practice Settings" icon={SynthesisIcons.Gear} modalId={modalId}>
             <Label size={LabelSize.Large}>Gamepiece Spawning</Label>
             <Stack direction={StackDirection.Horizontal}>
                 <Dropdown options={["Sphere", "Cube", "Capsule"]} onSelect={() => {}} />

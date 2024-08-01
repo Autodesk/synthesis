@@ -1,8 +1,8 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { GrFormClose } from "react-icons/gr"
 import Stack, { StackDirection } from "@/components/Stack"
 import Label from "@/components/Label"
+import { SynthesisIcons } from "../components/StyledComponents"
 
 type Entry = {
     name: string
@@ -18,7 +18,7 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Match Results"}
-            icon={<GrFormClose />}
+            icon={SynthesisIcons.Xmark}
             modalId={modalId}
             cancelName="Exit"
             middleName="Configure"

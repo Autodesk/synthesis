@@ -1,6 +1,6 @@
 import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
-import SliderDriver from "../driver/SliderDriver"
-import SliderStimulus from "../stimulus/SliderStimulus"
+import SliderDriver from "../../driver/SliderDriver"
+import SliderStimulus from "../../stimulus/SliderStimulus"
 import SequenceableBehavior from "./SequenceableBehavior"
 
 class GenericElevatorBehavior extends SequenceableBehavior {
@@ -16,11 +16,10 @@ class GenericElevatorBehavior extends SequenceableBehavior {
         sliderDriver: SliderDriver,
         sliderStimulus: SliderStimulus,
         jointIndex: number,
-        assemblyName: string,
-        assemblyIndex: number,
+        brainIndex: number,
         sequentialConfig: SequentialBehaviorPreferences | undefined
     ) {
-        super(jointIndex, assemblyName, assemblyIndex, [sliderDriver], [sliderStimulus], sequentialConfig)
+        super(jointIndex, brainIndex, [sliderDriver], [sliderStimulus], sequentialConfig)
 
         this._sliderDriver = sliderDriver
     }

@@ -8,11 +8,12 @@ import { useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { Divider, styled } from "@mui/material"
-import ArcadeDriveBehavior from "@/systems/simulation/behavior/ArcadeDriveBehavior"
-import GenericArmBehavior from "@/systems/simulation/behavior/GenericArmBehavior"
-import GenericElevatorBehavior from "@/systems/simulation/behavior/GenericElevatorBehavior"
+import GenericElevatorBehavior from "@/systems/simulation/behavior/synthesis/GenericElevatorBehavior"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import { JSX } from "react/jsx-runtime"
+import ArcadeDriveBehavior from "@/systems/simulation/behavior/synthesis/ArcadeDriveBehavior"
+import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 // eslint-disable-next-line react-refresh/only-export-components
 export enum ConfigureRobotBrainTypes {
@@ -39,7 +40,8 @@ function GetJoints(robot: MirabufSceneObject): JSX.Element[] {
     let elementKey = 0
 
     /* Iterate through each behavior of the robot */
-    robot.brain?.behaviors.forEach(behavior => {
+    const brain = robot.brain as SynthesisBrain
+    brain.behaviors.forEach(behavior => {
         /* Adds the joints that the wheels are associated with */
         if (behavior instanceof ArcadeDriveBehavior) {
             behavior.wheels.forEach(wheel => {

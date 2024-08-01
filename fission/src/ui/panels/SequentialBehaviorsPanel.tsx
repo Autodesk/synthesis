@@ -7,11 +7,12 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import { FaArrowRightArrowLeft, FaGear, FaXmark } from "react-icons/fa6"
 import { Box, Button as MUIButton, Divider, styled, alpha, Icon } from "@mui/material"
 import Button, { ButtonSize } from "../components/Button"
-import GenericArmBehavior from "@/systems/simulation/behavior/GenericArmBehavior"
 import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SequenceableBehavior from "@/systems/simulation/behavior/SequenceableBehavior"
+import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import Checkbox from "../components/Checkbox"
+import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 const UnselectParentIcon = <FaXmark size={"1.25rem"} />
 const InvertIcon = <FaArrowRightArrowLeft size={"1.25rem"} style={{ transform: "rotate(90deg)" }} />
@@ -259,7 +260,7 @@ const SequentialBehaviorsPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                         if (prefs.sequentialConfig) setBehaviors(prefs.sequentialConfig)
                                         else {
                                             setBehaviors(
-                                                mirabufSceneObject.brain?.behaviors
+                                                (mirabufSceneObject.brain as SynthesisBrain).behaviors
                                                     .filter(b => b instanceof SequenceableBehavior)
                                                     .map(b => {
                                                         return DefaultSequentialConfig(

@@ -1,6 +1,5 @@
 import * as THREE from "three"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { FaGear } from "react-icons/fa6"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
 import TransformGizmos from "@/ui/components/TransformGizmos"
@@ -21,6 +20,7 @@ import {
 } from "@/util/TypeConversions"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { useTheme } from "@/ui/ThemeContext"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -184,7 +184,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
     return (
         <Panel
             name="Configure Pickup"
-            icon={<FaGear />}
+            icon={SynthesisIcons.Gear}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
@@ -220,7 +220,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
                 <>
                     {/* Button for user to select the parent node */}
                     <SelectButton
-                        placeholder="Select pickup node"
+                        placeholder="Select parent node"
                         value={selectedNode}
                         onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
                     />

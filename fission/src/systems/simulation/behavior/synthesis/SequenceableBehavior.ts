@@ -1,13 +1,12 @@
 import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
-import Driver from "../driver/Driver"
-import Stimulus from "../stimulus/Stimulus"
-import Behavior from "./Behavior"
+import Driver from "../../driver/Driver"
+import Stimulus from "../../stimulus/Stimulus"
+import Behavior from "../Behavior"
 import InputSystem from "@/systems/input/InputSystem"
 
 abstract class SequenceableBehavior extends Behavior {
     private _jointIndex: number
-    private _assemblyName: string
-    private _assemblyIndex: number
+    private _brainIndex: number
     private _sequentialConfig: SequentialBehaviorPreferences | undefined
 
     abstract maxVelocity: number
@@ -18,8 +17,7 @@ abstract class SequenceableBehavior extends Behavior {
 
     constructor(
         jointIndex: number,
-        assemblyName: string,
-        assemblyIndex: number,
+        brainIndex: number,
         drivers: Driver[],
         stimuli: Stimulus[],
         sequentialConfig: SequentialBehaviorPreferences | undefined
@@ -27,8 +25,7 @@ abstract class SequenceableBehavior extends Behavior {
         super(drivers, stimuli)
 
         this._jointIndex = jointIndex
-        this._assemblyName = assemblyName
-        this._assemblyIndex = assemblyIndex
+        this._brainIndex = brainIndex
         this._sequentialConfig = sequentialConfig
     }
 
@@ -38,11 +35,7 @@ abstract class SequenceableBehavior extends Behavior {
         const inputName = "joint " + (this._sequentialConfig?.parentJointIndex ?? this._jointIndex)
         const inverted = this._sequentialConfig?.inverted ?? false
 
-        this.applyInput(
-            InputSystem.getInput(inputName, this._assemblyName, this._assemblyIndex) *
-                this.maxVelocity *
-                (inverted ? -1 : 1)
-        )
+        this.applyInput(InputSystem.getInput(inputName, this._brainIndex) * this.maxVelocity * (inverted ? -1 : 1))
     }
 }
 

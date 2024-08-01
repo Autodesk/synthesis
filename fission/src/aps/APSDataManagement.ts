@@ -117,6 +117,7 @@ export async function getHubs(): Promise<Hub[] | undefined> {
     }
 
     try {
+        APS.incApsCalls("project-v1-hubs")
         return await fetch("https://developer.api.autodesk.com/project/v1/hubs", {
             method: "GET",
             headers: {
@@ -154,6 +155,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
     }
 
     try {
+        APS.incApsCalls("project-v1-hubs-x-projects")
         return await fetch(`https://developer.api.autodesk.com/project/v1/hubs/${hub.id}/projects/`, {
             method: "GET",
             headers: {
@@ -190,6 +192,7 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
     }
 
     try {
+        APS.incApsCalls("data-v1-projects-x-folders-x-contents")
         return await fetch(
             `https://developer.api.autodesk.com/data/v1/projects/${project.id}/folders/${folder.id}/contents`,
             {
@@ -239,6 +242,7 @@ export async function searchFolder(project: Project, folder: Folder, filters?: F
         endpoint += `?${filterToQuery(filters)}`
     }
 
+    APS.incApsCalls("data-v1-projects-x-folders-x-search")
     const res = await fetch(endpoint, {
         method: "GET",
         headers: {
@@ -267,6 +271,7 @@ export async function downloadData(data: Data): Promise<ArrayBuffer | undefined>
         return undefined
     }
 
+    APS.incApsCalls("object_bucket")
     return await fetch(data.href, {
         method: "GET",
         headers: {
