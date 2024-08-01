@@ -5,7 +5,7 @@
 - Navigate to [`synthesis.autodesk.com/download`](https://synthesis.autodesk.com/download.html).
 - Find the Exporter source code zip download.
   - Note that the source code is platform agnostic, it will work for **both** `Windows` and `Mac`.
-- Once the source code for the Exporter is installed unzip the folder.
+- Once the source code for the Exporter is downloaded, unzip the folder.
 - Next, if not done already, install `Autodesk Fusion`.
 - Once Fusion is open navigate to the `Utilities Toolbar`.
 ![image_caption](../tutorials/img/fusion/fusion-empty.png)
