@@ -7,7 +7,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
-import { ConfigurationSavedEvent } from "../../ConfigureAssembliesPanel"
+import { ConfigurationSavedEvent } from "../../ConfigurePanel"
 import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
@@ -89,7 +89,7 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
-    }, [])
+    }, [selectedField, zones])
 
     return (
         <>

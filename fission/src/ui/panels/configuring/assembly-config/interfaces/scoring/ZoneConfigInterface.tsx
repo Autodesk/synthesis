@@ -16,7 +16,7 @@ import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGro
 import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
-import { ConfigurationSavedEvent } from "../../ConfigureAssembliesPanel"
+import { ConfigurationSavedEvent } from "../../ConfigurePanel"
 
 /**
  * Saves ejector configuration to selected field.
@@ -132,7 +132,18 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             save(selectedField, selectedZone, name, alliance, points, destroy, persistent, transformGizmo, selectedNode)
             saveAllZones()
         }
-    }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, transformGizmo, selectedNode])
+    }, [
+        selectedField,
+        selectedZone,
+        name,
+        alliance,
+        points,
+        destroy,
+        persistent,
+        transformGizmo,
+        selectedNode,
+        saveAllZones,
+    ])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -148,7 +159,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
@@ -194,19 +204,22 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     }, [theme])
 
     /** Sets the selected node if it is a part of the currently loaded field */
-    const trySetSelectedNode = useCallback((body: Jolt.BodyID) => {
-        if (!selectedField) {
-            return false
-        }
+    const trySetSelectedNode = useCallback(
+        (body: Jolt.BodyID) => {
+            if (!selectedField) {
+                return false
+            }
 
-        const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
-        if (!assoc || assoc?.sceneObject != selectedField) {
-            return false
-        }
+            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+            if (!assoc || assoc?.sceneObject != selectedField) {
+                return false
+            }
 
-        setSelectedNode(assoc.rigidNodeId)
-        return true
-    }, [])
+            setSelectedNode(assoc.rigidNodeId)
+            return true
+        },
+        [selectedField]
+    )
 
     return (
         <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">

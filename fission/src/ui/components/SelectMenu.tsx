@@ -43,10 +43,11 @@ export class SelectMenuOption {
 
 interface OptionCardProps {
     value: SelectMenuOption
+    index: number
     onSelected: (val: SelectMenuOption) => void
 }
 
-const OptionCard: React.FC<OptionCardProps> = ({ value, onSelected }) => {
+const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected }) => {
     return (
         /* Box containing the entire card */
         <Box display="flex" textAlign={"center"} key={value.name} minHeight={"30px"}>
@@ -56,7 +57,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, onSelected }) => {
                 <Box width="8px" />
                 {/* Label for joint index and type (grey if child) */}
                 <LabelStyled
-                    key={`arm-nodes-notation ${value}`}
+                    key={value.name + index}
                     size={LabelSize.Small}
                     className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
                 >
@@ -79,29 +80,27 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, onSelected }) => {
 interface SelectMenuProps {
     options: SelectMenuOption[]
     onOptionSelected: (val: SelectMenuOption | undefined) => void
-    headerText: string
+    defaultHeaderText: string
     indentation?: number
 }
 
-const SelectMenu: React.FC<SelectMenuProps> = ({ options, onOptionSelected, headerText, indentation }) => {
+const SelectMenu: React.FC<SelectMenuProps> = ({
+    options,
+    onOptionSelected,
+    defaultHeaderText: headerText,
+    indentation,
+}) => {
     const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(undefined)
 
     useEffect(() => {
         if (selectedOption == undefined) return
 
         if (!options.some(o => o.name == selectedOption.name)) setSelectedOption(undefined)
-    }, [options])
+    }, [options, selectedOption])
 
     return (
         <>
-            <Box
-                display="flex"
-                textAlign={"center"}
-                minHeight={"30px"}
-                // border="solid"
-                // borderColor={"white"}
-                key="selected-item"
-            >
+            <Box display="flex" textAlign={"center"} minHeight={"30px"} key="selected-item">
                 <Box width={`${20 * (indentation ?? 0)}px`} />
                 {selectedOption != undefined ? (
                     <Button
@@ -124,15 +123,16 @@ const SelectMenu: React.FC<SelectMenuProps> = ({ options, onOptionSelected, head
             <DividerStyled />
             {selectedOption == undefined ? (
                 <>
-                    {options.map(option => {
+                    {options.map((option, i) => {
                         return (
                             <OptionCard
                                 value={option}
+                                index={i}
                                 onSelected={val => {
                                     setSelectedOption(val)
                                     onOptionSelected(val)
                                 }}
-                                key={option.name}
+                                key={option.name + i}
                             />
                         )
                     })}

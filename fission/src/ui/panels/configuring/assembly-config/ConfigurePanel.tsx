@@ -10,6 +10,9 @@ import { AiOutlinePlus } from "react-icons/ai"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
+import InputSystem from "@/systems/input/InputSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 const AddIcon = <AiOutlinePlus size={"1.25rem"} />
 
@@ -22,12 +25,12 @@ class AssemblySelectionOption extends SelectMenuOption {
     }
 }
 
-interface AssemblySelectionProps {
-    assemblyType: MiraType
+interface ConfigurationSelectionProps {
+    configurationType: ConfigurationType
     onAssemblySelected: (assembly: MirabufSceneObject | undefined) => void
 }
 
-const AssemblySelection: React.FC<AssemblySelectionProps> = ({ assemblyType, onAssemblySelected }) => {
+const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configurationType, onAssemblySelected }) => {
     const robots = useMemo(() => {
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
             if (x instanceof MirabufSceneObject) {
@@ -53,13 +56,16 @@ const AssemblySelection: React.FC<AssemblySelectionProps> = ({ assemblyType, onA
     return (
         <SelectMenu
             // TODO: Add control scheme name if it's a robot
-            options={(assemblyType == MiraType.ROBOT ? robots : fields).map(assembly => {
-                return new AssemblySelectionOption(`${assembly.assemblyName} (${assembly.id})`, assembly)
+            options={(configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly => {
+                return new AssemblySelectionOption(
+                    `${configurationType == ConfigurationType.ROBOT ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}]` : ""} ${assembly.assemblyName}`,
+                    assembly
+                )
             })}
             onOptionSelected={val => {
                 onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)
             }}
-            headerText={`Select a ${assemblyType == MiraType.ROBOT ? "Robot" : "Field"}`}
+            defaultHeaderText={`Select a ${configurationType == ConfigurationType.ROBOT ? "Robot" : "Field"}`}
         />
     )
 }
@@ -90,18 +96,18 @@ const robotModes = [
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
 
 interface ConfigModeSelectionProps {
-    assemblyType: MiraType
+    configurationType: ConfigurationType
     onModeSelected: (mode: ConfigMode | undefined) => void
 }
 
-const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ assemblyType, onModeSelected }) => {
+const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ configurationType, onModeSelected }) => {
     return (
         <SelectMenu
-            options={assemblyType == MiraType.ROBOT ? robotModes : fieldModes}
+            options={configurationType == ConfigurationType.ROBOT ? robotModes : fieldModes}
             onOptionSelected={val => {
                 onModeSelected((val as ConfigModeSelectionOption)?.configMode)
             }}
-            headerText="Select a Configuration Mode"
+            defaultHeaderText="Select a Configuration Mode"
             indentation={1}
         />
     )
@@ -122,13 +128,14 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly 
             return <Label>interface not set up</Label>
         case ConfigMode.CONTROLS:
             return <Label>interface not set up</Label>
-        case ConfigMode.SCORING_ZONES:
+        case ConfigMode.SCORING_ZONES: {
             const zones = assembly.fieldPreferences?.scoringZones
             if (zones == undefined) {
                 console.error("Field does not contain scoring zone preferences!")
                 return <Label>ERROR: Field does not contain scoring zone configuration!</Label>
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
+        }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -150,8 +157,14 @@ export class ConfigurationSavedEvent extends Event {
     }
 }
 
-const ConfigureAssembliesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const [assemblyType, setAssemblyType] = useState<MiraType>(MiraType.ROBOT)
+enum ConfigurationType {
+    ROBOT,
+    FIELD,
+    INPUTS,
+}
+
+const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+    const [configurationType, setConfigurationType] = useState<ConfigurationType>(ConfigurationType.ROBOT)
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
     const [selectedConfigMode, setSelectedConfigMode] = useState<ConfigMode | undefined>(undefined)
 
@@ -169,48 +182,53 @@ const ConfigureAssembliesPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
                 <ToggleButtonGroup
-                    value={assemblyType}
+                    value={configurationType}
                     exclusive
                     onChange={(_, v) => {
-                        v != null && setAssemblyType(v)
+                        v != null && setConfigurationType(v)
                         setSelectedAssembly(undefined)
-                        if (selectedConfigMode != undefined) {
-                            new ConfigurationSavedEvent()
-                            setSelectedConfigMode(undefined)
-                        }
+                        new ConfigurationSavedEvent()
+                        setSelectedConfigMode(undefined)
                     }}
                     sx={{
                         alignSelf: "center",
                     }}
                 >
-                    <ToggleButton value={MiraType.ROBOT}>Robots</ToggleButton>
-                    <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
+                    <ToggleButton value={ConfigurationType.ROBOT}>Robots</ToggleButton>
+                    <ToggleButton value={ConfigurationType.FIELD}>Fields</ToggleButton>
+                    <ToggleButton value={ConfigurationType.INPUTS}>Inputs</ToggleButton>
                 </ToggleButtonGroup>
-                <AssemblySelection
-                    assemblyType={assemblyType}
-                    onAssemblySelected={a => {
-                        if (selectedConfigMode != undefined) {
-                            new ConfigurationSavedEvent()
-                            setSelectedConfigMode(undefined)
-                        }
-                        setSelectedAssembly(a)
-                    }}
-                />
-                {selectedAssembly != undefined && (
-                    <ConfigModeSelection
-                        assemblyType={assemblyType}
-                        onModeSelected={mode => {
-                            if (selectedConfigMode != undefined) new ConfigurationSavedEvent()
-                            setSelectedConfigMode(mode)
-                        }}
-                    />
-                )}
-                {selectedConfigMode != undefined && selectedAssembly != undefined && (
-                    <ConfigInterface configMode={selectedConfigMode} assembly={selectedAssembly} />
+                {configurationType == ConfigurationType.INPUTS ? (
+                    <ChangeInputsInterface />
+                ) : (
+                    <>
+                        <AssemblySelection
+                            configurationType={configurationType}
+                            onAssemblySelected={a => {
+                                if (selectedConfigMode != undefined) {
+                                    new ConfigurationSavedEvent()
+                                    setSelectedConfigMode(undefined)
+                                }
+                                setSelectedAssembly(a)
+                            }}
+                        />
+                        {selectedAssembly != undefined && (
+                            <ConfigModeSelection
+                                configurationType={configurationType}
+                                onModeSelected={mode => {
+                                    if (selectedConfigMode != undefined) new ConfigurationSavedEvent()
+                                    setSelectedConfigMode(mode)
+                                }}
+                            />
+                        )}
+                        {selectedConfigMode != undefined && selectedAssembly != undefined && (
+                            <ConfigInterface configMode={selectedConfigMode} assembly={selectedAssembly} />
+                        )}
+                    </>
                 )}
             </div>
         </Panel>
     )
 }
 
-export default ConfigureAssembliesPanel
+export default ConfigurePanel

@@ -28,6 +28,10 @@ class SynthesisBrain extends Brain {
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
 
+    public get assemblyName(): string {
+        return this._assemblyName
+    }
+
     public get inputSchemeName(): string {
         const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
         if (scheme == undefined) return "Not Configured"

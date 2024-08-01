@@ -16,7 +16,7 @@ import {
 import { useTheme } from "@/ui/ThemeContext"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { ConfigurationSavedEvent } from "../ConfigureAssembliesPanel"
+import { ConfigurationSavedEvent } from "../ConfigurePanel"
 
 // slider constants
 const MIN_VELOCITY = 0.0

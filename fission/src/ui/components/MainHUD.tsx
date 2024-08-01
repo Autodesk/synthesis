@@ -113,9 +113,9 @@ const MainHUD: React.FC = () => {
                 </div>
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
-                        value={"Configure Assemblies"}
+                        value={"Configure"}
                         icon={SynthesisIcons.Gear}
-                        onClick={() => openPanel("configure-assemblies")}
+                        onClick={() => openPanel("configure")}
                     />
                     <MainHUDButton
                         value={"Debug Tools"}

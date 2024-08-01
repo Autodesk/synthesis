@@ -16,7 +16,7 @@ import {
 } from "@/util/TypeConversions"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { useTheme } from "@/ui/ThemeContext"
-import { ConfigurationSavedEvent } from "../ConfigureAssembliesPanel"
+import { ConfigurationSavedEvent } from "../ConfigurePanel"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
