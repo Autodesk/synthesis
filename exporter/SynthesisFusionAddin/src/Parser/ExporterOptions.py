@@ -51,7 +51,7 @@ class ExporterOptions:
     autoCalcGamepieceWeight: bool = field(default=False)
 
     frictionOverride: bool = field(default=False)
-    frictionOverrideCoeff: float | None = field(default=None)
+    frictionOverrideCoeff: float = field(default=0.5)
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
