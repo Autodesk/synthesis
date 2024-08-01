@@ -3,7 +3,6 @@ import Driver, { DriverControlMode } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 class SliderDriver extends Driver {
     private _constraint: Jolt.SliderConstraint

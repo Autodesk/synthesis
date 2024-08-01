@@ -8,8 +8,6 @@ class GenericArmBehavior extends Behavior {
     private _inputName: string
     private _brainIndex: number
 
-    private _rotationalSpeed = 6
-
     constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number, brainIndex: number) {
         super([hingeDriver], [hingeStimulus])
 
@@ -24,7 +22,7 @@ class GenericArmBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.rotateArm(InputSystem.getInput(this._inputName, this._brainIndex) * this._rotationalSpeed)
+        this.rotateArm(InputSystem.getInput(this._inputName, this._brainIndex))
     }
 }
 

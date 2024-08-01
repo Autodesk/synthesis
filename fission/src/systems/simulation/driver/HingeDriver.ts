@@ -10,6 +10,15 @@ class HingeDriver extends Driver {
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
     private _targetVelocity: number = 0.0
     private _targetAngle: number
+    private _maxVelocity: number
+
+    public get maxVelocity(): number {
+        return this._maxVelocity
+    }
+
+    public set maxVelocity(radsPerSec: number) {
+        this._maxVelocity = radsPerSec
+    }
 
     public get targetVelocity(): number {
         return this._targetVelocity
@@ -25,13 +34,14 @@ class HingeDriver extends Driver {
         this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
     }
 
-    public set minTorqueLimit(nm: number) {
-        const motorSettings = this._constraint.GetMotorSettings()
-        motorSettings.mMinTorqueLimit = nm
+    public get maxTorque() {
+        return this._constraint.GetMotorSettings().mMaxTorqueLimit
     }
-    public set maxTorqueLimit(nm: number) {
+
+    public set maxTorque(nm: number) {
         const motorSettings = this._constraint.GetMotorSettings()
         motorSettings.mMaxTorqueLimit = nm
+        motorSettings.mMinTorqueLimit = -nm
     }
 
     public get controlMode(): DriverControlMode {
@@ -53,7 +63,7 @@ class HingeDriver extends Driver {
         }
     }
 
-    public constructor(constraint: Jolt.HingeConstraint, info?: mirabuf.IInfo) {
+    public constructor(constraint: Jolt.HingeConstraint, maxVelocity: number, info?: mirabuf.IInfo) {
         super(info)
 
         this._constraint = constraint
@@ -66,18 +76,18 @@ class HingeDriver extends Driver {
         springSettings.mDamping = 0.995
 
         motorSettings.mSpringSettings = springSettings
-        motorSettings.mMinTorqueLimit = -200.0
-        motorSettings.mMaxTorqueLimit = 200.0
 
         this._targetAngle = this._constraint.GetCurrentAngle()
+        this._maxVelocity = maxVelocity
 
         this.controlMode = DriverControlMode.Velocity
     }
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetAngularVelocity(this._targetVelocity)
+            this._constraint.SetTargetAngularVelocity(this._targetVelocity * this._maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
+            //TODO add maxVel to diff
             this._constraint.SetTargetAngle(this._targetAngle)
         }
     }

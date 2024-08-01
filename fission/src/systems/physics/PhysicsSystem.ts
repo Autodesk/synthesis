@@ -355,18 +355,14 @@ class PhysicsSystem extends WorldSystem {
             let listener: Jolt.PhysicsStepListener | undefined = undefined
 
             const motors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
+            let maxVel = jointData.motorDefinitions![jDef.motorReference].simpleMotor?.maxVelocity
             let maxForce = jointData.motorDefinitions![jDef.motorReference].simpleMotor?.stallTorque
-            let maxVel = undefined;
-            if (parser.assembly.data?.joints?.motorDefinitions && parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference] && parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference].simpleMotor) {
-                maxVel = parser.assembly.data?.joints?.motorDefinitions![jDef.motorReference].simpleMotor?.maxVelocity
-            }
             if (motors) {
                 const thisMotor = motors.filter(x => x.name == jInst.info?.name)
-                if (thisMotor && thisMotor[0]) {
+                if (thisMotor[0]) {
                     maxVel = thisMotor[0].maxVelocity
                     maxForce = thisMotor[0].maxForce
                 }
-
             }
 
             switch (jDef.jointMotionType!) {
@@ -397,7 +393,7 @@ class PhysicsSystem extends WorldSystem {
                         }
                     } else {
                         constraints.push(
-                            [this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!), maxVel ? maxVel : 40]
+                            [this.CreateHingeConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB, parser.assembly.info!.version!), maxVel ? maxVel : 40]
                         )
                     }
                     break
@@ -441,6 +437,7 @@ class PhysicsSystem extends WorldSystem {
     private CreateHingeConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
+        torque: number,
         bodyA: Jolt.Body,
         bodyB: Jolt.Body,
         versionNum: number
@@ -489,6 +486,10 @@ class PhysicsSystem extends WorldSystem {
             hingeConstraintSettings.mLimitsMin = -upper
             hingeConstraintSettings.mLimitsMax = -lower
         }
+
+        hingeConstraintSettings.mMotorSettings.mMaxTorqueLimit = torque
+        hingeConstraintSettings.mMotorSettings.mMinTorqueLimit = -torque
+
 
         const constraint = hingeConstraintSettings.Create(bodyA, bodyB)
         this._joltPhysSystem.AddConstraint(constraint)
