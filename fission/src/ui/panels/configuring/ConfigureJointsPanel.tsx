@@ -14,7 +14,7 @@ import ScrollView from "@/ui/components/ScrollView"
 import Slider from "@/ui/components/Slider"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import { Box } from "@mui/material"
-import { useMemo, useState } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
 
 type JointRowProps = {
@@ -43,7 +43,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
         ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxForce
     )
 
-    const onChange = (vel: number, force: number) => {
+    const onChange = useCallback((vel: number, force: number) => {
         if (driver instanceof WheelDriver) {
             const wheelDrivers = robot?.mechanism
                 ? World.SimulationSystem.GetSimulationLayer(robot.mechanism)?.drivers.filter(
@@ -82,7 +82,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
         }
 
         PreferencesSystem.savePreferences()
-    }
+    }, [driver, velocity, force])
 
     return (
         <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>

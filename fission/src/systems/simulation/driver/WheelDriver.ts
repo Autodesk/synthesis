@@ -14,32 +14,18 @@ class WheelDriver extends Driver {
     public device?: string
     private _reversed: boolean
 
-    private _accelerationDirection: number = 0.0
+    public accelerationDirection: number = 0.0
     private _prevVel: number = 0.0
-    private _maxVelocity = 30.0
+    public maxVelocity = 30.0
     private _maxAcceleration = 1.5
 
     private _targetVelocity = () => {
-        let vel = this._accelerationDirection * (this._reversed ? -1 : 1) * this._maxVelocity
+        let vel = this.accelerationDirection * (this._reversed ? -1 : 1) * this.maxVelocity
 
         if (vel - this._prevVel < -this._maxAcceleration) vel = this._prevVel - this._maxAcceleration
         if (vel - this._prevVel > this._maxAcceleration) vel = this._prevVel + this._maxAcceleration
 
         return vel
-    }
-
-    public get accelerationDirection(): number {
-        return this._accelerationDirection
-    }
-    public set accelerationDirection(radsPerSec: number) {
-        this._accelerationDirection = radsPerSec
-    }
-
-    public get maxVelocity(): number {
-        return this._maxVelocity
-    }
-    public set maxVelocity(radsPerSec: number) {
-        this._maxVelocity = radsPerSec
     }
 
     public get maxForce(): number {
@@ -64,7 +50,7 @@ class WheelDriver extends Driver {
         super(info)
 
         this._constraint = constraint
-        this._maxVelocity = maxVel
+        this.maxVelocity = maxVel
         const controller = JOLT.castObject(this._constraint.GetController(), JOLT.WheeledVehicleController)
         this._maxAcceleration = controller.GetEngine().mMaxTorque
 

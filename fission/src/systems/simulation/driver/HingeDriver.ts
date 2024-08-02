@@ -8,31 +8,17 @@ class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
 
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
-    private _accelerationDirection: number = 0.0
     private _targetAngle: number
-    private _maxVelocity: number
+    public accelerationDirection: number = 0.0
+    public maxVelocity: number
 
     private _prevAng: number = 0.0
-
-    public get accelerationDirection(): number {
-        return this._accelerationDirection
-    }
-    public set accelerationDirection(radsPerSec: number) {
-        this._accelerationDirection = radsPerSec
-    }
 
     public get targetAngle(): number {
         return this._targetAngle
     }
     public set targetAngle(rads: number) {
         this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
-    }
-
-    public get maxVelocity(): number {
-        return this._maxVelocity
-    }
-    public set maxVelocity(radsPerSec: number) {
-        this._maxVelocity = radsPerSec
     }
 
     public get maxForce() {
@@ -68,7 +54,7 @@ class HingeDriver extends Driver {
         super(info)
 
         this._constraint = constraint
-        this._maxVelocity = maxVelocity
+        this.maxVelocity = maxVelocity
         this._targetAngle = this._constraint.GetCurrentAngle()
 
         const motorSettings = this._constraint.GetMotorSettings()
@@ -84,13 +70,13 @@ class HingeDriver extends Driver {
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetAngularVelocity(this._accelerationDirection * this._maxVelocity)
+            this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
             let ang = this._targetAngle
 
-            if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this._maxVelocity
-            if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this._maxVelocity
-            this._constraint.SetTargetAngle(this._targetAngle)
+            if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this.maxVelocity
+            if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this.maxVelocity
+            this._constraint.SetTargetAngle(ang)
         }
     }
 }

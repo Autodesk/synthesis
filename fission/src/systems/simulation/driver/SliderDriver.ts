@@ -8,18 +8,11 @@ class SliderDriver extends Driver {
     private _constraint: Jolt.SliderConstraint
 
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
-    private _accelerationDirection: number = 0.0
     private _targetPosition: number = 0.0
-    private _maxVelocity: number = 1.0
+    public accelerationDirection: number = 0.0
+    public maxVelocity: number = 1.0
 
     private _prevPos: number = 0.0
-
-    public get accelerationDirection(): number {
-        return this._accelerationDirection
-    }
-    public set accelerationDirection(radsPerSec: number) {
-        this._accelerationDirection = radsPerSec
-    }
 
     public get targetPosition(): number {
         return this._targetPosition
@@ -29,13 +22,6 @@ class SliderDriver extends Driver {
             this._constraint.GetLimitsMin(),
             Math.min(this._constraint.GetLimitsMax(), position)
         )
-    }
-
-    public get maxVelocity(): number {
-        return this._maxVelocity
-    }
-    public set maxVelocity(radsPerSec: number) {
-        this._maxVelocity = radsPerSec
     }
 
     public get maxForce(): number {
@@ -70,7 +56,7 @@ class SliderDriver extends Driver {
         super(info)
 
         this._constraint = constraint
-        this._maxVelocity = maxVelocity
+        this.maxVelocity = maxVelocity
 
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
@@ -84,12 +70,12 @@ class SliderDriver extends Driver {
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetVelocity(this._accelerationDirection * this._maxVelocity)
+            this._constraint.SetTargetVelocity(this.accelerationDirection * this.maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
             let pos = this._targetPosition
 
-            if (pos - this._prevPos < -this.maxVelocity) pos = this._prevPos - this._maxVelocity
-            if (pos - this._prevPos > this.maxVelocity) pos = this._prevPos + this._maxVelocity
+            if (pos - this._prevPos < -this.maxVelocity) pos = this._prevPos - this.maxVelocity
+            if (pos - this._prevPos > this.maxVelocity) pos = this._prevPos + this.maxVelocity
 
             this._constraint.SetTargetPosition(pos)
         }
