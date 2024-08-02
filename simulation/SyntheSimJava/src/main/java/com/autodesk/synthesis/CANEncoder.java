@@ -14,6 +14,7 @@ public class CANEncoder {
 
     private SimDevice m_device;
 
+    private SimDouble m_init;
     private SimDouble m_position;
     private SimDouble m_velocity;
 
@@ -26,6 +27,7 @@ public class CANEncoder {
     public CANEncoder(String name, int deviceId) {
         m_device = SimDevice.create(name, deviceId);
 
+        m_device = SimDevice.create(name, deviceId);
         m_position = m_device.createDouble("position", Direction.kInput, 0.0);
         m_velocity = m_device.createDouble("velocity", Direction.kInput, 0.0);
     }
