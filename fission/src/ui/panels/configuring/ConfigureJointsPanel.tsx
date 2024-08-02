@@ -106,7 +106,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
                     min={driverSwitch(driver, 100, 20, 0.1) as number}
                     max={driverSwitch(driver, 800, 150, 15) as number}
                     value={force}
-                    label={driverSwitch(driver, "Max Force", "Max Torque", "Max Accel.") as string}
+                    label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
                     format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                     onChange={(_, _force: number | number[]) => {
                         setForce(_force as number)
