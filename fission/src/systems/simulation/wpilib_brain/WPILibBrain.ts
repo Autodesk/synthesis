@@ -7,7 +7,7 @@ import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
 import { SimOutputGroup } from "./SimOutput"
-import { SimInput } from "./SimInput"
+import { SimGyroInput, SimInput } from "./SimInput"
 
 const worker = new WPILibWSWorker()
 
@@ -17,7 +17,7 @@ const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
 const CANMOTOR_SUPPLY_VOLTAGE = ">supplyVoltage"
 const CANENCODER_RAW_INPUT_POSITION = ">rawPositionInput"
 
-export type SimType = "PWM" | "CANMotor" | "Solenoid" | "SimDevice" | "CANEncoder"
+export type SimType = "PWM" | "CANMotor" | "Solenoid" | "SimDevice" | "CANEncoder" | "Gyro"
 
 enum FieldType {
     Read = 0,
@@ -157,6 +157,22 @@ export class SimCANEncoder {
     }
 }
 
+export class SimGyro {
+    private constructor() {}
+
+    public static SetAngleX(device: string, angle: number): boolean {
+        return SimGeneric.Set("Gyro", device, ">angle_x", angle);
+    }
+
+    public static SetAngleY(device: string, angle: number): boolean {
+        return SimGeneric.Set("Gyro", device, ">angle_y", angle);
+    }
+
+    public static SetAngleZ(device: string, angle: number): boolean {
+        return SimGeneric.Set("Gyro", device, ">angle_z", angle);
+    }
+}
+
 worker.addEventListener("message", (eventData: MessageEvent) => {
     let data: any | undefined
     try {
@@ -230,6 +246,8 @@ class WPILibBrain extends Brain {
             console.warn("SimulationLayer is undefined")
             return
         }
+
+        this.addSimInput(new SimGyroInput("Gyro:ADXRS450[0]", mechanism));
     }
 
     public addSimOutputGroup(device: SimOutputGroup) {
@@ -243,6 +261,7 @@ class WPILibBrain extends Brain {
     public Update(deltaT: number): void {
         this._simOutputs.forEach(d => d.Update(deltaT))
         this._simInputs.forEach(i => i.Update(deltaT))
+        console.log(simMap)
     }
 
     public Enable(): void {

@@ -9,9 +9,12 @@ import com.revrobotics.CANSparkBase.IdleMode;
 // import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
+import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -35,6 +38,8 @@ public class Robot extends TimedRobot {
   private CANSparkMax m_SparkMax = new CANSparkMax(1, MotorType.kBrushless);
   private TalonFX m_Talon = new TalonFX(2);
   private XboxController m_Controller = new XboxController(0);
+  private ADXRS450_Gyro m_Gyro;
+    private ADXRS450_GyroSim m_GyroSim;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -45,6 +50,9 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+    m_Gyro = new ADXRS450_Gyro();
+    m_GyroSim = new ADXRS450_GyroSim(m_Gyro);
+    m_Gyro.calibrate();
   }
 
   /**
@@ -103,6 +111,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_Spark1.set(m_Controller.getLeftY());
     m_Spark2.set(-m_Controller.getRightY());
+    System.out.println(m_Gyro.getAngle());
     // m_Spark1.set(0.25);
     // m_Spark2.set(0.25);
     m_SparkMax.set(0.75);

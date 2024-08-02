@@ -107,12 +107,12 @@ function generateTableBody() {
             ) : (
                 <></>
             )}
-            {simMap.has("Joystick") ? (
-                [...simMap.get("Joystick")!.entries()].map(x => {
+            {simMap.has("Gyro") ? (
+                [...simMap.get("Gyro")!.entries()].map(x => {
                     return (
                         <TableRow key={x[0]}>
                             <TableCell>
-                                <TypoStyled>Joystick</TypoStyled>
+                                <TypoStyled>Gyro</TypoStyled>
                             </TableCell>
                             <TableCell>
                                 <TypoStyled>{x[0]}</TypoStyled>
@@ -213,7 +213,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             </TableContainer>
             <Stack>
                 <Dropdown
-                    options={["PWM", "SimDevice", "CANMotor", "CANEncoder"]}
+                    options={["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro"]}
                     onSelect={v => setSelectedType(v as unknown as SimType)}
                 />
                 {deviceSelect}
