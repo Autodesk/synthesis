@@ -54,7 +54,6 @@ import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
-import SequentialBehaviorsPanel from "./ui/panels/SequentialBehaviorsPanel.tsx"
 
 import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
 import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
@@ -240,7 +239,6 @@ const initialPanels: ReactElement[] = [
         openLocation="right"
         sidePadding={8}
     />,
-    <SequentialBehaviorsPanel key="sequential-joints" panelId="sequential-joints" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,

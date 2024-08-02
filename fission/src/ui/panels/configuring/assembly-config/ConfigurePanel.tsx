@@ -10,6 +10,7 @@ import { AiOutlinePlus } from "react-icons/ai"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -73,7 +74,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
 enum ConfigMode {
     INTAKE,
     EJECTOR,
-    JOINTS,
+    MOTORS,
     CONTROLS,
     SCORING_ZONES,
 }
@@ -90,7 +91,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 const robotModes = [
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
-    new ConfigModeSelectionOption("Joints", ConfigMode.JOINTS),
+    new ConfigModeSelectionOption("Motors", ConfigMode.MOTORS),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
@@ -124,8 +125,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly 
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
         case ConfigMode.EJECTOR:
             return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
-        case ConfigMode.JOINTS:
-            return <Label>interface not set up</Label>
+        case ConfigMode.MOTORS:
+            return <SequentialBehaviorsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS:
             return <Label>interface not set up</Label>
         case ConfigMode.SCORING_ZONES: {
