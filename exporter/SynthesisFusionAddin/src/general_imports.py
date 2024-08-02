@@ -31,11 +31,6 @@ try:
 
     if not path_proto_files in sys.path:
         sys.path.insert(2, path_proto_files)
-
-    from proto import deps
-
-    deps.installDependencies()
-
 except:
     logger.error("Failed:\n{}".format(traceback.format_exc()))
 
