@@ -119,7 +119,11 @@ const MainHUD: React.FC = () => {
                             openPanel("scoring-zones")
                         }}
                     />
-                    <MainHUDButton value={"Joints"} icon={SynthesisIcons.Gear} onClick={() => openPanel("joint-config")} />
+                    <MainHUDButton
+                        value={"Joints"}
+                        icon={SynthesisIcons.Gear}
+                        onClick={() => openPanel("joint-config")}
+                    />
                     <MainHUDButton
                         value={"Configure"}
                         icon={SynthesisIcons.Gear}

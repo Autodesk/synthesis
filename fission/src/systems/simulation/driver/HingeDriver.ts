@@ -87,7 +87,7 @@ class HingeDriver extends Driver {
             this._constraint.SetTargetAngularVelocity(this._accelerationDirection * this._maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
             let ang = this._targetAngle
-            
+
             if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this._maxVelocity
             if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this._maxVelocity
             this._constraint.SetTargetAngle(this._targetAngle)

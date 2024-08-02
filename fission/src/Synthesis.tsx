@@ -254,7 +254,7 @@ const initialPanels: ReactElement[] = [
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
-    <ConfigureJointsPanel key="joint-config" panelId="joint-config" openLocation="right" sidePadding={8} />
+    <ConfigureJointsPanel key="joint-config" panelId="joint-config" openLocation="right" sidePadding={8} />,
 ]
 
 export default Synthesis

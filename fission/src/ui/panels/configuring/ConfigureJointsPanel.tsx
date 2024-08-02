@@ -23,7 +23,6 @@ type JointRowProps = {
 }
 
 const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
-
     const driverSwitch = (driver: Driver, slider: unknown, hinge: unknown, drivetrain: unknown) => {
         switch (driver.constructor) {
             case SliderDriver:
@@ -38,14 +37,19 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
     }
 
     const [velocity, setVelocity] = useState<number>(
-        (driver as SliderDriver || driver as HingeDriver || driver as WheelDriver).maxVelocity)
+        ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxVelocity
+    )
     const [force, setForce] = useState<number>(
-        (driver as SliderDriver || driver as HingeDriver || driver as WheelDriver).maxForce)
+        ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxForce
+    )
 
     const onChange = (vel: number, force: number) => {
         if (driver instanceof WheelDriver) {
-            const wheelDrivers = robot?.mechanism ?
-                World.SimulationSystem.GetSimulationLayer(robot.mechanism)?.drivers.filter(x => x instanceof WheelDriver) : undefined
+            const wheelDrivers = robot?.mechanism
+                ? World.SimulationSystem.GetSimulationLayer(robot.mechanism)?.drivers.filter(
+                      x => x instanceof WheelDriver
+                  )
+                : undefined
             wheelDrivers?.forEach(x => {
                 x.maxVelocity = vel
                 x.maxForce = force
@@ -55,22 +59,24 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
             PreferencesSystem.getRobotPreferences(robot.assemblyName).driveVelocity = vel
             PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = force
         } else {
-            (driver as SliderDriver || driver as HingeDriver).maxVelocity = vel;                
-            (driver as SliderDriver || driver as HingeDriver).maxForce = force
+            ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
+            ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
 
             // Preferences
             if (driver.info && driver.info.name) {
-                const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors ? PreferencesSystem.getRobotPreferences(robot.assemblyName).motors.filter(x => {
-                    if (x.name)
-                        return x.name != driver.info?.name
-                    return false
-                }) : []
+                const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
+                    ? PreferencesSystem.getRobotPreferences(robot.assemblyName).motors.filter(x => {
+                          if (x.name) return x.name != driver.info?.name
+                          return false
+                      })
+                    : []
 
                 removedMotor.push({
                     name: driver.info?.name ?? "",
                     maxVelocity: vel,
-                    maxForce: force})
-                
+                    maxForce: force,
+                })
+
                 PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
             }
         }
@@ -78,11 +84,12 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
         PreferencesSystem.savePreferences()
     }
 
-
     return (
         <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
             <Stack direction={StackDirection.Vertical} spacing={8} justify="start">
-                <Label size={LabelSize.Medium}>{ driver instanceof WheelDriver ? "Drive" : (driver.info?.name ?? "UnnamedMotor") }</Label>
+                <Label size={LabelSize.Medium}>
+                    {driver instanceof WheelDriver ? "Drive" : driver.info?.name ?? "UnnamedMotor"}
+                </Label>
                 <Slider
                     min={0.1}
                     max={80}
@@ -90,7 +97,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
                     label="Max Velocity"
                     format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                     onChange={(_, _velocity: number | number[]) => {
-                        setVelocity(_velocity as number);
+                        setVelocity(_velocity as number)
                         onChange(_velocity as number, force)
                     }}
                     step={0.01}
@@ -102,7 +109,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
                     label={driverSwitch(driver, "Max Force", "Max Torque", "Max Accel.") as string}
                     format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                     onChange={(_, _force: number | number[]) => {
-                        setForce(_force as number);
+                        setForce(_force as number)
                         onChange(velocity, _force as number)
                     }}
                     step={0.01}
@@ -112,9 +119,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
     )
 }
 
-
-const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding}) => {
-
+const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
     const [origPref, setOrigPref] = useState<RobotPreferences | undefined>(undefined)
 
@@ -129,8 +134,9 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
     }, [])
 
     const drivers = useMemo(() => {
-        return selectedRobot?.mechanism ?
-            World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers : undefined
+        return selectedRobot?.mechanism
+            ? World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers
+            : undefined
     }, [selectedRobot])
 
     // Gets motors in preferences for ease of saving into origPrefs which can be used to revert on Cancel()
@@ -139,23 +145,22 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
             if (driver.info && driver.info.name && !(driver instanceof WheelDriver)) {
                 const motors = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
                 const removedMotor = motors.filter(x => {
-                    if (x.name)
-                        return x.name != driver.info?.name
+                    if (x.name) return x.name != driver.info?.name
                     return false
                 })
 
                 if (removedMotor.length == drivers.length) {
                     removedMotor.push({
                         name: driver.info?.name ?? "",
-                        maxVelocity: (driver as SliderDriver || driver as HingeDriver).maxVelocity,
-                        maxForce: (driver as SliderDriver || driver as HingeDriver).maxForce
+                        maxVelocity: ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity,
+                        maxForce: ((driver as SliderDriver) || (driver as HingeDriver)).maxForce,
                     })
                     PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
                 }
             }
         })
         PreferencesSystem.savePreferences()
-        setOrigPref({ ... PreferencesSystem.getRobotPreferences(robot.assemblyName)}) // clone
+        setOrigPref({ ...PreferencesSystem.getRobotPreferences(robot.assemblyName) }) // clone
     }
 
     function Cancel() {
@@ -167,13 +172,12 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                 } else {
                     if (driver.info && driver.info.name) {
                         const motor = origPref.motors.filter(x => {
-                            if (x.name)
-                                return x.name == driver.info?.name
+                            if (x.name) return x.name == driver.info?.name
                             return false
-                        })[0];
+                        })[0]
                         if (motor) {
-                            (driver as SliderDriver || driver as HingeDriver).maxVelocity = motor.maxVelocity;
-                            (driver as SliderDriver || driver as HingeDriver).maxForce = motor.maxForce
+                            ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = motor.maxVelocity
+                            ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = motor.maxForce
                         }
                     }
                 }
@@ -183,15 +187,16 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
         PreferencesSystem.savePreferences()
     }
 
-
     return (
-        <Panel 
+        <Panel
             name="Configure Joints"
             icon={<FaGear />}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
-            onAccept={() => { PreferencesSystem.savePreferences()}}       
+            onAccept={() => {
+                PreferencesSystem.savePreferences()
+            }}
             onCancel={Cancel}
             acceptEnabled={true}
         >
@@ -216,7 +221,6 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                 </>
             ) : (
                 <>
-
                     {drivers ? (
                         <ScrollView className="flex flex-col gap-4">
                             {/** Drivetrain row. Then other SliderDrivers and HingeDrivers */}
@@ -229,28 +233,26 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                                     return drivers.filter(x => x instanceof WheelDriver)[0]
                                 })()}
                             />
-                            {drivers.filter(x => x instanceof SliderDriver || x instanceof HingeDriver).map((driver: Driver, i: number) => (
-                                <JointRow
-                                    key={i + 1}
-                                    robot={(() => {
-                                        return selectedRobot
-                                    })()}
-                                    driver={(() => {
-                                        return driver
-                                    })()}
-                                />
-                            
-                            ))}
+                            {drivers
+                                .filter(x => x instanceof SliderDriver || x instanceof HingeDriver)
+                                .map((driver: Driver, i: number) => (
+                                    <JointRow
+                                        key={i + 1}
+                                        robot={(() => {
+                                            return selectedRobot
+                                        })()}
+                                        driver={(() => {
+                                            return driver
+                                        })()}
+                                    />
+                                ))}
                         </ScrollView>
                     ) : (
                         <Label>No Joints</Label>
                     )}
                 </>
             )}
-
-
         </Panel>
-
     )
 }
 

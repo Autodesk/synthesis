@@ -32,7 +32,10 @@ class ArcadeDriveBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this.DriveSpeeds(InputSystem.getInput("arcadeDrive", this._brainIndex), InputSystem.getInput("arcadeTurn", this._brainIndex))
+        this.DriveSpeeds(
+            InputSystem.getInput("arcadeDrive", this._brainIndex),
+            InputSystem.getInput("arcadeTurn", this._brainIndex)
+        )
     }
 }
 

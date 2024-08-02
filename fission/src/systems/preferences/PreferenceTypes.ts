@@ -91,7 +91,7 @@ export function DefaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
         },
         driveVelocity: 0,
-        driveAcceleration: 0
+        driveAcceleration: 0,
     }
 }
 

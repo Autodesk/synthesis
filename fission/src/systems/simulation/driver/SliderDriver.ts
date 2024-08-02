@@ -87,10 +87,10 @@ class SliderDriver extends Driver {
             this._constraint.SetTargetVelocity(this._accelerationDirection * this._maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
             let pos = this._targetPosition
-            
+
             if (pos - this._prevPos < -this.maxVelocity) pos = this._prevPos - this._maxVelocity
             if (pos - this._prevPos > this.maxVelocity) pos = this._prevPos + this._maxVelocity
-            
+
             this._constraint.SetTargetPosition(pos)
         }
     }

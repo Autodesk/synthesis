@@ -327,7 +327,7 @@ class PhysicsSystem extends WorldSystem {
         const jointData = parser.assembly.data!.joints!
         for (const [jGuid, jInst] of Object.entries(jointData.jointInstances!) as [
             string,
-            mirabuf.joint.JointInstance
+            mirabuf.joint.JointInstance,
         ][]) {
             if (jGuid == GROUNDED_JOINT_ID) continue
 
@@ -357,22 +357,32 @@ class PhysicsSystem extends WorldSystem {
             const constraints: Jolt.Constraint[] = []
             let listener: Jolt.PhysicsStepListener | undefined = undefined
 
-            // Motor preferences and mirabuf
+            // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
             const prefMotors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
             const prefMotor = prefMotors ? prefMotors.filter(x => x.name == jInst.info?.name) : undefined
             const miraMotor = jointData.motorDefinitions![jDef.motorReference]
 
-            // If preference motor exists, sets vel/acc to prefMotor. Then, if mirabuf motor exists, sets vel/acc to miraMotor. Then default
-            let maxVel = (prefMotor && prefMotor[0]) ? prefMotor[0].maxVelocity : ((miraMotor && miraMotor.simpleMotor) ? miraMotor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT : VELOCITY_DEFAULT)
-            let maxForce = (prefMotor && prefMotor[0]) ? prefMotor[0].maxForce : ((miraMotor && miraMotor.simpleMotor) ? miraMotor.simpleMotor.stallTorque : undefined)
+            let maxVel = VELOCITY_DEFAULT
+            let maxForce
+            if (prefMotor && prefMotor[0]) {
+                maxVel = prefMotor[0].maxVelocity
+                maxForce = prefMotor[0].maxForce
+            } else if (miraMotor && miraMotor.simpleMotor) {
+                maxVel = miraMotor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT
+                maxForce = miraMotor.simpleMotor.stallTorque
+            }
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
-                        const prefVel = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").driveVelocity
+                        const prefVel = PreferencesSystem.getRobotPreferences(
+                            parser.assembly.info?.name ?? ""
+                        ).driveVelocity
                         if (prefVel > 0) maxVel = prefVel
 
-                        const prefAcc = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").driveAcceleration
+                        const prefAcc = PreferencesSystem.getRobotPreferences(
+                            parser.assembly.info?.name ?? ""
+                        ).driveAcceleration
                         if (prefAcc > 0) maxForce = prefAcc
 
                         if (parser.directedGraph.GetAdjacencyList(rnA.id).length > 0) {
@@ -401,11 +411,19 @@ class PhysicsSystem extends WorldSystem {
                             listener = res[2]
                         }
                     } else {
-                        constraints.push(this.CreateHingeConstraint(jInst, jDef, maxForce ?? 50, bodyA, bodyB, parser.assembly.info!.version!))
+                        constraints.push(
+                            this.CreateHingeConstraint(
+                                jInst,
+                                jDef,
+                                maxForce ?? 50,
+                                bodyA,
+                                bodyB,
+                                parser.assembly.info!.version!
+                            )
+                        )
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
-                    
                     constraints.push(this.CreateSliderConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB))
                     break
                 default:
@@ -495,7 +513,6 @@ class PhysicsSystem extends WorldSystem {
 
         hingeConstraintSettings.mMotorSettings.mMaxTorqueLimit = torque
         hingeConstraintSettings.mMotorSettings.mMinTorqueLimit = -torque
-
 
         const constraint = hingeConstraintSettings.Create(bodyA, bodyB)
         this._constraints.push(constraint)
