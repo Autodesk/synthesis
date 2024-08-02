@@ -62,9 +62,8 @@ const FLOOR_FRICTION = 0.7
 const SUSPENSION_MIN_FACTOR = 0.1
 const SUSPENSION_MAX_FACTOR = 0.3
 
-// Motor constants
+// Motor constant
 const VELOCITY_DEFAULT = 30
-const ACCELERATION_DEFAULT = 150
 
 /**
  * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
@@ -358,23 +357,14 @@ class PhysicsSystem extends WorldSystem {
             const constraints: Jolt.Constraint[] = []
             let listener: Jolt.PhysicsStepListener | undefined = undefined
 
-            // maxForce becomes maxForce for sliders, maxTorque for hinges, and maxAcceleration for wheels
-            let maxVel = VELOCITY_DEFAULT
-            let maxForce;
-            const motor = jointData.motorDefinitions![jDef.motorReference]
-            if (motor && motor.simpleMotor) {
-                maxVel = motor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT
-                maxForce = motor.simpleMotor.stallTorque ?? ACCELERATION_DEFAULT
-            }
+            // Motor preferences and mirabuf
+            const prefMotors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
+            const prefMotor = prefMotors ? prefMotors.filter(x => x.name == jInst.info?.name) : undefined
+            const miraMotor = jointData.motorDefinitions![jDef.motorReference]
 
-            const motors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
-            if (motors) {
-                const thisMotor = motors.filter(x => x.name == jInst.info?.name)
-                if (thisMotor[0]) {
-                    maxVel = thisMotor[0].maxVelocity
-                    maxForce = thisMotor[0].maxForce
-                }
-            }
+            // If preference motor exists, sets vel/acc to prefMotor. Then, if mirabuf motor exists, sets vel/acc to miraMotor. Then default
+            let maxVel = (prefMotor && prefMotor[0]) ? prefMotor[0].maxVelocity : ((miraMotor && miraMotor.simpleMotor) ? miraMotor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT : VELOCITY_DEFAULT)
+            let maxForce = (prefMotor && prefMotor[0]) ? prefMotor[0].maxForce : ((miraMotor && miraMotor.simpleMotor) ? miraMotor.simpleMotor.stallTorque : undefined)
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
@@ -574,7 +564,7 @@ class PhysicsSystem extends WorldSystem {
         }
 
         sliderConstraintSettings.mMotorSettings.mMaxForceLimit = maxForce
-        sliderConstraintSettings.mMotorSettings.mMinForceLimit = -sliderConstraintSettings.mMotorSettings.mMaxForceLimit
+        sliderConstraintSettings.mMotorSettings.mMinForceLimit = -maxForce
 
         const constraint = sliderConstraintSettings.Create(bodyA, bodyB)
 
@@ -634,6 +624,9 @@ class PhysicsSystem extends WorldSystem {
         vehicleSettings.mWheels.clear()
         vehicleSettings.mWheels.push_back(wheelSettings)
 
+        // Other than maxTorque, these controller settings are not being used as of now
+        // because ArcadeDriveBehavior goes directly to the WheelDrivers.
+        // MaxTorque is only used as communication for WheelDriver to get maxAcceleration
         const controllerSettings = new JOLT.WheeledVehicleControllerSettings()
         controllerSettings.mEngine.mMaxTorque = maxAcc
         controllerSettings.mTransmission.mClutchStrength = 10.0
