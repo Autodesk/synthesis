@@ -47,9 +47,11 @@ class ExporterOptions:
 
     # Always stored in kg regardless of 'preferredUnits'
     robotWeight: KG = field(default=0.0)
+    autoCalcRobotWeight: bool = field(default=False)
+    autoCalcGamepieceWeight: bool = field(default=False)
 
     frictionOverride: bool = field(default=False)
-    frictionOverrideCoeff: float | None = field(default=None)
+    frictionOverrideCoeff: float = field(default=0.5)
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)

@@ -1,6 +1,5 @@
 import React, { useMemo, useReducer } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaWrench } from "react-icons/fa6"
 import Button, { ButtonProps } from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import World from "@/systems/World"
@@ -10,7 +9,7 @@ import { setSelectedBrainIndexGlobal } from "@/ui/panels/configuring/ChooseInput
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { useModalControlContext } from "@/ui/ModalContext"
 import InputSystem from "@/systems/input/InputSystem"
-import { IoTrashBin } from "react-icons/io5"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 interface AssemblyCardProps {
     mira: MirabufSceneObject
@@ -51,7 +50,7 @@ const AssemblyCard: React.FC<AssemblyCardProps> = ({ mira, update }) => {
                     }}
                 />
                 <ButtonSecondary
-                    value={<IoTrashBin />}
+                    value={SynthesisIcons.DeleteLarge}
                     onClick={() => {
                         World.SceneRenderer.RemoveSceneObject(mira.id)
                         update()
@@ -73,7 +72,13 @@ const ManageAssembliesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         .map(x => x[1] as MirabufSceneObject)
 
     return (
-        <Modal name={"Manage Assemblies"} icon={<FaWrench />} modalId={modalId} acceptEnabled={false} cancelName="Back">
+        <Modal
+            name={"Manage Assemblies"}
+            icon={SynthesisIcons.Wrench}
+            modalId={modalId}
+            acceptEnabled={false}
+            cancelName="Back"
+        >
             <div className="flex overflow-y-auto flex-col gap-2 min-w-[50vw] max-h-[60vh] bg-background-secondary rounded-md p-2">
                 <Label size={LabelSize.Medium} className="text-center border-b-[1pt] mt-[4pt] mb-[2pt] mx-[5%]">
                     {assemblies ? `${assemblies.length} Assemblies` : "No Assemblies"}

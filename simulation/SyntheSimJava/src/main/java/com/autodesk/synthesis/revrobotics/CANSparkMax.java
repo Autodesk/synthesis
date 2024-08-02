@@ -2,7 +2,7 @@ package com.autodesk.synthesis.revrobotics;
 
 import com.autodesk.synthesis.CANEncoder;
 import com.autodesk.synthesis.CANMotor;
-import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
+// import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.REVLibError;
 
@@ -47,25 +47,25 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
         return super.setIdleMode(mode);
     }
 
-    @Override
-    public SparkAbsoluteEncoder getAbsoluteEncoder() throws Exception{
-        try {
-            return new SparkAbsoluteEncoder(this.m_encoder, com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    // @Override
+    // public SparkAbsoluteEncoder getAbsoluteEncoder() throws Exception{
+    //     try {
+    //         return new SparkAbsoluteEncoder(this.m_encoder, com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
+    //     } catch (Exception e) {
+    //         // TODO Auto-generated catch block
+    //         e.printStackTrace();
+    //     }
+    // }
 
-    @Override
-    public SparkAbsoluteEncoder getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type type) throws Exception {
-        try {
-            return new SparkAbsoluteEncoder(this.m_encoder, type);
-        } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+    // @Override
+    // public SparkAbsoluteEncoder getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type type) throws Exception {
+    //     try {
+    //         return new SparkAbsoluteEncoder(this.m_encoder, type);
+    //     } catch (Exception e) {
+    //         // TODO Auto-generated catch block
+    //         e.printStackTrace();
+    //     }
+    // }
 
     // TODO: Finish following
     // @Override

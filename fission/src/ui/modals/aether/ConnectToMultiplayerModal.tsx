@@ -1,15 +1,15 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Button from "@/components/Button"
-import { FaGear } from "react-icons/fa6"
 import Stack, { StackDirection } from "@/components/Stack"
 import Dropdown from "@/components/Dropdown"
 import Label from "@/components/Label"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const ConnectToMultiplayerModal: React.FC<ModalPropsImpl> = ({ modalId }) => (
     <Modal
         name={"Connect to Multiplayer"}
-        icon={<FaGear />}
+        icon={SynthesisIcons.Gear}
         acceptEnabled={false}
         cancelName="Disconnect"
         modalId={modalId}

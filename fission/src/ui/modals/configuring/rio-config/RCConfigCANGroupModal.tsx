@@ -1,7 +1,6 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { useModalControlContext } from "@/ui/ModalContext"
-import { FaPlus } from "react-icons/fa6"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
 import Checkbox from "@/components/Checkbox"
@@ -12,6 +11,7 @@ import WPILibBrain, { CANGroup, simMap, SimType } from "@/systems/simulation/wpi
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver from "@/systems/simulation/driver/Driver"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -39,7 +39,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Create Device"
-            icon={<FaPlus />}
+            icon={SynthesisIcons.Add}
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {
