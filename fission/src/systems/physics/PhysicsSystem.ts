@@ -62,6 +62,10 @@ const FLOOR_FRICTION = 0.7
 const SUSPENSION_MIN_FACTOR = 0.1
 const SUSPENSION_MAX_FACTOR = 0.3
 
+// Motor constants
+const VELOCITY_DEFAULT = 30
+const ACCELERATION_DEFAULT = 150
+
 /**
  * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
  * This system can create physical representations of objects such as Robots,
@@ -355,8 +359,14 @@ class PhysicsSystem extends WorldSystem {
             let listener: Jolt.PhysicsStepListener | undefined = undefined
 
             // maxForce becomes maxForce for sliders, maxTorque for hinges, and maxAcceleration for wheels
-            let maxVel = jointData.motorDefinitions![jDef.motorReference].simpleMotor?.maxVelocity
-            let maxForce = jointData.motorDefinitions![jDef.motorReference].simpleMotor?.stallTorque
+            let maxVel = VELOCITY_DEFAULT
+            let maxForce;
+            const motor = jointData.motorDefinitions![jDef.motorReference]
+            if (motor && motor.simpleMotor) {
+                maxVel = motor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT
+                maxForce = motor.simpleMotor.stallTorque ?? ACCELERATION_DEFAULT
+            }
+
             const motors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
             if (motors) {
                 const thisMotor = motors.filter(x => x.name == jInst.info?.name)
@@ -401,7 +411,7 @@ class PhysicsSystem extends WorldSystem {
                             listener = res[2]
                         }
                     } else {
-                        constraints.push(this.CreateHingeConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB, parser.assembly.info!.version!))
+                        constraints.push(this.CreateHingeConstraint(jInst, jDef, maxForce ?? 50, bodyA, bodyB, parser.assembly.info!.version!))
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
@@ -419,7 +429,7 @@ class PhysicsSystem extends WorldSystem {
                         parentBody: bodyIdA,
                         childBody: bodyIdB,
                         constraint: x,
-                        maxVelocity: maxVel ?? 30,
+                        maxVelocity: maxVel ?? VELOCITY_DEFAULT,
                         info: jInst.info ?? undefined, // remove possibility for null
                     })
                 )

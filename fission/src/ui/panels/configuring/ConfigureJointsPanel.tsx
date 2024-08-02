@@ -99,7 +99,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
                 />
                 <Slider
                     min={driverSwitch(driver, 100, 20, 0.1) as number}
-                    max={driverSwitch(driver, 800, 200, 50) as number}
+                    max={driverSwitch(driver, 800, 150, 15) as number}
                     value={force}
                     label={driverSwitch(driver, "Max Force", "Max Torque", "Max Accel.") as string}
                     format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
