@@ -57,7 +57,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     ])
 
                     const hashBuffer = await selectedFile.arrayBuffer()
-                    await MirabufCachingService.CacheAndGetLocal(hashBuffer, MiraType.ROBOT)
+                    await MirabufCachingService.CacheAndGetLocal(hashBuffer, miraType)
                         .then(x => CreateMirabuf(x!))
                         .then(x => {
                             if (x) {

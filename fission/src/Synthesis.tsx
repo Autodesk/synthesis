@@ -48,11 +48,14 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
+import ConfigureRobotBrainPanel from "./ui/panels/configuring/ConfigureRobotBrainPanel.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
+import SequentialBehaviorsPanel from "./ui/panels/SequentialBehaviorsPanel.tsx"
+
 import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
 import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
 import DebugPanel from "./ui/panels/DebugPanel.tsx"
@@ -231,6 +234,13 @@ const initialPanels: ReactElement[] = [
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
+    <ConfigureRobotBrainPanel
+        key="config-robot-brain"
+        panelId="config-robot-brain"
+        openLocation="right"
+        sidePadding={8}
+    />,
+    <SequentialBehaviorsPanel key="sequential-joints" panelId="sequential-joints" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,

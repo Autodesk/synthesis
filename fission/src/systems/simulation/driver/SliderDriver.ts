@@ -11,6 +11,10 @@ class SliderDriver extends Driver {
     private _targetVelocity: number = 0.0
     private _targetPosition: number = 0.0
 
+    public get constraint(): Jolt.SliderConstraint {
+        return this._constraint
+    }
+
     public get targetVelocity(): number {
         return this._targetVelocity
     }
