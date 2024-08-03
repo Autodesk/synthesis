@@ -15,7 +15,7 @@ export interface InteractionStart {
 
 export interface InteractionMove {
     interactionType: InteractionType
-    scale?: number,
+    scale?: number
     movement?: [number, number]
 }
 
@@ -26,11 +26,10 @@ export interface InteractionEnd {
 
 /**
  * Handler for all screen interactions with Mouse, Pen, and Touch controls.
- * 
+ *
  * Mouse and Pen controls are stateless, whereas Touch controls are stateful
  */
 class ScreenInteractionHandler {
-
     private _primaryTouch: number | undefined
     private _secondaryTouch: number | undefined
     private _primaryTouchPosition: [number, number] | undefined
@@ -56,13 +55,13 @@ class ScreenInteractionHandler {
     public constructor(domElement: HTMLElement) {
         this._domElement = domElement
 
-        this._pointerMove = e => this.pointerMove(e) 
+        this._pointerMove = e => this.pointerMove(e)
         this._wheelMove = e => this.wheelMove(e)
         this._pointerDown = e => this.pointerDown(e)
         this._pointerUp = e => this.pointerUp(e)
         this._contextMenu = e => e.preventDefault()
         this._touchMove = e => e.preventDefault()
-        
+
         this._domElement.addEventListener("pointermove", this._pointerMove)
         this._domElement.addEventListener("wheel", this._wheelMove, { passive: false })
         this._domElement.addEventListener("contextmenu", this._contextMenu)
@@ -90,11 +89,13 @@ class ScreenInteractionHandler {
         if (!this.interactionMove) {
             return
         }
-        
-        if (e.pointerType == "mouse" || e.pointerType == "pen") {
 
+        if (e.pointerType == "mouse" || e.pointerType == "pen") {
             if (this._pointerPosition && !this._movementThresholdMet) {
-                const delta = [Math.abs(e.clientX - this._pointerPosition![0]), Math.abs(e.clientY - this._pointerPosition![1])]
+                const delta = [
+                    Math.abs(e.clientX - this._pointerPosition![0]),
+                    Math.abs(e.clientY - this._pointerPosition![1]),
+                ]
                 if (delta[0] > window.innerWidth * 0.01 || delta[1] > window.innerHeight * 0.01) {
                     this._movementThresholdMet = true
                 } else {
@@ -107,9 +108,11 @@ class ScreenInteractionHandler {
             this.interactionMove({ interactionType: e.button as InteractionType, movement: [e.movementX, e.movementY] })
         } else {
             if (e.pointerId == this._primaryTouch) {
-
                 if (!this._movementThresholdMet) {
-                    const delta = [Math.abs(e.clientX - this._primaryTouchPosition![0]), Math.abs(e.clientY - this._primaryTouchPosition![1])]
+                    const delta = [
+                        Math.abs(e.clientX - this._primaryTouchPosition![0]),
+                        Math.abs(e.clientY - this._primaryTouchPosition![1]),
+                    ]
                     if (delta[0] > e.width || delta[1] > e.height) {
                         this._movementThresholdMet = true
                     } else {
@@ -120,12 +123,14 @@ class ScreenInteractionHandler {
                 this._primaryTouchPosition = [e.clientX, e.clientY]
                 this.interactionMove({
                     interactionType: PRIMARY_MOUSE_INTERACTION,
-                    movement: [e.movementX, e.movementY]
+                    movement: [e.movementX, e.movementY],
                 })
             } else if (e.pointerId == this._secondaryTouch) {
-                
                 if (!this._movementThresholdMet) {
-                    const delta = [Math.abs(e.clientX - this._secondaryTouchPosition![0]), Math.abs(e.clientY - this._secondaryTouchPosition![1])]
+                    const delta = [
+                        Math.abs(e.clientX - this._secondaryTouchPosition![0]),
+                        Math.abs(e.clientY - this._secondaryTouchPosition![1]),
+                    ]
                     if (delta[0] > e.width || delta[1] > e.height) {
                         this._movementThresholdMet = true
                     } else {
@@ -134,16 +139,18 @@ class ScreenInteractionHandler {
                 }
 
                 this._secondaryTouchPosition = [e.clientX, e.clientY]
-                if (this._primaryTouchPosition) { // This shouldn't happen, but you never know
-                    const scalingDir = (new THREE.Vector2(this._secondaryTouchPosition[0], this._secondaryTouchPosition[1])).sub(
-                        new THREE.Vector2(this._primaryTouchPosition[0], this._primaryTouchPosition[1])
-                    )
+                if (this._primaryTouchPosition) {
+                    // This shouldn't happen, but you never know
+                    const scalingDir = new THREE.Vector2(
+                        this._secondaryTouchPosition[0],
+                        this._secondaryTouchPosition[1]
+                    ).sub(new THREE.Vector2(this._primaryTouchPosition[0], this._primaryTouchPosition[1]))
 
                     const scale = scalingDir.normalize().dot(new THREE.Vector2(e.movementX, e.movementY))
 
                     this.interactionMove({
                         interactionType: PRIMARY_MOUSE_INTERACTION,
-                        scale: scale * -0.06
+                        scale: scale * -0.06,
                     })
                 }
             }
@@ -168,7 +175,10 @@ class ScreenInteractionHandler {
                 this._primaryTouch = e.pointerId
                 this._primaryTouchPosition = [e.clientX, e.clientY]
                 this._movementThresholdMet = false
-                this.interactionStart({ interactionType: PRIMARY_MOUSE_INTERACTION, position: this._primaryTouchPosition })
+                this.interactionStart({
+                    interactionType: PRIMARY_MOUSE_INTERACTION,
+                    position: this._primaryTouchPosition,
+                })
             } else if (!this._secondaryTouch) {
                 this._secondaryTouch = e.pointerId
                 this._secondaryTouchPosition = [e.clientX, e.clientY]
@@ -178,7 +188,10 @@ class ScreenInteractionHandler {
             if (e.button >= 0 && e.button <= 2) {
                 this._movementThresholdMet = false
                 this._pointerPosition = [e.clientX, e.clientY]
-                this.interactionStart({ interactionType: e.button as InteractionType, position: [e.clientX, e.clientY] })
+                this.interactionStart({
+                    interactionType: e.button as InteractionType,
+                    position: [e.clientX, e.clientY],
+                })
             }
         }
     }
@@ -193,7 +206,10 @@ class ScreenInteractionHandler {
                 this._primaryTouch = this._secondaryTouch
                 this._secondaryTouch = undefined
                 if (!this._primaryTouch) {
-                    const end: InteractionEnd = { interactionType: PRIMARY_MOUSE_INTERACTION, position: [e.clientX, e.clientY] }
+                    const end: InteractionEnd = {
+                        interactionType: PRIMARY_MOUSE_INTERACTION,
+                        position: [e.clientX, e.clientY],
+                    }
                     this.interactionEnd(end)
                     if (this._doubleTapInteraction && !this._movementThresholdMet && this.contextMenu) {
                         this.contextMenu(end)
@@ -207,7 +223,10 @@ class ScreenInteractionHandler {
             }
         } else {
             if (e.button >= 0 && e.button <= 2) {
-                const end: InteractionEnd = { interactionType: e.button as InteractionType, position: [e.clientX, e.clientY] }
+                const end: InteractionEnd = {
+                    interactionType: e.button as InteractionType,
+                    position: [e.clientX, e.clientY],
+                }
                 this.interactionEnd(end)
                 if (e.button == SECONDARY_MOUSE_INTERACTION && !this._movementThresholdMet && this.contextMenu) {
                     this.contextMenu(end)

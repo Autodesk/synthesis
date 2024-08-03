@@ -1,16 +1,16 @@
-import MirabufSceneObject, { RigidNodeAssociate } from '@/mirabuf/MirabufSceneObject'
-import * as THREE from 'three'
-import World from '../World'
-import { ThreeVector3_JoltVec3 } from '@/util/TypeConversions'
-import { MiraType } from '@/mirabuf/MirabufLoader'
-import { MainHUD_AddToast } from '@/ui/components/MainHUD'
-import ScreenInteractionHandler, { InteractionEnd, InteractionMove, InteractionStart, PRIMARY_MOUSE_INTERACTION, MIDDLE_MOUSE_INTERACTION, SECONDARY_MOUSE_INTERACTION } from './ScreenInteractionHandler'
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import * as THREE from "three"
+import ScreenInteractionHandler, {
+    InteractionEnd,
+    InteractionMove,
+    InteractionStart,
+    PRIMARY_MOUSE_INTERACTION,
+    SECONDARY_MOUSE_INTERACTION,
+} from "./ScreenInteractionHandler"
 
-export type CameraControlsType =
-    "Orbit"
+export type CameraControlsType = "Orbit"
 
 export abstract class CameraControls {
-
     private _controlsType: CameraControlsType
 
     public abstract set enabled(val: boolean)
@@ -54,20 +54,28 @@ const DEG2RAD = Math.PI / 180.0
 
 /**
  * Creates a pseudo frustum of the perspective camera to scale the mouse movement to something relative to the scenes dimensions and scale
- * 
+ *
  * @param camera Main Camera
  * @param distanceFromFocus Distance from the focus point
  * @param originalMovement Original movement of the mouse across the screen
  * @returns Augmented movement to scale to the scenes relative dimensions
  */
-function augmentMovement(camera: THREE.Camera, distanceFromFocus: number, originalMovement: [number, number]): [number, number] {
+function augmentMovement(
+    camera: THREE.Camera,
+    distanceFromFocus: number,
+    originalMovement: [number, number]
+): [number, number] {
     const aspect = (camera as THREE.PerspectiveCamera)?.aspect ?? 1.0
     // const aspect = 1.0
     const fov: number | undefined = (camera as THREE.PerspectiveCamera)?.getEffectiveFOV()
     if (fov) {
         const res: [number, number] = [
-            (2 * distanceFromFocus * Math.tan(Math.min(Math.PI * 0.9 / 2, DEG2RAD * fov * aspect / 2)) * originalMovement[0]) / window.innerWidth,
-            (2 * distanceFromFocus * Math.tan(DEG2RAD * fov / 2) * originalMovement[1]) / window.innerHeight
+            (2 *
+                distanceFromFocus *
+                Math.tan(Math.min((Math.PI * 0.9) / 2, (DEG2RAD * fov * aspect) / 2)) *
+                originalMovement[0]) /
+                window.innerWidth,
+            (2 * distanceFromFocus * Math.tan((DEG2RAD * fov) / 2) * originalMovement[1]) / window.innerHeight,
         ]
         return res
     } else {
@@ -77,7 +85,7 @@ function augmentMovement(camera: THREE.Camera, distanceFromFocus: number, origin
 
 export class CustomOrbitControls extends CameraControls {
     private _enabled = true
-    
+
     private _mainCamera: THREE.Camera
 
     private _activePointerType: PointerType
@@ -100,7 +108,9 @@ export class CustomOrbitControls extends CameraControls {
     public set focusProvider(provider: MirabufSceneObject | undefined) {
         this._focusProvider = provider
     }
-    public get focusProvider() { return this._focusProvider }
+    public get focusProvider() {
+        return this._focusProvider
+    }
 
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
         super("Orbit")
@@ -115,7 +125,7 @@ export class CustomOrbitControls extends CameraControls {
         this._activePointerType = -1
 
         // Identity
-        this._focus = new THREE.Matrix4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)
+        this._focus = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
 
         this._interactionHandler.interactionStart = e => this.interactionStart(e)
         this._interactionHandler.interactionEnd = e => this.interactionEnd(e)
@@ -156,17 +166,18 @@ export class CustomOrbitControls extends CameraControls {
                 this._nextCoords.phi -= move.movement[1]
             } else if (this._activePointerType == SECONDARY_MOUSE_INTERACTION && !this.locked) {
                 this._focusProvider = undefined
-    
-                const orientation = (new THREE.Quaternion()).setFromEuler(this._mainCamera.rotation)
-    
-                const augmentedMovement = augmentMovement(
-                    this._mainCamera,
-                    this._coords.r,
-                    [move.movement[0], move.movement[1]]
+
+                const orientation = new THREE.Quaternion().setFromEuler(this._mainCamera.rotation)
+
+                const augmentedMovement = augmentMovement(this._mainCamera, this._coords.r, [
+                    move.movement[0],
+                    move.movement[1],
+                ])
+
+                const pan = new THREE.Vector3(-augmentedMovement[0], augmentedMovement[1], 0).applyQuaternion(
+                    orientation
                 )
-    
-                const pan = (new THREE.Vector3(-augmentedMovement[0], augmentedMovement[1], 0)).applyQuaternion(orientation)
-                const newPos = (new THREE.Vector3()).setFromMatrixPosition(this._focus)
+                const newPos = new THREE.Vector3().setFromMatrixPosition(this._focus)
                 newPos.add(pan)
                 this._focus.setPosition(newPos)
             }
@@ -178,17 +189,18 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public update(deltaT: number): void {
-
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 
         this._focusProvider?.LoadFocusTransform(this._focus)
 
         // Generate delta of spherical coordinates
-        const omega: SphericalCoords = this.enabled ? {
-            theta: this._nextCoords.theta - this._coords.theta,
-            phi: this._nextCoords.phi - this._coords.phi,
-            r: this._nextCoords.r - this._coords.r
-        } : { theta: 0, phi: 0, r: 0 }
+        const omega: SphericalCoords = this.enabled
+            ? {
+                  theta: this._nextCoords.theta - this._coords.theta,
+                  phi: this._nextCoords.phi - this._coords.phi,
+                  r: this._nextCoords.r - this._coords.r,
+              }
+            : { theta: 0, phi: 0, r: 0 }
 
         this._coords.theta += omega.theta * deltaT * CO_SENSITIVITY_THETA
         this._coords.phi += omega.phi * deltaT * CO_SENSITIVITY_PHI
@@ -197,13 +209,18 @@ export class CustomOrbitControls extends CameraControls {
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, this._coords.phi))
         this._coords.r = Math.min(CO_MAX_ZOOM, Math.max(CO_MIN_ZOOM, this._coords.r))
 
-        const deltaTransform = (new THREE.Matrix4()).makeTranslation(0, 0, this._coords.r)
-            .premultiply((new THREE.Matrix4()).makeRotationFromEuler(new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ")))
+        const deltaTransform = new THREE.Matrix4()
+            .makeTranslation(0, 0, this._coords.r)
+            .premultiply(
+                new THREE.Matrix4().makeRotationFromEuler(
+                    new THREE.Euler(this._coords.phi, this._coords.theta, 0, "YXZ")
+                )
+            )
 
         if (this.locked && this._focusProvider) {
             deltaTransform.premultiply(this._focus)
         } else {
-            const focusPosition = (new THREE.Matrix4()).copyPosition(this._focus)
+            const focusPosition = new THREE.Matrix4().copyPosition(this._focus)
             deltaTransform.premultiply(focusPosition)
         }
 
@@ -213,6 +230,5 @@ export class CustomOrbitControls extends CameraControls {
         this._nextCoords = { theta: this._coords.theta, phi: this._coords.phi, r: this._coords.r }
     }
 
-    public dispose(): void { }
-
+    public dispose(): void {}
 }

@@ -135,7 +135,7 @@ class SceneRenderer extends WorldSystem {
         this._screenInteractionHandler = new ScreenInteractionHandler(this._renderer.domElement)
         this._screenInteractionHandler.contextMenu = e => this.OnContextMenu(e)
 
-        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler);
+        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
     }
 
     public SetCameraControls(controlsType: CameraControlsType) {
@@ -150,7 +150,7 @@ class SceneRenderer extends WorldSystem {
     public UpdateCanvasSize() {
         this._renderer.setSize(window.innerWidth, window.innerHeight, true)
 
-        const vec = new THREE.Vector2(0,0)
+        const vec = new THREE.Vector2(0, 0)
         this._renderer.getSize(vec)
         // No idea why height would be zero, but just incase.
         this._mainCamera.aspect = window.innerHeight > 0 ? window.innerWidth / window.innerHeight : 1.0
@@ -188,7 +188,7 @@ class SceneRenderer extends WorldSystem {
         // Update the tags each frame if they are enabled in preferences
         if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
             new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
-        
+
         this._cameraControls.update(deltaT)
 
         this._composer.render(deltaT)
@@ -497,11 +497,16 @@ class SceneRenderer extends WorldSystem {
                 miraSupplierData = assoc.sceneObject.getSupplierData()
             }
         }
-        
+
         // All else fails, present default options.
         if (!miraSupplierData) {
             miraSupplierData = { title: "The Scene", items: [] }
-            miraSupplierData.items.push({ name: "Add", func: () => { MainHUD_OpenPanel("import-mirabuf") } })
+            miraSupplierData.items.push({
+                name: "Add",
+                func: () => {
+                    MainHUD_OpenPanel("import-mirabuf")
+                },
+            })
         }
 
         ContextSupplierEvent.Dispatch(miraSupplierData, e.position)

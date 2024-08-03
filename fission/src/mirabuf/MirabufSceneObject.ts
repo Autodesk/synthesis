@@ -232,7 +232,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             x.computeBoundingBox()
             x.computeBoundingSphere()
         })
-        
+
         /* Updating the position of the name tag according to the robots position on screen */
         if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
             const boundingBox = this.ComputeBoundingBox()
@@ -440,10 +440,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public LoadFocusTransform(mat: THREE.Matrix4) {
-        const com = World.PhysicsSystem.GetBody(this._mechanism.nodeToBody.get(this.rootNodeId)!).GetCenterOfMassTransform()
+        const com = World.PhysicsSystem.GetBody(
+            this._mechanism.nodeToBody.get(this.rootNodeId)!
+        ).GetCenterOfMassTransform()
         mat.copy(JoltMat44_ThreeMatrix4(com))
     }
-    
+
     public getSupplierData(): ContextData {
         const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
 
@@ -451,7 +453,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             name: "Remove",
             func: () => {
                 World.SceneRenderer.RemoveSceneObject(this.id)
-            }
+            },
         })
 
         if (this.miraType == MiraType.ROBOT) {
@@ -462,7 +464,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     func: () => {
                         setSelectedBrainIndexGlobal(brainIndex)
                         MainHUD_OpenPanel("choose-scheme")
-                    }
+                    },
                 })
             }
         }
@@ -474,7 +476,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     name: "Camera: Unfocus",
                     func: () => {
                         cameraControls.focusProvider = undefined
-                    }
+                    },
                 })
 
                 if (cameraControls.locked) {
@@ -482,14 +484,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                         name: "Camera: Unlock",
                         func: () => {
                             cameraControls.locked = false
-                        }
+                        },
                     })
                 } else {
                     data.items.push({
                         name: "Camera: Lock",
                         func: () => {
                             cameraControls.locked = true
-                        }
+                        },
                     })
                 }
             } else {
@@ -497,7 +499,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     name: "Camera: Focus",
                     func: () => {
                         cameraControls.focusProvider = this
-                    }
+                    },
                 })
             }
         }

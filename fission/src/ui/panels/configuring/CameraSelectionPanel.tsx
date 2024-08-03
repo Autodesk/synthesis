@@ -17,13 +17,13 @@ function OrbitSettings({ controls }: OrbitSettingsProps) {
         controls.locked = locked
     }, [controls, locked])
 
-    return (
-        <Checkbox label={"Lock to Robot"} defaultState={locked} onClick={(v) => setLocked(v)} />
-    )
+    return <Checkbox label={"Lock to Robot"} defaultState={locked} onClick={v => setLocked(v)} />
 }
 
 const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(World.SceneRenderer.currentCameraControls.controlsType)
+    const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
+        World.SceneRenderer.currentCameraControls.controlsType
+    )
 
     const setCameraControls = useCallback((t: CameraControlsType) => {
         switch (t) {
@@ -52,7 +52,7 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 value={cameraControlType}
                 exclusive
                 onChange={(_, v) => {
-                    if (v != null){
+                    if (v != null) {
                         return
                     }
 
@@ -61,11 +61,11 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             >
                 <ToggleButton value={"Orbit"}>Orbit</ToggleButton>
             </ToggleButtonGroup>
-            {
-                cameraControlType == "Orbit"
-                    ? <OrbitSettings controls={World.SceneRenderer.currentCameraControls as CustomOrbitControls} />
-                    : <></>
-            }
+            {cameraControlType == "Orbit" ? (
+                <OrbitSettings controls={World.SceneRenderer.currentCameraControls as CustomOrbitControls} />
+            ) : (
+                <></>
+            )}
         </Panel>
     )
 }

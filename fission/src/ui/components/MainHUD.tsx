@@ -46,7 +46,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
 
 // Future Synthesis Interns: Please, never, ever, ever do this.
 export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
-export let MainHUD_OpenPanel: (panelId: string) => void = (_id) => {}
+export let MainHUD_OpenPanel: (panelId: string) => void = _id => {}
 
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },

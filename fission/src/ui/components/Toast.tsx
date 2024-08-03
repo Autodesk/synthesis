@@ -1,7 +1,6 @@
 import React, { ReactElement, useEffect } from "react"
 import { ToastData, useToastContext } from "@/ui/ToastContext"
 import { FaXmark } from "react-icons/fa6"
-import { BsFillWrenchAdjustableCircleFill } from "react-icons/bs"
 import { AiFillWarning, AiOutlineInfoCircle } from "react-icons/ai"
 import { BiSolidErrorCircle } from "react-icons/bi"
 

@@ -22,8 +22,12 @@ export class ContextSupplierEvent extends Event {
     private _data: ContextData
     private _mousePosition: [number, number]
 
-    public get data() { return this._data }
-    public get mousePosition() { return this._mousePosition }
+    public get data() {
+        return this._data
+    }
+    public get mousePosition() {
+        return this._mousePosition
+    }
 
     private constructor(data: ContextData, mousePosition: [number, number]) {
         super(ContextSupplierEvent.KEY)
@@ -34,7 +38,13 @@ export class ContextSupplierEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static Dispatch(data: ContextData, mousePosition: [number, number]) { new ContextSupplierEvent(data, mousePosition) }
-    public static Listen(func: (e: ContextSupplierEvent) => void) { window.addEventListener(ContextSupplierEvent.KEY, func as (e: Event) => void) }
-    public static RemoveListener(func: (e: ContextSupplierEvent) => void) { window.removeEventListener(ContextSupplierEvent.KEY, func as (e: Event) => void) }
+    public static Dispatch(data: ContextData, mousePosition: [number, number]) {
+        new ContextSupplierEvent(data, mousePosition)
+    }
+    public static Listen(func: (e: ContextSupplierEvent) => void) {
+        window.addEventListener(ContextSupplierEvent.KEY, func as (e: Event) => void)
+    }
+    public static RemoveListener(func: (e: ContextSupplierEvent) => void) {
+        window.removeEventListener(ContextSupplierEvent.KEY, func as (e: Event) => void)
+    }
 }

@@ -1,5 +1,5 @@
-import { Box, Grid } from "@mui/material"
-import { useEffect, useRef, useState } from "react"
+import { Box } from "@mui/material"
+import { useEffect, useState } from "react"
 import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
 import { colorNameToVar } from "../ThemeContext"
 import Button, { ButtonSize } from "./Button"
@@ -12,7 +12,6 @@ interface ContextMenuStateData {
 }
 
 function ContextMenu() {
-
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
     // const { currentTheme, themes } = useTheme()
@@ -24,10 +23,14 @@ function ContextMenu() {
         }
 
         ContextSupplierEvent.Listen(func)
-        return () => { ContextSupplierEvent.RemoveListener(func) }
+        return () => {
+            ContextSupplierEvent.RemoveListener(func)
+        }
     }, [])
 
-    return (!state ? <></> :
+    return !state ? (
+        <></>
+    ) : (
         <Box
             id="CANCEL"
             component="div"
@@ -39,8 +42,8 @@ function ContextMenu() {
                 width: "100vw",
                 height: "100vh",
             }}
-            onPointerDown={() =>  setState(undefined)}
-            onContextMenu={(e) => e.preventDefault()}
+            onPointerDown={() => setState(undefined)}
+            onContextMenu={e => e.preventDefault()}
         >
             <Box
                 id="MENU"
@@ -55,7 +58,7 @@ function ContextMenu() {
                     padding: "1rem",
                     borderRadius: "0.5rem",
                     backgroundColor: colorNameToVar("Background"),
-                    color: colorNameToVar("InteractiveElementText")
+                    color: colorNameToVar("InteractiveElementText"),
                 }}
                 // Why, why, why do I need to do this. This is absurd
                 onPointerDown={e => e.stopPropagation()}
@@ -67,11 +70,13 @@ function ContextMenu() {
                         flexDirection: "column",
                     }}
                 >
-                    <Label key={"context-title"} size={LabelSize.Small}>{state.data.title}</Label>
+                    <Label key={"context-title"} size={LabelSize.Small}>
+                        {state.data.title}
+                    </Label>
                     <SectionDivider />
                 </Box>
-                {
-                    state.data.items.map(x => (<Button
+                {state.data.items.map(x => (
+                    <Button
                         size={ButtonSize.Small}
                         className={"w-full text-sm"}
                         value={x.name}
@@ -79,8 +84,8 @@ function ContextMenu() {
                             setState(undefined)
                             x.func()
                         }}
-                    />))
-                }
+                    />
+                ))}
             </Box>
         </Box>
     )
