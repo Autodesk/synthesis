@@ -7,3 +7,7 @@
 build/
 ctre-sil/
 bin/
+
+.settings/
+.classpath
+

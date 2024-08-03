@@ -43,7 +43,7 @@ public class CANMotor {
      */
     public CANMotor(String name, int deviceId, double defaultPercentOutput, boolean defaultBrakeMode,
             double defaultNeutralDeadband) {
-        m_device = SimDevice.create(name, deviceId);
+        m_device = SimDevice.create(String.format("%s:%s", "CANMotor", name), deviceId);
 
         m_init = m_device.createBoolean("init", Direction.kOutput, true);
 

@@ -26,7 +26,7 @@ public class CANEncoder {
      * @param deviceId CAN Device ID.
      */
     public CANEncoder(String name, int deviceId) {
-        m_device = SimDevice.create(name, deviceId);
+        m_device = SimDevice.create(String.format("%s:%s", "CANEncoder", name), deviceId);
 
         m_init = m_device.createBoolean("init", Direction.kOutput, true);
         m_position = m_device.createDouble("position", Direction.kInput, 0.0);
