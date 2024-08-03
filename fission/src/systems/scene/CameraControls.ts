@@ -42,9 +42,9 @@ const CO_MIN_ZOOM = 0.1
 const CO_MAX_PHI = Math.PI / 2.1
 const CO_MIN_PHI = -Math.PI / 2.1
 
-const CO_SENSITIVITY_ZOOM = 5.0
-const CO_SENSITIVITY_PHI = 1.0
-const CO_SENSITIVITY_THETA = 0.8
+const CO_SENSITIVITY_ZOOM = 4.0
+const CO_SENSITIVITY_PHI = 0.5
+const CO_SENSITIVITY_THETA = 0.5
 
 const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0

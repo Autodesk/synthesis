@@ -450,10 +450,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
 
         data.items.push({
-            name: "Remove",
+            name: "Move",
             func: () => {
-                World.SceneRenderer.RemoveSceneObject(this.id)
-            },
+                this.EnableTransformControls()
+            }
         })
 
         if (this.miraType == MiraType.ROBOT) {
@@ -503,6 +503,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 })
             }
         }
+
+        data.items.push({
+            name: "Remove",
+            func: () => {
+                World.SceneRenderer.RemoveSceneObject(this.id)
+            },
+        })
 
         return data
     }
