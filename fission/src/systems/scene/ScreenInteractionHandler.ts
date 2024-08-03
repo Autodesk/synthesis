@@ -37,6 +37,7 @@ class ScreenInteractionHandler {
     private _secondaryTouchPosition: [number, number] | undefined
     private _movementThresholdMet: boolean = false
     private _doubleTapInteraction: boolean = false
+    private _pointerPosition: [number, number] | undefined
 
     private _pointerMove: (ev: PointerEvent) => void
     private _wheelMove: (ev: WheelEvent) => void
@@ -91,6 +92,18 @@ class ScreenInteractionHandler {
         }
         
         if (e.pointerType == "mouse" || e.pointerType == "pen") {
+
+            if (this._pointerPosition && !this._movementThresholdMet) {
+                const delta = [Math.abs(e.clientX - this._pointerPosition![0]), Math.abs(e.clientY - this._pointerPosition![1])]
+                if (delta[0] > window.innerWidth * 0.01 || delta[1] > window.innerHeight * 0.01) {
+                    this._movementThresholdMet = true
+                } else {
+                    return
+                }
+            }
+
+            this._pointerPosition = [e.movementX, e.movementY]
+
             this.interactionMove({ interactionType: e.button as InteractionType, movement: [e.movementX, e.movementY] })
         } else {
             if (e.pointerId == this._primaryTouch) {
@@ -164,6 +177,7 @@ class ScreenInteractionHandler {
         } else {
             if (e.button >= 0 && e.button <= 2) {
                 this._movementThresholdMet = false
+                this._pointerPosition = [e.clientX, e.clientY]
                 this.interactionStart({ interactionType: e.button as InteractionType, position: [e.clientX, e.clientY] })
             }
         }
@@ -195,7 +209,7 @@ class ScreenInteractionHandler {
             if (e.button >= 0 && e.button <= 2) {
                 const end: InteractionEnd = { interactionType: e.button as InteractionType, position: [e.clientX, e.clientY] }
                 this.interactionEnd(end)
-                if (e.button == SECONDARY_MOUSE_INTERACTION && this.contextMenu) {
+                if (e.button == SECONDARY_MOUSE_INTERACTION && !this._movementThresholdMet && this.contextMenu) {
                     this.contextMenu(end)
                 }
             }

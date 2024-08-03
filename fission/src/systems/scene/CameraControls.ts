@@ -44,7 +44,7 @@ const CO_MIN_PHI = -Math.PI / 2.1
 
 const CO_SENSITIVITY_ZOOM = 5.0
 const CO_SENSITIVITY_PHI = 1.0
-const CO_SENSITIVITY_THETA = 1.0
+const CO_SENSITIVITY_THETA = 0.8
 
 const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0
@@ -65,13 +65,10 @@ function augmentMovement(camera: THREE.Camera, distanceFromFocus: number, origin
     // const aspect = 1.0
     const fov: number | undefined = (camera as THREE.PerspectiveCamera)?.getEffectiveFOV()
     if (fov) {
-        console.debug(`${fov}, ${aspect.toFixed(3)}, ${originalMovement[0].toFixed(1)}`)
-        console.debug(DEG2RAD * fov * aspect / 2)
         const res: [number, number] = [
             (2 * distanceFromFocus * Math.tan(Math.min(Math.PI * 0.9 / 2, DEG2RAD * fov * aspect / 2)) * originalMovement[0]) / window.innerWidth,
             (2 * distanceFromFocus * Math.tan(DEG2RAD * fov / 2) * originalMovement[1]) / window.innerHeight
         ]
-        // console.debug(res[0].toFixed(3))
         return res
     } else {
         return originalMovement
@@ -99,6 +96,11 @@ export class CustomOrbitControls extends CameraControls {
     public get enabled(): boolean {
         return this._enabled
     }
+
+    public set focusProvider(provider: MirabufSceneObject | undefined) {
+        this._focusProvider = provider
+    }
+    public get focusProvider() { return this._focusProvider }
 
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
         super("Orbit")
@@ -137,8 +139,8 @@ export class CustomOrbitControls extends CameraControls {
                 case PRIMARY_MOUSE_INTERACTION:
                     this._activePointerType = PRIMARY_MOUSE_INTERACTION
                     break
-                case MIDDLE_MOUSE_INTERACTION:
-                    this._activePointerType = MIDDLE_MOUSE_INTERACTION
+                case SECONDARY_MOUSE_INTERACTION:
+                    this._activePointerType = SECONDARY_MOUSE_INTERACTION
                     break
                 default:
                     break
@@ -152,7 +154,7 @@ export class CustomOrbitControls extends CameraControls {
                 // Add the movement of the mouse to the _currentPos
                 this._nextCoords.theta -= move.movement[0]
                 this._nextCoords.phi -= move.movement[1]
-            } else if (this._activePointerType == MIDDLE_MOUSE_INTERACTION && !this.locked) {
+            } else if (this._activePointerType == SECONDARY_MOUSE_INTERACTION && !this.locked) {
                 this._focusProvider = undefined
     
                 const orientation = (new THREE.Quaternion()).setFromEuler(this._mainCamera.rotation)
@@ -176,6 +178,8 @@ export class CustomOrbitControls extends CameraControls {
     }
 
     public update(deltaT: number): void {
+
+        deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 
         this._focusProvider?.LoadFocusTransform(this._focus)
 
@@ -207,21 +211,6 @@ export class CustomOrbitControls extends CameraControls {
         this._mainCamera.rotation.setFromRotationMatrix(deltaTransform)
 
         this._nextCoords = { theta: this._coords.theta, phi: this._coords.phi, r: this._coords.r }
-    }
-
-    private tryFindFocusProvider(screenPos: [number, number]) {
-        const dir = World.SceneRenderer.PixelToWorldSpace(screenPos[0], screenPos[1], 1.0).normalize().multiplyScalar(40.0)
-        const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(this._mainCamera.position), ThreeVector3_JoltVec3(dir))
-        if (res) {
-            const assoc = World.PhysicsSystem.GetBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
-            // Cast and Exist check
-            if (assoc?.sceneObject) {
-                if (assoc.sceneObject.miraType == MiraType.ROBOT && assoc.sceneObject != this._focusProvider) {
-                    this._focusProvider = assoc.sceneObject
-                    MainHUD_AddToast("info", "Focus Changed", `Focusing on ${assoc.sceneObject.assemblyName}`)
-                }
-            }
-        }
     }
 
     public dispose(): void { }

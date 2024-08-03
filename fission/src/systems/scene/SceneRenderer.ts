@@ -20,6 +20,7 @@ import World from "../World"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
+import { MainHUD_OpenPanel } from "@/ui/components/MainHUD"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -151,9 +152,8 @@ class SceneRenderer extends WorldSystem {
 
         const vec = new THREE.Vector2(0,0)
         this._renderer.getSize(vec)
-        console.debug(`${vec.x.toFixed(2)}, ${vec.y.toFixed(2)}`)
         // No idea why height would be zero, but just incase.
-        this._mainCamera.aspect = window.innerWidth / window.innerHeight
+        this._mainCamera.aspect = window.innerHeight > 0 ? window.innerWidth / window.innerHeight : 1.0
 
         if (this._mainCamera.aspect < STANDARD_ASPECT) {
             this._mainCamera.fov = STANDARD_CAMERA_FOV_Y
@@ -500,8 +500,8 @@ class SceneRenderer extends WorldSystem {
         
         // All else fails, present default options.
         if (!miraSupplierData) {
-            miraSupplierData = { title: "The scene", items: [] }
-            miraSupplierData.items.push({ name: "Spawn something", func: () => { console.debug("Uggh how do i do this") } })
+            miraSupplierData = { title: "The Scene", items: [] }
+            miraSupplierData.items.push({ name: "Add", func: () => { MainHUD_OpenPanel("import-mirabuf") } })
         }
 
         ContextSupplierEvent.Dispatch(miraSupplierData, e.position)

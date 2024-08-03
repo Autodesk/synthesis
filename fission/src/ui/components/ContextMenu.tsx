@@ -2,7 +2,9 @@ import { Box, Grid } from "@mui/material"
 import { useEffect, useRef, useState } from "react"
 import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
 import { colorNameToVar } from "../ThemeContext"
-import Button from "./Button"
+import Button, { ButtonSize } from "./Button"
+import Label, { LabelSize } from "./Label"
+import { SectionDivider } from "./StyledComponents"
 
 interface ContextMenuStateData {
     data: ContextData
@@ -45,6 +47,8 @@ function ContextMenu() {
                 component="div"
                 display="flex"
                 sx={{
+                    gap: "0.5rem",
+                    flexDirection: "column",
                     position: "fixed",
                     left: state.location[0],
                     top: state.location[1],
@@ -56,7 +60,27 @@ function ContextMenu() {
                 // Why, why, why do I need to do this. This is absurd
                 onPointerDown={e => e.stopPropagation()}
             >
-                <Button value="Sample" />
+                <Box
+                    component="div"
+                    display="flex"
+                    sx={{
+                        flexDirection: "column",
+                    }}
+                >
+                    <Label key={"context-title"} size={LabelSize.Small}>{state.data.title}</Label>
+                    <SectionDivider />
+                </Box>
+                {
+                    state.data.items.map(x => (<Button
+                        size={ButtonSize.Small}
+                        className={"w-full text-sm"}
+                        value={x.name}
+                        onClick={() => {
+                            setState(undefined)
+                            x.func()
+                        }}
+                    />))
+                }
             </Box>
         </Box>
     )

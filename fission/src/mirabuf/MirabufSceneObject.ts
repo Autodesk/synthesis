@@ -22,6 +22,9 @@ import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
+import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { setSelectedBrainIndexGlobal } from "@/ui/panels/configuring/ChooseInputSchemePanel"
+import { MainHUD_OpenPanel } from "@/ui/components/MainHUD"
 
 const DEBUG_BODIES = false
 
@@ -442,7 +445,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
     
     public getSupplierData(): ContextData {
-        const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A robot" : "A field", items: [] }
+        const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
 
         data.items.push({
             name: "Remove",
@@ -450,6 +453,54 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 World.SceneRenderer.RemoveSceneObject(this.id)
             }
         })
+
+        if (this.miraType == MiraType.ROBOT) {
+            const brainIndex = (this.brain as SynthesisBrain)?.brainIndex
+            if (brainIndex != undefined) {
+                data.items.push({
+                    name: "Set Scheme",
+                    func: () => {
+                        setSelectedBrainIndexGlobal(brainIndex)
+                        MainHUD_OpenPanel("choose-scheme")
+                    }
+                })
+            }
+        }
+
+        if (World.SceneRenderer.currentCameraControls.controlsType == "Orbit") {
+            const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
+            if (cameraControls.focusProvider == this) {
+                data.items.push({
+                    name: "Camera: Unfocus",
+                    func: () => {
+                        cameraControls.focusProvider = undefined
+                    }
+                })
+
+                if (cameraControls.locked) {
+                    data.items.push({
+                        name: "Camera: Unlock",
+                        func: () => {
+                            cameraControls.locked = false
+                        }
+                    })
+                } else {
+                    data.items.push({
+                        name: "Camera: Lock",
+                        func: () => {
+                            cameraControls.locked = true
+                        }
+                    })
+                }
+            } else {
+                data.items.push({
+                    name: "Camera: Focus",
+                    func: () => {
+                        cameraControls.focusProvider = this
+                    }
+                })
+            }
+        }
 
         return data
     }
