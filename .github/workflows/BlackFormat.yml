@@ -19,7 +19,7 @@ jobs:
         with:
           python-version: '3.9'
       - name: Setup Isort
-        run: python3 -m pip install isort
+        run: python3 -m pip install isort==5.8.0
       - name: Validate Isort Formatting
         run: python3 ./exporter/SynthesisFusionAddin/tools/verifyIsortFormatting.py
         id: isort-format-validation
@@ -35,5 +35,6 @@ jobs:
       - name: Validate Black Formatting
         uses: psf/black@stable
         with:
+          version: "24.2.0"
           options: "--check"
           src: "./exporter/SynthesisFusionAddin/"
