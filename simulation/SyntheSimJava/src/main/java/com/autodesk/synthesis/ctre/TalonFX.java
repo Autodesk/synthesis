@@ -16,7 +16,7 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
     public TalonFX(int deviceNumber) {
         super(deviceNumber);
 
-        this.m_motor = new CANMotor("SYN TalonFX", deviceNumber, 0.0, false, 0.3);
+        this.m_motor = new CANMotor("CANMotor/SYN TalonFX", deviceNumber, 0.0, false, 0.3);
     }
 
     @Override

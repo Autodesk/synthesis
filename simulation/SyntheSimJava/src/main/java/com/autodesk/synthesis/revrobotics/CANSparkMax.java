@@ -24,8 +24,8 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
     public CANSparkMax(int deviceId, MotorType motorType) {
         super(deviceId, motorType);
 
-        this.m_motor = new CANMotor("SYN CANSparkMax", deviceId, 0.0, false, 0.3);
-        this.m_encoder = new CANEncoder("SYN CANSparkMax/Encoder", deviceId);
+        this.m_motor = new CANMotor("CANMotor/SYN CANSparkMax", deviceId, 0.0, false, 0.3);
+        this.m_encoder = new CANEncoder("CANEncoder/SYN CANSparkMax", deviceId);
     }
 
     @Override

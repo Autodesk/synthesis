@@ -220,6 +220,10 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         return
     }
 
+    if (data.type == "SimDevice") {
+        ;[data.type, data.device] = data.device.split("/")
+    }
+
     if (!Object.values(SimType).includes(data.type)) {
         console.log("Unknown data type, bailing out")
         return
@@ -241,7 +245,7 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
         typeMap.set(device, currentData)
     }
 
-    Object.entries(updateData).forEach(([key, value]) => currentData[key] = value)
+    Object.entries(updateData).forEach(([key, value]) => (currentData[key] = value))
 
     window.dispatchEvent(new SimMapUpdateEvent(false))
 }
