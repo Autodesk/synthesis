@@ -224,6 +224,12 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         ;[data.type, data.device] = data.device.split("/")
     }
 
+    if ((data.type == "CANMotor" || data.type == "CANEncoder") && data.device.split(" ")[0] != "SYN") {
+        console.log("Non-Synthesim CANMotor discarded")
+        return
+    }
+
+
     if (!Object.values(SimType).includes(data.type)) {
         console.log("Unknown data type, bailing out")
         return
