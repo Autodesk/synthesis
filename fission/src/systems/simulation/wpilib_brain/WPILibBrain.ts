@@ -30,7 +30,6 @@ export enum SimType {
     PWM,
     CANMotor,
     Solenoid,
-    SimDevice,
     CANEncoder,
 }
 
@@ -138,7 +137,7 @@ export class SimCAN {
     public static GetDeviceWithID(id: number, type: SimType): any {
         const id_exp = /.*\[(\d+)\]/g
         const entries = [...simMap.entries()].filter(
-            ([simType, _data]) => simType == type || simType == SimType.SimDevice
+            ([simType, _data]) => simType == type 
         )
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
@@ -198,7 +197,7 @@ export class SimCANEncoder {
 
     public static SetPosition(device: string, position: number): boolean {
         return SimGeneric.Set(SimType.CANEncoder, device, CANENCODER_POSITION, position)
-    }
+    
 }
 
 worker.addEventListener("message", (eventData: MessageEvent) => {
@@ -215,25 +214,7 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         }
     }
 
-    if (!data?.type) {
-        console.log("No data, bailing out")
-        return
-    }
-
-    if (data.type == "SimDevice") {
-        ;[data.type, data.device] = data.device.split("/")
-    }
-
-    if ((data.type == "CANMotor" || data.type == "CANEncoder") && data.device.split(" ")[0] != "SYN") {
-        console.log("Non-Synthesim CANMotor discarded")
-        return
-    }
-
-
-    if (!Object.values(SimType).includes(data.type)) {
-        console.log("Unknown data type, bailing out")
-        return
-    }
+    if (!data?.type || data.split(" ")[0] != "SYN" || !Object.values(SimType).includes(data.type)) return
 
     UpdateSimMap(data.type, data.device, data.data)
 })
@@ -320,17 +301,8 @@ abstract class SimOutputGroup {
         this.type = type
     }
 
-    public abstract Update(deltaT: number): void
-}
-
-// Averaging is probably not the right solution
-
-export class PWMGroup extends SimOutputGroup {
-    public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, SimType.PWM)
-    }
-
-    public Update(_deltaT: number) {
+    // Averaging is probably not the right solution
+    public Update(deltaT: number): void {
         const average =
             this.ports.reduce((sum, port) => {
                 const speed = SimPWM.GetSpeed(`${port}`) ?? 0
@@ -344,36 +316,21 @@ export class PWMGroup extends SimOutputGroup {
             } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
                 d.targetVelocity = average * 40
             }
-            d.Update(_deltaT)
+            d.Update(deltaT)
         })
+
+    }
+}
+
+
+export class PWMGroup extends SimOutputGroup {
+    public constructor(name: string, ports: number[], drivers: Driver[]) {
+        super(name, ports, drivers, SimType.PWM)
     }
 }
 
 export class CANGroup extends SimOutputGroup {
     public constructor(name: string, ports: number[], drivers: Driver[]) {
         super(name, ports, drivers, SimType.CANMotor)
-    }
-
-    public Update(_deltaT: number) {
-        for (const port of this.ports) {
-            const device = SimCAN.GetDeviceWithID(port, this.type)
-            console.log(port, device)
-        }
-
-        const average =
-            this.ports.reduce((sum, port) => {
-                const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-                console.debug(port, speed)
-                return sum + speed
-            }, 0) / this.ports.length
-
-        this.drivers.forEach(d => {
-            if (d instanceof WheelDriver) {
-                d.targetWheelSpeed = average * 40
-            } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
-                d.targetVelocity = average * 40
-            }
-            d.Update(_deltaT)
-        })
     }
 }
