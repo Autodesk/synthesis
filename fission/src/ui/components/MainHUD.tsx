@@ -120,9 +120,9 @@ const MainHUD: React.FC = () => {
                         }}
                     />
                     <MainHUDButton
-                        value={"Joints"}
+                        value={"Subsystems"}
                         icon={SynthesisIcons.Gear}
-                        onClick={() => openPanel("joint-config")}
+                        onClick={() => openPanel("subsystem-config")}
                     />
                     <MainHUDButton
                         value={"Configure"}

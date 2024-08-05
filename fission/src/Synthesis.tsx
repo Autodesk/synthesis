@@ -40,7 +40,7 @@ import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
 import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
 import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
 import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
-import ConfigureJointsPanel from "@/panels/configuring/ConfigureJointsPanel"
+import ConfigureSubsystemsPanel from "@/ui/panels/configuring/ConfigureSubsystemsPanel.tsx"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
@@ -254,7 +254,7 @@ const initialPanels: ReactElement[] = [
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
-    <ConfigureJointsPanel key="joint-config" panelId="joint-config" openLocation="right" sidePadding={8} />,
+    <ConfigureSubsystemsPanel key="subsystem-config" panelId="subsystem-config" openLocation="right" sidePadding={8} />,
 ]
 
 export default Synthesis

@@ -17,12 +17,12 @@ import { Box } from "@mui/material"
 import { useCallback, useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
 
-type JointRowProps = {
+type SubsystemRowProps = {
     robot: MirabufSceneObject
     driver: Driver
 }
 
-const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
+const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
     const driverSwitch = (driver: Driver, slider: unknown, hinge: unknown, drivetrain: unknown) => {
         switch (driver.constructor) {
             case SliderDriver:
@@ -82,7 +82,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
         }
 
         PreferencesSystem.savePreferences()
-    }, [driver, velocity, force])
+    }, [driver, robot.mechanism, robot.assemblyName])
 
     return (
         <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
@@ -119,7 +119,7 @@ const JointRow: React.FC<JointRowProps> = ({ robot, driver }) => {
     )
 }
 
-const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+const ConfigureSubsystemsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
     const [origPref, setOrigPref] = useState<RobotPreferences | undefined>(undefined)
 
@@ -189,7 +189,7 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
 
     return (
         <Panel
-            name="Configure Joints"
+            name="Configure Subsystems"
             icon={<FaGear />}
             panelId={panelId}
             openLocation={openLocation}
@@ -224,7 +224,7 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                     {drivers ? (
                         <ScrollView className="flex flex-col gap-4">
                             {/** Drivetrain row. Then other SliderDrivers and HingeDrivers */}
-                            <JointRow
+                            <SubsystemRow
                                 key={0}
                                 robot={(() => {
                                     return selectedRobot
@@ -236,7 +236,7 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                             {drivers
                                 .filter(x => x instanceof SliderDriver || x instanceof HingeDriver)
                                 .map((driver: Driver, i: number) => (
-                                    <JointRow
+                                    <SubsystemRow
                                         key={i + 1}
                                         robot={(() => {
                                             return selectedRobot
@@ -248,7 +248,7 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                                 ))}
                         </ScrollView>
                     ) : (
-                        <Label>No Joints</Label>
+                        <Label>No Subsystems</Label>
                     )}
                 </>
             )}
@@ -256,4 +256,4 @@ const ConfigureJointsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
     )
 }
 
-export default ConfigureJointsPanel
+export default ConfigureSubsystemsPanel
