@@ -66,7 +66,8 @@ class SceneRenderer extends WorldSystem {
         this._scene = new THREE.Scene()
 
         this._renderer = this.CreateRenderer(
-            PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference")
+            PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference"),
+            PreferencesSystem.getGlobalPreference<boolean>("AntiAliasing")
         )
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0)
@@ -134,12 +135,13 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
-    public CreateRenderer(powerPreference: WebGLPowerPreference): THREE.WebGLRenderer {
+    public CreateRenderer(powerPreference: WebGLPowerPreference, antiAliasing: boolean): THREE.WebGLRenderer {
+        console.log(antiAliasing)
         const renderer = new THREE.WebGLRenderer({
             powerPreference: powerPreference,
             antialias: false,
             stencil: false,
-            depth: false,
+            // depth: !antiAliasing,
         })
         renderer.setClearColor(CLEAR_COLOR)
         renderer.setPixelRatio(window.devicePixelRatio)
@@ -149,11 +151,31 @@ class SceneRenderer extends WorldSystem {
         return renderer
     }
 
+    /** Function to disable or enable the antiAliasingPass */
     public SetAntiAliasing(antiAliasPass: boolean): void {
         if (antiAliasPass) {
             this._composer.addPass(this._antiAliasPass)
-        } else if (this._composer.passes.includes(this._antiAliasPass)) {
-            this._composer.removePass(this._antiAliasPass)
+        } else {
+            // console.log("here")
+            // this._renderer = this.CreateRenderer(
+            //     PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference"),
+            //     antiAliasPass
+            // )
+            this._renderer = new THREE.WebGLRenderer({
+                powerPreference: PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference"),
+                antialias: false,
+                stencil: false,
+                depth: true,
+            })
+            this._renderer.setClearColor(CLEAR_COLOR)
+            this._renderer.setPixelRatio(window.devicePixelRatio)
+            this._renderer.shadowMap.enabled = true
+            this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
+            this._renderer.setSize(window.innerWidth, window.innerHeight)
+
+            if (this._composer.passes.includes(this._antiAliasPass)) {
+                this._composer.removePass(this._antiAliasPass)
+            }
         }
     }
 

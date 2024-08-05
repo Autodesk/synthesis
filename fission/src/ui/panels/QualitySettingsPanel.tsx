@@ -6,6 +6,7 @@ import Dropdown from "@/components/Dropdown"
 import World from "@/systems/World"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
+/** converts the easily-readable options to PowerPreference type strings */
 function OptionsToPowerPreference(): { [key: string]: WebGLPowerPreference } {
     return {
         "High Performance": "high-performance",
@@ -14,6 +15,7 @@ function OptionsToPowerPreference(): { [key: string]: WebGLPowerPreference } {
     }
 }
 
+/** recieves the PowerPreference formatted string and converts it into a readable format for users to select */
 function PowerPreferenceToOptions(): { [key: string]: string } {
     return {
         "high-performance": "High Performance",
@@ -45,7 +47,10 @@ const QualitySettingsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                     value = OptionsToPowerPreference()[value as string]
 
                     // recreating the renderer with new preferences
-                    World.SceneRenderer.renderer = World.SceneRenderer.CreateRenderer(value as WebGLPowerPreference)
+                    World.SceneRenderer.renderer = World.SceneRenderer.CreateRenderer(
+                        value as WebGLPowerPreference,
+                        PreferencesSystem.getGlobalPreference<boolean>("AntiAliasing")
+                    )
 
                     // saving the new preference
                     PreferencesSystem.setGlobalPreference("PowerPreference", value)
