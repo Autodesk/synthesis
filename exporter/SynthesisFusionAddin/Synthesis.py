@@ -3,33 +3,35 @@ import sys
 
 import adsk.core
 
-# Currently required for `resolveDependencies()`, will be required for absolute imports.
+# Required for absolute imports.
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from .src.Dependencies import resolveDependencies  # isort:skip
+from src.Dependencies import resolveDependencies
+from src.Logging import logFailure, setupLogger
 
-# Transition: AARD-1741
-# Import order should be removed in AARD-1737 and `setupLogger()` moved to `__init__.py`
-from .src.Logging import getLogger, logFailure, setupLogger  # isort:skip
-
-setupLogger()
+logger = setupLogger()
 
 try:
-    from src import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
-    from src.UI import (
-        HUI,
-        Camera,
-        ConfigCommand,
-        MarkingMenu,
-        ShowAPSAuthCommand,
-        ShowWebsiteCommand,
-    )
-    from src.UI.Toolbar import Toolbar
+    # Attempt to import required pip dependencies to verify their installation.
+    import google.protobuf
+    import requests
 except (ImportError, ModuleNotFoundError) as error:
-    getLogger().warn(f"Running resolve dependencies with error of:\n{error}")
+    logger.warn(f"Running resolve dependencies with error of:\n{error}")
     result = resolveDependencies()
     if result:
         adsk.core.Application.get().userInterface.messageBox("Installed required dependencies.\nPlease restart Fusion.")
+
+
+from src import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
+from src.UI import (
+    HUI,
+    Camera,
+    ConfigCommand,
+    MarkingMenu,
+    ShowAPSAuthCommand,
+    ShowWebsiteCommand,
+)
+from src.UI.Toolbar import Toolbar
 
 
 @logFailure
@@ -68,9 +70,7 @@ def stop(_):
 
     # nm.deleteMe()
 
-    logger = getLogger(INTERNAL_ID)
     logger.cleanupHandlers()
-
     gm.clear()
 
 
