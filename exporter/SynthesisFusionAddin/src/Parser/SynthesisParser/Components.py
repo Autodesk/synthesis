@@ -8,13 +8,12 @@ import adsk.core
 import adsk.fusion
 
 from proto.proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
-
 from src.Logging import logFailure
-from src.Types import ExportMode
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser import PhysicalProperties
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import *
+from src.Types import ExportMode
 
 # TODO: Impelement Material overrides
 

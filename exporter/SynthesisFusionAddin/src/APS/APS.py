@@ -10,7 +10,7 @@ from typing import Any
 
 import requests
 
-from src import gm, ADDIN_PATH
+from src import ADDIN_PATH, gm
 from src.Logging import getLogger
 
 logger = getLogger()

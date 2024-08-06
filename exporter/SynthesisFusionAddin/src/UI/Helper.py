@@ -3,7 +3,7 @@ from typing import Union
 
 import adsk.core
 
-from src import gm, APP_NAME, APP_TITLE, INTERNAL_ID
+from src import APP_NAME, APP_TITLE, INTERNAL_ID, gm
 from src.UI import HUI, Events
 
 

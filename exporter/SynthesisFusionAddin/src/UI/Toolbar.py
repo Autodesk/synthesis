@@ -1,5 +1,5 @@
-from src.Logging import logFailure
 from src import INTERNAL_ID, gm
+from src.Logging import logFailure
 
 
 class Toolbar:
