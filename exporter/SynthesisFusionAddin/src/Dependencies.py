@@ -1,7 +1,6 @@
 import importlib.machinery
 import importlib.util
 import os
-import platform
 import subprocess
 import sys
 from pathlib import Path
@@ -9,10 +8,10 @@ from pathlib import Path
 import adsk.core
 import adsk.fusion
 
+from src import SYSTEM
 from src.Logging import getLogger, logFailure
 
 logger = getLogger()
-system = platform.system()
 
 # Since the Fusion python runtime is separate from the system python runtime we need to do some funky things
 # in order to download and install python packages separate from the standard library.
@@ -29,13 +28,11 @@ def getInternalFusionPythonInstillationFolder() -> str:
     pythonStandardLibraryModulePath = importlib.machinery.PathFinder.find_spec("os", sys.path).origin
 
     # Depending on platform, adjust to folder to where the python executable binaries are stored.
-    if system == "Windows":
+    if SYSTEM == "Windows":
         folder = f"{Path(pythonStandardLibraryModulePath).parents[1]}"
-    elif system == "Darwin":
-        folder = f"{Path(pythonStandardLibraryModulePath).parents[2]}/bin"
     else:
-        # TODO: System string should be moved to __init__ after GH-1013
-        raise RuntimeError("Unsupported platform.")
+        assert SYSTEM == "Darwin"
+        folder = f"{Path(pythonStandardLibraryModulePath).parents[2]}/bin"
 
     return folder
 
@@ -100,7 +97,7 @@ def resolveDependencies() -> bool | None:
     adsk.doEvents()
 
     pythonFolder = getInternalFusionPythonInstillationFolder()
-    pythonExecutableFile = "python.exe" if system == "Windows" else "python"  # Confirming 110% everything is fine.
+    pythonExecutableFile = "python.exe" if SYSTEM == "Windows" else "python"  # Confirming 110% everything is fine.
     pythonExecutablePath = os.path.join(pythonFolder, pythonExecutableFile)
 
     progressBar = ui.createProgressDialog()
@@ -109,7 +106,7 @@ def resolveDependencies() -> bool | None:
     progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP) * 2 + 2, 0)
 
     # Install pip manually on macos as it is not included by default? Really?
-    if system == "Darwin" and not os.path.exists(os.path.join(pythonFolder, "pip")):
+    if SYSTEM == "Darwin" and not os.path.exists(os.path.join(pythonFolder, "pip")):
         pipInstallScriptPath = os.path.join(pythonFolder, "get-pip.py")
         if not os.path.exists(pipInstallScriptPath):
             executeCommand("curl", "https://bootstrap.pypa.io/get-pip.py", "-o", pipInstallScriptPath)

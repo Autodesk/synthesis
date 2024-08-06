@@ -1,9 +1,4 @@
 # Contains all of the logic for mapping the Components / Occurrences
-import logging
-import traceback
-import uuid
-from typing import *
-
 import adsk.core
 import adsk.fusion
 
@@ -12,7 +7,11 @@ from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser import PhysicalProperties
 from src.Parser.SynthesisParser.PDMessage import PDMessage
-from src.Parser.SynthesisParser.Utilities import *
+from src.Parser.SynthesisParser.Utilities import (
+    fill_info,
+    guid_component,
+    guid_occurrence,
+)
 from src.Types import ExportMode
 
 # TODO: Impelement Material overrides

@@ -1,6 +1,3 @@
-import logging
-import traceback
-
 import adsk.core
 import adsk.fusion
 

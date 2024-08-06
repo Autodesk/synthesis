@@ -4,7 +4,6 @@ import adsk.core
 
 from src.Logging import logFailure
 from src.Types import OString
-from src.UI import Helper
 
 
 @logFailure

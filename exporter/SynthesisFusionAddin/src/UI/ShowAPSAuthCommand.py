@@ -1,10 +1,8 @@
 import json
-import os
 import time
 import traceback
 import urllib.parse
 import urllib.request
-import webbrowser
 
 import adsk.core
 

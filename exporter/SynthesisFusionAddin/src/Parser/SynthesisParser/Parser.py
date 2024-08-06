@@ -17,7 +17,7 @@ from src.Parser.SynthesisParser import (
     Materials,
     PDMessage,
 )
-from src.Parser.SynthesisParser.Utilities import *
+from src.Parser.SynthesisParser.Utilities import fill_info
 from src.Types import ExportLocation, ExportMode
 from src.UI.Camera import captureThumbnail, clearIconCache
 

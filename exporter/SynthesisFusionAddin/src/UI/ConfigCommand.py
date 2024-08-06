@@ -10,13 +10,12 @@ import adsk.core
 import adsk.fusion
 
 from src import gm
-from src.APS.APS import getAuth, getUserInfo, refreshAuthToken
+from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Parser import Parser
-from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.Types import ExportLocation, ExportMode
-from src.UI import CustomGraphics, FileDialogConfig, Helper, IconPaths
+from src.UI import FileDialogConfig
 from src.UI.Configuration.SerialCommand import SerialCommand
 from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.GeneralConfigTab import GeneralConfigTab

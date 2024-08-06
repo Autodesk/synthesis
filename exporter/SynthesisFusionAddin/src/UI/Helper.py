@@ -1,5 +1,4 @@
 from inspect import getmembers, isfunction
-from typing import Union
 
 import adsk.core
 

@@ -1,5 +1,5 @@
 import json
-from typing import Sequence, Tuple
+from typing import Sequence
 
 import adsk.core
 

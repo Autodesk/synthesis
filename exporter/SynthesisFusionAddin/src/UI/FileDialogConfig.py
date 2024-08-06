@@ -1,5 +1,3 @@
-from typing import Union
-
 import adsk.core
 import adsk.fusion
 
