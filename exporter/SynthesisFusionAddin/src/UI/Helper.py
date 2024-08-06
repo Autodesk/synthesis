@@ -1,21 +1,11 @@
-import traceback
 from inspect import getmembers, isfunction
+from typing import Union
 
-import adsk.core
-
-from src import APP_NAME, APP_TITLE, INTERNAL_ID, gm
-from src.UI import HUI, Events
-
-
-def check_solid_open() -> bool:
-    """### Checks to see if the current design open is Fusion Solid
-    - Supplied as callback
-    WARN - THIS NO LONGER FUNCTIONS
-    """
-    return True
+from ..general_imports import *
+from . import HUI, Events
 
 
-def getDocName() -> str | None:
+def getDocName() -> str or None:
     """### Gets the active Document Name
     - If it can't find one then it will return None
     """
@@ -39,7 +29,7 @@ def checkAttribute() -> bool:
         return False
 
 
-def addUnityAttribute() -> bool | None:
+def addUnityAttribute() -> bool or None:
     """#### Adds an attribute to the Fusion File
     - Initially intended to be used to add a marker for in use untiy files
     - No longer necessary

@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import { Slider as BaseSlider } from "@mui/base/Slider"
 import { Mark } from "@mui/base/useSlider"
 import Label, { LabelSize } from "./Label"
@@ -12,19 +12,18 @@ type SliderProps = {
     label?: string
     min: number
     max: number
-    defaultValue: number
-    onChange?: (v: number) => void
+    value: number
+    onChange?: (event: Event, value: number | number[], activeThumb: number) => void
     marks?: Mark[] | boolean
     step?: number
     locale?: string
     format?: Intl.NumberFormatOptions & CustomFormatOptions
 }
 
-const Slider: React.FC<SliderProps> = ({ label, min, max, defaultValue, onChange, step, marks, locale, format }) => {
-    const [value, setValue] = useState<number>(defaultValue)
+const Slider: React.FC<SliderProps> = ({ label, min, max, value, onChange, step, marks, locale, format }) => {
     locale ||= "en-us"
     format ||= {
-        maximumFractionDigits: 0,
+        maximumFractionDigits: (1.0 / (step == 0 ? 1 : step ?? 1)).toString().length - 1,
         prefix: "",
         suffix: "",
     }
@@ -40,13 +39,8 @@ const Slider: React.FC<SliderProps> = ({ label, min, max, defaultValue, onChange
                 </Label>
             </div>
             <BaseSlider
-                onChange={(_event: Event, value: number | number[], _activeThumb: number) => {
-                    if (typeof value === "number") {
-                        setValue(value)
-                        onChange && onChange(value)
-                    }
-                }}
-                defaultValue={defaultValue}
+                onChange={onChange}
+                value={value}
                 min={min}
                 max={max}
                 step={step}

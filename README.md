@@ -3,10 +3,10 @@
 
 <br/>
 
-[![Fission - Unit Test](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml)
-[![Fission - Packaging](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml)
-[![Fission - Lint/Format](https://github.com/Autodesk/synthesis/actions/workflows/FissionESLintFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/FissionESLintFormat.yml)
-[![Fusion - Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=master)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml)
+[![Fission - Unit Test](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionUnitTest.yml)
+[![Fission - Packaging](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionPackage.yml)
+[![Fission - Lint/Format](https://github.com/Autodesk/synthesis/actions/workflows/FissionESLintFormat.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/FissionESLintFormat.yml)
+[![Fusion - Format](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml/badge.svg?branch=prod)](https://github.com/Autodesk/synthesis/actions/workflows/BlackFormat.yml)
 
 Synthesis is a robotics simulator designed by and for [FIRST®](https://www.firstinspires.org/) robotics students to help teams design, strategize, test and practice. Teams have the ability to import their own robots and fields using our [Fusion Exporter](/exporter/) or use the pre-made ones available within Synthesis.
 
@@ -28,19 +28,19 @@ Here are some of our primary goals for Synthesis:
 If you are a FIRST robotics student who just wants to use Synthesis, you *don't* need this repo. Simply **install the latest release of Synthesis from [synthesis.autodesk.com/download](https://synthesis.autodesk.com/download.html)**.
 
 > [!IMPORTANT]
-> Moving to [synthesis.autodesk.com]
+> Moving to [synthesis.autodesk.com](http://synthesis.autodesk.com/).
 
 If you're a developer who wants to contribute to Synthesis, you're in the right place. Synthesis is comprised of 3 main components that can be developed separately. These components include:
 
 - [Fission (Core Web App)](/fission/README.md)
 - [Fusion Exporter (Fusion exporter to Mirabuf file format)](/exporter/SynthesisFusionAddin/README.md)
-- [Installers](/installer/)
+- [Fusion Exporter Installer](/installer/)
 
 Follow the above links to the respective READMEs on how to build and run each component.
 
 ### Compatibility Notes
 
-As Fusion is not supported on linux, the linux installer does not come with the Fusion Addin for exporting robots and fields.
+As Fusion is not officially supported on Linux, we do not provide an installer for the Fusion Exporter on Linux.
 
 ## Contributing
 

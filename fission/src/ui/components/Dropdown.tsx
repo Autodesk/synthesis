@@ -1,144 +1,126 @@
-import React, { ReactNode, useState } from "react"
-import Label, { LabelSize } from "./Label"
-import { Select as BaseSelect, SelectProps, SelectRootSlotProps } from "@mui/base/Select"
-import { Option as BaseOption } from "@mui/base/Option"
+import React, { useEffect, useRef, useState } from "react"
 import { styled } from "@mui/system"
-import { Button } from "@mui/base/Button"
-import UnfoldMoreRoundedIcon from "@mui/icons-material/UnfoldMoreRounded"
+import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
+import { colorNameToVar } from "../ThemeContext"
 
-const Select = React.forwardRef(function Select<TValue extends NonNullable<unknown>, Multiple extends boolean>(
-    props: SelectProps<TValue, Multiple>,
-    ref: React.ForwardedRef<HTMLButtonElement>
-) {
-    const slots: SelectProps<TValue, Multiple>["slots"] = {
-        root: CustomButton,
-        listbox: Listbox,
-        popup: Popup,
-        ...props.slots,
-    }
-
-    return <BaseSelect {...props} ref={ref} slots={slots} slotProps={{ listbox: {}, popup: { disablePortal: true } }} />
-}) as <TValue extends NonNullable<unknown>, Multiple extends boolean>(
-    props: SelectProps<TValue, Multiple> & React.RefAttributes<HTMLButtonElement>
-) => JSX.Element
-
-type DropdownProps = {
-    children?: ReactNode
-    label?: string
-    className?: string
-    options: string[]
-    onSelect: (opt: string) => void
-}
-
-const Dropdown: React.FC<DropdownProps> = ({ label, options, onSelect }) => {
-    const [optionList, _setOptionList] = useState(options)
-
-    return (
-        <>
-            {label && <Label size={LabelSize.Medium}>{label}</Label>}
-            <div className="relative w-full">
-                <Select
-                    defaultValue={optionList[0]}
-                    onChange={(
-                        _event: React.MouseEvent | React.KeyboardEvent | React.FocusEvent | null,
-                        value: string | unknown
-                    ) => typeof value === "string" && onSelect && onSelect(value)}
-                >
-                    {optionList.map(option => (
-                        <Option value={option} key={option}>
-                            {option}
-                        </Option>
-                    ))}
-                </Select>
-            </div>
-        </>
-    )
-}
-
-const CustomButton = React.forwardRef(function CustomButton<
-    TValue extends NonNullable<unknown>,
-    Multiple extends boolean,
->(props: SelectRootSlotProps<TValue, Multiple>, ref: React.ForwardedRef<HTMLButtonElement>) {
-    return (
-        <StyledButton type="button" {...props} ref={ref}>
-            {props.children}
-            <UnfoldMoreRoundedIcon />
-        </StyledButton>
-    )
+const CustomButton = styled(Button)({
+    "border": `2px solid ${colorNameToVar("InteractiveElementRight")}`,
+    "color": colorNameToVar("InteractiveElementText"),
+    "backgroundColor": colorNameToVar("BackgroundSecondary"),
+    "width": "100%",
+    "&:focus": {
+        outline: "none !important",
+        border: `2px solid ${colorNameToVar("InteractiveElementRight")} !important`,
+        boxShadow: "none !important",
+    },
+    "&:hover": {
+        outline: "none !important",
+        border: `2px solid ${colorNameToVar("InteractiveElementLeft")} !important`,
+        boxShadow: "none !important",
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
+    },
+    "&:focus-visible": {
+        outline: "none !important",
+        border: `2px solid ${colorNameToVar("InteractiveElementLeft")} !important`,
+        boxShadow: "none !important",
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
+    },
+    "&:active": {
+        outline: "none !important",
+        border: `2px solid ${colorNameToVar("InteractiveElementLeft")} !important`,
+        boxShadow: "none !important",
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
+    },
+    "&::-moz-focus-inner": {
+        border: "0 !important",
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
+    },
 })
 
-const StyledButton = styled(Button)`
-    position: relative;
-    text-align: left;
-    width: 100%;
-    background-image: linear-gradient(to right, var(--interactive-element-left), var(--interactive-element-right));
-    border-radius: 0.375rem;
-    border: none;
-    outline: none;
-    padding-left: calc(0.8em + 8px);
+const CustomMenu = styled(Menu)({
+    "& .MuiPaper-root": {
+        backgroundColor: colorNameToVar("BackgroundSecondary"),
+        color: colorNameToVar("MainText"),
+        border: `2px solid ${colorNameToVar("InteractiveElementRight")} !important`,
+        minWidth: "unset",
+    },
+    "& .MuiMenuItem-root": {
+        "transition": "background-color 0.3s ease, color 0.3s ease",
+        "&:hover": {
+            color: "#da6659",
+        },
+    },
+})
 
-    &:hover,
-    &:focus {
-        outline: none;
+interface DropdownProps {
+    options: string[]
+    defaultValue?: string
+    onSelect: (value: string) => void
+    label?: string
+    className?: string
+}
+
+const Dropdown: React.FC<DropdownProps> = ({ options, defaultValue, onSelect, label }) => {
+    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+    const [selectedValue, setSelectedValue] = useState<string>(defaultValue || "")
+    const buttonRef = useRef<HTMLButtonElement>(null)
+    const [menuWidth, setMenuWidth] = useState<number>(0)
+
+    useEffect(() => {
+        if (buttonRef.current) {
+            setMenuWidth(buttonRef.current.clientWidth)
+        }
+    }, [])
+
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+        setAnchorEl(event.currentTarget)
     }
 
-    & > svg {
-        font-size: 1rem;
-        position: absolute;
-        height: 100%;
-        top: 0;
-        right: 10px;
+    const handleClose = () => {
+        setAnchorEl(null)
     }
-`
 
-const Listbox = styled("ul")`
-    box-sizing: border-box;
-    width: 100%;
-    background-image: linear-gradient(to right, var(--interactive-element-right), var(--interactive-element-left));
-    border-radius: 1rem;
-    padding: 8px;
-`
-
-const Option = styled(BaseOption)`
-    list-style: none;
-    cursor: default;
-    padding: 0.6em 0.8em;
-    border-radius: 1rem;
-    cursor: pointer;
-    &:hover {
-        backdrop-filter: brightness(90%);
+    const handleSelect = (value: string) => {
+        setSelectedValue(value)
+        onSelect(value)
+        handleClose()
     }
-    &:hover,
-    &:focus {
-        outline: none;
-    }
-`
 
-const Popup = styled("div")`
-    position: relative;
-    z-index: 1;
-    width: 100%;
-`
-
-// <div
-//     onClick={() => setExpanded(!expanded)}
-//     className={`relative flex flex-col gap-2 select-none cursor-pointer bg-gradient-to-r from-interactive-element-left to-interactive-element-right w-full rounded-md ${className}`}
-// >
-//     <DropdownOption value={optionList[0]}>
-//         {optionList[0]}
-//         {optionList.length > 1 && (
-//             <div className="absolute right-2 top-1/2 -translate-y-1/2 flex flex-col h-1/2 content-center items-center">
-//                 <FaChevronUp className="h-1/2" />
-//                 <FaChevronDown className="h-1/2" />
-//             </div>
-//         )}
-//     </DropdownOption>
-//     {expanded &&
-//         optionList.slice(1).map(o => (
-//             <DropdownOption key={o} value={o}>
-//                 {o}
-//             </DropdownOption>
-//         ))}
-// </div>
+    return (
+        <div style={{ display: "inline-block", position: "relative" }}>
+            {label && (
+                <div
+                    style={{
+                        marginBottom: "4px",
+                        fontSize: "0.875rem",
+                        color: "white",
+                        textAlign: "center",
+                    }}
+                >
+                    {label}
+                </div>
+            )}
+            <Tooltip title={label || ""}>
+                <div>
+                    <CustomButton onClick={handleClick} ref={buttonRef}>
+                        {selectedValue || "Select an option"}
+                    </CustomButton>
+                </div>
+            </Tooltip>
+            <CustomMenu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+                MenuListProps={{ style: { minWidth: menuWidth } }}
+            >
+                {options.map((option, index) => (
+                    <MenuItem key={index} onClick={() => handleSelect(option)}>
+                        {option}
+                    </MenuItem>
+                ))}
+            </CustomMenu>
+        </div>
+    )
+}
 
 export default Dropdown

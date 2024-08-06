@@ -4,39 +4,63 @@ import Behavior from "../behavior/Behavior"
 import World from "@/systems/World"
 import WheelDriver from "../driver/WheelDriver"
 import WheelRotationStimulus from "../stimulus/WheelStimulus"
-import ArcadeDriveBehavior from "../behavior/ArcadeDriveBehavior"
+import ArcadeDriveBehavior from "../behavior/synthesis/ArcadeDriveBehavior"
 import { SimulationLayer } from "../SimulationSystem"
 import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import HingeDriver from "../driver/HingeDriver"
 import HingeStimulus from "../stimulus/HingeStimulus"
-import GenericArmBehavior from "../behavior/GenericArmBehavior"
+import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
 import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
-import GenericElevatorBehavior from "../behavior/GenericElevatorBehavior"
+import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import InputSystem from "@/systems/input/InputSystem"
 
 class SynthesisBrain extends Brain {
+    public static brainIndexMap = new Map<number, SynthesisBrain>()
+
     private _behaviors: Behavior[] = []
     private _simLayer: SimulationLayer
+    private _assemblyName: string
+    private _brainIndex: number
 
-    _leftWheelIndices: number[] = []
+    // Tracks how many joins have been made with unique controls
+    private _currentJointIndex = 1
 
-    // Tracks how many joins have been made for unique controls
-    _currentJointIndex = 1
+    public get inputSchemeName(): string {
+        const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
+        if (scheme == undefined) return "Not Configured"
 
-    public constructor(mechanism: Mechanism) {
+        return scheme.schemeName
+    }
+
+    public get brainIndex(): number {
+        return this._brainIndex
+    }
+
+    public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
 
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
+        this._assemblyName = assemblyName
+
+        this._brainIndex = SynthesisBrain.brainIndexMap.size
+        SynthesisBrain.brainIndexMap.set(this._brainIndex, this)
 
         if (!this._simLayer) {
-            console.log("SimulationLayer is undefined")
+            console.error("SimulationLayer is undefined")
             return
         }
 
-        this.ConfigureArcadeDriveBehavior()
-        this.ConfigureArmBehaviors()
-        this.ConfigureElevatorBehaviors()
+        // Only adds controls to mechanisms that are controllable (ignores fields)
+        if (mechanism.controllable) {
+            this.configureArcadeDriveBehavior()
+            this.configureArmBehaviors()
+            this.configureElevatorBehaviors()
+        } else {
+            this.configureField()
+        }
     }
 
     public Enable(): void {}
@@ -49,8 +73,12 @@ class SynthesisBrain extends Brain {
         this._behaviors = []
     }
 
+    public clearControls(): void {
+        InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
+    }
+
     // Creates an instance of ArcadeDriveBehavior and automatically configures it
-    public ConfigureArcadeDriveBehavior() {
+    private configureArcadeDriveBehavior() {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
@@ -89,11 +117,13 @@ class SynthesisBrain extends Brain {
             }
         }
 
-        this._behaviors.push(new ArcadeDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli))
+        this._behaviors.push(
+            new ArcadeDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex)
+        )
     }
 
     // Creates instances of ArmBehavior and automatically configures them
-    public ConfigureArmBehaviors() {
+    private configureArmBehaviors() {
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof HingeDriver
         ) as HingeDriver[]
@@ -102,13 +132,15 @@ class SynthesisBrain extends Brain {
         ) as HingeStimulus[]
 
         for (let i = 0; i < hingeDrivers.length; i++) {
-            this._behaviors.push(new GenericArmBehavior(hingeDrivers[i], hingeStimuli[i], this._currentJointIndex))
+            this._behaviors.push(
+                new GenericArmBehavior(hingeDrivers[i], hingeStimuli[i], this._currentJointIndex, this._brainIndex)
+            )
             this._currentJointIndex++
         }
     }
 
     // Creates instances of ElevatorBehavior and automatically configures them
-    public ConfigureElevatorBehaviors() {
+    private configureElevatorBehaviors() {
         const sliderDrivers: SliderDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof SliderDriver
         ) as SliderDriver[]
@@ -118,10 +150,21 @@ class SynthesisBrain extends Brain {
 
         for (let i = 0; i < sliderDrivers.length; i++) {
             this._behaviors.push(
-                new GenericElevatorBehavior(sliderDrivers[i], sliderStimuli[i], this._currentJointIndex)
+                new GenericElevatorBehavior(
+                    sliderDrivers[i],
+                    sliderStimuli[i],
+                    this._currentJointIndex,
+                    this._brainIndex
+                )
             )
             this._currentJointIndex++
         }
+    }
+
+    private configureField() {
+        PreferencesSystem.getFieldPreferences(this._assemblyName)
+
+        /** Put any field configuration here */
     }
 }
 

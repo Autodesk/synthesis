@@ -1,16 +1,14 @@
-import json
-import logging.handlers
-from typing import Sequence
+from typing import Sequence, Tuple
 
-import adsk.core
-
-from src import INTERNAL_ID, gm
-from src.UI import Helper
+from ..general_imports import *
+from ..Logging import getLogger
 
 """ # This file is Special
     It links all function names to command requests that palletes can make automatically
     If you create a function you can automatically call it from a javascript request or the palette js code.
 """
+
+logger = getLogger()
 
 
 def updateDocument(*argv: Sequence[str]):
@@ -56,9 +54,7 @@ def openDocument(json_data: str) -> str:
     data = json.loads(json_data)
     data = data["arguments"]
     gm.ui.messageBox(f"Attempting to open and focus on a given document: {data}\n TODO: Implement")
-    logging.getLogger(f"{INTERNAL_ID}.Events.openDocument").info(
-        f"Attempting to open and focus on a given document: {data}\n TODO: Implement"
-    )
+    logger.info(f"Attempting to open and focus on a given document: {data}\n TODO: Implement")
     return ""
 
 

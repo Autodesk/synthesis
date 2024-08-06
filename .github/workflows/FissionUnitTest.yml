@@ -3,9 +3,9 @@ name: Fission - Unit Test
 on:
   workflow_dispatch: {}
   push:
-    branches: [master, dev]
+    branches: [ prod, dev ]
   pull_request:
-    branches: [master, dev]
+    branches: [ prod, dev ]
 
 jobs:
   runUnitTests:
@@ -49,7 +49,6 @@ jobs:
       - name: Install Dependencies
         run: |
           cd fission
-          rm package-lock.json
           npm install
 
       - name: Download playwright if not cached

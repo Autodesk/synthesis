@@ -1,11 +1,11 @@
 import React, { useState } from "react"
 import Label, { LabelSize } from "@/components/Label"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { IoPeople } from "react-icons/io5"
 import Stack, { StackDirection } from "@/components/Stack"
 import Button from "@/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
 import Checkbox from "@/components/Checkbox"
+import { SynthesisIcons } from "../components/StyledComponents"
 
 const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
@@ -14,7 +14,7 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
     return (
         <Panel
             name={"MultiBot"}
-            icon={<IoPeople />}
+            icon={SynthesisIcons.People}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
@@ -29,6 +29,7 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             className="whitespace-nowrap"
                             onClick={() => setSelected(i)}
                             stateOverride={i == selected}
+                            key={i}
                         />
                     ))}
                 </fieldset>

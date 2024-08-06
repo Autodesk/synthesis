@@ -12,15 +12,17 @@
     - Success
 """
 
-import logging
-from typing import Union
+from typing import *
 
 import adsk.core
 import adsk.fusion
 
 from proto.proto_out import assembly_pb2
 
+from ...Logging import logFailure
 
+
+@logFailure
 def ExportRigidGroups(
     fus_occ: Union[adsk.fusion.Occurrence, adsk.fusion.Component],
     hel_occ: assembly_pb2.Occurrence,
@@ -34,22 +36,16 @@ def ExportRigidGroups(
         fus_occ (adsk.fusion.Occurrence): Fusion Occurrence Reference
         hel_occ (Assembly_pb2.Occurrence): Protobuf Hellion Occurrence Reference
     """
-    try:
-        log = logging.getLogger("{INTERNAL_ID}.Parser.RigidGroup")
+    groups = fus_occ.rigidGroups
 
-        groups = fus_occ.rigidGroups
+    if groups is None:
+        return
 
-        if groups is None:
-            return
+    _rigidGroups = hel_occ.rigidgroups
 
-        _rigidGroups = hel_occ.rigidgroups
-
-        for group in groups:
-            if not group.isSuppressed and group.isValid:
-                _group = _rigidGroups.add()
-                _group.name = group.name
-                for occurrence in group.occurrences:
-                    _group.occurrences.extend(occurrence.fullPathName)
-    except:
-        if log:
-            log.error(f"Exception thrown while parsing rigidgroups in {fus_occ.name}")
+    for group in groups:
+        if not group.isSuppressed and group.isValid:
+            _group = _rigidGroups.add()
+            _group.name = group.name
+            for occurrence in group.occurrences:
+                _group.occurrences.extend(occurrence.fullPathName)

@@ -1,60 +1,44 @@
-import logging
 import os
-import traceback
 
-import adsk.core
 from adsk.core import SaveImageFileOptions
 
-from src import A_EP
-from src.Types.OString import OString
-from src.UI import Helper
+from ..general_imports import *
+from ..Logging import logFailure, timed
+from ..Types import OString
+from . import Helper
 
 
+@logFailure
 def captureThumbnail(size=250):
     """
     ## Captures Thumbnail and saves it to a temporary path - needs to be cleared after or on startup
     - Size: int (Default: 200) : (width & height)
     """
     app = adsk.core.Application.get()
+    originalCamera = app.activeViewport.camera
 
-    log = logging.getLogger("{INTERNAL_ID}.HUI.Camera")
+    name = "Thumbnail_{0}.png".format(
+        app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0].replace(
+            " ", ""
+        )  # remove whitespace from just the filename
+    )
 
-    if Helper.check_solid_open():
-        try:
-            originalCamera = app.activeViewport.camera
+    path = OString.ThumbnailPath(name)
 
-            name = "Thumbnail_{0}.png".format(
-                app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0].replace(
-                    " ", ""
-                )  # remove whitespace from just the filename
-            )
+    saveOptions = SaveImageFileOptions.create(str(path.getPath()))
+    saveOptions.height = size
+    saveOptions.width = size
+    saveOptions.isAntiAliased = True
+    saveOptions.isBackgroundTransparent = True
 
-            path = OString.ThumbnailPath(name)
+    newCamera = app.activeViewport.camera
+    newCamera.isFitView = True
 
-            saveOptions = SaveImageFileOptions.create(str(path.getPath()))
-            saveOptions.height = size
-            saveOptions.width = size
-            saveOptions.isAntiAliased = True
-            saveOptions.isBackgroundTransparent = True
+    app.activeViewport.camera = newCamera
+    app.activeViewport.saveAsImageFileWithOptions(saveOptions)
+    app.activeViewport.camera = originalCamera
 
-            newCamera = app.activeViewport.camera
-            newCamera.isFitView = True
-
-            app.activeViewport.camera = newCamera
-            app.activeViewport.saveAsImageFileWithOptions(saveOptions)
-            app.activeViewport.camera = originalCamera
-
-            return str(path.getPath())
-
-        except:
-            if log:
-                log.error("Failed\n{}".format(traceback.format_exc()))
-
-            if A_EP:
-                A_EP.send_exception()
-
-    else:
-        return None
+    return str(path.getPath())
 
 
 def clearIconCache() -> None:

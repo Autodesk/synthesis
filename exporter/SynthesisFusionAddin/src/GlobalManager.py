@@ -1,7 +1,12 @@
 """ Initializes the global variables that are set in the run method to reduce hanging commands. """
 
+import logging
+
 import adsk.core
 import adsk.fusion
+
+from .general_imports import *
+from .strings import *
 
 
 class GlobalManager(object):
@@ -13,6 +18,9 @@ class GlobalManager(object):
 
             if self.app:
                 self.ui = self.app.userInterface
+
+            self.connected = False
+            """ Is unity currently connected """
 
             self.uniqueIds = []
             """ Collection of unique ID values to not overlap """
@@ -34,27 +42,17 @@ class GlobalManager(object):
                 - this is the list of objects being sent
             """
 
+            self.files = []
+
         def __str__(self):
             return "GlobalManager"
-
-        def clear(self):
-            for attr, value in self.__dict__.items():
-                if isinstance(value, list):
-                    setattr(self, attr, [])
 
     instance = None
 
     def __new__(cls):
         if not GlobalManager.instance:
-            """
-            (filename, line_number, function_name, lines, index) = inspect.getframeinfo(
-                inspect.currentframe().f_back
-            )
-            logging.getLogger(f"HellionFusion.Runtime").debug(
-                f"\n Called from {filename}\n \t - {lines} : {line_number} \n"
-            )
-            """
             GlobalManager.instance = GlobalManager.__GlobalManager()
+
         return GlobalManager.instance
 
     def __getattr__(self, name):

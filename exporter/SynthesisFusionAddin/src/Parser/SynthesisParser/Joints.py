@@ -22,7 +22,6 @@ Each root child has a number of children that are all rigidly attached to the dy
 
 """
 
-import logging
 import traceback
 import uuid
 from typing import Union
@@ -30,15 +29,17 @@ from typing import Union
 import adsk.core
 import adsk.fusion
 
-from proto.proto_out import assembly_pb2, joint_pb2, signal_pb2, types_pb2
-from src import DEBUG, INTERNAL_ID, gm
-from src.Parser.ExporterOptions import ExporterOptions, JointParentType, SignalType
-from src.Parser.SynthesisParser.PDMessage import PDMessage
-from src.Parser.SynthesisParser.Utilities import (
-    construct_info,
-    fill_info,
-    guid_occurrence,
-)
+from proto.proto_out import assembly_pb2, joint_pb2, motor_pb2, signal_pb2, types_pb2
+
+from ...general_imports import *
+from ...Logging import getLogger
+from ...Types import JointParentType, SignalType
+from ..ExporterOptions import ExporterOptions
+from .PDMessage import PDMessage
+from .Utilities import construct_info, fill_info, guid_occurrence
+
+logger = getLogger()
+
 
 # Need to take in a graphcontainer
 # Need to create a new base node for each Joint Instance
@@ -73,80 +74,80 @@ def populateJoints(
 
     # This is for creating all of the Joint Definition objects
     # So we need to iterate through the joints and construct them and add them to the map
-    if options.joints or DEBUG:
-        # Add the grounded joints object - TODO: rename some of the protobuf stuff for the love of god
+    if not options.joints:
+        return
 
-        joint_definition_ground = joints.joint_definitions["grounded"]
-        construct_info("grounded", joint_definition_ground)
+    # Add the grounded joints object - TODO: rename some of the protobuf stuff for the love of god
+    joint_definition_ground = joints.joint_definitions["grounded"]
+    construct_info("grounded", joint_definition_ground)
 
-        joint_instance_ground = joints.joint_instances["grounded"]
-        construct_info("grounded", joint_instance_ground)
+    joint_instance_ground = joints.joint_instances["grounded"]
+    construct_info("grounded", joint_instance_ground)
 
-        joint_instance_ground.joint_reference = joint_definition_ground.info.GUID
+    joint_instance_ground.joint_reference = joint_definition_ground.info.GUID
 
-        # Add the rest of the dynamic objects
+    # Add the rest of the dynamic objects
 
-        for joint in list(design.rootComponent.allJoints) + list(design.rootComponent.allAsBuiltJoints):
-            if joint.isSuppressed:
-                continue
+    for joint in list(design.rootComponent.allJoints) + list(design.rootComponent.allAsBuiltJoints):
+        if joint.isSuppressed:
+            continue
 
-            # turn RigidJoints into RigidGroups
-            if joint.jointMotion.jointType == 0:
-                _addRigidGroup(joint, assembly)
-                continue
+        # turn RigidJoints into RigidGroups
+        if joint.jointMotion.jointType == 0:
+            _addRigidGroup(joint, assembly)
+            continue
 
-            # for now if it's not a revolute or slider joint ignore it
-            if joint.jointMotion.jointType != 1 and joint.jointMotion.jointType != 2:
-                continue
+        # for now if it's not a revolute or slider joint ignore it
+        if joint.jointMotion.jointType != 1 and joint.jointMotion.jointType != 2:
+            continue
 
-            try:
-                #  Fusion has no instances of joints but lets roll with it anyway
+        try:
+            #  Fusion has no instances of joints but lets roll with it anyway
 
-                # progressDialog.message = f"Exporting Joint configuration {joint.name}"
-                progressDialog.addJoint(joint.name)
+            # progressDialog.message = f"Exporting Joint configuration {joint.name}"
+            progressDialog.addJoint(joint.name)
 
-                # create the definition
-                joint_definition = joints.joint_definitions[joint.entityToken]
-                _addJoint(joint, joint_definition)
+            # create the definition
+            joint_definition = joints.joint_definitions[joint.entityToken]
+            _addJoint(joint, joint_definition)
 
-                # create the instance of the single definition
-                joint_instance = joints.joint_instances[joint.entityToken]
+            # create the instance of the single definition
+            joint_instance = joints.joint_instances[joint.entityToken]
 
-                for parse_joints in options.joints:
-                    if parse_joints.jointToken == joint.entityToken:
-                        guid = str(uuid.uuid4())
-                        signal = signals.signal_map[guid]
-                        construct_info(joint.name, signal, GUID=guid)
-                        signal.io = signal_pb2.IOType.OUTPUT
+            for parse_joints in options.joints:
+                if parse_joints.jointToken == joint.entityToken:
+                    guid = str(uuid.uuid4())
+                    signal = signals.signal_map[guid]
+                    construct_info(joint.name, signal, GUID=guid)
+                    signal.io = signal_pb2.IOType.OUTPUT
 
-                        # really could just map the enum to a friggin string
-                        if parse_joints.signalType != SignalType.PASSIVE and assembly.dynamic:
-                            if parse_joints.signalType == SignalType.CAN:
-                                signal.device_type = signal_pb2.DeviceType.CANBUS
-                            elif parse_joints.signalType == SignalType.PWM:
-                                signal.device_type = signal_pb2.DeviceType.PWM
+                    # really could just map the enum to a friggin string
+                    if parse_joints.signalType != SignalType.PASSIVE and assembly.dynamic:
+                        if parse_joints.signalType == SignalType.CAN:
+                            signal.device_type = signal_pb2.DeviceType.CANBUS
+                        elif parse_joints.signalType == SignalType.PWM:
+                            signal.device_type = signal_pb2.DeviceType.PWM
 
-                            motor = joints.motor_definitions[joint.entityToken]
-                            fill_info(motor, joint)
-                            simple_motor = motor.simple_motor
-                            simple_motor.stall_torque = parse_joints.force
-                            simple_motor.max_velocity = parse_joints.speed
-                            simple_motor.braking_constant = 0.8  # Default for now
-                            joint_definition.motor_reference = joint.entityToken
+                        motor = joints.motor_definitions[joint.entityToken]
+                        fill_info(motor, joint)
+                        simple_motor = motor.simple_motor
+                        simple_motor.stall_torque = parse_joints.force
+                        simple_motor.max_velocity = parse_joints.speed
+                        simple_motor.braking_constant = 0.8  # Default for now
+                        joint_definition.motor_reference = joint.entityToken
 
-                            joint_instance.signal_reference = signal.info.GUID
-                        # else:
-                        #     signals.signal_map.remove(guid)
+                        joint_instance.signal_reference = signal.info.GUID
+                    # else:
+                    #     signals.signal_map.remove(guid)
 
-                _addJointInstance(joint, joint_instance, joint_definition, signals, options)
+            _addJointInstance(joint, joint_instance, joint_definition, signals, options)
 
-                # adds information for joint motion and limits
-                _motionFromJoint(joint.jointMotion, joint_definition)
+            # adds information for joint motion and limits
+            _motionFromJoint(joint.jointMotion, joint_definition)
 
-            except:
-                err_msg = "Failed:\n{}".format(traceback.format_exc())
-                logging.getLogger(f"{INTERNAL_ID}.JointParser").error("Failed:\n{}".format(traceback.format_exc()))
-                continue
+        except:
+            logger.error("Failed:\n{}".format(traceback.format_exc()))
+            continue
 
 
 def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
@@ -162,10 +163,8 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
         joint_definition.origin.x = 0.0
         joint_definition.origin.y = 0.0
         joint_definition.origin.z = 0.0
-        if DEBUG:
-            logging.getLogger(f"{INTERNAL_ID}.JointParser._addJoint").error(
-                f"Cannot find joint origin on joint {joint.name}"
-            )
+
+        logger.error(f"Cannot find joint origin on joint {joint.name}")
 
     joint_definition.break_magnitude = 0.0
 
@@ -465,9 +464,7 @@ def createJointGraph(
         elif node_map[supplied_joint.parent.value] is not None and node_map[supplied_joint.jointToken] is not None:
             node_map[supplied_joint.parent].children.append(node_map[supplied_joint.jointToken])
         else:
-            logging.getLogger("JointHierarchy").error(
-                f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.jointToken}"
-            )
+            logger.error(f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.jointToken}")
 
     for node in node_map.values():
         # append everything at top level to isolate kinematics

@@ -2,6 +2,7 @@ import Jolt from "@barclah/jolt-physics"
 import Driver, { DriverControlMode } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { mirabuf } from "@/proto/mirabuf"
 
 class SliderDriver extends Driver {
     private _constraint: Jolt.SliderConstraint
@@ -55,8 +56,8 @@ class SliderDriver extends Driver {
         }
     }
 
-    public constructor(constraint: Jolt.SliderConstraint) {
-        super()
+    public constructor(constraint: Jolt.SliderConstraint, info?: mirabuf.IInfo) {
+        super(info)
 
         this._constraint = constraint
 
