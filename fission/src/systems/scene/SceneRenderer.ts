@@ -27,8 +27,6 @@ class SceneRenderer extends WorldSystem {
     private _skybox: THREE.Mesh
     private _composer: EffectComposer
 
-    private _antiAliasPass: EffectPass
-
     private _sceneObjects: Map<number, SceneObject>
 
     private _orbitControls: OrbitControls
@@ -50,10 +48,6 @@ class SceneRenderer extends WorldSystem {
         return this._renderer
     }
 
-    public set renderer(renderer: THREE.WebGLRenderer) {
-        this._renderer = renderer
-    }
-
     public constructor() {
         super()
 
@@ -65,10 +59,19 @@ class SceneRenderer extends WorldSystem {
 
         this._scene = new THREE.Scene()
 
-        this._renderer = this.CreateRenderer(
-            PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference"),
-            PreferencesSystem.getGlobalPreference<boolean>("AntiAliasing")
-        )
+        console.log(PreferencesSystem.getQualityPreferences())
+        this._renderer = new THREE.WebGLRenderer({
+            powerPreference: "high-performance",
+            antialias: false,
+            stencil: false,
+            depth: !PreferencesSystem.getQualityPreferences().antiAliasing,
+            // logarithmicDepthBuffer: true,
+        })
+        this._renderer.setClearColor(CLEAR_COLOR)
+        this._renderer.setPixelRatio(window.devicePixelRatio)
+        this._renderer.shadowMap.enabled = true
+        this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
+        this._renderer.setSize(window.innerWidth, window.innerHeight)
 
         const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0)
         directionalLight.position.set(-1.0, 3.0, 2.0)
@@ -119,13 +122,17 @@ class SceneRenderer extends WorldSystem {
         this._composer = new EffectComposer(this._renderer)
         this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
 
-        const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
-        this._antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
-        this.SetAntiAliasing(PreferencesSystem.getGlobalPreference<boolean>("AntiAliasing"))
+        if (PreferencesSystem.getQualityPreferences().antiAliasing) {
+            const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+            const antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
+            this._composer.addPass(antiAliasPass)
+        }
 
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this._orbitControls.update()
+
+        console.log(window.outerHeight, window.innerHeight)
     }
 
     public UpdateCanvasSize() {
@@ -135,50 +142,7 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
-    public CreateRenderer(powerPreference: WebGLPowerPreference, antiAliasing: boolean): THREE.WebGLRenderer {
-        console.log(antiAliasing)
-        const renderer = new THREE.WebGLRenderer({
-            powerPreference: powerPreference,
-            antialias: false,
-            stencil: false,
-            // depth: !antiAliasing,
-        })
-        renderer.setClearColor(CLEAR_COLOR)
-        renderer.setPixelRatio(window.devicePixelRatio)
-        renderer.shadowMap.enabled = true
-        renderer.shadowMap.type = THREE.PCFSoftShadowMap
-        renderer.setSize(window.innerWidth, window.innerHeight)
-        return renderer
-    }
-
     /** Function to disable or enable the antiAliasingPass */
-    public SetAntiAliasing(antiAliasPass: boolean): void {
-        if (antiAliasPass) {
-            this._composer.addPass(this._antiAliasPass)
-        } else {
-            // console.log("here")
-            // this._renderer = this.CreateRenderer(
-            //     PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference"),
-            //     antiAliasPass
-            // )
-            this._renderer = new THREE.WebGLRenderer({
-                powerPreference: PreferencesSystem.getGlobalPreference<WebGLPowerPreference>("PowerPreference"),
-                antialias: false,
-                stencil: false,
-                depth: true,
-            })
-            this._renderer.setClearColor(CLEAR_COLOR)
-            this._renderer.setPixelRatio(window.devicePixelRatio)
-            this._renderer.shadowMap.enabled = true
-            this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
-            this._renderer.setSize(window.innerWidth, window.innerHeight)
-
-            if (this._composer.passes.includes(this._antiAliasPass)) {
-                this._composer.removePass(this._antiAliasPass)
-            }
-        }
-    }
-
     public Update(deltaT: number): void {
         this._sceneObjects.forEach(obj => {
             obj.Update()

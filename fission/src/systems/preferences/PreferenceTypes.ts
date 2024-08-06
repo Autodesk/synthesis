@@ -3,8 +3,6 @@ import { Vector3Tuple } from "three"
 
 export type GlobalPreference =
     | "QualitySettings"
-    | "PowerPreference"
-    | "AntiAliasing"
     | "ZoomSensitivity"
     | "PitchSensitivity"
     | "YawSensitivity"
@@ -17,11 +15,10 @@ export type GlobalPreference =
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
+export const QualityPreferencesKey: string = "Quality"
 
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     QualitySettings: "High" as QualitySetting,
-    PowerPreference: "default" as WebGLPowerPreference,
-    AntiAliasing: false,
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
@@ -34,6 +31,18 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"
+
+export type QualityPreferences = {
+    fancyShadows: boolean
+    antiAliasing: boolean
+}
+
+export function DefaultQualityPreferences(): QualityPreferences {
+    return {
+        fancyShadows: false,
+        antiAliasing: false,
+    }
+}
 
 export type IntakePreferences = {
     deltaTransformation: number[]

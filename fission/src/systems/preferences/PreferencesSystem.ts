@@ -2,11 +2,14 @@ import {
     DefaultFieldPreferences,
     DefaultGlobalPreferences,
     DefaultRobotPreferences,
+    DefaultQualityPreferences,
     FieldPreferences,
     FieldPreferencesKey,
     GlobalPreference,
     RobotPreferences,
     RobotPreferencesKey,
+    QualityPreferences,
+    QualityPreferencesKey,
 } from "./PreferenceTypes"
 
 export class PreferenceEvent extends Event {
@@ -103,6 +106,18 @@ class PreferencesSystem {
         }
 
         return allFieldPrefs
+    }
+
+    /** Gets simulation quality preferences */
+    public static getQualityPreferences(): QualityPreferences {
+        let qualityPrefs = this.getPreference<QualityPreferences>(QualityPreferencesKey)
+
+        if (qualityPrefs == undefined) {
+            qualityPrefs = DefaultQualityPreferences()
+            this._preferences[QualityPreferencesKey] = qualityPrefs
+        }
+
+        return qualityPrefs
     }
 
     /** Load all preferences from local storage */
