@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useReducer, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Label, { LabelSize } from "@/ui/components/Label"
 import { FaArrowRightArrowLeft, FaXmark } from "react-icons/fa6"
-import { Box, Button as MUIButton, Divider, styled, alpha, Icon } from "@mui/material"
+import { Box, Button as MUIButton, styled, alpha, Icon } from "@mui/material"
 import Button, { ButtonSize } from "@/ui/components/Button"
 import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -11,16 +11,10 @@ import Checkbox from "@/ui/components/Checkbox"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import { SectionLabel } from "@/ui/components/StyledComponents"
 
 const UnselectParentIcon = <FaXmark size={"1.25rem"} />
 const InvertIcon = <FaArrowRightArrowLeft size={"1.25rem"} style={{ transform: "rotate(90deg)" }} />
-
-/** White label for a behavior name */
-const LabelStyled = styled(Label)({
-    fontWeight: 700,
-    margin: "0pt",
-    textWrap: "nowrap",
-})
 
 /** Grey label for a child behavior name */
 const ChildLabelStyled = styled(Label)({
@@ -28,10 +22,6 @@ const ChildLabelStyled = styled(Label)({
     margin: "0pt",
     color: "#bbbbbb",
     textWrap: "nowrap",
-})
-
-const DividerStyled = styled(Divider)({
-    borderColor: "white",
 })
 
 /** A button used to select a parent behavior. Appears at a grey outline when the 'set' button is pressed on a different behavior */
@@ -75,7 +65,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
 }) => {
     return (
         /* Box containing the entire card */
-        <Box display="flex" textAlign={"center"} key={elementKey}>
+        <Box display="flex" textAlign={"center"} key={elementKey} position="relative">
             {/* Box containing the label */}
             <Box position="absolute" alignSelf={"center"} display="flex">
                 {/* Indentation before the name */}
@@ -90,13 +80,13 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                         {name}
                     </ChildLabelStyled>
                 ) : (
-                    <LabelStyled
+                    <SectionLabel
                         key={`arm-nodes-notation ${elementKey}`}
                         size={LabelSize.Small}
                         className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
                     >
                         {name}
-                    </LabelStyled>
+                    </SectionLabel>
                 )}
             </Box>
 
@@ -225,7 +215,7 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
         if (selectedRobot == undefined || behaviors == undefined) return
         PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
         PreferencesSystem.savePreferences()
-    }, [])
+    }, [behaviors, selectedRobot])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -237,10 +227,6 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
 
     return (
         <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
-            <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                Set Parent Behaviors
-            </LabelStyled>
-            <DividerStyled />
             {behaviors.map(behavior => {
                 const jointIndex = behavior.jointIndex
                 return (

@@ -86,11 +86,6 @@ const MainHUD: React.FC = () => {
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
-                        value={"Manage Assemblies"}
-                        icon={SynthesisIcons.Wrench}
-                        onClick={() => openModal("manage-assemblies")}
-                    />
-                    <MainHUDButton
                         value={"Settings"}
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
@@ -101,7 +96,7 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("view")}
                     /> */}
                     <MainHUDButton
-                        value={"Import Local Mira"}
+                        value={"Import Local Asset"}
                         icon={SynthesisIcons.Import}
                         onClick={() => openModal("import-local-mirabuf")}
                     />

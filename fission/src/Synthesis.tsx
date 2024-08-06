@@ -39,7 +39,6 @@ import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
-import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
@@ -219,7 +218,6 @@ const initialModals = [
     <RCConfigEncoderModal key="config-encoder" modalId="config-encoder" />,
     <MatchModeModal key="match-mode" modalId="match-mode" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
-    <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
 ]

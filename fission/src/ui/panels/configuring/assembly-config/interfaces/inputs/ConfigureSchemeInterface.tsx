@@ -1,34 +1,18 @@
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import Checkbox from "@/ui/components/Checkbox"
-import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import EditInputInterface from "./EditInputInterface"
 import { useCallback, useEffect, useState } from "react"
-import { Input } from "@/systems/input/InputSystem"
 import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import { SectionDivider } from "@/ui/components/StyledComponents"
 
-// Converts camelCase to Title Case for the inputs modal
-const toTitleCase = (camelCase: string) => {
-    const result = camelCase.replace(/([A-Z])/g, " $1")
-    const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
-    return finalResult
-}
-
-class InputSelectionOption extends SelectMenuOption {
-    input: Input
-
-    constructor(input: Input) {
-        super(toTitleCase(input.inputName))
-
-        this.input = input
-    }
-}
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
 }
 
+/** Interface to configure a specific input scheme */
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
-    const [selectedInput, setSelectedInput] = useState<Input | undefined>(undefined)
-    const [useGamepad, setUseGamepad] = useState<boolean>(false)
+    //const [selectedInput, setSelectedInput] = useState<Input | undefined>(undefined)
+    const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme.usesGamepad)
 
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes()
@@ -43,7 +27,8 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     }, [saveEvent])
 
     return (
-        <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
+        <>
+            {/** Toggle the input scheme between controller and keyboard mode */}
             <Checkbox
                 label="Use Controller"
                 defaultState={selectedScheme.usesGamepad}
@@ -52,21 +37,23 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                     selectedScheme.usesGamepad = val
                 }}
             />
-            <SelectMenu
-                options={selectedScheme.inputs.map(i => new InputSelectionOption(i))}
-                onOptionSelected={val => setSelectedInput((val as InputSelectionOption)?.input)}
-                defaultHeaderText={"Select an Input"}
-                indentation={1}
-            />
+            <SectionDivider />
 
-            {selectedInput != undefined && (
-                <EditInputInterface
-                    input={selectedInput}
-                    useGamepad={useGamepad}
-                    onInputChanged={() => (selectedScheme.customized = true)}
-                />
-            )}
-        </div>
+            {/* Scroll view for inputs */}
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
+                {selectedScheme.inputs.map(i => {
+                    return (
+                        <EditInputInterface
+                            input={i}
+                            useGamepad={useGamepad}
+                            onInputChanged={() => {
+                                selectedScheme.customized = true
+                            }}
+                        />
+                    )
+                })}
+            </div>
+        </>
     )
 }
 export default ConfigureSchemeInterface

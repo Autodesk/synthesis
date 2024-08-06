@@ -14,9 +14,10 @@ import {
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
-import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import Button from "@/ui/components/Button"
+import { Spacer } from "@/ui/components/StyledComponents"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -203,11 +204,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 }}
                 step={0.01}
             />
-            <LabeledButton
-                placement={LabelPlacement.Left}
-                label="Reset"
+            {Spacer(10)}
+            <Button
                 value="Reset"
-                buttonClassName="w-min"
                 onClick={() => {
                     if (transformGizmo) {
                         const robotTransformation = JoltMat44_ThreeMatrix4(

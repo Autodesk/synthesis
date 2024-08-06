@@ -6,7 +6,6 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useMemo, useReducer, useState } from "react"
-import { AiOutlinePlus } from "react-icons/ai"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
@@ -18,9 +17,9 @@ import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/ui/components/Button"
 import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
-const AddIcon = <AiOutlinePlus size={"1.25rem"} />
-
+/** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
     assemblyObject: MirabufSceneObject
 
@@ -36,7 +35,8 @@ interface ConfigurationSelectionProps {
 }
 
 const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configurationType, onAssemblySelected }) => {
-    const [x, update] = useReducer(x => !x, false)
+    // Update is used when a robot or field is deleted to update the select menu
+    const [u, update] = useReducer(x => !x, false)
     const { openPanel } = usePanelControlContext()
 
     const robots = useMemo(() => {
@@ -48,7 +48,8 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
         }) as MirabufSceneObject[]
 
         return assemblies
-    }, [x])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [u])
 
     const fields = useMemo(() => {
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
@@ -59,11 +60,12 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
         }) as MirabufSceneObject[]
 
         return assemblies
-    }, [x])
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [u])
 
+    /** Robot or field select menu */
     return (
         <SelectMenu
-            // TODO: Add control scheme name if it's a robot
             options={(configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly => {
                 return new AssemblySelectionOption(
                     `${configurationType == ConfigurationType.ROBOT ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}]` : ""} ${assembly.assemblyName}`,
@@ -83,6 +85,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
                 console.log("Open spawn panel")
                 openPanel("import-mirabuf")
             }}
+            noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : "fields"} spawned!`}
         />
     )
 }
@@ -107,7 +110,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 const robotModes = [
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
-    new ConfigModeSelectionOption("Motors", ConfigMode.MOTORS),
+    new ConfigModeSelectionOption("Joints", ConfigMode.MOTORS),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
@@ -136,6 +139,7 @@ interface ConfigInterfaceProps {
     openPanel: (panelId: string) => void
 }
 
+/** The interface for the actual configuration */
 const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly, openPanel }) => {
     switch (configMode) {
         case ConfigMode.INTAKE:
@@ -144,7 +148,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
         case ConfigMode.MOTORS:
             return <SequentialBehaviorsInterface selectedRobot={assembly} />
-        case ConfigMode.CONTROLS:
+        case ConfigMode.CONTROLS: {
             const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
             const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
@@ -160,6 +164,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                     {scheme && <ConfigureSchemeInterface selectedScheme={scheme} />}
                 </>
             )
+        }
         case ConfigMode.SCORING_ZONES: {
             const zones = assembly.fieldPreferences?.scoringZones
             if (zones == undefined) {
@@ -173,6 +178,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
     }
 }
 
+/** An event to save whatever configuration interface is open when it is closed */
 export class ConfigurationSavedEvent extends Event {
     public constructor() {
         super("ConfigurationSaved")
@@ -204,7 +210,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             name={"Configure Assemblies"}
-            icon={AddIcon}
+            icon={SynthesisIcons.Gear}
             panelId={panelId}
             cancelEnabled={false}
             openLocation="right"
@@ -213,7 +219,8 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }}
             acceptName="Close"
         >
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh]">
+                {/** Toggle button group for the robot, field, and input buttons */}
                 <ToggleButtonGroup
                     value={configurationType}
                     exclusive
@@ -235,6 +242,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <ChangeInputsInterface />
                 ) : (
                     <>
+                        {/** Select menu to pick a robot or field */}
                         <AssemblySelection
                             configurationType={configurationType}
                             onAssemblySelected={a => {
@@ -245,6 +253,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 setSelectedAssembly(a)
                             }}
                         />
+                        {/** Nested select menu to pick a configuration mode */}
                         {selectedAssembly != undefined && (
                             <ConfigModeSelection
                                 configurationType={configurationType}
@@ -254,6 +263,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 }}
                             />
                         )}
+                        {/** The interface for the selected configuration mode */}
                         {selectedConfigMode != undefined && selectedAssembly != undefined && (
                             <ConfigInterface
                                 configMode={selectedConfigMode}

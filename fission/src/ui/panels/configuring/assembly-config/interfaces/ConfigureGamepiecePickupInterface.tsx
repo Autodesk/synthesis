@@ -212,7 +212,6 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             {Spacer(10)}
             <Button
                 value="Reset"
-                //buttonClassName="w-min"
                 onClick={() => {
                     if (transformGizmo) {
                         const robotTransformation = JoltMat44_ThreeMatrix4(

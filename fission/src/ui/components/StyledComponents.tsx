@@ -24,6 +24,8 @@ import {
     FaXmark,
     FaChessBoard,
     FaCar,
+    FaArrowLeft,
+    FaMinus,
 } from "react-icons/fa6"
 
 export class SynthesisIcons {
@@ -33,6 +35,7 @@ export class SynthesisIcons {
     public static Gear = (<FaGear />)
     public static MagnifyingGlass = (<FaMagnifyingGlass />)
     public static Add = (<FaPlus />)
+    public static Minus = (<FaMinus />)
     public static Import = (<FaFileImport />)
     public static Wrench = (<FaWrench />)
     public static ScrewdriverWrench = (<FaScrewdriverWrench />)
@@ -54,6 +57,7 @@ export class SynthesisIcons {
     public static RefreshLarge = (<BiRefresh size={"1.25rem"} />)
     public static SelectLarge = (<IoCheckmark size={"1.25rem"} />)
     public static EditLarge = (<IoPencil size={"1.25rem"} />)
+    public static LeftArrowLarge = (<FaArrowLeft size={"1.25rem"} />)
 }
 
 export const SectionDivider = styled(Divider)({

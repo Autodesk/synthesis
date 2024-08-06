@@ -6,6 +6,7 @@ import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeMana
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 
+/** If a scheme is assigned to a robot, find the name of that robot */
 const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
     for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
         if (value == scheme) return SynthesisBrain.brainIndexMap.get(key)?.assemblyName
@@ -44,6 +45,7 @@ const ConfigureInputsInterface = () => {
 
     return (
         <>
+            {/** Select menu with input schemes */}
             <SelectMenu
                 options={InputSchemeManager.allInputSchemes.map(s => new SchemeSelectionOption(s))}
                 onOptionSelected={val => {

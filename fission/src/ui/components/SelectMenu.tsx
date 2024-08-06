@@ -1,13 +1,18 @@
 import React, { useEffect, useState } from "react"
 
-import { Box, Button as MUIButton, styled, alpha, Divider } from "@mui/material"
+import { Box, Button as MUIButton, styled, alpha } from "@mui/material"
 import Label, { LabelSize } from "./Label"
-import { FaArrowLeft } from "react-icons/fa6"
-import Button from "./Button"
-import { AddButtonInteractiveColor, DeleteButton, Spacer } from "./StyledComponents"
+import {
+    AddButtonInteractiveColor,
+    ButtonIcon,
+    DeleteButton,
+    SectionDivider,
+    SectionLabel,
+    Spacer,
+    SynthesisIcons,
+} from "./StyledComponents"
 
-const LeftArrow = <FaArrowLeft size={"1.25rem"} />
-
+// Select menu item button (appears as an outline when hovered over, the text is a separate component)
 const CustomButton = styled(MUIButton)({
     "borderStyle": "none",
     "borderWidth": "1px",
@@ -34,16 +39,6 @@ const CustomButton = styled(MUIButton)({
         backgroundColor: "transparent",
         borderColor: "grey",
     },
-})
-
-const LabelStyled = styled(Label)({
-    fontWeight: 700,
-    margin: "0pt",
-    textWrap: "nowrap",
-})
-
-const DividerStyled = styled(Divider)({
-    borderColor: "white",
 })
 
 /** Extend this to make a type that contains custom data */
@@ -76,13 +71,13 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 {/* Indentation before the name */}
                 <Box width="8px" />
                 {/* Label for joint index and type (grey if child) */}
-                <LabelStyled
+                <SectionLabel
                     key={value.name + index}
                     size={LabelSize.Small}
                     className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
                 >
                     {value.name}
-                </LabelStyled>
+                </SectionLabel>
             </Box>
 
             {/* Button used for selecting a parent (shows up as an outline) */}
@@ -93,6 +88,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 }}
                 sx={{ borderColor: "#888888" }}
             />
+            {/** Delete button only if onDelete is defined */}
             {onDelete && (
                 <>
                     {Spacer(0, 10)}
@@ -107,6 +103,7 @@ interface SelectMenuProps {
     options: SelectMenuOption[]
     onOptionSelected: (val: SelectMenuOption | undefined) => void
     defaultHeaderText: string
+    noOptionsText?: string
     indentation?: number
     onDelete?: (val: SelectMenuOption) => void | undefined
     onAddClicked?: () => void
@@ -115,68 +112,77 @@ interface SelectMenuProps {
 const SelectMenu: React.FC<SelectMenuProps> = ({
     options,
     onOptionSelected,
-    defaultHeaderText: headerText,
+    defaultHeaderText,
+    noOptionsText,
     indentation,
     onDelete,
     onAddClicked,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(undefined)
-    // useEffect(() => {
-    //     if (selectedOption == undefined)
-    //         return
-    //
-    //     if (!options.some(o => o.name == selectedOption.name)) setSelectedOption(undefined)
-    // }, [options, selectedOption])
 
+    // If the selected option no longer exists as an option, deselect it
     useEffect(() => {
         if (!options.some(o => o.name === selectedOption?.name)) {
             setSelectedOption(undefined)
-            onOptionSelected(undefined) // Notify parent if needed
+            onOptionSelected(undefined)
         }
-    }, [options])
+    }, [options, onOptionSelected, selectedOption])
 
     return (
         <>
+            {/** Box containing the menu header */}
             <Box display="flex" textAlign={"center"} minHeight={"30px"} key="selected-item">
                 <Box width={`${20 * (indentation ?? 0)}px`} />
-                {selectedOption != undefined ? (
-                    <Button
-                        value={LeftArrow}
+
+                {/** Back arrow button when an option is selected */}
+                {selectedOption != undefined && (
+                    <ButtonIcon
+                        value={SynthesisIcons.LeftArrowLarge}
                         onClick={() => {
                             setSelectedOption(undefined)
                             onOptionSelected(undefined)
                         }}
-                        colorOverrideClass="bg-[#00000000] hover:brightness-90"
-                        sizeOverrideClass="p-[0.25rem]"
                     />
-                ) : null}
+                )}
+
+                {/** Label with either the header text, or the name of the selected option if an option is selected */}
                 <Box alignSelf={"center"} display="flex">
                     <Box width="8px" />
-                    <LabelStyled size={LabelSize.Small} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {selectedOption != undefined ? selectedOption.name : headerText}
-                    </LabelStyled>
+                    <SectionLabel size={LabelSize.Small} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        {selectedOption != undefined ? selectedOption.name : defaultHeaderText}
+                    </SectionLabel>
                 </Box>
             </Box>
-            <DividerStyled />
-            {selectedOption == undefined ? (
+            <SectionDivider />
+
+            {selectedOption == undefined && (
                 <>
-                    {options.map((option, i) => {
-                        return (
-                            <OptionCard
-                                value={option}
-                                index={i}
-                                onSelected={val => {
-                                    setSelectedOption(val)
-                                    onOptionSelected(val)
-                                }}
-                                key={option.name + i}
-                                onDelete={onDelete ? () => onDelete(option) : undefined}
-                            />
-                        )
-                    })}
+                    {/** List of options */}
+                    {options.length > 0 ? (
+                        options.map((option, i) => {
+                            return (
+                                <OptionCard
+                                    value={option}
+                                    index={i}
+                                    onSelected={val => {
+                                        setSelectedOption(val)
+                                        onOptionSelected(val)
+                                    }}
+                                    key={option.name + i}
+                                    onDelete={onDelete ? () => onDelete(option) : undefined}
+                                />
+                            )
+                        })
+                    ) : (
+                        <>
+                            {/** No options available text */}
+                            <Label size={LabelSize.Small}>{noOptionsText ?? "No options available!"}</Label>
+                        </>
+                    )}
+                    {/** Add button */}
                     {onAddClicked && AddButtonInteractiveColor(onAddClicked)}
                 </>
-            ) : null}
+            )}
         </>
     )
 }
