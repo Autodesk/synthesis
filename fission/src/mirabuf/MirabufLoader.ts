@@ -40,14 +40,27 @@ const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, { create:
 const canOPFS = await (async() => {
     try {
         console.log(`trying OPFS`)
-        const fileHandle = await robotFolderHandle.getFileHandle(
-            "0",
-            { create: true }
-        )
-        const writable = await fileHandle.createWritable()
-        await writable.close()
-        console.log(`yes OPFS`)
-        return true
+
+        if (robotFolderHandle.name == robotsDirName) {
+            robotFolderHandle.entries
+            robotFolderHandle.keys
+
+            const fileHandle = await robotFolderHandle.getFileHandle(
+                "0",
+                { create: true }
+            )
+            const writable = await fileHandle.createWritable() 
+            await writable.close()
+            await fileHandle.getFile()
+
+            robotFolderHandle.removeEntry(fileHandle.name)
+
+            console.log(`yes OPFS`)
+            return true
+        } else {
+            console.log(`no OPFS`)
+            return false
+        }
     } catch (e) {
         console.log(`no OPFS`)
         return false
