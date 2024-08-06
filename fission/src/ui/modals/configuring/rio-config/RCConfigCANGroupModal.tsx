@@ -34,7 +34,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     const cans = simMap.get(SimType.CANMotor) ?? new Map<string, any>
-    const devices: [string, any][] = [...cans.entries()].filter(([_, data]) => data["<init"])
+    const devices: [string, any][] = [...cans.entries()].filter(([_, data]) => data["<init"]).reverse()
 
     return (
         <Modal
@@ -71,7 +71,8 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 label={p.toString()}
                                 defaultState={false}
                                 onClick={checked => {
-                                    const port = parseInt(p)
+                                    const port = parseInt(p.split("[")[1].split("]")[0])
+                                        console.log(port)
                                     if (checked && !checkedPorts.includes(port)) {
                                         setCheckedPorts([...checkedPorts, port])
                                     } else if (!checked && checkedPorts.includes(port)) {

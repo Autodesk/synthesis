@@ -29,9 +29,13 @@ public class Robot extends TimedRobot {
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-    private Spark m_Spark = new Spark(0);
-    private CANSparkMax m_SparkMax = new CANSparkMax(1, MotorType.kBrushless);
-    private com.autodesk.synthesis.ctre.TalonFX m_Talon = new com.autodesk.synthesis.ctre.TalonFX(2);
+    private CANSparkMax m_SparkMax1 = new CANSparkMax(1, MotorType.kBrushless);
+    private CANSparkMax m_SparkMax2 = new CANSparkMax(2, MotorType.kBrushless);
+    private CANSparkMax m_SparkMax3 = new CANSparkMax(3, MotorType.kBrushless);
+    private CANSparkMax m_SparkMax4 = new CANSparkMax(4, MotorType.kBrushless);
+    private CANSparkMax m_SparkMax5 = new CANSparkMax(5, MotorType.kBrushless);
+    private CANSparkMax m_SparkMax6 = new CANSparkMax(6, MotorType.kBrushless);
+    //private com.autodesk.synthesis.ctre.TalonFX m_Talon = new com.autodesk.synthesis.ctre.TalonFX(2);
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -87,12 +91,12 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
 
-        m_Spark.set(0.5);
-        m_SparkMax.set(1.0);
-        //m_SparkMax.setNeutralDeadband(0.01); // FIXME: for some reason I can't set
-        // the deadband even after defining the function in the child
-        m_Talon.set(-1.0);
-        //m_Talon.configureNeutralDeadband(0.2);
+        m_SparkMax1.set(1.0);
+        m_SparkMax2.set(1.0);
+        m_SparkMax3.set(1.0);
+        m_SparkMax4.set(1.0);
+        m_SparkMax5.set(1.0);
+        m_SparkMax6.set(1.0);
 
         switch (m_autoSelected) {
             case kCustomAuto:
@@ -113,17 +117,23 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during operator control. */
     @Override
     public void teleopPeriodic() {
-        m_Spark.set(0.25);
-        m_SparkMax.set(0.75);
-        m_Talon.set(-0.5);
+        m_SparkMax1.set(-0.75);
+        m_SparkMax2.set(-0.75);
+        m_SparkMax3.set(-0.75);
+        m_SparkMax4.set(-0.75);
+        m_SparkMax5.set(-0.75);
+        m_SparkMax6.set(-0.75);
     }
 
     /** This function is called once when the robot is disabled. */
     @Override
     public void disabledInit() {
-        m_Spark.set(0.0);
-        m_SparkMax.set(0.0);
-        m_Talon.set(0.0);
+        m_SparkMax1.set(0.0);
+        m_SparkMax2.set(0.0);
+        m_SparkMax3.set(0.0);
+        m_SparkMax4.set(0.0);
+        m_SparkMax5.set(0.0);
+        m_SparkMax6.set(0.0);
     }
 
     /** This function is called periodically when disabled. */

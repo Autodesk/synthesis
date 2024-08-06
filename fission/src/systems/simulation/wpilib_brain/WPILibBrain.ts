@@ -22,15 +22,14 @@ const CANMOTOR_SUPPLY_CURRENT = ">supplyCurrent"
 const CANMOTOR_MOTOR_CURRENT = ">motorCurrent"
 const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 
-// const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
-// const CANENCODER_RAW_INPUT_POSITION = ">rawPositionInput"
 const CANENCODER_POSITION = ">position"
 const CANENCODER_VELOCITY = ">velocity"
+
 export enum SimType {
-    PWM,
-    CANMotor,
-    Solenoid,
-    CANEncoder,
+    PWM = "PWM",
+    CANMotor = "CANMotor",
+    Solenoid = "Solenoid",
+    CANEncoder = "CANEncoder",
 }
 
 enum FieldType {
@@ -135,17 +134,20 @@ export class SimCAN {
     private constructor() {}
 
     public static GetDeviceWithID(id: number, type: SimType): any {
-        const id_exp = /.*\[(\d+)\]/g
-        const entries = [...simMap.entries()].filter(
-            ([simType, _data]) => simType == type 
-        )
+        //const id_exp = /.*\[(\d+)\]/g
+        const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type)
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
-                const result = [...key.matchAll(id_exp)]
-                if (result?.length <= 0 || result[0].length <= 1) continue
-                const parsed_id = parseInt(result[0][1])
-                if (parsed_id != id) continue
-
+                // const result = [...key.matchAll(id_exp)]
+                // if (result?.length <= 0 || result[0].length <= 1) continue
+                // const parsed_id = parseInt(result[0][1])
+                // if (parsed_id != id) continue
+                const res = key.split("[")[1].split("]")[0]
+                // console.log("id: " + res)
+                // console.log(id)
+                if (!res) continue
+                const parsed_id = parseInt(res)
+                if (id != parsed_id) continue
                 return data.get(key)
             }
         }
@@ -197,7 +199,7 @@ export class SimCANEncoder {
 
     public static SetPosition(device: string, position: number): boolean {
         return SimGeneric.Set(SimType.CANEncoder, device, CANENCODER_POSITION, position)
-    
+    }
 }
 
 worker.addEventListener("message", (eventData: MessageEvent) => {
@@ -214,7 +216,7 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         }
     }
 
-    if (!data?.type || data.split(" ")[0] != "SYN" || !Object.values(SimType).includes(data.type)) return
+    if (!data?.type || !Object.values(SimType).includes(data.type) || data.device.split(" ")[0] != "SYN") return
 
     UpdateSimMap(data.type, data.device, data.data)
 })
@@ -301,6 +303,14 @@ abstract class SimOutputGroup {
         this.type = type
     }
 
+    public abstract Update(deltaT: number): void
+}
+
+export class PWMGroup extends SimOutputGroup {
+    public constructor(name: string, ports: number[], drivers: Driver[]) {
+        super(name, ports, drivers, SimType.PWM)
+    }
+
     // Averaging is probably not the right solution
     public Update(deltaT: number): void {
         const average =
@@ -318,19 +328,31 @@ abstract class SimOutputGroup {
             }
             d.Update(deltaT)
         })
-
     }
-}
 
-
-export class PWMGroup extends SimOutputGroup {
-    public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, SimType.PWM)
-    }
 }
 
 export class CANGroup extends SimOutputGroup {
     public constructor(name: string, ports: number[], drivers: Driver[]) {
         super(name, ports, drivers, SimType.CANMotor)
     }
+    
+    // Averaging is probably not the right solution
+    public Update(deltaT: number): void {
+        const average =
+            this.ports.reduce((sum, port) => {
+                const device = SimCAN.GetDeviceWithID(port, SimType.CANMotor)
+                return sum + device["<percentOutput"]
+            }, 0) / this.ports.length
+
+        this.drivers.forEach(d => {
+            if (d instanceof WheelDriver) {
+                d.targetWheelSpeed = average * 40
+            } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
+                d.targetVelocity = average * 40
+            }
+            d.Update(deltaT)
+        })
+    }
+
 }
