@@ -32,17 +32,14 @@ const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, { create:
 export const backUpRobots: Map<MirabufCacheID, ArrayBuffer> = new Map<MirabufCacheID, ArrayBuffer>()
 export const backUpFields: Map<MirabufCacheID, ArrayBuffer> = new Map<MirabufCacheID, ArrayBuffer>()
 
-const canOPFS = await (async() => {
+const canOPFS = await (async () => {
     try {
         if (robotFolderHandle.name == robotsDirName) {
             robotFolderHandle.entries
             robotFolderHandle.keys
 
-            const fileHandle = await robotFolderHandle.getFileHandle(
-                "0",
-                { create: true }
-            )
-            const writable = await fileHandle.createWritable() 
+            const fileHandle = await robotFolderHandle.getFileHandle("0", { create: true })
+            const writable = await fileHandle.createWritable()
             await writable.close()
             await fileHandle.getFile()
 
@@ -96,7 +93,6 @@ class MirabufCachingService {
             return {}
         }
     }
-
 
     /**
      * Cache remote Mirabuf file
@@ -246,17 +242,18 @@ class MirabufCachingService {
         try {
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
             const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
-            const buff = cache.get(id) ?? await (async() => {
-                const fileHandle = canOPFS ? await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(
-                    id,
-                    {
-                        create: false,
-                    }
-                ) : undefined
-                return fileHandle ? await fileHandle.getFile().then(x => x.arrayBuffer()) : undefined
-            })()
+            const buff =
+                cache.get(id) ??
+                (await (async () => {
+                    const fileHandle = canOPFS
+                        ? await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(id, {
+                              create: false,
+                          })
+                        : undefined
+                    return fileHandle ? await fileHandle.getFile().then(x => x.arrayBuffer()) : undefined
+                })())
 
-            // If we have buffer, get assembly 
+            // If we have buffer, get assembly
             if (buff) {
                 const assembly = this.AssemblyFromBuffer(buff)
                 World.AnalyticsSystem?.Event("Cache Get", {
@@ -370,10 +367,9 @@ class MirabufCachingService {
             // Store buffer
             if (canOPFS) {
                 // Store in OPFS
-                const fileHandle = await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(
-                    backupID,
-                    { create: true }
-                )
+                const fileHandle = await (
+                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                ).getFileHandle(backupID, { create: true })
                 const writable = await fileHandle.createWritable()
                 await writable.write(miraBuff)
                 await writable.close()
