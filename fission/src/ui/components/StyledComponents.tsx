@@ -3,7 +3,7 @@ import Label from "./Label"
 import Button, { ButtonProps, ButtonSize } from "./Button"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
-import { AiOutlinePlus } from "react-icons/ai"
+import { AiOutlineInfoCircle, AiOutlinePlus } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
 import { AiFillWarning } from "react-icons/ai"
 import { BsCodeSquare } from "react-icons/bs"
@@ -46,6 +46,7 @@ export class SynthesisIcons {
     public static SteeringWheel = (<GiSteeringWheel />)
     public static OutlineDoubleRight = (<AiOutlineDoubleRight />)
     public static Connect = (<GrConnect />)
+    public static Info = (<AiOutlineInfoCircle />)
 
     /** Large icons: used for icon buttons */
     public static DeleteLarge = (<IoTrashBin size={"1.25rem"} />)
