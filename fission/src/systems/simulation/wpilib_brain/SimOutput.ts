@@ -22,7 +22,7 @@ export abstract class SimOutputGroup {
 
 export class PWMOutputGroup extends SimOutputGroup {
     public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, "PWM")
+        super(name, ports, drivers, SimType.PWM)
     }
 
     public Update(_deltaT: number) {
@@ -44,15 +44,26 @@ export class PWMOutputGroup extends SimOutputGroup {
     }
 }
 
-export class CANOutputGroup extends SimOutputGroup {
+export class CANGroup extends SimOutputGroup {
     public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, "CANMotor")
+        super(name, ports, drivers, SimType.CANMotor)
     }
 
-    public Update(_deltaT: number) {
-        for (const port of this.ports) {
-            const device = SimCAN.GetDeviceWithID(port, this.type)
-            console.log(port, device)
-        }
+    // Averaging is probably not the right solution
+    public Update(deltaT: number): void {
+        const average =
+            this.ports.reduce((sum, port) => {
+                const device = SimCAN.GetDeviceWithID(port, SimType.CANMotor)
+                return sum + device["<percentOutput"]
+            }, 0) / this.ports.length
+
+        this.drivers.forEach(d => {
+            if (d instanceof WheelDriver) {
+                d.targetWheelSpeed = average * 40
+            } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
+                d.targetVelocity = average * 40
+            }
+            d.Update(deltaT)
+        })
     }
 }

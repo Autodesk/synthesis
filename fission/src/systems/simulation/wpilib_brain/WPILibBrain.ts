@@ -13,7 +13,6 @@ const worker = new WPILibWSWorker()
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
 
-<<<<<<< HEAD
 const CANMOTOR_PERCENT_OUTPUT = "<percentOutput"
 const CANMOTOR_BRAKE_MODE = "<brakeMode"
 const CANMOTOR_NEUTRAL_DEADBAND = "<neutralDeadband"
@@ -30,7 +29,7 @@ export enum SimType {
     CANMotor = "CANMotor",
     Solenoid = "Solenoid",
     CANEncoder = "CANEncoder",
-    Gyro = "Gyro"
+    Gyro = "Gyro",
 }
 
 enum FieldType {
@@ -207,15 +206,15 @@ export class SimGyro {
     private constructor() {}
 
     public static SetAngleX(device: string, angle: number): boolean {
-        return SimGeneric.Set(SimType.Gyro, device, ">angle_x", angle);
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_x", angle)
     }
 
     public static SetAngleY(device: string, angle: number): boolean {
-        return SimGeneric.Set(SimType.Gyro, device, ">angle_y", angle);
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_y", angle)
     }
 
     public static SetAngleZ(device: string, angle: number): boolean {
-        return SimGeneric.Set(SimType.Gyro, device, ">angle_z", angle);
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_z", angle)
     }
 }
 
@@ -272,7 +271,7 @@ class WPILibBrain extends Brain {
             return
         }
 
-        this.addSimInput(new SimGyroInput("Gyro:ADXRS450[0]", mechanism));
+        this.addSimInput(new SimGyroInput("Gyro:ADXRS450[0]", mechanism))
     }
 
     public addSimOutputGroup(device: SimOutputGroup) {
