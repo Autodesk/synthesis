@@ -51,7 +51,7 @@ const QualitySettingsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation,
                         {SynthesisIcons.Info}
                         {/* <span className="cursor-pointer">ℹ️</span> */}
                         {isTooltipVisible && (
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-gray-600 bg-opacity-100 text-white text-center rounded-md p-9 px-3 py-2 opacity-90 z-10">
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-48 bg-gray-600 bg-opacity-100 text-white text-center rounded-md px-3 py-2 opacity-90 z-10">
                                 If these settings are changed then the game will reload to apply the changes, removing
                                 all of your robots and fields from the scene.
                             </div>
