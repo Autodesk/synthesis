@@ -42,6 +42,11 @@ class GlobalManager(object):
         def __str__(self):
             return "GlobalManager"
 
+        def clear(self):
+            for attr, value in self.__dict__.items():
+                if isinstance(value, list):
+                    setattr(self, attr, [])
+
     instance = None
 
     def __new__(cls):

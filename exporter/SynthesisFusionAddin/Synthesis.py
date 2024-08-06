@@ -71,25 +71,7 @@ def stop(_):
     logger = getLogger(INTERNAL_ID)
     logger.cleanupHandlers()
 
-    for file in gm.files:
-        try:
-            os.remove(file)
-        except OSError:
-            pass
-
-    # removes path so that proto files don't get confused
-
-    import sys
-
-    path = os.path.abspath(os.path.dirname(__file__))
-
-    path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out"))
-
-    if path in sys.path:
-        sys.path.remove(path)
-
-    if path_proto_files in sys.path:
-        sys.path.remove(path_proto_files)
+    gm.clear()
 
 
 @logFailure
