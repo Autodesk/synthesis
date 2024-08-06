@@ -18,9 +18,20 @@ def main() -> None:
     exitCode = 0
     for i, (oldFileState, newFileState) in enumerate(zip(oldFileStates, newFileStates)):
         for j, (previousLine, newLine) in enumerate(zip(oldFileState, newFileState)):
-            if previousLine != newLine:
-                print(f"File {files[i]} is not formatted correctly!\nLine: {j + 1}")
-                exitCode = 1
+            if previousLine == newLine:
+                continue
+
+            print(f"File {files[i]} is not formatted correctly!\nLine: {j + 1}")
+            print(
+                "\nOld file state:\n"
+                + "\n".join(oldFileState[k].strip() for k in range(max(0, j - 10), min(len(oldFileState), j + 11)))
+            )
+            print(
+                "\nNew file state:\n"
+                + "\n".join(newFileState[k].strip() for k in range(max(0, j - 10), min(len(newFileState), j + 11)))
+            )
+            exitCode = 1
+            break
 
     if not exitCode:
         print("All files are formatted correctly with isort!")
