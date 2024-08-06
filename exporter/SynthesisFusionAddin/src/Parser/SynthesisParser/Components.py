@@ -6,7 +6,6 @@ from typing import *
 
 import adsk.core
 import adsk.fusion
-
 from proto.proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
 
 from ...Logging import logFailure, timed

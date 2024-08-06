@@ -5,7 +5,6 @@ from typing import *
 
 import adsk.core
 import adsk.fusion
-
 from proto.proto_out import joint_pb2, types_pb2
 
 from ...general_imports import *
