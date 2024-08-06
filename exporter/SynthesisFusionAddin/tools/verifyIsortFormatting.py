@@ -22,14 +22,10 @@ def main() -> None:
                 continue
 
             print(f"File {files[i]} is not formatted correctly!\nLine: {j + 1}")
-            print(
-                "\nOld file state:\n"
-                + "\n".join(oldFileState[k].strip() for k in range(max(0, j - 10), min(len(oldFileState), j + 11)))
-            )
-            print(
-                "\nNew file state:\n"
-                + "\n".join(newFileState[k].strip() for k in range(max(0, j - 10), min(len(newFileState), j + 11)))
-            )
+            oldFileStateRange = range(max(0, j - 10), min(len(oldFileState), j + 11))
+            print("\nOld file state:\n" + "\n".join(oldFileState[k].strip() for k in oldFileStateRange))
+            newFileStateRange = range(max(0, j - 10), min(len(newFileState), j + 11))
+            print("\nNew file state:\n" + "\n".join(newFileState[k].strip() for k in newFileStateRange))
             exitCode = 1
             break
 
