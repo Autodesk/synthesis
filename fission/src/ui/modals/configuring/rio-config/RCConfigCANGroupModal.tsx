@@ -73,7 +73,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 defaultState={false}
                                 onClick={checked => {
                                     const port = parseInt(p.split("[")[1].split("]")[0])
-                                        console.log(port)
+                                    console.log(port)
                                     if (checked && !checkedPorts.includes(port)) {
                                         setCheckedPorts([...checkedPorts, port])
                                     } else if (!checked && checkedPorts.includes(port)) {

@@ -44,7 +44,7 @@ export class PWMOutputGroup extends SimOutputGroup {
     }
 }
 
-export class CANGroup extends SimOutputGroup {
+export class CANOutputGroup extends SimOutputGroup {
     public constructor(name: string, ports: number[], drivers: Driver[]) {
         super(name, ports, drivers, SimType.CANMotor)
     }
@@ -54,7 +54,7 @@ export class CANGroup extends SimOutputGroup {
         const average =
             this.ports.reduce((sum, port) => {
                 const device = SimCAN.GetDeviceWithID(port, SimType.CANMotor)
-                return sum + device["<percentOutput"]
+                return sum + device["<percentOutput"] ?? 0
             }, 0) / this.ports.length
 
         this.drivers.forEach(d => {

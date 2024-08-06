@@ -134,20 +134,14 @@ export class SimCAN {
     private constructor() {}
 
     public static GetDeviceWithID(id: number, type: SimType): any {
-        //const id_exp = /.*\[(\d+)\]/g
+        const id_exp = /.*\[(\d+)\]/g
         const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type)
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
-                // const result = [...key.matchAll(id_exp)]
-                // if (result?.length <= 0 || result[0].length <= 1) continue
-                // const parsed_id = parseInt(result[0][1])
-                // if (parsed_id != id) continue
-                const res = key.split("[")[1].split("]")[0]
-                // console.log("id: " + res)
-                // console.log(id)
-                if (!res) continue
-                const parsed_id = parseInt(res)
-                if (id != parsed_id) continue
+                const result = [...key.matchAll(id_exp)]
+                if (result?.length <= 0 || result[0].length <= 1) continue
+                const parsed_id = parseInt(result[0][1])
+                if (parsed_id != id) continue
                 return data.get(key)
             }
         }
