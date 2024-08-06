@@ -1,6 +1,5 @@
-from ..general_imports import *
-from ..Logging import logFailure
-from ..strings import INTERNAL_ID
+from src.Logging import logFailure
+from src import INTERNAL_ID, gm
 
 
 class Toolbar:

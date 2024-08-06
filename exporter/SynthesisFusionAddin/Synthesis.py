@@ -15,8 +15,8 @@ from .src.Logging import getLogger, logFailure, setupLogger  # isort:skip
 setupLogger()
 
 try:
-    from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
-    from .src.UI import (
+    from src import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
+    from src.UI import (
         HUI,
         Camera,
         ConfigCommand,
@@ -24,7 +24,7 @@ try:
         ShowAPSAuthCommand,
         ShowWebsiteCommand,
     )
-    from .src.UI.Toolbar import Toolbar
+    from src.UI.Toolbar import Toolbar
 except (ImportError, ModuleNotFoundError) as error:
     getLogger().warn(f"Running resolve dependencies with error of:\n{error}")
     result = resolveDependencies()

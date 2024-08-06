@@ -4,11 +4,10 @@ import traceback
 import adsk.core
 import adsk.fusion
 
-from ..general_imports import INTERNAL_ID
-from ..Logging import logFailure
-from ..Types import Joint, JointParentType, SignalType, Wheel, WheelType
-from . import IconPaths
-from .CreateCommandInputsHelper import (
+from src.Logging import logFailure
+from src.Types import Joint, JointParentType, SignalType, Wheel, WheelType
+from src.UI import IconPaths
+from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
     createTableInput,
     createTextBoxInput,

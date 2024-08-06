@@ -9,22 +9,18 @@ from enum import Enum
 import adsk.core
 import adsk.fusion
 
-from ..APS.APS import getAuth, getUserInfo, refreshAuthToken
-from ..general_imports import *
-from ..Logging import getLogger, logFailure
-from ..Parser.ExporterOptions import ExporterOptions
-from ..Parser.SynthesisParser.Parser import Parser
-from ..Parser.SynthesisParser.Utilities import guid_occurrence
-from ..Types import ExportLocation, ExportMode
-from . import CustomGraphics, FileDialogConfig, Helper, IconPaths
-from .Configuration.SerialCommand import SerialCommand
-from .GamepieceConfigTab import GamepieceConfigTab
-from .GeneralConfigTab import GeneralConfigTab
-
-# Transition: AARD-1685
-# In the future all components should be handled in this way.
-# This import broke everything when attempting to use absolute imports??? Investigate?
-from .JointConfigTab import JointConfigTab
+from src import gm
+from src.APS.APS import getAuth, getUserInfo, refreshAuthToken
+from src.Logging import getLogger, logFailure
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Parser.SynthesisParser.Parser import Parser
+from src.Parser.SynthesisParser.Utilities import guid_occurrence
+from src.Types import ExportLocation, ExportMode
+from src.UI import CustomGraphics, FileDialogConfig, Helper, IconPaths
+from src.UI.Configuration.SerialCommand import SerialCommand
+from src.UI.GamepieceConfigTab import GamepieceConfigTab
+from src.UI.GeneralConfigTab import GeneralConfigTab
+from src.UI.JointConfigTab import JointConfigTab
 
 # ====================================== CONFIG COMMAND ======================================
 

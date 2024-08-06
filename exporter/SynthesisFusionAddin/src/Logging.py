@@ -11,8 +11,8 @@ from typing import cast
 
 import adsk.core
 
-from .strings import INTERNAL_ID
-from .UI.OsHelper import getOSPath
+from src import INTERNAL_ID
+from src.UI.OsHelper import getOSPath
 
 MAX_LOG_FILES_TO_KEEP = 10
 TIMING_LEVEL = 25

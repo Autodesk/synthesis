@@ -10,13 +10,13 @@ from typing import Any
 
 import requests
 
-from ..general_imports import INTERNAL_ID, gm, my_addin_path
-from ..Logging import getLogger
+from src import gm, ADDIN_PATH
+from src.Logging import getLogger
 
 logger = getLogger()
 
 CLIENT_ID = "GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU"
-auth_path = os.path.abspath(os.path.join(my_addin_path, "..", ".aps_auth"))
+auth_path = os.path.abspath(os.path.join(ADDIN_PATH, "..", ".aps_auth"))
 
 APS_AUTH = None
 APS_USER_INFO = None

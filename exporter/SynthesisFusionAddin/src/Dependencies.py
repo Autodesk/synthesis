@@ -9,7 +9,7 @@ from pathlib import Path
 import adsk.core
 import adsk.fusion
 
-from .Logging import getLogger, logFailure
+from src.Logging import getLogger, logFailure
 
 logger = getLogger()
 system = platform.system()
