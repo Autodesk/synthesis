@@ -87,19 +87,19 @@ class SimulationLayer {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint)
                 const driver = new HingeDriver(hinge, x.info)
                 this._drivers.push(driver)
-                const stim = new HingeStimulus(hinge)
+                const stim = new HingeStimulus(hinge, x.info)
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
                 const driver = new WheelDriver(vehicle, x.info)
                 this._drivers.push(driver)
-                const stim = new WheelRotationStimulus(vehicle.GetWheel(0))
+                const stim = new WheelRotationStimulus(vehicle.GetWheel(0), x.info)
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
                 const driver = new SliderDriver(slider, x.info)
                 this._drivers.push(driver)
-                const stim = new SliderStimulus(slider)
+                const stim = new SliderStimulus(slider, x.info)
                 this._stimuli.push(stim)
             }
         })

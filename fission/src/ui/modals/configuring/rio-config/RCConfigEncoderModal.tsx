@@ -5,20 +5,46 @@ import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
 import NumberInput from "@/components/NumberInput"
+import WPILibBrain, { simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
+import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
-    const [name, setName] = useState<string>("")
-    const [selectedSignal, setSelectedSignal] = useState<string>("")
-    const [selectedChannelA, setSelectedChannelA] = useState<number>(0)
-    const [selectedChannelB, setSelectedChannelB] = useState<number>(0)
+    const [_name, setName] = useState<string>("")
+
+    let stimuli: EncoderStimulus[] = []
+    let simLayer
+    let brain: WPILibBrain
+
+    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    if (miraObjs.length > 0) {
+        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+        simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        stimuli = simLayer?.stimuli.filter(s => s instanceof EncoderStimulus) ?? []
+        brain = simLayer?.brain as WPILibBrain
+    }
+
+    let devices: [string, unknown][] = []
+
+    const encoders = simMap.get("CANEncoder")
+    if (encoders) {
+        devices = [...encoders.entries()]
+    }
+
+    const stimMap: { [key: string]: EncoderStimulus } = {}
+
+    stimuli.forEach(stim => {
+        const label = `${stim.constructor.name} ${stim.info?.name && "(" + stim.info!.name + ")"}`
+        stimMap[label] = stim
+    })
+
+    const [selectedDevice, setSelectedDevice] = useState<string>(devices[0] && devices[0][0])
+    const [selectedStimulus, setSelectedStimulus] = useState<EncoderStimulus | undefined>(stimuli[0])
     const [conversionFactor, setConversionFactor] = useState<number>(1)
-
-    const numPorts = 10
-    const signals = ["Rev0 (uuid)", "Rev1 (uuid)", "Rev2 (uuid)", "Rev3 (uuid)"]
-
-    if (!selectedSignal) setSelectedSignal(signals[0])
 
     return (
         <Modal
@@ -27,8 +53,8 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {
-                // mostly doing this so eslint doesn't complain about unused variables
-                console.log(name, selectedSignal, selectedChannelA, selectedChannelB, conversionFactor)
+                if (selectedDevice && selectedStimulus)
+                    brain.addSimInput(new SimEncoderInput(selectedDevice, selectedStimulus, conversionFactor))
             }}
             onCancel={() => {
                 openModal("roborio")
@@ -36,17 +62,8 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Dropdown label="Signal" options={signals} onSelect={s => setSelectedSignal(s)} />
-            <Dropdown
-                label="Channel A"
-                options={[...Array(numPorts).keys()].map(n => n.toString())}
-                onSelect={s => setSelectedChannelA(parseInt(s))}
-            />
-            <Dropdown
-                label="Channel B"
-                options={[...Array(numPorts).keys()].map(n => n.toString())}
-                onSelect={s => setSelectedChannelB(parseInt(s))}
-            />
+            <Dropdown label="Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
+            <Dropdown label="Stimuli" options={Object.keys(stimMap)} onSelect={s => setSelectedStimulus(stimMap[s])} />
             <NumberInput
                 placeholder="Conversion Factor"
                 defaultValue={conversionFactor}

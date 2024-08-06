@@ -5,15 +5,15 @@ import Brain from "../Brain"
 import WPILibWSWorker from "./WPILibWSWorker?worker"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
-import Driver from "../driver/Driver"
-import WheelDriver from "../driver/WheelDriver"
-import HingeDriver from "../driver/HingeDriver"
-import SliderDriver from "../driver/SliderDriver"
+
+import { SimOutputGroup } from "./SimOutput"
+import { SimGyroInput, SimInput } from "./SimInput"
 
 const worker = new WPILibWSWorker()
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
 
+<<<<<<< HEAD
 const CANMOTOR_PERCENT_OUTPUT = "<percentOutput"
 const CANMOTOR_BRAKE_MODE = "<brakeMode"
 const CANMOTOR_NEUTRAL_DEADBAND = "<neutralDeadband"
@@ -30,6 +30,7 @@ export enum SimType {
     CANMotor = "CANMotor",
     Solenoid = "Solenoid",
     CANEncoder = "CANEncoder",
+    Gyro = "Gyro"
 }
 
 enum FieldType {
@@ -202,6 +203,22 @@ export class SimCANEncoder {
     }
 }
 
+export class SimGyro {
+    private constructor() {}
+
+    public static SetAngleX(device: string, angle: number): boolean {
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_x", angle);
+    }
+
+    public static SetAngleY(device: string, angle: number): boolean {
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_y", angle);
+    }
+
+    public static SetAngleZ(device: string, angle: number): boolean {
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_z", angle);
+    }
+}
+
 worker.addEventListener("message", (eventData: MessageEvent) => {
     let data: any | undefined
 
@@ -242,7 +259,8 @@ function UpdateSimMap(type: SimType, device: string, updateData: any) {
 class WPILibBrain extends Brain {
     private _simLayer: SimulationLayer
 
-    private _simDevices: SimOutputGroup[] = []
+    private _simOutputs: SimOutputGroup[] = []
+    private _simInputs: SimInput[] = []
 
     constructor(mechanism: Mechanism) {
         super(mechanism)
@@ -253,14 +271,22 @@ class WPILibBrain extends Brain {
             console.warn("SimulationLayer is undefined")
             return
         }
+
+        this.addSimInput(new SimGyroInput("Gyro:ADXRS450[0]", mechanism));
     }
 
     public addSimOutputGroup(device: SimOutputGroup) {
-        this._simDevices.push(device)
+        this._simOutputs.push(device)
+    }
+
+    public addSimInput(input: SimInput) {
+        this._simInputs.push(input)
     }
 
     public Update(deltaT: number): void {
-        this._simDevices.forEach(d => d.Update(deltaT))
+        this._simOutputs.forEach(d => d.Update(deltaT))
+        this._simInputs.forEach(i => i.Update(deltaT))
+        console.log(simMap)
     }
 
     public Enable(): void {
@@ -289,70 +315,3 @@ export class SimMapUpdateEvent extends Event {
 }
 
 export default WPILibBrain
-
-abstract class SimOutputGroup {
-    public name: string
-    public ports: number[]
-    public drivers: Driver[]
-    public type: SimType
-
-    public constructor(name: string, ports: number[], drivers: Driver[], type: SimType) {
-        this.name = name
-        this.ports = ports
-        this.drivers = drivers
-        this.type = type
-    }
-
-    public abstract Update(deltaT: number): void
-}
-
-export class PWMGroup extends SimOutputGroup {
-    public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, SimType.PWM)
-    }
-
-    // Averaging is probably not the right solution
-    public Update(deltaT: number): void {
-        const average =
-            this.ports.reduce((sum, port) => {
-                const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-                console.debug(port, speed)
-                return sum + speed
-            }, 0) / this.ports.length
-
-        this.drivers.forEach(d => {
-            if (d instanceof WheelDriver) {
-                d.targetWheelSpeed = average * 40
-            } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
-                d.targetVelocity = average * 40
-            }
-            d.Update(deltaT)
-        })
-    }
-
-}
-
-export class CANGroup extends SimOutputGroup {
-    public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, SimType.CANMotor)
-    }
-    
-    // Averaging is probably not the right solution
-    public Update(deltaT: number): void {
-        const average =
-            this.ports.reduce((sum, port) => {
-                const device = SimCAN.GetDeviceWithID(port, SimType.CANMotor)
-                return sum + device["<percentOutput"]
-            }, 0) / this.ports.length
-
-        this.drivers.forEach(d => {
-            if (d instanceof WheelDriver) {
-                d.targetWheelSpeed = average * 40
-            } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
-                d.targetVelocity = average * 40
-            }
-            d.Update(deltaT)
-        })
-    }
-
-}

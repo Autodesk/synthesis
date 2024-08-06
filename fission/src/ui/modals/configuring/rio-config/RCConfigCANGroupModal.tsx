@@ -7,7 +7,8 @@ import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
-import WPILibBrain, { CANGroup, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { CANOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver from "@/systems/simulation/driver/Driver"
@@ -44,7 +45,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 // no eslint complain
-                brain.addSimOutputGroup(new CANGroup(name, checkedPorts, checkedDrivers))
+                brain.addSimOutputGroup(new CANOutputGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
                 const replacer = (_: unknown, value: unknown) => {
                     if (value instanceof Map) {
