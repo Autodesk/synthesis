@@ -192,7 +192,8 @@ class SceneRenderer extends WorldSystem {
             this._light.shadow.bias = 0.0
             this._light.shadow.normalBias = 0.01
             this._scene.add(this._light)
-        } else if (quality === "High") { // setting light to cascading shadows
+        } else if (quality === "High") {
+            // setting light to cascading shadows
             this._light = new CSM({
                 parent: this._scene,
                 camera: this._mainCamera,
