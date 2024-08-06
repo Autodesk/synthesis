@@ -20,36 +20,25 @@ export interface AccumTimes {
 
 class AnalyticsSystem extends WorldSystem {
     private _lastSampleTime = Date.now()
+    private _consent: boolean
 
     public constructor() {
         super()
 
+        this._consent = PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")
         init({
             measurementId: "G-6XNCRD7QNC",
             debug: import.meta.env.DEV,
             anonymizeIp: true,
             sendPageViews: false,
-            trackingConsent: PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics"),
+            trackingConsent: this._consent,
         })
 
         PreferencesSystem.addEventListener(
             e => e.prefName == "ReportAnalytics" && this.ConsentUpdate(e.prefValue as boolean)
         )
 
-        let betaCode = document.cookie.match(BETA_CODE_COOKIE_REGEX)?.[0]
-        if (betaCode) {
-            betaCode = betaCode.substring(betaCode.indexOf("=") + 1, betaCode.indexOf(";"))
-
-            this.SetUserProperty("Beta Code", betaCode)
-        } else {
-            console.debug("No code match")
-        }
-
-        if (MOBILE_USER_AGENT_REGEX.test(navigator.userAgent)) {
-            this.SetUserProperty("Is Mobile", "true")
-        } else {
-            this.SetUserProperty("Is Mobile", "false")
-        }
+        this.SendMetaData()
     }
 
     public Event(name: string, params?: { [key: string]: string | number }) {
@@ -69,7 +58,35 @@ class AnalyticsSystem extends WorldSystem {
     }
 
     private ConsentUpdate(granted: boolean) {
+        this._consent = granted
         consent(granted)
+
+        this.SendMetaData()
+    }
+
+    private SendMetaData() {
+        if (import.meta.env.DEV) {
+            this.SetUserProperty("Internal Traffic", "true")
+        }
+
+        if (!this._consent) {
+            return
+        }
+
+        let betaCode = document.cookie.match(BETA_CODE_COOKIE_REGEX)?.[0]
+        if (betaCode) {
+            betaCode = betaCode.substring(betaCode.indexOf("=") + 1, betaCode.indexOf(";"))
+
+            this.SetUserProperty("Beta Code", betaCode)
+        } else {
+            console.debug("No code match")
+        }
+
+        if (MOBILE_USER_AGENT_REGEX.test(navigator.userAgent)) {
+            this.SetUserProperty("Is Mobile", "true")
+        } else {
+            this.SetUserProperty("Is Mobile", "false")
+        }
     }
 
     private currentSampleInterval() {

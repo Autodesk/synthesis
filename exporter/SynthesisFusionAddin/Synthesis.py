@@ -1,29 +1,35 @@
-# DO NOT CHANGE ORDER, OR ADD IMPORTS BEFORE UNTIL END COMMENT
-
 import os
-from shutil import rmtree
+import sys
 
 import adsk.core
 
-from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
-from .src.Logging import getLogger, logFailure, setupLogger
-from .src.UI import (
-    HUI,
-    Camera,
-    ConfigCommand,
-    Handlers,
-    Helper,
-    MarkingMenu,
-    ShowAPSAuthCommand,
-    ShowWebsiteCommand,
-)
-from .src.UI.Toolbar import Toolbar
+# Currently required for `resolveDependencies()`, will be required for absolute imports.
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# END OF RESTRICTION
+from .src.Dependencies import resolveDependencies  # isort:skip
 
-# Transition: AARD-1721
-# Should attempt to fix this ordering scheme within AARD-1741
-from .src.APS import APS  # isort:skip
+# Transition: AARD-1741
+# Import order should be removed in AARD-1737 and `setupLogger()` moved to `__init__.py`
+from .src.Logging import getLogger, logFailure, setupLogger  # isort:skip
+
+setupLogger()
+
+try:
+    from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
+    from .src.UI import (
+        HUI,
+        Camera,
+        ConfigCommand,
+        MarkingMenu,
+        ShowAPSAuthCommand,
+        ShowWebsiteCommand,
+    )
+    from .src.UI.Toolbar import Toolbar
+except (ImportError, ModuleNotFoundError) as error:
+    getLogger().warn(f"Running resolve dependencies with error of:\n{error}")
+    result = resolveDependencies()
+    if result:
+        adsk.core.Application.get().userInterface.messageBox("Installed required dependencies.\nPlease restart Fusion.")
 
 
 @logFailure
@@ -33,7 +39,6 @@ def run(_):
     Arguments:
         **context** *context* -- Fusion context to derive app and UI.
     """
-    setupLogger()
 
     # Remove all items prior to start just to make sure
     unregister_all()
