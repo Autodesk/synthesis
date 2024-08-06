@@ -29,7 +29,7 @@ from typing import Union
 import adsk.core
 import adsk.fusion
 
-from proto.proto_out import assembly_pb2, joint_pb2, motor_pb2, signal_pb2, types_pb2
+from src.Proto import assembly_pb2, joint_pb2, motor_pb2, signal_pb2, types_pb2
 
 from ...general_imports import *
 from ...Logging import getLogger

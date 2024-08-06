@@ -6,7 +6,7 @@ import traceback
 
 import adsk
 
-from proto.proto_out import material_pb2
+from src.Proto import material_pb2
 
 from ...general_imports import *
 from ...Logging import logFailure, timed
