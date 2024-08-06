@@ -4,22 +4,35 @@ import { Box, Button as MUIButton, styled, alpha, Divider } from "@mui/material"
 import Label, { LabelSize } from "./Label"
 import { FaArrowLeft } from "react-icons/fa6"
 import Button from "./Button"
+import { AddButtonInteractiveColor, DeleteButton, Spacer } from "./StyledComponents"
 
 const LeftArrow = <FaArrowLeft size={"1.25rem"} />
 
 const CustomButton = styled(MUIButton)({
-    "borderStyle": "solid",
+    "borderStyle": "none",
     "borderWidth": "1px",
     "transition": "border-color 0.3s ease",
+    "outline": "none",
     "&:hover": {
-        borderColor: "white",
-        backgroundColor: alpha("#33333333", 0.3),
+        borderStyle: "solid",
+        borderColor: "grey",
+        backgroundColor: "transparent",
     },
     "position": "relative",
     "overflow": "hidden",
     "& .MuiTouchRipple-root span": {
-        backgroundColor: alpha("#ffffff", 0.3),
+        backgroundColor: alpha("#ffffff", 0.07),
         animationDuration: "300ms",
+    },
+    "&:focus": {
+        borderColor: "grey",
+        backgroundColor: "transparent",
+        outline: "none",
+    },
+    "&:selected": {
+        outline: "none",
+        backgroundColor: "transparent",
+        borderColor: "grey",
     },
 })
 
@@ -45,12 +58,19 @@ interface OptionCardProps {
     value: SelectMenuOption
     index: number
     onSelected: (val: SelectMenuOption) => void
+    onDelete?: () => void
 }
 
-const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected }) => {
+const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDelete }) => {
     return (
-        /* Box containing the entire card */
-        <Box display="flex" textAlign={"center"} key={value.name} minHeight={"30px"}>
+        <Box
+            display="flex"
+            textAlign={"center"}
+            key={value.name}
+            minHeight={"30px"}
+            overflow="hidden"
+            position={"relative"}
+        >
             {/* Box containing the label */}
             <Box position="absolute" alignSelf={"center"} display="flex">
                 {/* Indentation before the name */}
@@ -73,6 +93,12 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected }) => 
                 }}
                 sx={{ borderColor: "#888888" }}
             />
+            {onDelete && (
+                <>
+                    {Spacer(0, 10)}
+                    {DeleteButton(onDelete != undefined ? onDelete : () => {})}
+                </>
+            )}
         </Box>
     )
 }
@@ -82,6 +108,8 @@ interface SelectMenuProps {
     onOptionSelected: (val: SelectMenuOption | undefined) => void
     defaultHeaderText: string
     indentation?: number
+    onDelete?: (val: SelectMenuOption) => void | undefined
+    onAddClicked?: () => void
 }
 
 const SelectMenu: React.FC<SelectMenuProps> = ({
@@ -89,14 +117,23 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     onOptionSelected,
     defaultHeaderText: headerText,
     indentation,
+    onDelete,
+    onAddClicked,
 }) => {
     const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(undefined)
+    // useEffect(() => {
+    //     if (selectedOption == undefined)
+    //         return
+    //
+    //     if (!options.some(o => o.name == selectedOption.name)) setSelectedOption(undefined)
+    // }, [options, selectedOption])
 
     useEffect(() => {
-        if (selectedOption == undefined) return
-
-        if (!options.some(o => o.name == selectedOption.name)) setSelectedOption(undefined)
-    }, [options, selectedOption])
+        if (!options.some(o => o.name === selectedOption?.name)) {
+            setSelectedOption(undefined)
+            onOptionSelected(undefined) // Notify parent if needed
+        }
+    }, [options])
 
     return (
         <>
@@ -133,9 +170,11 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                                     onOptionSelected(val)
                                 }}
                                 key={option.name + i}
+                                onDelete={onDelete ? () => onDelete(option) : undefined}
                             />
                         )
                     })}
+                    {onAddClicked && AddButtonInteractiveColor(onAddClicked)}
                 </>
             ) : null}
         </>

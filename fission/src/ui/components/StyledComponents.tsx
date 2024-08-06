@@ -65,8 +65,8 @@ export const SectionLabel = styled(Label)({
     margin: "0pt",
 })
 
-export const Spacer = (widthPx: number) => {
-    return <Box minHeight={`${widthPx}px`} />
+export const Spacer = (heightPx?: number, widthPx?: number) => {
+    return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
 }
 
 export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick }) => {

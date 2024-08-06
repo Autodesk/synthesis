@@ -14,9 +14,10 @@ import {
     ReactRgbaColor_ThreeColor,
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
-import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { useTheme } from "@/ui/ThemeContext"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import Button from "@/ui/components/Button"
+import { Spacer } from "@/ui/components/StyledComponents"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -208,11 +209,10 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }}
                 step={0.01}
             />
-            <LabeledButton
-                placement={LabelPlacement.Left}
-                label="Reset"
+            {Spacer(10)}
+            <Button
                 value="Reset"
-                buttonClassName="w-min"
+                //buttonClassName="w-min"
                 onClick={() => {
                     if (transformGizmo) {
                         const robotTransformation = JoltMat44_ThreeMatrix4(

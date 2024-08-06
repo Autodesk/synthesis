@@ -20,7 +20,6 @@ import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
 import ViewModal from "@/modals/ViewModal"
 import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "@/modals/aether/ServerHostingModal"
-import ChangeInputsModal from "@/ui/modals/configuring/inputs/ChangeInputsModal.tsx"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
 import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
@@ -206,7 +205,6 @@ const initialModals = [
     <UpdateAvailableModal key="update-available" modalId="update-available" />,
     <ConnectToMultiplayerModal key="connect-to-multiplayer" modalId="connect-to-multiplayer" />,
     <ServerHostingModal key="server-hosting" modalId="server-hosting" />,
-    <ChangeInputsModal key="change-inputs" modalId="change-inputs" />,
     <ChooseMultiplayerModeModal key="multiplayer-mode" modalId="multiplayer-mode" />,
     <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
     <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,

@@ -115,8 +115,8 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                 sx={{
                     borderColor:
                         lookingForParent == undefined ||
-                            lookingForParent == behavior ||
-                            behavior.parentJointIndex != undefined
+                        lookingForParent == behavior ||
+                        behavior.parentJointIndex != undefined
                             ? "transparent"
                             : "#888888",
                 }}
@@ -139,12 +139,12 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
             <Box display="flex" position="relative" alignSelf={"center"} alignItems={"center"}>
                 {/* Button to set the parent of this behavior */}
                 <Button
-                    key="set"
+                    key="follow"
                     size={ButtonSize.Small}
                     value={
                         lookingForParent == behavior || behavior.parentJointIndex != undefined
                             ? UnselectParentIcon
-                            : "set"
+                            : "follow"
                     }
                     onClick={() => {
                         if (hasChild) return
@@ -210,9 +210,10 @@ interface SequentialBehaviorProps {
 const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selectedRobot }) => {
     const [behaviors, setBehaviors] = useState<SequentialBehaviorPreferences[]>(
         PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
-        (selectedRobot.brain as SynthesisBrain).behaviors
-            .filter(b => b instanceof SequenceableBehavior)
-            .map(b => DefaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")))
+            (selectedRobot.brain as SynthesisBrain).behaviors
+                .filter(b => b instanceof SequenceableBehavior)
+                .map(b => DefaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))
+    )
     const [lookingForParent, setLookingForParent] = useState<SequentialBehaviorPreferences | undefined>(undefined)
 
     const [_, update] = useReducer(x => {
@@ -234,9 +235,8 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
         }
     }, [saveEvent])
 
-
     return (
-        <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[40vh] bg-background-secondary rounded-md p-2">
+        <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
             <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                 Set Parent Behaviors
             </LabelStyled>
@@ -246,11 +246,7 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
                 return (
                     <BehaviorCard
                         elementKey={jointIndex}
-                        name={
-                            behavior.type == "Arm"
-                                ? `Joint ${jointIndex} (Arm)`
-                                : `Joint ${jointIndex} (Elevator)`
-                        }
+                        name={behavior.type == "Arm" ? `Joint ${jointIndex} (Arm)` : `Joint ${jointIndex} (Elevator)`}
                         behavior={behavior}
                         key={jointIndex}
                         update={update}

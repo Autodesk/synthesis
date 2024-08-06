@@ -70,7 +70,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, value, pl
 
     return (
         <Stack direction={StackDirection.Vertical}>
-            <Label size={LabelSize.Small}>{"Click to select"}</Label>
+            <Label size={LabelSize.Small}>{"Select Follow Node"}</Label>
             <Button
                 value={selecting ? "..." : value || placeholder || "Click to select"}
                 colorOverrideClass={selecting ? "bg-background-secondary" : colorClass}

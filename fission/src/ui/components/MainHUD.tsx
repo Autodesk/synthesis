@@ -101,11 +101,6 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("view")}
                     /> */}
                     <MainHUDButton
-                        value={"Controls"}
-                        icon={SynthesisIcons.Gamepad}
-                        onClick={() => openModal("change-inputs")}
-                    />
-                    <MainHUDButton
                         value={"Import Local Mira"}
                         icon={SynthesisIcons.Import}
                         onClick={() => openModal("import-local-mirabuf")}

@@ -5,7 +5,7 @@ import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useMemo, useState } from "react"
+import { useMemo, useReducer, useState } from "react"
 import { AiOutlinePlus } from "react-icons/ai"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
@@ -14,6 +14,10 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { usePanelControlContext } from "@/ui/PanelContext"
+import Button from "@/ui/components/Button"
+import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
+import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 
 const AddIcon = <AiOutlinePlus size={"1.25rem"} />
 
@@ -32,6 +36,9 @@ interface ConfigurationSelectionProps {
 }
 
 const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configurationType, onAssemblySelected }) => {
+    const [x, update] = useReducer(x => !x, false)
+    const { openPanel } = usePanelControlContext()
+
     const robots = useMemo(() => {
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
             if (x instanceof MirabufSceneObject) {
@@ -41,7 +48,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
         }) as MirabufSceneObject[]
 
         return assemblies
-    }, [])
+    }, [x])
 
     const fields = useMemo(() => {
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
@@ -52,7 +59,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
         }) as MirabufSceneObject[]
 
         return assemblies
-    }, [])
+    }, [x])
 
     return (
         <SelectMenu
@@ -67,6 +74,15 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
                 onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)
             }}
             defaultHeaderText={`Select a ${configurationType == ConfigurationType.ROBOT ? "Robot" : "Field"}`}
+            onDelete={val => {
+                World.SceneRenderer.RemoveSceneObject((val as AssemblySelectionOption).assemblyObject.id)
+                onAssemblySelected(undefined)
+                update()
+            }}
+            onAddClicked={() => {
+                console.log("Open spawn panel")
+                openPanel("import-mirabuf")
+            }}
         />
     )
 }
@@ -117,9 +133,10 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ configuration
 interface ConfigInterfaceProps {
     configMode: ConfigMode
     assembly: MirabufSceneObject
+    openPanel: (panelId: string) => void
 }
 
-const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly }) => {
+const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly, openPanel }) => {
     switch (configMode) {
         case ConfigMode.INTAKE:
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
@@ -128,7 +145,21 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly 
         case ConfigMode.MOTORS:
             return <SequentialBehaviorsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS:
-            return <Label>interface not set up</Label>
+            const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
+            const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+
+            return (
+                <>
+                    <Button
+                        value="Set Scheme"
+                        onClick={() => {
+                            setSelectedBrainIndexGlobal(brainIndex)
+                            openPanel("choose-scheme")
+                        }}
+                    />
+                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} />}
+                </>
+            )
         case ConfigMode.SCORING_ZONES: {
             const zones = assembly.fieldPreferences?.scoringZones
             if (zones == undefined) {
@@ -165,6 +196,7 @@ enum ConfigurationType {
 }
 
 const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+    const { openPanel } = usePanelControlContext()
     const [configurationType, setConfigurationType] = useState<ConfigurationType>(ConfigurationType.ROBOT)
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
     const [selectedConfigMode, setSelectedConfigMode] = useState<ConfigMode | undefined>(undefined)
@@ -208,8 +240,8 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             onAssemblySelected={a => {
                                 if (selectedConfigMode != undefined) {
                                     new ConfigurationSavedEvent()
-                                    setSelectedConfigMode(undefined)
                                 }
+                                setSelectedConfigMode(undefined)
                                 setSelectedAssembly(a)
                             }}
                         />
@@ -223,7 +255,11 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             />
                         )}
                         {selectedConfigMode != undefined && selectedAssembly != undefined && (
-                            <ConfigInterface configMode={selectedConfigMode} assembly={selectedAssembly} />
+                            <ConfigInterface
+                                configMode={selectedConfigMode}
+                                assembly={selectedAssembly}
+                                openPanel={openPanel}
+                            />
                         )}
                     </>
                 )}

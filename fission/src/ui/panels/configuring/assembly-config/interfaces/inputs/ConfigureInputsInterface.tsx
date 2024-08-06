@@ -1,18 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { ConfigurationSavedEvent } from "../../ConfigurePanel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import InputSystem, { Input } from "@/systems/input/InputSystem"
+import InputSystem from "@/systems/input/InputSystem"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
-import EditInputInterface from "./EditInputInterface"
-import Checkbox from "@/ui/components/Checkbox"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-
-// Converts camelCase to Title Case for the inputs modal
-const toTitleCase = (camelCase: string) => {
-    const result = camelCase.replace(/([A-Z])/g, " $1")
-    const finalResult = result.charAt(0).toUpperCase() + result.slice(1)
-    return finalResult
-}
+import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 
 const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
     for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
@@ -35,25 +27,10 @@ class SchemeSelectionOption extends SelectMenuOption {
     }
 }
 
-class InputSelectionOption extends SelectMenuOption {
-    input: Input
-
-    constructor(input: Input) {
-        super(toTitleCase(input.inputName))
-
-        this.input = input
-    }
-}
-
-interface ChangeInputsProps {}
-
-const ConfigureInputsInterface: React.FC<ChangeInputsProps> = () => {
+const ConfigureInputsInterface = () => {
     const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(undefined)
-    const [selectedInput, setSelectedInput] = useState<Input | undefined>(undefined)
-    const [useGamepad, setUseGamepad] = useState<boolean>(false)
 
     const saveEvent = useCallback(() => {
-        console.log("save")
         InputSchemeManager.saveSchemes()
     }, [])
 
@@ -73,36 +50,11 @@ const ConfigureInputsInterface: React.FC<ChangeInputsProps> = () => {
                     setSelectedScheme((val as SchemeSelectionOption)?.scheme)
                     if (val == undefined) {
                         new ConfigurationSavedEvent()
-                        setSelectedInput(undefined)
                     }
                 }}
                 defaultHeaderText={"Select an Input Scheme"}
             />
-            {selectedScheme != undefined && (
-                <>
-                    <Checkbox
-                        label="Use Controller"
-                        defaultState={selectedScheme.usesGamepad}
-                        onClick={val => {
-                            setUseGamepad(val)
-                            selectedScheme.usesGamepad = val
-                        }}
-                    />
-                    <SelectMenu
-                        options={selectedScheme.inputs.map(i => new InputSelectionOption(i))}
-                        onOptionSelected={val => setSelectedInput((val as InputSelectionOption)?.input)}
-                        defaultHeaderText={"Select an Input"}
-                        indentation={1}
-                    />
-                </>
-            )}
-            {selectedScheme != undefined && selectedInput != undefined && (
-                <EditInputInterface
-                    input={selectedInput}
-                    useGamepad={useGamepad}
-                    onInputChanged={() => (selectedScheme.customized = true)}
-                />
-            )}
+            {selectedScheme && <ConfigureSchemeInterface selectedScheme={selectedScheme} />}
         </>
     )
 }

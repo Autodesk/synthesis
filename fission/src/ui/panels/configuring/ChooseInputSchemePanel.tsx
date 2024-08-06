@@ -72,7 +72,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             cancelName="Close"
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
-            <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[45vh] bg-background-secondary rounded-md p-2">
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
                 {/** The label and divider at the top of the scroll view */}
                 <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${InputSchemeManager.availableInputSchemes.length} Input Schemes`}
