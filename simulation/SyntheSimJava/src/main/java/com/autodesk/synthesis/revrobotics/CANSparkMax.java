@@ -47,15 +47,10 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
         return super.setIdleMode(mode);
     }
 
-    // @Override
-    // public SparkAbsoluteEncoder getAbsoluteEncoder() throws Exception{
-    //     try {
-    //         return new SparkAbsoluteEncoder(this.m_encoder, com.revrobotics.SparkAbsoluteEncoder.Type.kDutyCycle);
-    //     } catch (Exception e) {
-    //         // TODO Auto-generated catch block
-    //         e.printStackTrace();
-    //     }
-    // }
+    /// Use instead on getAbsoluteEncoder(), everything else works exactly the same
+    public com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder getAbsoluteEncoderSim() {
+        return new SparkAbsoluteEncoder(super.getAbsoluteEncoder(), this.m_encoder);
+    }
 
     // @Override
     // public SparkAbsoluteEncoder getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type type) throws Exception {
