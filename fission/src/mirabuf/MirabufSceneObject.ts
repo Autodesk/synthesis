@@ -104,8 +104,6 @@ class MirabufSceneObject extends SceneObject {
 
         this._debugBodies = null
 
-        // this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
-
         this.getPreferences()
 
         // creating nametag for robots
@@ -158,7 +156,7 @@ class MirabufSceneObject extends SceneObject {
 
         this.UpdateScoringZones()
 
-        // adding transform gizmo
+        // Adding a transform gizmo to the assembly when it spawns
         new GizmoSceneObject(
             new THREE.Mesh(
                 new THREE.SphereGeometry(3.0),

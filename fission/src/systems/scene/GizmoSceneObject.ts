@@ -41,13 +41,16 @@ class GizmoSceneObject extends SceneObject {
     }
 
     public Setup(): void {
+        // adding the mesh and gizmo to the scene
         World.SceneRenderer.AddObject(this._mesh)
         World.SceneRenderer.AddObject(this._gizmo)
 
+        // forcing the gizmo to rotate and transform with the object
         this._gizmo.setSpace("local")
         this._gizmo.attach(this._mesh)
 
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
+            // disable orbit controls when dragging the transform gizmo
             const gizmoDragging = World.SceneRenderer.IsAnyGizmoDragging()
             if (!event.value && !gizmoDragging) {
                 World.SceneRenderer.orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
@@ -58,6 +61,7 @@ class GizmoSceneObject extends SceneObject {
             }
 
             if (event.target.mode === "translate") {
+                // disable other gizmos when translating
                 Array.from(World.SceneRenderer.sceneObjects.values())
                     .filter(obj => obj instanceof GizmoSceneObject)
                     .forEach(obj => {
@@ -94,6 +98,7 @@ class GizmoSceneObject extends SceneObject {
         if (this._parentObject !== undefined) this._parentObject.DisablePhysics()
     }
     public Update(): void {
+        // updating the size of the gizmo based on the distance from the camera
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
         this._gizmo.setSize(
             (this._size / this._mainCamera.position.distanceTo(this.gizmo.object!.position)) *
@@ -101,7 +106,7 @@ class GizmoSceneObject extends SceneObject {
                 1.9
         )
 
-        // updating the position of the mirabuf object
+        // mapping the mesh transformations to the mirabuf object
         if (this._parentObject !== undefined) {
             this._parentObject.DisablePhysics()
 
@@ -128,8 +133,9 @@ class GizmoSceneObject extends SceneObject {
             }
         }
 
+        // creating enter key and escape key event listeners
         if (InputSystem.isKeyPressed("Enter")) {
-            // confirming placement of the mirabuf object
+            // confirming placement of object
             if (this._parentObject !== undefined) this._parentObject.EnablePhysics()
             World.SceneRenderer.RemoveSceneObject(this.id)
             return
@@ -147,6 +153,7 @@ class GizmoSceneObject extends SceneObject {
         World.SceneRenderer.RemoveObject(this._gizmo)
     }
 
+    /** changes the mode of the gizmo */
     public SetMode(mode: GizmoMode) {
         this._gizmo.setMode(mode)
     }
