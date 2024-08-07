@@ -13,6 +13,7 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import ScrollView from "@/ui/components/ScrollView"
 import Slider from "@/ui/components/Slider"
 import Stack, { StackDirection } from "@/ui/components/Stack"
+import { SectionDivider } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
 import { useCallback, useMemo, useState } from "react"
 import { FaGear } from "react-icons/fa6"
@@ -88,37 +89,41 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
     )
 
     return (
-        <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-            <Stack direction={StackDirection.Vertical} spacing={8} justify="start">
-                <Label size={LabelSize.Medium}>
-                    {driver instanceof WheelDriver ? "Drive" : driver.info?.name ?? "UnnamedMotor"}
-                </Label>
-                <Slider
-                    min={0.1}
-                    max={80}
-                    value={velocity}
-                    label="Max Velocity"
-                    format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                    onChange={(_, _velocity: number | number[]) => {
-                        setVelocity(_velocity as number)
-                        onChange(_velocity as number, force)
-                    }}
-                    step={0.01}
-                />
-                <Slider
-                    min={driverSwitch(driver, 100, 20, 0.1) as number}
-                    max={driverSwitch(driver, 800, 150, 15) as number}
-                    value={force}
-                    label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
-                    format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                    onChange={(_, _force: number | number[]) => {
-                        setForce(_force as number)
-                        onChange(velocity, _force as number)
-                    }}
-                    step={0.01}
-                />
-            </Stack>
-        </Box>
+        <>
+            <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+                <Stack direction={StackDirection.Vertical} spacing={8} justify="start">
+                    <Label size={LabelSize.Medium}>
+                        {driver instanceof WheelDriver ? "Drive" : driver.info?.name ?? "UnnamedMotor"}
+                    </Label>
+                    <Slider
+                        min={0.1}
+                        max={driverSwitch(driver, 50, 30, 80) as number}
+                        value={velocity}
+                        label="Max Velocity"
+                        format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                        onChange={(_, _velocity: number | number[]) => {
+                            setVelocity(_velocity as number)
+                            onChange(_velocity as number, force)
+                        }}
+                        step={0.01}
+                    />
+                    <Slider
+                        min={driverSwitch(driver, 100, 20, 0.1) as number}
+                        max={driverSwitch(driver, 800, 150, 15) as number}
+                        value={force}
+                        label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
+                        format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                        onChange={(_, _force: number | number[]) => {
+                            setForce(_force as number)
+                            onChange(velocity, _force as number)
+                        }}
+                        step={0.01}
+                    />
+                </Stack>
+            </Box>
+            <SectionDivider />
+        </>
+
     )
 }
 
