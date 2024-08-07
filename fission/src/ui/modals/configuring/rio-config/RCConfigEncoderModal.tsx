@@ -5,7 +5,7 @@ import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
 import NumberInput from "@/components/NumberInput"
-import WPILibBrain, { simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
@@ -30,7 +30,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     let devices: [string, unknown][] = []
 
-    const encoders = simMap.get("CANEncoder")
+    const encoders = simMap.get(SimType.CANEncoder)
     if (encoders) {
         devices = [...encoders.entries()]
     }

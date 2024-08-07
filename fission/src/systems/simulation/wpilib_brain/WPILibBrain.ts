@@ -104,6 +104,9 @@ export class SimGeneric {
         selectedData[field] = value
 
         data[field] = value
+
+        console.log("field " + field + " device " + device + " value " + value)
+
         worker.postMessage({
             command: "update",
             data: {
