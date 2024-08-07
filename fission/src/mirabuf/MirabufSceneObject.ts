@@ -106,7 +106,7 @@ class MirabufSceneObject extends SceneObject {
 
         this._debugBodies = null
 
-        this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
+        // this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
 
         this.getPreferences()
 
@@ -419,13 +419,13 @@ class MirabufSceneObject extends SceneObject {
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
     }
 
-    private EnablePhysics() {
+    public EnablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
     }
 
-    private DisablePhysics() {
+    public DisablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })

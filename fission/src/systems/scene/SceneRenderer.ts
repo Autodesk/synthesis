@@ -15,6 +15,7 @@ import InputSystem from "../input/InputSystem"
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import GizmoSceneObject from "./GizmoSceneObject"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -144,6 +145,11 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
+    public test() {
+        const mesh = new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), new THREE.MeshBasicMaterial({ color: 0xff0000 }))
+        new GizmoSceneObject(mesh, "translate", 3, this._mainCamera, this._renderer.domElement)
+    }
+
     public Update(deltaT: number): void {
         this._sceneObjects.forEach(obj => {
             obj.Update()
@@ -176,6 +182,15 @@ class SceneRenderer extends WorldSystem {
         obj.id = id
         this._sceneObjects.set(id, obj)
         obj.Setup()
+
+        if (obj instanceof MirabufSceneObject) {
+            const mesh = new THREE.Mesh(
+                new THREE.SphereGeometry(3.0),
+                new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
+            )
+            new GizmoSceneObject(mesh, "translate", 3, this._mainCamera, this._renderer.domElement, obj)
+        }
+
         return id
     }
 
@@ -191,7 +206,7 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    public AddToScene(obj: THREE.Mesh) {
+    public AddToScene(obj: THREE.Object3D) {
         this._scene.add(obj)
     }
 
