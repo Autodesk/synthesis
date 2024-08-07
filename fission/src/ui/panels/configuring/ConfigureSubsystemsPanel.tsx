@@ -43,46 +43,49 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
         ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxForce
     )
 
-    const onChange = useCallback((vel: number, force: number) => {
-        if (driver instanceof WheelDriver) {
-            const wheelDrivers = robot?.mechanism
-                ? World.SimulationSystem.GetSimulationLayer(robot.mechanism)?.drivers.filter(
-                      x => x instanceof WheelDriver
-                  )
-                : undefined
-            wheelDrivers?.forEach(x => {
-                x.maxVelocity = vel
-                x.maxForce = force
-            })
-
-            // Preferences
-            PreferencesSystem.getRobotPreferences(robot.assemblyName).driveVelocity = vel
-            PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = force
-        } else {
-            ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
-            ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
-
-            // Preferences
-            if (driver.info && driver.info.name) {
-                const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
-                    ? PreferencesSystem.getRobotPreferences(robot.assemblyName).motors.filter(x => {
-                          if (x.name) return x.name != driver.info?.name
-                          return false
-                      })
-                    : []
-
-                removedMotor.push({
-                    name: driver.info?.name ?? "",
-                    maxVelocity: vel,
-                    maxForce: force,
+    const onChange = useCallback(
+        (vel: number, force: number) => {
+            if (driver instanceof WheelDriver) {
+                const wheelDrivers = robot?.mechanism
+                    ? World.SimulationSystem.GetSimulationLayer(robot.mechanism)?.drivers.filter(
+                          x => x instanceof WheelDriver
+                      )
+                    : undefined
+                wheelDrivers?.forEach(x => {
+                    x.maxVelocity = vel
+                    x.maxForce = force
                 })
 
-                PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
-            }
-        }
+                // Preferences
+                PreferencesSystem.getRobotPreferences(robot.assemblyName).driveVelocity = vel
+                PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = force
+            } else {
+                ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
+                ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
 
-        PreferencesSystem.savePreferences()
-    }, [driver, robot.mechanism, robot.assemblyName])
+                // Preferences
+                if (driver.info && driver.info.name) {
+                    const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
+                        ? PreferencesSystem.getRobotPreferences(robot.assemblyName).motors.filter(x => {
+                              if (x.name) return x.name != driver.info?.name
+                              return false
+                          })
+                        : []
+
+                    removedMotor.push({
+                        name: driver.info?.name ?? "",
+                        maxVelocity: vel,
+                        maxForce: force,
+                    })
+
+                    PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
+                }
+            }
+
+            PreferencesSystem.savePreferences()
+        },
+        [driver, robot.mechanism, robot.assemblyName]
+    )
 
     return (
         <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
