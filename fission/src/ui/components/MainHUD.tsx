@@ -10,7 +10,6 @@ import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import { Button } from "@mui/base/Button"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
-import World from "@/systems/World"
 
 type ButtonProps = {
     value: string
