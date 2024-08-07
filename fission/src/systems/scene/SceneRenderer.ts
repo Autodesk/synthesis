@@ -1,20 +1,20 @@
 import * as THREE from "three"
-import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
+import SceneObject from "./SceneObject"
 
-import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
+import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 
-import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
+import vertexShader from "@/shaders/vertex.glsl"
 import { Theme } from "@/ui/ThemeContext"
-import InputSystem from "../input/InputSystem"
 import Jolt from "@barclah/jolt-physics"
+import InputSystem from "../input/InputSystem"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import {} from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
+import GizmoSceneObject from "./GizmoSceneObject"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -49,6 +49,10 @@ class SceneRenderer extends WorldSystem {
 
     public get renderer(): THREE.WebGLRenderer {
         return this._renderer
+    }
+
+    public get orbitControls() {
+        return this._orbitControls
     }
 
     public constructor() {
@@ -187,6 +191,10 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
+    public AddToScene(obj: THREE.Mesh) {
+        this._scene.add(obj)
+    }
+
     public CreateSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
@@ -249,7 +257,7 @@ class SceneRenderer extends WorldSystem {
         return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
 
-    /** 
+    /**
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
@@ -261,6 +269,13 @@ class SceneRenderer extends WorldSystem {
             this._skybox.material.uniforms.gColor.value = currentTheme["Background"]["color"]["g"]
             this._skybox.material.uniforms.bColor.value = currentTheme["Background"]["color"]["b"]
         }
+    }
+
+    /** returns whether any gizmos are being currently dragged */
+    public IsAnyGizmoDragging(): boolean {
+        return Array.from(this._sceneObjects.values())
+            .filter(obj => obj instanceof GizmoSceneObject)
+            .some(obj => obj.gizmo.dragging)
     }
 
     /**
@@ -282,6 +297,7 @@ class SceneRenderer extends WorldSystem {
         transformControl.addEventListener(
             "dragging-changed",
             (event: { target: TransformControls; value: unknown }) => {
+                console.log("here")
                 const isAnyGizmoDragging = Array.from(this._transformControls.keys()).some(gizmo => gizmo.dragging)
                 if (!event.value && !isAnyGizmoDragging) {
                     this._orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
