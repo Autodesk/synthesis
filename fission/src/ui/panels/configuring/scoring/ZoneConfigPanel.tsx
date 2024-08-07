@@ -1,25 +1,25 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
-import Input from "@/components/Input"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
+import Input from "@/components/Input"
 import NumberInput from "@/components/NumberInput"
-import { SelectedZone } from "./ScoringZonesPanel"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { usePanelControlContext } from "@/ui/PanelContext"
-import SelectButton from "@/ui/components/SelectButton"
-import Jolt from "@barclah/jolt-physics"
-import TransformGizmos, { GizmoTransformMode } from "@/ui/components/TransformGizmos"
-import * as THREE from "three"
-import World from "@/systems/World"
-import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/ThemeContext"
-import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
+import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import World from "@/systems/World"
+import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
+import { usePanelControlContext } from "@/ui/PanelContext"
+import { useTheme } from "@/ui/ThemeContext"
+import SelectButton from "@/ui/components/SelectButton"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
+import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
+import Jolt from "@barclah/jolt-physics"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import * as THREE from "three"
+import { SelectedZone } from "./ScoringZonesPanel"
 
 /**
  * Saves ejector configuration to selected field.
@@ -53,7 +53,7 @@ function save(
     points: number,
     destroy: boolean,
     persistent: boolean,
-    gizmo: TransformGizmos,
+    gizmo: GizmoSceneObject,
     selectedNode?: RigidNodeId
 ) {
     const field = SelectedZone.field
@@ -116,8 +116,8 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     const [destroy] = useState<boolean>(SelectedZone.zone.destroyGamepiece)
     const [persistent, setPersistent] = useState<boolean>(SelectedZone.zone.persistentPoints)
 
-    const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
-    const [transformMode, setTransformMode] = useState<GizmoTransformMode>("translate")
+    const [transformGizmo, setTransformGizmo] = useState<GizmoSceneObject | undefined>(undefined)
+    const [transformMode, setTransformMode] = useState<GizmoMode>("translate")
 
     const { currentTheme, themes } = useTheme()
     const theme = useMemo(() => {
@@ -144,13 +144,13 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             return
         }
 
-        const gizmo = new TransformGizmos(
-            new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), zone.alliance == "blue" ? blueMaterial : redMaterial)
+        const gizmo = new GizmoSceneObject(
+            new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), zone.alliance == "blue" ? blueMaterial : redMaterial),
+            "translate",
+            1.5
         )
 
         ;(gizmo.mesh.material as THREE.Material).depthTest = false
-        gizmo.AddMeshToScene()
-        gizmo.CreateGizmo("translate", 1.5)
 
         const deltaTransformation = Array_ThreeMatrix4(zone.deltaTransformation)
 
@@ -171,7 +171,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         setTransformGizmo(gizmo)
 
         return () => {
-            gizmo.RemoveGizmos()
+            World.SceneRenderer.RemoveSceneObject(gizmo.id)
             setTransformGizmo(undefined)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -268,7 +268,7 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
                         if (v == undefined) return
 
                         setTransformMode(v)
-                        transformGizmo?.SwitchGizmo(v, 1.5)
+                        transformGizmo?.SetMode(v)
                     }}
                     sx={{
                         alignSelf: "center",

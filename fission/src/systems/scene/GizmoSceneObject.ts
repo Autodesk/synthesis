@@ -6,7 +6,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { PerspectiveCamera } from "three"
 import { ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeConversions"
 
-export type TransformGizmoMode = "translate" | "rotate" | "scale"
+export type GizmoMode = "translate" | "rotate" | "scale"
 
 class GizmoSceneObject extends SceneObject {
     private _gizmo: TransformControls
@@ -25,7 +25,7 @@ class GizmoSceneObject extends SceneObject {
         return this._mesh
     }
 
-    public constructor(mesh: THREE.Mesh, mode: TransformGizmoMode, size: number, parentObject?: MirabufSceneObject) {
+    public constructor(mesh: THREE.Mesh, mode: GizmoMode, size: number, parentObject?: MirabufSceneObject) {
         super()
 
         this._mesh = mesh
@@ -147,7 +147,7 @@ class GizmoSceneObject extends SceneObject {
         World.SceneRenderer.RemoveObject(this._gizmo)
     }
 
-    public SetMode(mode: TransformGizmoMode) {
+    public SetMode(mode: GizmoMode) {
         this._gizmo.setMode(mode)
     }
 }

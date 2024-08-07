@@ -129,6 +129,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
         const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
         const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
+        console.log("here")
         mesh.position.setFromMatrixPosition(gizmoTransformation)
         mesh.rotation.setFromRotationMatrix(gizmoTransformation)
 
