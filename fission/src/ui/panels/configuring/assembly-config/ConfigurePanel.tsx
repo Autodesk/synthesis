@@ -5,7 +5,7 @@ import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useMemo, useReducer, useState } from "react"
+import { useEffect, useMemo, useReducer, useState } from "react"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
@@ -18,6 +18,31 @@ import Button from "@/ui/components/Button"
 import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+
+enum ConfigMode {
+    INTAKE,
+    EJECTOR,
+    MOTORS,
+    CONTROLS,
+    SCORING_ZONES,
+}
+
+// eslint-disable-next-line react-refresh/only-export-components
+export enum ConfigurationType {
+    ROBOT,
+    FIELD,
+    INPUTS,
+}
+
+let selectedConfigurationType: ConfigurationType = ConfigurationType.ROBOT
+// eslint-disable-next-line react-refresh/only-export-components
+export function setSelectedConfigurationType(type: ConfigurationType) {
+    selectedConfigurationType = type
+}
+
+function getConfigurationType() {
+    return selectedConfigurationType
+}
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -88,14 +113,6 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
             noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : "fields"} spawned!`}
         />
     )
-}
-
-enum ConfigMode {
-    INTAKE,
-    EJECTOR,
-    MOTORS,
-    CONTROLS,
-    SCORING_ZONES,
 }
 
 class ConfigModeSelectionOption extends SelectMenuOption {
@@ -195,17 +212,16 @@ export class ConfigurationSavedEvent extends Event {
     }
 }
 
-enum ConfigurationType {
-    ROBOT,
-    FIELD,
-    INPUTS,
-}
-
 const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { openPanel } = usePanelControlContext()
-    const [configurationType, setConfigurationType] = useState<ConfigurationType>(ConfigurationType.ROBOT)
+    const { openPanel, closePanel } = usePanelControlContext()
+    const [configurationType, setConfigurationType] = useState<ConfigurationType>(getConfigurationType())
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
-    const [selectedConfigMode, setSelectedConfigMode] = useState<ConfigMode | undefined>(undefined)
+    const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
+
+    useEffect(() => {
+        closePanel("choose-scheme")
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     return (
         <Panel
@@ -215,6 +231,9 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             cancelEnabled={false}
             openLocation="right"
             onAccept={() => {
+                // Save the current panel state
+                setSelectedConfigurationType(configurationType)
+
                 new ConfigurationSavedEvent()
             }}
             acceptName="Close"
@@ -226,9 +245,10 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     exclusive
                     onChange={(_, v) => {
                         v != null && setConfigurationType(v)
+                        //console.log(v)
                         setSelectedAssembly(undefined)
                         new ConfigurationSavedEvent()
-                        setSelectedConfigMode(undefined)
+                        setConfigMode(undefined)
                     }}
                     sx={{
                         alignSelf: "center",
@@ -246,10 +266,10 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         <AssemblySelection
                             configurationType={configurationType}
                             onAssemblySelected={a => {
-                                if (selectedConfigMode != undefined) {
+                                if (configMode != undefined) {
                                     new ConfigurationSavedEvent()
                                 }
-                                setSelectedConfigMode(undefined)
+                                setConfigMode(undefined)
                                 setSelectedAssembly(a)
                             }}
                         />
@@ -258,15 +278,15 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             <ConfigModeSelection
                                 configurationType={configurationType}
                                 onModeSelected={mode => {
-                                    if (selectedConfigMode != undefined) new ConfigurationSavedEvent()
-                                    setSelectedConfigMode(mode)
+                                    if (configMode != undefined) new ConfigurationSavedEvent()
+                                    setConfigMode(mode)
                                 }}
                             />
                         )}
                         {/** The interface for the selected configuration mode */}
-                        {selectedConfigMode != undefined && selectedAssembly != undefined && (
+                        {configMode != undefined && selectedAssembly != undefined && (
                             <ConfigInterface
-                                configMode={selectedConfigMode}
+                                configMode={configMode}
                                 assembly={selectedAssembly}
                                 openPanel={openPanel}
                             />

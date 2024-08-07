@@ -54,9 +54,10 @@ interface OptionCardProps {
     index: number
     onSelected: (val: SelectMenuOption) => void
     onDelete?: () => void
+    includeDelete: boolean
 }
 
-const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDelete }) => {
+const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDelete, includeDelete }) => {
     return (
         <Box
             display="flex"
@@ -89,7 +90,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 sx={{ borderColor: "#888888" }}
             />
             {/** Delete button only if onDelete is defined */}
-            {onDelete && (
+            {onDelete && includeDelete && (
                 <>
                     {Spacer(0, 10)}
                     {DeleteButton(onDelete != undefined ? onDelete : () => {})}
@@ -102,23 +103,31 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
 interface SelectMenuProps {
     options: SelectMenuOption[]
     onOptionSelected: (val: SelectMenuOption | undefined) => void
+
+    // Function to return a default value
+    defaultSelectedOption?: (options: SelectMenuOption[]) => SelectMenuOption | undefined
     defaultHeaderText: string
     noOptionsText?: string
     indentation?: number
     onDelete?: (val: SelectMenuOption) => void | undefined
+
+    // If false, this menu option will not have a delete button
+    deleteCondition?: (val: SelectMenuOption) => boolean
     onAddClicked?: () => void
 }
 
 const SelectMenu: React.FC<SelectMenuProps> = ({
     options,
     onOptionSelected,
+    defaultSelectedOption,
     defaultHeaderText,
     noOptionsText,
     indentation,
     onDelete,
+    deleteCondition,
     onAddClicked,
 }) => {
-    const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(undefined)
+    const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(defaultSelectedOption?.(options))
 
     // If the selected option no longer exists as an option, deselect it
     useEffect(() => {
@@ -170,6 +179,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                                     }}
                                     key={option.name + i}
                                     onDelete={onDelete ? () => onDelete(option) : undefined}
+                                    includeDelete={deleteCondition == undefined || deleteCondition(option)}
                                 />
                             )
                         })

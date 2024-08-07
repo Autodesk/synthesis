@@ -11,7 +11,6 @@ interface ConfigSchemeProps {
 
 /** Interface to configure a specific input scheme */
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
-    //const [selectedInput, setSelectedInput] = useState<Input | undefined>(undefined)
     const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme.usesGamepad)
 
     const saveEvent = useCallback(() => {
@@ -44,6 +43,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                 {selectedScheme.inputs.map(i => {
                     return (
                         <EditInputInterface
+                            key={i.inputName}
                             input={i}
                             useGamepad={useGamepad}
                             onInputChanged={() => {

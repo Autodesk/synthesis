@@ -18,6 +18,8 @@ import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { Box } from "@mui/material"
 import { useEffect, useReducer } from "react"
+import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurePanel"
+import { setSelectedScheme } from "./assembly-config/interfaces/inputs/ConfigureInputsInterface"
 
 let selectedBrainIndexGlobal: number | undefined = undefined
 // eslint-disable-next-line react-refresh/only-export-components
@@ -30,7 +32,7 @@ function getBrainIndex() {
 }
 
 const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { closePanel } = usePanelControlContext()
+    const { closePanel, openPanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
 
     const [_, update] = useReducer(x => !x, false)
@@ -47,9 +49,10 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             const scheme = InputSchemeManager.availableInputSchemes[0]
 
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
-            InputSystem.selectedScheme = scheme
 
-            openModal("change-inputs")
+            setSelectedConfigurationType(ConfigurationType.INPUTS)
+            setSelectedScheme(scheme)
+            openPanel("configure")
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -109,8 +112,10 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 {/** Edit button - same as select but opens the inputs modal */}
                                 {EditButton(() => {
                                     InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
-                                    InputSystem.selectedScheme = scheme
-                                    openModal("change-inputs")
+
+                                    setSelectedConfigurationType(ConfigurationType.INPUTS)
+                                    setSelectedScheme(scheme)
+                                    openPanel("configure")
                                 })}
 
                                 {/** Delete button (only if the scheme is customized) */}
