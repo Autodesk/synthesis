@@ -9,9 +9,9 @@ import { ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeCon
 export type TransformGizmoMode = "translate" | "rotate" | "scale"
 
 class GizmoSceneObject extends SceneObject {
+    private _gizmo: TransformControls
     private _mesh: THREE.Mesh
     private _parentObject: MirabufSceneObject | undefined
-    private _gizmo: TransformControls
 
     private _mainCamera: PerspectiveCamera
 
@@ -21,34 +21,32 @@ class GizmoSceneObject extends SceneObject {
         return this._gizmo
     }
 
-    public constructor(
-        mesh: THREE.Mesh,
-        mode: TransformGizmoMode,
-        size: number,
-        mainCamera: PerspectiveCamera,
-        domElement: HTMLElement,
-        parentObject?: MirabufSceneObject
-    ) {
+    public get mesh() {
+        return this._mesh
+    }
+
+    public constructor(mesh: THREE.Mesh, mode: TransformGizmoMode, size: number, parentObject?: MirabufSceneObject) {
         super()
 
         this._mesh = mesh
         this._parentObject = parentObject
-        this._mainCamera = mainCamera
+        this._mainCamera = World.SceneRenderer.mainCamera
 
         this._size = size
 
-        this._gizmo = new TransformControls(mainCamera, domElement)
+        this._gizmo = new TransformControls(World.SceneRenderer.mainCamera, World.SceneRenderer.renderer.domElement)
         this._gizmo.setMode(mode)
 
         World.SceneRenderer.RegisterSceneObject(this)
     }
 
     public Setup(): void {
-        World.SceneRenderer.AddToScene(this._mesh)
-        World.SceneRenderer.AddToScene(this._gizmo)
+        World.SceneRenderer.AddObject(this._mesh)
+        World.SceneRenderer.AddObject(this._gizmo)
 
         this._gizmo.setSpace("local")
         this._gizmo.attach(this._mesh)
+
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
             const gizmoDragging = World.SceneRenderer.IsAnyGizmoDragging()
             if (!event.value && !gizmoDragging) {
@@ -142,10 +140,15 @@ class GizmoSceneObject extends SceneObject {
             return
         }
     }
+
     public Dispose(): void {
         this._gizmo.detach()
         World.SceneRenderer.RemoveObject(this._mesh)
         World.SceneRenderer.RemoveObject(this._gizmo)
+    }
+
+    public SetMode(mode: TransformGizmoMode) {
+        this._gizmo.setMode(mode)
     }
 }
 

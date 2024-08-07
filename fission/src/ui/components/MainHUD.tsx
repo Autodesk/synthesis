@@ -132,11 +132,6 @@ const MainHUD: React.FC = () => {
                             openPanel("debug")
                         }}
                     />
-                    <MainHUDButton
-                        value={"Test"}
-                        icon={SynthesisIcons.Import}
-                        onClick={() => World.SceneRenderer.test()}
-                    />
                 </div>
                 {userInfo ? (
                     <MainHUDButton

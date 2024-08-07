@@ -21,6 +21,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 
 const DEBUG_BODIES = false
 
@@ -37,8 +38,6 @@ class MirabufSceneObject extends SceneObject {
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
-
-    private _transformGizmos: TransformGizmos | undefined
 
     private _intakePreferences: IntakePreferences | undefined
     private _ejectorPreferences: EjectorPreferences | undefined
@@ -159,6 +158,17 @@ class MirabufSceneObject extends SceneObject {
         this.UpdateIntakeSensor()
 
         this.UpdateScoringZones()
+
+        // adding transform gizmo
+        new GizmoSceneObject(
+            new THREE.Mesh(
+                new THREE.SphereGeometry(3.0),
+                new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
+            ),
+            "translate",
+            3,
+            this
+        )
     }
 
     public Update(): void {
@@ -179,29 +189,6 @@ class MirabufSceneObject extends SceneObject {
                 const meshes = this._mirabufInstance.meshes.get(part) ?? []
                 meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
             })
-
-            /**
-             * Update the position and rotation of the body to match the position of the transform gizmo.
-             *
-             * This block of code should only be executed if the transform gizmo exists.
-             */
-            if (this._transformGizmos) {
-                if (InputSystem.isKeyPressed("Enter")) {
-                    // confirming placement of the mirabuf object
-                    this.DisableTransformControls()
-                    return
-                } else if (InputSystem.isKeyPressed("Escape")) {
-                    // cancelling the creation of the mirabuf scene object
-                    World.SceneRenderer.RemoveSceneObject(this.id)
-                    return
-                }
-
-                // if the gizmo is being dragged, copy the mesh position and rotation to the Mirabuf body
-                if (this._transformGizmos.isBeingDragged()) {
-                    this._transformGizmos.UpdateMirabufPositioning(this, rn)
-                    World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-                }
-            }
 
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
@@ -261,7 +248,6 @@ class MirabufSceneObject extends SceneObject {
         })
 
         this._nameTag?.Dispose()
-        this.DisableTransformControls()
         World.SimulationSystem.UnregisterMechanism(this._mechanism)
         World.PhysicsSystem.DestroyMechanism(this._mechanism)
         this._mirabufInstance.Dispose(World.SceneRenderer.scene)
@@ -369,34 +355,6 @@ class MirabufSceneObject extends SceneObject {
                 World.SceneRenderer.RegisterSceneObject(newZone)
             }
         }
-    }
-
-    /**
-     * Changes the mode of the mirabuf object from being interacted with to being placed.
-     */
-    public EnableTransformControls(): void {
-        if (this._transformGizmos) return
-
-        this._transformGizmos = new TransformGizmos(
-            new THREE.Mesh(
-                new THREE.SphereGeometry(3.0),
-                new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
-            )
-        )
-        this._transformGizmos.AddMeshToScene()
-        this._transformGizmos.CreateGizmo("translate", 5.0)
-
-        this.DisablePhysics()
-    }
-
-    /**
-     * Changes the mode of the mirabuf object from being placed to being interacted with.
-     */
-    public DisableTransformControls(): void {
-        if (!this._transformGizmos) return
-        this._transformGizmos?.RemoveGizmos()
-        this._transformGizmos = undefined
-        this.EnablePhysics()
     }
 
     /**

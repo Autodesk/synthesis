@@ -1,26 +1,26 @@
-import * as THREE from "three"
-import { useCallback, useEffect, useMemo, useState } from "react"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
-import TransformGizmos from "@/ui/components/TransformGizmos"
-import World from "@/systems/World"
-import Slider from "@/ui/components/Slider"
-import Jolt from "@barclah/jolt-physics"
-import Label from "@/ui/components/Label"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import Button from "@/ui/components/Button"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import World from "@/systems/World"
+import Button from "@/ui/components/Button"
+import Label from "@/ui/components/Label"
+import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
+import Slider from "@/ui/components/Slider"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { useTheme } from "@/ui/ThemeContext"
 import {
     Array_ThreeMatrix4,
     JoltMat44_ThreeMatrix4,
     ReactRgbaColor_ThreeColor,
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
-import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
-import { useTheme } from "@/ui/ThemeContext"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import Jolt from "@barclah/jolt-physics"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import * as THREE from "three"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -49,7 +49,12 @@ const MAX_ZONE_SIZE = 1.0
  * @param selectedRobot Selected robot to save data to.
  * @param selectedNode Selected node that configuration is relative to.
  */
-function save(zoneSize: number, gizmo: TransformGizmos, selectedRobot: MirabufSceneObject, selectedNode?: RigidNodeId) {
+function save(
+    zoneSize: number,
+    gizmo: GizmoSceneObject,
+    selectedRobot: MirabufSceneObject,
+    selectedNode?: RigidNodeId
+) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
     }
@@ -85,7 +90,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
-    const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
+    const [transformGizmo, setTransformGizmo] = useState<GizmoSceneObject | undefined>(undefined)
     const robots = useMemo(() => {
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
             if (x instanceof MirabufSceneObject) {
@@ -111,16 +116,16 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
             return
         }
 
-        const gizmo = new TransformGizmos(
+        const gizmo = new GizmoSceneObject(
             new THREE.Mesh(
                 new THREE.SphereGeometry(0.5),
                 World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightSelect.color))
-            )
+            ),
+            "translate",
+            1.5
         )
 
         ;(gizmo.mesh.material as THREE.Material).depthTest = false
-        gizmo.AddMeshToScene()
-        gizmo.CreateGizmo("translate", 1.5)
 
         const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences.deltaTransformation)
 
@@ -142,7 +147,7 @@ const ConfigureGamepiecePickupPanel: React.FC<PanelPropsImpl> = ({ panelId, open
         setTransformGizmo(gizmo)
 
         return () => {
-            gizmo.RemoveGizmos()
+            World.SceneRenderer.RemoveSceneObject(gizmo.id)
             setTransformGizmo(undefined)
         }
     }, [selectedRobot, theme])

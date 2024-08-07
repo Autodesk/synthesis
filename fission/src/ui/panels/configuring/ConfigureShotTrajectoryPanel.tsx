@@ -2,7 +2,6 @@ import * as THREE from "three"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
-import TransformGizmos from "@/ui/components/TransformGizmos"
 import Slider from "@/ui/components/Slider"
 import Jolt from "@barclah/jolt-physics"
 import Label from "@/ui/components/Label"
@@ -21,6 +20,7 @@ import { useTheme } from "@/ui/ThemeContext"
 import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -51,11 +51,11 @@ const MAX_VELOCITY = 20.0
  */
 function save(
     ejectorVelocity: number,
-    gizmo: TransformGizmos,
+    mesh: THREE.Mesh,
     selectedRobot: MirabufSceneObject,
     selectedNode?: RigidNodeId
 ) {
-    if (!selectedRobot?.ejectorPreferences || !gizmo) {
+    if (!selectedRobot?.ejectorPreferences || !mesh) {
         return
     }
 
@@ -66,7 +66,7 @@ function save(
         return
     }
 
-    const gizmoTransformation = gizmo.mesh.matrixWorld
+    const gizmoTransformation = mesh.matrixWorld
     const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
@@ -86,7 +86,7 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
     const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
-    const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
+    const [mesh, setMesh] = useState<THREE.Mesh | undefined>(undefined)
     const robots = useMemo(() => {
         const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
             if (x instanceof MirabufSceneObject) {
@@ -100,21 +100,20 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
     // Not sure I like this, but made it a state and effect rather than a memo to add the cleanup to the end
     useEffect(() => {
         if (!selectedRobot?.ejectorPreferences) {
-            setTransformGizmo(undefined)
+            // setMesh(undefined)
             return
         }
 
-        const gizmo = new TransformGizmos(
+        setMesh(
             new THREE.Mesh(
                 new THREE.ConeGeometry(0.1, 0.4, 4).rotateX(Math.PI / 2.0).translate(0, 0, 0.2),
                 World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightSelect.color))
             )
         )
-
-        ;(gizmo.mesh.material as THREE.Material).depthTest = false
-        gizmo.AddMeshToScene()
-        gizmo.CreateGizmo("translate", 1.5)
-        gizmo.CreateGizmo("rotate", 2.0)
+        if (!mesh) return
+        ;(mesh.material as THREE.Material).depthTest = false
+        const translationGizmo = new GizmoSceneObject(mesh, "translate", 1.5)
+        const rotationGizmo = new GizmoSceneObject(mesh, "rotate", 2.0)
 
         const deltaTransformation = Array_ThreeMatrix4(selectedRobot.ejectorPreferences.deltaTransformation)
 
@@ -130,16 +129,15 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
         const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
         const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
-        gizmo.mesh.position.setFromMatrixPosition(gizmoTransformation)
-        gizmo.mesh.rotation.setFromRotationMatrix(gizmoTransformation)
-
-        setTransformGizmo(gizmo)
+        mesh.position.setFromMatrixPosition(gizmoTransformation)
+        mesh.rotation.setFromRotationMatrix(gizmoTransformation)
 
         return () => {
-            gizmo.RemoveGizmos()
-            setTransformGizmo(undefined)
+            World.SceneRenderer.RemoveSceneObject(translationGizmo.id)
+            World.SceneRenderer.RemoveSceneObject(rotationGizmo.id)
+            // setMesh(undefined)
         }
-    }, [selectedRobot, theme])
+    }, [mesh, selectedRobot, theme])
 
     useEffect(() => {
         if (selectedRobot?.ejectorPreferences) {
@@ -183,8 +181,8 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {
-                if (transformGizmo && selectedRobot) {
-                    save(ejectorVelocity, transformGizmo, selectedRobot, selectedNode)
+                if (mesh && selectedRobot) {
+                    save(ejectorVelocity, mesh, selectedRobot, selectedNode)
                     const currentGp = selectedRobot.activeEjectable
                     selectedRobot.SetEjectable(undefined, true)
                     selectedRobot.SetEjectable(currentGp)
@@ -239,12 +237,12 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
                         value="Reset"
                         buttonClassName="w-min"
                         onClick={() => {
-                            if (transformGizmo) {
+                            if (mesh) {
                                 const robotTransformation = JoltMat44_ThreeMatrix4(
                                     World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
                                 )
-                                transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
-                                transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
+                                mesh.position.setFromMatrixPosition(robotTransformation)
+                                mesh.rotation.setFromRotationMatrix(robotTransformation)
                             }
                             setEjectorVelocity((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
                             setSelectedNode(selectedRobot?.rootNodeId)
