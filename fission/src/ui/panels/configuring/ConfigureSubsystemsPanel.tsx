@@ -123,7 +123,6 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
             </Box>
             <SectionDivider />
         </>
-
     )
 }
 
