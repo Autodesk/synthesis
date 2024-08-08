@@ -3,7 +3,7 @@ import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus"
 import Behavior from "@/systems/simulation/behavior/Behavior"
 import InputSystem from "@/systems/input/InputSystem"
 import HingeDriver from "../../driver/HingeDriver"
-import Driver from "../../driver/Driver"
+import Driver, { DriverControlMode } from "../../driver/Driver"
 import HingeStimulus from "../../stimulus/HingeStimulus"
 import Stimulus from "../../stimulus/Stimulus"
 import { Matrix4, Quaternion, Vector3 } from "three"
@@ -37,6 +37,11 @@ class SwerveDriveBehavior extends Behavior {
         this._hinges = hinges
         this._brainIndex = brainIndex
         this._assemblyName = assemblyName
+
+        hinges.forEach(h => {
+            h.constraint.SetLimits(-Infinity, Infinity)
+            h.controlMode = DriverControlMode.Velocity
+        })
     }
 
     /** @returns true if the difference between a and b is within acceptanceDelta */
@@ -130,10 +135,10 @@ class SwerveDriveBehavior extends Behavior {
         turn = SwerveDriveBehavior.withinTolerance(turn, 0.0, 0.1) ? 0.0 : turn
 
         // Are the inputs basically zero
-        if (forward == 0.0 && turn == 0.0 && strafe == 0.0) {
+        /* if (forward == 0.0 && turn == 0.0 && strafe == 0.0) {
             this._wheels.forEach(w => (w.targetWheelSpeed = 0.0))
             return
-        }
+        } */
 
         // Adjusts how much turning verse translation is favored
         turn *= 1.5
@@ -185,14 +190,16 @@ class SwerveDriveBehavior extends Behavior {
             }
         }
 
+        console.log("set speeds to " + this._hinges.length + " wheels")
+
         for (let i = 0; i < this._wheels.length; i++) {
             const speed: number = velocities[i].length()
             const yComponent: number = robotForward.dot(velocities[i])
             const xComponent: number = robotRight.dot(velocities[i])
             const angle: number = Math.atan2(xComponent, yComponent) * (180.0 / Math.PI)
 
-            this._hinges[i].targetVelocity = angle
-            this._wheels[i].targetWheelSpeed = speed
+            this._hinges[i].targetVelocity = 10 /* angle */
+            this._wheels[i].targetWheelSpeed = 5 /* speed */
         }
     }
 
@@ -201,11 +208,15 @@ class SwerveDriveBehavior extends Behavior {
         const strafeInput = InputSystem.getInput("swerveStrafe", this._brainIndex)
         const turnInput = InputSystem.getInput("swerveTurn", this._brainIndex)
 
-        this.DriveSpeeds(
-            forwardInput * this._forwardSpeed,
-            strafeInput * this._strafeSpeed,
-            turnInput * this._turnSpeed
-        )
+        this._hinges.forEach(h => {
+            h.targetVelocity = 0
+        })
+
+        // this.DriveSpeeds(
+        // forwardInput * this._forwardSpeed,
+        // strafeInput * this._strafeSpeed,
+        // turnInput * this._turnSpeed
+        // )
     }
 }
 

@@ -106,8 +106,6 @@ class MirabufSceneObject extends SceneObject {
 
         this._debugBodies = null
 
-        this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
-
         this.getPreferences()
 
         // creating nametag for robots
@@ -116,6 +114,8 @@ class MirabufSceneObject extends SceneObject {
                 this._brain instanceof SynthesisBrain ? this._brain.inputSchemeName : "Not Configured"
             )
         }
+
+        this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
     }
 
     public Setup(): void {
@@ -170,6 +170,9 @@ class MirabufSceneObject extends SceneObject {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+            // const pos = body.GetWorldTransform().GetTranslation()
+            // console.log(`${pos.GetX()} ${pos.GetY()} ${pos.GetZ()}`)
+            // this.DisableTransformControls()
             const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
             rn.parts.forEach(part => {
                 const partTransform = this._mirabufInstance.parser.globalTransforms

@@ -38,6 +38,10 @@ class HingeDriver extends Driver {
         return this._controlMode
     }
 
+    public get constraint(): Jolt.HingeConstraint {
+        return this._constraint
+    }
+
     public set controlMode(mode: DriverControlMode) {
         this._controlMode = mode
         switch (mode) {
