@@ -54,6 +54,7 @@ public class CANMotor {
         m_supplyCurrent = m_device.createDouble("supplyCurrent", Direction.kInput, 120.0);
         m_motorCurrent = m_device.createDouble("motorCurrent", Direction.kInput, 120.0);
         m_busVoltage = m_device.createDouble("busVoltage", Direction.kInput, 12.0);
+        m_busVoltage.set(0.0); // disable CANMotor inputs
     }
 
     /**
@@ -91,14 +92,7 @@ public class CANMotor {
         m_neutralDeadband.set(Math.min(1.0, Math.max(0.0, deadband)));
     }
 
-    /**
-     * Sets the supply current, simulated.
-     * 
-     */
-    public void setSupplyCurrent(int current) {
-        m_supplyCurrent.set(current);
-    }
-
+    
     /**
      * Get the supply current, simulated.
      * 

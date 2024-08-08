@@ -20,6 +20,7 @@ export class SimEncoderInput implements SimInput {
 
     public Update(_deltaT: number) {
         SimCANEncoder.SetPosition(`${this._device}`, this._stimulus.positionValue)
+        SimCANEncoder.SetVelocity(`${this._device}`, this._stimulus.velocityValue)
     }
 }
 
