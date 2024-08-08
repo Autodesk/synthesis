@@ -197,7 +197,7 @@ class SceneRenderer extends WorldSystem {
             this._light = new CSM({
                 parent: this._scene,
                 camera: this._mainCamera,
-                cascades: 3,
+                cascades: 4,
                 lightDirection: new THREE.Vector3(1.0, -3.0, -2.0).normalize(),
                 lightIntensity: 5,
                 shadowMapSize: shadowMapSize,
@@ -314,7 +314,7 @@ class SceneRenderer extends WorldSystem {
         return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
 
-    /** 
+    /**
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
