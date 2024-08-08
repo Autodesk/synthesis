@@ -267,8 +267,6 @@ class WPILibBrain extends Brain {
             console.warn("SimulationLayer is undefined")
             return
         }
-
-        this.addSimInput(new SimGyroInput("Gyro:ADXRS450[0]", mechanism))
     }
 
     public addSimOutputGroup(device: SimOutputGroup) {
@@ -282,7 +280,6 @@ class WPILibBrain extends Brain {
     public Update(deltaT: number): void {
         this._simOutputs.forEach(d => d.Update(deltaT))
         this._simInputs.forEach(i => i.Update(deltaT))
-        console.log(simMap)
     }
 
     public Enable(): void {

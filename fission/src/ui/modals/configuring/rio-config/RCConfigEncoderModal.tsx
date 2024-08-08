@@ -4,7 +4,6 @@ import { useModalControlContext } from "@/ui/ModalContext"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
-import NumberInput from "@/components/NumberInput"
 import WPILibBrain, { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -44,7 +43,6 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const [selectedDevice, setSelectedDevice] = useState<string>(devices[0] && devices[0][0])
     const [selectedStimulus, setSelectedStimulus] = useState<EncoderStimulus | undefined>(stimuli[0])
-    const [conversionFactor, setConversionFactor] = useState<number>(1)
 
     return (
         <Modal
@@ -54,7 +52,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 if (selectedDevice && selectedStimulus)
-                    brain.addSimInput(new SimEncoderInput(selectedDevice, selectedStimulus, conversionFactor))
+                    brain.addSimInput(new SimEncoderInput(selectedDevice, selectedStimulus))
             }}
             onCancel={() => {
                 openModal("roborio")
@@ -64,14 +62,6 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Input placeholder="..." className="w-full" onInput={setName} />
             <Dropdown label="Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
             <Dropdown label="Stimuli" options={Object.keys(stimMap)} onSelect={s => setSelectedStimulus(stimMap[s])} />
-            <NumberInput
-                placeholder="Conversion Factor"
-                defaultValue={conversionFactor}
-                label="Conversion Factor"
-                onInput={n => {
-                    setConversionFactor(n || 0)
-                }}
-            />
         </Modal>
     )
 }

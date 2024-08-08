@@ -91,13 +91,25 @@ public class Robot extends TimedRobot {
     @Override
     public void autonomousPeriodic() {
 
-        m_SparkMax1.set(1.0);
-        m_SparkMax2.set(1.0);
-        m_SparkMax3.set(1.0);
-        m_SparkMax4.set(1.0);
-        m_SparkMax5.set(1.0);
-        m_SparkMax6.set(1.0);
+        double position = m_SparkMax1.getAbsoluteEncoderSim().getPosition();
 
+        if (position >= 20) {
+            m_SparkMax1.set(0.0);
+            m_SparkMax2.set(0.0);
+            m_SparkMax3.set(0.0);
+            m_SparkMax4.set(0.0);
+            m_SparkMax5.set(0.0);
+            m_SparkMax6.set(0.0);
+        } else {
+            m_SparkMax1.set(1.0);
+            m_SparkMax2.set(1.0);
+            m_SparkMax3.set(1.0);
+            m_SparkMax4.set(1.0);
+            m_SparkMax5.set(1.0);
+            m_SparkMax6.set(1.0);
+        }
+
+       
         switch (m_autoSelected) {
             case kCustomAuto:
                 // Put custom auto code here
