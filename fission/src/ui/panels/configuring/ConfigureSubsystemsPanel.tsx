@@ -97,7 +97,7 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
                     </Label>
                     <Slider
                         min={0.1}
-                        max={driverSwitch(driver, 50, 30, 80) as number}
+                        max={driverSwitch(driver, 80, 40, 80) as number}
                         value={velocity}
                         label="Max Velocity"
                         format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
@@ -107,6 +107,7 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
                         }}
                         step={0.01}
                     />
+                    {(PreferencesSystem.getGlobalPreference("SubsystemGravity") || driver instanceof WheelDriver) ? (
                     <Slider
                         min={driverSwitch(driver, 100, 20, 0.1) as number}
                         max={driverSwitch(driver, 800, 150, 15) as number}
@@ -119,6 +120,14 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
                         }}
                         step={0.01}
                     />
+                    ) : (
+                        (driver instanceof HingeDriver) ? (
+                            <Label>Select Realistic Gravity in Settings for torque config</Label>
+                        ) : (
+                            <Label>Select Realistic Gravity in Settings for force config</Label>
+                        )
+                    )
+                    }
                 </Stack>
             </Box>
             <SectionDivider />
@@ -184,7 +193,9 @@ const ConfigureSubsystemsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                         })[0]
                         if (motor) {
                             ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = motor.maxVelocity
-                            ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = motor.maxForce
+                            ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = PreferencesSystem.getGlobalPreference("SubsystemGravity")
+                                ? motor.maxForce 
+                                : ( driver instanceof SliderDriver ? 500 : 100)
                         }
                     }
                 }

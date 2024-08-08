@@ -12,6 +12,7 @@ export type GlobalPreference =
     | "InputSchemes"
     | "RenderSceneTags"
     | "RenderScoreboard"
+    | "SubsystemGravity"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -27,6 +28,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
+    SubsystemGravity: false,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"

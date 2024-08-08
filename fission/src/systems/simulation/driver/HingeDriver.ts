@@ -3,16 +3,22 @@ import Driver, { DriverControlMode } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
+import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+
+const MAX_TORQUE_WITHOUT_GRAV = 100
 
 class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
 
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
     private _targetAngle: number
+    private _maxTorqueWithGrav: number = 0.0
     public accelerationDirection: number = 0.0
     public maxVelocity: number
 
     private _prevAng: number = 0.0
+
+    private _gravityChange?: (event: PreferenceEvent) => void
 
     public get targetAngle(): number {
         return this._targetAngle
@@ -27,8 +33,8 @@ class HingeDriver extends Driver {
 
     public set maxForce(nm: number) {
         const motorSettings = this._constraint.GetMotorSettings()
-        motorSettings.mMaxTorqueLimit = nm
-        motorSettings.mMinTorqueLimit = -nm
+        motorSettings.set_mMaxTorqueLimit(nm)
+        motorSettings.set_mMinTorqueLimit(nm)
     }
 
     public get controlMode(): DriverControlMode {
@@ -65,7 +71,28 @@ class HingeDriver extends Driver {
         springSettings.mDamping = 0.995
         motorSettings.mSpringSettings = springSettings
 
+        this._maxTorqueWithGrav = motorSettings.get_mMaxTorqueLimit()
+        if (!PreferencesSystem.getGlobalPreference("SubsystemGravity")) {
+            motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
+            motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
+        }
+
         this.controlMode = DriverControlMode.Velocity
+        
+        this._gravityChange = (event: PreferenceEvent) => {
+            if (event.prefName == "SubsystemGravity") {
+                const motorSettings = this._constraint.GetMotorSettings()
+                if (event.prefValue) {
+                    motorSettings.set_mMaxTorqueLimit(this._maxTorqueWithGrav)
+                    motorSettings.set_mMinTorqueLimit(-this._maxTorqueWithGrav)
+                } else {
+                    motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
+                    motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
+                }
+            }
+        }
+
+        PreferencesSystem.addEventListener(this._gravityChange)
     }
 
     public Update(_: number): void {
