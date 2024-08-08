@@ -107,7 +107,7 @@ class PhysicsSystem extends WorldSystem {
         const ground = this.CreateBox(
             new THREE.Vector3(5.0, 0.5, 5.0),
             undefined,
-            new THREE.Vector3(0.0, -2.05, 0.0),
+            new THREE.Vector3(0.0, -2.0, 0.0),
             undefined
         )
         ground.SetFriction(FLOOR_FRICTION)
