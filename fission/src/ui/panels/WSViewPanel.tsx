@@ -29,8 +29,8 @@ const TypoStyled = styled(Typography)({
 function generateTableBody() {
     return (
         <TableBody>
-            {simMap.has("PWM") ? (
-                [...simMap.get("PWM")!.entries()]
+            {simMap.has(SimType.PWM) ? (
+                [...simMap.get(SimType.PWM)!.entries()]
                     .filter(x => x[1]["<init"] == true)
                     .map(x => {
                         return (
@@ -50,27 +50,8 @@ function generateTableBody() {
             ) : (
                 <></>
             )}
-            {simMap.has("SimDevice") ? (
-                [...simMap.get("SimDevice")!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>SimDevice</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
-            )}
-            {simMap.has("CANMotor") ? (
-                [...simMap.get("CANMotor")!.entries()].map(x => {
+            {simMap.has(SimType.CANMotor) ? (
+                [...simMap.get(SimType.CANMotor)!.entries()].map(x => {
                     return (
                         <TableRow key={x[0]}>
                             <TableCell>
@@ -88,8 +69,8 @@ function generateTableBody() {
             ) : (
                 <></>
             )}
-            {simMap.has("CANEncoder") ? (
-                [...simMap.get("CANEncoder")!.entries()].map(x => {
+            {simMap.has(SimType.CANEncoder) ? (
+                [...simMap.get(SimType.CANEncoder)!.entries()].map(x => {
                     return (
                         <TableRow key={x[0]}>
                             <TableCell>
@@ -107,8 +88,8 @@ function generateTableBody() {
             ) : (
                 <></>
             )}
-            {simMap.has("Gyro") ? (
-                [...simMap.get("Gyro")!.entries()].map(x => {
+            {simMap.has(SimType.Gyro) ? (
+                [...simMap.get(SimType.Gyro)!.entries()].map(x => {
                     return (
                         <TableRow key={x[0]}>
                             <TableCell>
@@ -228,7 +209,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         <Button
                             value={"Set"}
                             onClick={() =>
-                                setGeneric(selectedType ?? "PWM", selectedDevice, field, value, selectedValueType)
+                                setGeneric(selectedType ?? SimType.PWM, selectedDevice, field, value, selectedValueType)
                             }
                         />
                     </Box>

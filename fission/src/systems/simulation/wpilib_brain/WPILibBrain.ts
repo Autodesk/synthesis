@@ -7,7 +7,7 @@ import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
 import { SimOutputGroup } from "./SimOutput"
-import { SimGyroInput, SimInput } from "./SimInput"
+import { SimInput } from "./SimInput"
 
 const worker = new WPILibWSWorker()
 const PWM_SPEED = "<speed"
