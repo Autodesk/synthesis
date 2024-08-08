@@ -132,7 +132,7 @@ const MainHUD: React.FC = () => {
                         value={`Hi, ${userInfo.givenName}`}
                         icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
-                        onClick={() => APS.logout()}
+                        onClick={() => openModal("aps-management")}
                     />
                 ) : (
                     <MainHUDButton
