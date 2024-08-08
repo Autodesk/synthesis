@@ -14,8 +14,15 @@ logger = setupLogger()
 
 try:
     # Attempt to import required pip dependencies to verify their installation.
-    import google.protobuf
     import requests
+    from proto.proto_out import (
+        assembly_pb2,
+        joint_pb2,
+        material_pb2,
+        motor_pb2,
+        signal_pb2,
+        types_pb2,
+    )
 except (ImportError, ModuleNotFoundError) as error:
     logger.warn(f"Running resolve dependencies with error of:\n{error}")
     result = resolveDependencies()
