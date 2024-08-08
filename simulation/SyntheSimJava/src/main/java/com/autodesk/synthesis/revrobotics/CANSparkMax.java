@@ -1,5 +1,7 @@
 package com.autodesk.synthesis.revrobotics;
 
+import java.util.ArrayList;
+
 import com.autodesk.synthesis.CANEncoder;
 import com.autodesk.synthesis.CANMotor;
 // import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
@@ -13,6 +15,7 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
 
     private CANMotor m_motor;
     public CANEncoder m_encoder;
+    private ArrayList<CANSparkMax> followers;
 
     /**
      * Creates a new CANSparkMax, wrapped with simulation support.
@@ -26,12 +29,17 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
 
         this.m_motor = new CANMotor("SYN CANSparkMax", deviceId, 0.0, false, 0.3);
         this.m_encoder = new CANEncoder("SYN CANSparkMax", deviceId);
+        this.followers = new ArrayList();
     }
 
+    // setting a follower doesn't break the simulated follower - leader relationship
     @Override
     public void set(double percent) {
         super.set(percent);
         this.m_motor.setPercentOutput(percent);
+        for (CANSparkMax follower : this.followers) {
+            follower.set(percent);
+        }
     }
 
     public void setNeutralDeadband(double n) {
@@ -47,27 +55,22 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
         return super.setIdleMode(mode);
     }
 
-    /// Use instead on getAbsoluteEncoder(), everything else works exactly the same
+    /// Use instead on getAbsoluteEncoder(), everything else works exactly the same in every way but name
     public com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder getAbsoluteEncoderSim() {
         return new SparkAbsoluteEncoder(super.getAbsoluteEncoder(), this.m_encoder);
     }
 
-    // @Override
-    // public SparkAbsoluteEncoder getAbsoluteEncoder(com.revrobotics.SparkAbsoluteEncoder.Type type) throws Exception {
-    //     try {
-    //         return new SparkAbsoluteEncoder(this.m_encoder, type);
-    //     } catch (Exception e) {
-    //         // TODO Auto-generated catch block
-    //         e.printStackTrace();
-    //     }
-    // }
+    public void newFollower(CANSparkMax f) {
+        this.followers.add(f);
+    }
 
-    // TODO: Finish following
-    // @Override
-    // public REVLibError follow(CANSparkBase leader) {
-    //     REVLibError err = super.follow(leader);
-    //     // figure out how to have primitives follow
-    //     this.m_motor.m_percentOuput = leader.x;
-    //     return err;
-    // }
+    // Must pass in a simulation-supported leader to have the simulated portion of this motor follow
+    @Override
+    public REVLibError follow(CANSparkBase leader) {
+        REVLibError err = super.follow(leader);
+        if (leader instanceof CANSparkMax) {
+            ((CANSparkMax) leader).newFollower(this);
+        }
+        return err;
+    }
 }
