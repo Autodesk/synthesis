@@ -68,8 +68,9 @@ const Modal: React.FC<ModalProps> = ({
                 )}
                 <div
                     id="content"
-                    className={`${contentClassName} ${!contentClassName?.includes("mx") ? "mx-[2rem]" : ""
-                        } flex flex-col gap-4 max-h-75vh p-4`}
+                    className={`${contentClassName} ${
+                        !contentClassName?.includes("mx") ? "mx-[2rem]" : ""
+                    } flex flex-col gap-4 max-h-75vh p-4`}
                 >
                     {children}
                 </div>
@@ -82,8 +83,9 @@ const Modal: React.FC<ModalProps> = ({
                                 closeModal()
                                 if (!cancelBlocked && onCancel) onCancel()
                             }}
-                            className={`${cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                            className={`${
+                                cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
+                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                         />
                     )}
                     {middleEnabled && (
@@ -93,8 +95,9 @@ const Modal: React.FC<ModalProps> = ({
                             onClick={() => {
                                 if (!middleBlocked && onMiddle) onMiddle()
                             }}
-                            className={`${middleBlocked ? "bg-interactive-background" : "bg-accept-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                            className={`${
+                                middleBlocked ? "bg-interactive-background" : "bg-accept-button"
+                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                         />
                     )}
                     {acceptEnabled && (
@@ -105,8 +108,9 @@ const Modal: React.FC<ModalProps> = ({
                                 closeModal()
                                 if (!acceptBlocked && onAccept) onAccept()
                             }}
-                            className={`${acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                            className={`${
+                                acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
+                            } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
                         />
                     )}
                 </div>
