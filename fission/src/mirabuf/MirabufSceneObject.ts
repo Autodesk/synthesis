@@ -47,6 +47,8 @@ class MirabufSceneObject extends SceneObject {
     private _ejectable?: EjectableSceneObject
     private _scoringZones: ScoringZoneSceneObject[] = []
 
+    private _gizmo: GizmoSceneObject | undefined
+
     private _nameTag: SceneOverlayTag | undefined
 
     get mirabufInstance() {
@@ -157,7 +159,7 @@ class MirabufSceneObject extends SceneObject {
         this.UpdateScoringZones()
 
         // Adding a transform gizmo to the assembly when it spawns
-        new GizmoSceneObject(
+        this._gizmo = new GizmoSceneObject(
             new THREE.Mesh(
                 new THREE.SphereGeometry(3.0),
                 new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
@@ -227,6 +229,10 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
+        if (this._gizmo) {
+            World.SceneRenderer.RemoveSceneObject(this._gizmo.id)
+        }
+
         if (this._intakeSensor) {
             World.SceneRenderer.RemoveSceneObject(this._intakeSensor.id)
             this._intakeSensor = undefined
@@ -372,6 +378,10 @@ class MirabufSceneObject extends SceneObject {
         this._ejectorPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.ejector
 
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
+    }
+
+    public RemoveGizmo() {
+        this._gizmo = undefined
     }
 
     public EnablePhysics() {

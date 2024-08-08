@@ -134,7 +134,7 @@ class GizmoSceneObject extends SceneObject {
         }
 
         // creating enter key and escape key event listeners
-        if (InputSystem.isKeyPressed("Enter")) {
+        if (InputSystem.isKeyPressed("Enter") && this._parentObject) {
             // confirming placement of object
             if (this._parentObject !== undefined) this._parentObject.EnablePhysics()
             World.SceneRenderer.RemoveSceneObject(this.id)
@@ -149,6 +149,7 @@ class GizmoSceneObject extends SceneObject {
 
     public Dispose(): void {
         this._gizmo.detach()
+        if (this._parentObject) this._parentObject.RemoveGizmo()
         World.SceneRenderer.RemoveObject(this._mesh)
         World.SceneRenderer.RemoveObject(this._gizmo)
     }
