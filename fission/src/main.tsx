@@ -19,8 +19,8 @@ const defaultColors: Theme = {
         above: ["Background", "BackgroundSecondary"],
     },
     Background: { color: { r: 0, g: 0, b: 0, a: 1 }, above: [] },
-    BackgroundSecondary: { color: { r: 25, g: 25, b: 25, a: 1 }, above: [] },
-    InteractiveBackground: { color: { r: 52, g: 58, b: 64, a: 1 }, above: [] },
+    BackgroundSecondary: { color: { r: 18, g: 18, b: 18, a: 1 }, above: [] },
+    InteractiveBackground: { color: { r: 40, g: 44, b: 47, a: 1 }, above: [] },
     MainText: {
         color: { r: 255, g: 255, b: 255, a: 1 },
         above: [

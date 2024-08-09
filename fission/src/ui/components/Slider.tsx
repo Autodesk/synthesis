@@ -53,7 +53,7 @@ const Slider: React.FC<SliderProps> = ({ label, min, max, value, onChange, step,
                         }
                     },
                     rail: {
-                        className: `block absolute w-full h-[12px] rounded-full bg-current`,
+                        className: `block absolute w-full h-[12px] rounded-full bg-interactive-background`,
                     },
                     track: {
                         className: `block absolute h-[12px] rounded-full bg-gradient-to-r from-interactive-element-left to-interactive-element-right`,

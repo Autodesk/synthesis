@@ -335,7 +335,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     return (
         <Panel
-            name={"Select Mirabuf"}
+            name={"Spawn Asset"}
             icon={SynthesisIcons.AddLarge}
             panelId={panelId}
             acceptEnabled={false}
