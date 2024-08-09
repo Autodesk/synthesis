@@ -1,11 +1,11 @@
 import adsk.core
 import adsk.fusion
 
-from ..Logging import logFailure
-from ..Parser.ExporterOptions import ExporterOptions
-from ..Types import Gamepiece, PreferredUnits, toKg, toLbs
-from . import IconPaths
-from .CreateCommandInputsHelper import (
+from src.Logging import logFailure
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Types import Gamepiece, PreferredUnits, toKg, toLbs
+from src.UI import IconPaths
+from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
     createTableInput,
     createTextBoxInput,

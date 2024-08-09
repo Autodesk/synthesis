@@ -86,11 +86,6 @@ const MainHUD: React.FC = () => {
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
-                        value={"Manage Assemblies"}
-                        icon={SynthesisIcons.Wrench}
-                        onClick={() => openModal("manage-assemblies")}
-                    />
-                    <MainHUDButton
                         value={"Settings"}
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
@@ -101,23 +96,9 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("view")}
                     /> */}
                     <MainHUDButton
-                        value={"Controls"}
-                        icon={SynthesisIcons.Gamepad}
-                        onClick={() => openModal("change-inputs")}
-                    />
-                </div>
-                <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
-                    <MainHUDButton
-                        value={"Edit Scoring Zones"}
-                        icon={SynthesisIcons.Basketball}
-                        onClick={() => {
-                            openPanel("scoring-zones")
-                        }}
-                    />
-                    <MainHUDButton
                         value={"Configure"}
                         icon={SynthesisIcons.Gear}
-                        onClick={() => openModal("config-robot")}
+                        onClick={() => openPanel("configure")}
                     />
                     <MainHUDButton
                         value={"Debug Tools"}

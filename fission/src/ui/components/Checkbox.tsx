@@ -8,16 +8,19 @@ type CheckboxProps = {
     className?: string
     defaultState: boolean
     stateOverride?: boolean
+    hideLabel?: boolean
     onClick?: (checked: boolean) => void
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, stateOverride, onClick }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, stateOverride, hideLabel, onClick }) => {
     const [state] = useState(defaultState)
     return (
         <Stack direction={StackDirection.Horizontal} className="items-center">
-            <Label size={LabelSize.Small} className={`mr-12 ${className} whitespace-nowrap`}>
-                {label}
-            </Label>
+            {hideLabel ? null : (
+                <Label size={LabelSize.Small} className={`mr-12 ${className} whitespace-nowrap`}>
+                    {label}
+                </Label>
+            )}
             <Switch
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
                 slotProps={{
