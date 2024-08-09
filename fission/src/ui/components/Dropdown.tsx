@@ -45,9 +45,14 @@ const CustomMenu = styled(Menu)({
         minWidth: "unset",
     },
     "& .MuiMenuItem-root": {
-        "transition": "background-color 0.3s ease, color 0.3s ease",
+        "transition": "background-color 0.3s ease, color 0.3s ease, transform 0.2s ease",
+        "transform": "scale(1.06)",
         "&:hover": {
             color: "#da6659",
+            transform: "scale(1.05)",
+        },
+        "&:active": {
+            transform: "scale(1.03)",
         },
     },
 })
@@ -102,7 +107,11 @@ const Dropdown: React.FC<DropdownProps> = ({ options, defaultValue, onSelect, la
             )}
             <Tooltip title={label || ""}>
                 <div>
-                    <CustomButton onClick={handleClick} ref={buttonRef}>
+                    <CustomButton
+                        onClick={handleClick}
+                        ref={buttonRef}
+                        className={`transform transition-transform hover:scale-[1.012] active:scale-[1.024]`}
+                    >
                         {selectedValue || "Select an option"}
                     </CustomButton>
                 </div>

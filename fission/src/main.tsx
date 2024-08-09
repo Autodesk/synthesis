@@ -11,15 +11,15 @@ const defaultColors: Theme = {
         above: [],
     },
     InteractiveElementLeft: {
-        color: { r: 224, g: 130, b: 65, a: 1 },
+        color: { r: 207, g: 114, b: 57, a: 1 },
         above: ["Background", "BackgroundSecondary"],
     },
     InteractiveElementRight: {
-        color: { r: 218, g: 102, b: 89, a: 1 },
+        color: { r: 212, g: 75, b: 62, a: 1 },
         above: ["Background", "BackgroundSecondary"],
     },
     Background: { color: { r: 0, g: 0, b: 0, a: 1 }, above: [] },
-    BackgroundSecondary: { color: { r: 30, g: 30, b: 30, a: 1 }, above: [] },
+    BackgroundSecondary: { color: { r: 25, g: 25, b: 25, a: 1 }, above: [] },
     InteractiveBackground: { color: { r: 52, g: 58, b: 64, a: 1 }, above: [] },
     MainText: {
         color: { r: 255, g: 255, b: 255, a: 1 },
@@ -33,8 +33,8 @@ const defaultColors: Theme = {
         ],
     },
     Scrollbar: { color: { r: 170, g: 170, b: 170, a: 1 }, above: [] },
-    AcceptButton: { color: { r: 71, g: 138, b: 226, a: 1 }, above: [] },
-    CancelButton: { color: { r: 231, g: 85, b: 81, a: 1 }, above: [] },
+    AcceptButton: { color: { r: 33, g: 137, b: 228, a: 1 }, above: [] },
+    CancelButton: { color: { r: 248, g: 78, b: 78, a: 1 }, above: [] },
     InteractiveElementText: {
         color: { r: 255, g: 255, b: 255, a: 1 },
         above: [],

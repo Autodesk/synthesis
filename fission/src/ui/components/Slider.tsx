@@ -48,7 +48,8 @@ const Slider: React.FC<SliderProps> = ({ label, min, max, value, onChange, step,
                 slotProps={{
                     root: ownerState => {
                         return {
-                            className: `h-1 w-full inline-flex items-center relative touch-none ${ownerState.disabled ? "text-slate-200 dark:text-slate-200" : "cursor-pointer text-[#343A40] dark:text-[#343A40]"}`,
+                            className: `h-1 w-full inline-flex items-center relative touch-none ${ownerState.disabled ? "text-slate-200 dark:text-slate-200" : "cursor-pointer text-[#343A40] dark:text-[#343A40]"}
+                            transform transition-transform hover:scale-[1.01] active:scale-[1.02]`,
                         }
                     },
                     rail: {

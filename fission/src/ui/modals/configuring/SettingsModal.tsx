@@ -1,10 +1,8 @@
 import React, { useState } from "react"
-import { useModalControlContext } from "@/ui/ModalContext"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaGear } from "react-icons/fa6"
 import Label, { LabelSize } from "@/components/Label"
 import Dropdown from "@/components/Dropdown"
-import Button from "@/components/Button"
 import Slider from "@/components/Slider"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -14,8 +12,6 @@ import { Box } from "@mui/material"
 import { Spacer } from "@/ui/components/StyledComponents"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext()
-
     const [qualitySettings, setQualitySettings] = useState<string>(
         PreferencesSystem.getGlobalPreference<string>("QualitySettings")
     )
@@ -75,32 +71,35 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         setQualitySettings(selected)
                     }}
                 />
-                {Spacer(5)}
+                {/** Theme editor disabled for now */}
+                {/* {Spacer(5)}
                 <Box alignSelf={"center"}>
                     <Button value="Theme Editor" onClick={() => openModal("theme-editor")} />
-                </Box>
+                </Box> */}
                 {Spacer(5)}
                 <Label size={LabelSize.Medium}>Camera Settings</Label>
                 <Slider
                     min={1}
                     max={15}
-                    value={PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")}
+                    value={zoomSensitivity}
                     label={"Zoom Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setZoomSensitivity(value as number)}
                 />
+                {Spacer(2)}
                 <Slider
                     min={1}
                     max={15}
-                    value={PreferencesSystem.getGlobalPreference<number>("PitchSensitivity")}
+                    value={pitchSensitivity}
                     label={"Pitch Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setPitchSensitivity(value as number)}
                 />
+                {Spacer(2)}
                 <Slider
                     min={1}
                     max={15}
-                    value={PreferencesSystem.getGlobalPreference<number>("YawSensitivity")}
+                    value={yawSensitivity}
                     label={"Yaw Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setYawSensitivity(value as number)}

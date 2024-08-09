@@ -23,7 +23,14 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""} items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0`}
+            className={`relative flex flex-row 
+                cursor-pointer 
+                bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""} 
+                items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0 
+                transform 
+                transition-transform 
+                hover:scale-[1.015] 
+                active:scale-[1.03]`}
         >
             {larger && icon}
             {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}

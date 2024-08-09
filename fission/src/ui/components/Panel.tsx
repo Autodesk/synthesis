@@ -158,7 +158,9 @@ const Panel: React.FC<PanelProps> = ({
                                 }}
                                 className={`${
                                     cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
+                                transform transition-transform hover:scale-[1.03] active:scale-[1.06]`}
+                                style={{ fontWeight: "bold" }}
                             />
                         )}
                         {middleEnabled && (
@@ -170,7 +172,9 @@ const Panel: React.FC<PanelProps> = ({
                                 }}
                                 className={`${
                                     middleBlocked ? "bg-interactive-background" : "bg-accept-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
+                                transform transition-transform hover:scale-[1.03] active:scale-[1.06]`}
+                                style={{ fontWeight: "bold" }}
                             />
                         )}
                         {acceptEnabled && (
@@ -183,7 +187,9 @@ const Panel: React.FC<PanelProps> = ({
                                 }}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
-                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90`}
+                                } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
+                                transform transition-transform hover:scale-[1.03] active:scale-[1.06]`}
+                                style={{ fontWeight: "bold" }}
                             />
                         )}
                     </div>
