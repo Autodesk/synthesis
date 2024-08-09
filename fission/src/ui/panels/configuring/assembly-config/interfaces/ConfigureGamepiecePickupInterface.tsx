@@ -220,7 +220,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                         transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
                         transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
                     }
-                    setZoneSize((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
+                    setZoneSize(0.5)
                     setSelectedNode(selectedRobot?.rootNodeId)
                 }}
             />

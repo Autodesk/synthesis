@@ -107,7 +107,6 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
                 update()
             }}
             onAddClicked={() => {
-                console.log("Open spawn panel")
                 openPanel("import-mirabuf")
             }}
             noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : "fields"} spawned!`}
@@ -127,7 +126,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 const robotModes = [
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
-    new ConfigModeSelectionOption("Joints", ConfigMode.MOTORS),
+    new ConfigModeSelectionOption("Sequential Joints", ConfigMode.MOTORS),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
@@ -225,7 +224,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     return (
         <Panel
-            name={"Configure Assemblies"}
+            name={"Configure Objects"}
             icon={SynthesisIcons.Gear}
             panelId={panelId}
             cancelEnabled={false}
@@ -245,7 +244,6 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     exclusive
                     onChange={(_, v) => {
                         v != null && setConfigurationType(v)
-                        //console.log(v)
                         setSelectedAssembly(undefined)
                         new ConfigurationSavedEvent()
                         setConfigMode(undefined)

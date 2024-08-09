@@ -215,7 +215,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                         transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
                         transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
                     }
-                    setEjectorVelocity((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
+                    setEjectorVelocity(1)
                     setSelectedNode(selectedRobot?.rootNodeId)
                 }}
             />

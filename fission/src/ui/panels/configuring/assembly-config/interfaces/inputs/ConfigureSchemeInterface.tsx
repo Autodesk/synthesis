@@ -1,7 +1,7 @@
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import Checkbox from "@/ui/components/Checkbox"
 import EditInputInterface from "./EditInputInterface"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { ConfigurationSavedEvent } from "../../ConfigurePanel"
 import { SectionDivider } from "@/ui/components/StyledComponents"
 
@@ -12,6 +12,7 @@ interface ConfigSchemeProps {
 /** Interface to configure a specific input scheme */
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
     const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme.usesGamepad)
+    const scrollRef = useRef<HTMLDivElement>(null)
 
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes()
@@ -24,6 +25,26 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
             ConfigurationSavedEvent.RemoveListener(saveEvent)
         }
     }, [saveEvent])
+
+    /** Disable scrolling with arrow keys to stop accidentally scrolling when binding keys */
+    useEffect(() => {
+        const handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+            if (event.key === "ArrowUp" || event.key === "ArrowDown") {
+                event.preventDefault()
+            }
+        }
+
+        const scrollElement = scrollRef.current
+        if (scrollElement) {
+            scrollElement.addEventListener("keydown", handleKeyDown as unknown as EventListener)
+        }
+
+        return () => {
+            if (scrollElement) {
+                scrollElement.removeEventListener("keydown", handleKeyDown as unknown as EventListener)
+            }
+        }
+    }, [])
 
     return (
         <>
@@ -39,7 +60,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
             <SectionDivider />
 
             {/* Scroll view for inputs */}
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
+            <div ref={scrollRef} tabIndex={0} className="flex overflow-y-auto flex-col gap-2 bg-background-secondary">
                 {selectedScheme.inputs.map(i => {
                     return (
                         <EditInputInterface

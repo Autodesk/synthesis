@@ -100,8 +100,6 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.Import}
                         onClick={() => openModal("import-local-mirabuf")}
                     />
-                </div>
-                <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
                         value={"Configure"}
                         icon={SynthesisIcons.Gear}

@@ -16,7 +16,7 @@ import {
 const CustomButton = styled(MUIButton)({
     "borderStyle": "none",
     "borderWidth": "1px",
-    "transition": "border-color 0.3s ease",
+    "transition": "border-color 0s",
     "outline": "none",
     "&:hover": {
         borderStyle: "solid",
@@ -37,7 +37,7 @@ const CustomButton = styled(MUIButton)({
     "&:selected": {
         outline: "none",
         backgroundColor: "transparent",
-        borderColor: "grey",
+        borderColor: "none",
     },
 })
 
