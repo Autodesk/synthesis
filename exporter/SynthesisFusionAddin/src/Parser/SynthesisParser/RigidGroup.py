@@ -16,7 +16,6 @@ from typing import Union
 
 import adsk.core
 import adsk.fusion
-
 from proto.proto_out import assembly_pb2
 from src.Logging import logFailure
 

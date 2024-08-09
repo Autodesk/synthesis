@@ -1,5 +1,4 @@
 import adsk
-
 from proto.proto_out import material_pb2
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
