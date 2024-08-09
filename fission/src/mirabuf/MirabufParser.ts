@@ -240,7 +240,6 @@ class MirabufParser {
             console.log("Failed to get part definitions")
             return
         }
-        console.debug(partDefinitions)
     }
 
     private NewRigidNode(suffix?: string): RigidNode {
