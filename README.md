@@ -60,6 +60,10 @@ All code is under a configured formatting utility. See each component for more d
 
 Mirabuf is a file format we use to store physical data from Fusion to load into the Synthesis simulator (Fission). This is a separate project that is a submodule of Synthesis. [See Mirabuf](https://github.com/HiceS/mirabuf/)
 
+### Jolt Physics
+
+Jolt is the core physics engine for our web biased simulator. [See JoltPhysics.js](https://github.com/HunterBarclay/JoltPhysics.js) for more information.
+
 ### Tutorials
 
 Our source code for the tutorials featured on our [Tutorials Page](https://synthesis.autodesk.com/tutorials.html).
