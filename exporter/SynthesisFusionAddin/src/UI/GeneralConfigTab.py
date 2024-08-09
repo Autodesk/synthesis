@@ -1,18 +1,18 @@
 import adsk.core
 import adsk.fusion
 
-from ..Logging import logFailure
-from ..Parser.ExporterOptions import (
+from src.Logging import logFailure
+from src.Parser.ExporterOptions import (
     ExporterOptions,
     ExportLocation,
     ExportMode,
     PreferredUnits,
 )
-from ..Types import KG, toKg, toLbs
-from . import IconPaths
-from .CreateCommandInputsHelper import createBooleanInput, createTableInput
-from .GamepieceConfigTab import GamepieceConfigTab
-from .JointConfigTab import JointConfigTab
+from src.Types import KG, toKg, toLbs
+from src.UI import IconPaths
+from src.UI.CreateCommandInputsHelper import createBooleanInput, createTableInput
+from src.UI.GamepieceConfigTab import GamepieceConfigTab
+from src.UI.JointConfigTab import JointConfigTab
 
 
 class GeneralConfigTab:

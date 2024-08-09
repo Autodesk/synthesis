@@ -6,14 +6,20 @@ import adsk.fusion
 from google.protobuf.json_format import MessageToJson
 from proto.proto_out import assembly_pb2, types_pb2
 
-from ...APS.APS import getAuth, upload_mirabuf
-from ...general_imports import *
-from ...Logging import getLogger, logFailure, timed
-from ...Types import ExportLocation, ExportMode
-from ...UI.Camera import captureThumbnail, clearIconCache
-from ..ExporterOptions import ExporterOptions
-from . import Components, JointHierarchy, Joints, Materials, PDMessage
-from .Utilities import *
+from src import gm
+from src.APS.APS import getAuth, upload_mirabuf
+from src.Logging import getLogger, logFailure, timed
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Parser.SynthesisParser import (
+    Components,
+    JointHierarchy,
+    Joints,
+    Materials,
+    PDMessage,
+)
+from src.Parser.SynthesisParser.Utilities import fill_info
+from src.Types import ExportLocation, ExportMode
+from src.UI.Camera import captureThumbnail, clearIconCache
 
 logger = getLogger()
 

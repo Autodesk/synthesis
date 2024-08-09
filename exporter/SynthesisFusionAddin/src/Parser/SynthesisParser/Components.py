@@ -1,19 +1,18 @@
 # Contains all of the logic for mapping the Components / Occurrences
-import logging
-import traceback
-import uuid
-from typing import *
-
 import adsk.core
 import adsk.fusion
 from proto.proto_out import assembly_pb2, joint_pb2, material_pb2, types_pb2
 
-from ...Logging import logFailure, timed
-from ...Types import ExportMode
-from ..ExporterOptions import ExporterOptions
-from . import PhysicalProperties
-from .PDMessage import PDMessage
-from .Utilities import *
+from src.Logging import logFailure
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Parser.SynthesisParser import PhysicalProperties
+from src.Parser.SynthesisParser.PDMessage import PDMessage
+from src.Parser.SynthesisParser.Utilities import (
+    fill_info,
+    guid_component,
+    guid_occurrence,
+)
+from src.Types import ExportMode
 
 # TODO: Impelement Material overrides
 
