@@ -136,6 +136,11 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }, [])
 
+    useEffect(() => {
+        closePanel("configure")
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     // Get Default Mirabuf Data, Load into manifest.
     useEffect(() => {
         // To remove the prettier warning
@@ -335,7 +340,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     return (
         <Panel
-            name={"Select Mirabuf"}
+            name={"Select Asset"}
             icon={SynthesisIcons.AddLarge}
             panelId={panelId}
             acceptEnabled={false}

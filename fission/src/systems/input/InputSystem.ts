@@ -141,9 +141,6 @@ class InputSystem extends WorldSystem {
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
 
-    // The scheme most recently selected in the controls modal
-    public static selectedScheme: InputScheme | undefined
-
     // Maps a brain index to a certain input scheme
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
 
