@@ -23,7 +23,7 @@ try:
         signal_pb2,
         types_pb2,
     )
-except (ImportError, ModuleNotFoundError) as error:
+except (ImportError, ModuleNotFoundError, BaseException) as error:  # BaseException required to catch proto.VersionError
     logger.warn(f"Running resolve dependencies with error of:\n{error}")
     result = resolveDependencies()
     if result:
