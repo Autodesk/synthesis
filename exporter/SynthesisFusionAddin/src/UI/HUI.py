@@ -1,6 +1,8 @@
-from ..general_imports import *
-from ..Logging import logFailure
-from . import Handlers, OsHelper
+import adsk.core
+
+from src import INTERNAL_ID, gm
+from src.Logging import logFailure
+from src.UI import Handlers, OsHelper
 
 
 # no longer used

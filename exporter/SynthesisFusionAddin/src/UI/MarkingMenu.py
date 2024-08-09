@@ -1,10 +1,7 @@
-import logging.handlers
-import traceback
-
 import adsk.core
 import adsk.fusion
 
-from ..Logging import logFailure
+from src.Logging import getLogger, logFailure
 
 # Ripped all the boiler plate from the example code: https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-c90ce6a2-c282-11e6-a365-3417ebc87622
 
@@ -14,6 +11,8 @@ handlers = []
 cmdDefs = []
 entities = []
 occurrencesOfComponents = {}
+
+logger = getLogger()
 
 
 @logFailure(messageBox=True)
@@ -207,6 +206,7 @@ def stopMarkingMenu(ui: adsk.core.UserInterface):
         if obj.isValid:
             obj.deleteMe()
         else:
-            ui.messageBox(str(obj) + " is not a valid object")
+            logger.warn(f"{str(obj)} is not a valid object")
 
+    cmdDefs.clear()
     handlers.clear()

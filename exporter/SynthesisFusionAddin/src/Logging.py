@@ -11,8 +11,8 @@ from typing import cast
 
 import adsk.core
 
-from .strings import INTERNAL_ID
-from .UI.OsHelper import getOSPath
+from src import INTERNAL_ID
+from src.UI.OsHelper import getOSPath
 
 MAX_LOG_FILES_TO_KEEP = 10
 TIMING_LEVEL = 25
@@ -27,7 +27,7 @@ class SynthesisLogger(logging.Logger):
             handler.close()
 
 
-def setupLogger() -> None:
+def setupLogger() -> SynthesisLogger:
     now = datetime.now().strftime("%H-%M-%S")
     today = date.today()
     logFileFolder = getOSPath(f"{pathlib.Path(__file__).parent.parent}", "logs")
@@ -46,6 +46,7 @@ def setupLogger() -> None:
     logger = getLogger(INTERNAL_ID)
     logger.setLevel(10)  # Debug
     logger.addHandler(logHandler)
+    return cast(SynthesisLogger, logger)
 
 
 def getLogger(name: str | None = None) -> SynthesisLogger:
