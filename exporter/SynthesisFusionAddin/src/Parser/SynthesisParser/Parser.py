@@ -4,7 +4,6 @@ import pathlib
 import adsk.core
 import adsk.fusion
 from google.protobuf.json_format import MessageToJson
-
 from proto.proto_out import assembly_pb2, types_pb2
 
 from ...APS.APS import getAuth, upload_mirabuf
