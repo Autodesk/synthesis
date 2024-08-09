@@ -34,7 +34,7 @@ class HingeDriver extends Driver {
     public set maxForce(nm: number) {
         const motorSettings = this._constraint.GetMotorSettings()
         motorSettings.set_mMaxTorqueLimit(nm)
-        motorSettings.set_mMinTorqueLimit(nm)
+        motorSettings.set_mMinTorqueLimit(-nm)
     }
 
     public get controlMode(): DriverControlMode {
