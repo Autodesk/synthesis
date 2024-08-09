@@ -372,10 +372,6 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         </SectionLabel>
                         <SectionDivider />
                         {cachedRobotElements}
-                        {Spacer(5)}
-                        <Box alignSelf={"center"}>
-                            <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
-                        </Box>
                     </>
                 ) : (
                     <>
@@ -431,6 +427,9 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         {remoteFieldElements}
                     </>
                 )}
+                <Box alignSelf={"center"}>
+                    <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
+                </Box>
             </div>
         </Panel>
     )
