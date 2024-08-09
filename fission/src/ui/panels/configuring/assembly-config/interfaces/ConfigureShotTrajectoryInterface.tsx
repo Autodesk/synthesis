@@ -1,16 +1,12 @@
 import * as THREE from "three"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
 import SelectButton from "@/components/SelectButton"
 import TransformGizmos from "@/ui/components/TransformGizmos"
 import Slider from "@/ui/components/Slider"
 import Jolt from "@barclah/jolt-physics"
-import Label from "@/ui/components/Label"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import Button from "@/ui/components/Button"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import { MiraType } from "@/mirabuf/MirabufLoader"
 import {
     Array_ThreeMatrix4,
     JoltMat44_ThreeMatrix4,
@@ -18,9 +14,10 @@ import {
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
-import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import Button from "@/ui/components/Button"
+import { Spacer } from "@/ui/components/StyledComponents"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -77,25 +74,36 @@ function save(
     PreferencesSystem.savePreferences()
 }
 
-const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+interface ConfigEjectorProps {
+    selectedRobot: MirabufSceneObject
+}
+
+const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ selectedRobot }) => {
     const { currentTheme, themes } = useTheme()
     const theme = useMemo(() => {
         return themes[currentTheme]
     }, [currentTheme, themes])
 
-    const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
     const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
-    const robots = useMemo(() => {
-        const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
-            if (x instanceof MirabufSceneObject) {
-                return x.miraType === MiraType.ROBOT
-            }
-            return false
-        }) as MirabufSceneObject[]
-        return assemblies
-    }, [])
+
+    const saveEvent = useCallback(() => {
+        if (transformGizmo && selectedRobot) {
+            save(ejectorVelocity, transformGizmo, selectedRobot, selectedNode)
+            const currentGp = selectedRobot.activeEjectable
+            selectedRobot.SetEjectable(undefined, true)
+            selectedRobot.SetEjectable(currentGp)
+        }
+    }, [transformGizmo, selectedRobot, selectedNode, ejectorVelocity])
+
+    useEffect(() => {
+        ConfigurationSavedEvent.Listen(saveEvent)
+
+        return () => {
+            ConfigurationSavedEvent.RemoveListener(saveEvent)
+        }
+    }, [saveEvent])
 
     // Not sure I like this, but made it a state and effect rather than a memo to add the cleanup to the end
     useEffect(() => {
@@ -176,84 +184,43 @@ const ConfigureShotTrajectoryPanel: React.FC<PanelPropsImpl> = ({ panelId, openL
     )
 
     return (
-        <Panel
-            name="Configure Ejector"
-            icon={SynthesisIcons.Gear}
-            panelId={panelId}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
-            onAccept={() => {
-                if (transformGizmo && selectedRobot) {
-                    save(ejectorVelocity, transformGizmo, selectedRobot, selectedNode)
-                    const currentGp = selectedRobot.activeEjectable
-                    selectedRobot.SetEjectable(undefined, true)
-                    selectedRobot.SetEjectable(currentGp)
-                }
-            }}
-            onCancel={() => {}}
-            acceptEnabled={selectedRobot?.ejectorPreferences != undefined}
-        >
-            {selectedRobot?.ejectorPreferences == undefined ? (
-                <>
-                    <Label>Select a robot</Label>
-                    {/** Scroll view for selecting a robot to configure */}
-                    <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[40vh] bg-background-secondary rounded-md p-2">
-                        {robots.map(mirabufSceneObject => {
-                            return (
-                                <Button
-                                    value={mirabufSceneObject.assemblyName}
-                                    onClick={() => {
-                                        setSelectedRobot(mirabufSceneObject)
-                                    }}
-                                    key={mirabufSceneObject.id}
-                                ></Button>
-                            )
-                        })}
-                    </div>
-                    {/* TODO: remove the accept button on this version */}
-                </>
-            ) : (
-                <>
-                    {/* Button for user to select the parent node */}
-                    <SelectButton
-                        placeholder="Select parent node"
-                        value={selectedNode}
-                        onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
-                    />
+        <>
+            {/* Button for user to select the parent node */}
+            <SelectButton
+                placeholder="Select parent node"
+                value={selectedNode}
+                onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
+            />
 
-                    {/* Slider for user to set velocity of ejector configuration */}
-                    <Slider
-                        min={MIN_VELOCITY}
-                        max={MAX_VELOCITY}
-                        value={ejectorVelocity}
-                        label="Velocity"
-                        format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                        onChange={(_, vel: number | number[]) => {
-                            setEjectorVelocity(vel as number)
-                        }}
-                        step={0.01}
-                    />
-                    <LabeledButton
-                        placement={LabelPlacement.Left}
-                        label="Reset"
-                        value="Reset"
-                        buttonClassName="w-min"
-                        onClick={() => {
-                            if (transformGizmo) {
-                                const robotTransformation = JoltMat44_ThreeMatrix4(
-                                    World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
-                                )
-                                transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
-                                transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
-                            }
-                            setEjectorVelocity((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
-                            setSelectedNode(selectedRobot?.rootNodeId)
-                        }}
-                    />
-                </>
-            )}
-        </Panel>
+            {/* Slider for user to set velocity of ejector configuration */}
+            <Slider
+                min={MIN_VELOCITY}
+                max={MAX_VELOCITY}
+                value={ejectorVelocity}
+                label="Velocity"
+                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={(_, vel: number | number[]) => {
+                    setEjectorVelocity(vel as number)
+                }}
+                step={0.01}
+            />
+            {Spacer(10)}
+            <Button
+                value="Reset"
+                onClick={() => {
+                    if (transformGizmo) {
+                        const robotTransformation = JoltMat44_ThreeMatrix4(
+                            World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
+                        )
+                        transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
+                        transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
+                    }
+                    setEjectorVelocity(1)
+                    setSelectedNode(selectedRobot?.rootNodeId)
+                }}
+            />
+        </>
     )
 }
 
-export default ConfigureShotTrajectoryPanel
+export default ConfigureShotTrajectoryInterface

@@ -29,14 +29,16 @@ from typing import Union
 import adsk.core
 import adsk.fusion
 
-from src.Proto import assembly_pb2, joint_pb2, motor_pb2, signal_pb2, types_pb2
-
-from ...general_imports import *
-from ...Logging import getLogger
-from ...Types import JointParentType, SignalType
-from ..ExporterOptions import ExporterOptions
-from .PDMessage import PDMessage
-from .Utilities import construct_info, fill_info, guid_occurrence
+from src.Logging import getLogger
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Parser.SynthesisParser.PDMessage import PDMessage
+from src.Parser.SynthesisParser.Utilities import (
+    construct_info,
+    fill_info,
+    guid_occurrence,
+)
+from src.Proto import assembly_pb2, joint_pb2, signal_pb2, types_pb2
+from src.Types import JointParentType, SignalType
 
 logger = getLogger()
 

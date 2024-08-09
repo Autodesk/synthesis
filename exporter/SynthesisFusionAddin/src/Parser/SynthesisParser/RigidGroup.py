@@ -12,14 +12,13 @@
     - Success
 """
 
-from typing import *
+from typing import Union
 
 import adsk.core
 import adsk.fusion
 
+from src.Logging import logFailure
 from src.Proto import assembly_pb2
-
-from ...Logging import logFailure
 
 
 @logFailure

@@ -1,18 +1,10 @@
-# Should contain Physical and Apperance materials ?
-import json
-import logging
-import math
-import traceback
-
 import adsk
 
+from src.Logging import logFailure
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Parser.SynthesisParser.PDMessage import PDMessage
+from src.Parser.SynthesisParser.Utilities import construct_info, fill_info
 from src.Proto import material_pb2
-
-from ...general_imports import *
-from ...Logging import logFailure, timed
-from ..ExporterOptions import ExporterOptions
-from .PDMessage import PDMessage
-from .Utilities import *
 
 OPACITY_RAMPING_CONSTANT = 14.0
 
