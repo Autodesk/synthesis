@@ -44,7 +44,7 @@ jobs:
         with:
           path: |
             ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}
+          key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v2
 
       - name: Install Dependencies
         run: |

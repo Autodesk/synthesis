@@ -11,6 +11,10 @@ class ArcadeDriveBehavior extends Behavior {
     private _driveSpeed = 30
     private _turnSpeed = 30
 
+    public get wheels(): WheelDriver[] {
+        return this.leftWheels.concat(this.rightWheels)
+    }
+
     constructor(
         leftWheels: WheelDriver[],
         rightWheels: WheelDriver[],

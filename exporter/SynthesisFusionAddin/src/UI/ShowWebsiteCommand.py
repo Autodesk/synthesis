@@ -1,8 +1,9 @@
+import traceback
 import webbrowser
 
 import adsk.core
 
-from ..general_imports import *
+from src import gm
 
 
 class ShowWebsiteCommandExecuteHandler(adsk.core.CommandEventHandler):
