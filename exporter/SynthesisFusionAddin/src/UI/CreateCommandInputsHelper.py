@@ -1,6 +1,6 @@
 import adsk.core
 
-from ..Logging import logFailure
+from src.Logging import logFailure
 
 
 @logFailure

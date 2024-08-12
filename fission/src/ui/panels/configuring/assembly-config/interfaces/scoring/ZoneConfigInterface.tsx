@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
 import Input from "@/components/Input"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
 import NumberInput from "@/components/NumberInput"
-import { SelectedZone } from "./ScoringZonesPanel"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { usePanelControlContext } from "@/ui/PanelContext"
 import SelectButton from "@/ui/components/SelectButton"
 import Jolt from "@barclah/jolt-physics"
 import TransformGizmos, { GizmoTransformMode } from "@/ui/components/TransformGizmos"
@@ -14,12 +11,12 @@ import * as THREE from "three"
 import World from "@/systems/World"
 import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
-import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "../../ConfigurePanel"
 
 /**
  * Saves ejector configuration to selected field.
@@ -48,6 +45,8 @@ import { SynthesisIcons } from "@/ui/components/StyledComponents"
  * @param selectedNode Selected node that configuration is relative to.
  */
 function save(
+    field: MirabufSceneObject,
+    zone: ScoringZonePreferences,
     name: string,
     alliance: Alliance,
     points: number,
@@ -56,7 +55,7 @@ function save(
     gizmo: TransformGizmos,
     selectedNode?: RigidNodeId
 ) {
-    const field = SelectedZone.field
+    console.log("save")
     if (!field?.fieldPreferences || !gizmo) {
         return
     }
@@ -78,8 +77,6 @@ function save(
     const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(fieldTransformation.invert())
 
-    const zone = SelectedZone.zone
-
     zone.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
     zone.name = name
     zone.alliance = alliance
@@ -93,8 +90,15 @@ function save(
     PreferencesSystem.savePreferences()
 }
 
-const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
+interface ZoneConfigProps {
+    selectedField: MirabufSceneObject
+    selectedZone: ScoringZonePreferences
+    saveAllZones: () => void
+}
+
+const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
     //Official FIRST hex
+    // TODO: Do we want to eventually make these editable?
     const redMaterial = new THREE.MeshPhongMaterial({
         color: 0xed1c24,
         shininess: 0.0,
@@ -107,14 +111,13 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         opacity: 0.7,
         transparent: true,
     }) //0x0000ff
-    const { openPanel, closePanel } = usePanelControlContext()
 
-    const [name, setName] = useState<string>(SelectedZone.zone.name)
-    const [alliance, setAlliance] = useState<Alliance>(SelectedZone.zone.alliance)
-    const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(SelectedZone.zone.parentNode)
-    const [points, setPoints] = useState<number>(SelectedZone.zone.points)
-    const [destroy] = useState<boolean>(SelectedZone.zone.destroyGamepiece)
-    const [persistent, setPersistent] = useState<boolean>(SelectedZone.zone.persistentPoints)
+    const [name, setName] = useState<string>(selectedZone.name)
+    const [alliance, setAlliance] = useState<Alliance>(selectedZone.alliance)
+    const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(selectedZone.parentNode)
+    const [points, setPoints] = useState<number>(selectedZone.points)
+    const [destroy] = useState<boolean>(selectedZone.destroyGamepiece)
+    const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
 
     const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
     const [transformMode, setTransformMode] = useState<GizmoTransformMode>("translate")
@@ -124,20 +127,43 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
         return themes[currentTheme]
     }, [currentTheme, themes])
 
-    useEffect(() => {
-        closePanel("scoring-zones")
+    const saveEvent = useCallback(() => {
+        if (transformGizmo && selectedField) {
+            save(selectedField, selectedZone, name, alliance, points, destroy, persistent, transformGizmo, selectedNode)
+            saveAllZones()
+        }
+    }, [
+        selectedField,
+        selectedZone,
+        name,
+        alliance,
+        points,
+        destroy,
+        persistent,
+        transformGizmo,
+        selectedNode,
+        saveAllZones,
+    ])
 
+    useEffect(() => {
+        ConfigurationSavedEvent.Listen(saveEvent)
+
+        return () => {
+            ConfigurationSavedEvent.RemoveListener(saveEvent)
+        }
+    }, [saveEvent])
+
+    useEffect(() => {
         World.PhysicsSystem.HoldPause()
 
         return () => {
             World.PhysicsSystem.ReleasePause()
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     useEffect(() => {
-        const field = SelectedZone.field
-        const zone = SelectedZone.zone
+        const field = selectedField
+        const zone = selectedZone
 
         if (!field || !zone) {
             setTransformGizmo(undefined)
@@ -178,109 +204,86 @@ const ZoneConfigPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     }, [theme])
 
     /** Sets the selected node if it is a part of the currently loaded field */
-    const trySetSelectedNode = useCallback((body: Jolt.BodyID) => {
-        if (!SelectedZone.field) {
-            return false
-        }
+    const trySetSelectedNode = useCallback(
+        (body: Jolt.BodyID) => {
+            if (!selectedField) {
+                return false
+            }
 
-        const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
-        if (!assoc || assoc?.sceneObject != SelectedZone.field) {
-            return false
-        }
+            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+            if (!assoc || assoc?.sceneObject != selectedField) {
+                return false
+            }
 
-        setSelectedNode(assoc.rigidNodeId)
-        return true
-    }, [])
+            setSelectedNode(assoc.rigidNodeId)
+            return true
+        },
+        [selectedField]
+    )
 
     return (
-        <Panel
-            name="Scoring Zone Config"
-            panelId={panelId}
-            icon={SynthesisIcons.Basketball}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
-            onAccept={() => {
-                if (transformGizmo && SelectedZone.field) {
-                    save(name, alliance, points, destroy, persistent, transformGizmo, selectedNode)
-                }
-                openPanel("scoring-zones")
-            }}
-            onCancel={() => {
-                openPanel("scoring-zones")
-            }}
-        >
-            <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
-                {/** Set the zone name */}
-                <Input
-                    label="Name"
-                    placeholder="Enter zone name"
-                    defaultValue={SelectedZone.zone.name}
-                    onInput={setName}
-                />
+        <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
+            {/** Set the zone name */}
+            <Input label="Name" placeholder="Enter zone name" defaultValue={selectedZone.name} onInput={setName} />
 
-                {/** Set the alliance color */}
-                <Button
-                    value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
-                    onClick={() => {
-                        setAlliance(alliance == "blue" ? "red" : "blue")
-                        if (transformGizmo) {
-                            transformGizmo.mesh.material = alliance == "blue" ? redMaterial : blueMaterial
-                        }
-                    }}
-                    colorOverrideClass={`bg-match-${alliance}-alliance`}
-                />
+            {/** Set the alliance color */}
+            <Button
+                value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
+                onClick={() => {
+                    setAlliance(alliance == "blue" ? "red" : "blue")
+                    if (transformGizmo) {
+                        transformGizmo.mesh.material = alliance == "blue" ? redMaterial : blueMaterial
+                    }
+                }}
+                colorOverrideClass={`bg-match-${alliance}-alliance`}
+            />
 
-                {/** Select a parent node */}
-                <SelectButton
-                    placeholder="Select parent node"
-                    value={selectedNode}
-                    onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
-                />
+            {/** Select a parent node */}
+            <SelectButton
+                placeholder="Select parent node"
+                value={selectedNode}
+                onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
+            />
 
-                {/** Set the point value */}
-                <NumberInput
-                    label="Points"
-                    placeholder="Zone points"
-                    defaultValue={SelectedZone.zone.points}
-                    onInput={v => setPoints(v || 1)}
-                />
+            {/** Set the point value */}
+            <NumberInput
+                label="Points"
+                placeholder="Zone points"
+                defaultValue={selectedZone.points}
+                onInput={v => setPoints(v || 1)}
+            />
 
-                {/** When checked, the zone will destroy gamepieces it comes in contact with */}
-                {/** <Checkbox
+            {/** When checked, the zone will destroy gamepieces it comes in contact with */}
+            {/** <Checkbox
                     label="Destroy Gamepiece"
-                    defaultState={SelectedZone.zone.destroyGamepiece}
+                    defaultState={selectedZone.destroyGamepiece}
                     onClick={setDestroy}
                 /> */}
 
-                {/** When checked, points will stay even when a gamepiece leaves the zone */}
-                <Checkbox
-                    label="Persistent Points"
-                    defaultState={SelectedZone.zone.persistentPoints}
-                    onClick={setPersistent}
-                />
+            {/** When checked, points will stay even when a gamepiece leaves the zone */}
+            <Checkbox label="Persistent Points" defaultState={selectedZone.persistentPoints} onClick={setPersistent} />
 
-                {/** Switch between transform control modes */}
+            {/** Switch between transform control modes */}
 
-                <ToggleButtonGroup
-                    value={transformMode}
-                    exclusive
-                    onChange={(_, v) => {
-                        if (v == undefined) return
+            <ToggleButtonGroup
+                value={transformMode}
+                exclusive
+                onChange={(_, v) => {
+                    if (v == undefined) return
 
-                        setTransformMode(v)
-                        transformGizmo?.SwitchGizmo(v, 1.5)
-                    }}
-                    sx={{
-                        alignSelf: "center",
-                    }}
-                >
-                    <ToggleButton value={"translate"}>Move</ToggleButton>
-                    <ToggleButton value={"scale"}>Scale</ToggleButton>
-                    <ToggleButton value={"rotate"}>Rotate</ToggleButton>
-                </ToggleButtonGroup>
-            </div>
-        </Panel>
+                    setTransformMode(v)
+                    transformGizmo?.SwitchGizmo(v, 1.5)
+                }}
+                sx={{
+                    alignSelf: "center",
+                }}
+            >
+                <ToggleButton value={"translate"}>Move</ToggleButton>
+                <ToggleButton value={"scale"}>Scale</ToggleButton>
+                <ToggleButton value={"rotate"}>Rotate</ToggleButton>
+            </ToggleButtonGroup>
+        </div>
     )
 }
 
-export default ZoneConfigPanel
+export default ZoneConfigInterface

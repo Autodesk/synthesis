@@ -1,11 +1,8 @@
-import logging
-import traceback
-
 import adsk.core
 import adsk.fusion
 
-from ..general_imports import *
-from ..Logging import logFailure
+from src import gm
+from src.Logging import logFailure
 
 
 @logFailure

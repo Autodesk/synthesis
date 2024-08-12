@@ -1,11 +1,9 @@
 import os
 
-from adsk.core import SaveImageFileOptions
+import adsk.core
 
-from ..general_imports import *
-from ..Logging import logFailure, timed
-from ..Types import OString
-from . import Helper
+from src.Logging import logFailure
+from src.Types import OString
 
 
 @logFailure
@@ -25,7 +23,7 @@ def captureThumbnail(size=250):
 
     path = OString.ThumbnailPath(name)
 
-    saveOptions = SaveImageFileOptions.create(str(path.getPath()))
+    saveOptions = adsk.core.SaveImageFileOptions.create(str(path.getPath()))
     saveOptions.height = size
     saveOptions.width = size
     saveOptions.isAntiAliased = True
