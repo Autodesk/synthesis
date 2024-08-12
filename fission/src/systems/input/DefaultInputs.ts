@@ -91,8 +91,8 @@ class DefaultInputs {
                     shift: false,
                     meta: false,
                 }),
-                new AxisInput("joint 5", "KeyN", "true", -1, false, false, -1, -1, EmptyModifierState, {
-                    ctrl: false,
+                new AxisInput("joint 5", "KeyN", "KeyN", -1, false, false, -1, -1, EmptyModifierState, {
+                    ctrl: true,
                     alt: false,
                     shift: false,
                     meta: false,

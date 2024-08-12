@@ -1,12 +1,7 @@
 """ Initializes the global variables that are set in the run method to reduce hanging commands. """
 
-import logging
-
 import adsk.core
 import adsk.fusion
-
-from .general_imports import *
-from .strings import *
 
 
 class GlobalManager(object):
@@ -46,6 +41,11 @@ class GlobalManager(object):
 
         def __str__(self):
             return "GlobalManager"
+
+        def clear(self):
+            for attr, value in self.__dict__.items():
+                if isinstance(value, list):
+                    setattr(self, attr, [])
 
     instance = None
 

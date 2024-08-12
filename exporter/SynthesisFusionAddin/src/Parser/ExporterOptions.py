@@ -11,9 +11,9 @@ from dataclasses import dataclass, field, fields
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
-from ..Logging import logFailure, timed
-from ..strings import INTERNAL_ID
-from ..Types import (
+from src import INTERNAL_ID
+from src.Logging import logFailure, timed
+from src.Types import (
     KG,
     ExportLocation,
     ExportMode,
