@@ -1,12 +1,15 @@
 package com.autodesk.synthesis.ctre;
 
+import com.autodesk.synthesis.CANEncoder;
 import com.autodesk.synthesis.CANMotor;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfigurator;
 import com.ctre.phoenix6.hardware.DeviceIdentifier;
 
 public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
     private CANMotor m_motor;
+    private CANEncoder m_encoder;
 
     /**
      * Creates a new TalonFX, wrapped with simulation support.
@@ -19,10 +22,11 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
         this.m_motor = new CANMotor("SYN TalonFX", deviceNumber, 0.0, false, 0.3);
     }
 
+    /// I think we're getting percentOutput and speed mixed up
     @Override
-    public void set(double speed) {
-        super.set(speed);
-        this.m_motor.setPercentOutput(speed);
+    public void set(double percentOutput) {
+        super.set(percentOutput);
+        this.m_motor.setPercentOutput(percentOutput);
     }
 
     @Override
@@ -41,5 +45,20 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
     // called internally by the configurator to set the deadband, not for user use
     public void setNeutralDeadband(double deadband) {
         this.m_motor.setNeutralDeadband(deadband);
+    }
+
+    @Override
+    public StatusSignal<Double> getPosition() {
+        Double pos = this.m_encoder.getPosition();
+        super.setPosition(pos);
+        return super.getPosition();
+    }
+
+    /// I think this is a pointless method
+    @Override
+    public StatusSignal<Double> getVelocity() {
+        Double velocity = this.m_encoder.getVelocity();
+        super.set(velocity);
+        return super.getVelocity();
     }
 }
