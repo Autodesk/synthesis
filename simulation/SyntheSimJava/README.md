@@ -4,18 +4,21 @@ This is the SyntheSim Java utility library. FRC users can add this to their proj
 
 ## Current 3rd-Party Support
 
-This is a list of the following 3rd-Party libraries that SyntheSim - Java improves, as well as the level of capability currently offered.
+A list of the 3rd-Party libraries SyntheSimJava supports, including the features currently offered.
 
 ### REVRobotics
-- [ ] CANSparkMax
+
+- [x] CANSparkMax
   - [x] Basic motor control
   - [x] Basic internal encoder data
-  - [ ] Motor following
-  - [ ] Full encoder support
+  - [x] Motor following
+  - [x] Full encoder support
 
-### CTRE Phoenix
-- [ ] TalonFX
-  - [ ] Basic motor control
+### CTRE Phoenix v6
+
+- [x] TalonFX
+  - [x] Basic motor control
+  - [x] Full configuration support (via a [TalonFXConfigurator](src/main/com/autodesk/synthesis/ctre/TalonFXConfigurator.java) wrapper)
   - [ ] Basic internal encoder data
   - [ ] Motor following
   - [ ] Full encoder support
@@ -27,15 +30,18 @@ To build the project, run the `build` task:
 <details>
   <summary>Example</summary>
 
-  Windows:
-  ```sh
-  $ gradlew.bat build
-  ```
+Windows:
 
-  MacOS/Linux:
-  ```sh
-  $ ./gradlew build
-  ```
+```sh
+gradlew.bat build
+```
+
+MacOS/Linux:
+
+```sh
+./gradlew build
+```
+
 </details>
 
 ## Usage
@@ -49,20 +55,23 @@ To publish the project locally, run the `publishToMavenLocal` task:
 <details>
   <summary>Example</summary>
 
-  Windows:
-  ```sh
-  $ gradlew.bat publishToMavenLocal
-  ```
+Windows:
 
-  MacOS/Linux:
-  ```sh
-  $ ./gradlew publishToMavenLocal
-  ```
+```sh
+gradlew.bat publishToMavenLocal
+```
+
+MacOS/Linux:
+
+```sh
+./gradlew publishToMavenLocal
+```
+
 </details>
 
 ### Adding to project locally
 
-In order to add the project locally, you must include the the `mavenLocal()` repository to your projects:
+In order to add the project locally, you must include the `mavenLocal()` repository to your projects:
 
 ```groovy
 repositories {
