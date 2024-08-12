@@ -16,16 +16,12 @@
 
 """
 
-import logging
-import traceback
 from typing import Union
 
 import adsk
-
 from proto.proto_out import types_pb2
 
-from ...general_imports import INTERNAL_ID
-from ...Logging import logFailure
+from src.Logging import logFailure
 
 
 @logFailure
