@@ -1,15 +1,7 @@
 import * as THREE from "three"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import SelectButton from "@/components/SelectButton"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
-import Button from "@/ui/components/Button"
-import Label from "@/ui/components/Label"
-import LabeledButton, { LabelPlacement } from "@/ui/components/LabeledButton"
 import Slider from "@/ui/components/Slider"
 import Jolt from "@barclah/jolt-physics"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -25,6 +17,7 @@ import { useTheme } from "@/ui/ThemeContext"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
 import Button from "@/ui/components/Button"
 import { Spacer } from "@/ui/components/StyledComponents"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1

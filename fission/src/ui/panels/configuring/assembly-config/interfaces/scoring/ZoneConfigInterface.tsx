@@ -2,17 +2,13 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import Input from "@/components/Input"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
-import Input from "@/components/Input"
 import NumberInput from "@/components/NumberInput"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SelectButton from "@/ui/components/SelectButton"
 import Jolt from "@barclah/jolt-physics"
-import TransformGizmos, { GizmoTransformMode } from "@/ui/components/TransformGizmos"
 import * as THREE from "three"
 import World from "@/systems/World"
 import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
-import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
-import { usePanelControlContext } from "@/ui/PanelContext"
 import { useTheme } from "@/ui/ThemeContext"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
@@ -20,6 +16,7 @@ import { Alliance, ScoringZonePreferences } from "@/systems/preferences/Preferen
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
 
 /**
  * Saves ejector configuration to selected field.
@@ -274,18 +271,18 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 onChange={(_, v) => {
                     if (v == undefined) return
 
-                        setTransformMode(v)
-                        transformGizmo?.SetMode(v)
-                    }}
-                    sx={{
-                        alignSelf: "center",
-                    }}
-                >
-                    <ToggleButton value={"translate"}>Move</ToggleButton>
-                    <ToggleButton value={"scale"}>Scale</ToggleButton>
-                </ToggleButtonGroup>
-                    <ToggleButton value={"rotate"}>Rotate</ToggleButton>
-            </div>
+                    setTransformMode(v)
+                    transformGizmo?.SetMode(v)
+                }}
+                sx={{
+                    alignSelf: "center",
+                }}
+            >
+                <ToggleButton value={"translate"}>Move</ToggleButton>
+                <ToggleButton value={"scale"}>Scale</ToggleButton>
+            </ToggleButtonGroup>
+            <ToggleButton value={"rotate"}>Rotate</ToggleButton>
+        </div>
     )
 }
 

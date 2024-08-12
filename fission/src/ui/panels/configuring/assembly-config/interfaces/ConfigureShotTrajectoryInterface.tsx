@@ -14,11 +14,10 @@ import {
 } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
 import Button from "@/ui/components/Button"
 import { Spacer } from "@/ui/components/StyledComponents"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -90,13 +89,13 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     const [ejectorMesh, setEjectorMesh] = useState<THREE.Mesh | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
-        if (transformGizmo && selectedRobot) {
-            save(ejectorVelocity, transformGizmo, selectedRobot, selectedNode)
+        if (ejectorMesh && selectedRobot) {
+            save(ejectorVelocity, ejectorMesh, selectedRobot, selectedNode)
             const currentGp = selectedRobot.activeEjectable
             selectedRobot.SetEjectable(undefined, true)
             selectedRobot.SetEjectable(currentGp)
         }
-    }, [transformGizmo, selectedRobot, selectedNode, ejectorVelocity])
+    }, [ejectorMesh, selectedRobot, selectedNode, ejectorVelocity])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -209,12 +208,12 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             <Button
                 value="Reset"
                 onClick={() => {
-                    if (transformGizmo) {
+                    if (ejectorMesh) {
                         const robotTransformation = JoltMat44_ThreeMatrix4(
                             World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
                         )
-                        transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
-                        transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
+                        ejectorMesh.position.setFromMatrixPosition(robotTransformation)
+                        ejectorMesh.rotation.setFromRotationMatrix(robotTransformation)
                     }
                     setEjectorVelocity(1)
                     setSelectedNode(selectedRobot?.rootNodeId)
