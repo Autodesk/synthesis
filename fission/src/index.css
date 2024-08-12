@@ -2,6 +2,24 @@
 @tailwind components;
 @tailwind utilities;
 
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: "transparent";
+}
+
+::-webkit-scrollbar-thumb {
+    background: #444444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
 :root {
     /* font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; */
     font-family: "Artifakt";

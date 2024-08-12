@@ -1,12 +1,8 @@
-from typing import Union
-
 import adsk.core
 import adsk.fusion
 
-from ..general_imports import *
-
-# from ..proto_out import Configuration_pb2
-from ..Types import OString
+from src import gm
+from src.Types import OString
 
 
 def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | bool:

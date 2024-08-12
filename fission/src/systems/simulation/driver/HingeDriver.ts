@@ -16,6 +16,10 @@ class HingeDriver extends Driver {
     public accelerationDirection: number = 0.0
     public maxVelocity: number
 
+    public get constraint(): Jolt.HingeConstraint {
+        return this._constraint
+    }
+    
     private _prevAng: number = 0.0
 
     private _gravityChange?: (event: PreferenceEvent) => void

@@ -34,13 +34,13 @@ If you're a developer who wants to contribute to Synthesis, you're in the right 
 
 - [Fission (Core Web App)](/fission/README.md)
 - [Fusion Exporter (Fusion exporter to Mirabuf file format)](/exporter/SynthesisFusionAddin/README.md)
-- [Installers](/installer/)
+- [Fusion Exporter Installer](/installer/)
 
 Follow the above links to the respective READMEs on how to build and run each component.
 
 ### Compatibility Notes
 
-As Fusion is not supported on linux, the linux installer does not come with the Fusion Addin for exporting robots and fields.
+As Fusion is not officially supported on Linux, we do not provide an installer for the Fusion Exporter on Linux.
 
 ## Contributing
 
@@ -59,6 +59,10 @@ All code is under a configured formatting utility. See each component for more d
 ### Mirabuf
 
 Mirabuf is a file format we use to store physical data from Fusion to load into the Synthesis simulator (Fission). This is a separate project that is a submodule of Synthesis. [See Mirabuf](https://github.com/HiceS/mirabuf/)
+
+### Jolt Physics
+
+Jolt is the core physics engine for our web biased simulator. [See JoltPhysics.js](https://github.com/HunterBarclay/JoltPhysics.js) for more information.
 
 ### Tutorials
 

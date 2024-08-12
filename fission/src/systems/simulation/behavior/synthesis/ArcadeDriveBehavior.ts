@@ -8,6 +8,10 @@ class ArcadeDriveBehavior extends Behavior {
     private rightWheels: WheelDriver[]
     private _brainIndex: number
 
+    public get wheels(): WheelDriver[] {
+        return this.leftWheels.concat(this.rightWheels)
+    }
+
     constructor(
         leftWheels: WheelDriver[],
         rightWheels: WheelDriver[],

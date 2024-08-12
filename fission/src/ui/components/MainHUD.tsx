@@ -86,11 +86,6 @@ const MainHUD: React.FC = () => {
                 />
                 <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
                     <MainHUDButton
-                        value={"Manage Assemblies"}
-                        icon={SynthesisIcons.Wrench}
-                        onClick={() => openModal("manage-assemblies")}
-                    />
-                    <MainHUDButton
                         value={"Settings"}
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
@@ -101,25 +96,6 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("view")}
                     /> */}
                     <MainHUDButton
-                        value={"Controls"}
-                        icon={SynthesisIcons.Gamepad}
-                        onClick={() => openModal("change-inputs")}
-                    />
-                    <MainHUDButton
-                        value={"Import Local Mira"}
-                        icon={SynthesisIcons.Import}
-                        onClick={() => openModal("import-local-mirabuf")}
-                    />
-                </div>
-                <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
-                    <MainHUDButton
-                        value={"Edit Scoring Zones"}
-                        icon={SynthesisIcons.Basketball}
-                        onClick={() => {
-                            openPanel("scoring-zones")
-                        }}
-                    />
-                    <MainHUDButton
                         value={"Subsystems"}
                         icon={SynthesisIcons.Gear}
                         onClick={() => openPanel("subsystem-config")}
@@ -127,7 +103,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Configure"}
                         icon={SynthesisIcons.Gear}
-                        onClick={() => openModal("config-robot")}
+                        onClick={() => openPanel("configure")}
                     />
                     <MainHUDButton
                         value={"Debug Tools"}
@@ -142,7 +118,7 @@ const MainHUD: React.FC = () => {
                         value={`Hi, ${userInfo.givenName}`}
                         icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
-                        onClick={() => APS.logout()}
+                        onClick={() => openModal("aps-management")}
                     />
                 ) : (
                     <MainHUDButton

@@ -1,28 +1,29 @@
-import HingeDriver from "@/systems/simulation/driver/HingeDriver"
-import HingeStimulus from "@/systems/simulation/stimulus/HingeStimulus"
-import Behavior from "@/systems/simulation/behavior/Behavior"
-import InputSystem from "@/systems/input/InputSystem"
+import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import HingeDriver from "../../driver/HingeDriver"
+import HingeStimulus from "../../stimulus/HingeStimulus"
+import SequenceableBehavior from "./SequenceableBehavior"
 
-class GenericArmBehavior extends Behavior {
+class GenericArmBehavior extends SequenceableBehavior {
     private _hingeDriver: HingeDriver
-    private _inputName: string
-    private _brainIndex: number
 
-    constructor(hingeDriver: HingeDriver, hingeStimulus: HingeStimulus, jointIndex: number, brainIndex: number) {
-        super([hingeDriver], [hingeStimulus])
+    public get hingeDriver(): HingeDriver {
+        return this._hingeDriver
+    }
+
+    constructor(
+        hingeDriver: HingeDriver,
+        hingeStimulus: HingeStimulus,
+        jointIndex: number,
+        brainIndex: number,
+        sequentialConfig: SequentialBehaviorPreferences | undefined
+    ) {
+        super(jointIndex, brainIndex, [hingeDriver], [hingeStimulus], sequentialConfig)
 
         this._hingeDriver = hingeDriver
-        this._inputName = "joint " + jointIndex
-        this._brainIndex = brainIndex
     }
 
-    // Sets the arm's acceleration direction
-    rotateArm(input: number) {
-        this._hingeDriver.accelerationDirection = input
-    }
-
-    public Update(_: number): void {
-        this.rotateArm(InputSystem.getInput(this._inputName, this._brainIndex))
+    applyInput = (direction: number) => {
+        this._hingeDriver.accelerationDirection = direction
     }
 }
 

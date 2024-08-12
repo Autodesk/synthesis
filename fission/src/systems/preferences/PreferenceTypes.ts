@@ -45,6 +45,24 @@ export type EjectorPreferences = {
     parentNode: string | undefined
 }
 
+export type BehaviorType = "Elevator" | "Arm"
+
+export type SequentialBehaviorPreferences = {
+    jointIndex: number
+    parentJointIndex: number | undefined
+    type: BehaviorType
+    inverted: boolean
+}
+
+export function DefaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
+    return {
+        jointIndex: index,
+        parentJointIndex: undefined,
+        type: type,
+        inverted: false,
+    }
+}
+
 export type RobotPreferences = {
     inputsSchemes: InputScheme[]
     motors: MotorPreferences[]
@@ -52,6 +70,7 @@ export type RobotPreferences = {
     ejector: EjectorPreferences
     driveVelocity: number
     driveAcceleration: number
+    sequentialConfig?: SequentialBehaviorPreferences[]
 }
 
 export type MotorPreferences = {

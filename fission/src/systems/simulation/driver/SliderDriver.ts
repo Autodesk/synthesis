@@ -16,6 +16,10 @@ class SliderDriver extends Driver {
     public accelerationDirection: number = 0.0
     public maxVelocity: number = 1.0
 
+    public get constraint(): Jolt.SliderConstraint {
+        return this._constraint
+    }
+
     private _prevPos: number = 0.0
 
     private _gravityChange?: (event: PreferenceEvent) => void
