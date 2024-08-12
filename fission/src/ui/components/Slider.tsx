@@ -2,6 +2,7 @@ import React from "react"
 import { Slider as BaseSlider } from "@mui/base/Slider"
 import { Mark } from "@mui/base/useSlider"
 import Label, { LabelSize } from "./Label"
+import { LabelWithTooltip } from "./StyledComponents"
 
 type CustomFormatOptions = {
     prefix?: string
@@ -9,7 +10,7 @@ type CustomFormatOptions = {
 }
 
 type SliderProps = {
-    label?: string
+    label: string
     min: number
     max: number
     value: number
@@ -18,9 +19,21 @@ type SliderProps = {
     step?: number
     locale?: string
     format?: Intl.NumberFormatOptions & CustomFormatOptions
+    tooltipText?: string
 }
 
-const Slider: React.FC<SliderProps> = ({ label, min, max, value, onChange, step, marks, locale, format }) => {
+const Slider: React.FC<SliderProps> = ({
+    label,
+    min,
+    max,
+    value,
+    onChange,
+    step,
+    marks,
+    locale,
+    format,
+    tooltipText,
+}) => {
     locale ||= "en-us"
     format ||= {
         maximumFractionDigits: (1.0 / (step == 0 ? 1 : step ?? 1)).toString().length - 1,
@@ -33,7 +46,7 @@ const Slider: React.FC<SliderProps> = ({ label, min, max, value, onChange, step,
     return (
         <>
             <div className="flex flex-row justify-between w-full">
-                <Label size={LabelSize.Small}>{label}</Label>
+                {tooltipText ? LabelWithTooltip(label, tooltipText) : <Label size={LabelSize.Small}>{label}</Label>}
                 <Label size={LabelSize.Small}>
                     {format.prefix + value.toLocaleString(locale, format) + format.suffix}
                 </Label>

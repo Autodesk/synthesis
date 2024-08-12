@@ -8,8 +8,8 @@ import logo from "@/assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "@/ui/ToastContext"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
-import { Button } from "@mui/base/Button"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
+import { Button } from "@mui/base"
 
 type ButtonProps = {
     value: string
@@ -65,12 +65,11 @@ const MainHUD: React.FC = () => {
     return (
         <>
             {!isOpen && (
-                <button
+                <ButtonIcon
                     onClick={() => setIsOpen(!isOpen)}
                     className="absolute left-6 top-6 focus:outline-0 focus-visible:outline-0"
-                >
-                    <BiMenuAltLeft size={40} className="text-main-hud-close-icon" />
-                </button>
+                    value={<BiMenuAltLeft size={65} className="text-main-hud-close-icon" />}
+                />
             )}
             <motion.div
                 initial="closed"
@@ -81,7 +80,7 @@ const MainHUD: React.FC = () => {
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img src={logo} className="w-[80%] h-[100%] object-contain" />
                     <ButtonIcon
-                        value={<FaXmark color="bg-icon" size={20} className="text-main-hud-close-icon" />}
+                        value={<FaXmark color="bg-icon" size={30} className="text-main-hud-close-icon" />}
                         onClick={() => setIsOpen(false)}
                     />
                 </div>
@@ -97,7 +96,7 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
                     />
-                    {/* <MainHUDButton
+                    {/*                     <MainHUDButton
                         value={"View"}
                         icon={SynthesisIcons.MagnifyingGlass}
                         onClick={() => openModal("view")}
@@ -108,8 +107,8 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("import-local-mirabuf")}
                     />
                     <MainHUDButton
-                        value={"Configure"}
-                        icon={SynthesisIcons.Gear}
+                        value={"Configure Scene Objects"}
+                        icon={SynthesisIcons.Wrench}
                         onClick={() => openPanel("configure")}
                     />
                     <MainHUDButton

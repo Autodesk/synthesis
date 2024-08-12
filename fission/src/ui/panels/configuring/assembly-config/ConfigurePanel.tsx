@@ -225,7 +225,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             name={"Configure Objects"}
-            icon={SynthesisIcons.Gear}
+            icon={SynthesisIcons.Wrench}
             panelId={panelId}
             cancelEnabled={false}
             openLocation="right"

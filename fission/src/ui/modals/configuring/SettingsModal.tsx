@@ -94,6 +94,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     label={"Pitch Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setPitchSensitivity(value as number)}
+                    tooltipText="Moving the camera up and down."
                 />
                 {Spacer(2)}
                 <Slider
@@ -103,6 +104,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     label={"Yaw Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setYawSensitivity(value as number)}
+                    tooltipText="Moving the camera left and right."
                 />
                 {Spacer(20)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
@@ -113,6 +115,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         onClick={checked => {
                             setReportAnalytics(checked)
                         }}
+                        tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                     />
                     <Checkbox
                         label="Use Metric"
@@ -122,23 +125,25 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         }}
                     />
                     <Checkbox
-                        label="Render Score Zones"
+                        label="Show Scoring Zones"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")}
                         onClick={checked => {
                             setRenderScoringZones(checked)
                         }}
+                        tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
                     />
                     <Checkbox
-                        label="Render Scene Tags"
+                        label="Show Scene Tags"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")}
                         onClick={checked => {
                             setRenderSceneTags(checked)
                             if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE)
                             else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
                         }}
+                        tooltipText="Name tags above robot."
                     />
                     <Checkbox
-                        label="Render Scoreboard"
+                        label="Show Scoreboard"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")}
                         onClick={checked => {
                             setRenderScoreboard(checked)

@@ -1,7 +1,8 @@
 import React, { useState } from "react"
-import Stack, { StackDirection } from "./Stack"
 import Label, { LabelSize } from "./Label"
 import { Switch } from "@mui/base/Switch"
+import { Box } from "@mui/material"
+import { LabelWithTooltip } from "./StyledComponents"
 
 type CheckboxProps = {
     label: string
@@ -10,13 +11,30 @@ type CheckboxProps = {
     stateOverride?: boolean
     hideLabel?: boolean
     onClick?: (checked: boolean) => void
+    tooltipText?: string
 }
 
-const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, stateOverride, hideLabel, onClick }) => {
+const Checkbox: React.FC<CheckboxProps> = ({
+    label,
+    className,
+    defaultState,
+    stateOverride,
+    hideLabel,
+    onClick,
+    tooltipText,
+}) => {
     const [state] = useState(defaultState)
     return (
-        <Stack direction={StackDirection.Horizontal} className="items-center">
-            {hideLabel ? null : (
+        <Box
+            display="flex"
+            flexDirection={"row"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+            textAlign={"center"}
+        >
+            {hideLabel ? null : tooltipText ? (
+                LabelWithTooltip(label, tooltipText)
+            ) : (
                 <Label size={LabelSize.Small} className={`mr-12 ${className} whitespace-nowrap`}>
                     {label}
                 </Label>
@@ -41,7 +59,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, sta
                 }}
                 defaultChecked={stateOverride != null ? undefined : state}
             />
-        </Stack>
+        </Box>
     )
 }
 

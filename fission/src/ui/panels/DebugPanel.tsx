@@ -19,7 +19,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import Jolt from "@barclah/jolt-physics"
 import Label from "../components/Label"
 import { colorNameToVar } from "../ThemeContext"
-import { SectionDivider, Spacer, SynthesisIcons } from "../components/StyledComponents"
+import { SynthesisIcons } from "../components/StyledComponents"
 import { useModalControlContext } from "../ModalContext"
 
 const LabelStyled = styled(Label)({
