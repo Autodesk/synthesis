@@ -27,6 +27,7 @@ import {
     FaCar,
     FaArrowLeft,
     FaMinus,
+    FaBug,
 } from "react-icons/fa6"
 
 export class SynthesisIcons {
@@ -50,6 +51,7 @@ export class SynthesisIcons {
     public static SteeringWheel = (<GiSteeringWheel />)
     public static OutlineDoubleRight = (<AiOutlineDoubleRight />)
     public static Connect = (<GrConnect />)
+    public static Bug = (<FaBug />)
 
     /** Large icons: used for icon buttons */
     public static DeleteLarge = (<IoTrashBin size={"1.25rem"} />)
@@ -59,6 +61,7 @@ export class SynthesisIcons {
     public static SelectLarge = (<IoCheckmark size={"1.25rem"} />)
     public static EditLarge = (<IoPencil size={"1.25rem"} />)
     public static LeftArrowLarge = (<FaArrowLeft size={"1.25rem"} />)
+    public static BugLarge = (<FaBug size={"1.25rem"} />)
 }
 
 export const SectionDivider = styled(Divider)({

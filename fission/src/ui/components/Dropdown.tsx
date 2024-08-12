@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react"
-import { styled } from "@mui/system"
+import { alpha, styled } from "@mui/system"
 import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
 import { colorNameToVar } from "../ThemeContext"
 
@@ -35,6 +35,9 @@ const CustomButton = styled(Button)({
         border: "0 !important",
         backgroundColor: colorNameToVar("BackgroundSecondary"),
     },
+    "& .MuiTouchRipple-root": {
+        color: "#ffffff30",
+    },
 })
 
 const CustomMenu = styled(Menu)({
@@ -53,6 +56,9 @@ const CustomMenu = styled(Menu)({
         },
         "&:active": {
             transform: "scale(1.03)",
+        },
+        "& .MuiTouchRipple-root": {
+            color: alpha("#d44a3e", 0.3),
         },
     },
 })

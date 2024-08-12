@@ -61,7 +61,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="center"
             name={"Debug Panel"}
-            icon={SynthesisIcons.ScrewdriverWrench}
+            icon={SynthesisIcons.BugLarge}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"
@@ -98,7 +98,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     />
                     <Button value={"Test God Mode"} onClick={TestGodMode} className="w-full" />
                     <Button
-                        value={"Clear Prefs"}
+                        value={"Clear Preferences"}
                         onClick={() => PreferencesSystem.clearPreferences()}
                         className="w-full"
                     />

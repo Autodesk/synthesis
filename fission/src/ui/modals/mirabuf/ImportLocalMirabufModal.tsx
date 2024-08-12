@@ -8,10 +8,12 @@ import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import { usePanelControlContext } from "@/ui/PanelContext"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
     const { showTooltip } = useTooltipControlContext()
+    const { openPanel } = usePanelControlContext()
 
     const fileUploadRef = useRef<HTMLInputElement>(null)
 
@@ -53,6 +55,8 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 World.SceneRenderer.RegisterSceneObject(x)
                             }
                         })
+
+                    if (miraType == MiraType.ROBOT) openPanel("choose-scheme")
                 }
             }}
         >
