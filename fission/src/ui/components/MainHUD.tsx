@@ -96,11 +96,6 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("view")}
                     /> */}
                     <MainHUDButton
-                        value={"Import Local Asset"}
-                        icon={SynthesisIcons.Import}
-                        onClick={() => openModal("import-local-mirabuf")}
-                    />
-                    <MainHUDButton
                         value={"Configure"}
                         icon={SynthesisIcons.Gear}
                         onClick={() => openPanel("configure")}
