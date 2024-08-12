@@ -153,7 +153,7 @@ For basic user control of the mechanisms, we'll have a Synthesis Brain. By the e
 | `lint`               | Runs eslint on the project.                                                                                             |
 | `lint:fix`           | Attempts to fix issues found with eslint.                                                                               |
 | `prettier`           | Runs prettier on the project as a check.                                                                                |
-| `prettier:fix`       | Runs prettier on the project to fix any issues with formating. **DO NOT USE**, I don't like the current format it uses. |
-| `format`             | Runs `prettier:fix` and `lint:fix`. **Do not use** for the same reasons as `prettier:fix`.                              |
+| `prettier:fix`       | Runs prettier on the project to fix any issues with formating.                                                          |
+| `format`             | Runs `prettier:fix` and `lint:fix`.                                                                                     |
 | `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                                 |
 | `playwright:install` | Downloads the playwright browsers.                                                                                      |
