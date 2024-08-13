@@ -12,6 +12,7 @@ import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOv
 import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
 import { Spacer } from "@/ui/components/StyledComponents"
+import World from "@/systems/World"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -73,6 +74,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     defaultValue={PreferencesSystem.getGlobalPreference<QualitySetting>("QualitySettings")}
                     onSelect={selected => {
                         setQualitySettings(selected)
+                        World.SceneRenderer.ChangeLighting(selected)
                     }}
                 />
                 {Spacer(5)}
