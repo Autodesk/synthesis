@@ -60,7 +60,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             openLocation="center"
-            name={"Debug Panel"}
+            name={"Debug Tools"}
             icon={SynthesisIcons.BugLarge}
             panelId={panelId}
             acceptEnabled={false}

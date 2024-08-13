@@ -56,6 +56,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                     setUseGamepad(val)
                     selectedScheme.usesGamepad = val
                 }}
+                tooltipText="Supported controllers: Xbox one, Xbox 360."
             />
             <SectionDivider />
 
