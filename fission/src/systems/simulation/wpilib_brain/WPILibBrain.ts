@@ -242,7 +242,7 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
 function UpdateSimMap(type: SimType, device: string, updateData: DeviceData) {
     let typeMap = simMap.get(type)
     if (!typeMap) {
-        typeMap = new Map<string, any>()
+        typeMap = new Map<string, DeviceData>()
         simMap.set(type, typeMap)
     }
 
