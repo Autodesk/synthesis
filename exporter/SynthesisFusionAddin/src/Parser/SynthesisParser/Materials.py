@@ -1,10 +1,10 @@
 import adsk.core
 
-from proto.proto_out import material_pb2
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import construct_info, fill_info
+from src.Proto import material_pb2
 
 OPACITY_RAMPING_CONSTANT = 14.0
 

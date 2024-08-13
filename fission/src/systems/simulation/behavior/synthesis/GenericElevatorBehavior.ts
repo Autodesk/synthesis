@@ -1,30 +1,31 @@
-import SliderDriver from "@/systems/simulation/driver/SliderDriver"
-import SliderStimulus from "@/systems/simulation/stimulus/SliderStimulus"
-import Behavior from "@/systems/simulation/behavior/Behavior"
-import InputSystem from "@/systems/input/InputSystem"
+import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import SliderDriver from "../../driver/SliderDriver"
+import SliderStimulus from "../../stimulus/SliderStimulus"
+import SequenceableBehavior from "./SequenceableBehavior"
 
-class GenericElevatorBehavior extends Behavior {
+class GenericElevatorBehavior extends SequenceableBehavior {
     private _sliderDriver: SliderDriver
-    private _inputName: string
-    private _brainIndex: number
 
-    private _linearSpeed = 2.5
+    maxVelocity = 6
 
-    constructor(sliderDriver: SliderDriver, sliderStimulus: SliderStimulus, jointIndex: number, brainIndex: number) {
-        super([sliderDriver], [sliderStimulus])
+    public get sliderDriver(): SliderDriver {
+        return this._sliderDriver
+    }
+
+    constructor(
+        sliderDriver: SliderDriver,
+        sliderStimulus: SliderStimulus,
+        jointIndex: number,
+        brainIndex: number,
+        sequentialConfig: SequentialBehaviorPreferences | undefined
+    ) {
+        super(jointIndex, brainIndex, [sliderDriver], [sliderStimulus], sequentialConfig)
 
         this._sliderDriver = sliderDriver
-        this._inputName = "joint " + jointIndex
-        this._brainIndex = brainIndex
     }
 
-    // Changes the elevators target position
-    moveElevator(linearVelocity: number) {
-        this._sliderDriver.targetVelocity = linearVelocity
-    }
-
-    public Update(_: number): void {
-        this.moveElevator(InputSystem.getInput(this._inputName, this._brainIndex) * this._linearSpeed)
+    applyInput = (velocity: number) => {
+        this._sliderDriver.targetVelocity = velocity
     }
 }
 

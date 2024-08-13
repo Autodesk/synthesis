@@ -4,12 +4,12 @@ from typing import Any, Iterator, cast
 import adsk.core
 import adsk.fusion
 
-from proto.proto_out import joint_pb2, types_pb2
 from src import gm
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import guid_component, guid_occurrence
+from src.Proto import joint_pb2, types_pb2
 
 logger = getLogger()
 

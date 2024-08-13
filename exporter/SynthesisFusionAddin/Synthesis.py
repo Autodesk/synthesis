@@ -6,7 +6,6 @@ import adsk.core
 
 # Required for absolute imports.
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "proto", "proto_out")))
 
 from src.Dependencies import resolveDependencies
 from src.Logging import logFailure, setupLogger
@@ -15,9 +14,17 @@ logger = setupLogger()
 
 try:
     # Attempt to import required pip dependencies to verify their installation.
-    import google.protobuf
     import requests
-except (ImportError, ModuleNotFoundError) as error:
+
+    from src.Proto import (
+        assembly_pb2,
+        joint_pb2,
+        material_pb2,
+        motor_pb2,
+        signal_pb2,
+        types_pb2,
+    )
+except (ImportError, ModuleNotFoundError, BaseException) as error:  # BaseException required to catch proto.VersionError
     logger.warn(f"Running resolve dependencies with error of:\n{error}")
     result = resolveDependencies()
     if result:

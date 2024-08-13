@@ -29,7 +29,6 @@ from typing import Any, Callable, Union
 import adsk.core
 import adsk.fusion
 
-from proto.proto_out import assembly_pb2, joint_pb2, signal_pb2, types_pb2
 from src.Logging import getLogger
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
@@ -38,6 +37,7 @@ from src.Parser.SynthesisParser.Utilities import (
     fill_info,
     guid_occurrence,
 )
+from src.Proto import assembly_pb2, joint_pb2, signal_pb2, types_pb2
 from src.Types import Joint, JointParentType, SignalType, Wheel
 
 logger = getLogger()
