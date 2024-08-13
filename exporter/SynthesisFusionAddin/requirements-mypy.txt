@@ -1,6 +1,3 @@
-black
-isort
 mypy
-pyminifier
 types-protobuf
 types-request
