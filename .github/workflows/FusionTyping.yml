@@ -17,5 +17,6 @@ jobs:
         with:
           python-version: '3.11'
       - run: pip install mypy
-      - run: cd exporter/SynthesisFusionAddin/
-      - run: mypy .
+      - name: Test mypy
+        working-directory: ./exporter/SynthesisFusionAddin
+        run: mypy
