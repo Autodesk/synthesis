@@ -29,9 +29,7 @@ async function tryConnect(port: number | undefined): Promise<void> {
 
 async function tryDisconnect(): Promise<void> {
     await connectMutex.runExclusive(() => {
-        if (!socket) {
-            return
-        }
+        if (!socket) return
 
         socket?.close()
         socket = undefined
@@ -39,7 +37,6 @@ async function tryDisconnect(): Promise<void> {
 }
 
 function onMessage(event: MessageEvent) {
-    // console.log(`${JSON.stringify(JSON.parse(event.data), null, '\t')}`)
     self.postMessage(event.data)
 }
 
@@ -52,9 +49,7 @@ self.addEventListener("message", e => {
             tryDisconnect()
             break
         case "update":
-            if (socket) {
-                socket.send(JSON.stringify(e.data.data))
-            }
+            if (socket) socket.send(JSON.stringify(e.data.data))
             break
         default:
             console.warn(`Unrecognized command '${e.data.command}'`)

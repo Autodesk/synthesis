@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
@@ -154,14 +153,6 @@ export class SimCAN {
 
 export class SimCANMotor {
     private constructor() {}
-
-    // public static GetDutyCycle(device: string): number | undefined {
-    //     return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
-    // }
-    //
-    // public static SetSupplyVoltage(device: string, voltage: number): boolean {
-    //     return SimGeneric.Set("CANMotor", device, CANMOTOR_SUPPLY_VOLTAGE, voltage)
-    // }
 
     public static GetPercentOutput(device: string): number | undefined {
         return SimGeneric.Get(SimType.CANMotor, device, CANMOTOR_PERCENT_OUTPUT, 0.0)

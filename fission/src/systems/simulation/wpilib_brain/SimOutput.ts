@@ -4,6 +4,8 @@ import SliderDriver from "../driver/SliderDriver"
 import WheelDriver from "../driver/WheelDriver"
 import { SimCAN, SimPWM, SimType } from "./WPILibBrain"
 
+// TODO: Averaging is probably not the right solution
+// If we do average, we need a better ui for creating one to one output group pairings
 export abstract class SimOutputGroup {
     public name: string
     public ports: number[]
@@ -49,7 +51,6 @@ export class CANOutputGroup extends SimOutputGroup {
         super(name, ports, drivers, SimType.CANMotor)
     }
 
-    // Averaging is probably not the right solution
     public Update(deltaT: number): void {
         const average =
             this.ports.reduce((sum, port) => {

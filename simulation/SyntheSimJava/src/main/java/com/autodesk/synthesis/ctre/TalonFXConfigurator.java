@@ -4,8 +4,6 @@ import com.ctre.phoenix6.hardware.DeviceIdentifier;
 import com.ctre.phoenix6.configs.TorqueCurrentConfigs;
 import com.ctre.phoenix6.StatusCode;
 
-//import com.ctre.phoenix6.configs.TalonFXConfigurator
-
 public class TalonFXConfigurator extends com.ctre.phoenix6.configs.TalonFXConfigurator {
     private TalonFX devicePtr;
 

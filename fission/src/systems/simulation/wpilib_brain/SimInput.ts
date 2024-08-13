@@ -19,8 +19,8 @@ export class SimEncoderInput implements SimInput {
     }
 
     public Update(_deltaT: number) {
-        SimCANEncoder.SetPosition(`${this._device}`, this._stimulus.positionValue)
-        SimCANEncoder.SetVelocity(`${this._device}`, this._stimulus.velocityValue)
+        SimCANEncoder.SetPosition(this._device, this._stimulus.positionValue)
+        SimCANEncoder.SetVelocity(this._device, this._stimulus.velocityValue)
     }
 }
 
@@ -62,7 +62,6 @@ export class SimGyroInput implements SimInput {
         const x = this.GetX()
         const y = this.GetY()
         const z = this.GetZ()
-        // console.log(`${this._device}\n${x}\n${y}\n${z}`)
         SimGyro.SetAngleX(this._device, x)
         SimGyro.SetAngleY(this._device, y)
         SimGyro.SetAngleZ(this._device, z)
