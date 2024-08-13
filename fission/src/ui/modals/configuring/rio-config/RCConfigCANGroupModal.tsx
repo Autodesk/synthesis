@@ -35,7 +35,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     const cans = simMap.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
-    const devices: [string, Map<string, number>][] = [...cans.entries()].filter(([_, data]) => data["<init"]).reverse()
+    const devices: [string, Map<string, number>][] = [...cans.entries()].filter(([_, data]) => data.get("<init")).reverse()
 
     return (
         <Modal

@@ -26,12 +26,20 @@ const TypoStyled = styled(Typography)({
     color: "white",
 })
 
+function formatMap(map: Map<string, number>): string {
+    let entries: string = ""
+    map.forEach((value, key) => {
+        entries += `${key} : ${value}`
+    })
+    return entries
+}
+
 function generateTableBody() {
     return (
         <TableBody>
             {simMap.has(SimType.PWM) ? (
                 [...simMap.get(SimType.PWM)!.entries()]
-                    .filter(x => x[1]["<init"] == true)
+                    .filter(x => x[1].get("<init") == 1)
                     .map(x => {
                         return (
                             <TableRow key={x[0]}>
@@ -42,7 +50,7 @@ function generateTableBody() {
                                     <TypoStyled>{x[0]}</TypoStyled>
                                 </TableCell>
                                 <TableCell>
-                                    <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                    <TypoStyled>{formatMap(x[1])}</TypoStyled>
                                 </TableCell>
                             </TableRow>
                         )
@@ -61,7 +69,7 @@ function generateTableBody() {
                                 <TypoStyled>{x[0]}</TypoStyled>
                             </TableCell>
                             <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
                             </TableCell>
                         </TableRow>
                     )
@@ -80,7 +88,7 @@ function generateTableBody() {
                                 <TypoStyled>{x[0]}</TypoStyled>
                             </TableCell>
                             <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
                             </TableCell>
                         </TableRow>
                     )
@@ -99,7 +107,7 @@ function generateTableBody() {
                                 <TypoStyled>{x[0]}</TypoStyled>
                             </TableCell>
                             <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
                             </TableCell>
                         </TableRow>
                     )
