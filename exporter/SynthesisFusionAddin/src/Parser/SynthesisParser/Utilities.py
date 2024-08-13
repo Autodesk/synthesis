@@ -1,9 +1,10 @@
 import math
 import uuid
-from typing import Any
 
 import adsk.core
 import adsk.fusion
+
+from src.Proto import assembly_pb2
 
 
 def guid_component(comp: adsk.fusion.Component) -> str:
@@ -18,15 +19,15 @@ def guid_none(_: None) -> str:
     return str(uuid.uuid4())
 
 
-def fill_info(proto_obj: Any, fus_object: adsk.fusion.Component, override_guid: str | None = None) -> None:
+def fill_info(proto_obj: assembly_pb2.Assembly, fus_object: adsk.core.Base, override_guid: str | None = None) -> None:
     construct_info("", proto_obj, fus_object=fus_object, GUID=override_guid)
 
 
 def construct_info(
     name: str,
-    proto_obj: Any,
+    proto_obj: assembly_pb2.Assembly,
     version: int = 5,
-    fus_object: adsk.fusion.Component | None = None,
+    fus_object: adsk.core.Base | None = None,
     GUID: str | None = None,
 ) -> None:
     """Constructs a info object from either a name or a fus_object
@@ -48,20 +49,15 @@ def construct_info(
 
     if fus_object is not None:
         proto_obj.info.name = fus_object.name
-    elif name is not None:
-        proto_obj.info.name = name
     else:
-        raise ValueError("Cannot construct info from no name or fus_object")
+        proto_obj.info.name = name
 
     if GUID is not None:
         proto_obj.info.GUID = str(GUID)
+    elif fus_object is not None and hasattr(fus_object, "entityToken"):
+        proto_obj.info.GUID = fus_object.entityToken
     else:
-        try:
-            # attempt to get entity token
-            proto_obj.info.GUID = fus_object.entityToken
-        except AttributeError:
-            # fails and gets new uuid
-            proto_obj.info.GUID = str(uuid.uuid4())
+        proto_obj.info.GUID = str(uuid.uuid4())
 
 
 # Transition: AARD-1765
