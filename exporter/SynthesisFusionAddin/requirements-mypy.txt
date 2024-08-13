@@ -1,3 +1,3 @@
 mypy
 types-protobuf
-types-request
+types-requests
