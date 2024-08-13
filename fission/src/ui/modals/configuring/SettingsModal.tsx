@@ -71,11 +71,6 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         setQualitySettings(selected)
                     }}
                 />
-                {/** Theme editor disabled for now */}
-                {/* {Spacer(5)}
-                <Box alignSelf={"center"}>
-                    <Button value="Theme Editor" onClick={() => openModal("theme-editor")} />
-                </Box> */}
                 {Spacer(5)}
                 <Label size={LabelSize.Medium}>Camera Settings</Label>
                 <Slider

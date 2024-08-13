@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { BiMenuAltLeft } from "react-icons/bi"
 import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
@@ -10,6 +9,7 @@ import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
+import { Box } from "@mui/material"
 
 type ButtonProps = {
     value: string
@@ -65,11 +65,26 @@ const MainHUD: React.FC = () => {
     return (
         <>
             {!isOpen && (
-                <ButtonIcon
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="absolute left-6 top-6 focus:outline-0 focus-visible:outline-0"
-                    value={<BiMenuAltLeft size={65} className="text-main-hud-close-icon" />}
-                />
+                <Box
+                    display="flex"
+                    alignItems={"center"}
+                    height="100%"
+                    position={"absolute"}
+                    sx={{ top: "0", left: "0" }}
+                >
+                    <Box
+                        position="absolute"
+                        className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
+                        sx={{
+                            borderTopRightRadius: "100px",
+                            borderBottomRightRadius: "100px",
+                            borderTopLeftRadius: "0",
+                            borderBottomLeftRadius: "0",
+                        }}
+                    >
+                        <ButtonIcon onClick={() => setIsOpen(!isOpen)} value={SynthesisIcons.OpenHudIcon} />
+                    </Box>
+                </Box>
             )}
             <motion.div
                 initial="closed"

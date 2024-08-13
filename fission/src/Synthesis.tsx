@@ -127,6 +127,8 @@ function Synthesis() {
         if (PreferencesSystem.getGlobalPreference("RenderScoreboard") && !scoreboardExists) {
             openPanel("scoreboard")
         }
+
+        openPanel("import-mirabuf")
     })
 
     const onConsent = useCallback(() => {

@@ -4,7 +4,7 @@ import Button, { ButtonProps, ButtonSize } from "./Button"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
 import { AiOutlinePlus } from "react-icons/ai"
-import { BiRefresh } from "react-icons/bi"
+import { BiMenuAltLeft, BiRefresh } from "react-icons/bi"
 import { AiFillWarning } from "react-icons/ai"
 import { BsCodeSquare } from "react-icons/bs"
 import { GiSteeringWheel } from "react-icons/gi"
@@ -62,6 +62,8 @@ export class SynthesisIcons {
     public static EditLarge = (<IoPencil size={"1.25rem"} />)
     public static LeftArrowLarge = (<FaArrowLeft size={"1.25rem"} />)
     public static BugLarge = (<FaBug size={"1.25rem"} />)
+
+    public static OpenHudIcon = (<BiMenuAltLeft size={"3rem"} color="black" />)
 }
 
 export const SectionDivider = styled(Divider)({
