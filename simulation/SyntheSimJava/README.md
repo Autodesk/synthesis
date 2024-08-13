@@ -19,9 +19,9 @@ A list of the 3rd-Party libraries SyntheSimJava supports, including the features
 - [x] TalonFX
   - [x] Basic motor control
   - [x] Full configuration support (via a [TalonFXConfigurator](src/main/com/autodesk/synthesis/ctre/TalonFXConfigurator.java) wrapper)
-  - [ ] Basic internal encoder data
-  - [ ] Motor following
-  - [ ] Full encoder support
+  - [x] Basic internal encoder data
+  - [x] Motor following
+  - [x] Full encoder support
 
 ## Building
 
@@ -93,3 +93,5 @@ dependencies {
 ### Swapping Imports
 
 SyntheSimJava creates alternative classes that wrap the original ones. Everything that we intercept is passed on to the original class, making it so these classes can (although not recommended) be used when running your robot code on original hardware. Be sure to switch over any and all CAN devices that this project supports in order to effectively simulate your code inside of Synthesis, or with any HALSim, WebSocket supported simulation/device.
+
+The one exception to this is the `CANSparkMax.getAbsoluteEncoder()` method, which you must substitute for the `CANSparkMax.getAbsoluteEncoderSim()` method, because we were unable to override the original, because we are unable to wrap the return type `SparkAbsoluteEncoder`, because it's constructor is private. We instead created a class that implements all the same interfaces and has all the same methods, and thus works exactly the same, except it isn't an explicit subclass of `SparkAbsoluteEncoder`. The only difference to the API is the method name, everything else operates identically.
