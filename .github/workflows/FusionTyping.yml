@@ -9,20 +9,17 @@ on:
 
 jobs:
   mypy:
+    strategy:
+      matrix:
+        target: [
+          "exporter/SynthesisFusionAddin",
+        ]
+    name: Run mypy on ${{ matrix.target }}
     runs-on: ubuntu-latest
     steps:
-      - name: Setup Python
-        uses: actions/setup-python@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
         with:
-          python-version: '3.9'
-          architecture: x64
-      - name: Checkout
-        uses: actions/checkout@v3
-      - name: Install mypy
-        run: pip install mypy
-      - name: Run mypy
-        uses: sasanquaneuf/mypy-github-action@releases/v1
-        with:
-          checkName: 'mypy'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          python-version: "3.11"
+      - run: pip install mypy
+      - run: mypy --config-file ${{ matrix.target }}/mypy.ini
