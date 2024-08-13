@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install mypy
+      - run: pip install ./exporter/SynthesisFusionAddin/requirements.txt
       - name: Test mypy
         working-directory: ./exporter/SynthesisFusionAddin
         run: mypy
