@@ -44,7 +44,7 @@ from src.UI.Toolbar import Toolbar
 
 
 @logFailure
-def run(_context: dict[str, Any]):
+def run(_context: dict[str, Any]) -> None:
     """## Entry point to application from Fusion.
 
     Arguments:
