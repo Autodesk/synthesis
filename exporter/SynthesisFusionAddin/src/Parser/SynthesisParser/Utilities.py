@@ -1,15 +1,16 @@
 import math
 import uuid
+from typing import Any
 
-from adsk.core import Vector3D
-from adsk.fusion import Component, Occurrence
+import adsk.core
+import adsk.fusion
 
 
-def guid_component(comp: Component) -> str:
+def guid_component(comp: adsk.fusion.Component) -> str:
     return f"{comp.entityToken}_{comp.id}"
 
 
-def guid_occurrence(occ: Occurrence) -> str:
+def guid_occurrence(occ: adsk.fusion.Occurrence) -> str:
     return f"{occ.entityToken}_{guid_component(occ.component)}"
 
 
@@ -17,11 +18,17 @@ def guid_none(_: None) -> str:
     return str(uuid.uuid4())
 
 
-def fill_info(proto_obj, fus_object, override_guid=None) -> None:
+def fill_info(proto_obj: Any, fus_object: adsk.fusion.Component, override_guid: str | None = None) -> None:
     construct_info("", proto_obj, fus_object=fus_object, GUID=override_guid)
 
 
-def construct_info(name: str, proto_obj, version=5, fus_object=None, GUID=None) -> None:
+def construct_info(
+    name: str,
+    proto_obj: Any,
+    version: int = 5,
+    fus_object: adsk.fusion.Component | None = None,
+    GUID: str | None = None,
+) -> None:
     """Constructs a info object from either a name or a fus_object
 
     Args:
@@ -57,8 +64,10 @@ def construct_info(name: str, proto_obj, version=5, fus_object=None, GUID=None) 
             proto_obj.info.GUID = str(uuid.uuid4())
 
 
+# Transition: AARD-1765
+# Will likely be removed later as this is no longer used. Avoiding adding typing for now.
 # My previous function was alot more optimized however now I realize the bug was this doesn't work well with degrees
-def euler_to_quaternion(r):
+def euler_to_quaternion(r):  # type: ignore
     (yaw, pitch, roll) = (r[0], r[1], r[2])
     qx = math.sin(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) - math.cos(roll / 2) * math.sin(
         pitch / 2
@@ -75,7 +84,7 @@ def euler_to_quaternion(r):
     return [qx, qy, qz, qw]
 
 
-def rad_to_deg(rad):
+def rad_to_deg(rad):  # type: ignore
     """Very simple method to convert Radians to degrees
 
     Args:
@@ -87,7 +96,7 @@ def rad_to_deg(rad):
     return (rad * 180) / math.pi
 
 
-def quaternion_to_euler(qx, qy, qz, qw):
+def quaternion_to_euler(qx, qy, qz, qw):  # type: ignore
     """Takes in quat values and converts to degrees
 
     - roll is x axis - atan2(2(qwqy + qzqw), 1-2(qy^2 + qz^2))
@@ -127,7 +136,7 @@ def quaternion_to_euler(qx, qy, qz, qw):
     return round(roll, 4), round(pitch, 4), round(yaw, 4)
 
 
-def throwZero():
+def throwZero():  # type: ignore
     """Simple function to report incorrect quat values
 
     Raises:
@@ -136,7 +145,7 @@ def throwZero():
     raise RuntimeError("While computing the quaternion the trace was reported as 0 which is invalid")
 
 
-def spatial_to_quaternion(mat):
+def spatial_to_quaternion(mat):  # type: ignore
     """Takes a 1D Spatial Transform Matrix and derives rotational quaternion
 
     I wrote this however it is difficult to extensibly test so use with caution
@@ -194,13 +203,13 @@ def spatial_to_quaternion(mat):
         raise RuntimeError("Supplied matrix to spatial_to_quaternion is not a 1D spatial matrix in size.")
 
 
-def normalize_quaternion(x, y, z, w):
+def normalize_quaternion(x, y, z, w):  # type: ignore
     f = 1.0 / math.sqrt((x * x) + (y * y) + (z * z) + (w * w))
     return x * f, y * f, z * f, w * f
 
 
-def _getAngleTo(vec_origin: list, vec_current: Vector3D) -> int:
-    origin = Vector3D.create(vec_origin[0], vec_origin[1], vec_origin[2])
+def _getAngleTo(vec_origin: list, vec_current: adsk.core.Vector3D) -> int:  # type: ignore
+    origin = adsk.core.Vector3D.create(vec_origin[0], vec_origin[1], vec_origin[2])
     val = origin.angleTo(vec_current)
     deg = val * (180 / math.pi)
-    return val
+    return val  # type: ignore

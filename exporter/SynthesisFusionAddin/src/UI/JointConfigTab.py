@@ -104,7 +104,7 @@ class JointConfigTab:
 
     @property
     def isVisible(self) -> bool:
-        return self.jointConfigTab.isVisible
+        return self.jointConfigTab.isVisible or False
 
     @isVisible.setter
     def isVisible(self, value: bool) -> None:
@@ -264,6 +264,7 @@ class JointConfigTab:
         )
 
         self.previousWheelCheckboxState.append(isWheel)
+        return True
 
     @logFailure
     def addWheel(self, joint: adsk.fusion.Joint, wheel: Wheel | None = None) -> None:
@@ -403,6 +404,14 @@ class JointConfigTab:
         self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
     ) -> None:
         commandInput = args.input
+        jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
+        jointTable: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
+        jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
+        jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
+            "jointSelectCancelButton"
+        )
+        jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
+
         if commandInput.id == "wheelType":
             wheelTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
             position = self.wheelConfigTable.getPosition(wheelTypeDropdown)[1]
@@ -443,22 +452,12 @@ class JointConfigTab:
                 wheelSignalItems.listItems.item(signalTypeDropdown.selectedItem.index).isSelected = True
 
         elif commandInput.id == "jointAddButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
-            jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "jointSelectCancelButton"
-            )
-            jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
-
             jointSelection.isVisible = jointSelection.isEnabled = True
             jointSelection.clearSelection()
             jointAddButton.isEnabled = jointRemoveButton.isEnabled = False
             jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = True
 
         elif commandInput.id == "jointRemoveButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointTable: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
-
             jointAddButton.isEnabled = True
 
             if jointTable.selectedRow == -1 or jointTable.selectedRow == 0:
@@ -468,12 +467,6 @@ class JointConfigTab:
                 self.removeIndexedJoint(jointTable.selectedRow - 1)  # selectedRow is 1 indexed
 
         elif commandInput.id == "jointSelectCancelButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
-            jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "jointSelectCancelButton"
-            )
-            jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
             jointSelection.isEnabled = jointSelection.isVisible = False
             jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
             jointAddButton.isEnabled = jointRemoveButton.isEnabled = True

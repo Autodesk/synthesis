@@ -7,7 +7,7 @@ from src.Types import OString
 
 
 @logFailure
-def captureThumbnail(size=250):
+def captureThumbnail(size: int = 250) -> str | os.PathLike[str]:
     """
     ## Captures Thumbnail and saves it to a temporary path - needs to be cleared after or on startup
     - Size: int (Default: 200) : (width & height)
@@ -23,7 +23,9 @@ def captureThumbnail(size=250):
 
     path = OString.ThumbnailPath(name)
 
-    saveOptions = adsk.core.SaveImageFileOptions.create(str(path.getPath()))
+    # Transition: AARD-1765
+    # Will be addressed in the OString refactor
+    saveOptions = adsk.core.SaveImageFileOptions.create(str(path.getPath()))  # type: ignore[attr-defined]
     saveOptions.height = size
     saveOptions.width = size
     saveOptions.isAntiAliased = True
@@ -36,7 +38,7 @@ def captureThumbnail(size=250):
     app.activeViewport.saveAsImageFileWithOptions(saveOptions)
     app.activeViewport.camera = originalCamera
 
-    return str(path.getPath())
+    return str(path.getPath())  # type: ignore[attr-defined]
 
 
 def clearIconCache() -> None:
@@ -44,7 +46,7 @@ def clearIconCache() -> None:
 
     This is useful for now but should be cached in the event the app is closed and re-opened.
     """
-    path = OString.ThumbnailPath("Whatever.png").getDirectory()
+    path = OString.ThumbnailPath("Whatever.png").getDirectory()  # type: ignore[attr-defined]
 
     for _r, _d, f in os.walk(path):
         for file in f:

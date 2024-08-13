@@ -5,6 +5,7 @@
 import os
 import pathlib
 from enum import Enum
+from typing import Any
 
 import adsk.core
 import adsk.fusion
@@ -36,7 +37,9 @@ INPUTS_ROOT (adsk.fusion.CommandInputs):
 INPUTS_ROOT = None
 
 
-def GUID(arg):
+# Transition: AARD-1765
+# This should be removed in the config command refactor. Seemingly impossible to type.
+def GUID(arg: str | adsk.core.Base) -> str | adsk.core.Base:
     """### Will return command object when given a string GUID, or the string GUID of an object (depending on arg value)
 
     Args:
@@ -49,7 +52,7 @@ def GUID(arg):
         object = gm.app.activeDocument.design.findEntityByToken(arg)[0]
         return object
     else:  # type(obj)
-        return arg.entityToken
+        return arg.entityToken  # type: ignore[union-attr]
 
 
 class JointMotions(Enum):
@@ -76,14 +79,13 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         - will be called from (@ref Events.py)
     """
 
-    def __init__(self, configure):
+    def __init__(self, configure: Any) -> None:
         super().__init__()
 
     @logFailure(messageBox=True)
-    def notify(self, args):
-        exporterOptions = ExporterOptions().readFromDesign()
-        eventArgs = adsk.core.CommandCreatedEventArgs.cast(args)
-        cmd = eventArgs.command  # adsk.core.Command
+    def notify(self, args: adsk.core.CommandCreatedEventArgs) -> None:
+        exporterOptions = ExporterOptions().readFromDesign() or ExporterOptions()
+        cmd = args.command
 
         # Set to false so won't automatically export on switch context
         cmd.isAutoExecute = False
@@ -284,16 +286,15 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.current = SerialCommand()
 
     @logFailure(messageBox=True)
-    def notify(self, args):
-        eventArgs = adsk.core.CommandEventArgs.cast(args)
+    def notify(self, args: adsk.core.CommandEventArgs) -> None:
         exporterOptions = ExporterOptions().readFromDesign()
 
-        if eventArgs.executeFailed:
+        if args.executeFailed:
             logger.error("Could not execute configuration due to failure")
             return
 
@@ -305,8 +306,8 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 # save was canceled
                 return
 
-            updatedPath = pathlib.Path(savepath).parent
-            if updatedPath != self.current.filePath:
+            updatedPath = pathlib.Path(str(savepath)).parent
+            if str(updatedPath) != self.current.filePath:
                 self.current.filePath = str(updatedPath)
         else:
             savepath = processedFileName
@@ -326,7 +327,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             units = gamepieceConfigTab.selectedUnits
 
         exporterOptions = ExporterOptions(
-            savepath,
+            str(savepath),
             name,
             version,
             materials=0,
@@ -362,12 +363,12 @@ class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
         adsk (CommandEventHandler): Command event handler that a client derives from to handle events triggered by a CommandEvent.
     """
 
-    def __init__(self, cmd) -> None:
+    def __init__(self, cmd: adsk.core.Command) -> None:
         super().__init__()
         self.cmd = cmd
 
     @logFailure(messageBox=True)
-    def notify(self, args):
+    def notify(self, args: adsk.core.CommandEventArgs) -> None:
         """Notify member called when a command event is triggered
 
         Args:
@@ -386,22 +387,26 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
 
     lastInputCmd = None
 
-    def __init__(self, cmd):
+    def __init__(self, cmd: adsk.core.Command) -> None:
         super().__init__()
         self.cmd = cmd
 
-        self.allWheelPreselections = []  # all child occurrences of selections
-        self.allGamepiecePreselections = []  # all child gamepiece occurrences of selections
+        # Transition: AARD-1765
+        # self.allWheelPreselections = []  # all child occurrences of selections
+        # self.allGamepiecePreselections = []  # all child gamepiece occurrences of selections
 
         self.selectedOcc = None  # selected occurrence (if there is one)
         self.selectedJoint = None  # selected joint (if there is one)
 
-        self.wheelJointList = []
+        # Transition: AARD-1765
+        # self.wheelJointList = []
         self.algorithmicSelection = True
 
     @logFailure(messageBox=True)
     def traverseAssembly(
-        self, child_occurrences: adsk.fusion.OccurrenceList, jointedOcc: dict
+        self, child_occurrences: adsk.fusion.OccurrenceList, jointedOcc: dict[adsk.fusion.Joint, adsk.fusion.Occurrence]
+    ) -> (
+        list[adsk.fusion.Joint | adsk.fusion.Occurrence] | None
     ):  # recursive traversal to check if children are jointed
         """### Traverses the entire occurrence hierarchy to find a match (jointed occurrence) in self.occurrence
 
@@ -422,7 +427,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
         return None  # no jointed occurrence found
 
     @logFailure(messageBox=True)
-    def wheelParent(self, occ: adsk.fusion.Occurrence):
+    def wheelParent(self, occ: adsk.fusion.Occurrence) -> list[str | adsk.fusion.Occurrence | None]:
         """### Identify an occurrence that encompasses the entire wheel component.
 
         Process:
@@ -490,7 +495,7 @@ class MySelectHandler(adsk.core.SelectionEventHandler):
         return [None, occ]  # no jointed occurrence found, return what is selected
 
     @logFailure(messageBox=True)
-    def notify(self, args: adsk.core.SelectionEventArgs):
+    def notify(self, args: adsk.core.SelectionEventArgs) -> None:
         """### Notify member is called when a selection event is triggered.
 
         Args:
@@ -512,12 +517,12 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
     Args: SelectionEventHandler
     """
 
-    def __init__(self, cmd):
+    def __init__(self, cmd: adsk.core.Command) -> None:
         super().__init__()
         self.cmd = cmd
 
     @logFailure(messageBox=True)
-    def notify(self, args):
+    def notify(self, args: adsk.core.SelectionEventArgs) -> None:
         design = adsk.fusion.Design.cast(gm.app.activeProduct)
         preSelectedOcc = adsk.fusion.Occurrence.cast(args.selection.entity)
         preSelectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
@@ -539,12 +544,12 @@ class MyPreselectEndHandler(adsk.core.SelectionEventHandler):
     Args: SelectionEventArgs
     """
 
-    def __init__(self, cmd):
+    def __init__(self, cmd: adsk.core.Command) -> None:
         super().__init__()
         self.cmd = cmd
 
     @logFailure(messageBox=True)
-    def notify(self, args):
+    def notify(self, args: adsk.core.SelectionEventArgs) -> None:
         design = adsk.fusion.Design.cast(gm.app.activeProduct)
         preSelectedOcc = adsk.fusion.Occurrence.cast(args.selection.entity)
         preSelectedJoint = adsk.fusion.Joint.cast(args.selection.entity)
@@ -560,7 +565,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
     Args: InputChangedEventHandler
     """
 
-    def __init__(self, cmd):
+    def __init__(self, cmd: adsk.core.Command) -> None:
         super().__init__()
         self.cmd = cmd
         self.allWeights = [None, None]  # [lbs, kg]
@@ -568,7 +573,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
         self.isLbs_f = True
 
     @logFailure
-    def reset(self):
+    def reset(self) -> None:
         """### Process:
         - Reset the mouse icon to default
         - Clear active selections
@@ -576,7 +581,7 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
         self.cmd.setCursor("", 0, 0)
         gm.ui.activeSelections.clear()
 
-    def notify(self, args):
+    def notify(self, args: adsk.core.InputChangedEventArgs) -> None:
         generalConfigTab.handleInputChanged(args)
 
         if jointConfigTab.isVisible:
@@ -593,11 +598,8 @@ class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
     Args: CommandEventHandler
     """
 
-    def __init__(self):
-        super().__init__()
-
     @logFailure(messageBox=True)
-    def notify(self, args):
+    def notify(self, args: adsk.core.CommandEventArgs) -> None:
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
 

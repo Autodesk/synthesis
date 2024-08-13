@@ -1,3 +1,5 @@
+from typing import cast
+
 import adsk.core
 import adsk.fusion
 
@@ -37,7 +39,7 @@ def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = Non
     dialogResult = fileDialog.showSave()
 
     if dialogResult == adsk.core.DialogResults.DialogOK:
-        return fileDialog.filename
+        return cast(str, fileDialog.filename)
     else:
         return False
 
@@ -51,7 +53,9 @@ def generateFilePath() -> str:
     Returns:
         str: file path
     """
-    tempPath = OString.TempPath("").getPath()
+    # Transition: AARD-1765
+    # Ignoring the type for now, will revisit in the OString refactor
+    tempPath = OString.TempPath("").getPath()  # type: ignore
     return str(tempPath)
 
 
@@ -74,5 +78,4 @@ def generateFileName() -> str:
     return "{0}_{1}.mira".format(name, version)
 
 
-def OpenFileDialog():
-    pass
+def OpenFileDialog() -> None: ...

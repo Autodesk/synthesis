@@ -1,4 +1,8 @@
+from typing import Any
+
 import adsk.core
+
+# from src.UI.HUI import HButton
 
 
 class HButtonCommandCreatedEvent(adsk.core.CommandCreatedEventHandler):
@@ -8,17 +12,17 @@ class HButtonCommandCreatedEvent(adsk.core.CommandCreatedEventHandler):
     **adsk.core.CommandCreatedEventHandler** -- Parent abstract created event class
     """
 
-    def __init__(self, button):
+    def __init__(self, button: Any) -> None:
         super().__init__()
         self.button = button
 
-    def notify(self, args):
+    def notify(self, args: adsk.core.CommandCreatedEventArgs) -> None:
         """## Called when parent button object is created and links the execute function pointer.
 
         Arguments:
             **args** *args* -- List of arbitrary info given to fusion event handlers.
         """
-        cmd = adsk.core.CommandCreatedEventArgs.cast(args).command
+        cmd = args.command
 
         if self.button.check_func():
             onExecute = HButtonCommandExecuteHandler(self.button)
@@ -33,11 +37,11 @@ class HButtonCommandExecuteHandler(adsk.core.CommandEventHandler):
     **adsk.core.CommandEventHandler** -- Fusion CommandEventHandler Abstract parent to link notify to ui.
     """
 
-    def __init__(self, button):
+    def __init__(self, button: Any) -> None:
         super().__init__()
         self.button = button
 
-    def notify(self, _):
+    def notify(self, _: adsk.core.CommandEventArgs) -> None:
         self.button.exec_func()
 
 

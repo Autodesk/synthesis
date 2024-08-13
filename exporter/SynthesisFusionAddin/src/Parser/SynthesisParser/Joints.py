@@ -24,7 +24,7 @@ Each root child has a number of children that are all rigidly attached to the dy
 
 import traceback
 import uuid
-from typing import Union
+from typing import Any, Callable, Union
 
 import adsk.core
 import adsk.fusion
@@ -38,7 +38,7 @@ from src.Parser.SynthesisParser.Utilities import (
     fill_info,
     guid_occurrence,
 )
-from src.Types import JointParentType, SignalType
+from src.Types import Joint, JointParentType, SignalType, Wheel
 
 logger = getLogger()
 
@@ -71,7 +71,7 @@ def populateJoints(
     progressDialog: PDMessage,
     options: ExporterOptions,
     assembly: assembly_pb2.Assembly,
-):
+) -> None:
     fill_info(joints, None)
 
     # This is for creating all of the Joint Definition objects
@@ -152,7 +152,7 @@ def populateJoints(
             continue
 
 
-def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint):
+def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint) -> None:
     fill_info(joint_definition, joint)
 
     jointPivotTranslation = _jointOrigin(joint)
@@ -177,7 +177,7 @@ def _addJointInstance(
     joint_definition: joint_pb2.Joint,
     signals: signal_pb2.Signals,
     options: ExporterOptions,
-):
+) -> None:
     fill_info(joint_instance, joint)
     # because there is only one and we are using the token - should be the same
     joint_instance.joint_reference = joint_instance.info.GUID
@@ -232,7 +232,7 @@ def _addJointInstance(
                     joint_instance.signal_reference = ""
 
 
-def _addRigidGroup(joint: adsk.fusion.Joint, assembly: assembly_pb2.Assembly):
+def _addRigidGroup(joint: adsk.fusion.Joint, assembly: assembly_pb2.Assembly) -> None:
     if joint.jointMotion.jointType != 0 or not (
         joint.occurrenceOne.isLightBulbOn and joint.occurrenceTwo.isLightBulbOn
     ):
@@ -249,22 +249,22 @@ def _motionFromJoint(fusionMotionDefinition: adsk.fusion.JointMotion, proto_join
     # if fusionJoint.geometryOrOriginOne.objectType == "adsk::fusion::JointGeometry"
     # create the DOF depending on what kind of information the joint has
 
-    fillJointMotionFuncSwitcher = {
-        0: noop,  # this should be ignored
+    fillJointMotionFuncSwitcher: dict[int, Callable[..., None]] = {
+        0: notImplementedPlaceholder,  # this should be ignored
         1: fillRevoluteJointMotion,
         2: fillSliderJointMotion,
-        3: noop,  # TODO: Implement - Ball Joint at least
-        4: noop,  # TODO: Implement
-        5: noop,  # TODO: Implement
-        6: noop,  # TODO: Implement
+        3: notImplementedPlaceholder,  # TODO: Implement - Ball Joint at least
+        4: notImplementedPlaceholder,  # TODO: Implement
+        5: notImplementedPlaceholder,  # TODO: Implement
+        6: notImplementedPlaceholder,  # TODO: Implement
     }
 
-    fillJointMotionFunc = fillJointMotionFuncSwitcher.get(fusionMotionDefinition.jointType, lambda: None)
+    fillJointMotionFunc = fillJointMotionFuncSwitcher.get(fusionMotionDefinition.jointType, notImplementedPlaceholder)
 
     fillJointMotionFunc(fusionMotionDefinition, proto_joint)
 
 
-def fillRevoluteJointMotion(revoluteMotion: adsk.fusion.RevoluteJointMotion, proto_joint: joint_pb2.Joint):
+def fillRevoluteJointMotion(revoluteMotion: adsk.fusion.RevoluteJointMotion, proto_joint: joint_pb2.Joint) -> None:
     """#### Fill Protobuf revolute joint motion data
 
     Args:
@@ -338,9 +338,7 @@ def fillSliderJointMotion(sliderMotion: adsk.fusion.SliderJointMotion, proto_joi
     dof.value = sliderMotion.slideValue
 
 
-def noop(*argv):
-    """Easy way to keep track of no-op code that required function pointers"""
-    pass
+def notImplementedPlaceholder(*argv: Any) -> None: ...
 
 
 def _searchForGrounded(
@@ -431,9 +429,9 @@ def _jointOrigin(fusionJoint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]
 
 
 def createJointGraph(
-    supplied_joints: list,
-    wheels: list,
-    joint_tree: types_pb2.GraphContainer,
+    suppliedJoints: list[Joint],
+    _wheels: list[Wheel],
+    jointTree: types_pb2.GraphContainer,
     progressDialog: PDMessage,
 ) -> None:
     # progressDialog.message = f"Building Joint Graph Map from given joints"
@@ -442,44 +440,43 @@ def createJointGraph(
     progressDialog.update()
 
     # keep track of current nodes to link them
-    node_map = dict({})
+    nodeMap = dict()
 
     # contains all of the static ground objects
     groundNode = types_pb2.Node()
     groundNode.value = "ground"
 
-    node_map[groundNode.value] = groundNode
+    nodeMap[groundNode.value] = groundNode
 
     # addWheelsToGraph(wheels, groundNode, joint_tree)
 
     # first iterate through to create the nodes
-    for supplied_joint in supplied_joints:
+    for suppliedJoint in suppliedJoints:
         newNode = types_pb2.Node()
-        newNode.value = supplied_joint.jointToken
-        node_map[newNode.value] = newNode
+        newNode.value = suppliedJoint.jointToken
+        nodeMap[newNode.value] = newNode
 
     # second sort them
-    for supplied_joint in supplied_joints:
-        current_node = node_map[supplied_joint.jointToken]
-        if supplied_joint.parent == JointParentType.ROOT:
-            node_map["ground"].children.append(node_map[supplied_joint.jointToken])
-        elif node_map[supplied_joint.parent.value] is not None and node_map[supplied_joint.jointToken] is not None:
-            node_map[supplied_joint.parent].children.append(node_map[supplied_joint.jointToken])
+    for suppliedJoint in suppliedJoints:
+        if suppliedJoint.parent == JointParentType.ROOT:
+            nodeMap["ground"].children.append(nodeMap[suppliedJoint.jointToken])
+        elif nodeMap[suppliedJoint.parent.value] is not None and nodeMap[suppliedJoint.jointToken] is not None:
+            nodeMap[str(suppliedJoint.parent)].children.append(nodeMap[suppliedJoint.jointToken])
         else:
-            logger.error(f"Cannot construct hierarhcy because of detached tree at : {supplied_joint.jointToken}")
+            logger.error(f"Cannot construct hierarhcy because of detached tree at : {suppliedJoint.jointToken}")
 
-    for node in node_map.values():
+    for node in nodeMap.values():
         # append everything at top level to isolate kinematics
-        joint_tree.nodes.append(node)
+        jointTree.nodes.append(node)
 
 
-def addWheelsToGraph(wheels: list, rootNode: types_pb2.Node, joint_tree: types_pb2.GraphContainer):
+def addWheelsToGraph(wheels: list[Wheel], rootNode: types_pb2.Node, jointTree: types_pb2.GraphContainer) -> None:
     for wheel in wheels:
         # wheel name
         # wheel signal
         # wheel occ id
         # these don't have children
         wheelNode = types_pb2.Node()
-        wheelNode.value = wheel.occurrenceToken
+        wheelNode.value = wheel.jointToken
         rootNode.children.append(wheelNode)
-        joint_tree.nodes.append(wheelNode)
+        jointTree.nodes.append(wheelNode)

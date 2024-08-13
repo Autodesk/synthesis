@@ -179,8 +179,7 @@ class Parser:
             logger.debug("Uploading file to APS")
             project = app.data.activeProject
             if not project.isValid:
-                gm.ui.messageBox("Project is invalid", "")
-                return False  # add throw later
+                raise RuntimeError("Project is invalid")
             project_id = project.id
             folder_id = project.rootFolder.id
             file_name = f"{self.exporterOptions.fileLocation}.mira"
@@ -189,18 +188,17 @@ class Parser:
         else:
             assert self.exporterOptions.exportLocation == ExportLocation.DOWNLOAD
             # check if entire path exists and create if not since gzip doesn't do that.
-            path = pathlib.Path(self.exporterOptions.fileLocation).parent
+            path = pathlib.Path(str(self.exporterOptions.fileLocation)).parent
             path.mkdir(parents=True, exist_ok=True)
+            self.pdMessage.currentMessage = "Saving File..."
+            self.pdMessage.update()
             if self.exporterOptions.compressOutput:
                 logger.debug("Compressing file")
-                with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
-                    self.pdMessage.currentMessage = "Saving File..."
-                    self.pdMessage.update()
+                with gzip.open(str(self.exporterOptions.fileLocation), "wb", 9) as f:
                     f.write(assembly_out.SerializeToString())
             else:
-                f = open(self.exporterOptions.fileLocation, "wb")
-                f.write(assembly_out.SerializeToString())
-                f.close()
+                with open(str(self.exporterOptions.fileLocation), "wb") as f:
+                    f.write(assembly_out.SerializeToString())
 
         _ = progressDialog.hide()
 

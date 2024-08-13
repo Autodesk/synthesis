@@ -1,5 +1,6 @@
 import os
 import sys
+from typing import Any
 
 import adsk.core
 
@@ -36,7 +37,7 @@ from src.UI.Toolbar import Toolbar
 
 
 @logFailure
-def run(_):
+def run(_context: dict[str, Any]) -> None:
     """## Entry point to application from Fusion.
 
     Arguments:
@@ -56,7 +57,7 @@ def run(_):
 
 
 @logFailure
-def stop(_):
+def stop(_context: dict[str, Any]) -> None:
     """## Fusion exit point - deconstructs buttons and handlers
 
     Arguments:
