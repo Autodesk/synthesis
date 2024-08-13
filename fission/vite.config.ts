@@ -13,7 +13,7 @@ const useLocal = true
 export default defineConfig({
     plugins: [
         react(),
-        /* viteSingleFile() */ glsl({
+        glsl({
             include: [
                 // Glob pattern, or array of glob patterns to import
                 "**/*.glsl",
