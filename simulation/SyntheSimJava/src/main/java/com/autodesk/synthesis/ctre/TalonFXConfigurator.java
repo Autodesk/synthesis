@@ -15,7 +15,10 @@ public class TalonFXConfigurator extends com.ctre.phoenix6.configs.TalonFXConfig
         // if you know how to get a device from an id, let me know
         this.devicePtr = device;
     }
-
+    
+    /*
+     * Applies a torque configuration to a TalonFX motor and passes the new neutral deadband to the simulated motor in fission if applicable
+     */
     @Override
     public StatusCode apply(TorqueCurrentConfigs newTorqueCurrent) {
         StatusCode code = super.apply(newTorqueCurrent);
