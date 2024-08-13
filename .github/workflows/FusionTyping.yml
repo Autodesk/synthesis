@@ -11,12 +11,13 @@ jobs:
   mypy:
     name: Run mypy
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./exporter/SynthesisFusionAddin
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - run: pip install -r ./exporter/SynthesisFusionAddin/requirements-mypy.txt
-      - name: Test mypy
-        working-directory: ./exporter/SynthesisFusionAddin
-        run: mypy
+      - run: pip install -r requirements-mypy.txt
+      - run: mypy
