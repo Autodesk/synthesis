@@ -7,45 +7,15 @@ on:
   pull_request:
     branches: [ prod, dev ]
 
-# jobs:
-#   mypy:
-#     name: Run mypy
-#     runs-on: ubuntu-latest
-#     steps:
-#       - uses: actions/checkout@v4
-#       - uses: actions/setup-python@v5
-#         with:
-#           python-version: '3.11'
-#       - run: pip install mypy
-#       - run: mypy --config-file exporter/SynthesisFusionAddin/mypy.ini
-
-permissions:
-  contents: read
-
-env:
-  PIP_DISABLE_PIP_VERSION_CHECK: 1
-  FORCE_COLOR: 1
-  TERM: xterm-256color  # needed for FORCE_COLOR to work on mypy on Ubuntu, see https://github.com/python/mypy/issues/13817
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
-  cancel-in-progress: true
-
 jobs:
   mypy:
-    strategy:
-      fail-fast: false
-      matrix:
-        target: [
-          "exporter/SynthesisFusionAddin"
-        ]
-    name: Run mypy on ${{ matrix.target }}
+    name: Run mypy
     runs-on: ubuntu-latest
-    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
       - run: pip install mypy
-      - run: mypy --config-file ${{ matrix.target }}/mypy.ini
+      - run: cd exporter/SynthesisFusionAddin/
+      - run: mypy
