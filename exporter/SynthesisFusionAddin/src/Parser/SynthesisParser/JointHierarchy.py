@@ -104,9 +104,7 @@ class DynamicOccurrenceNode(GraphNode):
     def print(self) -> None:
         print(f"\n\t-------{self.data.name}-------")
         for edge in self.edges:
-            ...
-        # Transition: AARD-1765
-        # edge.print()
+            edge.print()
 
     def getConnectedAxis(self) -> list[Any]:
         """Gets all Axis with the NEXT relationship
