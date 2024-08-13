@@ -20,7 +20,6 @@ import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
 import ViewModal from "@/modals/ViewModal"
 import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "@/modals/aether/ServerHostingModal"
-import ChangeInputsModal from "@/ui/modals/configuring/ChangeInputsModal.tsx"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
 import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
@@ -37,13 +36,9 @@ import ThemeEditorModal from "@/modals/configuring/theme-editor/ThemeEditorModal
 import MatchModeModal from "@/modals/spawning/MatchModeModal"
 import RobotSwitchPanel from "@/panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
-import ConfigureGamepiecePickupPanel from "@/panels/configuring/ConfigureGamepiecePickupPanel"
-import ConfigureShotTrajectoryPanel from "@/panels/configuring/ConfigureShotTrajectoryPanel"
-import ScoringZonesPanel from "@/panels/configuring/scoring/ScoringZonesPanel"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
-import ManageAssembliesModal from "@/modals/spawning/ManageAssembliesModal.tsx"
 import World from "@/systems/World.ts"
 import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
@@ -51,14 +46,13 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import ConfigureRobotModal from "./ui/modals/configuring/ConfigureRobotModal.tsx"
-import ResetAllInputsModal from "./ui/modals/configuring/ResetAllInputsModal.tsx"
-import ZoneConfigPanel from "./ui/panels/configuring/scoring/ZoneConfigPanel.tsx"
+import ConfigureRobotBrainPanel from "./ui/panels/configuring/ConfigureRobotBrainPanel.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import Lazy from "./util/Lazy.ts"
+
 import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
 import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
 import DebugPanel from "./ui/panels/DebugPanel.tsx"
@@ -66,6 +60,9 @@ import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSc
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
+import ResetAllInputsModal from "./ui/modals/configuring/inputs/ResetAllInputsModal.tsx"
+import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
+import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -208,7 +205,6 @@ const initialModals = [
     <UpdateAvailableModal key="update-available" modalId="update-available" />,
     <ConnectToMultiplayerModal key="connect-to-multiplayer" modalId="connect-to-multiplayer" />,
     <ServerHostingModal key="server-hosting" modalId="server-hosting" />,
-    <ChangeInputsModal key="change-inputs" modalId="change-inputs" />,
     <ChooseMultiplayerModeModal key="multiplayer-mode" modalId="multiplayer-mode" />,
     <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
     <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,
@@ -223,10 +219,9 @@ const initialModals = [
     <RCConfigEncoderModal key="config-encoder" modalId="config-encoder" />,
     <MatchModeModal key="match-mode" modalId="match-mode" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
-    <ManageAssembliesModal key="manage-assemblies" modalId="manage-assemblies" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
-    <ConfigureRobotModal key="config-robot" modalId="config-robot" />,
     <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
+    <APSManagementModal key="aps-management" modalId="aps-management" />,
 ]
 
 const initialPanels: ReactElement[] = [
@@ -234,25 +229,18 @@ const initialPanels: ReactElement[] = [
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
-    <ConfigureGamepiecePickupPanel
-        key="config-gamepiece-pickup"
-        panelId="config-gamepiece-pickup"
-        openLocation="right"
-        sidePadding={8}
-    />,
-    <ConfigureShotTrajectoryPanel
-        key="config-shot-trajectory"
-        panelId="config-shot-trajectory"
-        openLocation="right"
-        sidePadding={8}
-    />,
-    <ScoringZonesPanel key="scoring-zones" panelId="scoring-zones" openLocation="right" sidePadding={8} />,
-    <ZoneConfigPanel key="zone-config" panelId="zone-config" openLocation="right" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
+    <ConfigureRobotBrainPanel
+        key="config-robot-brain"
+        panelId="config-robot-brain"
+        openLocation="right"
+        sidePadding={8}
+    />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
+    <ConfigurePanel key="configure" panelId="configure" />,
 ]
 
 export default Synthesis

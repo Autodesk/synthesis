@@ -2,7 +2,6 @@ import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
 export type GlobalPreference =
-    | "ScreenMode"
     | "QualitySettings"
     | "ZoomSensitivity"
     | "PitchSensitivity"
@@ -18,8 +17,7 @@ export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
 
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
-    ScreenMode: "Windowed",
-    QualitySettings: "High",
+    QualitySettings: "High" as QualitySetting,
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
@@ -30,6 +28,8 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderSceneTags: true,
     RenderScoreboard: true,
 }
+
+export type QualitySetting = "Low" | "Medium" | "High"
 
 export type IntakePreferences = {
     deltaTransformation: number[]
@@ -43,10 +43,29 @@ export type EjectorPreferences = {
     parentNode: string | undefined
 }
 
+export type BehaviorType = "Elevator" | "Arm"
+
+export type SequentialBehaviorPreferences = {
+    jointIndex: number
+    parentJointIndex: number | undefined
+    type: BehaviorType
+    inverted: boolean
+}
+
+export function DefaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
+    return {
+        jointIndex: index,
+        parentJointIndex: undefined,
+        type: type,
+        inverted: false,
+    }
+}
+
 export type RobotPreferences = {
     inputsSchemes: InputScheme[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    sequentialConfig?: SequentialBehaviorPreferences[]
 }
 
 export type Alliance = "red" | "blue"

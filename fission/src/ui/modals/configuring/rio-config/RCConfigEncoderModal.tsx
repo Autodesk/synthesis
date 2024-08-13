@@ -1,11 +1,11 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { useModalControlContext } from "@/ui/ModalContext"
-import { FaPlus } from "react-icons/fa6"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
 import NumberInput from "@/components/NumberInput"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -23,7 +23,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Create Device"
-            icon={<FaPlus />}
+            icon={SynthesisIcons.Add}
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {

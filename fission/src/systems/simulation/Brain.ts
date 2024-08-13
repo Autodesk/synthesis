@@ -3,8 +3,8 @@ import Mechanism from "../physics/Mechanism"
 abstract class Brain {
     protected _mechanism: Mechanism
 
-    constructor(mechansim: Mechanism) {
-        this._mechanism = mechansim
+    constructor(mechanism: Mechanism) {
+        this._mechanism = mechanism
     }
 
     public abstract Update(deltaT: number): void

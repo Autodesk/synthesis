@@ -1,14 +1,10 @@
-import logging
-import traceback
-
 import adsk.core
 import adsk.fusion
 
-from ..general_imports import INTERNAL_ID
-from ..Logging import logFailure
-from ..Types import Joint, JointParentType, SignalType, Wheel, WheelType
-from . import IconPaths
-from .CreateCommandInputsHelper import (
+from src.Logging import logFailure
+from src.Types import Joint, JointParentType, SignalType, Wheel, WheelType
+from src.UI import IconPaths
+from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
     createTableInput,
     createTextBoxInput,
@@ -105,6 +101,14 @@ class JointConfigTab:
         self.jointConfigTable.addToolbarCommandInput(jointSelectCancelButton)
 
         self.reset()
+
+    @property
+    def isVisible(self) -> bool:
+        return self.jointConfigTab.isVisible
+
+    @isVisible.setter
+    def isVisible(self, value: bool) -> None:
+        self.jointConfigTab.isVisible = value
 
     @logFailure
     def addJoint(self, fusionJoint: adsk.fusion.Joint, synJoint: Joint | None = None) -> bool:
@@ -297,6 +301,9 @@ class JointConfigTab:
         signalType.tooltip = "Wheel signal type is linked with the respective joint signal type."
         i = self.selectedJointList.index(joint)
         jointSignalType = SignalType(self.jointConfigTable.getInputAtPosition(i + 1, 3).selectedItem.index + 1)
+
+        # Invisible white space characters are required in the list item name field to make this work.
+        # I have no idea why, Fusion API needs some special education help - Brandon
         signalType.listItems.add("‎", jointSignalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
         signalType.listItems.add("‎", jointSignalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
         signalType.listItems.add("‎", jointSignalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
@@ -498,9 +505,7 @@ class JointConfigTab:
         jointSelectCancelButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointSelectCancelButton")
         jointSelection: adsk.core.SelectionCommandInput = commandInputs.itemById("jointSelection")
 
-        if self.jointConfigTable.rowCount <= 1:
-            jointRemoveButton.isEnabled = False
-
+        jointRemoveButton.isEnabled = self.jointConfigTable.rowCount > 1
         if not jointSelection.isEnabled:
-            jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
+            jointAddButton.isEnabled = True
             jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = False

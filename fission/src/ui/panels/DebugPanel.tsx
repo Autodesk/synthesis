@@ -6,7 +6,11 @@ import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { MainHUD_AddToast } from "../components/MainHUD"
 import { ToastType } from "../ToastContext"
 import { Random } from "@/util/Random"
-import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, {
+    backUpFields as hashedMiraFields,
+    backUpRobots as hashedMiraRobots,
+    MiraType,
+} from "@/mirabuf/MirabufLoader"
 import { Box, styled } from "@mui/material"
 import { usePanelControlContext } from "../PanelContext"
 import APS from "@/aps/APS"
@@ -15,7 +19,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import Jolt from "@barclah/jolt-physics"
 import Label from "../components/Label"
 import { colorNameToVar } from "../ThemeContext"
-import { FaScrewdriverWrench } from "react-icons/fa6"
+import { SynthesisIcons } from "../components/StyledComponents"
 import { useModalControlContext } from "../ModalContext"
 
 const LabelStyled = styled(Label)({
@@ -57,7 +61,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="center"
             name={"Debug Panel"}
-            icon={<FaScrewdriverWrench />}
+            icon={SynthesisIcons.ScrewdriverWrench}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"
@@ -113,6 +117,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     onClick={() => {
                         console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
                         console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
+                        console.log(hashedMiraRobots)
+                        console.log(hashedMiraFields)
                     }}
                 />
                 <Button value={"Clear Mira Cache"} onClick={() => MirabufCachingService.RemoveAll()} />

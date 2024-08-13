@@ -11,9 +11,9 @@ from dataclasses import dataclass, field, fields
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 
-from ..Logging import logFailure, timed
-from ..strings import INTERNAL_ID
-from ..Types import (
+from src import INTERNAL_ID
+from src.Logging import logFailure, timed
+from src.Types import (
     KG,
     ExportLocation,
     ExportMode,
@@ -47,9 +47,11 @@ class ExporterOptions:
 
     # Always stored in kg regardless of 'preferredUnits'
     robotWeight: KG = field(default=0.0)
+    autoCalcRobotWeight: bool = field(default=False)
+    autoCalcGamepieceWeight: bool = field(default=False)
 
     frictionOverride: bool = field(default=False)
-    frictionOverrideCoeff: float | None = field(default=None)
+    frictionOverrideCoeff: float = field(default=0.5)
 
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)

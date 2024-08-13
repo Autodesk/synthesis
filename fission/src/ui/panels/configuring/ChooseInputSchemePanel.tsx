@@ -4,14 +4,22 @@ import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeMana
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import Button from "@/ui/components/Button"
-import Label, { LabelSize } from "@/ui/components/Label"
+import { LabelSize } from "@/ui/components/Label"
+import {
+    EditButton,
+    DeleteButton,
+    SelectButton,
+    AddButtonInteractiveColor,
+    SectionLabel,
+    SectionDivider,
+    SynthesisIcons,
+} from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
-import { Box, Divider, styled } from "@mui/material"
+import { Box } from "@mui/material"
 import { useEffect, useReducer } from "react"
-import { AiOutlinePlus } from "react-icons/ai"
-import { IoCheckmark, IoPencil, IoTrashBin } from "react-icons/io5"
+import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurePanel"
+import { setSelectedScheme } from "./assembly-config/interfaces/inputs/ConfigureInputsInterface"
 
 let selectedBrainIndexGlobal: number | undefined = undefined
 // eslint-disable-next-line react-refresh/only-export-components
@@ -24,24 +32,10 @@ function getBrainIndex() {
 }
 
 const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const { closePanel } = usePanelControlContext()
+    const { closePanel, openPanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
 
     const [_, update] = useReducer(x => !x, false)
-
-    const AddIcon = <AiOutlinePlus size={"1.25rem"} />
-    const DeleteIcon = <IoTrashBin size={"1.25rem"} />
-    const SelectIcon = <IoCheckmark size={"1.25rem"} />
-    const EditIcon = <IoPencil size={"1.25rem"} />
-
-    const LabelStyled = styled(Label)({
-        fontWeight: 700,
-        margin: "0pt",
-    })
-
-    const DividerStyled = styled(Divider)({
-        borderColor: "white",
-    })
 
     useEffect(() => {
         closePanel("import-mirabuf")
@@ -49,16 +43,16 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         /** If the panel is closed before a scheme is selected, defaults to the top of the list */
         return () => {
             const brainIndex = getBrainIndex()
-            console.log(brainIndex)
 
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
             const scheme = InputSchemeManager.availableInputSchemes[0]
 
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
-            InputSystem.selectedScheme = scheme
 
-            openModal("change-inputs")
+            setSelectedConfigurationType(ConfigurationType.INPUTS)
+            setSelectedScheme(scheme)
+            openPanel("configure")
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -76,16 +70,17 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             openLocation={"right"}
             sidePadding={8}
             acceptEnabled={false}
+            icon={SynthesisIcons.Gamepad}
             cancelEnabled={selectedBrainIndexGlobal != undefined}
             cancelName="Close"
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
-            <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[45vh] bg-background-secondary rounded-md p-2">
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
                 {/** The label and divider at the top of the scroll view */}
-                <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${InputSchemeManager.availableInputSchemes.length} Input Schemes`}
-                </LabelStyled>
-                <DividerStyled />
+                </SectionLabel>
+                <SectionDivider />
 
                 {/** Creates list items with buttons */}
                 {InputSchemeManager.availableInputSchemes.map(scheme => {
@@ -98,9 +93,9 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             gap={"1rem"}
                             key={scheme.schemeName}
                         >
-                            <LabelStyled>
+                            <SectionLabel>
                                 {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
-                            </LabelStyled>
+                            </SectionLabel>
                             <Box
                                 component={"div"}
                                 display={"flex"}
@@ -110,49 +105,38 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 alignItems={"center"}
                             >
                                 {/** Select button */}
-                                <Button
-                                    value={SelectIcon}
-                                    onClick={() => {
-                                        InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
-                                        closePanel(panelId)
-                                    }}
-                                    colorOverrideClass="bg-accept-button hover:brightness-90"
-                                />
+                                {SelectButton(() => {
+                                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
+                                    closePanel(panelId)
+                                })}
                                 {/** Edit button - same as select but opens the inputs modal */}
-                                <Button
-                                    value={EditIcon}
-                                    onClick={() => {
-                                        InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
-                                        InputSystem.selectedScheme = scheme
-                                        openModal("change-inputs")
-                                    }}
-                                    colorOverrideClass="bg-accept-button hover:brightness-90"
-                                />
+                                {EditButton(() => {
+                                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
+
+                                    setSelectedConfigurationType(ConfigurationType.INPUTS)
+                                    setSelectedScheme(scheme)
+                                    openPanel("configure")
+                                })}
+
                                 {/** Delete button (only if the scheme is customized) */}
                                 {scheme.customized ? (
-                                    <>
-                                        <Button
-                                            value={DeleteIcon}
-                                            onClick={() => {
-                                                // Fetch current custom schemes
-                                                InputSchemeManager.saveSchemes()
-                                                InputSchemeManager.resetDefaultSchemes()
-                                                const schemes =
-                                                    PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+                                    DeleteButton(() => {
+                                        // Fetch current custom schemes
+                                        InputSchemeManager.saveSchemes()
+                                        InputSchemeManager.resetDefaultSchemes()
+                                        const schemes =
+                                            PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
 
-                                                // Find and remove this input scheme
-                                                const index = schemes.indexOf(scheme)
-                                                schemes.splice(index, 1)
+                                        // Find and remove this input scheme
+                                        const index = schemes.indexOf(scheme)
+                                        schemes.splice(index, 1)
 
-                                                // Save to preferences
-                                                PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
-                                                PreferencesSystem.savePreferences()
+                                        // Save to preferences
+                                        PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
+                                        PreferencesSystem.savePreferences()
 
-                                                update()
-                                            }}
-                                            colorOverrideClass="bg-cancel-button hover:brightness-90"
-                                        />
-                                    </>
+                                        update()
+                                    })
                                 ) : (
                                     <></>
                                 )}
@@ -162,13 +146,11 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 })}
             </div>
             {/** New scheme with a randomly assigned name button */}
-            <Button
-                value={AddIcon}
-                onClick={() => {
-                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), DefaultInputs.newBlankScheme)
-                    openModal("assign-new-scheme")
-                }}
-            />
+            {AddButtonInteractiveColor(() => {
+                InputSystem.brainIndexSchemeMap.set(getBrainIndex(), DefaultInputs.newBlankScheme)
+                openModal("assign-new-scheme")
+            })}
+
             <Box height="12px"></Box>
         </Panel>
     )

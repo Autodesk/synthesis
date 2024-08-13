@@ -1,4 +1,4 @@
-from ..general_imports import *
+import adsk.core
 
 
 class HButtonCommandCreatedEvent(adsk.core.CommandCreatedEventHandler):

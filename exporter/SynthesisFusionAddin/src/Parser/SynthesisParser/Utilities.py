@@ -1,10 +1,8 @@
 import math
 import uuid
 
-from adsk.core import Base, Vector3D
+from adsk.core import Vector3D
 from adsk.fusion import Component, Occurrence
-
-# from proto.proto_out import types_pb2
 
 
 def guid_component(comp: Component) -> str:
