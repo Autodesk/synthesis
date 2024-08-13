@@ -33,7 +33,7 @@ def getInternalFusionPythonInstillationFolder() -> str | os.PathLike[str]:
 
     # Depending on platform, adjust to folder to where the python executable binaries are stored.
     if SYSTEM == "Windows":
-        folder = str(Path(pythonStandardLibraryModulePath).parents[1])
+        folder = f"{Path(pythonStandardLibraryModulePath).parents[1]}"
     else:
         assert SYSTEM == "Darwin"
         folder = f"{Path(pythonStandardLibraryModulePath).parents[2]}/bin"
