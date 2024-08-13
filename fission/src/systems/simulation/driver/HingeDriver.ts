@@ -19,7 +19,7 @@ class HingeDriver extends Driver {
     public get constraint(): Jolt.HingeConstraint {
         return this._constraint
     }
-    
+
     private _prevAng: number = 0.0
 
     private _gravityChange?: (event: PreferenceEvent) => void
@@ -82,7 +82,7 @@ class HingeDriver extends Driver {
         }
 
         this.controlMode = DriverControlMode.Velocity
-        
+
         this._gravityChange = (event: PreferenceEvent) => {
             if (event.prefName == "SubsystemGravity") {
                 const motorSettings = this._constraint.GetMotorSettings()

@@ -24,7 +24,6 @@ class SliderDriver extends Driver {
 
     private _gravityChange?: (event: PreferenceEvent) => void
 
-
     public get targetPosition(): number {
         return this._targetPosition
     }
