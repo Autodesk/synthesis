@@ -106,8 +106,6 @@ export class SimGeneric {
         selectedData.set(field, value)
         data.set(field, value)
 
-        console.log("field " + field + " device " + device + " value " + value)
-
         worker.postMessage({
             command: "update",
             data: {
@@ -248,8 +246,6 @@ function UpdateSimMap(type: SimType, device: string, updateData: DeviceData) {
     }
 
     Object.entries(updateData).forEach(([key, value]) => currentData.set(key, value))
-
-    console.log("currentData " + [...currentData])
 
     window.dispatchEvent(new SimMapUpdateEvent(false))
 }
