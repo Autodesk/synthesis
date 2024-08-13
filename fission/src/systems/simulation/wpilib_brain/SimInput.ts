@@ -62,7 +62,6 @@ export class SimGyroInput implements SimInput {
         const x = this.GetX()
         const y = this.GetY()
         const z = this.GetZ()
-        // console.log(`${this._device}\n${x}\n${y}\n${z}`)
         SimGyro.SetAngleX(this._device, x)
         SimGyro.SetAngleY(this._device, y)
         SimGyro.SetAngleZ(this._device, z)
