@@ -1,21 +1,17 @@
 author: Synthesis Team
-summary: Tutorial for using Fusion360 exporter
+summary: Tutorial for using Fusion exporter
 id: FusionExporterCodelab
 tags: Python, Exporter, CAD
 categories: Python, CAD
-environments: Fusion360
+environments: Autodesk Fusion
 status: Draft
 feedback link: https://github.com/Autodesk/synthesis/issues
 
-# Synthesis Fusion 360 Exporter Addin
-
-## Intro
-
-The Synthesis Fusion 360 exporter is the tool used by both developers and users to export their CAD models into the Synthesis simulator. The exporter comes as an optional install component of every version of synthesis and requires Fusion 360 to be installed.
-
-For information regarding the manual install process visit the [Synthesis Fusion 360 Exporter](https://github.com/Autodesk/synthesis/tree/prod/exporter) source code for more information.
+# Synthesis Fusion Exporter Addin
 
 ## Getting Started
+
+The Synthesis Fusion exporter is the tool used by both developers and users to export their CAD models into the Synthesis simulator. The exporter installer and manual installation material can be found at our [downloads page](https://synthesis.autodesk.com/download.html).
 
 ### Manual Install
 
@@ -41,8 +37,6 @@ For information regarding the manual install process visit the [Synthesis Fusion
 under the `Utilities` tab.
 ![image_caption](img/fusion/fusion-utilities-with-synthesis.png)
 
-Thanks for installing the Synthesis Fusion Exporter! For any additional help visit our [Synthesis Community Discord Server](https://www.discord.gg/hHcF9AVgZA) where you can talk directly to our developers.
-
 ### Using an Installer
 
 Our automatic installer is still in development, visit the [Synthesis Discord Server](https://www.discord.gg/hHcF9AVgZA) for updates and any manual installing help.
@@ -53,6 +47,18 @@ Our automatic installer is still in development, visit the [Synthesis Discord Se
 After clicking the button, a panel will open up. This is the exporter. In this panel, you can provide us with most of the extra data we need to properly simulate your robot or field in Synthesis.
 
 ![image_caption](img/fusion/exporter-panel.png)
+
+## Usage
+
+### Toolbar Buttons
+
+Core panel
+
+APS Login
+
+The last toolbar button opens Synthesis for you.
+
+## Core Panel
 
 ### General Tab
 
@@ -76,7 +82,7 @@ This is where you will do most of your configuring. Here is a basic overview of 
 Notes:
 
 - All parts of your robot that you want to be movable must be a part of a joint. Otherwise the exporter will automatically attempt to ground the part. This is the cause for many problems relating to robots not moving expectedly.
-- When selecting your joints it is important that your robot is structured correctly. See [Design Hierarchy](#design-hierarchy) for more information.
+- When selecting your joints it is important that your robot is structured correctly. See [Design Hierarchy](#tips-on-design-hierarchy) for more information.
 - Signal type specifies what type of IO is used to control the wheel. This is needed for code emulation.
 
 ### Advanced Tab
@@ -103,7 +109,9 @@ The advanced tab has some optional toggles for disabling / enabling some more ad
 
 Note that some of these features are currently still experimental and may not be working or behave as expected.
 
-## Design Hierarchy
+## APS Login
+
+## Tips on Design Hierarchy
 
 Synthesis not only relys on the joints between parts to determine structure of your robot or field, but also the hierarchy of all the parts in the design. If you look at the browser, you can see the parent child relation ship between all our your parts, and it is important that you have them set correctly in order to ensure Synthesis knows your intentions.
 
