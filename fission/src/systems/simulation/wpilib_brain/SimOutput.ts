@@ -59,7 +59,7 @@ export class CANOutputGroup extends SimOutputGroup {
         const average =
             this.ports.reduce((sum, port) => {
                 const device = SimCAN.GetDeviceWithID(port, SimType.CANMotor)
-                return sum + device["<percentOutput"] ?? 0
+                return sum + (device?.get("<percentOutput") ?? 0)
             }, 0) / this.ports.length
 
         this.drivers.forEach(d => {

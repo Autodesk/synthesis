@@ -128,10 +128,10 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
             SimGeneric.Set(simType, device, field, JSON.parse(value))
             break
         case "boolean":
-            SimGeneric.Set(simType, device, field, value.toLowerCase() == "true")
+            SimGeneric.Set(simType, device, field, parseInt(value)) // 1 or 0 (change to float if needed)
             break
         default:
-            SimGeneric.Set(simType, device, field, value)
+            SimGeneric.Set(simType, device, field, parseFloat(value))
             break
     }
 }

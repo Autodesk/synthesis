@@ -83,12 +83,7 @@ export class SimGeneric {
         return (data.get(field) as T | undefined) ?? defaultValue
     }
 
-    public static Set<T extends string | boolean | number>(
-        simType: SimType,
-        device: string,
-        field: string,
-        value: T
-    ): boolean {
+    public static Set<T extends number>(simType: SimType, device: string, field: string, value: T): boolean {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a write or both field type`)
@@ -107,7 +102,7 @@ export class SimGeneric {
             return false
         }
 
-        const selectedData: DeviceData = new Map<string, string | boolean | number>()
+        const selectedData: DeviceData = new Map<string, number>()
         selectedData.set(field, value)
         data.set(field, value)
 
