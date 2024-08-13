@@ -63,7 +63,13 @@ class ScreenInteractionHandler {
         this._touchMove = e => e.preventDefault()
 
         this._domElement.addEventListener("pointermove", this._pointerMove)
-        this._domElement.addEventListener("wheel", this._wheelMove, { passive: false })
+        this._domElement.addEventListener("wheel", e => {
+            if (e.ctrlKey) {
+                e.preventDefault();
+            } else {
+                this._wheelMove
+            }
+        }, { passive: false })
         this._domElement.addEventListener("contextmenu", this._contextMenu)
         this._domElement.addEventListener("pointerdown", this._pointerDown)
         this._domElement.addEventListener("pointerup", this._pointerUp)
