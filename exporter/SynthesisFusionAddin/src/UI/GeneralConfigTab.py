@@ -156,6 +156,10 @@ class GeneralConfigTab:
             frictionOverrideButton.isVisible = frictionCoefficient.isVisible = False
 
     @property
+    def isActive(self) -> bool:
+        return self.generalOptionsTab.isActive or False
+
+    @property
     def exportMode(self) -> ExportMode:
         exportModeDropdown: adsk.core.DropDownCommandInput = self.generalOptionsTab.children.itemById(
             "exportModeDropdown"

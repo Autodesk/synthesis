@@ -109,6 +109,10 @@ class GamepieceConfigTab:
         self.gamepieceConfigTab.isVisible = value
 
     @property
+    def isActive(self) -> bool:
+        return self.gamepieceConfigTab.isActive or False
+
+    @property
     def selectedUnits(self) -> PreferredUnits:
         return self.currentUnits
 

@@ -582,12 +582,13 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
         gm.ui.activeSelections.clear()
 
     def notify(self, args: adsk.core.InputChangedEventArgs) -> None:
-        generalConfigTab.handleInputChanged(args)
+        if generalConfigTab.isActive:
+            generalConfigTab.handleInputChanged(args)
 
-        if jointConfigTab.isVisible:
+        if jointConfigTab.isVisible and jointConfigTab.isActive:
             jointConfigTab.handleInputChanged(args, INPUTS_ROOT)
 
-        if gamepieceConfigTab.isVisible:
+        if gamepieceConfigTab.isVisible and gamepieceConfigTab.isActive:
             gamepieceConfigTab.handleInputChanged(args, INPUTS_ROOT)
 
 

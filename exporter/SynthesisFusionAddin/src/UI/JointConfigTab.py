@@ -110,6 +110,10 @@ class JointConfigTab:
     def isVisible(self, value: bool) -> None:
         self.jointConfigTab.isVisible = value
 
+    @property
+    def isActive(self) -> bool:
+        return self.jointConfigTab.isActive or False
+
     @logFailure
     def addJoint(self, fusionJoint: adsk.fusion.Joint, synJoint: Joint | None = None) -> bool:
         if fusionJoint in self.selectedJointList:
