@@ -1,4 +1,4 @@
-from typing import Any, Callable
+from typing import Callable
 
 import adsk.core
 import adsk.fusion
@@ -9,7 +9,7 @@ from src.Logging import getLogger, logFailure
 
 # global mapping list of event handlers to keep them referenced for the duration of the command
 # handlers = {}
-handlers: list[Any] = []
+handlers: list[adsk.core.EventHandler] = []
 cmdDefs: list[adsk.core.CommandDefinition] = []
 entities: list[adsk.fusion.Occurrence] = []
 
