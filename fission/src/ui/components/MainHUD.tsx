@@ -34,7 +34,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
         >
             {larger && icon}
             {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
-            <span className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}>{value}</span>
+            <span className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} text-main-text cursor-pointer`}>{value}</span>
         </Button>
     )
 }
@@ -98,7 +98,7 @@ const MainHUD: React.FC = () => {
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img src={logo} className="w-[80%] h-[100%] object-contain" />
                     <ButtonIcon
-                        value={<FaXmark color="bg-icon" size={30} className="text-main-hud-close-icon" />}
+                        value={<FaXmark color="bg-icon" size={23} className="text-main-hud-close-icon" />}
                         onClick={() => setIsOpen(false)}
                     />
                 </div>
@@ -108,7 +108,11 @@ const MainHUD: React.FC = () => {
                     larger={true}
                     onClick={() => openPanel("import-mirabuf")}
                 />
-                <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
+                <Box
+                    display="flex"
+                    flexDirection={"column"}
+                    sx={{ backgroundColor: "black", borderRadius: "7px", padding: "3px" }}
+                >
                     <MainHUDButton
                         value={"General Settings"}
                         icon={SynthesisIcons.Gear}
@@ -131,7 +135,7 @@ const MainHUD: React.FC = () => {
                             openPanel("debug")
                         }}
                     />
-                </div>
+                </Box>
                 {userInfo ? (
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}

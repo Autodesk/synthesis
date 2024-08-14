@@ -69,7 +69,7 @@ export class SynthesisIcons {
 }
 
 export const SectionDivider = styled(Divider)({
-    borderColor: "white",
+    borderColor: "grey",
 })
 
 export const SectionLabel = styled(Label)({
