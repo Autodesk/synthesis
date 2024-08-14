@@ -19,7 +19,7 @@ def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = Non
         str: full file path
     """
 
-    fileDialog: adsk.core.FileDialog = gm.ui.createFileDialog()
+    fileDialog = gm.ui.createFileDialog()
     fileDialog.isMultiSelectEnabled = False
 
     fileDialog.title = "Save Export Result"
