@@ -2,14 +2,14 @@ import {
     DefaultFieldPreferences,
     DefaultGlobalPreferences,
     DefaultRobotPreferences,
-    DefaultQualityPreferences,
+    DefaultGraphicsPreferences,
     FieldPreferences,
     FieldPreferencesKey,
     GlobalPreference,
     RobotPreferences,
     RobotPreferencesKey,
-    QualityPreferences,
-    QualityPreferencesKey,
+    GraphicsPreferences,
+    GraphicsPreferenceKey,
 } from "./PreferenceTypes"
 
 export class PreferenceEvent extends Event {
@@ -109,15 +109,15 @@ class PreferencesSystem {
     }
 
     /** Gets simulation quality preferences */
-    public static getQualityPreferences(): QualityPreferences {
-        let qualityPrefs = this.getPreference<QualityPreferences>(QualityPreferencesKey)
+    public static getGraphicsPreferences(): GraphicsPreferences {
+        let graphicsPrefs = this.getPreference<GraphicsPreferences>(GraphicsPreferenceKey)
 
-        if (qualityPrefs == undefined) {
-            qualityPrefs = DefaultQualityPreferences()
-            this._preferences[QualityPreferencesKey] = qualityPrefs
+        if (graphicsPrefs == undefined) {
+            graphicsPrefs = DefaultGraphicsPreferences()
+            this._preferences[GraphicsPreferenceKey] = graphicsPrefs
         }
 
-        return qualityPrefs
+        return graphicsPrefs
     }
 
     /** Load all preferences from local storage */

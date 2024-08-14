@@ -63,7 +63,7 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import ResetAllInputsModal from "./ui/modals/configuring/inputs/ResetAllInputsModal.tsx"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
-import QualitySettingsPanel from "./ui/panels/QualitySettingsPanel.tsx"
+import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -242,7 +242,7 @@ const initialPanels: ReactElement[] = [
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
-    <QualitySettingsPanel key="quality-settings" panelId="quality-settings" openLocation="right" sidePadding={8} />,
+    <GraphicsSettings key="graphics-settings" panelId="graphics-settings" openLocation="right" sidePadding={8} />,
 ]
 
 export default Synthesis

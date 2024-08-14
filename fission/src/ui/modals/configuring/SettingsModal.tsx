@@ -4,24 +4,18 @@ import { usePanelControlContext } from "@/ui/PanelContext"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { FaGear } from "react-icons/fa6"
 import Label, { LabelSize } from "@/components/Label"
-import Dropdown from "@/components/Dropdown"
 import Button from "@/components/Button"
 import Slider from "@/components/Slider"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
 import { Spacer } from "@/ui/components/StyledComponents"
-import World from "@/systems/World"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext()
+    const { openModal, closeModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
 
-    const [qualitySettings, setQualitySettings] = useState<string>(
-        PreferencesSystem.getGlobalPreference<string>("QualitySettings")
-    )
     const [zoomSensitivity, setZoomSensitivity] = useState<number>(
         PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")
     )
@@ -46,7 +40,6 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 
     const saveSettings = () => {
-        PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
         PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
         PreferencesSystem.setGlobalPreference<number>("PitchSensitivity", pitchSensitivity)
         PreferencesSystem.setGlobalPreference<number>("YawSensitivity", yawSensitivity)
@@ -71,17 +64,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
                 <Label size={LabelSize.Medium}>Screen Settings</Label>
                 <Box alignSelf={"center"}>
-                    <Button value="Configure Quality Settings" onClick={() => openPanel("quality-settings")} />
+                    <Button
+                        value="Graphics Settings"
+                        onClick={() => {
+                            openPanel("graphics-settings")
+                            closeModal()
+                        }}
+                    />
                 </Box>
-                <Dropdown
-                    label="Quality Settings"
-                    options={["Low", "Medium", "High"] as QualitySetting[]}
-                    defaultValue={PreferencesSystem.getGlobalPreference<QualitySetting>("QualitySettings")}
-                    onSelect={selected => {
-                        setQualitySettings(selected)
-                        World.SceneRenderer.ChangeLighting(selected)
-                    }}
-                />
                 {Spacer(5)}
                 <Box alignSelf={"center"}>
                     <Button value="Theme Editor" onClick={() => openModal("theme-editor")} />

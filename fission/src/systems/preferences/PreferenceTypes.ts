@@ -2,7 +2,6 @@ import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
 export type GlobalPreference =
-    | "QualitySettings"
     | "ZoomSensitivity"
     | "PitchSensitivity"
     | "YawSensitivity"
@@ -15,10 +14,9 @@ export type GlobalPreference =
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
-export const QualityPreferencesKey: string = "Quality"
+export const GraphicsPreferenceKey: string = "Quality"
 
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
-    QualitySettings: "High" as QualitySetting,
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
@@ -30,16 +28,22 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderScoreboard: true,
 }
 
-export type QualitySetting = "Low" | "Medium" | "High"
-
-export type QualityPreferences = {
+export type GraphicsPreferences = {
+    lightIntensity: number
     fancyShadows: boolean
+    maxFar: number
+    cascades: number
+    shadowMapSize: number
     antiAliasing: boolean
 }
 
-export function DefaultQualityPreferences(): QualityPreferences {
+export function DefaultGraphicsPreferences(): GraphicsPreferences {
     return {
+        lightIntensity: 5,
         fancyShadows: false,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
         antiAliasing: false,
     }
 }
