@@ -79,9 +79,7 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
                     PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
                 }
 
-                // This line is purely for ES Lint and Prettier to agree on formatting the semicolon below.
-                PreferencesSystem.savePreferences()
-
+                // eslint-disable-next-line no-extra-semi
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
             }
@@ -192,13 +190,14 @@ const ConfigureSubsystemsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                             return false
                         })[0]
                         if (motor) {
-                            ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = motor.maxVelocity
-                            ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce =
-                                PreferencesSystem.getGlobalPreference("SubsystemGravity")
-                                    ? motor.maxForce
-                                    : driver instanceof SliderDriver
-                                      ? 500
-                                      : 100
+                            // This line is a separate variable to get ES Lint and Prettier to agree on formatting the semicolon below
+                            const forcePref = PreferencesSystem.getGlobalPreference("SubsystemGravity")
+                                ? motor.maxForce
+                                : driver instanceof SliderDriver
+                                ? 500
+                                : 100
+                            ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = motor.maxVelocity
+                            ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = forcePref
                         }
                     }
                 }
