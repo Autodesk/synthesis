@@ -4,7 +4,7 @@ import Button, { ButtonProps, ButtonSize } from "./Button"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
 import { AiOutlinePlus } from "react-icons/ai"
-import { BiMenuAltLeft, BiRefresh } from "react-icons/bi"
+import { BiRefresh } from "react-icons/bi"
 import { AiFillWarning } from "react-icons/ai"
 import { BsCodeSquare } from "react-icons/bs"
 import { GiSteeringWheel } from "react-icons/gi"
@@ -28,7 +28,9 @@ import {
     FaArrowLeft,
     FaMinus,
     FaBug,
+    FaAngleRight,
 } from "react-icons/fa6"
+import { colorNameToVar } from "../ThemeContext"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
@@ -63,7 +65,7 @@ export class SynthesisIcons {
     public static LeftArrowLarge = (<FaArrowLeft size={"1.25rem"} />)
     public static BugLarge = (<FaBug size={"1.25rem"} />)
 
-    public static OpenHudIcon = (<BiMenuAltLeft size={"3rem"} color="black" />)
+    public static OpenHudIcon = (<FaAngleRight size={"3rem"} color={colorNameToVar("BackgroundSecondary")} />)
 }
 
 export const SectionDivider = styled(Divider)({

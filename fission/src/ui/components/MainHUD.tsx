@@ -74,6 +74,7 @@ const MainHUD: React.FC = () => {
                 >
                     <Box
                         position="absolute"
+                        minWidth={"65px"}
                         className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
                         sx={{
                             borderTopRightRadius: "100px",
@@ -82,7 +83,9 @@ const MainHUD: React.FC = () => {
                             borderBottomLeftRadius: "0",
                         }}
                     >
-                        <ButtonIcon onClick={() => setIsOpen(!isOpen)} value={SynthesisIcons.OpenHudIcon} />
+                        <Box sx={{ transform: "translateY(2.5px)" }}>
+                            <ButtonIcon onClick={() => setIsOpen(!isOpen)} value={SynthesisIcons.OpenHudIcon} />
+                        </Box>
                     </Box>
                 </Box>
             )}
