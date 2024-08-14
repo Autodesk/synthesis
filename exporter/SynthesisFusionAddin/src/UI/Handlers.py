@@ -2,8 +2,6 @@ from typing import Any
 
 import adsk.core
 
-# from src.UI.HUI import HButton
-
 
 class HButtonCommandCreatedEvent(adsk.core.CommandCreatedEventHandler):
     """## Abstraction of CreatedEvent as its mostly useless in this context
