@@ -194,8 +194,8 @@ const ConfigureSubsystemsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
                             const forcePref = PreferencesSystem.getGlobalPreference("SubsystemGravity")
                                 ? motor.maxForce
                                 : driver instanceof SliderDriver
-                                ? 500
-                                : 100
+                                  ? 500
+                                  : 100
                             ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = motor.maxVelocity
                             ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = forcePref
                         }
