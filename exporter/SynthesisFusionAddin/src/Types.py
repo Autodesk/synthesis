@@ -3,7 +3,7 @@ import pathlib
 import platform
 from dataclasses import MISSING, dataclass, field, fields, is_dataclass
 from enum import Enum, EnumType
-from typing import Any, TypeAlias, get_origin
+from typing import Any, TypeAlias, get_args, get_origin
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
@@ -103,7 +103,7 @@ def makeObjectFromJson(objType: type, data: Any) -> Any:
     elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
         return data
     elif get_origin(objType) is list:
-        return [makeObjectFromJson(objType.__args__[0], item) for item in data]  # type: ignore[attr-defined]
+        return [makeObjectFromJson(get_args(objType)[0], item) for item in data]
 
     obj = objType()
     assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
