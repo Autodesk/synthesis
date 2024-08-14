@@ -61,6 +61,14 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
                 PreferencesSystem.getRobotPreferences(robot.assemblyName).driveVelocity = vel
                 PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = force
             } else {
+                // A function because ES Lint and Prettier are fighting over semicolon formatting
+                const editMotors = () => {
+                    ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
+                    ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
+                }
+
+                editMotors()
+
                 // Preferences
                 if (driver.info && driver.info.name) {
                     const removedMotor = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
@@ -79,9 +87,7 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
                     PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
                 }
 
-                // Edit subsystems
-                ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
-                ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
+                
             }
 
             PreferencesSystem.savePreferences()
