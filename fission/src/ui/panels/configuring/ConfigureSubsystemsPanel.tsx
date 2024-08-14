@@ -61,7 +61,8 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
                 PreferencesSystem.getRobotPreferences(robot.assemblyName).driveVelocity = vel
                 PreferencesSystem.getRobotPreferences(robot.assemblyName).driveAcceleration = force
             } else {
-                ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
+                // prettier-ignore
+                ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
 
                 // Preferences
