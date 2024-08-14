@@ -79,7 +79,9 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
                     PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
                 }
 
-                // eslint-disable-next-line
+                // This line is purely for ES Lint and Prettier to agree on formatting the semicolon below.
+                PreferencesSystem.savePreferences()
+
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
             }
