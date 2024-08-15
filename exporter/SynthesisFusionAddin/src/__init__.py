@@ -23,8 +23,6 @@ else:
     SUPPORT_PATH = makeDirectories(f"{os.path.expanduser('~')}/.config/Autodesk/Synthesis")
 
 gm = GlobalManager()
-gm.ui.messageBox(f"Release: {IS_RELEASE}")
-gm.ui.messageBox(f"Support Path: {SUPPORT_PATH}")
 
 __all__ = [
     "APP_NAME",
