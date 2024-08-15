@@ -241,7 +241,7 @@ class InputSystem extends WorldSystem {
     }
 
     // Returns true if two modifier states are identical
-    private static compareModifiers(state1: ModifierState, state2: ModifierState): boolean {
+    public static compareModifiers(state1: ModifierState, state2: ModifierState): boolean {
         if (!state1 || !state2) return false
 
         return (

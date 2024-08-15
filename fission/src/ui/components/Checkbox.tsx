@@ -40,6 +40,7 @@ const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, sta
                     },
                 }}
                 defaultChecked={stateOverride != null ? undefined : state}
+                id="checkbox-switch"
             />
         </Stack>
     )

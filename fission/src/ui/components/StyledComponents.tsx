@@ -100,28 +100,30 @@ export const EditButton = (onClick: () => void) => {
     return <PositiveButton value={SynthesisIcons.EditLarge} onClick={onClick} />
 }
 
-export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick }) => {
+export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick, id }) => {
     return (
         <Button
             size={ButtonSize.Medium}
             value={value}
             onClick={onClick}
             colorOverrideClass="bg-cancel-button hover:brightness-90"
+            id={id}
         />
     )
 }
 
-export const DeleteButton = (onClick: () => void) => {
-    return <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={onClick} />
+export const DeleteButton = (onClick: () => void, id?: string) => {
+    return <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={onClick} id={id} />
 }
 
-export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick }) => {
+export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick, id }) => {
     return (
         <Button
             value={value}
             onClick={onClick}
             colorOverrideClass="bg-[#00000000] hover:brightness-90"
             sizeOverrideClass="p-[0.25rem]"
+            id={id}
         />
     )
 }
@@ -130,6 +132,6 @@ export const RefreshButton = (onClick: () => void) => {
     return <ButtonIcon value={SynthesisIcons.RefreshLarge} onClick={onClick} />
 }
 
-export const AddButtonInteractiveColor = (onClick: () => void) => {
-    return <Button value={SynthesisIcons.AddLarge} onClick={onClick} />
+export const AddButtonInteractiveColor = (onClick: () => void, id?: string) => {
+    return <Button value={SynthesisIcons.AddLarge} onClick={onClick} id={id} />
 }

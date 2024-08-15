@@ -87,13 +87,15 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 onClick={() => {
                     onSelected(value)
                 }}
+                className={value.name}
                 sx={{ borderColor: "#888888" }}
+                id={`select-button-${value.name}`}
             />
             {/** Delete button only if onDelete is defined */}
             {onDelete && includeDelete && (
                 <>
                     {Spacer(0, 10)}
-                    {DeleteButton(onDelete != undefined ? onDelete : () => {})}
+                    {DeleteButton(onDelete != undefined ? onDelete : () => {}, "select-menu-delete-button")}
                 </>
             )}
         </Box>
@@ -151,6 +153,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                             setSelectedOption(undefined)
                             onOptionSelected(undefined)
                         }}
+                        id="select-menu-back-button"
                     />
                 )}
 
@@ -190,7 +193,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                         </>
                     )}
                     {/** Add button */}
-                    {onAddClicked && AddButtonInteractiveColor(onAddClicked)}
+                    {onAddClicked && AddButtonInteractiveColor(onAddClicked, "select-menu-add-button")}
                 </>
             )}
         </>
