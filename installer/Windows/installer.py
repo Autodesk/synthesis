@@ -32,6 +32,11 @@ def move_folder(src_folder, dest_folder):
         print(f"Destination folder '{dest_folder}' does not exist. Creating it.")
         os.makedirs(dest_folder)
 
+    dest_path = os.path.join(dest_folder, os.path.basename(src_folder))
+    if os.path.exists(dest_path):
+        print("Path exists, removing it...")
+        shutil.rmtree(dest_path)
+
     shutil.move(src_folder, dest_folder)
     print(f"Successfully moved '{src_folder}' to '{dest_folder}'.")
 
