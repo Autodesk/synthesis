@@ -11,8 +11,9 @@ from typing import cast
 
 import adsk.core
 
-from src import INTERNAL_ID
+from src import INTERNAL_ID, IS_RELEASE, SUPPORT_PATH
 from src.UI.OsHelper import getOSPath
+from src.Util import makeDirectories
 
 MAX_LOG_FILES_TO_KEEP = 10
 TIMING_LEVEL = 25
@@ -30,14 +31,19 @@ class SynthesisLogger(logging.Logger):
 def setupLogger() -> SynthesisLogger:
     now = datetime.now().strftime("%H-%M-%S")
     today = date.today()
-    logFileFolder = getOSPath(f"{pathlib.Path(__file__).parent.parent}", "logs")
-    logFiles = [os.path.join(logFileFolder, file) for file in os.listdir(logFileFolder) if file.endswith(".log")]
-    logFiles.sort()
-    if len(logFiles) >= MAX_LOG_FILES_TO_KEEP:
-        for file in logFiles[: len(logFiles) - MAX_LOG_FILES_TO_KEEP]:
-            os.remove(file)
+    if not IS_RELEASE:
+        logFileFolder = makeDirectories(getOSPath(f"{pathlib.Path(__file__).parent.parent}", "logs"))
+    else:
+        logFileFolder = makeDirectories(f"{SUPPORT_PATH}/Logs/")
 
-    logFileName = f"{logFileFolder}{getOSPath(f'{INTERNAL_ID}-{today}-{now}.log')}"
+    if not IS_RELEASE:  # TODO: Decide if this is what I want to do or not
+        logFiles = [os.path.join(logFileFolder, file) for file in os.listdir(logFileFolder) if file.endswith(".log")]
+        logFiles.sort()
+        if len(logFiles) >= MAX_LOG_FILES_TO_KEEP:
+            for file in logFiles[: len(logFiles) - MAX_LOG_FILES_TO_KEEP]:
+                os.remove(file)
+
+    logFileName = f"{logFileFolder}{getOSPath(f'{today}-{now}.log')}"
     logHandler = logging.handlers.WatchedFileHandler(logFileName, mode="w")
     logHandler.setFormatter(logging.Formatter("%(name)s - %(levelname)s - %(message)s"))
 
@@ -46,6 +52,7 @@ def setupLogger() -> SynthesisLogger:
     logger = getLogger(INTERNAL_ID)
     logger.setLevel(10)  # Debug
     logger.addHandler(logHandler)
+
     return cast(SynthesisLogger, logger)
 
 

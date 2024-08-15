@@ -15,6 +15,7 @@ logger = setupLogger()
 try:
     # Attempt to import required pip dependencies to verify their installation.
     import requests
+
     from proto.proto_out import (
         assembly_pb2,
         joint_pb2,
@@ -69,6 +70,9 @@ def stop(_):
     Arguments:
         **context** *context* -- Fusion Data.
     """
+    sys.path.remove(os.path.dirname(os.path.abspath(__file__)))
+    sys.path.remove(os.path.abspath(os.path.join(os.path.dirname(__file__), "proto", "proto_out")))
+
     unregister_all()
 
     app = adsk.core.Application.get()

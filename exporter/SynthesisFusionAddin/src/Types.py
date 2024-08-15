@@ -3,7 +3,9 @@ import pathlib
 import platform
 from dataclasses import dataclass, field, fields, is_dataclass
 from enum import Enum, EnumType
-from typing import Union, get_origin
+from typing import Literal, TypeAlias, Union, get_origin
+
+OperatingSystemString: TypeAlias = Literal["Windows", "Darwin", "Linux"]
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])

@@ -3,8 +3,8 @@ from typing import Union
 
 import adsk.core
 import adsk.fusion
-from proto.proto_out import joint_pb2, types_pb2
 
+from proto.proto_out import joint_pb2, types_pb2
 from src import gm
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions

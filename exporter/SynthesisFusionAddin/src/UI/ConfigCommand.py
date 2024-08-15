@@ -305,9 +305,13 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
                 # save was canceled
                 return
 
-            updatedPath = pathlib.Path(savepath).parent
-            if updatedPath != self.current.filePath:
-                self.current.filePath = str(updatedPath)
+            # Transition: AARD-1742
+            # With the addition of a 'release' build the fusion exporter will not have permissions within the sourced
+            # folder. Because of this we cannot use this kind of tmp path anymore. This code was already unused and
+            # should be removed.
+            # updatedPath = pathlib.Path(savepath).parent
+            # if updatedPath != self.current.filePath:
+            #     self.current.filePath = str(updatedPath)
         else:
             savepath = processedFileName
 

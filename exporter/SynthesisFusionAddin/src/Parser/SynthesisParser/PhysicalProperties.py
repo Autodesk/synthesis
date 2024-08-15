@@ -19,8 +19,8 @@
 from typing import Union
 
 import adsk
-from proto.proto_out import types_pb2
 
+from proto.proto_out import types_pb2
 from src.Logging import logFailure
 
 
