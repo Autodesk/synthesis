@@ -1,18 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ApplicationPackage SchemaVersion="1.0"
 	ProductType="Application"
-
 	AutodeskProduct="Fusion360"
-	Name="Cadasio for Autodesk Fusion"
-	Description="Cadasio addin for Fusion."
+	Name="Synthesis for Autodesk Fusion"
+	Description="Synthesis addin for Fusion."
 	AppVersion="2.0.0"
 	Author="Autodesk Synthesis"
 	AppNameSpace="com.autodesk.Synthesis for Autodesk Fusion 360"
-	OnlineDocumentation="https://synthesis.autodesk.com"
-
-	ProductCode="*"
-	UpgradeCode="{673306DD-9911-43AA-9216-491233544D18}" >
-	
+	OnlineDocumentation="https://synthesis.autodesk.com" >
 	<CompanyDetails Name="Synthesis"
 		Url="https://synthesis.autodesk.com/"
 		Email="frc@autodesk.com" />

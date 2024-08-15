@@ -2,7 +2,6 @@
 setlocal enabledelayedexpansion
 setlocal
 
-set "FUSION_ADDIN_LOCATION=%USERPROFILE%\AppData\Local\Autodesk\Autodesk Fusion 360\API\AddIns\"
 set "EXPORTER_SOURCE_DIR=..\..\exporter\SynthesisFusionAddin\"
 
 mkdir tmp\
@@ -25,7 +24,11 @@ set executable=%executable:~0,-1%
 
 %executable% --onefile --add-data "SynthesisExporter.zip;." installer.py
 
+move .\dist\installer.exe .
 rmdir /s /q tmp
+rmdir /s /q build
+rmdir /s /q dist
 del SynthesisExporter.zip
+del installer.spec
 
 endlocal
