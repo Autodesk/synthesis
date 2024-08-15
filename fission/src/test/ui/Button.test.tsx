@@ -5,7 +5,7 @@ import Button from "@/ui/components/Button"
 describe("Button", () => {
     test("Click Enabled Button", () => {
         let buttonClicked = false
-        let container = render(<Button onClick={() => (buttonClicked = true)} value="Test Button" />).container
+        const container = render(<Button onClick={() => (buttonClicked = true)} value="Test Button" />).container
 
         const button = getByText(container, "Test Button")
         assert(button != undefined)
@@ -16,7 +16,7 @@ describe("Button", () => {
 
     test("Click Disabled Button", () => {
         let buttonClicked = false
-        let container = render(
+        const container = render(
             <Button onClick={() => (buttonClicked = true)} value="Test Button" disabled={true} />
         ).container
 

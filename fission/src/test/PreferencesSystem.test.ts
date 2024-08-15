@@ -2,7 +2,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { test, describe, expect } from "vitest"
 
 describe("Preferences System", () => {
-    test("Settings without saving", () => {
+    test("Setting without saving", () => {
         PreferencesSystem.setGlobalPreference("ZoomSensitivity", 15)
         PreferencesSystem.setGlobalPreference("RenderSceneTags", true)
         PreferencesSystem.setGlobalPreference("RenderScoreboard", false)
@@ -20,7 +20,7 @@ describe("Preferences System", () => {
         expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(true)
         expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(true)
     })
-    test("Settings then saving", () => {
+    test("Setting then saving", () => {
         PreferencesSystem.setGlobalPreference("ZoomSensitivity", 13)
         PreferencesSystem.setGlobalPreference("RenderSceneTags", true)
         PreferencesSystem.setGlobalPreference("RenderScoreboard", false)
