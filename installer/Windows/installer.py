@@ -42,9 +42,6 @@ def move_folder(src_folder, dest_folder):
 
 
 def main():
-    if not ctypes.windll.shell32.IsUserAnAdmin():
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
-
     destination_folder = os.path.expandvars(r"%appdata%\Autodesk\ApplicationPlugins")
     os.makedirs(destination_folder, exist_ok=True)
     with tempfile.TemporaryDirectory() as temp_dir:

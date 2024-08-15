@@ -17,12 +17,14 @@ SYSTEM: OperatingSystemString = platform.system()
 assert SYSTEM != "Linux"
 
 if SYSTEM == "Windows":
-    SUPPORT_PATH = makeDirectories(os.path.expandvars(r"%appdata%\Autodesk\Synthesis/"))
+    SUPPORT_PATH = makeDirectories(os.path.expandvars(r"%appdata%\Autodesk\Synthesis"))
 else:
     assert SYSTEM == "Darwin"
-    SUPPORT_PATH = makeDirectories(f"{os.path.expanduser('~')}/.config/Autodesk/Synthesis/")
+    SUPPORT_PATH = makeDirectories(f"{os.path.expanduser('~')}/.config/Autodesk/Synthesis")
 
 gm = GlobalManager()
+gm.ui.messageBox(f"Release: {IS_RELEASE}")
+gm.ui.messageBox(f"Support Path: {SUPPORT_PATH}")
 
 __all__ = [
     "APP_NAME",

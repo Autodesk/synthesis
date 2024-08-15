@@ -11,7 +11,7 @@ from typing import cast
 
 import adsk.core
 
-from src import INTERNAL_ID, IS_RELEASE, SUPPORT_PATH
+from src import INTERNAL_ID, IS_RELEASE, SUPPORT_PATH, gm
 from src.UI.OsHelper import getOSPath
 from src.Util import makeDirectories
 
@@ -36,6 +36,7 @@ def setupLogger() -> SynthesisLogger:
     else:
         logFileFolder = makeDirectories(f"{SUPPORT_PATH}/Logs/")
 
+    gm.ui.messageBox(logFileFolder)
     if not IS_RELEASE:  # TODO: Decide if this is what I want to do or not
         logFiles = [os.path.join(logFileFolder, file) for file in os.listdir(logFileFolder) if file.endswith(".log")]
         logFiles.sort()
@@ -52,7 +53,6 @@ def setupLogger() -> SynthesisLogger:
     logger = getLogger(INTERNAL_ID)
     logger.setLevel(10)  # Debug
     logger.addHandler(logHandler)
-
     return cast(SynthesisLogger, logger)
 
 
