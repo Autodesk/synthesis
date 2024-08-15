@@ -18,6 +18,7 @@ from src.Parser.SynthesisParser import (
     PDMessage,
 )
 from src.Parser.SynthesisParser.Utilities import fill_info
+from src.Proto import assembly_pb2, types_pb2
 from src.Types import ExportLocation, ExportMode
 from src.UI.Camera import captureThumbnail, clearIconCache
 

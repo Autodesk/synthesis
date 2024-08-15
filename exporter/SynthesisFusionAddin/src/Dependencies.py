@@ -1,5 +1,4 @@
 import importlib.machinery
-import importlib.util
 import os
 import subprocess
 import sys
@@ -52,18 +51,6 @@ def executeCommand(*args: str) -> subprocess.CompletedProcess:
         raise error
 
 
-@logFailure
-def verifyCompiledProtoImports() -> bool:
-    protoModules = ["assembly_pb2", "joint_pb2", "material_pb2", "types_pb2"]
-    for module in protoModules:
-        # Absolute imports must be set up by this point for importlib to be able to find each module.
-        spec = importlib.util.find_spec(f"proto.proto_out.{module}")
-        if spec is None:
-            return False
-
-    return True
-
-
 def getInstalledPipPackages(pythonExecutablePath: str) -> dict[str, str]:
     result: str = executeCommand(pythonExecutablePath, "-m", "pip", "freeze").stdout
     # We don't need to check against packages with a specific hash as those are not required by Synthesis.
@@ -83,10 +70,6 @@ def packagesOutOfDate(installedPackages: dict[str, str]) -> bool:
 def resolveDependencies() -> bool | None:
     app = adsk.core.Application.get()
     ui = app.userInterface
-    if not verifyCompiledProtoImports():
-        ui.messageBox("Missing required compiled protobuf files.")
-        return False
-
     if app.isOffLine:
         # If we have gotten this far that means that an import error was thrown for possible missing
         # dependencies... And we can't try to download them because we have no internet... ¯\_(ツ)_/¯

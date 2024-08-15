@@ -22,6 +22,7 @@ import adsk
 
 from proto.proto_out import types_pb2
 from src.Logging import logFailure
+from src.Proto import types_pb2
 
 
 @logFailure

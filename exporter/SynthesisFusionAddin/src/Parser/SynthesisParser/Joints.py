@@ -38,6 +38,7 @@ from src.Parser.SynthesisParser.Utilities import (
     fill_info,
     guid_occurrence,
 )
+from src.Proto import assembly_pb2, joint_pb2, signal_pb2, types_pb2
 from src.Types import JointParentType, SignalType
 
 logger = getLogger()

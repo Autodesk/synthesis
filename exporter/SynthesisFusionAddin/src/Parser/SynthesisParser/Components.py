@@ -12,6 +12,7 @@ from src.Parser.SynthesisParser.Utilities import (
     guid_component,
     guid_occurrence,
 )
+from src.Proto import assembly_pb2, joint_pb2, material_pb2, types_pb2
 from src.Types import ExportMode
 
 # TODO: Impelement Material overrides
