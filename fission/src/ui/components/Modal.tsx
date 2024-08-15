@@ -61,7 +61,17 @@ const Modal: React.FC<ModalProps> = ({
                 {name && (
                     <div id="header" className="flex items-center gap-8 h-16">
                         <span className="flex justify-center align-center ml-8 text-icon">{iconEl && iconEl}</span>
-                        <h1 className="text-3xl inline-block align-middle whitespace-nowrap mr-10">{name}</h1>
+                        <h1
+                            className="text-3xl inline-block align-middle whitespace-nowrap mr-10"
+                            style={{
+                                userSelect: "none",
+                                MozUserSelect: "none",
+                                msUserSelect: "none",
+                                WebkitUserSelect: "none",
+                            }}
+                        >
+                            {name}
+                        </h1>
                     </div>
                 )}
                 <div

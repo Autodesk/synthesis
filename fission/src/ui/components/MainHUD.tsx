@@ -34,7 +34,12 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
         >
             {larger && icon}
             {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
-            <span className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} text-main-text cursor-pointer`}>{value}</span>
+            <span
+                className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} text-main-text cursor-pointer`}
+                style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
+            >
+                {value}
+            </span>
         </Button>
     )
 }
@@ -74,7 +79,7 @@ const MainHUD: React.FC = () => {
                 >
                     <Box
                         position="absolute"
-                        minWidth={"65px"}
+                        minWidth={"50px"}
                         className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
                         sx={{
                             borderTopRightRadius: "100px",
@@ -83,7 +88,7 @@ const MainHUD: React.FC = () => {
                             borderBottomLeftRadius: "0",
                         }}
                     >
-                        <Box sx={{ transform: "translateY(2.5px)" }}>
+                        <Box sx={{ transform: "translateY(2.5px) translateX(-3px)" }}>
                             <ButtonIcon onClick={() => setIsOpen(!isOpen)} value={SynthesisIcons.OpenHudIcon} />
                         </Box>
                     </Box>
@@ -96,7 +101,16 @@ const MainHUD: React.FC = () => {
                 className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
-                    <img src={logo} className="w-[80%] h-[100%] object-contain" />
+                    <img
+                        src={logo}
+                        className="w-[80%] h-[100%] object-contain"
+                        style={{
+                            userSelect: "none",
+                            MozUserSelect: "none",
+                            msUserSelect: "none",
+                            WebkitUserSelect: "none",
+                        }}
+                    />
                     <ButtonIcon
                         value={<FaXmark color="bg-icon" size={23} className="text-main-hud-close-icon" />}
                         onClick={() => setIsOpen(false)}

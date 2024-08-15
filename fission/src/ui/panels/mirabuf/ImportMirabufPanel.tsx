@@ -24,7 +24,6 @@ import {
     DeleteButton,
     RefreshButton,
     SynthesisIcons,
-    Spacer,
 } from "@/ui/components/StyledComponents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
@@ -393,10 +392,6 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         </SectionLabel>
                         <SectionDivider />
                         {cachedFieldElements}
-                        {Spacer(5)}
-                        <Box alignSelf={"center"}>
-                            <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
-                        </Box>
                     </>
                 )}
                 <Box

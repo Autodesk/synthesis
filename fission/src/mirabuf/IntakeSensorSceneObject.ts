@@ -49,7 +49,12 @@ class IntakeSensorSceneObject extends SceneObject {
 
             this._mesh = World.SceneRenderer.CreateSphere(
                 this._parentAssembly.intakePreferences.zoneDiameter / 2.0,
-                World.SceneRenderer.CreateToonMaterial(0x5eeb67)
+                new THREE.MeshPhongMaterial({
+                    color: 0x33aa33,
+                    shininess: 0.0,
+                    opacity: 0.25,
+                    transparent: true,
+                })
             )
             World.SceneRenderer.scene.add(this._mesh)
 

@@ -39,6 +39,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={SynthesisIcons.Import}
             modalId={modalId}
             acceptEnabled={selectedFile !== undefined && miraType !== undefined}
+            onCancel={() => openPanel("import-mirabuf")}
             onAccept={async () => {
                 if (selectedFile && miraType != undefined) {
                     showTooltip("controls", [

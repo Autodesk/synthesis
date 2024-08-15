@@ -58,6 +58,7 @@ const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, sizeOverride
                 active:scale-[1.06] 
                 ${className || ""}
             `}
+            style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
         >
             {value}
         </BaseButton>
