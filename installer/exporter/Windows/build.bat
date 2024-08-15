@@ -2,7 +2,7 @@
 setlocal enabledelayedexpansion
 setlocal
 
-set "EXPORTER_SOURCE_DIR=..\..\exporter\SynthesisFusionAddin\"
+set "EXPORTER_SOURCE_DIR=..\..\..\exporter\SynthesisFusionAddin\"
 
 mkdir tmp\synthesis.bundle\Contents\
 xcopy ..\synthesis.bundle .\tmp\synthesis.bundle

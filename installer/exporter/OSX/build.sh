@@ -1,7 +1,7 @@
 #!/bin/bash
 
 FUSION_ADDIN_LOCATION=~/Library/Application\ Support/Autodesk/ApplicationPlugins/
-EXPORTER_SOURCE_DIR=../../exporter/SynthesisFusionAddin/
+EXPORTER_SOURCE_DIR=../../../exporter/SynthesisFusionAddin/
 
 mkdir -p tmp/
 cp -r synthesis.bundle tmp/
