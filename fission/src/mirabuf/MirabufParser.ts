@@ -83,57 +83,54 @@ class MirabufParser {
         this.GenerateTreeValues()
         this.LoadGlobalTransforms()
 
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const that = this
-
         function traverseTree(nodes: mirabuf.INode[], op: (node: mirabuf.INode) => void) {
             nodes.forEach(x => {
-                if (x.children) {
-                    traverseTree(x.children, op)
-                }
+                if (x.children) traverseTree(x.children, op)
                 op(x)
             })
         }
 
-        // 1: Initial Rigidgroups from ancestorial breaks in joints
+        // const materials = assembly.data?.materials?.physicalMaterials
+
+        // 1: Initial RigidGroups from ancestral breaks in joints
         const jointInstanceKeys = Object.keys(assembly.data!.joints!.jointInstances!) as string[]
         jointInstanceKeys.forEach(key => {
-            if (key != GROUNDED_JOINT_ID) {
-                const jInst = assembly.data!.joints!.jointInstances![key]
-                const [ancestorA, ancestorB] = this.FindAncestorialBreak(jInst.parentPart!, jInst.childPart!)
-                const parentRN = this.NewRigidNode()
-                this.MovePartToRigidNode(ancestorA, parentRN)
-                this.MovePartToRigidNode(ancestorB, this.NewRigidNode())
-                if (jInst.parts && jInst.parts.nodes)
-                    traverseTree(jInst.parts.nodes, x => this.MovePartToRigidNode(x.value!, parentRN))
-            }
-        })
+            if (key == GROUNDED_JOINT_ID) return
 
-        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+            const jInst = assembly.data!.joints!.jointInstances![key]
+            const [ancestorA, ancestorB] = this.FindAncestorialBreak(jInst.parentPart!, jInst.childPart!)
+            const parentRN = this.NewRigidNode()
+
+            this.MovePartToRigidNode(ancestorA, parentRN)
+            this.MovePartToRigidNode(ancestorB, this.NewRigidNode())
+
+            if (jInst.parts && jInst.parts.nodes)
+                traverseTree(jInst.parts.nodes, x => this.MovePartToRigidNode(x.value!, parentRN))
+        })
 
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
-            // Collect all definitions labelled as gamepieces (dynamic = true)
+            // Collect all definitions labeled as gamepieces (dynamic = true)
             const gamepieceDefinitions: Set<string> = new Set<string>()
 
             Object.values(assembly.data!.parts!.partDefinitions!).forEach((def: mirabuf.IPartDefinition) => {
                 if (def.dynamic) gamepieceDefinitions.add(def.info!.GUID!)
             })
 
-            // Create gamepiece rigid nodes from partinstances with corresponding definitions
+            // Create gamepiece rigid nodes from PartInstances with corresponding definitions
             Object.values(assembly.data!.parts!.partInstances!).forEach((inst: mirabuf.IPartInstance) => {
-                if (gamepieceDefinitions.has(inst.partDefinitionReference!)) {
-                    const instNode = this.BinarySearchDesignTree(inst.info!.GUID!)
-                    if (instNode) {
-                        const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
-                        gpRn.isGamePiece = true
-                        this.MovePartToRigidNode(instNode!.value!, gpRn)
-                        instNode.children &&
-                            traverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
-                    } else {
-                        this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
-                    }
+                if (!gamepieceDefinitions.has(inst.partDefinitionReference!)) return
+
+                const instNode = this.BinarySearchDesignTree(inst.info!.GUID!)
+                if (!instNode) {
+                    this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
+                    return
                 }
+
+                const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
+                gpRn.isGamePiece = true
+                this.MovePartToRigidNode(instNode!.value!, gpRn)
+                instNode.children && traverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
             })
         }
 
@@ -142,26 +139,19 @@ class MirabufParser {
         const gNode = this.NewRigidNode()
         this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode)
 
-        // traverseTree(gInst.parts!.nodes!, x => (!this._partToNodeMap.has(x.value!)) && this.MovePartToRigidNode(x.value!, gNode));
-
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
         // 3: Traverse and round up
         const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
-            const currentNode = that._partToNodeMap.get(node.value!)
-            if (!currentNode) {
-                that.MovePartToRigidNode(node.value!, parentNode)
-            }
-
-            if (node.children) {
-                node.children!.forEach(x => traverseNodeRoundup(x, currentNode ? currentNode : parentNode))
-            }
+            const currentNode = this._partToNodeMap.get(node.value!)
+            if (!currentNode) this.MovePartToRigidNode(node.value!, parentNode)
+            ;(node.children ?? []).forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
         }
         this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
 
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
-        // 4: Bandage via rigidgroups
+        // 4: Bandage via RigidGroups
         assembly.data!.joints!.rigidGroups!.forEach(rg => {
             let rn: RigidNode | null = null
             rg.occurrences!.forEach(y => {
@@ -203,11 +193,10 @@ class MirabufParser {
             const rA = this._partToNodeMap.get(x.parentPart)
             const rB = this._partToNodeMap.get(x.childPart)
 
-            if (rA && rB && rA.id != rB.id) {
-                graph.AddNode(rA.id)
-                graph.AddNode(rB.id)
-                graph.AddEdgeUndirected(rA.id, rB.id)
-            }
+            if (!rA || !rB || rA.id == rB.id) return
+            graph.AddNode(rA.id)
+            graph.AddNode(rB.id)
+            graph.AddEdgeUndirected(rA.id, rB.id)
         })
         const directedGraph = new Graph()
         const whiteGreyBlackMap = new Map<string, boolean>()
@@ -215,22 +204,22 @@ class MirabufParser {
             whiteGreyBlackMap.set(x.id, false)
             directedGraph.AddNode(x.id)
         })
+
         function directedRecursive(node: string) {
             graph.GetAdjacencyList(node).forEach(x => {
-                if (whiteGreyBlackMap.has(x)) {
-                    directedGraph.AddEdgeDirected(node, x)
-                    whiteGreyBlackMap.delete(x)
-                    directedRecursive(x)
-                }
+                if (!whiteGreyBlackMap.has(x)) return
+
+                directedGraph.AddEdgeDirected(node, x)
+                whiteGreyBlackMap.delete(x)
+                directedRecursive(x)
             })
         }
-        if (rootNode) {
-            whiteGreyBlackMap.delete(rootNode.id)
-            directedRecursive(rootNode.id)
-        } else {
-            whiteGreyBlackMap.delete(this._rigidNodes[0].id)
-            directedRecursive(this._rigidNodes[0].id)
-        }
+
+        const node = rootNode?.id ?? this._rigidNodes[0].id
+
+        whiteGreyBlackMap.delete(node)
+        directedRecursive(node)
+
         this._directedGraph = directedGraph
 
         // Transition: GH-1014
@@ -243,7 +232,7 @@ class MirabufParser {
     }
 
     private NewRigidNode(suffix?: string): RigidNode {
-        const node = new RigidNode(`${this._nodeNameCounter++}${suffix ? suffix : ""}`)
+        const node = new RigidNode(`${this._nodeNameCounter++}${suffix ?? ""}`)
         this._rigidNodes.push(node)
         return node
     }
@@ -283,41 +272,35 @@ class MirabufParser {
         this._globalTransforms.clear()
 
         const getTransforms = (node: mirabuf.INode, parent: THREE.Matrix4) => {
-            for (const child of node.children!) {
-                if (!partInstances.has(child.value!)) {
-                    continue
-                }
-                const partInstance = partInstances.get(child.value!)!
+            node.children!.forEach(child => {
+                const partInstance: mirabuf.IPartInstance | undefined = partInstances.get(child.value!)
 
-                if (this._globalTransforms.has(child.value!)) continue
+                if (!partInstance || this.globalTransforms.has(child.value!)) return
                 const mat = MirabufTransform_ThreeMatrix4(partInstance.transform!)!
 
                 // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
 
                 this._globalTransforms.set(child.value!, mat.premultiply(parent))
                 getTransforms(child, mat)
-            }
+            })
         }
 
-        for (const child of root.children!) {
+        root.children?.forEach(child => {
             const partInstance = partInstances.get(child.value!)!
-            let mat
-            if (!partInstance.transform) {
-                const def = partDefinitions[partInstances.get(child.value!)!.partDefinitionReference!]
-                if (!def.baseTransform) {
-                    mat = new THREE.Matrix4().identity()
-                } else {
-                    mat = MirabufTransform_ThreeMatrix4(def.baseTransform)
-                }
-            } else {
-                mat = MirabufTransform_ThreeMatrix4(partInstance.transform)
-            }
+            // TODO: guarantee that these assertions won't fail
+            const def = partDefinitions[partInstance.partDefinitionReference!]
+
+            const mat = partInstance.transform
+                ? MirabufTransform_ThreeMatrix4(partInstance.transform)
+                : def.baseTransform
+                  ? MirabufTransform_ThreeMatrix4(def.baseTransform)
+                  : new THREE.Matrix4().identity()
 
             // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
 
-            this._globalTransforms.set(partInstance.info!.GUID!, mat!)
-            getTransforms(child, mat!)
-        }
+            this._globalTransforms.set(partInstance.info!.GUID!, mat)
+            getTransforms(child, mat)
+        })
     }
 
     private FindAncestorialBreak(partA: string, partB: string): [string, string] {
@@ -480,7 +463,7 @@ export class Graph {
     public AddEdgeDirected(nodeA: string, nodeB: string) {
         if (!this._adjacencyMap.has(nodeA) || !this._adjacencyMap.has(nodeB)) throw new Error("Nodes aren't in graph")
 
-        this._adjacencyMap.get(nodeA)!.push(nodeB)
+        this._adjacencyMap.get(nodeA).push(nodeB)
     }
 
     public GetAdjacencyList(node: string) {
