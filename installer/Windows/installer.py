@@ -3,6 +3,7 @@ import shutil
 import sys
 import tempfile
 import zipfile
+import ctypes
 
 
 def resource_path(relative_path):
@@ -36,11 +37,14 @@ def move_folder(src_folder, dest_folder):
 
 
 def main():
-    destination_folder = r"%appdata%\Autodesk\Autodesk Fusion\API\AddIns"
+    if not ctypes.windll.shell32.IsUserAnAdmin():
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
 
+    destination_folder = r"%appdata%\Autodesk\ApplicationPlugins"
+    os.makedirs(destination_folder, exist_ok=True)
     with tempfile.TemporaryDirectory() as temp_dir:
-        extract_file("resources.zip", temp_dir)
-        with zipfile.ZipFile(os.path.join(temp_dir, "resources.zip"), "r") as zip_ref:
+        extract_file("SynthesisExporter.zip", temp_dir)
+        with zipfile.ZipFile(os.path.join(temp_dir, "SynthesisExporter.zip"), "r") as zip_ref:
             zip_ref.extractall(temp_dir)
 
         src_folder = os.path.join(temp_dir, "tmp")
