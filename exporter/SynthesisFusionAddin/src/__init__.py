@@ -17,7 +17,7 @@ SYSTEM: OperatingSystemString = platform.system()
 assert SYSTEM != "Linux"
 
 if SYSTEM == "Windows":
-    SUPPORT_PATH = makeDirectories(f"{os.getenv('APPDATA')}\\Autodesk\\Synthesis\\")
+    SUPPORT_PATH = makeDirectories(os.path.expandvars(r"%appdata%\Autodesk\Synthesis/"))
 else:
     assert SYSTEM == "Darwin"
     SUPPORT_PATH = makeDirectories(f"{os.path.expanduser('~')}/.config/Autodesk/Synthesis/")
