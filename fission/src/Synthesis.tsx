@@ -63,6 +63,7 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import ResetAllInputsModal from "./ui/modals/configuring/inputs/ResetAllInputsModal.tsx"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
+import TouchControls from "./ui/components/TouchControls.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -167,6 +168,7 @@ function Synthesis() {
                         <ToastProvider key="toast-provider">
                             <Scene useStats={true} key="scene-in-toast-provider" />
                             <SceneOverlay />
+                            <TouchControls />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
