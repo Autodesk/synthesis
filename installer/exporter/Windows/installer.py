@@ -6,54 +6,49 @@ import zipfile
 import ctypes
 
 
-def resource_path(relative_path):
+def getResourcePath(relativePath: str | os.PathLike[str]) -> None:
     if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-        base_path = sys._MEIPASS
+        basePath = sys._MEIPASS
     else:
-        base_path = os.path.dirname(__file__)
+        basePath = os.path.dirname(__file__)
 
-    return os.path.join(base_path, relative_path)
-
-
-def extract_file(resource_name, dest_folder):
-    resource_full_path = resource_path(resource_name)
-    if not os.path.exists(resource_full_path):
-        raise FileNotFoundError(f"Resource '{resource_name}' not found.")
-
-    shutil.copy(resource_full_path, os.path.join(dest_folder, resource_name))
+    return os.path.join(basePath, relativePath)
 
 
-def move_folder(src_folder, dest_folder):
-    if not os.path.exists(src_folder):
-        print(f"Source folder '{src_folder}' does not exist.")
-        return
+def extractFile(resourceName: str | os.PathLike[str], destinationFolder: str | os.PathLike[str]) -> None:
+    fullResourcePath = getResourcePath(resourceName)
+    if not os.path.exists(fullResourcePath):
+        raise FileNotFoundError(f"Resource '{resourceName}' not found.")
 
-    if not os.path.exists(dest_folder):
-        print(f"Destination folder '{dest_folder}' does not exist. Creating it.")
-        os.makedirs(dest_folder)
+    shutil.copy(fullResourcePath, os.path.join(destinationFolder, resourceName))
 
-    dest_path = os.path.join(dest_folder, os.path.basename(src_folder))
+
+def move_folder(sourceFolder: str | os.PathLike[str], destinationFolder: str | os.PathLike[str]) -> None:
+    if not os.path.exists(sourceFolder):
+        raise FileNotFoundError(f"Source folder '{sourceFolder}' not found.")
+
+    dest_path = os.path.join(destinationFolder, os.path.basename(sourceFolder))
     if os.path.exists(dest_path):
         print("Path exists, removing it...")
         shutil.rmtree(dest_path)
 
-    shutil.move(src_folder, dest_folder)
-    print(f"Successfully moved '{src_folder}' to '{dest_folder}'.")
+    shutil.move(sourceFolder, destinationFolder)
+    print(f"Successfully moved '{sourceFolder}' to '{destinationFolder}'.")
 
 
-def main():
+def main() -> None:
     if not ctypes.windll.shell32.IsUserAnAdmin():
         ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
 
-    destination_folder = os.path.expandvars(r"%appdata%\Autodesk\ApplicationPlugins")
-    os.makedirs(destination_folder, exist_ok=True)
-    with tempfile.TemporaryDirectory() as temp_dir:
-        extract_file("SynthesisExporter.zip", temp_dir)
-        with zipfile.ZipFile(os.path.join(temp_dir, "SynthesisExporter.zip"), "r") as zip_ref:
-            zip_ref.extractall(temp_dir)
+    destinationFolder = os.path.expandvars(r"%appdata%\Autodesk\ApplicationPlugins")
+    os.makedirs(destinationFolder, exist_ok=True)
+    with tempfile.TemporaryDirectory() as tempDir:
+        extractFile("SynthesisExporter.zip", tempDir)
+        with zipfile.ZipFile(os.path.join(tempDir, "SynthesisExporter.zip"), "r") as zip:
+            zip.extractall(tempDir)
 
-        src_folder = os.path.join(temp_dir, "synthesis.bundle")
-        move_folder(src_folder, destination_folder)
+        sourceFolder = os.path.join(tempDir, "synthesis.bundle")
+        move_folder(sourceFolder, destinationFolder)
 
 
 if __name__ == "__main__":
