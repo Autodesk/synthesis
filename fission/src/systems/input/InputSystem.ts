@@ -189,6 +189,7 @@ class InputSystem extends WorldSystem {
 
     // Called when any key is first pressed
     private handleKeyDown(event: KeyboardEvent) {
+        console.log(event.code)
         InputSystem._keysPressed[event.code] = true
     }
 
