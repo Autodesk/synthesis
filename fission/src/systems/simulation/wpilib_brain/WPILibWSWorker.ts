@@ -31,15 +31,17 @@ async function tryDisconnect(): Promise<void> {
     await connectMutex.runExclusive(() => {
         if (!socket) return
 
-        socket?.close()
+        socket.close()
         socket = undefined
     })
 }
 
+// Posts incoming messages
 function onMessage(event: MessageEvent) {
     self.postMessage(event.data)
 }
 
+// Sends outgoing messages
 self.addEventListener("message", e => {
     switch (e.data.command) {
         case "connect":
@@ -49,6 +51,7 @@ self.addEventListener("message", e => {
             tryDisconnect()
             break
         case "update":
+            console.log(`update in worker ${JSON.stringify(e.data)}`)
             if (socket) socket.send(JSON.stringify(e.data.data))
             break
         default:
@@ -56,5 +59,3 @@ self.addEventListener("message", e => {
             break
     }
 })
-
-console.log("Worker started")

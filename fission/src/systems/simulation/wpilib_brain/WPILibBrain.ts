@@ -102,9 +102,11 @@ export class SimGeneric {
             return false
         }
 
-        const selectedData: DeviceData = new Map<string, number>()
-        selectedData.set(field, value)
+        const selectedData: { [key: string]: number } = {}
+        selectedData[field] = value
         data.set(field, value)
+
+        console.log(`encoder update: ${JSON.stringify(selectedData)}`)
 
         worker.postMessage({
             command: "update",
