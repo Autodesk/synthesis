@@ -18,11 +18,13 @@ import Button from "@/ui/components/Button"
 import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import ConfigureSubsystemsInterface from "../ConfigureSubsystemsInterface"
 
 enum ConfigMode {
     INTAKE,
     EJECTOR,
     MOTORS,
+    SUBSYSTEMS,
     CONTROLS,
     SCORING_ZONES,
 }
@@ -127,6 +129,7 @@ const robotModes = [
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
     new ConfigModeSelectionOption("Sequential Joints", ConfigMode.MOTORS),
+    new ConfigModeSelectionOption("Subsystems", ConfigMode.SUBSYSTEMS),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
@@ -164,6 +167,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
         case ConfigMode.MOTORS:
             return <SequentialBehaviorsInterface selectedRobot={assembly} />
+        case ConfigMode.SUBSYSTEMS:
+            return <ConfigureSubsystemsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS: {
             const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
             const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
@@ -224,8 +229,8 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     return (
         <Panel
-            name={"Configure Objects"}
-            icon={SynthesisIcons.Gear}
+            name={"Configure Assets"}
+            icon={SynthesisIcons.Wrench}
             panelId={panelId}
             cancelEnabled={false}
             openLocation="right"

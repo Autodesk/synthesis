@@ -9,14 +9,14 @@ import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import World from "@/systems/World"
 import Button from "@/ui/components/Button"
 import Label, { LabelSize } from "@/ui/components/Label"
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import { PanelPropsImpl } from "@/ui/components/Panel"
 import ScrollView from "@/ui/components/ScrollView"
 import Slider from "@/ui/components/Slider"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import { SectionDivider } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
-import { useCallback, useMemo, useState } from "react"
-import { FaGear } from "react-icons/fa6"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { ConfigurationSavedEvent } from "./assembly-config/ConfigurePanel"
 
 type SubsystemRowProps = {
     robot: MirabufSceneObject
@@ -133,8 +133,11 @@ const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
     )
 }
 
-const ConfigureSubsystemsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
-    const [selectedRobot, setSelectedRobot] = useState<MirabufSceneObject | undefined>(undefined)
+interface ConfigureSubsystemsProps {
+    selectedRobot: MirabufSceneObject
+}
+
+const ConfigureSubsystemsInterface: React.FC<ConfigureSubsystemsProps> = ({ selectedRobot }) => {
     const [origPref, setOrigPref] = useState<RobotPreferences | undefined>(undefined)
 
     const robots = useMemo(() => {
@@ -152,6 +155,18 @@ const ConfigureSubsystemsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
             ? World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers
             : undefined
     }, [selectedRobot])
+
+    const saveEvent = useCallback(() => {
+        PreferencesSystem.savePreferences()
+    }, [])
+
+    useEffect(() => {
+        ConfigurationSavedEvent.Listen(saveEvent)
+
+        return () => {
+            ConfigurationSavedEvent.RemoveListener(saveEvent)
+        }
+    }, [saveEvent])
 
     // Gets motors in preferences for ease of saving into origPrefs which can be used to revert on Cancel()
     function saveOrigMotors(robot: MirabufSceneObject) {
@@ -177,6 +192,7 @@ const ConfigureSubsystemsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
         setOrigPref({ ...PreferencesSystem.getRobotPreferences(robot.assemblyName) }) // clone
     }
 
+    // TODO
     function Cancel() {
         if (selectedRobot && origPref) {
             drivers?.forEach(driver => {
@@ -208,72 +224,38 @@ const ConfigureSubsystemsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocat
     }
 
     return (
-        <Panel
-            name="Configure Subsystems"
-            icon={<FaGear />}
-            panelId={panelId}
-            openLocation={openLocation}
-            sidePadding={sidePadding}
-            onAccept={() => {
-                PreferencesSystem.savePreferences()
-            }}
-            onCancel={Cancel}
-            acceptEnabled={true}
-        >
-            {selectedRobot?.ejectorPreferences == undefined ? (
-                <>
-                    <Label>Select a robot</Label>
-                    {/** Scroll view for selecting a robot to configure */}
-                    <div className="flex overflow-y-auto flex-col gap-2 min-w-[20vw] max-h-[40vh] bg-background-secondary rounded-md p-2">
-                        {robots.map(mirabufSceneObject => {
-                            return (
-                                <Button
-                                    value={mirabufSceneObject.assemblyName}
-                                    onClick={() => {
-                                        setSelectedRobot(mirabufSceneObject)
-                                        saveOrigMotors(mirabufSceneObject)
-                                    }}
-                                    key={mirabufSceneObject.id}
-                                ></Button>
-                            )
-                        })}
-                    </div>
-                </>
-            ) : (
-                <>
-                    {drivers ? (
-                        <ScrollView className="flex flex-col gap-4">
-                            {/** Drivetrain row. Then other SliderDrivers and HingeDrivers */}
+        <>
+            {drivers ? (
+                <ScrollView className="flex flex-col gap-4">
+                    {/** Drivetrain row. Then other SliderDrivers and HingeDrivers */}
+                    <SubsystemRow
+                        key={0}
+                        robot={(() => {
+                            return selectedRobot
+                        })()}
+                        driver={(() => {
+                            return drivers.filter(x => x instanceof WheelDriver)[0]
+                        })()}
+                    />
+                    {drivers
+                        .filter(x => x instanceof SliderDriver || x instanceof HingeDriver)
+                        .map((driver: Driver, i: number) => (
                             <SubsystemRow
-                                key={0}
+                                key={i + 1}
                                 robot={(() => {
                                     return selectedRobot
                                 })()}
                                 driver={(() => {
-                                    return drivers.filter(x => x instanceof WheelDriver)[0]
+                                    return driver
                                 })()}
                             />
-                            {drivers
-                                .filter(x => x instanceof SliderDriver || x instanceof HingeDriver)
-                                .map((driver: Driver, i: number) => (
-                                    <SubsystemRow
-                                        key={i + 1}
-                                        robot={(() => {
-                                            return selectedRobot
-                                        })()}
-                                        driver={(() => {
-                                            return driver
-                                        })()}
-                                    />
-                                ))}
-                        </ScrollView>
-                    ) : (
-                        <Label>No Subsystems</Label>
-                    )}
-                </>
+                        ))}
+                </ScrollView>
+            ) : (
+                <Label>No Subsystems</Label>
             )}
-        </Panel>
+        </>
     )
 }
 
-export default ConfigureSubsystemsPanel
+export default ConfigureSubsystemsInterface
