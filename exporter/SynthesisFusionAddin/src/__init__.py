@@ -11,7 +11,7 @@ APP_TITLE = "Synthesis Robot Exporter"
 DESCRIPTION = "Exports files from Fusion into the Synthesis Format"
 INTERNAL_ID = "Synthesis"
 ADDIN_PATH = os.path.dirname(os.path.realpath(__file__))
-IS_RELEASE = str(Path(os.path.abspath(__file__)).parent.parent.parent.parent).split("/")[-1] == "ApplicationPlugins"
+IS_RELEASE = str(Path(os.path.abspath(__file__)).parent.parent.parent.parent).split(os.sep)[-1] == "ApplicationPlugins"
 
 SYSTEM: OperatingSystemString = platform.system()
 assert SYSTEM != "Linux"
