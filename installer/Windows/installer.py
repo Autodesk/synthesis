@@ -47,7 +47,7 @@ def main():
         with zipfile.ZipFile(os.path.join(temp_dir, "SynthesisExporter.zip"), "r") as zip_ref:
             zip_ref.extractall(temp_dir)
 
-        src_folder = os.path.join(temp_dir, "tmp")
+        src_folder = os.path.join(temp_dir, "synthesis.bundle")
         move_folder(src_folder, destination_folder)
 
 
