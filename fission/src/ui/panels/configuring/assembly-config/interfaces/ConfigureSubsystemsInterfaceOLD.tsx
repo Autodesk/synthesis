@@ -1,29 +1,25 @@
-import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import Driver from "@/systems/simulation/driver/Driver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import World from "@/systems/World"
-import Button from "@/ui/components/Button"
 import Label, { LabelSize } from "@/ui/components/Label"
-import { PanelPropsImpl } from "@/ui/components/Panel"
 import ScrollView from "@/ui/components/ScrollView"
 import Slider from "@/ui/components/Slider"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import { SectionDivider } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "./assembly-config/ConfigurePanel"
+import { ConfigurationSavedEvent } from "../ConfigurePanel"
 
 type SubsystemRowProps = {
     robot: MirabufSceneObject
     driver: Driver
 }
 
-const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
+export const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
     const driverSwitch = (driver: Driver, slider: unknown, hinge: unknown, drivetrain: unknown) => {
         switch (driver.constructor) {
             case SliderDriver:
@@ -137,18 +133,9 @@ interface ConfigureSubsystemsProps {
     selectedRobot: MirabufSceneObject
 }
 
-const ConfigureSubsystemsInterface: React.FC<ConfigureSubsystemsProps> = ({ selectedRobot }) => {
-    const [origPref, setOrigPref] = useState<RobotPreferences | undefined>(undefined)
-
-    const robots = useMemo(() => {
-        const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
-            if (x instanceof MirabufSceneObject) {
-                return x.miraType === MiraType.ROBOT
-            }
-            return false
-        }) as MirabufSceneObject[]
-        return assemblies
-    }, [])
+const ConfigureSubsystemsInterfaceOLD: React.FC<ConfigureSubsystemsProps> = ({ selectedRobot }) => {
+    // This is disabled for now, but will be added back when merged with Aylas cancel functionality branch
+    //const [origPref, setOrigPref] = useState<RobotPreferences | undefined>(undefined)
 
     const drivers = useMemo(() => {
         return selectedRobot?.mechanism
@@ -168,8 +155,13 @@ const ConfigureSubsystemsInterface: React.FC<ConfigureSubsystemsProps> = ({ sele
         }
     }, [saveEvent])
 
+    /**
+     *
+     * This is disabled for now, but will be added back when merged with Aylas cancel functionality branch
+     *
+     */
     // Gets motors in preferences for ease of saving into origPrefs which can be used to revert on Cancel()
-    function saveOrigMotors(robot: MirabufSceneObject) {
+    /*     function saveOrigMotors(robot: MirabufSceneObject) {
         drivers?.forEach(driver => {
             if (driver.info && driver.info.name && !(driver instanceof WheelDriver)) {
                 const motors = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
@@ -192,7 +184,6 @@ const ConfigureSubsystemsInterface: React.FC<ConfigureSubsystemsProps> = ({ sele
         setOrigPref({ ...PreferencesSystem.getRobotPreferences(robot.assemblyName) }) // clone
     }
 
-    // TODO
     function Cancel() {
         if (selectedRobot && origPref) {
             drivers?.forEach(driver => {
@@ -221,7 +212,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigureSubsystemsProps> = ({ sele
             PreferencesSystem.setRobotPreferences(selectedRobot.assemblyName, origPref)
         }
         PreferencesSystem.savePreferences()
-    }
+    } */
 
     return (
         <>
@@ -258,4 +249,4 @@ const ConfigureSubsystemsInterface: React.FC<ConfigureSubsystemsProps> = ({ sele
     )
 }
 
-export default ConfigureSubsystemsInterface
+export default ConfigureSubsystemsInterfaceOLD

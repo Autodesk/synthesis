@@ -6,10 +6,7 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useEffect, useMemo, useReducer, useState } from "react"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -18,12 +15,9 @@ import Button from "@/ui/components/Button"
 import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import ConfigureSubsystemsInterface from "../ConfigureSubsystemsInterface"
+import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
 
 enum ConfigMode {
-    INTAKE,
-    EJECTOR,
-    MOTORS,
     SUBSYSTEMS,
     CONTROLS,
     SCORING_ZONES,
@@ -126,9 +120,6 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 }
 
 const robotModes = [
-    new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
-    new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
-    new ConfigModeSelectionOption("Sequential Joints", ConfigMode.MOTORS),
     new ConfigModeSelectionOption("Subsystems", ConfigMode.SUBSYSTEMS),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
@@ -161,12 +152,6 @@ interface ConfigInterfaceProps {
 /** The interface for the actual configuration */
 const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly, openPanel }) => {
     switch (configMode) {
-        case ConfigMode.INTAKE:
-            return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
-        case ConfigMode.EJECTOR:
-            return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
-        case ConfigMode.MOTORS:
-            return <SequentialBehaviorsInterface selectedRobot={assembly} />
         case ConfigMode.SUBSYSTEMS:
             return <ConfigureSubsystemsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS: {
