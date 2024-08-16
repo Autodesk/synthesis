@@ -2,22 +2,7 @@
 setlocal enabledelayedexpansion
 setlocal
 
-where python >nul 2>&1
-IF %ERRORLEVEL% NEQ 0 (
-    echo Python not found. Installing Python...
-    curl -o python-installer.exe https://www.python.org/ftp/python/3.11.0/python-3.11.0-amd64.exe
-    python-installer.exe /quiet InstallAllUsers=1 PrependPath=1
-    del python-installer.exe
-)
-
-python -m pip --version >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
-    echo pip not found. Installing pip...
-    python -m ensurepip
-    python -m pip install --upgrade pip
-)
-
-python -m pip install -r requirements.txt
+python -m pip install -r requirements.txt --user
 
 set "EXPORTER_SOURCE_DIR=..\..\..\exporter\SynthesisFusionAddin\"
 
