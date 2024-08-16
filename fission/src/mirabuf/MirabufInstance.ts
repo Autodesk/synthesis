@@ -109,9 +109,8 @@ class MirabufInstance {
     }
 
     public constructor(parser: MirabufParser, materialStyle?: MaterialStyle, progressHandle?: ProgressHandle) {
-        if (parser.errors.some(x => x[0] >= ParseErrorSeverity.Unimportable)) {
+        if (parser.errors.some(x => x[0] >= ParseErrorSeverity.Unimportable))
             throw new Error("Parser has significant errors...")
-        }
 
         this._mirabufParser = parser
         this._materials = new Map()
@@ -126,39 +125,30 @@ class MirabufInstance {
     }
 
     /**
-     * Parses all mirabuf appearances into ThreeJs materials.
+     * Parses all mirabuf appearances into ThreeJS materials.
      */
     private LoadMaterials(materialStyle: MaterialStyle) {
         Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!).forEach(
             ([appearanceId, appearance]) => {
-                let hex = 0xe32b50
-                let opacity = 1.0
-                if (appearance.albedo) {
-                    const { A, B, G, R } = appearance?.albedo
-                    if (A && B && G && R) {
-                        hex = (A << 24) | (R << 16) | (G << 8) | B
-                        opacity = A / 255.0
-                    }
-                }
+                const { A, B, G, R } = appearance.albedo ?? {}
+                const [hex, opacity] =
+                    A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
 
-                let material: THREE.Material
-                if (materialStyle == MaterialStyle.Regular) {
-                    material = new THREE.MeshPhongMaterial({
-                        color: hex,
-                        shininess: 0.0,
-                        shadowSide: THREE.DoubleSide,
-                        opacity: opacity,
-                        transparent: opacity < 1.0,
-                    })
-                } else if (materialStyle == MaterialStyle.Normals) {
-                    material = new THREE.MeshNormalMaterial()
-                } else if (materialStyle == MaterialStyle.Toon) {
-                    material = World.SceneRenderer.CreateToonMaterial(hex, 5)
-                    console.debug("Toon Material")
-                }
+                const material =
+                    materialStyle === MaterialStyle.Regular
+                        ? new THREE.MeshPhongMaterial({
+                              color: hex,
+                              shininess: 0.0,
+                              shadowSide: THREE.DoubleSide,
+                              opacity: opacity,
+                              transparent: opacity < 1.0,
+                          })
+                        : materialStyle === MaterialStyle.Normals
+                          ? new THREE.MeshNormalMaterial()
+                          : World.SceneRenderer.CreateToonMaterial(hex, 5)
 
-                World.SceneRenderer.SetupMaterial(material!)
-                this._materials.set(appearanceId, material!)
+                World.SceneRenderer.SetupMaterial(material)
+                this._materials.set(appearanceId, material)
             }
         )
     }
@@ -178,61 +168,51 @@ class MirabufInstance {
 
         const batchMap = new Map<THREE.Material, Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>>()
         const countMap = new Map<THREE.Material, BatchCounts>()
-
         // Filter all instances by first material, then body
-        for (const instance of Object.values(instances)) {
-            const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]!
-            const bodies = definition.bodies
-            if (bodies) {
-                for (const body of bodies) {
-                    if (!body) continue
-                    const mesh = body.triangleMesh
-                    if (
-                        mesh &&
-                        mesh.mesh &&
-                        mesh.mesh.verts &&
-                        mesh.mesh.normals &&
-                        mesh.mesh.uv &&
-                        mesh.mesh.indices
-                    ) {
-                        const appearanceOverride = body.appearanceOverride
-                        const material: THREE.Material = WIREFRAME
-                            ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
-                            : appearanceOverride && this._materials.has(appearanceOverride)
-                              ? this._materials.get(appearanceOverride)!
-                              : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
+        Object.values(instances).forEach(instance => {
+            const definition = assembly.data!.parts!.partDefinitions![instance.partDefinitionReference!]
+            const bodies = definition?.bodies ?? []
+            bodies.forEach(body => {
+                const mesh = body?.triangleMesh?.mesh
+                if (!mesh?.verts || !mesh.normals || !mesh.uv || !mesh.indices) return
 
-                        let materialBodyMap = batchMap.get(material)
-                        if (!materialBodyMap) {
-                            materialBodyMap = new Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>()
-                            batchMap.set(material, materialBodyMap)
-                        }
+                const appearanceOverride = body.appearanceOverride
+                const material: THREE.Material = WIREFRAME
+                    ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
+                    : appearanceOverride && this._materials.has(appearanceOverride)
+                      ? this._materials.get(appearanceOverride)!
+                      : fillerMaterials[nextFillerMaterial++ % fillerMaterials.length]
 
-                        const partBodyGuid = this.GetPartBodyGuid(definition, body)
-                        let bodyInstances = materialBodyMap.get(partBodyGuid)
-                        if (!bodyInstances) {
-                            bodyInstances = [body, new Array<mirabuf.IPartInstance>()]
-                            materialBodyMap.set(partBodyGuid, bodyInstances)
-                        }
-                        bodyInstances[1].push(instance)
-
-                        if (countMap.has(material)) {
-                            const count = countMap.get(material)!
-                            count.maxInstances += 1
-                            count.maxVertices += mesh.mesh.verts.length / 3
-                            count.maxIndices += mesh.mesh.indices.length
-                        } else {
-                            const count: BatchCounts = {
-                                maxInstances: 1,
-                                maxVertices: mesh.mesh.verts.length / 3,
-                                maxIndices: mesh.mesh.indices.length,
-                            }
-                            countMap.set(material, count)
-                        }
-                    }
+                let materialBodyMap = batchMap.get(material)
+                if (!materialBodyMap) {
+                    materialBodyMap = new Map<string, [mirabuf.IBody, Array<mirabuf.IPartInstance>]>()
+                    batchMap.set(material, materialBodyMap)
                 }
-            }
-        }
+
+                const partBodyGuid = this.GetPartBodyGuid(definition, body)
+                let bodyInstances = materialBodyMap.get(partBodyGuid)
+                if (!bodyInstances) {
+                    bodyInstances = [body, new Array<mirabuf.IPartInstance>()]
+                    materialBodyMap.set(partBodyGuid, bodyInstances)
+                }
+                bodyInstances[1].push(instance)
+
+                if (countMap.has(material)) {
+                    const count = countMap.get(material)!
+                    count.maxInstances += 1
+                    count.maxVertices += mesh.verts.length / 3
+                    count.maxIndices += mesh.indices.length
+                    return
+                }
+
+                const count: BatchCounts = {
+                    maxInstances: 1,
+                    maxVertices: mesh.verts.length / 3,
+                    maxIndices: mesh.indices.length,
+                }
+                countMap.set(material, count)
+            })
+        })
 
         console.debug(batchMap)
 
