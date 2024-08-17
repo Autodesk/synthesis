@@ -89,9 +89,11 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
     geometry.setIndex(mesh.indices!)
 }
 
+type FrictionCoefficients = { dyn: number; stat: number }
+
 class MirabufInstance {
     private _mirabufParser: MirabufParser
-    private _materials: Map<string, THREE.Material>
+    private _materials: Map<string, [THREE.Material, FrictionCoefficients]>
     private _meshes: Map<MirabufPartInstanceGUID, Array<[THREE.BatchedMesh, number]>>
     private _batches: Array<THREE.BatchedMesh>
 
@@ -125,9 +127,14 @@ class MirabufInstance {
     }
 
     /**
-     * Parses all mirabuf appearances into ThreeJS materials.
+     * Parses all mirabuf appearances into ThreeJS and Jolt materials.
      */
     private LoadMaterials(materialStyle: MaterialStyle) {
+        Object.entries(this._mirabufParser.assembly.data!.materials!.physicalMaterials!).forEach(([name, material]) => {
+            const [static_f, dynamic_f] = [material.staticFriction, material.dynamicFriction]
+            console.log(`${name} - static: ${static_f} dynamic: ${dynamic_f}`)
+            //this._materials.set()
+        })
         Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!).forEach(
             ([appearanceId, appearance]) => {
                 const { A, B, G, R } = appearance.albedo ?? {}
