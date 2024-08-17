@@ -306,4 +306,3 @@ export class SimMapUpdateEvent extends Event {
 }
 
 export default WPILibBrain
-

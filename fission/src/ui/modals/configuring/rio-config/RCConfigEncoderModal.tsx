@@ -28,7 +28,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         brain = simLayer?.brain as WPILibBrain
     }
 
-    const devices: [string, unknown][] = [...simMap.get(SimType.CANEncoder)?.entries() ?? []] // ugly
+    const devices: [string, unknown][] = [...(simMap.get(SimType.CANEncoder)?.entries() ?? [])] // ugly
 
     const stimMap = new Map<string, EncoderStimulus>()
 
@@ -57,7 +57,11 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
             <Dropdown label="Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
-            <Dropdown label="Stimuli" options={[...stimMap.keys()]} onSelect={s => setSelectedStimulus(stimMap.get(s))} />
+            <Dropdown
+                label="Stimuli"
+                options={[...stimMap.keys()]}
+                onSelect={s => setSelectedStimulus(stimMap.get(s))}
+            />
         </Modal>
     )
 }
