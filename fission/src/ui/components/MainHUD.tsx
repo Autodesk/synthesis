@@ -96,6 +96,11 @@ const MainHUD: React.FC = () => {
                         onClick={() => openModal("view")}
                     /> */}
                     <MainHUDButton
+                        value={"Subsystems"}
+                        icon={SynthesisIcons.Gear}
+                        onClick={() => openPanel("subsystem-config")}
+                    />
+                    <MainHUDButton
                         value={"Configure"}
                         icon={SynthesisIcons.Gear}
                         onClick={() => openPanel("configure")}
