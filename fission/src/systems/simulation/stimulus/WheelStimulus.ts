@@ -1,5 +1,6 @@
 import Jolt from "@barclah/jolt-physics"
 import EncoderStimulus from "./EncoderStimulus"
+import { mirabuf } from "@/proto/mirabuf"
 
 /**
  *
@@ -28,8 +29,8 @@ class WheelRotationStimulus extends EncoderStimulus {
         this._accum = shouldAccum
     }
 
-    public constructor(wheel: Jolt.Wheel) {
-        super()
+    public constructor(wheel: Jolt.Wheel, info?: mirabuf.IInfo) {
+        super(info)
 
         this._wheel = wheel
     }
