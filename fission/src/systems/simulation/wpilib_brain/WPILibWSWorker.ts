@@ -51,7 +51,6 @@ self.addEventListener("message", e => {
             tryDisconnect()
             break
         case "update":
-            console.log(`update in worker ${JSON.stringify(e.data)}`)
             if (socket) socket.send(JSON.stringify(e.data.data))
             break
         default:

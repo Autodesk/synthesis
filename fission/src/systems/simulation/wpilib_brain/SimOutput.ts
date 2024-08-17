@@ -41,9 +41,9 @@ export class PWMOutputGroup extends SimOutputGroup {
 
         this.drivers.forEach(d => {
             if (d instanceof WheelDriver) {
-                d.targetWheelSpeed = average * 40
+                d.accelerationDirection = average
             } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
-                d.targetVelocity = average * 40
+                d.accelerationDirection = average
             }
             d.Update(_deltaT)
         })
@@ -64,9 +64,9 @@ export class CANOutputGroup extends SimOutputGroup {
 
         this.drivers.forEach(d => {
             if (d instanceof WheelDriver) {
-                d.targetWheelSpeed = average * 40
+                d.accelerationDirection = average
             } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
-                d.targetVelocity = average * 40
+                d.accelerationDirection = average
             }
             d.Update(deltaT)
         })

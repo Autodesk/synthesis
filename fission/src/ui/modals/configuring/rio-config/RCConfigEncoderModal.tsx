@@ -34,7 +34,6 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     stimuli.forEach(stim => {
         const label = `${stim.constructor.name} ${stim.info?.name && "(" + stim.info!.name + ")"}`
-        console.log("stim: " + label)
         stimMap.set(label, stim)
     })
 

@@ -106,8 +106,6 @@ export class SimGeneric {
         selectedData[field] = value
         data.set(field, value)
 
-        console.log(`encoder update: ${JSON.stringify(selectedData)}`)
-
         worker.postMessage({
             command: "update",
             data: {
@@ -308,3 +306,4 @@ export class SimMapUpdateEvent extends Event {
 }
 
 export default WPILibBrain
+
