@@ -78,7 +78,7 @@ const Modal: React.FC<ModalProps> = ({
                     id="content"
                     className={`${contentClassName || ""} ${
                         !contentClassName?.includes("mx") ? "mx-[2rem]" : ""
-                    } flex flex-col gap-4 max-h-[75vh]`}
+                    } flex flex-col gap-4 max-h-75vh p-4`}
                 >
                     {children}
                 </div>
