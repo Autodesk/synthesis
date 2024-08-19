@@ -356,7 +356,7 @@ class PhysicsSystem extends WorldSystem {
 
             let listener: Jolt.PhysicsStepListener | undefined = undefined
 
-            function addConstraint(c: Jolt.Constraint): void {
+            const addConstraint = (c: Jolt.Constraint): void => {
                 mechanism.AddConstraint({
                     parentBody: bodyIdA!,
                     childBody: bodyIdB!,

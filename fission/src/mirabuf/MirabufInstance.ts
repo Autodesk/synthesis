@@ -89,11 +89,9 @@ const transformGeometry = (geometry: THREE.BufferGeometry, mesh: mirabuf.IMesh) 
     geometry.setIndex(mesh.indices!)
 }
 
-type FrictionCoefficients = { dyn: number; stat: number }
-
 class MirabufInstance {
     private _mirabufParser: MirabufParser
-    private _materials: Map<string, [THREE.Material, FrictionCoefficients]>
+    private _materials: Map<string, THREE.Material>
     private _meshes: Map<MirabufPartInstanceGUID, Array<[THREE.BatchedMesh, number]>>
     private _batches: Array<THREE.BatchedMesh>
 
