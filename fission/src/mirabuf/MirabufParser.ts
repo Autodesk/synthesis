@@ -124,7 +124,10 @@ class MirabufParser {
         const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
             const currentNode = this._partToNodeMap.get(node.value!)
             if (!currentNode) this.MovePartToRigidNode(node.value!, parentNode)
-            ;(node.children ?? []).forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
+
+            // Eslint complains about the semicolon added at the begining of the line if you inline this variable
+            const children = node.children ?? []
+            children.forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
         }
         this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
 
@@ -218,9 +221,9 @@ class MirabufParser {
 
         const directedGraph = new Graph()
         const whiteGreyBlackMap = new Map<string, boolean>()
-        this._rigidNodes.forEach(x => {
-            whiteGreyBlackMap.set(x.id, false)
-            directedGraph.AddNode(x.id)
+        this._rigidNodes.forEach(node => {
+            whiteGreyBlackMap.set(node.id, false)
+            directedGraph.AddNode(node.id)
         })
 
         function directedRecursive(node: string) {
