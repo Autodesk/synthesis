@@ -350,59 +350,47 @@ class PhysicsSystem extends WorldSystem {
             const bodyA = this.GetBody(bodyIdA)
             const bodyB = this.GetBody(bodyIdB)
 
-            const constraints: Jolt.Constraint[] = []
             let listener: Jolt.PhysicsStepListener | undefined = undefined
+
+            function addConstraint(c: Jolt.Constraint): void {
+                mechanism.AddConstraint({
+                    parentBody: bodyIdA!,
+                    childBody: bodyIdB!,
+                    constraint: c,
+                    info: jInst.info ?? undefined, // remove possibility for null
+                })
+            }
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
-                        if (parser.directedGraph.GetAdjacencyList(rnA.id).length > 0) {
-                            const res = this.CreateWheelConstraint(
-                                jInst,
-                                jDef,
-                                bodyA,
-                                bodyB,
-                                parser.assembly.info!.version!
-                            )
-                            constraints.push(res[0])
-                            constraints.push(res[1])
-                            listener = res[2]
-                        } else {
-                            const res = this.CreateWheelConstraint(
-                                jInst,
-                                jDef,
-                                bodyB,
-                                bodyA,
-                                parser.assembly.info!.version!
-                            )
-                            constraints.push(res[0])
-                            constraints.push(res[1])
-                            listener = res[2]
-                        }
+                        const [bodyOne, bodyTwo] =
+                            parser.directedGraph.GetAdjacencyList(rnA.id).length > 0 ? [bodyA, bodyB] : [bodyB, bodyA]
+
+                        const res = this.CreateWheelConstraint(
+                            jInst,
+                            jDef,
+                            bodyOne,
+                            bodyTwo,
+                            parser.assembly.info!.version!
+                        )
+                        addConstraint(res[0])
+                        addConstraint(res[1])
+                        listener = res[2]
                     } else {
-                        constraints.push(
+                        addConstraint(
                             this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)
                         )
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
-                    constraints.push(this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB))
+                    addConstraint(this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB))
                     break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")
                     break
             }
 
-            if (constraints.length > 0) {
-                constraints.forEach(x =>
-                    mechanism.AddConstraint({
-                        parentBody: bodyIdA,
-                        childBody: bodyIdB,
-                        constraint: x,
-                        info: jInst.info ?? undefined, // remove possibility for null
-                    })
-                )
-            }
             if (listener) {
                 mechanism.AddStepListener(listener)
             }
@@ -456,7 +444,7 @@ class PhysicsSystem extends WorldSystem {
         )
 
         // Some values that are meant to be exactly PI are perceived as being past it, causing unexpected behavior.
-        // This safety check caps the values to be within [-PI, PI] wth minimal difference in precision.
+        // This safety check caps the values to be within [-PI, PI] with minimal difference in precision.
         const piSafetyCheck = (v: number) => Math.min(3.14158, Math.max(-3.14158, v))
 
         if (
@@ -646,6 +634,7 @@ class PhysicsSystem extends WorldSystem {
             let shapesAdded = 0
 
             let totalMass = 0
+            let frictionOverride = 0
             const comAccum = new mirabuf.Vector3()
 
             const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
@@ -659,49 +648,47 @@ class PhysicsSystem extends WorldSystem {
 
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
-                if (
-                    partInstance.skipCollider == null ||
-                    partInstance == undefined ||
-                    partInstance.skipCollider == false
-                ) {
-                    const partDefinition =
-                        parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
+                if (partInstance.skipCollider) return
 
-                    const partShapeResult = rn.isDynamic
-                        ? this.CreateConvexShapeSettingsFromPart(partDefinition)
-                        : this.CreateConcaveShapeSettingsFromPart(partDefinition)
+                const partDefinition =
+                    parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
 
-                    if (partShapeResult) {
-                        const [shapeSettings, partMin, partMax] = partShapeResult
+                const partShapeResult = rn.isDynamic
+                    ? this.CreateConvexShapeSettingsFromPart(partDefinition)
+                    : this.CreateConcaveShapeSettingsFromPart(partDefinition)
 
-                        const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!)
-                        const translation = transform.GetTranslation()
-                        const rotation = transform.GetQuaternion()
-                        compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
-                        shapesAdded++
+                if (!partShapeResult) return
 
-                        this.UpdateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
-                        this.UpdateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
+                const [shapeSettings, partMin, partMax] = partShapeResult
 
-                        JOLT.destroy(partMin)
-                        JOLT.destroy(partMax)
-                        JOLT.destroy(transform)
+                const transform = ThreeMatrix4_JoltMat44(parser.globalTransforms.get(partId)!)
+                const translation = transform.GetTranslation()
+                const rotation = transform.GetQuaternion()
+                compoundShapeSettings.AddShape(translation, rotation, shapeSettings, 0)
+                shapesAdded++
 
-                        if (
-                            partDefinition.physicalData &&
-                            partDefinition.physicalData.com &&
-                            partDefinition.physicalData.mass
-                        ) {
-                            const mass = partDefinition.massOverride
-                                ? partDefinition.massOverride!
-                                : partDefinition.physicalData.mass!
-                            totalMass += mass
-                            comAccum.x += (partDefinition.physicalData.com.x! * mass) / 100.0
-                            comAccum.y += (partDefinition.physicalData.com.y! * mass) / 100.0
-                            comAccum.z += (partDefinition.physicalData.com.z! * mass) / 100.0
-                        }
-                    }
-                }
+                this.UpdateMinMaxBounds(transform.Multiply3x3(partMin), minBounds, maxBounds)
+                this.UpdateMinMaxBounds(transform.Multiply3x3(partMax), minBounds, maxBounds)
+
+                JOLT.destroy(partMin)
+                JOLT.destroy(partMax)
+                JOLT.destroy(transform)
+
+                // Set friction override once to any of the parts' values
+                if (!frictionOverride && partDefinition?.frictionOverride)
+                    frictionOverride = partDefinition.frictionOverride
+
+                if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
+
+                const mass = partDefinition.massOverride
+                    ? partDefinition.massOverride!
+                    : partDefinition.physicalData.mass!
+
+                totalMass += mass
+
+                comAccum.x += (partDefinition.physicalData.com.x! * mass) / 100.0
+                comAccum.y += (partDefinition.physicalData.com.y! * mass) / 100.0
+                comAccum.z += (partDefinition.physicalData.com.z! * mass) / 100.0
             })
 
             if (shapesAdded > 0) {
@@ -713,9 +700,7 @@ class PhysicsSystem extends WorldSystem {
 
                 const shape = shapeResult.Get()
 
-                if (rn.isDynamic) {
-                    shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass
-                }
+                if (rn.isDynamic) shape.GetMassProperties().mMass = !totalMass ? 1 : totalMass
 
                 const bodySettings = new JOLT.BodyCreationSettings(
                     shape,
@@ -729,9 +714,15 @@ class PhysicsSystem extends WorldSystem {
                 body.SetAllowSleeping(false)
                 rnToBodies.set(rn.id, body.GetID())
 
+                // Set Friction Here
+                if (frictionOverride) body.SetFriction(frictionOverride)
+
                 // Little testing components
                 this._bodies.push(body.GetID())
                 body.SetRestitution(0.4)
+
+                if (!frictionOverride) return
+                body.SetFriction(frictionOverride)
             }
             // Cleanup
             JOLT.destroy(compoundShapeSettings)
@@ -748,7 +739,7 @@ class PhysicsSystem extends WorldSystem {
      */
     private CreateConvexShapeSettingsFromPart(
         partDefinition: mirabuf.IPartDefinition
-    ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
+    ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined {
         const settings = new JOLT.ConvexHullShapeSettings()
 
         const min = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
@@ -756,14 +747,14 @@ class PhysicsSystem extends WorldSystem {
 
         const points = settings.mPoints
         partDefinition.bodies!.forEach(body => {
-            if (body.triangleMesh && body.triangleMesh.mesh && body.triangleMesh.mesh.verts) {
-                const vertArr = body.triangleMesh.mesh.verts
-                for (let i = 0; i < body.triangleMesh.mesh.verts.length; i += 3) {
-                    const vert = MirabufFloatArr_JoltVec3(vertArr, i)
-                    points.push_back(vert)
-                    this.UpdateMinMaxBounds(vert, min, max)
-                    JOLT.destroy(vert)
-                }
+            const verts = body.triangleMesh?.mesh?.verts
+            if (!verts) return
+
+            for (let i = 0; i < verts.length; i += 3) {
+                const vert = MirabufFloatArr_JoltVec3(verts, i)
+                points.push_back(vert)
+                this.UpdateMinMaxBounds(vert, min, max)
+                JOLT.destroy(vert)
             }
         })
 
@@ -785,7 +776,7 @@ class PhysicsSystem extends WorldSystem {
      */
     private CreateConcaveShapeSettingsFromPart(
         partDefinition: mirabuf.IPartDefinition
-    ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined | null {
+    ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined {
         const settings = new JOLT.MeshShapeSettings()
 
         settings.mMaxTrianglesPerLeaf = 8
