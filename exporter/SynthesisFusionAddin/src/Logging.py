@@ -30,12 +30,10 @@ class SynthesisLogger(logging.Logger):
 def setupLogger() -> SynthesisLogger:
     now = datetime.now().strftime("%H-%M-%S")
     today = date.today()
-    if not IS_RELEASE:
-        logFileFolder = makeDirectories(os.path.join(f"{pathlib.Path(__file__).parent.parent}", "logs"))
-    else:
+    if IS_RELEASE:
         logFileFolder = makeDirectories(os.path.join(SUPPORT_PATH, "Logs"))
-
-    if not IS_RELEASE:
+    else:
+        logFileFolder = makeDirectories(os.path.join(f"{pathlib.Path(__file__).parent.parent}", "logs"))
         logFiles = [os.path.join(logFileFolder, file) for file in os.listdir(logFileFolder) if file.endswith(".log")]
         logFiles.sort()
         if len(logFiles) >= MAX_LOG_FILES_TO_KEEP:
