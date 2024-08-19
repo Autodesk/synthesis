@@ -10,8 +10,6 @@ class GenericArmBehavior extends SequenceableBehavior {
         return this._hingeDriver
     }
 
-    maxVelocity: number = 6
-
     constructor(
         hingeDriver: HingeDriver,
         hingeStimulus: HingeStimulus,
@@ -24,8 +22,8 @@ class GenericArmBehavior extends SequenceableBehavior {
         this._hingeDriver = hingeDriver
     }
 
-    applyInput = (velocity: number) => {
-        this._hingeDriver.targetVelocity = velocity
+    applyInput = (direction: number) => {
+        this._hingeDriver.accelerationDirection = direction
     }
 }
 

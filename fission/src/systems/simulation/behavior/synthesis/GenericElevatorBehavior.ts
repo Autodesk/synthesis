@@ -6,8 +6,6 @@ import SequenceableBehavior from "./SequenceableBehavior"
 class GenericElevatorBehavior extends SequenceableBehavior {
     private _sliderDriver: SliderDriver
 
-    maxVelocity = 6
-
     public get sliderDriver(): SliderDriver {
         return this._sliderDriver
     }
@@ -24,8 +22,8 @@ class GenericElevatorBehavior extends SequenceableBehavior {
         this._sliderDriver = sliderDriver
     }
 
-    applyInput = (velocity: number) => {
-        this._sliderDriver.targetVelocity = velocity
+    applyInput = (direction: number) => {
+        this._sliderDriver.accelerationDirection = direction
     }
 }
 

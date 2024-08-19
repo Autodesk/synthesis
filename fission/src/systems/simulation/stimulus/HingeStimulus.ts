@@ -1,5 +1,6 @@
 import Jolt from "@barclah/jolt-physics"
 import EncoderStimulus from "./EncoderStimulus"
+import { mirabuf } from "@/proto/mirabuf"
 
 class HingeStimulus extends EncoderStimulus {
     private _accum: boolean = false
@@ -25,8 +26,8 @@ class HingeStimulus extends EncoderStimulus {
         this._accum = shouldAccum
     }
 
-    public constructor(hinge: Jolt.HingeConstraint) {
-        super()
+    public constructor(hinge: Jolt.HingeConstraint, info?: mirabuf.IInfo) {
+        super(info)
 
         this._hinge = hinge
     }
