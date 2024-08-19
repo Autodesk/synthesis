@@ -182,7 +182,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
-     * Enabing physics for a single body
+     * Enables physics for a single body
      *
      * @param bodyId
      */
@@ -553,14 +553,10 @@ class PhysicsSystem extends WorldSystem {
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
 
-        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3
-        let axis: Jolt.Vec3
         // No scaling, these are unit vectors
-        if (versionNum < 5) {
-            axis = new JOLT.Vec3(miraAxis.x ? -miraAxis.x : 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
-        } else {
-            axis = new JOLT.Vec3(miraAxis.x ?? 0, miraAxis.y ?? 0, miraAxis.z ?? 0)
-        }
+        const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3
+        const miraAxisX: number = (versionNum < 5 ? -miraAxis.x : miraAxis.x) ?? 0
+        const axis: Jolt.Vec3 = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
 
         const bounds = bodyWheel.GetShape().GetLocalBounds()
         const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
@@ -606,11 +602,12 @@ class PhysicsSystem extends WorldSystem {
         return [fixedConstraint, vehicleConstraint, listener]
     }
 
-    private IsWheel(jDef: mirabuf.joint.Joint) {
+    private IsWheel(jDef: mirabuf.joint.Joint): boolean {
         return (
-            jDef.info!.name! != "grounded" &&
-            jDef.userData &&
-            (new Map(Object.entries(jDef.userData.data!)).get("wheel") ?? "false") == "true"
+            (jDef.info?.name !== "grounded" &&
+                jDef.userData?.data &&
+                (jDef.userData.data["wheel"] ?? "false") === "true") ??
+            false
         )
     }
 
@@ -794,6 +791,7 @@ class PhysicsSystem extends WorldSystem {
             const vertArr = body.triangleMesh?.mesh?.verts
             const indexArr = body.triangleMesh?.mesh?.indices
             if (!vertArr || !indexArr) return
+
             for (let i = 0; i < vertArr.length; i += 3) {
                 const vert = MirabufFloatArr_JoltFloat3(vertArr, i)
                 settings.mTriangleVertices.push_back(vert)
