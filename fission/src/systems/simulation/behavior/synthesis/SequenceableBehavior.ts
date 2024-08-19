@@ -9,8 +9,6 @@ abstract class SequenceableBehavior extends Behavior {
     private _brainIndex: number
     private _sequentialConfig: SequentialBehaviorPreferences | undefined
 
-    abstract maxVelocity: number
-
     public get jointIndex(): number {
         return this._jointIndex
     }
@@ -35,7 +33,7 @@ abstract class SequenceableBehavior extends Behavior {
         const inputName = "joint " + (this._sequentialConfig?.parentJointIndex ?? this._jointIndex)
         const inverted = this._sequentialConfig?.inverted ?? false
 
-        this.applyInput(InputSystem.getInput(inputName, this._brainIndex) * this.maxVelocity * (inverted ? -1 : 1))
+        this.applyInput(InputSystem.getInput(inputName, this._brainIndex) * (inverted ? -1 : 1))
     }
 }
 

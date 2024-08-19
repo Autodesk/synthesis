@@ -29,14 +29,6 @@ class PreferencesSystem {
         window.addEventListener("preferenceChanged", callback as EventListener)
     }
 
-    /** Sets a global preference to be a value of a specific type */
-    public static setGlobalPreference<T>(key: GlobalPreference, value: T) {
-        if (this._preferences == undefined) this.loadPreferences()
-
-        window.dispatchEvent(new PreferenceEvent(key, value))
-        this._preferences[key] = value
-    }
-
     /** Gets any preference from the preferences map */
     private static getPreference<T>(key: string): T | undefined {
         if (this._preferences == undefined) this.loadPreferences()
@@ -55,6 +47,14 @@ class PreferencesSystem {
         throw new Error("Preference '" + key + "' is not assigned a default!")
     }
 
+    /** Sets a global preference to be a value of a specific type */
+    public static setGlobalPreference<T>(key: GlobalPreference, value: T) {
+        if (this._preferences == undefined) this.loadPreferences()
+
+        window.dispatchEvent(new PreferenceEvent(key, value))
+        this._preferences[key] = value
+    }
+
     /** Gets a RobotPreferences object for a robot of a specific mira name */
     public static getRobotPreferences(miraName: string): RobotPreferences {
         const allRoboPrefs = this.getAllRobotPreferences()
@@ -66,6 +66,12 @@ class PreferencesSystem {
         }
 
         return allRoboPrefs[miraName]
+    }
+
+    /** Sets the RobotPreferences object for the robot of a specific mira name */
+    public static setRobotPreferences(miraName: string, value: RobotPreferences) {
+        const allRoboPrefs = this.getAllRobotPreferences()
+        allRoboPrefs[miraName] = value
     }
 
     /** Gets preferences for every robot in local storage */

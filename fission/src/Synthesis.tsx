@@ -36,6 +36,7 @@ import ThemeEditorModal from "@/modals/configuring/theme-editor/ThemeEditorModal
 import MatchModeModal from "@/modals/spawning/MatchModeModal"
 import RobotSwitchPanel from "@/panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
+import ConfigureSubsystemsPanel from "@/ui/panels/configuring/ConfigureSubsystemsPanel.tsx"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
@@ -237,6 +238,7 @@ const initialPanels: ReactElement[] = [
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
+    <ConfigureSubsystemsPanel key="subsystem-config" panelId="subsystem-config" openLocation="right" sidePadding={8} />,
 ]
 
 export default Synthesis
