@@ -126,11 +126,12 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         }}
                     />
                     <Checkbox
-                        label="Subsystem Realistic Gravity"
+                        label="Realistic Subsystem Gravity"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
                         onClick={checked => {
                             setSubsystemGravity(checked)
                         }}
+                        tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
                     />
                     <Checkbox
                         label="Show Score Zones"

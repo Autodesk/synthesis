@@ -115,8 +115,8 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
 class ConfigModeSelectionOption extends SelectMenuOption {
     configMode: ConfigMode
 
-    constructor(name: string, configMode: ConfigMode) {
-        super(name)
+    constructor(name: string, configMode: ConfigMode, tooltip?: string) {
+        super(name, tooltip)
         this.configMode = configMode
     }
 }
@@ -124,7 +124,11 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 const robotModes = [
     new ConfigModeSelectionOption("Subsystems", ConfigMode.SUBSYSTEMS),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
-    new ConfigModeSelectionOption("Sequence Joints", ConfigMode.SEQUENTIAL),
+    new ConfigModeSelectionOption(
+        "Sequence Joints",
+        ConfigMode.SEQUENTIAL,
+        "Configure which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+    ),
 ]
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
 

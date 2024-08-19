@@ -106,24 +106,21 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         }}
                         step={0.01}
                     />
-                    {PreferencesSystem.getGlobalPreference("SubsystemGravity") || driver instanceof WheelDriver ? (
-                        <Slider
-                            min={driverSwitch(driver, 100, 20, 0.1) as number}
-                            max={driverSwitch(driver, 800, 150, 15) as number}
-                            value={force}
-                            label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
-                            format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                            onChange={(_, _force: number | number[]) => {
-                                setForce(_force as number)
-                                onChange(velocity, _force as number)
-                            }}
-                            step={0.01}
-                        />
-                    ) : driver instanceof HingeDriver ? (
-                        <Label>Select Realistic Gravity in Settings for torque config</Label>
-                    ) : (
-                        <Label>Select Realistic Gravity in Settings for force config</Label>
-                    )}
+                    {PreferencesSystem.getGlobalPreference("SubsystemGravity") ||
+                        (driver instanceof WheelDriver && (
+                            <Slider
+                                min={driverSwitch(driver, 100, 20, 0.1) as number}
+                                max={driverSwitch(driver, 800, 150, 15) as number}
+                                value={force}
+                                label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
+                                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                                onChange={(_, _force: number | number[]) => {
+                                    setForce(_force as number)
+                                    onChange(velocity, _force as number)
+                                }}
+                                step={0.01}
+                            />
+                        ))}
                     {sequentialBehavior && (
                         <Checkbox
                             defaultState={sequentialBehavior.inverted}

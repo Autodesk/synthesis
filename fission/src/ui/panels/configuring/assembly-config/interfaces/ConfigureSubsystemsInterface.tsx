@@ -16,18 +16,23 @@ import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/Sequen
 import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 
-enum ConfigMode {
+enum SubsystemOption {
     NONE,
     INTAKE,
     EJECTOR,
 }
 
 class ConfigModeSelectionOption extends SelectMenuOption {
-    configMode: ConfigMode
+    configMode: SubsystemOption
     driver?: Driver
     sequential?: SequentialBehaviorPreferences
 
-    constructor(name: string, configMode: ConfigMode, driver?: Driver, sequential?: SequentialBehaviorPreferences) {
+    constructor(
+        name: string,
+        configMode: SubsystemOption,
+        driver?: Driver,
+        sequential?: SequentialBehaviorPreferences
+    ) {
         super(name)
         this.configMode = configMode
         this.driver = driver
@@ -47,11 +52,11 @@ interface ConfigInterfaceProps {
 
 const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configModeOption, selectedRobot, saveBehaviors }) => {
     switch (configModeOption.configMode) {
-        case ConfigMode.INTAKE:
+        case SubsystemOption.INTAKE:
             return <ConfigureGamepiecePickupInterface selectedRobot={selectedRobot} />
-        case ConfigMode.EJECTOR:
+        case SubsystemOption.EJECTOR:
             return <ConfigureShotTrajectoryInterface selectedRobot={selectedRobot} />
-        case ConfigMode.NONE:
+        case SubsystemOption.NONE:
             return (
                 <SubsystemRowInterface
                     driver={configModeOption.driver!}
@@ -81,18 +86,18 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
         return World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers
     }, [selectedRobot])
 
-    const getConfigModes = () => {
-        const modes = [
-            new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
-            new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
+    const getSubsystemOptions = () => {
+        const options = [
+            new ConfigModeSelectionOption("Intake", SubsystemOption.INTAKE),
+            new ConfigModeSelectionOption("Ejector", SubsystemOption.EJECTOR),
         ]
 
-        if (drivers == undefined) return modes
+        if (drivers == undefined) return options
 
-        modes.push(
+        options.push(
             new ConfigModeSelectionOption(
                 "Drivetrain",
-                ConfigMode.NONE,
+                SubsystemOption.NONE,
                 drivers.filter(x => x instanceof WheelDriver)[0]
             )
         )
@@ -102,10 +107,10 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
         drivers
             .filter(x => x instanceof HingeDriver)
             .forEach(d => {
-                modes.push(
+                options.push(
                     new ConfigModeSelectionOption(
                         d.info?.name ?? "UnnamedMotor",
-                        ConfigMode.NONE,
+                        SubsystemOption.NONE,
                         d,
                         behaviors[jointIndex]
                     )
@@ -116,10 +121,10 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
         drivers
             .filter(x => x instanceof SliderDriver)
             .forEach(d => {
-                modes.push(
+                options.push(
                     new ConfigModeSelectionOption(
                         d.info?.name ?? "UnnamedMotor",
-                        ConfigMode.NONE,
+                        SubsystemOption.NONE,
                         d,
                         behaviors[jointIndex]
                     )
@@ -127,18 +132,18 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
                 jointIndex++
             })
 
-        return modes
+        return options
     }
 
     return (
         <>
             <SelectMenu
-                options={getConfigModes()}
+                options={getSubsystemOptions()}
                 onOptionSelected={val => {
                     if (val != undefined) new ConfigurationSavedEvent()
                     setSelectedConfigMode(val as ConfigModeSelectionOption)
                 }}
-                defaultHeaderText="Select a Configuration Mode"
+                defaultHeaderText="Select a Subsystem"
                 indentation={2}
             />
             {selectedConfigMode != undefined && (
@@ -148,7 +153,6 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
                     saveBehaviors={() => {
                         PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
                         PreferencesSystem.savePreferences()
-                        console.log("behaviors saved!")
                     }}
                 />
             )}
