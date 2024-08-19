@@ -8,7 +8,14 @@ import {
     MirabufFilesUpdateEvent,
     RequestMirabufFiles,
 } from "@/aps/APSDataManagement"
-import MirabufCachingService, { backUpFields, backUpRobots, MirabufCacheInfo, MirabufRemoteInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, {
+    backUpFields,
+    backUpRobots,
+    canOPFS,
+    MirabufCacheInfo,
+    MirabufRemoteInfo,
+    MiraType,
+} from "@/mirabuf/MirabufLoader"
 import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
@@ -71,8 +78,9 @@ export type MiraManifest = {
 }
 
 function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
-    // return canOPFS ?
-        return Object.values(MirabufCachingService.GetCacheMap(miraType))// : (miraType == MiraType.ROBOT ? backUpRobots : backUpFields)
+    return Object.values(
+        canOPFS ? MirabufCachingService.GetCacheMap(miraType) : miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+    )
 }
 
 function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {

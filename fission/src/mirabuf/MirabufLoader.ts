@@ -35,7 +35,7 @@ export let backUpFields: MapCache = {}
 
 export const canOPFS = await (async () => {
     try {
-        if (robotFolderHandle.name == fieldsDirName ) { // robotsDirName) {
+        if (robotFolderHandle.name == robotsDirName) {
             robotFolderHandle.entries
             robotFolderHandle.keys
 
@@ -190,16 +190,19 @@ class MirabufCachingService {
         try {
             const map: MapCache = this.GetCacheMap(miraType)
             const id = map[key].id
+            const _buffer = miraType == MiraType.ROBOT ? backUpRobots[id].buffer : backUpFields[id].buffer
             const _name = map[key].name
             const _thumbnailStorageID = map[key].thumbnailStorageID
             const info: MirabufCacheInfo = {
                 id: id,
                 cacheKey: key,
                 miraType: miraType,
+                buffer: _buffer,
                 name: name ?? _name,
                 thumbnailStorageID: thumbnailStorageID ?? _thumbnailStorageID,
             }
             map[key] = info
+            miraType == MiraType.ROBOT ? (backUpRobots[id] = info) : (backUpFields[id] = info)
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
             return true
         } catch (e) {
@@ -245,7 +248,7 @@ class MirabufCachingService {
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
             const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
             const buff =
-                (cache[id])?.buffer ??
+                cache[id]?.buffer ??
                 (await (async () => {
                     const fileHandle = canOPFS
                         ? await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(id, {
