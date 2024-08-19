@@ -67,8 +67,15 @@ export class SynthesisIcons {
 
     public static OpenHudIcon = (
         <FaAngleRight
-            size={"6vh"}
-            style={{ alignSelf: "middle", justifySelf: "center", minHeight: "40px", minWidth: "40px" }}
+            size={"5vh"}
+            style={{
+                alignSelf: "middle",
+                justifySelf: "center",
+                minHeight: "40px",
+                minWidth: "40px",
+                maxHeight: "50px",
+                maxWidth: "50px",
+            }}
             color={colorNameToVar("BackgroundSecondary")}
         />
     )

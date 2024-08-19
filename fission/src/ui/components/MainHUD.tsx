@@ -82,7 +82,8 @@ const MainHUD: React.FC = () => {
                         width={"5vw"}
                         minWidth={"50px"}
                         maxWidth={"60px"}
-                        className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04] aspect-square"
+                        style={{ aspectRatio: " 1 / 1.5" }}
+                        className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
                         sx={{
                             borderTopRightRadius: "100px",
                             borderBottomRightRadius: "100px",
