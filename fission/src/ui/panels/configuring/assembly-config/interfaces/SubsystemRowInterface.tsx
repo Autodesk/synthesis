@@ -1,25 +1,27 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import Driver from "@/systems/simulation/driver/Driver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import World from "@/systems/World"
+import Checkbox from "@/ui/components/Checkbox"
 import Label, { LabelSize } from "@/ui/components/Label"
-import ScrollView from "@/ui/components/ScrollView"
 import Slider from "@/ui/components/Slider"
 import Stack, { StackDirection } from "@/ui/components/Stack"
 import { SectionDivider } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
-import { useCallback, useEffect, useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import { useCallback, useState } from "react"
 
 type SubsystemRowProps = {
     robot: MirabufSceneObject
     driver: Driver
+    sequentialBehavior?: SequentialBehaviorPreferences
+    saveBehaviors?: () => void
 }
 
-export const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => {
+const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, sequentialBehavior, saveBehaviors }) => {
     const driverSwitch = (driver: Driver, slider: unknown, hinge: unknown, drivetrain: unknown) => {
         switch (driver.constructor) {
             case SliderDriver:
@@ -122,6 +124,16 @@ export const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => 
                     ) : (
                         <Label>Select Realistic Gravity in Settings for force config</Label>
                     )}
+                    {sequentialBehavior && (
+                        <Checkbox
+                            defaultState={sequentialBehavior.inverted}
+                            label={"Invert Motor"}
+                            onClick={val => {
+                                sequentialBehavior.inverted = val
+                                saveBehaviors?.()
+                            }}
+                        />
+                    )}
                 </Stack>
             </Box>
             <SectionDivider />
@@ -129,124 +141,4 @@ export const SubsystemRow: React.FC<SubsystemRowProps> = ({ robot, driver }) => 
     )
 }
 
-interface ConfigureSubsystemsProps {
-    selectedRobot: MirabufSceneObject
-}
-
-const ConfigureSubsystemsInterfaceOLD: React.FC<ConfigureSubsystemsProps> = ({ selectedRobot }) => {
-    // This is disabled for now, but will be added back when merged with Aylas cancel functionality branch
-    //const [origPref, setOrigPref] = useState<RobotPreferences | undefined>(undefined)
-
-    const drivers = useMemo(() => {
-        return selectedRobot?.mechanism
-            ? World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers
-            : undefined
-    }, [selectedRobot])
-
-    const saveEvent = useCallback(() => {
-        PreferencesSystem.savePreferences()
-    }, [])
-
-    useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
-
-        return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
-        }
-    }, [saveEvent])
-
-    /**
-     *
-     * This is disabled for now, but will be added back when merged with Aylas cancel functionality branch
-     *
-     */
-    // Gets motors in preferences for ease of saving into origPrefs which can be used to revert on Cancel()
-    /*     function saveOrigMotors(robot: MirabufSceneObject) {
-        drivers?.forEach(driver => {
-            if (driver.info && driver.info.name && !(driver instanceof WheelDriver)) {
-                const motors = PreferencesSystem.getRobotPreferences(robot.assemblyName).motors
-                const removedMotor = motors.filter(x => {
-                    if (x.name) return x.name != driver.info?.name
-                    return false
-                })
-
-                if (removedMotor.length == drivers.length) {
-                    removedMotor.push({
-                        name: driver.info?.name ?? "",
-                        maxVelocity: ((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity,
-                        maxForce: ((driver as SliderDriver) || (driver as HingeDriver)).maxForce,
-                    })
-                    PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
-                }
-            }
-        })
-        PreferencesSystem.savePreferences()
-        setOrigPref({ ...PreferencesSystem.getRobotPreferences(robot.assemblyName) }) // clone
-    }
-
-    function Cancel() {
-        if (selectedRobot && origPref) {
-            drivers?.forEach(driver => {
-                if (driver instanceof WheelDriver) {
-                    driver.maxVelocity = origPref.driveVelocity
-                    driver.maxForce = origPref.driveAcceleration
-                } else {
-                    if (driver.info && driver.info.name) {
-                        const motor = origPref.motors.filter(x => {
-                            if (x.name) return x.name == driver.info?.name
-                            return false
-                        })[0]
-                        if (motor) {
-                            // This line is a separate variable to get ES Lint and Prettier to agree on formatting the semicolon below
-                            const forcePref = PreferencesSystem.getGlobalPreference("SubsystemGravity")
-                                ? motor.maxForce
-                                : driver instanceof SliderDriver
-                                  ? 500
-                                  : 100
-                            ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = motor.maxVelocity
-                            ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = forcePref
-                        }
-                    }
-                }
-            })
-            PreferencesSystem.setRobotPreferences(selectedRobot.assemblyName, origPref)
-        }
-        PreferencesSystem.savePreferences()
-    } */
-
-    return (
-        <>
-            {drivers ? (
-                <ScrollView className="flex flex-col gap-4">
-                    {/** Drivetrain row. Then other SliderDrivers and HingeDrivers */}
-                    <SubsystemRow
-                        key={0}
-                        robot={(() => {
-                            return selectedRobot
-                        })()}
-                        driver={(() => {
-                            return drivers.filter(x => x instanceof WheelDriver)[0]
-                        })()}
-                    />
-                    {drivers
-                        .filter(x => x instanceof SliderDriver || x instanceof HingeDriver)
-                        .map((driver: Driver, i: number) => (
-                            <SubsystemRow
-                                key={i + 1}
-                                robot={(() => {
-                                    return selectedRobot
-                                })()}
-                                driver={(() => {
-                                    return driver
-                                })()}
-                            />
-                        ))}
-                </ScrollView>
-            ) : (
-                <Label>No Subsystems</Label>
-            )}
-        </>
-    )
-}
-
-export default ConfigureSubsystemsInterfaceOLD
+export default SubsystemRowInterface

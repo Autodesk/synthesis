@@ -16,10 +16,12 @@ import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 
 enum ConfigMode {
     SUBSYSTEMS,
     CONTROLS,
+    SEQUENTIAL,
     SCORING_ZONES,
 }
 
@@ -122,6 +124,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 const robotModes = [
     new ConfigModeSelectionOption("Subsystems", ConfigMode.SUBSYSTEMS),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
+    new ConfigModeSelectionOption("Sequence Joints", ConfigMode.SEQUENTIAL),
 ]
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
 
@@ -171,6 +174,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                 </>
             )
         }
+        case ConfigMode.SEQUENTIAL:
+            return <SequentialBehaviorsInterface selectedRobot={assembly} />
         case ConfigMode.SCORING_ZONES: {
             const zones = assembly.fieldPreferences?.scoringZones
             if (zones == undefined) {

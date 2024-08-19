@@ -3,31 +3,35 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import React, { useMemo, useState } from "react"
 import ConfigureGamepiecePickupInterface from "./ConfigureGamepiecePickupInterface"
 import ConfigureShotTrajectoryInterface from "./ConfigureShotTrajectoryInterface"
-import SequentialBehaviorsInterface from "./SequentialBehaviorsInterface"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
 import World from "@/systems/World"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import Driver from "@/systems/simulation/driver/Driver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
-import { SubsystemRow } from "./ConfigureSubsystemsInterfaceOLD"
+import SubsystemRowInterface from "./SubsystemRowInterface"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
+import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 
 enum ConfigMode {
     NONE,
     INTAKE,
     EJECTOR,
-    SUBSYSTEMS,
-    SEQUENTIAL,
 }
 
 class ConfigModeSelectionOption extends SelectMenuOption {
     configMode: ConfigMode
     driver?: Driver
+    sequential?: SequentialBehaviorPreferences
 
-    constructor(name: string, configMode: ConfigMode, driver?: Driver) {
+    constructor(name: string, configMode: ConfigMode, driver?: Driver, sequential?: SequentialBehaviorPreferences) {
         super(name)
         this.configMode = configMode
         this.driver = driver
+        this.sequential = sequential
     }
 }
 
@@ -38,20 +42,24 @@ interface ConfigSubsystemProps {
 interface ConfigInterfaceProps {
     configModeOption: ConfigModeSelectionOption
     selectedRobot: MirabufSceneObject
+    saveBehaviors: () => void
 }
 
-const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configModeOption, selectedRobot }) => {
+const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configModeOption, selectedRobot, saveBehaviors }) => {
     switch (configModeOption.configMode) {
         case ConfigMode.INTAKE:
             return <ConfigureGamepiecePickupInterface selectedRobot={selectedRobot} />
         case ConfigMode.EJECTOR:
             return <ConfigureShotTrajectoryInterface selectedRobot={selectedRobot} />
-        case ConfigMode.SEQUENTIAL:
-            return <SequentialBehaviorsInterface selectedRobot={selectedRobot} />
-        case ConfigMode.SUBSYSTEMS:
-            return <ConfigureSubsystemsInterface selectedRobot={selectedRobot} />
         case ConfigMode.NONE:
-            return <SubsystemRow driver={configModeOption.driver!} robot={selectedRobot} />
+            return (
+                <SubsystemRowInterface
+                    driver={configModeOption.driver!}
+                    robot={selectedRobot}
+                    sequentialBehavior={configModeOption.sequential}
+                    saveBehaviors={saveBehaviors}
+                />
+            )
         default:
             throw new Error(`Config mode ${configModeOption.configMode} has no associated interface`)
     }
@@ -59,6 +67,15 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configModeOption, sel
 
 const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selectedRobot }) => {
     const [selectedConfigMode, setSelectedConfigMode] = useState<ConfigModeSelectionOption | undefined>(undefined)
+
+    const behaviors = useMemo<SequentialBehaviorPreferences[]>(
+        () =>
+            PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
+            (selectedRobot.brain as SynthesisBrain).behaviors
+                .filter(b => b instanceof SequenceableBehavior)
+                .map(b => DefaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
+        []
+    )
 
     const drivers = useMemo(() => {
         return World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers
@@ -68,7 +85,6 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
         const modes = [
             new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
             new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
-            //new ConfigModeSelectionOption("Subsystems", ConfigMode.SUBSYSTEMS),
         ]
 
         if (drivers == undefined) return modes
@@ -81,13 +97,35 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
             )
         )
 
+        let jointIndex = 0
+
         drivers
-            .filter(x => x instanceof SliderDriver || x instanceof HingeDriver)
+            .filter(x => x instanceof HingeDriver)
             .forEach(d => {
-                modes.push(new ConfigModeSelectionOption(d.info?.name ?? "UnnamedMotor", ConfigMode.NONE, d))
+                modes.push(
+                    new ConfigModeSelectionOption(
+                        d.info?.name ?? "UnnamedMotor",
+                        ConfigMode.NONE,
+                        d,
+                        behaviors[jointIndex]
+                    )
+                )
+                jointIndex++
             })
 
-        modes.push(new ConfigModeSelectionOption("Sequence Joints", ConfigMode.SEQUENTIAL))
+        drivers
+            .filter(x => x instanceof SliderDriver)
+            .forEach(d => {
+                modes.push(
+                    new ConfigModeSelectionOption(
+                        d.info?.name ?? "UnnamedMotor",
+                        ConfigMode.NONE,
+                        d,
+                        behaviors[jointIndex]
+                    )
+                )
+                jointIndex++
+            })
 
         return modes
     }
@@ -104,7 +142,15 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
                 indentation={2}
             />
             {selectedConfigMode != undefined && (
-                <ConfigInterface configModeOption={selectedConfigMode} selectedRobot={selectedRobot} />
+                <ConfigInterface
+                    configModeOption={selectedConfigMode}
+                    selectedRobot={selectedRobot}
+                    saveBehaviors={() => {
+                        PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
+                        PreferencesSystem.savePreferences()
+                        console.log("behaviors saved!")
+                    }}
+                />
             )}
         </>
     )
