@@ -41,7 +41,7 @@ const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 onSelect={val => {
                     setView(val as ViewType)
                 }}
-                label={"View"}
+                label={"Camera View"}
             />
         </Modal>
     )
