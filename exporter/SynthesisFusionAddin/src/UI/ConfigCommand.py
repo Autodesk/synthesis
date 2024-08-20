@@ -5,6 +5,7 @@
 import os
 import pathlib
 from enum import Enum
+from typing import List
 
 import adsk.core
 import adsk.fusion
@@ -312,9 +313,17 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             savepath = processedFileName
 
         adsk.doEvents()
+
         design = gm.app.activeDocument.design
-        name = design.rootComponent.name.rsplit(" ", 1)[0]
-        version = design.rootComponent.name.rsplit(" ", 1)[1]
+
+        name_split: list[str] = design.rootComponent.name.split(" ")
+        # gm.ui.messageBox("Name Split: " + name_split[0] " " + name_split[1], "Synthesis: Info")
+        if len(name_split) < 2:
+            gm.ui.messageBox("Please open the robot design you would like to export", "Synthesis: Error")
+            return
+
+        name = name_split[0]
+        version = name_split[1]
 
         selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
         selectedGamepieces = gamepieceConfigTab.getGamepieces()
