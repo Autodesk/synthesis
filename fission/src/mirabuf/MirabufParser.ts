@@ -90,28 +90,10 @@ class MirabufParser {
             })
         }
 
-        // const materials = assembly.data?.materials?.physicalMaterials
-
-        // 1: Initial RigidGroups from ancestral breaks in joints
-        const jointInstanceKeys = Object.keys(assembly.data!.joints!.jointInstances!) as string[]
-        jointInstanceKeys.forEach(key => {
-            if (key === GROUNDED_JOINT_ID) return
-
-            const jInst = assembly.data!.joints!.jointInstances![key]
-            const [ancestorA, ancestorB] = this.FindAncestorialBreak(jInst.parentPart!, jInst.childPart!)
-            const parentRN = this.NewRigidNode()
-
-            this.MovePartToRigidNode(ancestorA, parentRN)
-            this.MovePartToRigidNode(ancestorB, this.NewRigidNode())
-
-            if (jInst.parts && jInst.parts.nodes)
-                traverseTree(jInst.parts.nodes, x => this.MovePartToRigidNode(x.value!, parentRN))
-        })
+        this.InitializeRigidGroups(assembly, traverseTree) // 1: from ancestral breaks in joints
 
         // Fields Only: Assign Game Piece rigid nodes
-        if (!assembly.dynamic) {
-            this.AssignGamePieceRigidNodes(assembly, traverseTree)
-        }
+        if (!assembly.dynamic) this.AssignGamePieceRigidNodes(assembly, traverseTree)
 
         // 2: Grounded joint
         const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
@@ -133,16 +115,7 @@ class MirabufParser {
 
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
-        // 4: Bandage via RigidGroups
-        assembly.data!.joints!.rigidGroups!.forEach(rg => {
-            let rn: RigidNode | null = null
-            rg.occurrences!.forEach(y => {
-                const currentRn = this._partToNodeMap.get(y)!
-
-                rn = !rn ? currentRn : currentRn.id != rn.id ? this.MergeRigidNodes(currentRn, rn) : rn
-            })
-        })
-
+        this.BandageRigidNodes(assembly) // 4: Bandage via RigidGroups
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
         // 5. Remove Empty RNs
@@ -150,30 +123,39 @@ class MirabufParser {
 
         // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
         this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
-        if (!assembly.dynamic && this._groundedNode) {
-            this._groundedNode.isDynamic = false
-        }
+        if (!assembly.dynamic && this._groundedNode) this._groundedNode.isDynamic = false
 
         // 7. Update root RigidNode
         const rootNode = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
-
-        if (rootNode) {
-            rootNode.isRoot = true
-            this._rootNode = rootNode.id
-        } else {
-            this._rootNode = this._rigidNodes[0].id
-        }
+        this._rootNode = rootNode?.id ?? this._rigidNodes[0].id
+        rootNode!.isRoot = true
 
         this._directedGraph = this.GenerateRigidNodeGraph(assembly, rootNode)
 
-        // Transition: GH-1014
-        const partDefinitions: { [k: string]: mirabuf.IPartDefinition } | null | undefined =
-            this.assembly.data?.parts?.partDefinitions
-
-        if (!partDefinitions) {
-            console.log("Failed to get part definitions")
+        if (!this.assembly.data?.parts?.partDefinitions) {
+            console.warn("Failed to get part definitions")
             return
         }
+    }
+
+    private InitializeRigidGroups(
+        assembly: mirabuf.Assembly,
+        traverseTree: (node: mirabuf.INode[], op: (node: mirabuf.INode) => void) => void
+    ) {
+        const jointInstanceKeys = Object.keys(assembly.data!.joints!.jointInstances!) as string[]
+        jointInstanceKeys.forEach(key => {
+            if (key === GROUNDED_JOINT_ID) return
+
+            const jInst = assembly.data!.joints!.jointInstances![key]
+            const [ancestorA, ancestorB] = this.FindAncestorialBreak(jInst.parentPart!, jInst.childPart!)
+            const parentRN = this.NewRigidNode()
+
+            this.MovePartToRigidNode(ancestorA, parentRN)
+            this.MovePartToRigidNode(ancestorB, this.NewRigidNode())
+
+            if (jInst.parts && jInst.parts.nodes)
+                traverseTree(jInst.parts.nodes, x => this.MovePartToRigidNode(x.value!, parentRN))
+        })
     }
 
     private AssignGamePieceRigidNodes(
@@ -201,6 +183,17 @@ class MirabufParser {
             gpRn.isGamePiece = true
             this.MovePartToRigidNode(instNode!.value!, gpRn)
             if (instNode.children) traverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
+        })
+    }
+
+    private BandageRigidNodes(assembly: mirabuf.Assembly) {
+        assembly.data!.joints!.rigidGroups!.forEach(rg => {
+            let rn: RigidNode | null = null
+            rg.occurrences!.forEach(y => {
+                const currentRn = this._partToNodeMap.get(y)!
+
+                rn = !rn ? currentRn : currentRn.id != rn.id ? this.MergeRigidNodes(currentRn, rn) : rn
+            })
         })
     }
 
