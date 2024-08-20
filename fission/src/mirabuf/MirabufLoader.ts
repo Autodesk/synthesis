@@ -77,7 +77,7 @@ class MirabufCachingService {
      */
     public static GetCacheMap(miraType: MiraType): MapCache {
         if (
-            (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") == MIRABUF_LOCALSTORAGE_GENERATION
+            (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") != MIRABUF_LOCALSTORAGE_GENERATION
         ) {
             window.localStorage.setItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY, MIRABUF_LOCALSTORAGE_GENERATION)
             window.localStorage.setItem(robotsDirName, "{}")
