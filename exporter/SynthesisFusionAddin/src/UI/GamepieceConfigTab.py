@@ -3,13 +3,13 @@ import adsk.fusion
 
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
-from src.Types import Gamepiece, PreferredUnits, toKg, toLbs
-from src.UI import IconPaths
+from src.Types import Gamepiece, UnitSystem
 from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
     createTableInput,
     createTextBoxInput,
 )
+from src.Util import convertMassUnitsFrom, convertMassUnitsTo, getFusionUnitSystem
 
 
 class GamepieceConfigTab:
@@ -19,7 +19,6 @@ class GamepieceConfigTab:
     gamepieceTable: adsk.core.TableCommandInput
     previousAutoCalcWeightCheckboxState: bool
     previousSelectedUnitDropdownIndex: int
-    currentUnits: PreferredUnits
 
     @logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs, exporterOptions: ExporterOptions) -> None:
@@ -37,20 +36,6 @@ class GamepieceConfigTab:
         )
         self.previousAutoCalcWeightCheckboxState = exporterOptions.autoCalcGamepieceWeight
 
-        self.currentUnits = exporterOptions.preferredUnits
-        imperialUnits = self.currentUnits == PreferredUnits.IMPERIAL
-        weightUnitTable = gamepieceTabInputs.addDropDownCommandInput(
-            "gamepieceWeightUnit", "Unit of Mass", adsk.core.DropDownStyles.LabeledIconDropDownStyle
-        )
-
-        # Invisible white space characters are required in the list item name field to make this work.
-        # I have no idea why, Fusion API needs some special education help - Brandon
-        weightUnitTable.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
-        weightUnitTable.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
-        weightUnitTable.tooltip = "Unit of mass"
-        weightUnitTable.tooltipDescription = "<hr>Configure the unit of mass for for the weight calculation."
-        self.previousSelectedUnitDropdownIndex = int(not imperialUnits)
-
         self.gamepieceTable = createTableInput(
             "gamepieceTable",
             "Gamepiece",
@@ -62,8 +47,17 @@ class GamepieceConfigTab:
         self.gamepieceTable.addCommandInput(
             createTextBoxInput("gamepieceNameHeader", "Name", gamepieceTabInputs, "Name", bold=False), 0, 0
         )
+        fusUnitSystem = getFusionUnitSystem()
         self.gamepieceTable.addCommandInput(
-            createTextBoxInput("gamepieceWeightHeader", "Weight", gamepieceTabInputs, "Weight", bold=False), 0, 1
+            createTextBoxInput(
+                "gamepieceWeightHeader",
+                "Weight",
+                gamepieceTabInputs,
+                f"Weight {'(lbs)' if fusUnitSystem is UnitSystem.IMPERIAL else '(kg)'}",
+                bold=False,
+            ),
+            0,
+            1,
         )
         self.gamepieceTable.addCommandInput(
             createTextBoxInput(
@@ -107,10 +101,6 @@ class GamepieceConfigTab:
     @isVisible.setter
     def isVisible(self, value: bool) -> None:
         self.gamepieceConfigTab.isVisible = value
-
-    @property
-    def selectedUnits(self) -> PreferredUnits:
-        return self.currentUnits
 
     @property
     def autoCalculateWeight(self) -> bool:
@@ -164,25 +154,12 @@ class GamepieceConfigTab:
             frictionCoefficient.valueOne = 0.5
 
         physical = gamepiece.component.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
-        if self.currentUnits == PreferredUnits.IMPERIAL:
-            gamepieceMass = toLbs(physical.mass)
-        else:
-            gamepieceMass = round(physical.mass, 2)
-
+        gamepieceMass = round(convertMassUnitsFrom(physical.mass), 2)
         weight = commandInputs.addValueInput(
             "gamepieceWeight", "Weight Input", "", adsk.core.ValueInput.createByString(str(gamepieceMass))
         )
         weight.tooltip = "Weight of field element"
         weight.isEnabled = not self.previousAutoCalcWeightCheckboxState
-
-        weightUnitDropdown: adsk.core.DropDownCommandInput = self.gamepieceConfigTab.children.itemById(
-            "gamepieceWeightUnit"
-        )
-        if weightUnitDropdown.selectedItem.index == 0:
-            weight.tooltipDescription = "<tt>(in pounds)</tt>"
-        else:
-            assert weightUnitDropdown.selectedItem.index == 1
-            weight.tooltipDescription = "<tt>(in kilograms)</tt>"
 
         row = self.gamepieceTable.rowCount
         self.gamepieceTable.addCommandInput(gamepieceName, row, 0)
@@ -218,7 +195,7 @@ class GamepieceConfigTab:
         gamepieces: list[Gamepiece] = []
         for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
             gamepieceEntityToken = self.selectedGamepieceList[row - 1].entityToken
-            gamepieceWeight = self.gamepieceTable.getInputAtPosition(row, 1).value
+            gamepieceWeight = convertMassUnitsTo(self.gamepieceTable.getInputAtPosition(row, 1).value)
             gamepieceFrictionCoefficient = self.gamepieceTable.getInputAtPosition(row, 2).valueOne
             gamepieces.append(Gamepiece(gamepieceEntityToken, gamepieceWeight, gamepieceFrictionCoefficient))
 
@@ -229,24 +206,13 @@ class GamepieceConfigTab:
         self.selectedGamepieceList.clear()
 
     @logFailure
-    def updateWeightTableToUnits(self, units: PreferredUnits) -> None:
-        assert units in {PreferredUnits.METRIC, PreferredUnits.IMPERIAL}
-        conversionFunc = toKg if units == PreferredUnits.METRIC else toLbs
-        for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
-            weightInput: adsk.core.ValueCommandInput = self.gamepieceTable.getInputAtPosition(row, 1)
-            weightInput.value = conversionFunc(weightInput.value)
-
-    @logFailure
     def calcGamepieceWeights(self) -> None:
         for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
             weightInput: adsk.core.ValueCommandInput = self.gamepieceTable.getInputAtPosition(row, 1)
             physical = self.selectedGamepieceList[row - 1].component.getPhysicalProperties(
                 adsk.fusion.CalculationAccuracy.LowCalculationAccuracy
             )
-            if self.currentUnits == PreferredUnits.IMPERIAL:
-                weightInput.value = toLbs(physical.mass)
-            else:
-                weightInput.value = round(physical.mass, 2)
+            weightInput.value = round(convertMassUnitsFrom(physical.mass), 2)
 
     @logFailure
     def handleInputChanged(
@@ -267,20 +233,6 @@ class GamepieceConfigTab:
                     weightInput.isEnabled = True
 
             self.previousAutoCalcWeightCheckboxState = autoCalcWeightButton.value
-
-        elif commandInput.id == "gamepieceWeightUnit":
-            weightUnitDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
-            if weightUnitDropdown.selectedItem.index == self.previousSelectedUnitDropdownIndex:
-                return
-
-            if weightUnitDropdown.selectedItem.index == 0:
-                self.currentUnits = PreferredUnits.IMPERIAL
-            else:
-                assert weightUnitDropdown.selectedItem.index == 1
-                self.currentUnits = PreferredUnits.METRIC
-
-            self.updateWeightTableToUnits(self.currentUnits)
-            self.previousSelectedUnitDropdownIndex = weightUnitDropdown.selectedItem.index
 
         elif commandInput.id == "gamepieceAddButton":
             gamepieceAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("gamepieceAddButton")

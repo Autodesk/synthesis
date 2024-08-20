@@ -3,7 +3,9 @@ import pathlib
 import platform
 from dataclasses import dataclass, field, fields, is_dataclass
 from enum import Enum, EnumType
-from typing import Union, get_origin
+from typing import TypeAlias, Union, get_origin
+
+import adsk.fusion
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
@@ -11,8 +13,16 @@ JointParentType = Enum("JointParentType", ["ROOT", "END"])
 WheelType = Enum("WheelType", ["STANDARD", "OMNI", "MECANUM"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
-PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
 ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
+UnitSystem = Enum("UnitSystem", ["METRIC", "IMPERIAL"])
+
+FUSION_UNIT_SYSTEM: dict[int, Enum] = {
+    adsk.fusion.DistanceUnits.MillimeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.CentimeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.MeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.InchDistanceUnits: UnitSystem.IMPERIAL,
+    adsk.fusion.DistanceUnits.FootDistanceUnits: UnitSystem.IMPERIAL,
+}
 
 
 @dataclass
@@ -72,22 +82,8 @@ class ModelHierarchy(Enum):
     SingleMesh = 3
 
 
-class LBS(float):
-    """Mass Unit in Pounds."""
-
-
-class KG(float):
-    """Mass Unit in Kilograms."""
-
-
-def toLbs(kgs: float) -> LBS:
-    return LBS(round(kgs * 2.2062, 2))
-
-
-def toKg(pounds: float) -> KG:
-    return KG(round(pounds / 2.2062, 2))
-
-
+KG: TypeAlias = float
+LBS: TypeAlias = float
 PRIMITIVES = (bool, str, int, float, type(None))
 
 
