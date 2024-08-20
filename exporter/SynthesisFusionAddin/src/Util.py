@@ -9,14 +9,14 @@ def getFusionUnitSystem() -> UnitSystem:
     return FUSION_UNIT_SYSTEM.get(fusDesign.fusionUnitsManager.distanceDisplayUnits, UnitSystem.METRIC)
 
 
-def convertMassUnitsFrom(input: float) -> float:
+def convertMassUnitsFrom(input: KG | LBS) -> KG | LBS:
     """Converts stored Synthesis mass units into user selected Fusion units."""
     unitManager = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct).fusionUnitsManager
     toString = "kg" if getFusionUnitSystem() is UnitSystem.METRIC else "lbmass"
     return unitManager.convert(input, "kg", toString)
 
 
-def convertMassUnitsTo(input: float) -> float:
+def convertMassUnitsTo(input: KG | LBS) -> KG | LBS:
     """Converts user selected Fusion mass units into Synthesis units."""
     unitManager = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct).fusionUnitsManager
     fromString = "kg" if getFusionUnitSystem() is UnitSystem.METRIC else "lbmass"
