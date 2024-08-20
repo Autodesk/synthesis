@@ -35,25 +35,7 @@ class PreferencesSystem {
         window.addEventListener("preferenceChanged", callback as EventListener)
     }
 
-    /**
-     * Sets a global preference to be a value of a specific type
-     *
-     * @param {GlobalPreference} key - The name of the preference to set.
-     * @param {T} value - The value to set the preference to.
-     */
-    public static setGlobalPreference<T>(key: GlobalPreference, value: T) {
-        if (this._preferences == undefined) this.loadPreferences()
-
-        window.dispatchEvent(new PreferenceEvent(key, value))
-        this._preferences[key] = value
-    }
-
-    /**  */
-    /**
-     * Gets any preference from the preferences map
-     * @param {string} key - The name of the preference to get.
-     * @returns {T} The value of this preference casted to type T.
-     */
+    /** Gets any preference from the preferences map */
     private static getPreference<T>(key: string): T | undefined {
         if (this._preferences == undefined) this.loadPreferences()
 
@@ -77,6 +59,19 @@ class PreferencesSystem {
     }
 
     /**
+     * Sets a global preference to be a value of a specific type
+     *
+     * @param {GlobalPreference} key - The name of the preference to set.
+     * @param {T} value - The value to set the preference to.
+     */
+    public static setGlobalPreference<T>(key: GlobalPreference, value: T) {
+        if (this._preferences == undefined) this.loadPreferences()
+
+        window.dispatchEvent(new PreferenceEvent(key, value))
+        this._preferences[key] = value
+    }
+
+    /**
      * @param {string} miraName - The name of the robot assembly to get preference for.
      * @returns {RobotPreferences} Robot preferences found for the given robot, or default robot preferences if none are found.
      */
@@ -90,6 +85,12 @@ class PreferencesSystem {
         }
 
         return allRoboPrefs[miraName]
+    }
+
+    /** Sets the RobotPreferences object for the robot of a specific mira name */
+    public static setRobotPreferences(miraName: string, value: RobotPreferences) {
+        const allRoboPrefs = this.getAllRobotPreferences()
+        allRoboPrefs[miraName] = value
     }
 
     /** @returns Preferences for every robot that was found in local storage. */
