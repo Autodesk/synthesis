@@ -80,8 +80,7 @@ class MirabufCachingService {
             (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") != MIRABUF_LOCALSTORAGE_GENERATION
         ) {
             window.localStorage.setItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY, MIRABUF_LOCALSTORAGE_GENERATION)
-            window.localStorage.setItem(robotsDirName, "{}")
-            window.localStorage.setItem(fieldsDirName, "{}")
+            this.RemoveAll()
             return {}
         }
 
@@ -330,8 +329,8 @@ class MirabufCachingService {
             fieldFolderHandle.removeEntry(key)
         }
 
-        window.localStorage.removeItem(robotsDirName)
-        window.localStorage.removeItem(fieldsDirName)
+        window.localStorage.setItem(robotsDirName, "{}")
+        window.localStorage.setItem(fieldsDirName, "{}")
 
         backUpRobots = {}
         backUpFields = {}
