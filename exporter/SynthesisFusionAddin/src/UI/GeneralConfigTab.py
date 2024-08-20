@@ -67,10 +67,10 @@ class GeneralConfigTab:
 
         displayWeight = convertMassUnitsFrom(exporterOptions.robotWeight)
 
-        fusUnitsSystem = getFusionUnitSystem()
+        fusUnitSystem = getFusionUnitSystem()
         weightInput = generalTabInputs.addValueInput(
             "weightInput",
-            f"Weight {'(lbs)' if fusUnitsSystem is UnitSystem.IMPERIAL else '(kg)'}",
+            f"Weight {'(lbs)' if fusUnitSystem is UnitSystem.IMPERIAL else '(kg)'}",
             "",
             adsk.core.ValueInput.createByReal(displayWeight),
         )
