@@ -8,9 +8,6 @@ class ArcadeDriveBehavior extends Behavior {
     private rightWheels: WheelDriver[]
     private _brainIndex: number
 
-    private _driveSpeed = 30
-    private _turnSpeed = 30
-
     public get wheels(): WheelDriver[] {
         return this.leftWheels.concat(this.rightWheels)
     }
@@ -30,19 +27,19 @@ class ArcadeDriveBehavior extends Behavior {
     }
 
     // Sets the drivetrains target linear and rotational velocity
-    private DriveSpeeds(linearVelocity: number, rotationVelocity: number) {
-        const leftSpeed = linearVelocity + rotationVelocity
-        const rightSpeed = linearVelocity - rotationVelocity
+    private DriveSpeeds(driveInput: number, turnInput: number) {
+        const leftDirection = driveInput + turnInput
+        const rightDirection = driveInput - turnInput
 
-        this.leftWheels.forEach(wheel => (wheel.targetWheelSpeed = leftSpeed))
-        this.rightWheels.forEach(wheel => (wheel.targetWheelSpeed = rightSpeed))
+        this.leftWheels.forEach(wheel => (wheel.accelerationDirection = leftDirection))
+        this.rightWheels.forEach(wheel => (wheel.accelerationDirection = rightDirection))
     }
 
     public Update(_: number): void {
-        const driveInput = InputSystem.getInput("arcadeDrive", this._brainIndex)
-        const turnInput = InputSystem.getInput("arcadeTurn", this._brainIndex)
-
-        this.DriveSpeeds(driveInput * this._driveSpeed, turnInput * this._turnSpeed)
+        this.DriveSpeeds(
+            InputSystem.getInput("arcadeDrive", this._brainIndex),
+            InputSystem.getInput("arcadeTurn", this._brainIndex)
+        )
     }
 }
 

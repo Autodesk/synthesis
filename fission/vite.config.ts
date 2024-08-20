@@ -4,7 +4,7 @@ import react from '@vitejs/plugin-react-swc'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import glsl from 'vite-plugin-glsl';
 
-const basePath = '/fission/'
+const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
 
@@ -36,22 +36,22 @@ export default defineConfig({
     plugins: plugins,
     resolve: {
         alias: [
-            { find: '@/components', replacement: path.resolve(__dirname, 'src', 'ui', 'components') },
-            { find: '@/modals', replacement: path.resolve(__dirname, 'src', 'ui', 'modals') },
-            { find: '@/panels', replacement: path.resolve(__dirname, 'src', 'ui', 'panels') },
-            { find: '@', replacement: path.resolve(__dirname, 'src') }
-        ]
+            { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+            { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+            { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+            { find: "@", replacement: path.resolve(__dirname, "src") },
+        ],
     },
     test: {
         testTimeout: 5000,
         globals: true,
-        environment: 'jsdom',
+        environment: "jsdom",
         browser: {
             enabled: true,
-            name: 'chromium',
+            name: "chromium",
             headless: true,
-            provider: 'playwright'
-        }
+            provider: "playwright",
+        },
     },
     server: {
         // this ensures that the browser opens upon server start
@@ -59,28 +59,30 @@ export default defineConfig({
         // this sets a default port to 3000
         port: serverPort,
         cors: false,
-        proxy: useLocal ? {
-            '/api/mira': {
-                target: `http://localhost:${serverPort}${basePath}`,
-                changeOrigin: true,
-                secure: false,
-                rewrite: (path) => path.replace(/^\/api\/mira/, '/Downloadables/Mira')
-            },
-            '/api/aps': {
-                target: `http://localhost:${dockerServerPort}/`,
-                changeOrigin: true,
-                secure: false,
-            },
-        } : {
-            '/api': {
-                target: `https://synthesis.autodesk.com/`,
-                changeOrigin: true,
-                secure: true,
-            },
-        },
+        proxy: useLocal
+            ? {
+                  "/api/mira": {
+                      target: `http://localhost:${serverPort}${basePath}`,
+                      changeOrigin: true,
+                      secure: false,
+                      rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira"),
+                  },
+                  "/api/aps": {
+                      target: `http://localhost:${dockerServerPort}/`,
+                      changeOrigin: true,
+                      secure: false,
+                  },
+              }
+            : {
+                  "/api": {
+                      target: `https://synthesis.autodesk.com/`,
+                      changeOrigin: true,
+                      secure: true,
+                  },
+              },
     },
     build: {
-        target: 'esnext',
+        target: "esnext",
     },
-    base: basePath
+    base: basePath,
 })
