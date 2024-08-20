@@ -9,7 +9,7 @@ from src.Logging import getLogger, logFailure
 
 # global mapping list of event handlers to keep them referenced for the duration of the command
 # handlers = {}
-handlers: list[adsk.core.EventHandler] = []
+handlers: list[adsk.core.CommandEventHandler] = []
 cmdDefs: list[adsk.core.CommandDefinition] = []
 entities: list[adsk.fusion.Occurrence] = []
 
