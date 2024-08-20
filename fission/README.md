@@ -1,7 +1,6 @@
 # Fission
 
 Fission is Synthesis' web-based robotics simulator. This app is hosted [on our website](https://synthesis.github.com/fission/), in addition to a closed, in-development version [here](https://synthesis.autodesk.com/beta/).
-
 ## Setup & Building
 
 ### Requirements
@@ -69,7 +68,7 @@ npm run dev
 
 ### Unit Testing
 
-We use a combination of Vitest and Playwright for running our unit tests. A number of the unit tests rely on the asset pack data and may timeout due to download speeds. By default, the unit test command uses a chromium browser.
+We use a combination of Vitest and Playwright for running our unit tests. A number of the unit tests rely on the asset pack data and may time out due to download speeds. By default, the unit test command uses a Chromium browser.
 
 ```bash
 npm run test
@@ -77,7 +76,7 @@ npm run test
 
 ## Packaging
 
-We have two commands, one for compiling dev for attachment to the in-development endpoint, and another for the release endpoint:
+We have two packaging commands: one for compiling dev for attachment to the in-development endpoint, and another for the release endpoint.
 
 Release:
 ```bash
@@ -106,17 +105,17 @@ The world serves as a hub for all of the core systems. It is a static class that
 
 ### Scene Renderer
 
-The Scene Renderer is our interface with rendering within the Canvas. This is primarily done via ThreeJS, however can be extended later on.
+The Scene Renderer is our interface for rendering within the Canvas. This is primarily done via ThreeJS, however it can be extended later on.
 
 ### Physics System
 
-This Physics System is our interface with Jolt, ensuring objects are properly handled and provides utility functions that are more custom fit to our purposes.
+This Physics System is our interface with Jolt, ensuring objects are properly handled and providing utility functions that are more custom-fit to our purposes.
 
 [Jolt Physics Architecture](https://jrouwe.github.io/JoltPhysics/)
 
 ### Input System
 
-The input system listens for and records key presses and joystick positions to be used by robots. It also maps robot behaviors (such as an arcade drivetrain or an arm) to specific keys through customizable input schemes.
+The Input System listens for and records key presses and joystick positions to be used by robots. It also maps robot behaviors (e.g. an arcade drivetrain or an arm) to specific keys through customizable input schemes.
 
 ### UI System
 
@@ -126,11 +125,11 @@ These systems will extend off of the core systems to build out features in Synth
 
 ### Simulation System
 
-The Simulation System articulates dynamic elements of the scene via the Physics System. At it's core there are 3 main components:
+The Simulation System articulates dynamic elements of the scene via the Physics System. At its core there are 3 main components:
 
 #### Driver
 
-Drivers are mostly write-only. They take in values to know how to articulate the physics objects and contraints.
+Drivers are mostly write-only. They take in values to know how to articulate the physics objects and constraints.
 
 #### Stimulus
 
@@ -140,22 +139,22 @@ Stimuli are mostly read-only. They read values from given physics objects and co
 
 Brains are the controllers of the mechanisms. They use a combination of Drivers and Stimuli to control a given mechanism.
 
-For basic user control of the mechanisms, we'll have a Synthesis Brain. By the end of Summer 2024, I hope to have an additional brain, the WPIBrain for facilitating WPILib code control over the mechanisms inside of Synthesis.
+For basic user control of the mechanisms, we'll have a Synthesis Brain. We hope to have an additional brain by the end of Summer 2024: the WPIBrain for facilitating WPILib code control over the mechanisms inside of Synthesis.
 
 ## NPM Scripts
 
 | Script               | Description                                                                                                             |
 | -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | `init`               | Runs the initialization commands to install all dependencies, assets, and unit testing browsers.                        |
-| `dev`                | Starts the development server used for testing. Supports hotloading (though finicky with WASM module loading).          |
-| `test`               | Runs the unit tests via vitest.                                                                                         |
-| `build`              | Builds the project into it's packaged form. Uses root base path.                                                        |
-| `build:prod`         | Builds the project into it's packaged form. Uses the `/fission/` base path.                                             |
+| `dev`                | Starts the development server used for testing. Supports hot-reloading (though finicky with WASM module loading).       |
+| `test`               | Runs the unit tests via Vitest.                                                                                         |
+| `build`              | Builds the project into its packaged form. Uses the root base path.                                                     |
+| `build:prod`         | Builds the project into its packaged form. Uses the `/fission/` base path.                                              |
 | `preview`            | Runs the built project for preview locally before deploying.                                                            |
-| `lint`               | Runs eslint on the project.                                                                                             |
-| `lint:fix`           | Attempts to fix issues found with eslint.                                                                               |
-| `prettier`           | Runs prettier on the project as a check.                                                                                |
-| `prettier:fix`       | Runs prettier on the project to fix any issues with formating.                                                          |
+| `lint`               | Runs ESLint on the project.                                                                                             |
+| `lint:fix`           | Attempts to fix issues found with ESLint.                                                                               |
+| `prettier`           | Runs Prettier on the project as a check.                                                                                |
+| `prettier:fix`       | Runs Prettier on the project to fix any issues with formatting.                                                         |
 | `format`             | Runs `prettier:fix` and `lint:fix`.                                                                                     |
 | `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                                 |
-| `playwright:install` | Downloads the playwright browsers.                                                                                      |
+| `playwright:install` | Downloads the Playwright browsers.                                                                                      |
