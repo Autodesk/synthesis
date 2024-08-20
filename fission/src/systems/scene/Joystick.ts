@@ -67,9 +67,6 @@ class Joystick {
             this.stickPosition.y = y
         }
 
-        // this.stickPosition.x = 0
-        // this.stickPosition.y = 0
-
         this.stickElement.style.transform = `translate(${this.stickPosition.x - this.maxDistance / 2}px, ${this.stickPosition.y - this.maxDistance / 2}px)`
         this.movementCallback(this.stickPosition.x / this.maxDistance, this.stickPosition.y / this.maxDistance)
     }

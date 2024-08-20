@@ -29,6 +29,8 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
+    SubsystemGravity: false,
+    TouchControls: false,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"
