@@ -5,7 +5,6 @@
 import os
 import pathlib
 from enum import Enum
-from typing import List
 
 import adsk.core
 import adsk.fusion
