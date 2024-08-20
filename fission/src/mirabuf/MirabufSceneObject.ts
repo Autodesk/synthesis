@@ -21,6 +21,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { MainHUD_AddToast } from "@/ui/components/MainHUD"
 
 const DEBUG_BODIES = false
 
@@ -397,6 +398,7 @@ class MirabufSceneObject extends SceneObject {
         this._transformGizmos?.RemoveGizmos()
         this._transformGizmos = undefined
         this.EnablePhysics()
+        World.SceneRenderer.isPlacingAssembly = false
     }
 
     /**
@@ -440,6 +442,14 @@ export async function CreateMirabuf(
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle
 ): Promise<MirabufSceneObject | null | undefined> {
+    // Cancel is there is another assembly being placed
+    console.log(World.SceneRenderer.isPlacingAssembly)
+    if (World.SceneRenderer.isPlacingAssembly) {
+        MainHUD_AddToast("error", "Error Placing Assembly.", "Place assembly before spawning another.")
+        return
+    } else {
+        World.SceneRenderer.isPlacingAssembly = true
+    }
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)

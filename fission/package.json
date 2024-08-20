@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite --open",
+    "dev": "vite --open --host",
     "build": "tsc && vite build",
     "build:prod": "tsc && vite build --base=/fission/ --outDir dist/prod",
     "build:dev": "tsc && vite build --base=/fission-closed/ --outDir dist/dev",

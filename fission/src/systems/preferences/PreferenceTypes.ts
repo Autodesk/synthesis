@@ -12,6 +12,7 @@ export type GlobalPreference =
     | "InputSchemes"
     | "RenderSceneTags"
     | "RenderScoreboard"
+    | "TouchControls"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -27,6 +28,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
+    TouchControls: false,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"

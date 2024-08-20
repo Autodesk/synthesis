@@ -10,6 +10,7 @@ import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import { Button } from "@mui/base/Button"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
+import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 
 type ButtonProps = {
     value: string
@@ -45,6 +46,8 @@ const MainHUD: React.FC = () => {
     const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
 
+    const touchCompatibility = matchMedia("(hover: none)").matches
+
     MainHUD_AddToast = addToast
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
@@ -60,7 +63,7 @@ const MainHUD: React.FC = () => {
             {!isOpen && (
                 <button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="absolute left-6 top-6 focus:outline-0 focus-visible:outline-0"
+                    className="fixed left-6 top-6 focus:outline-0 focus-visible:outline-0"
                 >
                     <BiMenuAltLeft size={40} className="text-main-hud-close-icon" />
                 </button>
@@ -107,6 +110,13 @@ const MainHUD: React.FC = () => {
                             openPanel("debug")
                         }}
                     />
+                    {touchCompatibility ? (
+                        <MainHUDButton
+                            value={"Touch Controls"}
+                            icon={SynthesisIcons.Gamepad}
+                            onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
+                        />
+                    ) : null}
                 </div>
                 {userInfo ? (
                     <MainHUDButton

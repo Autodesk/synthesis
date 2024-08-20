@@ -16,6 +16,7 @@ import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/c
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
 import Joystick from "./Joystick"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -36,6 +37,8 @@ class SceneRenderer extends WorldSystem {
     private _orbitControls: OrbitControls
     private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
 
+    private _isPlacingAssembly: boolean = false
+
     private _light: THREE.DirectionalLight | CSM | undefined
 
     public get sceneObjects() {
@@ -52,6 +55,15 @@ class SceneRenderer extends WorldSystem {
 
     public get renderer(): THREE.WebGLRenderer {
         return this._renderer
+    }
+
+    public get isPlacingAssembly() {
+        return this._isPlacingAssembly
+    }
+
+    public set isPlacingAssembly(value: boolean) {
+        new TouchControlsEvent(TouchControlsEventKeys.PLACE_BUTTON, value)
+        this._isPlacingAssembly = value
     }
 
     public constructor() {
@@ -129,7 +141,7 @@ class SceneRenderer extends WorldSystem {
         // Initialize the joystick
         const joystickBase = document.getElementById("joystick-base-left")!
         const joystickStick = document.getElementById("joystick-stick-left")!
-        const joystick = new Joystick(joystickBase, joystickStick, 50, (x, y) => {
+        const joystick = new Joystick(joystickBase, joystickStick, 55, (x, y) => {
             // Use the joystick input to control the cube
             cube.position.x += x * 0.1
             cube.position.y -= y * 0.1
