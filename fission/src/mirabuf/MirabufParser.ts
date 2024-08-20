@@ -107,9 +107,8 @@ class MirabufParser {
             const currentNode = this._partToNodeMap.get(node.value!)
             if (!currentNode) this.MovePartToRigidNode(node.value!, parentNode)
 
-            // Eslint complains about the semicolon added at the begining of the line if you inline this variable
-            const children = node.children ?? []
-            children.forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
+            if (!node.children) return
+            node.children.forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
         }
         this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
 
@@ -126,11 +125,10 @@ class MirabufParser {
         if (!assembly.dynamic && this._groundedNode) this._groundedNode.isDynamic = false
 
         // 7. Update root RigidNode
-        const rootNode = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
-        this._rootNode = rootNode?.id ?? this._rigidNodes[0].id
-        rootNode!.isRoot = true
+        const rootNodeId = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)?.id ?? this._rigidNodes[0].id
+        this._rootNode = rootNodeId
 
-        this._directedGraph = this.GenerateRigidNodeGraph(assembly, rootNode)
+        this._directedGraph = this.GenerateRigidNodeGraph(assembly, rootNodeId)
 
         if (!this.assembly.data?.parts?.partDefinitions) {
             console.warn("Failed to get part definitions")
@@ -163,11 +161,13 @@ class MirabufParser {
         traverseTree: (node: mirabuf.INode[], op: (node: mirabuf.INode) => void) => void
     ) {
         // Collect all definitions labeled as gamepieces (dynamic = true)
-        const gamepieceDefinitions: Set<string> = new Set<string>()
-
-        Object.values(assembly.data!.parts!.partDefinitions!).forEach((def: mirabuf.IPartDefinition) => {
-            if (def.dynamic) gamepieceDefinitions.add(def.info!.GUID!)
-        })
+        const gamepieceDefinitions: Set<string> = new Set(
+            Object.values(assembly.data!.parts!.partDefinitions!)
+                .filter(def => !def.dynamic)
+                .map((def: mirabuf.IPartDefinition) => {
+                    return def.info!.GUID!
+                })
+        )
 
         // Create gamepiece rigid nodes from PartInstances with corresponding definitions
         Object.values(assembly.data!.parts!.partInstances!).forEach((inst: mirabuf.IPartInstance) => {
@@ -197,10 +197,10 @@ class MirabufParser {
         })
     }
 
-    private GenerateRigidNodeGraph(assembly: mirabuf.Assembly, rootNode: RigidNode | undefined): Graph {
+    private GenerateRigidNodeGraph(assembly: mirabuf.Assembly, rootNodeId: string): Graph {
         // Build undirected graph
         const graph = new Graph()
-        graph.AddNode(rootNode ? rootNode.id : this._rigidNodes[0].id)
+        graph.AddNode(rootNodeId)
         const jointInstances = Object.values(assembly.data!.joints!.jointInstances!) as mirabuf.joint.JointInstance[]
         jointInstances.forEach((x: mirabuf.joint.JointInstance) => {
             const rA = this._partToNodeMap.get(x.parentPart)
@@ -220,19 +220,18 @@ class MirabufParser {
         })
 
         function directedRecursive(node: string) {
-            graph.GetAdjacencyList(node).forEach(x => {
-                if (!whiteGreyBlackMap.has(x)) return
-
-                directedGraph.AddEdgeDirected(node, x)
-                whiteGreyBlackMap.delete(x)
-                directedRecursive(x)
-            })
+            graph
+                .GetAdjacencyList(node)
+                .filter(x => whiteGreyBlackMap.has(x))
+                .forEach(x => {
+                    directedGraph.AddEdgeDirected(node, x)
+                    whiteGreyBlackMap.delete(x)
+                    directedRecursive(x)
+                })
         }
 
-        const node = rootNode?.id ?? this._rigidNodes[0].id
-
-        whiteGreyBlackMap.delete(node)
-        directedRecursive(node)
+        whiteGreyBlackMap.delete(rootNodeId)
+        directedRecursive(rootNodeId)
 
         return directedGraph
     }
@@ -402,7 +401,6 @@ class MirabufParser {
  * Collection of mirabuf parts that are bound together
  */
 class RigidNode {
-    public isRoot: boolean
     public id: RigidNodeId
     public parts: Set<string> = new Set()
     public isDynamic: boolean
@@ -411,7 +409,6 @@ class RigidNode {
     public constructor(id: RigidNodeId, isDynamic?: boolean, isGamePiece?: boolean) {
         this.id = id
         this.isDynamic = isDynamic ?? true
-        this.isRoot = false
         this.isGamePiece = isGamePiece ?? false
     }
 }
@@ -429,10 +426,6 @@ export class RigidNodeReadOnly {
 
     public get isDynamic(): boolean {
         return this._original.isDynamic
-    }
-
-    public get isRoot(): boolean {
-        return this._original.isRoot
     }
 
     public get isGamePiece(): boolean {
