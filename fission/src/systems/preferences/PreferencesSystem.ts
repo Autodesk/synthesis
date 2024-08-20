@@ -9,10 +9,15 @@ import {
     RobotPreferencesKey,
 } from "./PreferenceTypes"
 
+/** An event that's triggered when a preference is changed. */
 export class PreferenceEvent extends Event {
     public prefName: GlobalPreference
     public prefValue: unknown
 
+    /**
+     * @param {GlobalPreference} prefName - The name of the preference that has just been updated.
+     * @param {unknown} prefValue - The new value this preference was set to.
+     */
     constructor(prefName: GlobalPreference, prefValue: unknown) {
         super("preferenceChanged")
         this.prefName = prefName
@@ -20,6 +25,7 @@ export class PreferenceEvent extends Event {
     }
 }
 
+/** The preference system handles loading, saving, and updating all user managed data saved in local storage. */
 class PreferencesSystem {
     private static _preferences: { [key: string]: unknown }
     private static _localStorageKey = "Preferences"
@@ -29,7 +35,12 @@ class PreferencesSystem {
         window.addEventListener("preferenceChanged", callback as EventListener)
     }
 
-    /** Sets a global preference to be a value of a specific type */
+    /**
+     * Sets a global preference to be a value of a specific type
+     *
+     * @param {GlobalPreference} key - The name of the preference to set.
+     * @param {T} value - The value to set the preference to.
+     */
     public static setGlobalPreference<T>(key: GlobalPreference, value: T) {
         if (this._preferences == undefined) this.loadPreferences()
 
@@ -37,14 +48,24 @@ class PreferencesSystem {
         this._preferences[key] = value
     }
 
-    /** Gets any preference from the preferences map */
+    /**  */
+    /**
+     * Gets any preference from the preferences map
+     * @param {string} key - The name of the preference to get.
+     * @returns {T} The value of this preference casted to type T.
+     */
     private static getPreference<T>(key: string): T | undefined {
         if (this._preferences == undefined) this.loadPreferences()
 
         return this._preferences[key] as T
     }
 
-    /** Gets a global preference, or it's default value if it does not exist in the preferences map */
+    /**
+     * Gets a global preference, or it's default value if it does not exist in the preferences map
+     *
+     * @param {GlobalPreference} key - The name of the preference to get.
+     * @returns {T} The value of this preference casted to type T.
+     */
     public static getGlobalPreference<T>(key: GlobalPreference): T {
         const customPref = this.getPreference<T>(key)
         if (customPref != undefined) return customPref
@@ -55,7 +76,10 @@ class PreferencesSystem {
         throw new Error("Preference '" + key + "' is not assigned a default!")
     }
 
-    /** Gets a RobotPreferences object for a robot of a specific mira name */
+    /**
+     * @param {string} miraName - The name of the robot assembly to get preference for.
+     * @returns {RobotPreferences} Robot preferences found for the given robot, or default robot preferences if none are found.
+     */
     public static getRobotPreferences(miraName: string): RobotPreferences {
         const allRoboPrefs = this.getAllRobotPreferences()
 
@@ -68,7 +92,7 @@ class PreferencesSystem {
         return allRoboPrefs[miraName]
     }
 
-    /** Gets preferences for every robot in local storage */
+    /** @returns Preferences for every robot that was found in local storage. */
     public static getAllRobotPreferences(): { [key: string]: RobotPreferences } {
         let allRoboPrefs = this.getPreference<{ [key: string]: RobotPreferences }>(RobotPreferencesKey)
 
@@ -80,7 +104,10 @@ class PreferencesSystem {
         return allRoboPrefs
     }
 
-    /** Gets a FieldPreferences object for a robot of a specific mira name */
+    /**
+     * @param {string} miraName - The name of the field assembly to get preference for.
+     * @returns {FieldPreferences} Field preferences found for the given field, or default field preferences if none are found.
+     */
     public static getFieldPreferences(miraName: string): FieldPreferences {
         const allFieldPrefs = this.getAllFieldPreferences()
 
@@ -93,7 +120,7 @@ class PreferencesSystem {
         return allFieldPrefs[miraName]
     }
 
-    /** Gets preferences for every robot in local storage */
+    /** @returns Preferences for every field that was found in local storage. */
     public static getAllFieldPreferences(): { [key: string]: FieldPreferences } {
         let allFieldPrefs = this.getPreference<{ [key: string]: FieldPreferences }>(FieldPreferencesKey)
 
@@ -105,7 +132,7 @@ class PreferencesSystem {
         return allFieldPrefs
     }
 
-    /** Load all preferences from local storage */
+    /** Loads all preferences from local storage. */
     public static loadPreferences() {
         const loadedPrefs = window.localStorage.getItem(this._localStorageKey)
 
@@ -122,7 +149,7 @@ class PreferencesSystem {
         }
     }
 
-    /** Save all preferences to local storage */
+    /** Saves all preferences to local storage. */
     public static savePreferences() {
         if (this._preferences == undefined) {
             console.log("Preferences not loaded!")
@@ -139,7 +166,7 @@ class PreferencesSystem {
         window.localStorage.setItem(this._localStorageKey, prefsString)
     }
 
-    /** Remove all preferences from local storage */
+    /** Removes all preferences from local storage. */
     public static clearPreferences() {
         window.localStorage.removeItem(this._localStorageKey)
         this._preferences = {}

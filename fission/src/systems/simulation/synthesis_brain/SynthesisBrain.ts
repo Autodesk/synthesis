@@ -40,6 +40,7 @@ class SynthesisBrain extends Brain {
     // Tracks the number of each specific mira file spawned
     public static numberRobotsSpawned: { [key: string]: number } = {}
 
+    /** @returns {string} The name of the input scheme attached to this brain. */
     public get inputSchemeName(): string {
         const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
         if (scheme == undefined) return "Not Configured"
@@ -47,10 +48,15 @@ class SynthesisBrain extends Brain {
         return scheme.schemeName
     }
 
+    /** @returns {number} The unique index used to identify this brain. */
     public get brainIndex(): number {
         return this._brainIndex
     }
 
+    /**
+     * @param mechanism The mechanism this brain will control.
+     * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
+     */
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
 
@@ -89,7 +95,7 @@ class SynthesisBrain extends Brain {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
 
-    // Creates an instance of ArcadeDriveBehavior and automatically configures it
+    /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */
     private configureArcadeDriveBehavior() {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
@@ -134,7 +140,7 @@ class SynthesisBrain extends Brain {
         )
     }
 
-    // Creates instances of ArmBehavior and automatically configures them
+    /** Creates instances of ArmBehavior and automatically configures them. */
     private configureArmBehaviors() {
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof HingeDriver
@@ -171,7 +177,7 @@ class SynthesisBrain extends Brain {
         }
     }
 
-    // Creates instances of ElevatorBehavior and automatically configures them
+    /** Creates instances of ElevatorBehavior and automatically configures them. */
     private configureElevatorBehaviors() {
         const sliderDrivers: SliderDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof SliderDriver
@@ -208,6 +214,7 @@ class SynthesisBrain extends Brain {
         }
     }
 
+    /** Gets field preferences and handles any field specific configuration. */
     private configureField() {
         PreferencesSystem.getFieldPreferences(this._assemblyName)
 

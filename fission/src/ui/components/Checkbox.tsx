@@ -12,6 +12,19 @@ type CheckboxProps = {
     onClick?: (checked: boolean) => void
 }
 
+/**
+ * A checkbox component with a label and optional tooltip.
+ *
+ * @param {CheckboxProps} props - The properties object.
+ * @param {string} props.label - The label text that will be on the right of the checkbox.
+ * @param {string} props.className - Custom styling options.
+ * @param {boolean} props.defaultState - Should the box be checked when it's first created?.
+ * @param {boolean} props.stateOverride - Controls the state of the checkbox, overriding user inputs.
+ * @param {boolean} props.hideLabel - If true, the checkbox will not be labeled.
+ * @param {function} props.onClick - Callback function to handle state changes of the checkbox.
+ *
+ * @returns {JSX.Element} The rendered Dropdown component.
+ */
 const Checkbox: React.FC<CheckboxProps> = ({ label, className, defaultState, stateOverride, hideLabel, onClick }) => {
     const [state] = useState(defaultState)
     return (
