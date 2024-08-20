@@ -371,40 +371,42 @@ class PhysicsSystem extends WorldSystem {
 
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
-                    if (!this.IsWheel(jDef)) {
-                        addConstraint(
-                            this.CreateHingeConstraint(
-                                jInst,
-                                jDef,
-                                maxForce ?? 50,
-                                bodyA,
-                                bodyB,
-                                parser.assembly.info!.version!
-                            )
+                    if (this.IsWheel(jDef)) {
+                        const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
+                        maxVel = preferences.driveVelocity > 0 ? preferences.driveVelocity : maxVel
+                        maxForce = preferences.driveAcceleration > 0 ? preferences.driveAcceleration : maxForce
+
+                        const [bodyOne, bodyTwo] =
+                            parser.directedGraph.GetAdjacencyList(rnA.id).length > 0 ? [bodyA, bodyB] : [bodyB, bodyA]
+
+                        const res = this.CreateWheelConstraint(
+                            jInst,
+                            jDef,
+                            maxForce ?? 1.5,
+                            bodyOne,
+                            bodyTwo,
+                            parser.assembly.info!.version!
                         )
+                        addConstraint(res[0])
+                        addConstraint(res[1])
+                        listener = res[2]
 
                         break
                     }
 
-                    const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
-                    maxVel = preferences.driveVelocity > 0 ? preferences.driveVelocity : maxVel
-                    maxForce = preferences.driveAcceleration > 0 ? preferences.driveAcceleration : maxForce
-
-                    const [bodyOne, bodyTwo] =
-                        parser.directedGraph.GetAdjacencyList(rnA.id).length > 0 ? [bodyA, bodyB] : [bodyB, bodyA]
-
-                    const res = this.CreateWheelConstraint(
-                        jInst,
-                        jDef,
-                        maxForce ?? 1.5,
-                        bodyOne,
-                        bodyTwo,
-                        parser.assembly.info!.version!
+                    addConstraint(
+                        this.CreateHingeConstraint(
+                            jInst,
+                            jDef,
+                            maxForce ?? 50,
+                            bodyA,
+                            bodyB,
+                            parser.assembly.info!.version!
+                        )
                     )
-                    addConstraint(res[0])
-                    addConstraint(res[1])
-                    listener = res[2]
+
                     break
+
                 case mirabuf.joint.JointMotion.SLIDER:
                     addConstraint(this.CreateSliderConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB))
                     break
