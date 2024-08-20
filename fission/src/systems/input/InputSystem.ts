@@ -175,6 +175,17 @@ class InputSystem extends WorldSystem {
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) this.clearKeyData()
         })
+
+        // Disable gesture inputs on track pad to zoom into UI
+        window.addEventListener(
+            "wheel",
+            function (e) {
+                if (e.ctrlKey) {
+                    e.preventDefault() // Prevent the zoom
+                }
+            },
+            { passive: false }
+        )
     }
 
     public Update(_: number): void {

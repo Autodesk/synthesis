@@ -53,15 +53,25 @@ const Button: React.FC<ButtonProps> = ({
     return (
         <BaseButton
             onClick={onClick}
-            className={`${
-                colorOverrideClass
-                    ? colorOverrideClass
-                    : "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"
-            }  ${sizeClassNames} rounded-sm font-semibold cursor-pointer duration-200 border-none focus-visible:outline-0 focus:outline-0 ${
-                className || ""
-            }`}
+            className={`
+                ${colorOverrideClass || "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"}  
+                ${sizeClassNames} 
+                rounded-sm 
+                font-semibold 
+                cursor-pointer 
+                duration-200 
+                border-none 
+                focus-visible:outline-0 
+                focus:outline-0 
+                transform 
+                transition-transform 
+                hover:scale-[1.03] 
+                active:scale-[1.06] 
+                ${className || ""}
+            `}
             id={id}
             disabled={disabled ?? false}
+            style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
         >
             {value}
         </BaseButton>

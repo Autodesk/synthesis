@@ -13,6 +13,7 @@ export type GlobalPreference =
     | "InputSchemes"
     | "RenderSceneTags"
     | "RenderScoreboard"
+    | "SubsystemGravity"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -32,6 +33,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
+    SubsystemGravity: false,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"
@@ -71,9 +73,18 @@ export function DefaultSequentialConfig(index: number, type: BehaviorType): Sequ
 
 export type RobotPreferences = {
     inputsSchemes: InputScheme[]
+    motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    driveVelocity: number
+    driveAcceleration: number
     sequentialConfig?: SequentialBehaviorPreferences[]
+}
+
+export type MotorPreferences = {
+    name: string
+    maxVelocity: number
+    maxForce: number
 }
 
 export type Alliance = "red" | "blue"
@@ -98,6 +109,7 @@ export type FieldPreferences = {
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
+        motors: [],
         intake: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             zoneDiameter: 0.5,
@@ -108,6 +120,8 @@ export function DefaultRobotPreferences(): RobotPreferences {
             ejectorVelocity: 1,
             parentNode: undefined,
         },
+        driveVelocity: 0,
+        driveAcceleration: 0,
     }
 }
 

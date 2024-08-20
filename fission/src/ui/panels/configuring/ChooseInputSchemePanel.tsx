@@ -152,8 +152,6 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 InputSystem.brainIndexSchemeMap.set(getBrainIndex(), DefaultInputs.newBlankScheme)
                 openModal("assign-new-scheme")
             })}
-
-            <Box height="12px"></Box>
         </Panel>
     )
 }
