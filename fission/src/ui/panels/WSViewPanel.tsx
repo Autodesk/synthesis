@@ -26,12 +26,20 @@ const TypoStyled = styled(Typography)({
     color: "white",
 })
 
+function formatMap(map: Map<string, number>): string {
+    let entries: string = ""
+    map.forEach((value, key) => {
+        entries += `${key} : ${value}`
+    })
+    return entries
+}
+
 function generateTableBody() {
     return (
         <TableBody>
-            {simMap.has("PWM") ? (
-                [...simMap.get("PWM")!.entries()]
-                    .filter(x => x[1]["<init"] == true)
+            {simMap.has(SimType.PWM) ? (
+                [...simMap.get(SimType.PWM)!.entries()]
+                    .filter(x => x[1].get("<init") == 1)
                     .map(x => {
                         return (
                             <TableRow key={x[0]}>
@@ -42,7 +50,7 @@ function generateTableBody() {
                                     <TypoStyled>{x[0]}</TypoStyled>
                                 </TableCell>
                                 <TableCell>
-                                    <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                    <TypoStyled>{formatMap(x[1])}</TypoStyled>
                                 </TableCell>
                             </TableRow>
                         )
@@ -50,27 +58,8 @@ function generateTableBody() {
             ) : (
                 <></>
             )}
-            {simMap.has("SimDevice") ? (
-                [...simMap.get("SimDevice")!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>SimDevice</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
-            )}
-            {simMap.has("CANMotor") ? (
-                [...simMap.get("CANMotor")!.entries()].map(x => {
+            {simMap.has(SimType.CANMotor) ? (
+                [...simMap.get(SimType.CANMotor)!.entries()].map(x => {
                     return (
                         <TableRow key={x[0]}>
                             <TableCell>
@@ -80,7 +69,7 @@ function generateTableBody() {
                                 <TypoStyled>{x[0]}</TypoStyled>
                             </TableCell>
                             <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
                             </TableCell>
                         </TableRow>
                     )
@@ -88,8 +77,8 @@ function generateTableBody() {
             ) : (
                 <></>
             )}
-            {simMap.has("CANEncoder") ? (
-                [...simMap.get("CANEncoder")!.entries()].map(x => {
+            {simMap.has(SimType.CANEncoder) ? (
+                [...simMap.get(SimType.CANEncoder)!.entries()].map(x => {
                     return (
                         <TableRow key={x[0]}>
                             <TableCell>
@@ -99,7 +88,26 @@ function generateTableBody() {
                                 <TypoStyled>{x[0]}</TypoStyled>
                             </TableCell>
                             <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
+                            </TableCell>
+                        </TableRow>
+                    )
+                })
+            ) : (
+                <></>
+            )}
+            {simMap.has(SimType.Gyro) ? (
+                [...simMap.get(SimType.Gyro)!.entries()].map(x => {
+                    return (
+                        <TableRow key={x[0]}>
+                            <TableCell>
+                                <TypoStyled>Gyro</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{x[0]}</TypoStyled>
+                            </TableCell>
+                            <TableCell>
+                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
                             </TableCell>
                         </TableRow>
                     )
@@ -120,10 +128,10 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
             SimGeneric.Set(simType, device, field, JSON.parse(value))
             break
         case "boolean":
-            SimGeneric.Set(simType, device, field, value.toLowerCase() == "true")
+            SimGeneric.Set(simType, device, field, parseInt(value)) // 1 or 0 (change to float if needed)
             break
         default:
-            SimGeneric.Set(simType, device, field, value)
+            SimGeneric.Set(simType, device, field, parseFloat(value))
             break
     }
 }
@@ -194,7 +202,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             </TableContainer>
             <Stack>
                 <Dropdown
-                    options={["PWM", "SimDevice", "CANMotor", "CANEncoder"]}
+                    options={["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro"]}
                     onSelect={v => setSelectedType(v as unknown as SimType)}
                 />
                 {deviceSelect}
@@ -209,7 +217,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         <Button
                             value={"Set"}
                             onClick={() =>
-                                setGeneric(selectedType ?? "PWM", selectedDevice, field, value, selectedValueType)
+                                setGeneric(selectedType ?? SimType.PWM, selectedDevice, field, value, selectedValueType)
                             }
                         />
                     </Box>

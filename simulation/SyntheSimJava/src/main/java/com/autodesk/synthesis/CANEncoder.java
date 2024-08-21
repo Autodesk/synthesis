@@ -2,6 +2,7 @@ package com.autodesk.synthesis;
 
 import edu.wpi.first.hal.SimDevice;
 import edu.wpi.first.hal.SimDouble;
+import edu.wpi.first.hal.SimBoolean;
 import edu.wpi.first.hal.SimDevice.Direction;
 
 /**
@@ -14,6 +15,7 @@ public class CANEncoder {
 
     private SimDevice m_device;
 
+    private SimBoolean m_init;
     private SimDouble m_position;
     private SimDouble m_velocity;
 
@@ -24,8 +26,9 @@ public class CANEncoder {
      * @param deviceId CAN Device ID.
      */
     public CANEncoder(String name, int deviceId) {
-        m_device = SimDevice.create(name, deviceId);
+        m_device = SimDevice.create(String.format("%s:%s", "CANEncoder", name), deviceId);
 
+        m_init = m_device.createBoolean("init", Direction.kOutput, true);
         m_position = m_device.createDouble("position", Direction.kInput, 0.0);
         m_velocity = m_device.createDouble("velocity", Direction.kInput, 0.0);
     }

@@ -12,6 +12,7 @@ import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOv
 import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
 import { Spacer } from "@/ui/components/StyledComponents"
+import World from "@/systems/World"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -41,6 +42,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [renderScoreboard, setRenderScoreboard] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")
     )
+    const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
+    )
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
@@ -52,6 +56,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
+        PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
 
         PreferencesSystem.savePreferences()
     }
@@ -73,6 +78,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     defaultValue={PreferencesSystem.getGlobalPreference<QualitySetting>("QualitySettings")}
                     onSelect={selected => {
                         setQualitySettings(selected)
+                        World.SceneRenderer.ChangeLighting(selected)
                     }}
                 />
                 {Spacer(5)}
@@ -120,6 +126,13 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("UseMetric")}
                         onClick={checked => {
                             setUseMetric(checked)
+                        }}
+                    />
+                    <Checkbox
+                        label="Subsystem Realistic Gravity"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
+                        onClick={checked => {
+                            setSubsystemGravity(checked)
                         }}
                     />
                     <Checkbox
