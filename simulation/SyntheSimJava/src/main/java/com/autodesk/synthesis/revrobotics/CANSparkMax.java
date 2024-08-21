@@ -34,9 +34,11 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
         this.followers = new ArrayList();
     }
 
-    /* 
-     * Sets the percent output of the motor
+    /**
+     * Sets the percent output of the real and simulated motors
      * Setting a follower doesn't break the simulated follower - leader relationship, which it does for exclusively non-simulated motors
+     *
+     * @param percentOutput The new percent output of the motor
      *
      * See the original documentation for more information 
      */
@@ -49,24 +51,38 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
         }
     }
 
+    /**
+     * Sets the neutralDeadband of the real and simulated motors
+     *
+     * @param n The new neutralDeadband
+     */
     void setNeutralDeadband(double n) {
         this.m_motor.setNeutralDeadband(n);
     }
 
+    /**
+     * Sets the real and simulated motors to an idle mode
+     *
+     * @param mode The specific idle mode (Brake, Coast)
+     *
+     * @return A library error indicating failure or success
+     */
     @Override
     public REVLibError setIdleMode(com.revrobotics.CANSparkBase.IdleMode mode) {
-        if (mode != null) {
+        if (mode != null)
             this.m_motor.setBrakeMode(mode.equals(com.revrobotics.CANSparkBase.IdleMode.kBrake));
-        }
 
         return super.setIdleMode(mode);
     }
 
-    /* 
-     * Returns a simulation-supported SparkAbsoluteEncoder containing the position and velocity of the motor in fission.
+    /** 
+     * Gets a simulation-supported SparkAbsoluteEncoder containing the position and velocity of the motor in fission.
      * All information returned by this class besides position and velocity is from the real motor
      * Use instead on getAbsoluteEncoder(), everything except for the name of the method works exactly the same
-     */
+
+     * @return thewsimulation-supported SparkAbsoluteEncoder.
+     *
+     *      */
     public com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder getAbsoluteEncoderSim() {
         return new SparkAbsoluteEncoder(super.getAbsoluteEncoder(), this.m_encoder);
     }
@@ -75,9 +91,13 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
         this.followers.add(f);
     }
 
-    /* 
+    /** 
      * Causes a simulation-supported leader to follow another simulation-supported leader
      * The real versions of these motors will also follow each other
+     *
+     * @param leader The motor for this robot to follow
+     *
+     * @return a library error indicating failure or success
      */
     @Override
     public REVLibError follow(CANSparkBase leader) {

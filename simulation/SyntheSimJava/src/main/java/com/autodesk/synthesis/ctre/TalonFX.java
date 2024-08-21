@@ -22,13 +22,24 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
         this.m_motor = new CANMotor("SYN TalonFX", deviceNumber, 0.0, false, 0.3);
     }
 
-    /// I think we're getting percentOutput and speed mixed up
+    /// I think we're getting percentOutput and torque mixed up
+    /**
+     * Sets the torque of the real and simulated motors
+     *
+     * @param percentOutput The torque
+     */
     @Override
     public void set(double percentOutput) {
         super.set(percentOutput);
         this.m_motor.setPercentOutput(percentOutput);
     }
 
+    /**
+     * Sets both the real and simulated motors to neutral mode
+     *
+     * @param mode The neutral mode value
+     *
+     */
     @Override
     public void setNeutralMode(NeutralModeValue mode) {
         super.setNeutralMode(mode);
@@ -36,6 +47,11 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
         this.m_motor.setBrakeMode(mode == NeutralModeValue.Brake);
     }
 
+    /**
+     * Gets and internal configurator for both the simulated and real motors
+     *
+     * @return The internal configurator for this Talon motor
+     */
     @Override
     public TalonFXConfigurator getConfigurator() {
         DeviceIdentifier id = this.deviceIdentifier;
@@ -47,6 +63,11 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
         this.m_motor.setNeutralDeadband(deadband);
     }
 
+    /**
+     * Gets the position of the simulated encoder
+     *
+     * @return The motor position in revolutions
+     */
     @Override
     public StatusSignal<Double> getPosition() {
         Double pos = this.m_encoder.getPosition();
@@ -54,7 +75,11 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
         return super.getPosition();
     }
 
-    /// I think this is a pointless method
+    /**
+     * Gets the velocity of the simulated motor according to the simulated encoder
+     *
+     * @return The motor velocity in revolutions per second
+     */
     @Override
     public StatusSignal<Double> getVelocity() {
         Double velocity = this.m_encoder.getVelocity();
