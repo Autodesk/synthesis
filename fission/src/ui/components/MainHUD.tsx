@@ -170,7 +170,9 @@ const MainHUD: React.FC = () => {
                             icon={SynthesisIcons.Gamepad}
                             onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
                         />
-                    ) : <></>}
+                    ) : (
+                        <></>
+                    )}
                 </Box>
                 {userInfo ? (
                     <MainHUDButton
