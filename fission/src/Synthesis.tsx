@@ -41,7 +41,6 @@ import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
 import World from "@/systems/World.ts"
-import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
@@ -166,7 +165,7 @@ function Synthesis() {
                         closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
-                            <Scene useStats={true} key="scene-in-toast-provider" />
+                            <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
@@ -193,9 +192,6 @@ function Synthesis() {
 
 const initialModals = [
     <SettingsModal key="settings" modalId="settings" />,
-    <SpawningModal key="spawning" modalId="spawning" />,
-    <AddRobotsModal key="add-robot" modalId="add-robot" />,
-    <AddFieldsModal key="add-field" modalId="add-field" />,
     <ViewModal key="view" modalId="view" />,
     <DownloadAssetsModal key="download-assets" modalId="download-assets" />,
     <RoboRIOModal key="roborio" modalId="roborio" />,
