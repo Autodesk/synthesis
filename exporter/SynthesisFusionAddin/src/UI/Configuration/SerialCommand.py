@@ -10,6 +10,8 @@ import json
 from src.Types import OString
 
 
+# Transition: AARD-1765
+# Will likely be removed later as this is no longer used. Avoiding adding typing for now.
 def generateFilePath() -> str:
     """Generates a temporary file path that can be used to save the file for exporting
 
@@ -19,24 +21,29 @@ def generateFilePath() -> str:
     Returns:
         str: file path
     """
-    tempPath = OString.TempPath("").getPath()
+    tempPath = OString.TempPath("").getPath()  # type: ignore
     return str(tempPath)
 
 
 class Struct:
     """For decoding the dict values into named values"""
 
-    def __init__(self, **entries):
+    def __init__(self, **entries):  # type: ignore
         self.__dict__.update(entries)
 
 
 class SerialCommand:
     """All of the command inputs combined"""
 
-    def __init__(self):
+    def __init__(self):  # type: ignore
         self.general = General()
         self.advanced = Advanced()
-        self.filePath = generateFilePath()
+
+        # Transition: AARD-1742
+        # With the addition of a 'release' build the fusion exporter will not have permissions within the sourced
+        # folder. Because of this we cannot use this kind of tmp path anymore. This code was already unused and
+        # should be removed.
+        # self.filePath = generateFilePath()
 
     def toJSON(self) -> str:
         """Converts this class into a json object that can be written to the object data
@@ -50,7 +57,7 @@ class SerialCommand:
 class General:
     """General Options"""
 
-    def __init__(self):
+    def __init__(self):  # type: ignore
         # This is the overall export decision point
         self.exportMode = ExportMode.standard
         self.RenderType = RenderType.basic3D
@@ -64,7 +71,7 @@ class General:
 class Advanced:
     """Advanced settings in the command input"""
 
-    def __init__(self):
+    def __init__(self):  # type: ignore
         self.friction = BooleanInput("friction", True)
         self.density = BooleanInput("density", True)
         self.mass = BooleanInput("mass", True)

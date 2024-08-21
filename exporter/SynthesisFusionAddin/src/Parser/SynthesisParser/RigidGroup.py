@@ -21,10 +21,13 @@ from src.Logging import logFailure
 from src.Proto import assembly_pb2
 
 
+# Transition: AARD-1765
+# According to the type errors I'm getting here this code would have never compiled.
+# Should be removed later
 @logFailure
 def ExportRigidGroups(
     fus_occ: Union[adsk.fusion.Occurrence, adsk.fusion.Component],
-    hel_occ: assembly_pb2.Occurrence,
+    hel_occ: assembly_pb2.Occurrence,  # type: ignore[name-defined]
 ) -> None:
     """Takes a Fusion and Protobuf Occurrence and will assign Rigidbody data per the occurrence if any exist and are not surpressed.
 

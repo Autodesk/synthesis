@@ -112,20 +112,23 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
                     gap="10px"
                     alignItems={"center"}
                     justifyContent={"space-between"}
+                    width={"98%"}
                 >
                     <Label>{toTitleCase(input.inputName)}</Label>
 
-                    <Button
-                        key={input.inputName}
-                        value={
-                            input.inputName == selectedInput
-                                ? "Press anything"
-                                : transformKeyName(input.keyCode, input.keyModifiers)
-                        }
-                        onClick={() => {
-                            setSelectedInput(input.inputName)
-                        }}
-                    />
+                    <Box>
+                        <Button
+                            key={input.inputName}
+                            value={
+                                input.inputName == selectedInput
+                                    ? "Press anything"
+                                    : transformKeyName(input.keyCode, input.keyModifiers)
+                            }
+                            onClick={() => {
+                                setSelectedInput(input.inputName)
+                            }}
+                        />
+                    </Box>
                 </Box>
                 {Spacer(8, 0)}
                 <SectionDivider />
@@ -145,6 +148,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
                     gap="10px"
                     alignItems={"center"}
                     justifyContent={"space-between"}
+                    width={"98%"}
                 >
                     <Label>{toTitleCase(input.inputName)}</Label>
 
@@ -195,6 +199,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
                     gap="10px"
                     alignItems={"center"}
                     justifyContent={"space-between"}
+                    width={"98%"}
                 >
                     <Label>{toTitleCase(input.inputName)}</Label>
                     <Button
@@ -229,6 +234,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
                     gap="10px"
                     alignItems={"center"}
                     justifyContent={"space-between"}
+                    width={"98%"}
                 >
                     <Label>{toTitleCase(input.inputName)}</Label>
                     <Dropdown
@@ -257,6 +263,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
                     gap="10px"
                     alignItems={"center"}
                     justifyContent={"space-between"}
+                    width={"98%"}
                 >
                     <Label>{toTitleCase(input.inputName)}</Label>
 

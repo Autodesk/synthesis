@@ -11,16 +11,16 @@ const defaultColors: Theme = {
         above: [],
     },
     InteractiveElementLeft: {
-        color: { r: 224, g: 130, b: 65, a: 1 },
+        color: { r: 207, g: 114, b: 57, a: 1 },
         above: ["Background", "BackgroundSecondary"],
     },
     InteractiveElementRight: {
-        color: { r: 218, g: 102, b: 89, a: 1 },
+        color: { r: 212, g: 75, b: 62, a: 1 },
         above: ["Background", "BackgroundSecondary"],
     },
     Background: { color: { r: 0, g: 0, b: 0, a: 1 }, above: [] },
-    BackgroundSecondary: { color: { r: 30, g: 30, b: 30, a: 1 }, above: [] },
-    InteractiveBackground: { color: { r: 52, g: 58, b: 64, a: 1 }, above: [] },
+    BackgroundSecondary: { color: { r: 18, g: 18, b: 18, a: 1 }, above: [] },
+    InteractiveBackground: { color: { r: 40, g: 44, b: 47, a: 1 }, above: [] },
     MainText: {
         color: { r: 255, g: 255, b: 255, a: 1 },
         above: [
@@ -33,8 +33,8 @@ const defaultColors: Theme = {
         ],
     },
     Scrollbar: { color: { r: 170, g: 170, b: 170, a: 1 }, above: [] },
-    AcceptButton: { color: { r: 71, g: 138, b: 226, a: 1 }, above: [] },
-    CancelButton: { color: { r: 231, g: 85, b: 81, a: 1 }, above: [] },
+    AcceptButton: { color: { r: 33, g: 137, b: 228, a: 1 }, above: [] },
+    CancelButton: { color: { r: 248, g: 78, b: 78, a: 1 }, above: [] },
     InteractiveElementText: {
         color: { r: 255, g: 255, b: 255, a: 1 },
         above: [],
@@ -63,8 +63,8 @@ const defaultColors: Theme = {
     SkyboxTop: { color: { r: 255, g: 255, b: 255, a: 1 }, above: [] },
     SkyboxBottom: { color: { r: 255, g: 255, b: 255, a: 1 }, above: [] },
     FloorGrid: { color: { r: 93, g: 93, b: 93, a: 1 }, above: [] },
-    MatchRedAlliance: { color: { r: 255, g: 0, b: 0, a: 1 }, above: [] },
-    MatchBlueAlliance: { color: { r: 0, g: 0, b: 255, a: 1 }, above: [] },
+    MatchRedAlliance: { color: { r: 180, g: 20, b: 20, a: 1 }, above: [] },
+    MatchBlueAlliance: { color: { r: 20, g: 20, b: 180, a: 1 }, above: [] },
     ToastInfo: { color: { r: 126, g: 34, b: 206, a: 1 }, above: [] },
     ToastWarning: { color: { r: 234, g: 179, b: 8, a: 1 }, above: [] },
     ToastError: { color: { r: 239, g: 68, b: 68, a: 1 }, above: [] },

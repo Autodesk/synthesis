@@ -17,7 +17,17 @@ For information regarding the manual install process visit the [Synthesis Fusion
 
 ## Getting Started
 
-### Manual Install
+### Using an Installer
+
+- Visit [synthesis.autodesk.com/download](https://synthesis.autodesk.com/download.html) and select the installer for your operating system.
+  - Note that there is no installer for Linux since Fusion is only supported on Windows and Mac.
+- Once you have downloaded the installer for your operating system (`.exe` for Windows and `.pkg` for Mac) go ahead and run the executable.
+  - Since we do not code sign our installers (as interns of Autodesk we have very little control over this) you may get a warning from your operating system.
+  - For Mac to get around this see [this](https://support.apple.com/en-tm/guide/mac-help/mh40616/mac) guide for more information.
+- If you are at all concerned that we are doing something nefarious please feel free to [install the exporter manually.](#manual-install)
+  - Alternatively, you can even inspect how we build our installers [here](./exporter/) and build them yourself.
+
+### <a name="manual-install"></a> Manual Install
 
 - Navigate to [`synthesis.autodesk.com/download`](https://synthesis.autodesk.com/download.html).
 - Find the Exporter source code zip download.
@@ -42,11 +52,6 @@ under the `Utilities` tab.
 ![image_caption](img/fusion/fusion-utilities-with-synthesis.png)
 
 Thanks for installing the Synthesis Fusion Exporter! For any additional help visit our [Synthesis Community Discord Server](https://www.discord.gg/hHcF9AVgZA) where you can talk directly to our developers.
-
-### Using an Installer
-
-Our automatic installer is still in development, visit the [Synthesis Discord Server](https://www.discord.gg/hHcF9AVgZA) for updates and any manual installing help.
-
 
 ### Launching the Exporter
 
