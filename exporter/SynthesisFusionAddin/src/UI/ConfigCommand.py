@@ -301,7 +301,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
             savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
 
-            if savepath == False:
+            if not savepath:
                 # save was canceled
                 return
 

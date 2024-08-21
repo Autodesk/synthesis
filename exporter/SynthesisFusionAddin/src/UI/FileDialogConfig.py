@@ -1,3 +1,7 @@
+import os
+import tempfile
+from pathlib import Path
+
 import adsk.core
 import adsk.fusion
 
@@ -5,7 +9,7 @@ from src import gm
 from src.Types import OString
 
 
-def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | bool:
+def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | os.PathLike[str] | None:
     """Function to generate the Save File Dialog for the Hellion Data files
 
     Args:
@@ -13,7 +17,7 @@ def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = Non
         defaultName (str): default name for the saving file
 
     Returns:
-        bool: False if canceled
+        None: if canceled
         str: full file path
     """
 
@@ -36,10 +40,28 @@ def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = Non
     fileDialog.filterIndex = 0
     dialogResult = fileDialog.showSave()
 
-    if dialogResult == adsk.core.DialogResults.DialogOK:
-        return fileDialog.filename
-    else:
+    if dialogResult != adsk.core.DialogResults.DialogOK:
+        return None
+
+    canWrite = isWriteableDirectory(Path(fileDialog.filename).parent)
+    if not canWrite:
+        gm.ui.messageBox("Synthesis does not have the required permissions to write to this directory.")
+        return saveFileDialog(defaultPath, defaultName)
+
+    return fileDialog.filename
+
+
+def isWriteableDirectory(path: str | os.PathLike[str]) -> bool:
+    if not os.access(path, os.W_OK):
         return False
+
+    try:
+        with tempfile.NamedTemporaryFile(dir=path, delete=True) as f:
+            f.write(b"test")
+    except OSError:
+        return False
+
+    return True
 
 
 def generateFilePath() -> str:
