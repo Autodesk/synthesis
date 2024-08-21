@@ -40,12 +40,11 @@ export class SimGyroInput implements SimInput {
         this._robot = robot
         this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
 
-        if (this._joltID)
-            this._joltBody = World.PhysicsSystem.GetBody(this._joltID)
+        if (this._joltID) this._joltBody = World.PhysicsSystem.GetBody(this._joltID)
     }
 
     private GetAxis(axis: Jolt.Vec3): number {
-        return (this._joltBody?.GetRotation().GetRotationAngle(axis) ?? 0) * 180 / Math.PI
+        return ((this._joltBody?.GetRotation().GetRotationAngle(axis) ?? 0) * 180) / Math.PI
     }
 
     private GetX(): number {
@@ -65,8 +64,8 @@ export class SimGyroInput implements SimInput {
         const y = this.GetY()
         const z = this.GetZ()
         // console.log(`${this._device}\n${x}\n${y}\n${z}`)
-        SimGyro.SetAngleX(this._device, x);
-        SimGyro.SetAngleY(this._device, y);
-        SimGyro.SetAngleZ(this._device, z);
+        SimGyro.SetAngleX(this._device, x)
+        SimGyro.SetAngleY(this._device, y)
+        SimGyro.SetAngleZ(this._device, z)
     }
 }

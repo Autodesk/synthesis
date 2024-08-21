@@ -19,7 +19,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
-import com.autodesk.synthesis.Joystick;
+// import com.autodesk.synthesis.Joystick;
+import com.autodesk.synthesis.Gyro;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -38,8 +39,7 @@ public class Robot extends TimedRobot {
   private CANSparkMax m_SparkMax = new CANSparkMax(1, MotorType.kBrushless);
   private TalonFX m_Talon = new TalonFX(2);
   private XboxController m_Controller = new XboxController(0);
-  private ADXRS450_Gyro m_Gyro;
-    private ADXRS450_GyroSim m_GyroSim;
+  private Gyro m_Gyro = new Gyro("Test Gyro", 1);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -50,9 +50,6 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
-    m_Gyro = new ADXRS450_Gyro();
-    m_GyroSim = new ADXRS450_GyroSim(m_Gyro);
-    m_Gyro.calibrate();
   }
 
   /**
@@ -111,7 +108,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_Spark1.set(m_Controller.getLeftY());
     m_Spark2.set(-m_Controller.getRightY());
-    System.out.println(m_Gyro.getAngle());
+    System.out.println(m_Gyro.getAngleY());
     // m_Spark1.set(0.25);
     // m_Spark2.set(0.25);
     m_SparkMax.set(0.75);

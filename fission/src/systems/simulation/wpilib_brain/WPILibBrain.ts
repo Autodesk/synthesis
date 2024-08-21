@@ -161,15 +161,15 @@ export class SimGyro {
     private constructor() {}
 
     public static SetAngleX(device: string, angle: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">angle_x", angle);
+        return SimGeneric.Set("Gyro", device, ">angle_x", angle)
     }
 
     public static SetAngleY(device: string, angle: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">angle_y", angle);
+        return SimGeneric.Set("Gyro", device, ">angle_y", angle)
     }
 
     public static SetAngleZ(device: string, angle: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">angle_z", angle);
+        return SimGeneric.Set("Gyro", device, ">angle_z", angle)
     }
 }
 
@@ -209,6 +209,9 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         case "CANEncoder":
             UpdateSimMap("CANEncoder", device, updateData)
             break
+        case "Gyro":
+            UpdateSimMap("Gyro", device, updateData)
+            break
         default:
             break
     }
@@ -247,7 +250,7 @@ class WPILibBrain extends Brain {
             return
         }
 
-        this.addSimInput(new SimGyroInput("Gyro:ADXRS450[0]", mechanism));
+        this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
     }
 
     public addSimOutputGroup(device: SimOutputGroup) {
@@ -261,7 +264,7 @@ class WPILibBrain extends Brain {
     public Update(deltaT: number): void {
         this._simOutputs.forEach(d => d.Update(deltaT))
         this._simInputs.forEach(i => i.Update(deltaT))
-        console.log(simMap)
+        // console.log(simMap)
     }
 
     public Enable(): void {
