@@ -11,7 +11,7 @@ import Checkbox from "@/ui/components/Checkbox"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
-import { SectionLabel } from "@/ui/components/StyledComponents"
+import { SectionLabel, Spacer } from "@/ui/components/StyledComponents"
 
 const UnselectParentIcon = <FaXmark size={"1.25rem"} />
 const InvertIcon = <FaArrowRightArrowLeft size={"1.25rem"} style={{ transform: "rotate(90deg)" }} />
@@ -145,6 +145,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                     colorOverrideClass={hasChild ? "bg-background hover:brightness-100" : undefined}
                 />
             </Box>
+            {Spacer(0, 5)}
         </Box>
     )
 }

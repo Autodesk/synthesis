@@ -1,6 +1,7 @@
 import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
+/** Names of all global preferences. */
 export type GlobalPreference =
     | "QualitySettings"
     | "ZoomSensitivity"
@@ -18,6 +19,10 @@ export type GlobalPreference =
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
 
+/**
+ * Default values for GlobalPreferences as a fallback if they are not configured by the user.
+ * Every global preference should have a default value.
+ */
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     QualitySettings: "High" as QualitySetting,
     ZoomSensitivity: 15,
@@ -47,8 +52,10 @@ export type EjectorPreferences = {
     parentNode: string | undefined
 }
 
+/** The behavior types that can be sequenced. */
 export type BehaviorType = "Elevator" | "Arm"
 
+/** Data for sequencing and inverting elevator and behaviors. */
 export type SequentialBehaviorPreferences = {
     jointIndex: number
     parentJointIndex: number | undefined
@@ -56,6 +63,7 @@ export type SequentialBehaviorPreferences = {
     inverted: boolean
 }
 
+/** Default preferences for a joint with not parent specified and inverted set to false. */
 export function DefaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
     return {
         jointIndex: index,
@@ -95,6 +103,7 @@ export type ScoringZonePreferences = {
 }
 
 export type FieldPreferences = {
+    // TODO: implement this
     defaultSpawnLocation: Vector3Tuple
     scoringZones: ScoringZonePreferences[]
 }

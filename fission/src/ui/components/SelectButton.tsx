@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import Button, { ButtonSize } from "./Button"
-import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
 import World from "@/systems/World"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import Jolt from "@barclah/jolt-physics"
+import { LabelWithTooltip } from "./StyledComponents"
 
 // raycasting constants
 const RAY_MAX_LENGTH = 20.0
@@ -70,7 +70,10 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, value, pl
 
     return (
         <Stack direction={StackDirection.Vertical}>
-            <Label size={LabelSize.Small}>{"Select parent node"}</Label>
+            {LabelWithTooltip(
+                "Select parent node",
+                "Select the parent node for this object to follow. Click the button below, then click a part of the robot or field."
+            )}
             <Button
                 value={selecting ? "..." : value || placeholder || "Click to select"}
                 colorOverrideClass={selecting ? "bg-background-secondary" : colorClass}

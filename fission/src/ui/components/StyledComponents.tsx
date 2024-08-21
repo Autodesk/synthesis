@@ -1,5 +1,5 @@
-import { Box, Divider, styled } from "@mui/material"
-import Label from "./Label"
+import { Box, Divider, styled, IconButton, Tooltip } from "@mui/material"
+import Label, { LabelSize } from "./Label"
 import Button, { ButtonProps, ButtonSize } from "./Button"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
@@ -10,6 +10,7 @@ import { BsCodeSquare } from "react-icons/bs"
 import { GiSteeringWheel } from "react-icons/gi"
 import { AiOutlineDoubleRight } from "react-icons/ai"
 import { GrConnect } from "react-icons/gr"
+import InfoIcon from "@mui/icons-material/Info"
 
 import {
     FaGear,
@@ -26,7 +27,10 @@ import {
     FaCar,
     FaArrowLeft,
     FaMinus,
+    FaBug,
+    FaAngleRight,
 } from "react-icons/fa6"
+import { colorNameToVar } from "../ThemeContext"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
@@ -49,6 +53,7 @@ export class SynthesisIcons {
     public static SteeringWheel = (<GiSteeringWheel />)
     public static OutlineDoubleRight = (<AiOutlineDoubleRight />)
     public static Connect = (<GrConnect />)
+    public static Bug = (<FaBug />)
 
     /** Large icons: used for icon buttons */
     public static DeleteLarge = (<IoTrashBin size={"1.25rem"} />)
@@ -58,10 +63,26 @@ export class SynthesisIcons {
     public static SelectLarge = (<IoCheckmark size={"1.25rem"} />)
     public static EditLarge = (<IoPencil size={"1.25rem"} />)
     public static LeftArrowLarge = (<FaArrowLeft size={"1.25rem"} />)
+    public static BugLarge = (<FaBug size={"1.25rem"} />)
+
+    public static OpenHudIcon = (
+        <FaAngleRight
+            size={"5vh"}
+            style={{
+                alignSelf: "middle",
+                justifySelf: "center",
+                minHeight: "40px",
+                minWidth: "40px",
+                maxHeight: "50px",
+                maxWidth: "50px",
+            }}
+            color={colorNameToVar("BackgroundSecondary")}
+        />
+    )
 }
 
 export const SectionDivider = styled(Divider)({
-    borderColor: "white",
+    borderColor: "grey",
 })
 
 export const SectionLabel = styled(Label)({
@@ -100,28 +121,31 @@ export const EditButton = (onClick: () => void) => {
     return <PositiveButton value={SynthesisIcons.EditLarge} onClick={onClick} />
 }
 
-export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick }) => {
+export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick, id }) => {
     return (
         <Button
             size={ButtonSize.Medium}
             value={value}
             onClick={onClick}
             colorOverrideClass="bg-cancel-button hover:brightness-90"
+            id={id}
         />
     )
 }
 
-export const DeleteButton = (onClick: () => void) => {
-    return <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={onClick} />
+export const DeleteButton = (onClick: () => void, id?: string) => {
+    return <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={onClick} id={id} />
 }
 
-export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick }) => {
+export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick, id }) => {
     return (
         <Button
             value={value}
             onClick={onClick}
             colorOverrideClass="bg-[#00000000] hover:brightness-90"
             sizeOverrideClass="p-[0.25rem]"
+            id={id}
+            className="h-fit"
         />
     )
 }
@@ -130,6 +154,52 @@ export const RefreshButton = (onClick: () => void) => {
     return <ButtonIcon value={SynthesisIcons.RefreshLarge} onClick={onClick} />
 }
 
-export const AddButtonInteractiveColor = (onClick: () => void) => {
-    return <Button value={SynthesisIcons.AddLarge} onClick={onClick} />
+export const AddButtonInteractiveColor = (onClick: () => void, id?: string) => {
+    return <Button value={SynthesisIcons.AddLarge} onClick={onClick} id={id} />
+}
+
+export const CustomTooltip = (text: string) => {
+    return (
+        <Tooltip title={text}>
+            <IconButton
+                size="small"
+                disableRipple
+                sx={{
+                    "color": "#ffffff77",
+                    "&:hover": {
+                        borderStyle: "solid",
+                        borderColor: "grey",
+                        backgroundColor: "transparent",
+                    },
+                    "position": "relative",
+                    "overflow": "hidden",
+                    "& .MuiTouchRipple-root span": {
+                        backgroundColor: "#ffffffaa",
+                        animationDuration: "300ms",
+                    },
+                    "&:focus": {
+                        borderColor: "grey",
+                        backgroundColor: "transparent",
+                        outline: "none",
+                    },
+                    "&:selected": {
+                        outline: "none",
+                        backgroundColor: "transparent",
+                        borderColor: "none",
+                    },
+                }}
+            >
+                <InfoIcon fontSize="small" />
+            </IconButton>
+        </Tooltip>
+    )
+}
+
+export const LabelWithTooltip = (labelText: string, tooltipText: string, size?: LabelSize) => {
+    return (
+        <Box display={"flex"} flexDirection={"row"} alignItems={"center"} textAlign={"center"}>
+            <Label size={size ?? LabelSize.Small}>{labelText}</Label>
+            {CustomTooltip(tooltipText)}
+        </Box>
+    )
 }

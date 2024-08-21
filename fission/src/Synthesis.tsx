@@ -41,7 +41,6 @@ import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
 import World from "@/systems/World.ts"
-import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
@@ -61,7 +60,6 @@ import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSc
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
-import ResetAllInputsModal from "./ui/modals/configuring/inputs/ResetAllInputsModal.tsx"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
@@ -167,7 +165,7 @@ function Synthesis() {
                         closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
-                            <Scene useStats={true} key="scene-in-toast-provider" />
+                            <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
                             <TouchControls />
                             <MainHUD key={"main-hud"} />
@@ -195,9 +193,6 @@ function Synthesis() {
 
 const initialModals = [
     <SettingsModal key="settings" modalId="settings" />,
-    <SpawningModal key="spawning" modalId="spawning" />,
-    <AddRobotsModal key="add-robot" modalId="add-robot" />,
-    <AddFieldsModal key="add-field" modalId="add-field" />,
     <ViewModal key="view" modalId="view" />,
     <DownloadAssetsModal key="download-assets" modalId="download-assets" />,
     <RoboRIOModal key="roborio" modalId="roborio" />,
@@ -223,7 +218,6 @@ const initialModals = [
     <MatchModeModal key="match-mode" modalId="match-mode" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
-    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
     <APSManagementModal key="aps-management" modalId="aps-management" />,
 ]
 

@@ -24,11 +24,12 @@ import {
     DeleteButton,
     RefreshButton,
     SynthesisIcons,
-    Spacer,
 } from "@/ui/components/StyledComponents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import Button from "@/ui/components/Button"
+import { setSelectedBrainIndexGlobal } from "../configuring/ChooseInputSchemePanel"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 interface ItemCardProps {
     id: string
@@ -199,7 +200,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            // if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [showTooltip, closePanel, panelId, openPanel]
     )
@@ -222,7 +226,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [closePanel, panelId, openPanel]
     )
@@ -244,7 +251,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [closePanel, panelId, openPanel]
     )
@@ -350,7 +360,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     return (
         <Panel
-            name={"Select Asset"}
+            name={"Spawn Asset"}
             icon={SynthesisIcons.AddLarge}
             panelId={panelId}
             acceptEnabled={false}
@@ -388,10 +398,6 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         </SectionLabel>
                         <SectionDivider />
                         {cachedFieldElements}
-                        {Spacer(5)}
-                        <Box alignSelf={"center"}>
-                            <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
-                        </Box>
                     </>
                 )}
                 <Box
