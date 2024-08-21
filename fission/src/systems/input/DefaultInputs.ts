@@ -1,6 +1,7 @@
 import { InputScheme } from "./InputSchemeManager"
 import { AxisInput, ButtonInput, EmptyModifierState } from "./InputSystem"
 
+/** The purpose of this class is to store any defaults related to the input system. */
 class DefaultInputs {
     static ernie = () => {
         return {
@@ -133,6 +134,7 @@ class DefaultInputs {
         }
     }
 
+    /** We like this guy */
     public static hunter = () => {
         return {
             schemeName: "Hunter",
@@ -187,7 +189,8 @@ class DefaultInputs {
         }
     }
 
-    public static get defaultInputCopies() {
+    /** @returns {InputScheme[]} New copies of the default input schemes without reference to any others. */
+    public static get defaultInputCopies(): InputScheme[] {
         return [
             DefaultInputs.ernie(),
             DefaultInputs.luna(),
@@ -197,6 +200,7 @@ class DefaultInputs {
         ]
     }
 
+    /** @returns {InputScheme} A new blank input scheme with no control bound. */
     public static get newBlankScheme(): InputScheme {
         return {
             schemeName: "",

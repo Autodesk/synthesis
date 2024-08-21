@@ -57,6 +57,17 @@ interface OptionCardProps {
     includeDelete: boolean
 }
 
+/**
+ * An option for the select menu that contains a specific index, name, and can store a custom value through a SelectMenuOption instance.
+ *
+ * @param {OptionCardProps} props - The properties object.
+ * @param {number} props.index - The index of this option in the menu that's used to generate a unique key.
+ * @param {function} props.onSelected - Callback function to handle selection of this option.
+ * @param {function} [props.onDelete] - Callback function to handle deletion of this option.
+ * @param {boolean} props.includeDelete - A boolean to determine if this specific option is able to be deleted.
+ *
+ * @returns {JSX.Element} The rendered OptionCard component.
+ */
 const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDelete, includeDelete }) => {
     return (
         <Box
@@ -87,13 +98,15 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 onClick={() => {
                     onSelected(value)
                 }}
+                className={value.name}
                 sx={{ borderColor: "#888888" }}
+                id={`select-button-${value.name}`}
             />
             {/** Delete button only if onDelete is defined */}
             {onDelete && includeDelete && (
                 <>
                     {Spacer(0, 10)}
-                    {DeleteButton(onDelete != undefined ? onDelete : () => {})}
+                    {DeleteButton(onDelete != undefined ? onDelete : () => {}, "select-menu-delete-button")}
                 </>
             )}
         </Box>
@@ -116,6 +129,21 @@ interface SelectMenuProps {
     onAddClicked?: () => void
 }
 
+/**
+ * A menu with multiple options. When an option is selected, it is displayed as the header and a back button appears to select a different item.
+ *
+ * @param {SelectMenuProps} props - The properties object.
+ * @param {SelectMenuOption[]} props.options - The available options in this menu.
+ * @param {function} props.onOptionSelected - Callback function to handle an option being selected. Called with undefined when no option is selected.
+ * @param {string} props.defaultHeaderText - The text displayed in the header if no option is selected.
+ * @param {string} [props.noOptionsText] - The text displayed if there are no available options.
+ * @param {number} [props.indentation] - The number of indentations before the header text. Used to nest multiple select menus together.
+ * @param {function} [props.onDelete] - Callback function to handle the deletion of an option. If undefined, delete buttons will not be included.
+ * @param {function} [props.deleteCondition] - A function take in a specific option and return true if it's deletable.
+ * @param {function} [props.onAddClicked] - Callback function to handle the addition of an option. If undefined, no add button will be included.
+ *
+ * @returns {JSX.Element} The rendered SelectMenu component.
+ */
 const SelectMenu: React.FC<SelectMenuProps> = ({
     options,
     onOptionSelected,
@@ -151,6 +179,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                             setSelectedOption(undefined)
                             onOptionSelected(undefined)
                         }}
+                        id="select-menu-back-button"
                     />
                 )}
 
@@ -190,7 +219,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                         </>
                     )}
                     {/** Add button */}
-                    {onAddClicked && AddButtonInteractiveColor(onAddClicked)}
+                    {onAddClicked && AddButtonInteractiveColor(onAddClicked, "select-menu-add-button")}
                 </>
             )}
         </>

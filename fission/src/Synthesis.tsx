@@ -60,7 +60,6 @@ import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSc
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
-import ResetAllInputsModal from "./ui/modals/configuring/inputs/ResetAllInputsModal.tsx"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 
@@ -217,7 +216,6 @@ const initialModals = [
     <MatchModeModal key="match-mode" modalId="match-mode" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
-    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
     <APSManagementModal key="aps-management" modalId="aps-management" />,
 ]
 
