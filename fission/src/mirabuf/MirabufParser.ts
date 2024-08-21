@@ -286,7 +286,6 @@ class MirabufParser {
 
         root.children?.forEach(child => {
             const partInstance = partInstances.get(child.value!)!
-            // TODO: guarantee that these assertions won't fail
             const def = partDefinitions[partInstance.partDefinitionReference!]
 
             const mat = partInstance.transform

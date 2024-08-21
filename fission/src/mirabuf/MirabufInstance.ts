@@ -128,7 +128,7 @@ class MirabufInstance {
      * Parses all mirabuf appearances into ThreeJS and Jolt materials.
      */
     private LoadMaterials(materialStyle: MaterialStyle) {
-        ;(
+        (
             Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!) as [string, mirabuf.Color][]
         ).forEach(([appearanceId, { A, B, G, R }]) => {
             const hex = (A << 24) | (R << 16) | (G << 8) | B
