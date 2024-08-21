@@ -2,9 +2,6 @@
     links the Configuration Command seen when pressing the Synthesis button in the Addins Panel
 """
 
-import os
-import pathlib
-from enum import Enum
 from typing import Any
 
 import adsk.core
@@ -15,14 +12,11 @@ from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Parser import Parser
-from src.Types import ExportLocation, ExportMode
+from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
-from src.UI.Configuration.SerialCommand import SerialCommand
 from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.GeneralConfigTab import GeneralConfigTab
 from src.UI.JointConfigTab import JointConfigTab
-
-# ====================================== CONFIG COMMAND ======================================
 
 generalConfigTab: GeneralConfigTab
 jointConfigTab: JointConfigTab
@@ -30,55 +24,10 @@ gamepieceConfigTab: GamepieceConfigTab
 
 logger = getLogger()
 
-"""
-INPUTS_ROOT (adsk.fusion.CommandInputs):
-    - Provides access to the set of all commandInput UI elements in the panel
-"""
-INPUTS_ROOT = None
-
-
-# Transition: AARD-1765
-# This should be removed in the config command refactor. Seemingly impossible to type.
-def GUID(arg: str | adsk.core.Base) -> str | adsk.core.Base:
-    """### Will return command object when given a string GUID, or the string GUID of an object (depending on arg value)
-
-    Args:
-        arg str | object: Either a command input object or command input GUID
-
-    Returns:
-        str | object: Either a command input object or command input GUID
-    """
-    if type(arg) == str:
-        object = gm.app.activeDocument.design.findEntityByToken(arg)[0]
-        return object
-    else:  # type(obj)
-        return arg.entityToken  # type: ignore[union-attr]
-
-
-class JointMotions(Enum):
-    """### Corresponds to the API JointMotions enum
-
-    Args:
-        Enum (enum.Enum)
-    """
-
-    RIGID = 0
-    REVOLUTE = 1
-    SLIDER = 2
-    CYLINDRICAL = 3
-    PIN_SLOT = 4
-    PLANAR = 5
-    BALL = 6
+INPUTS_ROOT: adsk.core.CommandInputs
 
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
-    """### Start the Command Input Object and define all of the input groups to create our ParserOptions object.
-
-    Notes:
-        - linked and called from (@ref HButton) and linked
-        - will be called from (@ref Events.py)
-    """
-
     def __init__(self, configure: Any) -> None:
         super().__init__()
 
@@ -87,22 +36,16 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         exporterOptions = ExporterOptions().readFromDesign() or ExporterOptions()
         cmd = args.command
 
-        # Set to false so won't automatically export on switch context
         cmd.isAutoExecute = False
         cmd.isExecutedWhenPreEmpted = False
-        cmd.okButtonText = "Export"  # replace default OK text with "export"
-        cmd.setDialogInitialSize(400, 350)  # these aren't working for some reason...
-        cmd.setDialogMinimumSize(400, 350)  # these aren't working for some reason...
+        cmd.okButtonText = "Export"
+        cmd.setDialogSize(800, 350)
 
-        global INPUTS_ROOT  # Global CommandInputs arg
+        global INPUTS_ROOT
         INPUTS_ROOT = cmd.commandInputs
 
-        # ~~~~~~~~~~~~~~~~ HELP FILE ~~~~~~~~~~~~~~~~
-        """
-        Sets the small "i" icon in bottom left of the panel.
-            - This is an HTML file that has a script to redirect to exporter workflow tutorial.
-        """
-        cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
+        # TODO?
+        # cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
 
         global generalConfigTab
         generalConfigTab = GeneralConfigTab(args, exporterOptions)
@@ -139,10 +82,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 *gm.app.activeDocument.design.rootComponent.allJoints,
                 *gm.app.activeDocument.design.rootComponent.allAsBuiltJoints,
             ]:
-                if (
-                    joint.jointMotion.jointType in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value)
-                    and not joint.isSuppressed
-                ):
+                if joint.jointMotion.jointType in SELECTABLE_JOINT_TYPES and not joint.isSuppressed:
                     jointConfigTab.addJoint(joint)
 
         # Adding saved wheels must take place after joints are added as a result of how the two types are connected.
@@ -154,75 +94,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 if len(fusionJoints):
                     jointConfigTab.addWheel(fusionJoints[0], wheel)
 
-        # ~~~~~~~~~~~~~~~~ JOINT SETTINGS ~~~~~~~~~~~~~~~~
-        """
-        Joint settings group command
-        """
-
-        # Transition: AARD-1689
-        # Should possibly be implemented later?
-
-        # jointsSettings = a_input.addGroupCommandInput(
-        #     "joints_settings", "Joints Settings"
-        # )
-        # jointsSettings.isExpanded = False
-        # jointsSettings.isEnabled = True
-        # jointsSettings.tooltip = "tooltip"  # TODO: update tooltip
-        # joints_settings = jointsSettings.children
-
-        # self.createBooleanInput(
-        #     "kinematic_only",
-        #     "Kinematic Only",
-        #     joints_settings,
-        #     checked=False,
-        #     tooltip="tooltip",  # TODO: update tooltip
-        #     enabled=True,
-        # )
-
-        # self.createBooleanInput(
-        #     "calculate_limits",
-        #     "Calculate Limits",
-        #     joints_settings,
-        #     checked=True,
-        #     tooltip="tooltip",  # TODO: update tooltip
-        #     enabled=True,
-        # )
-
-        # self.createBooleanInput(
-        #     "auto_assign_ids",
-        #     "Auto-Assign ID's",
-        #     joints_settings,
-        #     checked=True,
-        #     tooltip="tooltip",  # TODO: update tooltip
-        #     enabled=True,
-        # )
-
-        # ~~~~~~~~~~~~~~~~ CONTROLLER SETTINGS ~~~~~~~~~~~~~~~~
-        """
-        Controller settings group command
-        """
-
-        # Transition: AARD-1689
-        # Should possibly be implemented later?
-
-        # controllerSettings = a_input.addGroupCommandInput(
-        #     "controller_settings", "Controller Settings"
-        # )
-
-        # controllerSettings.isExpanded = False
-        # controllerSettings.isEnabled = True
-        # controllerSettings.tooltip = "tooltip"  # TODO: update tooltip
-        # controller_settings = controllerSettings.children
-
-        # self.createBooleanInput(  # export signals checkbox
-        #     "export_signals",
-        #     "Export Signals",
-        #     controller_settings,
-        #     checked=True,
-        #     tooltip="tooltip",
-        #     enabled=True,
-        # )
-
         getAuth()
         user_info = getUserInfo()
         apsSettings = INPUTS_ROOT.addTabCommandInput(
@@ -230,66 +101,37 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         )
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 
-        # clear all selections before instantiating handlers.
         gm.ui.activeSelections.clear()
-
-        # ====================================== EVENT HANDLERS ======================================
-        """
-        Instantiating all the event handlers
-        """
-
         onExecute = ConfigureCommandExecuteHandler()
         cmd.execute.add(onExecute)
-        gm.handlers.append(onExecute)  # 0
+        gm.handlers.append(onExecute)
 
         onInputChanged = ConfigureCommandInputChanged(cmd)
         cmd.inputChanged.add(onInputChanged)
-        gm.handlers.append(onInputChanged)  # 1
+        gm.handlers.append(onInputChanged)
 
-        onExecutePreview = CommandExecutePreviewHandler(cmd)
+        onExecutePreview = CommandExecutePreviewHandler()
         cmd.executePreview.add(onExecutePreview)
-        gm.handlers.append(onExecutePreview)  # 2
+        gm.handlers.append(onExecutePreview)
 
         onSelect = MySelectHandler(cmd)
         cmd.select.add(onSelect)
-        gm.handlers.append(onSelect)  # 3
+        gm.handlers.append(onSelect)
 
         onPreSelect = MyPreSelectHandler(cmd)
         cmd.preSelect.add(onPreSelect)
-        gm.handlers.append(onPreSelect)  # 4
+        gm.handlers.append(onPreSelect)
 
         onPreSelectEnd = MyPreselectEndHandler(cmd)
         cmd.preSelectEnd.add(onPreSelectEnd)
-        gm.handlers.append(onPreSelectEnd)  # 5
+        gm.handlers.append(onPreSelectEnd)
 
         onDestroy = MyCommandDestroyHandler()
         cmd.destroy.add(onDestroy)
-        gm.handlers.append(onDestroy)  # 8
+        gm.handlers.append(onDestroy)
 
 
 class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
-    """### Called when Ok is pressed confirming the export
-
-    Process Steps:
-
-        1. Check for process open in explorer
-
-        1.5. Open file dialog to allow file location save
-            - Not always optimal if sending over socket for parse
-
-        2. Check Socket bind
-
-        3. Check Socket recv
-            - if true send data about file location in temp path
-
-        4. Parse file and focus on unity window
-
-    """
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.current = SerialCommand()
-
     @logFailure(messageBox=True)
     def notify(self, args: adsk.core.CommandEventArgs) -> None:
         exporterOptions = ExporterOptions().readFromDesign()
@@ -305,14 +147,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             if not savepath:
                 # save was canceled
                 return
-
-            # Transition: AARD-1742
-            # With the addition of a 'release' build the fusion exporter will not have permissions within the sourced
-            # folder. Because of this we cannot use this kind of tmp path anymore. This code was already unused and
-            # should be removed.
-            # updatedPath = pathlib.Path(savepath).parent
-            # if updatedPath != self.current.filePath:
-            #     self.current.filePath = str(updatedPath)
         else:
             savepath = processedFileName
 
@@ -361,50 +195,16 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
 
 class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):
-    """### Gets an event that is fired when the command has completed gathering the required input and now needs to perform a preview.
-
-    Args:
-        adsk (CommandEventHandler): Command event handler that a client derives from to handle events triggered by a CommandEvent.
-    """
-
-    def __init__(self, cmd: adsk.core.Command) -> None:
-        super().__init__()
-        self.cmd = cmd
-
     @logFailure(messageBox=True)
     def notify(self, args: adsk.core.CommandEventArgs) -> None:
-        """Notify member called when a command event is triggered
-
-        Args:
-            args (CommandEventArgs): command event argument
-        """
         jointConfigTab.handlePreviewEvent(args)
         gamepieceConfigTab.handlePreviewEvent(args)
 
 
 class MySelectHandler(adsk.core.SelectionEventHandler):
-    """### Event fires when the user selects an entity.
-    ##### This is different from a preselection where an entity is shown as being available for selection as the mouse passes over the entity. This is the actual selection where the user has clicked the mouse on the entity.
-
-    Args: SelectionEventHandler
-    """
-
-    lastInputCmd = None
-
     def __init__(self, cmd: adsk.core.Command) -> None:
         super().__init__()
         self.cmd = cmd
-
-        # Transition: AARD-1765
-        # self.allWheelPreselections = []  # all child occurrences of selections
-        # self.allGamepiecePreselections = []  # all child gamepiece occurrences of selections
-
-        self.selectedOcc = None  # selected occurrence (if there is one)
-        self.selectedJoint = None  # selected joint (if there is one)
-
-        # Transition: AARD-1765
-        # self.wheelJointList = []
-        self.algorithmicSelection = True
 
     @logFailure(messageBox=True)
     def traverseAssembly(
@@ -543,11 +343,6 @@ class MyPreSelectHandler(adsk.core.SelectionEventHandler):
 
 
 class MyPreselectEndHandler(adsk.core.SelectionEventHandler):
-    """### Event fires when the mouse is moved away from an entity that was in a preselect state.
-
-    Args: SelectionEventArgs
-    """
-
     def __init__(self, cmd: adsk.core.Command) -> None:
         super().__init__()
         self.cmd = cmd
@@ -563,25 +358,12 @@ class MyPreselectEndHandler(adsk.core.SelectionEventHandler):
 
 
 class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
-    """### Gets an event that is fired whenever an input value is changed.
-        - Button pressed, selection made, switching tabs, etc...
-
-    Args: InputChangedEventHandler
-    """
-
     def __init__(self, cmd: adsk.core.Command) -> None:
         super().__init__()
         self.cmd = cmd
-        self.allWeights = [None, None]  # [lbs, kg]
-        self.isLbs = True
-        self.isLbs_f = True
 
     @logFailure
     def reset(self) -> None:
-        """### Process:
-        - Reset the mouse icon to default
-        - Clear active selections
-        """
         self.cmd.setCursor("", 0, 0)
         gm.ui.activeSelections.clear()
 
@@ -597,14 +379,8 @@ class ConfigureCommandInputChanged(adsk.core.InputChangedEventHandler):
 
 
 class MyCommandDestroyHandler(adsk.core.CommandEventHandler):
-    """### Gets the event that is fired when the command is destroyed. Globals lists are released and active selections are cleared (when exiting the panel).
-        - In other words, when the OK or Cancel button is pressed...
-
-    Args: CommandEventHandler
-    """
-
     @logFailure(messageBox=True)
-    def notify(self, args: adsk.core.CommandEventArgs) -> None:
+    def notify(self, _: adsk.core.CommandEventArgs) -> None:
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
 

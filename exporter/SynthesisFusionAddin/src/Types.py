@@ -5,6 +5,8 @@ from dataclasses import MISSING, dataclass, field, fields, is_dataclass
 from enum import Enum, EnumType
 from typing import Any, TypeAlias, get_args, get_origin
 
+import adsk.fusion
+
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
 
@@ -85,6 +87,7 @@ def toKg(pounds: LBS) -> KG:
 
 
 PRIMITIVES = (bool, str, int, float, type(None))
+SELECTABLE_JOINT_TYPES = (adsk.fusion.JointTypes.RevoluteJointType, adsk.fusion.JointTypes.SliderJointType)
 
 
 def encodeNestedObjects(obj: Any) -> Any:

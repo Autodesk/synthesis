@@ -9,7 +9,7 @@ from src.Util import makeDirectories
 
 
 @logFailure
-def captureThumbnail(size: int = 250) -> str | os.PathLike[str]:
+def captureThumbnail(size: int = 250) -> str:
     """
     ## Captures Thumbnail and saves it to a temporary path - needs to be cleared after or on startup
     - Size: int (Default: 200) : (width & height)
