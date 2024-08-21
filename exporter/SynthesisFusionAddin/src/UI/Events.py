@@ -14,15 +14,11 @@ from src.Logging import getLogger
 logger = getLogger()
 
 
-def updateDocument(*argv: Sequence[str]):
-    pass
+def updateDocument(*argv: Sequence[str]) -> None: ...
 
 
-def updateConnection(_) -> str:
+def updateConnection() -> str:
     """Updates the JS side connection with the Network Manager connected()
-
-    Args:
-        _ (Any): Any
 
     Returns:
         str: Json formatted connected: true | false
@@ -61,6 +57,8 @@ def openDocument(json_data: str) -> str:
     return ""
 
 
-def example(palette):
+def example(palette: adsk.core.Palette) -> None:
     app = adsk.core.Application.get()
-    app.userInterface(f"{Helper.getDocName()}")
+    # Transition: AARD-1765
+    # Many many things in this file can be removed, this is just the part that typing can not be added to
+    # app.userInterface(f"{Helper.getDocName()}")

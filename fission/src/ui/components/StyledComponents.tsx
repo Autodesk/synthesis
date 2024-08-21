@@ -66,7 +66,20 @@ export class SynthesisIcons {
     public static BugLarge = (<FaBug size={"1.25rem"} />)
     public static XmarkLarge = (<FaXmark size={"1.25rem"} />)
 
-    public static OpenHudIcon = (<FaAngleRight size={"3rem"} color={colorNameToVar("BackgroundSecondary")} />)
+    public static OpenHudIcon = (
+        <FaAngleRight
+            size={"5vh"}
+            style={{
+                alignSelf: "middle",
+                justifySelf: "center",
+                minHeight: "40px",
+                minWidth: "40px",
+                maxHeight: "50px",
+                maxWidth: "50px",
+            }}
+            color={colorNameToVar("BackgroundSecondary")}
+        />
+    )
 }
 
 export const SectionDivider = styled(Divider)({
@@ -131,6 +144,7 @@ export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick }) => {
             onClick={onClick}
             colorOverrideClass="bg-[#00000000] hover:brightness-90"
             sizeOverrideClass="p-[0.25rem]"
+            className="h-fit"
         />
     )
 }

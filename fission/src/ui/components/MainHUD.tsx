@@ -23,13 +23,13 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={onClick}
-            className={`relative flex flex-row 
-                cursor-pointer 
-                bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""} 
-                items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0 
-                transform 
-                transition-transform 
-                hover:scale-[1.015] 
+            className={`relative flex flex-row
+                cursor-pointer
+                bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
+                items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0
+                transform
+                transition-transform
+                hover:scale-[1.015]
                 active:scale-[1.03]`}
         >
             {larger && icon}
@@ -79,7 +79,10 @@ const MainHUD: React.FC = () => {
                 >
                     <Box
                         position="absolute"
+                        width={"5vw"}
                         minWidth={"50px"}
+                        maxWidth={"60px"}
+                        style={{ aspectRatio: " 1 / 1.5" }}
                         className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
                         sx={{
                             borderTopRightRadius: "100px",
@@ -88,8 +91,12 @@ const MainHUD: React.FC = () => {
                             borderBottomLeftRadius: "0",
                         }}
                     >
-                        <Box sx={{ transform: "translateY(2.5px) translateX(-3px)" }}>
-                            <ButtonIcon onClick={() => setIsOpen(!isOpen)} value={SynthesisIcons.OpenHudIcon} />
+                        <Box className="flex w-full h-full items-center justify-center">
+                            <ButtonIcon
+                                onClick={() => setIsOpen(!isOpen)}
+                                value={SynthesisIcons.OpenHudIcon}
+                                className=""
+                            />
                         </Box>
                     </Box>
                 </Box>

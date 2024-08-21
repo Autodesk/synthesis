@@ -9,7 +9,7 @@ import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/Sequen
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
-import { SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { SectionLabel, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 /** Grey label for a child behavior name */
 const ChildLabelStyled = styled(Label)({
@@ -129,6 +129,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                     colorOverrideClass={hasChild ? "bg-background hover:brightness-100" : undefined}
                 />
             </Box>
+            {Spacer(0, 5)}
         </Box>
     )
 }
