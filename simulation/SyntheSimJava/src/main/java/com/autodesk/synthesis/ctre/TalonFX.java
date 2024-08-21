@@ -22,7 +22,6 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
         this.m_motor = new CANMotor("SYN TalonFX", deviceNumber, 0.0, false, 0.3);
     }
 
-    /// I think we're getting percentOutput and torque mixed up
     /**
      * Sets the torque of the real and simulated motors
      *
