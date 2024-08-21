@@ -454,7 +454,7 @@ export class Graph {
     }
 
     public AddEdgeDirected(nodeA: string, nodeB: string) {
-        if (!this._adjacencyMap.has(nodeA) || !this._adjacencyMap?.has(nodeB)) throw new Error("Nodes aren't in graph")
+        if (!this._adjacencyMap.has(nodeA) || !this._adjacencyMap.has(nodeB)) throw new Error("Nodes aren't in graph")
 
         this._adjacencyMap.get(nodeA)!.push(nodeB)
     }
