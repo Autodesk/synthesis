@@ -78,7 +78,6 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
     /* 
      * Causes a simulation-supported leader to follow another simulation-supported leader
      * The real versions of these motors will also follow each other
-     *
      */
     @Override
     public REVLibError follow(CANSparkBase leader) {
