@@ -20,7 +20,7 @@ public class SparkAbsoluteEncoder implements AbsoluteEncoder {
 
     /*
      * Get the average sampling depth for an absolute encoder
-     * Returns: The average sampling depth
+     * @return The average sampling depth
      */
     public int getAverageDepth() {
         return this.realEncoder.getAverageDepth();
