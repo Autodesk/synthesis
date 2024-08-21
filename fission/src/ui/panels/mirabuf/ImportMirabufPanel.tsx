@@ -200,10 +200,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
+            if (type == MiraType.ROBOT) setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
         },
         [showTooltip, closePanel, panelId, openPanel]
     )
@@ -226,10 +223,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
+            if (type == MiraType.ROBOT) setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
         },
         [closePanel, panelId, openPanel]
     )
@@ -251,10 +245,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
+            if (type == MiraType.ROBOT) setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
         },
         [closePanel, panelId, openPanel]
     )
