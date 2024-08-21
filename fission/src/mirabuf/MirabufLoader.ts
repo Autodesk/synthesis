@@ -53,7 +53,21 @@ export const canOPFS = await (async () => {
         }
     } catch (e) {
         console.log(`No access to OPFS`)
-        MirabufCachingService.RemoveAll()
+
+        // Copy-pasted from RemoveAll()
+        for await (const key of robotFolderHandle.keys()) {
+            robotFolderHandle.removeEntry(key)
+        }
+        for await (const key of fieldFolderHandle.keys()) {
+            fieldFolderHandle.removeEntry(key)
+        }
+
+        window.localStorage.setItem(robotsDirName, "{}")
+        window.localStorage.setItem(fieldsDirName, "{}")
+
+        backUpRobots = {}
+        backUpFields = {}
+
         return false
     }
 })()
