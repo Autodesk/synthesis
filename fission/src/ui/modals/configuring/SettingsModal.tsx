@@ -66,7 +66,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 saveSettings()
             }}
         >
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh]">
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
                 <Label size={LabelSize.Medium}>Screen Settings</Label>
                 <Dropdown
                     label="Quality Settings"
