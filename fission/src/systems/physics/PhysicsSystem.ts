@@ -1163,18 +1163,17 @@ function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
     })
 
     // Enable Collisions between other robots
-    RobotLayers.forEach(layerOne => {
-        RobotLayers.forEach(layerTwo => {
-            objectFilter.EnableCollision(layerOne, layerTwo)
-        })
-    })
+
+    for (let i = 0; i < RobotLayers.length - 1; i++) {
+        for (let j = i + 1; j < RobotLayers.length; j++) {
+            objectFilter.EnableCollision(RobotLayers[i], RobotLayers[j])
+        }
+    }
 
     const BP_LAYER_FIELD = new JOLT.BroadPhaseLayer(LAYER_FIELD)
     const BP_LAYER_GENERAL_DYNAMIC = new JOLT.BroadPhaseLayer(LAYER_GENERAL_DYNAMIC)
 
-    const bpRobotLayers = new Array<Jolt.BroadPhaseLayer>(RobotLayers.length).map(
-        (_, idx) => new JOLT.BroadPhaseLayer(idx)
-    )
+    const bpRobotLayers = RobotLayers.map(layer => new JOLT.BroadPhaseLayer(layer))
 
     const COUNT_BROAD_PHASE_LAYERS = 2 + RobotLayers.length
 
