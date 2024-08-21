@@ -1,8 +1,6 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import React, { useMemo, useState } from "react"
-import ConfigureGamepiecePickupInterface from "./ConfigureGamepiecePickupInterface"
-import ConfigureShotTrajectoryInterface from "./ConfigureShotTrajectoryInterface"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
 import World from "@/systems/World"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
@@ -16,25 +14,12 @@ import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/Sequen
 import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 
-enum SubsystemOption {
-    NONE,
-    INTAKE,
-    EJECTOR,
-}
-
 class ConfigModeSelectionOption extends SelectMenuOption {
-    configMode: SubsystemOption
-    driver?: Driver
+    driver: Driver
     sequential?: SequentialBehaviorPreferences
 
-    constructor(
-        name: string,
-        configMode: SubsystemOption,
-        driver?: Driver,
-        sequential?: SequentialBehaviorPreferences
-    ) {
+    constructor(name: string, driver: Driver, sequential?: SequentialBehaviorPreferences) {
         super(name)
-        this.configMode = configMode
         this.driver = driver
         this.sequential = sequential
     }
@@ -51,23 +36,14 @@ interface ConfigInterfaceProps {
 }
 
 const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configModeOption, selectedRobot, saveBehaviors }) => {
-    switch (configModeOption.configMode) {
-        case SubsystemOption.INTAKE:
-            return <ConfigureGamepiecePickupInterface selectedRobot={selectedRobot} />
-        case SubsystemOption.EJECTOR:
-            return <ConfigureShotTrajectoryInterface selectedRobot={selectedRobot} />
-        case SubsystemOption.NONE:
-            return (
-                <SubsystemRowInterface
-                    driver={configModeOption.driver!}
-                    robot={selectedRobot}
-                    sequentialBehavior={configModeOption.sequential}
-                    saveBehaviors={saveBehaviors}
-                />
-            )
-        default:
-            throw new Error(`Config mode ${configModeOption.configMode} has no associated interface`)
-    }
+    return (
+        <SubsystemRowInterface
+            driver={configModeOption.driver!}
+            robot={selectedRobot}
+            sequentialBehavior={configModeOption.sequential}
+            saveBehaviors={saveBehaviors}
+        />
+    )
 }
 
 const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selectedRobot }) => {
@@ -87,48 +63,22 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
     }, [selectedRobot])
 
     const getSubsystemOptions = () => {
-        const options = [
-            new ConfigModeSelectionOption("Intake", SubsystemOption.INTAKE),
-            new ConfigModeSelectionOption("Ejector", SubsystemOption.EJECTOR),
-        ]
-
-        if (drivers == undefined) return options
-
-        options.push(
-            new ConfigModeSelectionOption(
-                "Drivetrain",
-                SubsystemOption.NONE,
-                drivers.filter(x => x instanceof WheelDriver)[0]
-            )
-        )
+        if (drivers == undefined) return []
+        const options = [new ConfigModeSelectionOption("Drivetrain", drivers.filter(x => x instanceof WheelDriver)[0])]
 
         let jointIndex = 0
 
         drivers
             .filter(x => x instanceof HingeDriver)
             .forEach(d => {
-                options.push(
-                    new ConfigModeSelectionOption(
-                        d.info?.name ?? "UnnamedMotor",
-                        SubsystemOption.NONE,
-                        d,
-                        behaviors[jointIndex]
-                    )
-                )
+                options.push(new ConfigModeSelectionOption(d.info?.name ?? "UnnamedMotor", d, behaviors[jointIndex]))
                 jointIndex++
             })
 
         drivers
             .filter(x => x instanceof SliderDriver)
             .forEach(d => {
-                options.push(
-                    new ConfigModeSelectionOption(
-                        d.info?.name ?? "UnnamedMotor",
-                        SubsystemOption.NONE,
-                        d,
-                        behaviors[jointIndex]
-                    )
-                )
+                options.push(new ConfigModeSelectionOption(d.info?.name ?? "UnnamedMotor", d, behaviors[jointIndex]))
                 jointIndex++
             })
 

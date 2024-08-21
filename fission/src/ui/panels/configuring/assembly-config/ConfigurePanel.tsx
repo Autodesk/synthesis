@@ -17,9 +17,13 @@ import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterfa
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
 import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
+import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 
 enum ConfigMode {
     SUBSYSTEMS,
+    EJECTOR,
+    INTAKE,
     CONTROLS,
     SEQUENTIAL,
     SCORING_ZONES,
@@ -122,13 +126,19 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 }
 
 const robotModes = [
-    new ConfigModeSelectionOption("Subsystems", ConfigMode.SUBSYSTEMS),
-    new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
+    new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
+    new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
+    new ConfigModeSelectionOption(
+        "Configure Joints",
+        ConfigMode.SUBSYSTEMS,
+        "Set the velocities, torques, and accelerations of your robot's motors."
+    ),
     new ConfigModeSelectionOption(
         "Sequence Joints",
         ConfigMode.SEQUENTIAL,
-        "Configure which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+        "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
     ),
+    new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
 
@@ -159,6 +169,10 @@ interface ConfigInterfaceProps {
 /** The interface for the actual configuration */
 const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly, openPanel }) => {
     switch (configMode) {
+        case ConfigMode.INTAKE:
+            return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
+        case ConfigMode.EJECTOR:
+            return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
         case ConfigMode.SUBSYSTEMS:
             return <ConfigureSubsystemsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS: {
