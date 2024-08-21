@@ -5,6 +5,7 @@ import Label, { LabelSize } from "./Label"
 import {
     AddButtonInteractiveColor,
     ButtonIcon,
+    CustomTooltip,
     DeleteButton,
     SectionDivider,
     SectionLabel,
@@ -44,8 +45,10 @@ const CustomButton = styled(MUIButton)({
 /** Extend this to make a type that contains custom data */
 export class SelectMenuOption {
     name: string
-    constructor(name: string) {
+    tooltipText?: string
+    constructor(name: string, tooltipText?: string) {
         this.name = name
+        this.tooltipText = tooltipText
     }
 }
 
@@ -83,6 +86,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 {/* Indentation before the name */}
                 <Box width="8px" />
                 {/* Label for joint index and type (grey if child) */}
+
                 <SectionLabel
                     key={value.name + index}
                     size={LabelSize.Small}
@@ -102,6 +106,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 sx={{ borderColor: "#888888" }}
                 id={`select-button-${value.name}`}
             />
+            {value.tooltipText && CustomTooltip(value.tooltipText)}
             {/** Delete button only if onDelete is defined */}
             {onDelete && includeDelete && (
                 <>
