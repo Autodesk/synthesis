@@ -20,14 +20,10 @@ class IntakeSensorSceneObject extends SceneObject {
     private _deltaTransformation?: THREE.Matrix4
 
     private _joltBodyId?: Jolt.BodyID
-    private _mesh?: THREE.Mesh
     private _collision?: (e: OnContactPersistedEvent) => void
 
     public constructor(parentAssembly: MirabufSceneObject) {
         super()
-
-        console.debug("Trying to create intake sensor...")
-
         this._parentAssembly = parentAssembly
     }
 
@@ -47,12 +43,6 @@ class IntakeSensorSceneObject extends SceneObject {
                 return
             }
 
-            this._mesh = World.SceneRenderer.CreateSphere(
-                this._parentAssembly.intakePreferences.zoneDiameter / 2.0,
-                World.SceneRenderer.CreateToonMaterial(0x5eeb67)
-            )
-            World.SceneRenderer.scene.add(this._mesh)
-
             this._collision = (event: OnContactPersistedEvent) => {
                 const brain = this._parentAssembly.brain
                 const brainIndex = brain instanceof SynthesisBrain ? brain.brainIndex ?? -1 : -1
@@ -71,8 +61,6 @@ class IntakeSensorSceneObject extends SceneObject {
             }
 
             OnContactPersistedEvent.AddListener(this._collision)
-
-            console.debug("Intake sensor created successfully!")
         }
     }
 
@@ -88,25 +76,12 @@ class IntakeSensorSceneObject extends SceneObject {
 
             World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(position))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
-
-            if (this._mesh) {
-                this._mesh.position.setFromMatrixPosition(bodyTransform)
-                this._mesh.rotation.setFromRotationMatrix(bodyTransform)
-            }
         }
     }
 
     public Dispose(): void {
-        console.debug("Destroying intake sensor")
-
         if (this._joltBodyId) {
             World.PhysicsSystem.DestroyBodyIds(this._joltBodyId)
-
-            if (this._mesh) {
-                this._mesh.geometry.dispose()
-                ;(this._mesh.material as THREE.Material).dispose()
-                World.SceneRenderer.scene.remove(this._mesh)
-            }
         }
 
         if (this._collision) OnContactPersistedEvent.RemoveListener(this._collision)

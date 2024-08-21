@@ -159,9 +159,21 @@ class InputSystem extends WorldSystem {
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this)
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
 
+        // Detect when the user leaves the page to clear inputs
         document.addEventListener("visibilitychange", () => {
             if (document.hidden) this.clearKeyData()
         })
+
+        // Disable gesture inputs on track pad to zoom into UI
+        window.addEventListener(
+            "wheel",
+            function (e) {
+                if (e.ctrlKey) {
+                    e.preventDefault() // Prevent the zoom
+                }
+            },
+            { passive: false }
+        )
     }
 
     public Update(_: number): void {

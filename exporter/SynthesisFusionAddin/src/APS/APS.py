@@ -1,3 +1,4 @@
+import http.client
 import json
 import os
 import pathlib
@@ -52,21 +53,21 @@ def getAPSAuth() -> APSAuth | None:
     return APS_AUTH
 
 
-def _res_json(res):
-    return json.loads(res.read().decode(res.info().get_param("charset") or "utf-8"))
+def _res_json(res: http.client.HTTPResponse) -> dict[str, Any]:
+    return dict(json.loads(res.read().decode(str(res.info().get_param("charset")) or "utf-8")))
 
 
 def getCodeChallenge() -> str | None:
     endpoint = "https://synthesis.autodesk.com/api/aps/challenge/"
-    res = urllib.request.urlopen(endpoint)
+    res: http.client.HTTPResponse = urllib.request.urlopen(endpoint)
     data = _res_json(res)
-    return data["challenge"]
+    return str(data["challenge"])
 
 
 def getAuth() -> APSAuth | None:
     global APS_AUTH
     if APS_AUTH is not None:
-        return APS_AUTH
+        return APS_AUTH  # type: ignore[unreachable]
 
     currTime = time.time()
     if os.path.exists(auth_path):
@@ -86,7 +87,7 @@ def getAuth() -> APSAuth | None:
     return APS_AUTH
 
 
-def convertAuthToken(code: str):
+def convertAuthToken(code: str) -> None:
     global APS_AUTH
     authUrl = f'https://synthesis.autodesk.com/api/aps/code/?code={code}&redirect_uri={urllib.parse.quote_plus("https://synthesis.autodesk.com/api/aps/exporter/")}'
     res = urllib.request.urlopen(authUrl)
@@ -106,14 +107,14 @@ def convertAuthToken(code: str):
     _ = loadUserInfo()
 
 
-def removeAuth():
+def removeAuth() -> None:
     global APS_AUTH, APS_USER_INFO
     APS_AUTH = None
     APS_USER_INFO = None
     pathlib.Path.unlink(pathlib.Path(auth_path))
 
 
-def refreshAuthToken():
+def refreshAuthToken() -> None:
     global APS_AUTH
     if APS_AUTH is None or APS_AUTH.refresh_token is None:
         raise Exception("No refresh token found.")
@@ -178,6 +179,8 @@ def loadUserInfo() -> APSUserInfo | None:
         removeAuth()
         logger.error(f"User Info Error:\n{e.code} - {e.reason}")
         gm.ui.messageBox("Please sign in again.")
+    finally:
+        return None
 
 
 def getUserInfo() -> APSUserInfo | None:
@@ -259,20 +262,30 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
     global APS_AUTH
     if APS_AUTH is None:
         gm.ui.messageBox("You must login to upload designs to APS", "USER ERROR")
+        return None
+
     auth = APS_AUTH.access_token
     # Get token from APS API later
 
     new_folder_id = get_item_id(auth, project_id, folder_id, "MirabufDir", "folders")
     if new_folder_id is None:
-        folder_id = create_folder(auth, project_id, folder_id, "MirabufDir")
+        created_folder_id = create_folder(auth, project_id, folder_id, "MirabufDir")
     else:
-        folder_id = new_folder_id
-    (lineage_id, file_id, file_version) = get_file_id(auth, project_id, folder_id, file_name)
+        created_folder_id = new_folder_id
+
+    if created_folder_id is None:
+        return None
+
+    file_id_data = get_file_id(auth, project_id, created_folder_id, file_name)
+    if file_id_data is None:
+        return None
+
+    (lineage_id, file_id, file_version) = file_id_data
 
     """
     Create APS Storage Location
     """
-    object_id = create_storage_location(auth, project_id, folder_id, file_name)
+    object_id = create_storage_location(auth, project_id, created_folder_id, file_name)
     if object_id is None:
         gm.ui.messageBox("UPLOAD ERROR", "Object id is none; check create storage location")
         return None
@@ -297,10 +310,10 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
         return None
     if file_id != "":
         update_file_version(
-            auth, project_id, folder_id, lineage_id, file_id, file_name, file_contents, file_version, object_id
+            auth, project_id, created_folder_id, lineage_id, file_id, file_name, file_contents, file_version, object_id
         )
     else:
-        _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(folder_id), file_name)
+        _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(created_folder_id), file_name)
     return ""
 
 
@@ -376,7 +389,7 @@ def get_item_id(auth: str, project_id: str, parent_folder_id: str, folder_name: 
         return ""
     for item in data:
         if item["type"] == item_type and item["attributes"]["name"] == folder_name:
-            return item["id"]
+            return str(item["id"])
     return None
 
 
@@ -500,7 +513,7 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> t
     elif not file_res.ok:
         gm.ui.messageBox(f"UPLOAD ERROR: {file_res.text}", "Failed to get file")
         return None
-    file_json: list[dict[str, Any]] = file_res.json()
+    file_json: dict[str, Any] = file_res.json()
     if len(file_json["data"]) == 0:
         return ("", "", "")
     id: str = str(file_json["data"][0]["id"])

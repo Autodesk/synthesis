@@ -6,7 +6,7 @@ from src.Logging import logFailure
 
 
 @logFailure
-def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels) -> None:
+def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels: list[adsk.fusion.Occurrence]) -> None:
     design = gm.app.activeDocument.design
 
     boundingBox = wheel.boundingBox  # occurrence bounding box
