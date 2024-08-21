@@ -316,7 +316,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         design = gm.app.activeDocument.design
 
         name_split: list[str] = design.rootComponent.name.split(" ")
-        # gm.ui.messageBox("Name Split: " + name_split[0] " " + name_split[1], "Synthesis: Info")
         if len(name_split) < 2:
             gm.ui.messageBox("Please open the robot design you would like to export", "Synthesis: Error")
             return
