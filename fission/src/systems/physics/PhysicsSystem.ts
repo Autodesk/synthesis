@@ -343,15 +343,6 @@ class PhysicsSystem extends WorldSystem {
             const bodyA = this.GetBody(bodyIdA)
             const bodyB = this.GetBody(bodyIdB)
 
-            const addConstraint = (c: Jolt.Constraint): void => {
-                mechanism.AddConstraint({
-                    parentBody: bodyIdA!,
-                    childBody: bodyIdB!,
-                    constraint: c,
-                    maxVelocity: maxVel ?? VELOCITY_DEFAULT,
-                    info: jInst.info ?? undefined, // remove possibility for null
-                })
-            }
             // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
             const prefMotors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
             const prefMotor = prefMotors ? prefMotors.filter(x => x.name == jInst.info?.name) : undefined
@@ -369,15 +360,26 @@ class PhysicsSystem extends WorldSystem {
 
             let listener: Jolt.PhysicsStepListener | null = null
 
+            const addConstraint = (c: Jolt.Constraint): void => {
+                mechanism.AddConstraint({
+                    parentBody: bodyIdA!,
+                    childBody: bodyIdB!,
+                    constraint: c,
+                    maxVelocity: maxVel ?? VELOCITY_DEFAULT,
+                    info: jInst.info ?? undefined,
+                })
+            }
+
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
                         const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
-                        maxVel = preferences.driveVelocity > 0 ? preferences.driveVelocity : maxVel
-                        maxForce = preferences.driveAcceleration > 0 ? preferences.driveAcceleration : maxForce
+                        maxVel = preferences.driveVelocity ?? maxVel
+                        maxForce = preferences.driveAcceleration ?? maxForce
 
-                        const [bodyOne, bodyTwo] =
-                            parser.directedGraph.GetAdjacencyList(rnA.id).length > 0 ? [bodyA, bodyB] : [bodyB, bodyA]
+                        const [bodyOne, bodyTwo] = parser.directedGraph.GetAdjacencyList(rnA.id).length
+                            ? [bodyA, bodyB]
+                            : [bodyB, bodyA]
 
                         const res = this.CreateWheelConstraint(
                             jInst,
@@ -864,7 +866,7 @@ class PhysicsSystem extends WorldSystem {
             .GetNarrowPhaseQuery()
             .CastRay(ray, raySettings, collector, bp_filter, object_filter, body_filter, shape_filter)
 
-        if (collector.HadHit()) return undefined
+        if (!collector.HadHit()) return undefined
 
         const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
         return { data: collector.mHit, point: hitPoint, ray: ray }
