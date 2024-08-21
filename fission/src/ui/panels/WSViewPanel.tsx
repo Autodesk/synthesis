@@ -27,16 +27,19 @@ const TypoStyled = styled(Typography)({
 })
 
 function generateTableBody() {
+    const names: SimType[] = ["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro", "Accel"]
+
     return (
         <TableBody>
-            {simMap.has("PWM") ? (
-                [...simMap.get("PWM")!.entries()]
-                    .filter(x => x[1]["<init"] == true)
-                    .map(x => {
-                        return (
+            {names.map(name => 
+                simMap.has(name) ? (
+                    [...simMap.get(name)!.entries()]
+                        // most devices don't have <init field but we want to hide the ones that do
+                        .filter(x => !Object.keys(x[1]).includes("<init") || x[1]["<init"] == true)
+                        .map(x => (
                             <TableRow key={x[0]}>
                                 <TableCell>
-                                    <TypoStyled>PWM</TypoStyled>
+                                    <TypoStyled>{name}</TypoStyled>
                                 </TableCell>
                                 <TableCell>
                                     <TypoStyled>{x[0]}</TypoStyled>
@@ -45,86 +48,10 @@ function generateTableBody() {
                                     <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
                                 </TableCell>
                             </TableRow>
-                        )
-                    })
-            ) : (
-                <></>
-            )}
-            {simMap.has("SimDevice") ? (
-                [...simMap.get("SimDevice")!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>SimDevice</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
-            )}
-            {simMap.has("CANMotor") ? (
-                [...simMap.get("CANMotor")!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>CAN Motor</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
-            )}
-            {simMap.has("CANEncoder") ? (
-                [...simMap.get("CANEncoder")!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>CAN Encoder</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
-            )}
-            {simMap.has("Gyro") ? (
-                [...simMap.get("Gyro")!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>Gyro</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
+                        ))
+                ) : (
+                    <></>
+                )
             )}
         </TableBody>
     )

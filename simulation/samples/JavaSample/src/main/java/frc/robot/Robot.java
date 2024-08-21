@@ -4,13 +4,17 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.hardware.Pigeon2;
 import com.ctre.phoenix6.hardware.TalonFX;
+import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkBase.IdleMode;
 // import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
+import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -40,6 +44,11 @@ public class Robot extends TimedRobot {
   private TalonFX m_Talon = new TalonFX(2);
   private XboxController m_Controller = new XboxController(0);
   private Gyro m_Gyro = new Gyro("Test Gyro", 1);
+  private AHRS m_NavX = new AHRS();
+  // Creates an ADXL362 accelerometer object on the MXP SPI port
+  // with a measurement range from -8 to 8 G's
+  private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
+  private Pigeon2 m_Pigeon2 = new Pigeon2(0);
 
   /**
    * This function is run when the robot is first started up and should be used for any

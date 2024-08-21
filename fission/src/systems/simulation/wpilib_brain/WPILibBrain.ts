@@ -7,7 +7,7 @@ import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
 import { SimOutputGroup } from "./SimOutput"
-import { SimGyroInput, SimInput } from "./SimInput"
+import { SimAccelInput, SimGyroInput, SimInput } from "./SimInput"
 
 const worker = new WPILibWSWorker()
 
@@ -17,7 +17,7 @@ const CANMOTOR_DUTY_CYCLE = "<dutyCycle"
 const CANMOTOR_SUPPLY_VOLTAGE = ">supplyVoltage"
 const CANENCODER_RAW_INPUT_POSITION = ">rawPositionInput"
 
-export type SimType = "PWM" | "CANMotor" | "Solenoid" | "SimDevice" | "CANEncoder" | "Gyro"
+export type SimType = "PWM" | "CANMotor" | "Solenoid" | "SimDevice" | "CANEncoder" | "Gyro" | "Accel"
 
 enum FieldType {
     Read = 0,
@@ -44,7 +44,7 @@ function GetFieldType(field: string): FieldType {
 export const simMap = new Map<SimType, Map<string, any>>()
 
 export class SimGeneric {
-    private constructor() {}
+    private constructor() { }
 
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
         const fieldType = GetFieldType(field)
@@ -106,7 +106,7 @@ export class SimGeneric {
 }
 
 export class SimPWM {
-    private constructor() {}
+    private constructor() { }
 
     public static GetSpeed(device: string): number | undefined {
         return SimGeneric.Get("PWM", device, PWM_SPEED, 0.0)
@@ -118,7 +118,7 @@ export class SimPWM {
 }
 
 export class SimCAN {
-    private constructor() {}
+    private constructor() { }
 
     public static GetDeviceWithID(id: number, type: SimType): any {
         const id_exp = /.*\[(\d+)\]/g
@@ -138,7 +138,7 @@ export class SimCAN {
 }
 
 export class SimCANMotor {
-    private constructor() {}
+    private constructor() { }
 
     public static GetDutyCycle(device: string): number | undefined {
         return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
@@ -150,7 +150,7 @@ export class SimCANMotor {
 }
 
 export class SimCANEncoder {
-    private constructor() {}
+    private constructor() { }
 
     public static SetRawInputPosition(device: string, rawInputPosition: number): boolean {
         return SimGeneric.Set("CANEncoder", device, CANENCODER_RAW_INPUT_POSITION, rawInputPosition)
@@ -158,7 +158,7 @@ export class SimCANEncoder {
 }
 
 export class SimGyro {
-    private constructor() {}
+    private constructor() { }
 
     public static SetAngleX(device: string, angle: number): boolean {
         return SimGeneric.Set("Gyro", device, ">angle_x", angle)
@@ -182,6 +182,22 @@ export class SimGyro {
 
     public static SetRateZ(device: string, rate: number): boolean {
         return SimGeneric.Set("Gyro", device, ">rate_z", rate)
+    }
+}
+
+export class SimAccel {
+    private constructor() { }
+
+    public static SetX(device: string, accel: number): boolean {
+        return SimGeneric.Set("Accel", device, ">x", accel)
+    }
+
+    public static SetY(device: string, accel: number): boolean {
+        return SimGeneric.Set("Accel", device, ">y", accel)
+    }
+
+    public static SetZ(device: string, accel: number): boolean {
+        return SimGeneric.Set("Accel", device, ">z", accel)
     }
 }
 
@@ -224,6 +240,9 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         case "Gyro":
             UpdateSimMap("Gyro", device, updateData)
             break
+        case "Accel":
+            UpdateSimMap("Accel", device, updateData)
+            break
         default:
             break
     }
@@ -262,7 +281,8 @@ class WPILibBrain extends Brain {
             return
         }
 
-        this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
+        // this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
+        this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
     }
 
     public addSimOutputGroup(device: SimOutputGroup) {
