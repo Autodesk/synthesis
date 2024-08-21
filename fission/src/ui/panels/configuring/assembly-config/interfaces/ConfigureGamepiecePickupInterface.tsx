@@ -131,7 +131,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             1.5
         )
 
-        ;(gizmo.obj.material as THREE.Material).depthTest = false
+        ;((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
 
         const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences.deltaTransformation)
 

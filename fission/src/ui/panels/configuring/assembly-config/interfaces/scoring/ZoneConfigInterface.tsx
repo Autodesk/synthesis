@@ -176,7 +176,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             1.5
         )
 
-        ;(gizmo.obj.material as THREE.Material).depthTest = false
+        ;((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
 
         const deltaTransformation = Array_ThreeMatrix4(zone.deltaTransformation)
 
@@ -231,9 +231,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
                 onClick={() => {
                     setAlliance(alliance == "blue" ? "red" : "blue")
-                    if (transformGizmo) {
-                        transformGizmo.obj.material = alliance == "blue" ? redMaterial : blueMaterial
-                    }
+                    if (transformGizmo)
+                        (transformGizmo.obj as THREE.Mesh).material = alliance == "blue" ? redMaterial : blueMaterial
                 }}
                 colorOverrideClass={`bg-match-${alliance}-alliance`}
             />
