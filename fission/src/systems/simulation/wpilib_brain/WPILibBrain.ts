@@ -171,6 +171,18 @@ export class SimGyro {
     public static SetAngleZ(device: string, angle: number): boolean {
         return SimGeneric.Set("Gyro", device, ">angle_z", angle)
     }
+
+    public static SetRateX(device: string, rate: number): boolean {
+        return SimGeneric.Set("Gyro", device, ">rate_x", rate)
+    }
+
+    public static SetRateY(device: string, rate: number): boolean {
+        return SimGeneric.Set("Gyro", device, ">rate_y", rate)
+    }
+
+    public static SetRateZ(device: string, rate: number): boolean {
+        return SimGeneric.Set("Gyro", device, ">rate_z", rate)
+    }
 }
 
 worker.addEventListener("message", (eventData: MessageEvent) => {

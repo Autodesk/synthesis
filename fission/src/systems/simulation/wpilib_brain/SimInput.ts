@@ -59,6 +59,20 @@ export class SimGyroInput implements SimInput {
         return this.GetAxis(SimGyroInput.AXIS_Z)
     }
 
+    private GetAxisVelocity(axis: "x" | "y" | "z"): number {
+        const axes = this._joltBody?.GetAngularVelocity()
+        if (!axes) return 0
+
+        switch (axis) {
+            case "x":
+                return axes.GetX()
+            case "y":
+                return axes.GetY()
+            case "z":
+                return axes.GetZ()
+        }
+    }
+
     public Update(_deltaT: number) {
         const x = this.GetX()
         const y = this.GetY()
@@ -67,5 +81,8 @@ export class SimGyroInput implements SimInput {
         SimGyro.SetAngleX(this._device, x)
         SimGyro.SetAngleY(this._device, y)
         SimGyro.SetAngleZ(this._device, z)
+        SimGyro.SetRateX(this._device, this.GetAxisVelocity("x"))
+        SimGyro.SetRateY(this._device, this.GetAxisVelocity("y"))
+        SimGyro.SetRateZ(this._device, this.GetAxisVelocity("z"))
     }
 }
