@@ -4,7 +4,7 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -176,6 +176,38 @@ class MirabufSceneObject extends SceneObject {
             this.Eject()
         }
 
+        /* Translates gizmo translations to the mirabuf assembly */
+        if (this._gizmo) {
+            this.DisablePhysics()
+            if (this._gizmo.isDragging) {
+                this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+                    World.PhysicsSystem.SetBodyPosition(
+                        this._mechanism.GetBodyByNodeId(rn.id)!,
+                        ThreeMatrix4_JoltMat44(this._gizmo!.obj.matrix).GetTranslation()
+                    )
+                    World.PhysicsSystem.SetBodyRotation(
+                        this._mechanism.GetBodyByNodeId(rn.id)!,
+                        ThreeQuaternion_JoltQuat(this._gizmo!.obj.quaternion)
+                    )
+
+                    rn.parts.forEach(part => {
+                        const partTransform = this._mirabufInstance.parser.globalTransforms
+                            .get(part)!
+                            .clone()
+                            .premultiply(this._gizmo!.obj.matrix)
+
+                        const meshes = this._mirabufInstance.meshes.get(part) ?? []
+                        meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
+                    })
+                })
+            }
+
+            this.UpdateBatches()
+            this.UpdateNameTag()
+            return
+        }
+
+        /** Updating the position of all mirabuf nodes */
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
@@ -210,22 +242,8 @@ class MirabufSceneObject extends SceneObject {
             }
         })
 
-        this._mirabufInstance.batches.forEach(x => {
-            x.computeBoundingBox()
-            x.computeBoundingSphere()
-        })
-
-        /* Updating the position of the name tag according to the robots position on screen */
-        if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
-            const boundingBox = this.ComputeBoundingBox()
-            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
-                new THREE.Vector3(
-                    (boundingBox.max.x + boundingBox.min.x) / 2,
-                    boundingBox.max.y + 0.1,
-                    (boundingBox.max.z + boundingBox.min.z) / 2
-                )
-            )
-        }
+        this.UpdateBatches()
+        this.UpdateNameTag()
     }
 
     public Dispose(): void {
@@ -308,6 +326,28 @@ class MirabufSceneObject extends SceneObject {
         mesh.castShadow = true
 
         return mesh
+    }
+
+    /** Updates the batch computations */
+    private UpdateBatches() {
+        this._mirabufInstance.batches.forEach(x => {
+            x.computeBoundingBox()
+            x.computeBoundingSphere()
+        })
+    }
+
+    /** Updates the position of the nametag relative to the robots position */
+    private UpdateNameTag() {
+        if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
+            const boundingBox = this.ComputeBoundingBox()
+            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
+                new THREE.Vector3(
+                    (boundingBox.max.x + boundingBox.min.x) / 2,
+                    boundingBox.max.y + 0.1,
+                    (boundingBox.max.z + boundingBox.min.z) / 2
+                )
+            )
+        }
     }
 
     public UpdateIntakeSensor() {

@@ -65,7 +65,7 @@ function save(
 
     const translation = new THREE.Vector3(0, 0, 0)
     const rotation = new THREE.Quaternion(0, 0, 0, 1)
-    gizmo.mesh.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
+    gizmo.obj.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(1, 1, 1))
     const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
@@ -112,7 +112,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             return
         }
 
-        transformGizmo.mesh.scale.set(zoneSize, zoneSize, zoneSize)
+        transformGizmo.obj.scale.set(zoneSize, zoneSize, zoneSize)
     }, [zoneSize, transformGizmo])
 
     // Not sure I like this, but made it a state and effect rather than a memo to add the cleanup to the end
@@ -131,7 +131,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             1.5
         )
 
-        ;(gizmo.mesh.material as THREE.Material).depthTest = false
+        ;(gizmo.obj.material as THREE.Material).depthTest = false
 
         const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences.deltaTransformation)
 
@@ -147,8 +147,8 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
         const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
-        gizmo.mesh.position.setFromMatrixPosition(gizmoTransformation)
-        gizmo.mesh.rotation.setFromRotationMatrix(gizmoTransformation)
+        gizmo.obj.position.setFromMatrixPosition(gizmoTransformation)
+        gizmo.obj.rotation.setFromRotationMatrix(gizmoTransformation)
 
         setTransformGizmo(gizmo)
 
@@ -221,8 +221,8 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                         const robotTransformation = JoltMat44_ThreeMatrix4(
                             World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
                         )
-                        transformGizmo.mesh.position.setFromMatrixPosition(robotTransformation)
-                        transformGizmo.mesh.rotation.setFromRotationMatrix(robotTransformation)
+                        transformGizmo.obj.position.setFromMatrixPosition(robotTransformation)
+                        transformGizmo.obj.rotation.setFromRotationMatrix(robotTransformation)
                     }
                     setZoneSize(0.5)
                     setSelectedNode(selectedRobot?.rootNodeId)

@@ -3,14 +3,13 @@ import { TransformControls } from "three/examples/jsm/controls/TransformControls
 import InputSystem from "../input/InputSystem"
 import World from "../World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { PerspectiveCamera } from "three"
-import { ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeConversions"
+import { Object3D, PerspectiveCamera } from "three"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
 
 class GizmoSceneObject extends SceneObject {
     private _gizmo: TransformControls
-    private _mesh: THREE.Mesh
+    private _obj: Object3D
     private _parentObject: MirabufSceneObject | undefined
 
     private _mainCamera: PerspectiveCamera
@@ -21,14 +20,18 @@ class GizmoSceneObject extends SceneObject {
         return this._gizmo
     }
 
-    public get mesh() {
-        return this._mesh
+    public get obj() {
+        return this._obj
+    }
+
+    public get isDragging() {
+        return this._gizmo.dragging
     }
 
     public constructor(mesh: THREE.Mesh, mode: GizmoMode, size: number, parentObject?: MirabufSceneObject) {
         super()
 
-        this._mesh = mesh
+        this._obj = mesh
         this._parentObject = parentObject
         this._mainCamera = World.SceneRenderer.mainCamera
 
@@ -42,12 +45,12 @@ class GizmoSceneObject extends SceneObject {
 
     public Setup(): void {
         // adding the mesh and gizmo to the scene
-        World.SceneRenderer.AddObject(this._mesh)
+        World.SceneRenderer.AddObject(this._obj)
         World.SceneRenderer.AddObject(this._gizmo)
 
         // forcing the gizmo to rotate and transform with the object
         this._gizmo.setSpace("local")
-        this._gizmo.attach(this._mesh)
+        this._gizmo.attach(this._obj)
 
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
             // disable orbit controls when dragging the transform gizmo
@@ -94,9 +97,8 @@ class GizmoSceneObject extends SceneObject {
                     })
             }
         })
-
-        if (this._parentObject !== undefined) this._parentObject.DisablePhysics()
     }
+
     public Update(): void {
         // updating the size of the gizmo based on the distance from the camera
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
@@ -105,33 +107,6 @@ class GizmoSceneObject extends SceneObject {
                 Math.tan(mainCameraFovRadians) *
                 1.9
         )
-
-        // mapping the mesh transformations to the mirabuf object
-        if (this._parentObject !== undefined) {
-            this._parentObject.DisablePhysics()
-
-            if (this._gizmo.dragging) {
-                this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
-                    World.PhysicsSystem.SetBodyPosition(
-                        this._parentObject!.mechanism.GetBodyByNodeId(rn.id)!,
-                        ThreeMatrix4_JoltMat44(this._mesh.matrix).GetTranslation()
-                    )
-                    World.PhysicsSystem.SetBodyRotation(
-                        this._parentObject!.mechanism.GetBodyByNodeId(rn.id)!,
-                        ThreeQuaternion_JoltQuat(this._mesh.quaternion)
-                    )
-
-                    rn.parts.forEach(part => {
-                        const partTransform = this._parentObject!.mirabufInstance.parser.globalTransforms.get(part)!
-                            .clone()
-                            .premultiply(this._mesh.matrix)
-
-                        const meshes = this._parentObject!.mirabufInstance.meshes.get(part) ?? []
-                        meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
-                    })
-                })
-            }
-        }
 
         // creating enter key and escape key event listeners
         if (InputSystem.isKeyPressed("Enter") && this._parentObject) {
@@ -150,7 +125,7 @@ class GizmoSceneObject extends SceneObject {
     public Dispose(): void {
         this._gizmo.detach()
         if (this._parentObject) this._parentObject.RemoveGizmo()
-        World.SceneRenderer.RemoveObject(this._mesh)
+        World.SceneRenderer.RemoveObject(this._obj)
         World.SceneRenderer.RemoveObject(this._gizmo)
     }
 
