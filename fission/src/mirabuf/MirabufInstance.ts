@@ -128,11 +128,6 @@ class MirabufInstance {
      * Parses all mirabuf appearances into ThreeJS and Jolt materials.
      */
     private LoadMaterials(materialStyle: MaterialStyle) {
-        Object.entries(this._mirabufParser.assembly.data!.materials!.physicalMaterials!).forEach(([name, material]) => {
-            const [static_f, dynamic_f] = [material.staticFriction, material.dynamicFriction]
-            console.log(`${name} - static: ${static_f} dynamic: ${dynamic_f}`)
-            //this._materials.set()
-        })
         Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!).forEach(
             ([appearanceId, appearance]) => {
                 const { A, B, G, R } = appearance.albedo ?? {}
