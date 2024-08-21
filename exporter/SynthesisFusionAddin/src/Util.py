@@ -15,14 +15,14 @@ def convertMassUnitsFrom(input: KG | LBS) -> KG | LBS:
     """Converts stored Synthesis mass units into user selected Fusion units."""
     unitManager = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct).fusionUnitsManager
     toString = "kg" if getFusionUnitSystem() is UnitSystem.METRIC else "lbmass"
-    return unitManager.convert(input, "kg", toString)
+    return unitManager.convert(input, "kg", toString) or 0.0
 
 
 def convertMassUnitsTo(input: KG | LBS) -> KG | LBS:
     """Converts user selected Fusion mass units into Synthesis units."""
     unitManager = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct).fusionUnitsManager
     fromString = "kg" if getFusionUnitSystem() is UnitSystem.METRIC else "lbmass"
-    return unitManager.convert(input, fromString, "kg")
+    return unitManager.convert(input, fromString, "kg") or 0.0
 
 
 def designMassCalculation() -> KG | LBS:
@@ -42,7 +42,7 @@ def designMassCalculation() -> KG | LBS:
     return round(convertMassUnitsFrom(mass), 2)
 
 
-def makeDirectories(directory: str | os.PathLike[str]) -> str | os.PathLike[str]:
+def makeDirectories(directory: str) -> str:
     """Ensures than an input directory exists and attempts to create it if it doesn't."""
     os.makedirs(directory, exist_ok=True)
     return directory

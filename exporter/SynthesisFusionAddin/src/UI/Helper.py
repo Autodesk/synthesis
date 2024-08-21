@@ -3,52 +3,52 @@ from inspect import getmembers, isfunction
 import adsk.core
 
 from src import APP_NAME, APP_TITLE, INTERNAL_ID, gm
+from src.Logging import logFailure
 from src.UI import HUI, Events
 
 
-def getDocName() -> str or None:
+def check_solid_open() -> bool:
+    return True
+
+
+def getDocName() -> str | None:
     """### Gets the active Document Name
     - If it can't find one then it will return None
     """
     app = adsk.core.Application.get()
     if check_solid_open():
-        return app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0]
+        return app.activeDocument.design.rootComponent.name.rsplit(" ", 1)[0] or ""
     else:
         return None
 
 
+@logFailure(messageBox=True)
 def checkAttribute() -> bool:
     """### Will process the file and look for a flag that unity is already using it."""
     app = adsk.core.Application.get()
-    try:
-        connected = app.activeDocument.attributes.itemByName("UnityFile", "Connected")
-        if connected is not None:
-            return connected.value
-        return False
-    except:
-        app.userInterface.messageBox(f"Could not access the attributes of the file \n -- {traceback.format_exc()}.")
-        return False
+    connected = app.activeDocument.attributes.itemByName("UnityFile", "Connected")
+    if connected is not None:
+        return connected.value or False
+
+    return False
 
 
-def addUnityAttribute() -> bool or None:
+@logFailure
+def addUnityAttribute() -> bool | None:
     """#### Adds an attribute to the Fusion File
     - Initially intended to be used to add a marker for in use untiy files
     - No longer necessary
     """
     app = adsk.core.Application.get()
-    try:
-        current = app.activeDocument.attributes.itemByName("UnityFile", "Connected")
+    current = app.activeDocument.attributes.itemByName("UnityFile", "Connected")
 
-        if check_solid_open and (current is None):
-            val = app.activeDocument.attributes.add("UnityFile", "Connected", "True")
-            return val
-        elif current is not None:
-            return current
-        return None
+    if check_solid_open() and (current is None):
+        val = app.activeDocument.attributes.add("UnityFile", "Connected", "True")
+        return val or False
+    elif current is not None:
+        return current or False
 
-    except:
-        app.userInterface.messageBox(f"Could not access the attributes of the file \n -- {traceback.format_exc()}.")
-        return False
+    return None
 
 
 def openPanel() -> None:
@@ -70,5 +70,3 @@ def openPanel() -> None:
         func_list = [o for o in getmembers(Events, isfunction)]
         palette_new = HUI.HPalette(name, APP_TITLE, True, True, False, 400, 500, func_list)
         gm.elements.append(palette_new)
-
-    return

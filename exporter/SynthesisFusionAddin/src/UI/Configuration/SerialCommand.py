@@ -10,6 +10,8 @@ import json
 from src.Types import OString
 
 
+# Transition: AARD-1765
+# Will likely be removed later as this is no longer used. Avoiding adding typing for now.
 def generateFilePath() -> str:
     """Generates a temporary file path that can be used to save the file for exporting
 
@@ -19,21 +21,21 @@ def generateFilePath() -> str:
     Returns:
         str: file path
     """
-    tempPath = OString.TempPath("").getPath()
+    tempPath = OString.TempPath("").getPath()  # type: ignore
     return str(tempPath)
 
 
 class Struct:
     """For decoding the dict values into named values"""
 
-    def __init__(self, **entries):
+    def __init__(self, **entries):  # type: ignore
         self.__dict__.update(entries)
 
 
 class SerialCommand:
     """All of the command inputs combined"""
 
-    def __init__(self):
+    def __init__(self):  # type: ignore
         self.general = General()
         self.advanced = Advanced()
 
@@ -55,7 +57,7 @@ class SerialCommand:
 class General:
     """General Options"""
 
-    def __init__(self):
+    def __init__(self):  # type: ignore
         # This is the overall export decision point
         self.exportMode = ExportMode.standard
         self.RenderType = RenderType.basic3D
@@ -69,7 +71,7 @@ class General:
 class Advanced:
     """Advanced settings in the command input"""
 
-    def __init__(self):
+    def __init__(self):  # type: ignore
         self.friction = BooleanInput("friction", True)
         self.density = BooleanInput("density", True)
         self.mass = BooleanInput("mass", True)
