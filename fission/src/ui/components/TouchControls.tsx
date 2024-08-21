@@ -34,16 +34,16 @@ function TouchControls() {
     const PlaceMirabufAssembly = useCallback(() => {
         if (inputRef.current) {
             const pressEvent = new KeyboardEvent("keydown", {
-                key: "Enter",
-                code: "Enter",
+                key: "ConfirmAssemblyButton",
+                code: "ConfirmAssemblyButton",
                 bubbles: true,
             })
             inputRef.current.dispatchEvent(pressEvent)
 
             setTimeout(() => {
                 const releaseEvent = new KeyboardEvent("keyup", {
-                    key: "Enter",
-                    code: "Enter",
+                    key: "ConfirmAssemblyButton",
+                    code: "ConfirmAssemblyButton",
                     bubbles: true,
                 })
                 inputRef.current?.dispatchEvent(releaseEvent)
@@ -67,7 +67,7 @@ function TouchControls() {
                 className={`fixed bottom-[5vh] left-[5vw] w-60 h-60 touch-none ${isJoystickVisible ? "" : "hidden"}`}
             >
                 <div
-                    id="joystick-base-circle"
+                    id="joystick-left-circle"
                     className="relative w-36 h-36 bg-gray-100 bg-blend-difference bg-opacity-30 rounded-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 >
                     <div
@@ -77,13 +77,16 @@ function TouchControls() {
                 </div>
             </div>
             <div
-                id="joystick-right"
-                className={`fixed bottom-5 right-5 w-36 h-36 touch-none ${isJoystickVisible ? "" : "hidden"}`}
+                id="joystick-base-right"
+                className={`fixed bottom-[5vh] right-[5vw] w-60 h-60 touch-none ${isJoystickVisible ? "" : "hidden"}`}
             >
-                <div id="joystick-base-right" className="relative w-full h-full bg-black bg-opacity-20 rounded-full">
+                <div
+                    id="joystick-right-circle"
+                    className="relative w-36 h-36 bg-gray-100 bg-blend-difference bg-opacity-30 rounded-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                >
                     <div
                         id="joystick-stick-right"
-                        className="absolute w-14 h-14 bg-black bg-opacity-50 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                        className="absolute w-14 h-14 bg-black bg-opacity-70 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                     ></div>
                 </div>
             </div>
@@ -92,6 +95,8 @@ function TouchControls() {
 }
 
 export default TouchControls
+
+export const MAX_JOYSTICK_RADIUS: number = 55
 
 export const enum TouchControlsEventKeys {
     PLACE_BUTTON = "PlaceButtonEvent",
@@ -116,4 +121,11 @@ export class TouchControlsEvent extends Event {
     public static RemoveListener(eventKey: TouchControlsEventKeys, func: (e: Event) => void) {
         window.removeEventListener(eventKey, func)
     }
+}
+
+/** Notates the left and right joysticks with their x and y axis */
+export const enum TouchControlsJoystick {
+    LEFT,
+    RIGHT,
+    NONE,
 }

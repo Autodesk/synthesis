@@ -187,7 +187,7 @@ class MirabufSceneObject extends SceneObject {
              * This block of code should only be executed if the transform gizmo exists.
              */
             if (this._transformGizmos) {
-                if (InputSystem.isKeyPressed("Enter")) {
+                if (InputSystem.isKeyPressed("ConfirmAssemblyButton") || InputSystem.isKeyPressed("Enter")) {
                     // confirming placement of the mirabuf object
                     this.DisableTransformControls()
                     return

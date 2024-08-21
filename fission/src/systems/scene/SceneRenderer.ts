@@ -15,7 +15,6 @@ import Jolt from "@barclah/jolt-physics"
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
-import Joystick from "./Joystick"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 
 const CLEAR_COLOR = 0x121212
@@ -131,21 +130,6 @@ class SceneRenderer extends WorldSystem {
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
         this._orbitControls.update()
-
-        // Add a cube to the scene
-        const geometry1 = new THREE.BoxGeometry()
-        const material1 = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-        const cube = new THREE.Mesh(geometry1, material1)
-        this._scene.add(cube)
-
-        // Initialize the joystick
-        const joystickBase = document.getElementById("joystick-base-left")!
-        const joystickStick = document.getElementById("joystick-stick-left")!
-        const joystick = new Joystick(joystickBase, joystickStick, 55, (x, y) => {
-            // Use the joystick input to control the cube
-            cube.position.x += x * 0.1
-            cube.position.y -= y * 0.1
-        })
     }
 
     public UpdateCanvasSize() {

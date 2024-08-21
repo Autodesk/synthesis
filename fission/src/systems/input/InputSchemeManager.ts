@@ -8,6 +8,7 @@ export type InputScheme = {
     descriptiveName: string
     customized: boolean
     usesGamepad: boolean
+    usesTouchControls: boolean
     inputs: Input[]
 }
 
@@ -58,6 +59,7 @@ class InputSchemeManager {
                     rawAxis.useGamepadButtons,
                     rawAxis.posGamepadButton,
                     rawAxis.negGamepadButton,
+                    rawAxis.touchControlAxis,
                     rawAxis.posKeyModifiers,
                     rawAxis.negKeyModifiers
                 )
@@ -140,6 +142,7 @@ class InputSchemeManager {
             descriptiveName: scheme.descriptiveName,
             customized: scheme.customized,
             usesGamepad: scheme.usesGamepad,
+            usesTouchControls: scheme.usesTouchControls,
             inputs: copiedInputs,
         }
     }

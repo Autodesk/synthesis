@@ -1,22 +1,23 @@
+import { MAX_JOYSTICK_RADIUS } from "@/ui/components/TouchControls"
+
 class Joystick {
     private baseElement: HTMLElement
     private stickElement: HTMLElement
-    private maxDistance: number
     private stickPosition: { x: number; y: number } = { x: 0, y: 0 }
-    private movementCallback: (x: number, y: number) => void
     private baseRect: DOMRect | null = null
     private activePointerId: number | null = null // Track the active pointer ID
 
-    constructor(
-        baseElement: HTMLElement,
-        stickElement: HTMLElement,
-        maxDistance: number,
-        movementCallback: (x: number, y: number) => void
-    ) {
+    public get x() {
+        return this.stickPosition.x / MAX_JOYSTICK_RADIUS
+    }
+
+    public get y() {
+        return this.stickPosition.y / MAX_JOYSTICK_RADIUS
+    }
+
+    constructor(baseElement: HTMLElement, stickElement: HTMLElement) {
         this.baseElement = baseElement
         this.stickElement = stickElement
-        this.maxDistance = maxDistance
-        this.movementCallback = movementCallback
 
         this.initialize()
     }
@@ -38,12 +39,11 @@ class Joystick {
         this.updateStickPosition(event.clientX, event.clientY)
     }
 
-    private onPointerUp() {
+    private onPointerUp(event: PointerEvent) {
+        if (this.activePointerId !== event.pointerId) return
         this.stickPosition = { x: 0, y: 0 }
         this.stickElement.style.transform = `translate(-50%, -50%)`
         this.baseRect = null
-
-        this.movementCallback(0, 0)
     }
 
     private updateStickPosition(clientX: number, clientY: number) {
@@ -58,17 +58,20 @@ class Joystick {
         const distance = Math.sqrt(x * x + y * y)
 
         // If the distance exceeds maxDistance, constrain it
-        if (distance > this.maxDistance) {
+        if (distance > MAX_JOYSTICK_RADIUS) {
             const angle = Math.atan2(y, x)
-            this.stickPosition.x = Math.cos(angle) * this.maxDistance
-            this.stickPosition.y = Math.sin(angle) * this.maxDistance
+            this.stickPosition.x = Math.cos(angle) * MAX_JOYSTICK_RADIUS
+            this.stickPosition.y = Math.sin(angle) * MAX_JOYSTICK_RADIUS
         } else {
             this.stickPosition.x = x
             this.stickPosition.y = y
         }
 
-        this.stickElement.style.transform = `translate(${this.stickPosition.x - this.maxDistance / 2}px, ${this.stickPosition.y - this.maxDistance / 2}px)`
-        this.movementCallback(this.stickPosition.x / this.maxDistance, this.stickPosition.y / this.maxDistance)
+        this.stickElement.style.transform = `translate(${this.stickPosition.x - MAX_JOYSTICK_RADIUS / 2}px, ${this.stickPosition.y - MAX_JOYSTICK_RADIUS / 2}px)`
+    }
+
+    public GetPosition(axis: "x" | "y") {
+        return this.stickPosition[axis] / MAX_JOYSTICK_RADIUS
     }
 }
 
