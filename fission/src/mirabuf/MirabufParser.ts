@@ -163,7 +163,7 @@ class MirabufParser {
         // Collect all definitions labeled as gamepieces (dynamic = true)
         const gamepieceDefinitions: Set<string> = new Set(
             Object.values(assembly.data!.parts!.partDefinitions!)
-                .filter(def => !def.dynamic)
+                .filter(def => def.dynamic)
                 .map((def: mirabuf.IPartDefinition) => {
                     return def.info!.GUID!
                 })
