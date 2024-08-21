@@ -38,7 +38,12 @@ class SerialCommand:
     def __init__(self):  # type: ignore
         self.general = General()
         self.advanced = Advanced()
-        self.filePath = generateFilePath()
+
+        # Transition: AARD-1742
+        # With the addition of a 'release' build the fusion exporter will not have permissions within the sourced
+        # folder. Because of this we cannot use this kind of tmp path anymore. This code was already unused and
+        # should be removed.
+        # self.filePath = generateFilePath()
 
     def toJSON(self) -> str:
         """Converts this class into a json object that can be written to the object data

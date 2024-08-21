@@ -2,8 +2,10 @@ import os
 
 import adsk.core
 
+from src import SUPPORT_PATH
 from src.Logging import logFailure
 from src.Types import OString
+from src.Util import makeDirectories
 
 
 @logFailure
@@ -21,11 +23,10 @@ def captureThumbnail(size: int = 250) -> str | os.PathLike[str]:
         )  # remove whitespace from just the filename
     )
 
-    path = OString.ThumbnailPath(name)
+    path = makeDirectories(f"{SUPPORT_PATH}/Resources/Icons/")
+    path += name
 
-    # Transition: AARD-1765
-    # Will be addressed in the OString refactor
-    saveOptions = adsk.core.SaveImageFileOptions.create(str(path.getPath()))  # type: ignore[attr-defined]
+    saveOptions = adsk.core.SaveImageFileOptions.create(path)
     saveOptions.height = size
     saveOptions.width = size
     saveOptions.isAntiAliased = True
@@ -38,7 +39,7 @@ def captureThumbnail(size: int = 250) -> str | os.PathLike[str]:
     app.activeViewport.saveAsImageFileWithOptions(saveOptions)
     app.activeViewport.camera = originalCamera
 
-    return str(path.getPath())  # type: ignore[attr-defined]
+    return path
 
 
 def clearIconCache() -> None:
