@@ -3,7 +3,6 @@ import platform
 from pathlib import Path
 
 from src.GlobalManager import GlobalManager
-from src.Types import OperatingSystemString
 from src.Util import makeDirectories
 
 APP_NAME = "Synthesis"
@@ -13,9 +12,7 @@ INTERNAL_ID = "Synthesis"
 ADDIN_PATH = os.path.dirname(os.path.realpath(__file__))
 IS_RELEASE = str(Path(os.path.abspath(__file__)).parent.parent.parent.parent).split(os.sep)[-1] == "ApplicationPlugins"
 
-SYSTEM: OperatingSystemString = platform.system()
-assert SYSTEM != "Linux"
-
+SYSTEM = platform.system()
 if SYSTEM == "Windows":
     SUPPORT_PATH = makeDirectories(os.path.expandvars(r"%appdata%\Autodesk\Synthesis"))
 else:

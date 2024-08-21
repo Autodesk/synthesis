@@ -21,7 +21,7 @@ def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = Non
         str: full file path
     """
 
-    fileDialog: adsk.core.FileDialog = gm.ui.createFileDialog()
+    fileDialog = gm.ui.createFileDialog()
     fileDialog.isMultiSelectEnabled = False
 
     fileDialog.title = "Save Export Result"
@@ -48,7 +48,7 @@ def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = Non
         gm.ui.messageBox("Synthesis does not have the required permissions to write to this directory.")
         return saveFileDialog(defaultPath, defaultName)
 
-    return fileDialog.filename
+    return fileDialog.filename or ""
 
 
 def isWriteableDirectory(path: str | os.PathLike[str]) -> bool:
@@ -73,7 +73,9 @@ def generateFilePath() -> str:
     Returns:
         str: file path
     """
-    tempPath = OString.TempPath("").getPath()
+    # Transition: AARD-1765
+    # Ignoring the type for now, will revisit in the OString refactor
+    tempPath = OString.TempPath("").getPath()  # type: ignore
     return str(tempPath)
 
 
@@ -96,5 +98,4 @@ def generateFileName() -> str:
     return "{0}_{1}.mira".format(name, version)
 
 
-def OpenFileDialog():
-    pass
+def OpenFileDialog() -> None: ...
