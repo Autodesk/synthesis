@@ -76,6 +76,7 @@ class MirabufCachingService {
      * @returns {MapCache} Map of cached keys and paired MirabufCacheInfo
      */
     public static GetCacheMap(miraType: MiraType): MapCache {
+        console.log(`getcachemap`)
         if (
             (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") != MIRABUF_LOCALSTORAGE_GENERATION
         ) {
@@ -104,6 +105,7 @@ class MirabufCachingService {
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
     public static async CacheRemote(fetchLocation: string, miraType?: MiraType): Promise<MirabufCacheInfo | undefined> {
+        console.log(`cacheremote`)
         if (miraType) {
             const map = MirabufCachingService.GetCacheMap(miraType)
             const target = map[fetchLocation]
@@ -125,6 +127,7 @@ class MirabufCachingService {
     }
 
     public static async CacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
+        console.log(`cacheaps`)
         if (!data.href) {
             console.error("Data has no href")
             return undefined
@@ -160,6 +163,7 @@ class MirabufCachingService {
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
     public static async CacheLocal(buffer: ArrayBuffer, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
+        console.log(`cachelocal`)
         const key = await this.HashBuffer(buffer)
 
         const map = MirabufCachingService.GetCacheMap(miraType)
@@ -222,6 +226,7 @@ class MirabufCachingService {
         buffer: ArrayBuffer,
         miraType: MiraType
     ): Promise<mirabuf.Assembly | undefined> {
+        console.log(`cachegetlocal`)
         const key = await this.HashBuffer(buffer)
         const map = MirabufCachingService.GetCacheMap(miraType)
         const target = map[key]
@@ -322,6 +327,7 @@ class MirabufCachingService {
      * Removes all Mirabuf files from the caching services. Mostly for debugging purposes.
      */
     public static async RemoveAll() {
+        console.log(`removeall`)
         if (canOPFS) {
             for await (const key of robotFolderHandle.keys()) {
                 robotFolderHandle.removeEntry(key)
@@ -345,8 +351,8 @@ class MirabufCachingService {
         miraType?: MiraType,
         name?: string
     ): Promise<MirabufCacheInfo | undefined> {
-        const backupID = Date.now().toString()
         try {
+            const backupID = Date.now().toString()
             if (!miraType) {
                 console.log("Double loading")
                 miraType = this.AssemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
@@ -401,6 +407,7 @@ class MirabufCachingService {
     }
 
     private static async HashBuffer(buffer: ArrayBuffer): Promise<string> {
+        console.log(`hashbuffer`)
         const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
         let hash = ""
         new Uint8Array(hashBuffer).forEach(x => (hash = hash + String.fromCharCode(x)))
