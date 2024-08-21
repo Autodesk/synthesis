@@ -18,94 +18,124 @@ public class SparkAbsoluteEncoder implements AbsoluteEncoder {
         this.simEncoder = simEncoder;
     }
 
-    /*
-     * Get the average sampling depth for an absolute encoder
+    /**
+     * Gets the average sampling depth for the real encoder
+     *
      * @return The average sampling depth
      */
     public int getAverageDepth() {
         return this.realEncoder.getAverageDepth();
     }
 
-    /*
-     * Get the phase of the AbsoluteEncoder
-     * Returns: The phase of the encoder
+    /**
+     * Gets the phase of the real encoder 
+     *
+     * @return The phase of the real encoder
     */
     public boolean getInverted() {
         return this.realEncoder.getInverted();
     }
 
-    /*
-     * Get the position of the motor. This returns the native units of 'rotations' by default, and can be changed by a scale factor using setPositionConversionFactor().
-     * Returns: Number of rotations of the motor
+    /**
+     * Gets the position lf the simulated motor.
+     * This returns the native units of 'rotations' by default, and can be changed by a scale factor using setPositionConversionFactor().
+     *
+     * @return Number of rotations of the motor
     */
     public double getPosition() {
-        return this.simEncoder.getPosition() * this.realEncoder.getPositionConversionFactor();
+        return this.simEncoder.getPosition();
     }
 
-    /*
-     * Set the conversion factor for position of the encoder. Multiplied by the native output units to give you position
-     * Returns: The conversion factor for position
+    /**
+     * Sets the conversion factor for position of the real encoder. Multiplied by the native output units to give you position
+     *
+     * @return The conversion factor used by the encoder for position
     */
     public double getPositionConversionFactor() {
-        return this.getPositionConversionFactor();
+        return this.realEncoder.getPositionConversionFactor();
     }
     
     
-    /*
-     * Get the velocity of the motor. This returns the native units of 'rotations per second' by default, and can be changed by a scale factor using setVelocityConversionFactor().
-     * Returns: Number of rotations per second of the motor
+    /**
+     * Gets the velocity of the simulated motor. This returns the native units of 'rotations per second' by default, and can be changed by a scale factor using setVelocityConversionFactor().
+     *
+     * @return Number of rotations per second of the motor
     */
     public double getVelocity() {
         return this.simEncoder.getVelocity() * this.realEncoder.getVelocityConversionFactor();
     }
 
 
-    /*
-     * Get the conversion factor for velocity of the encoder.
+    /**
+     * Gets the conversion factor for velocity of the real encoder.
+     *
+     * @return The conversion factor used by the encoder for position
     */
     public double getVelocityConversionFactor() {
         return this.realEncoder.getVelocityConversionFactor();
     }
 
-    /*
-     * Gets the zero offset for an absolute encoder (the position that is reported as zero).
+    /**
+     * Gets the zero offset in revolutions for the real encoder (the position that is reported as zero).
+     *
+     * @return The zero offset
     */
     public double getZeroOffset() {
         return this.realEncoder.getZeroOffset();
     }
     
-    /*
-     * Set the average sampling depth for an absolute encoder.
+    /**
+     * Sets the average sampling depth for the real encoder.
+     *
+     * @param depth The average sampling depth
+     *
+     * @return a library error indicating failure or success
     */
     public REVLibError setAverageDepth(int depth) {
         return this.realEncoder.setAverageDepth(depth);
     }
 
-    /*
-     * Set the phase of the AbsoluteEncoder so that it is set to be in phase with the motor itself
+    /**
+     * Sets the phase of the real encoder 
+     *
+     * @param inverted Whether the real motor should be inverted
+     *
+     * @return a library error indicating failure or success
     */
     public REVLibError setInverted(boolean inverted) {
         return this.realEncoder.setInverted(inverted);
     }
 
-    /*
-    * Set the conversion factor for position of the encoder.
+    /**
+    * Sets the conversion factor for position of the real encoder.
+    *
+    * @param The new position conversion factor
+    *
+    * @return a library error indicating failure or success
     */
     public REVLibError setPositionConversionFactor(double factor) {
         return this.realEncoder.setPositionConversionFactor(factor);
     }
 
-    /*
-     * Set the conversion factor for velocity of the encoder.
+    /**
+     * Sets the conversion factor for velocity of the real encoder.
+     *
+     * @param factor The new velocity conversion factor
+     *
+     * @return a library error indicating failure or success
     */
     public REVLibError setVelocityConversionFactor(double factor) {
         return this.realEncoder.setVelocityConversionFactor(factor);
     }
 
-    /*
-     * Sets the zero offset of an absolute encoder (the position that is reported as zero).
+    /**
+     * Sets the zero offset of the real encoder (the position that is reported as zero).
+     *
+     * @param offset The new zero offset
+     *
+     * @return a library error indicating failure or success
     */
-    public REVLibError setZeroOffset(double factor) {
-        return this.realEncoder.setZeroOffset(factor);
+    public REVLibError setZeroOffset(double offset) {
+        return this.realEncoder.setZeroOffset(offset);
     }
 }
