@@ -182,7 +182,8 @@ class MirabufInstance {
                 if (!mesh?.verts || !mesh.normals || !mesh.uv || !mesh.indices) return
 
                 const appearanceOverride = body.appearanceOverride
-                const material: THREE.Material = WIREFRAME
+
+                const material = WIREFRAME
                     ? new THREE.MeshStandardMaterial({ wireframe: true, color: 0x000000 })
                     : appearanceOverride && this._materials.has(appearanceOverride)
                       ? this._materials.get(appearanceOverride)!
