@@ -15,9 +15,20 @@ export type ButtonProps = {
     size?: ButtonSize
     onClick?: () => void
     className?: string
+    id?: string
+    disabled?: boolean
 }
 
-const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, sizeOverrideClass, size, onClick, className }) => {
+const Button: React.FC<ButtonProps> = ({
+    value,
+    colorOverrideClass,
+    sizeOverrideClass,
+    size,
+    onClick,
+    className,
+    id,
+    disabled,
+}) => {
     let sizeClassNames = sizeOverrideClass
 
     if (!size) size = ButtonSize.Medium as ButtonSize
@@ -58,6 +69,8 @@ const Button: React.FC<ButtonProps> = ({ value, colorOverrideClass, sizeOverride
                 active:scale-[1.06] 
                 ${className || ""}
             `}
+            id={id}
+            disabled={disabled ?? false}
             style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
         >
             {value}
