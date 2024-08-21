@@ -165,7 +165,7 @@ class PhysicsSystem extends WorldSystem {
      * The pause works off of a request counter.
      */
     public ReleasePause() {
-        if (this._pauseCounter > 0) this._pauseCounter--
+        if (this._pauseCounter) this._pauseCounter--
     }
 
     /**
