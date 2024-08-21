@@ -67,7 +67,7 @@ class ScreenInteractionHandler {
             if (e.ctrlKey) {
                 e.preventDefault();
             } else {
-                this._wheelMove
+                this._wheelMove(e)
             }
         }, { passive: false })
         this._domElement.addEventListener("contextmenu", this._contextMenu)
