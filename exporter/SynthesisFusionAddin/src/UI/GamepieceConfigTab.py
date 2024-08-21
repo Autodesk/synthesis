@@ -102,11 +102,15 @@ class GamepieceConfigTab:
 
     @property
     def isVisible(self) -> bool:
-        return self.gamepieceConfigTab.isVisible
+        return self.gamepieceConfigTab.isVisible or False
 
     @isVisible.setter
     def isVisible(self, value: bool) -> None:
         self.gamepieceConfigTab.isVisible = value
+
+    @property
+    def isActive(self) -> bool:
+        return self.gamepieceConfigTab.isActive or False
 
     @property
     def selectedUnits(self) -> PreferredUnits:
@@ -117,7 +121,7 @@ class GamepieceConfigTab:
         autoCalcWeightButton: adsk.core.BoolValueCommandInput = self.gamepieceConfigTab.children.itemById(
             "autoCalcGamepieceWeight"
         )
-        return autoCalcWeightButton.value
+        return autoCalcWeightButton.value or False
 
     @logFailure
     def weightInputs(self) -> list[adsk.core.ValueCommandInput]:
@@ -252,6 +256,17 @@ class GamepieceConfigTab:
     def handleInputChanged(
         self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
     ) -> None:
+        gamepieceAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("gamepieceAddButton")
+        gamepieceTable: adsk.core.TableCommandInput = args.inputs.itemById("gamepieceTable")
+        gamepieceRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("gamepieceRemoveButton")
+        gamepieceSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
+            "gamepieceSelectCancelButton"
+        )
+        gamepieceSelection: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById(
+            "gamepieceSelect"
+        )
+        spacer: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById("gamepieceTabSpacer")
+
         commandInput = args.input
         if commandInput.id == "autoCalcGamepieceWeight":
             autoCalcWeightButton = adsk.core.BoolValueCommandInput.cast(commandInput)
@@ -283,18 +298,6 @@ class GamepieceConfigTab:
             self.previousSelectedUnitDropdownIndex = weightUnitDropdown.selectedItem.index
 
         elif commandInput.id == "gamepieceAddButton":
-            gamepieceAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("gamepieceAddButton")
-            gamepieceRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "gamepieceRemoveButton"
-            )
-            gamepieceSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "gamepieceSelectCancelButton"
-            )
-            gamepieceSelection: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById(
-                "gamepieceSelect"
-            )
-            spacer: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById("gamepieceTabSpacer")
-
             gamepieceSelection.isVisible = gamepieceSelection.isEnabled = True
             gamepieceSelection.clearSelection()
             gamepieceAddButton.isEnabled = gamepieceRemoveButton.isEnabled = False
@@ -302,9 +305,6 @@ class GamepieceConfigTab:
             spacer.isVisible = False
 
         elif commandInput.id == "gamepieceRemoveButton":
-            gamepieceAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("gamepieceAddButton")
-            gamepieceTable: adsk.core.TableCommandInput = args.inputs.itemById("gamepieceTable")
-
             gamepieceAddButton.isEnabled = True
             if gamepieceTable.selectedRow == -1 or gamepieceTable.selectedRow == 0:
                 ui = adsk.core.Application.get().userInterface
@@ -313,18 +313,6 @@ class GamepieceConfigTab:
                 self.removeIndexedGamepiece(gamepieceTable.selectedRow - 1)  # selectedRow is 1 indexed
 
         elif commandInput.id == "gamepieceSelectCancelButton":
-            gamepieceAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("gamepieceAddButton")
-            gamepieceRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "gamepieceRemoveButton"
-            )
-            gamepieceSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "gamepieceSelectCancelButton"
-            )
-            gamepieceSelection: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById(
-                "gamepieceSelect"
-            )
-            spacer: adsk.core.SelectionCommandInput = self.gamepieceConfigTab.children.itemById("gamepieceTabSpacer")
-
             gamepieceSelection.isEnabled = gamepieceSelection.isVisible = False
             gamepieceSelectCancelButton.isEnabled = gamepieceSelectCancelButton.isVisible = False
             gamepieceAddButton.isEnabled = gamepieceRemoveButton.isEnabled = True

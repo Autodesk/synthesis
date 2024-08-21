@@ -36,13 +36,13 @@ class ExporterOptions:
     fileLocation: str | None = field(
         default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~"))
     )
-    name: str = field(default=None)
-    version: str = field(default=None)
+    name: str | None = field(default=None)
+    version: str | None = field(default=None)
     materials: int = field(default=0)
     exportMode: ExportMode = field(default=ExportMode.ROBOT)
-    wheels: list[Wheel] = field(default=None)
-    joints: list[Joint] = field(default=None)
-    gamepieces: list[Gamepiece] = field(default=None)
+    wheels: list[Wheel] = field(default_factory=list)
+    joints: list[Joint] = field(default_factory=list)
+    gamepieces: list[Gamepiece] = field(default_factory=list)
     preferredUnits: PreferredUnits = field(default=PreferredUnits.IMPERIAL)
 
     # Always stored in kg regardless of 'preferredUnits'

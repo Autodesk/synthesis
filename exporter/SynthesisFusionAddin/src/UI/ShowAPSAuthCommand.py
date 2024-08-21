@@ -3,6 +3,7 @@ import time
 import traceback
 import urllib.parse
 import urllib.request
+from typing import Any
 
 import adsk.core
 
@@ -15,10 +16,7 @@ palette = None
 
 
 class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
-    def __init__(self):
-        super().__init__()
-
-    def notify(self, args):
+    def notify(self, args: adsk.core.CommandEventArgs) -> None:
         try:
             global palette
             palette = gm.ui.palettes.itemById("authPalette")
@@ -60,10 +58,10 @@ class ShowAPSAuthCommandExecuteHandler(adsk.core.CommandEventHandler):
 
 
 class ShowAPSAuthCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
-    def __init__(self, configure):
+    def __init__(self, configure: Any) -> None:
         super().__init__()
 
-    def notify(self, args):
+    def notify(self, args: adsk.core.CommandCreatedEventArgs) -> None:
         try:
             command = args.command
             onExecute = ShowAPSAuthCommandExecuteHandler()
@@ -77,18 +75,11 @@ class ShowAPSAuthCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
 
 class SendInfoCommandExecuteHandler(adsk.core.CommandEventHandler):
-    def __init__(self):
-        super().__init__()
-
-    def notify(self, args):
-        pass
+    def notify(self, args: adsk.core.CommandEventArgs) -> None: ...
 
 
 class SendInfoCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
-    def __init__(self):
-        super().__init__()
-
-    def notify(self, args):
+    def notify(self, args: adsk.core.CommandCreatedEventArgs) -> None:
         try:
             command = args.command
             onExecute = SendInfoCommandExecuteHandler()
@@ -102,10 +93,7 @@ class SendInfoCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
 
 class MyCloseEventHandler(adsk.core.UserInterfaceGeneralEventHandler):
-    def __init__(self):
-        super().__init__()
-
-    def notify(self, args):
+    def notify(self, args: adsk.core.EventArgs) -> None:
         try:
             if palette:
                 palette.deleteMe()
@@ -118,13 +106,9 @@ class MyCloseEventHandler(adsk.core.UserInterfaceGeneralEventHandler):
 
 
 class MyHTMLEventHandler(adsk.core.HTMLEventHandler):
-    def __init__(self):
-        super().__init__()
-
-    def notify(self, args):
+    def notify(self, args: adsk.core.HTMLEventArgs) -> None:
         try:
-            htmlArgs = adsk.core.HTMLEventArgs.cast(args)
-            data = json.loads(htmlArgs.data)
+            data = json.loads(args.data)
             # gm.ui.messageBox(msg)
 
             convertAuthToken(data["code"])
