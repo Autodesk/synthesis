@@ -322,11 +322,13 @@ class MirabufCachingService {
      * Removes all Mirabuf files from the caching services. Mostly for debugging purposes.
      */
     public static async RemoveAll() {
-        for await (const key of robotFolderHandle.keys()) {
-            robotFolderHandle.removeEntry(key)
-        }
-        for await (const key of fieldFolderHandle.keys()) {
-            fieldFolderHandle.removeEntry(key)
+        if (canOPFS) {
+            for await (const key of robotFolderHandle.keys()) {
+                robotFolderHandle.removeEntry(key)
+            }
+            for await (const key of fieldFolderHandle.keys()) {
+                fieldFolderHandle.removeEntry(key)
+            }
         }
 
         window.localStorage.setItem(robotsDirName, "{}")
