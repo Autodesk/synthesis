@@ -66,6 +66,7 @@ import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSc
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
+import SoftBodySceneObject from "./systems/scene/SoftBodySceneObject.ts"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -110,6 +111,9 @@ function Synthesis() {
         mainLoop()
 
         World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
+
+        const softBody = new SoftBodySceneObject()
+        World.SceneRenderer.RegisterSceneObject(softBody)
 
         // Cleanup
         return () => {

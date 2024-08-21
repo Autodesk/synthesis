@@ -276,6 +276,26 @@ class PhysicsSystem extends WorldSystem {
         return body
     }
 
+    public CreateSoftBody(shape: Jolt.ConvexHullShape) {
+        const scale = new JOLT.Vec3(1, 1, 1)
+        const triangleContext = new JOLT.ShapeGetTriangles(
+            shape,
+            JOLT.AABox.prototype.sBiggest(),
+            shape.GetCenterOfMass(),
+            JOLT.Quat.prototype.sIdentity(),
+            scale
+        )
+        JOLT.destroy(scale)
+
+        const vertices = new Float32Array(
+            JOLT.HEAP32.buffer,
+            triangleContext.GetVerticesData(),
+            triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
+        )
+
+        
+    }
+
     public AddBodyToSystem(bodyId: Jolt.BodyID, shouldActivate: boolean) {
         this._joltBodyInterface.AddBody(
             bodyId,
