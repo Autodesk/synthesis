@@ -147,9 +147,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
         const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
-        gizmo.obj.position.setFromMatrixPosition(gizmoTransformation)
-        gizmo.obj.rotation.setFromRotationMatrix(gizmoTransformation)
-
+        gizmo.UpdateGizmoObjectPositionAndRotation(gizmoTransformation)
         setTransformGizmo(gizmo)
 
         return () => {

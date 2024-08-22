@@ -14,6 +14,7 @@ import Jolt from "@barclah/jolt-physics"
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -235,6 +236,13 @@ class SceneRenderer extends WorldSystem {
 
     public RemoveSceneObject(id: number) {
         const obj = this._sceneObjects.get(id)
+        if (obj instanceof MirabufSceneObject) {
+            Array.from(this._sceneObjects.values())
+                .filter(x => x instanceof GizmoSceneObject)
+                .forEach(x => {
+                    if ((x as GizmoSceneObject).parentObjectId === obj.id) this.RemoveSceneObject(x.id)
+                })
+        }
         if (this._sceneObjects.delete(id)) {
             obj!.Dispose()
         }

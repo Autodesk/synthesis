@@ -1,3 +1,4 @@
+import * as THREE from "three"
 import SceneObject from "./SceneObject"
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 import InputSystem from "../input/InputSystem"
@@ -30,10 +31,22 @@ class GizmoSceneObject extends SceneObject {
         return this._gizmo.dragging
     }
 
-    public constructor(mesh: THREE.Mesh, mode: GizmoMode, size: number, parentObject?: MirabufSceneObject) {
+    public get parentObjectId() {
+        return this._parentObject?.id
+    }
+
+    public constructor(
+        obj: THREE.Mesh = new THREE.Mesh(
+            new THREE.SphereGeometry(0.2),
+            new THREE.MeshBasicMaterial({ color: 0x00ff00 })
+        ),
+        mode: GizmoMode,
+        size: number,
+        parentObject?: MirabufSceneObject
+    ) {
         super()
 
-        this._obj = mesh
+        this._obj = obj
         this._parentObject = parentObject
         this._mainCamera = World.SceneRenderer.mainCamera
 
@@ -102,6 +115,8 @@ class GizmoSceneObject extends SceneObject {
     }
 
     public Update(): void {
+        this._gizmo.updateMatrixWorld()
+
         // updating the size of the gizmo based on the distance from the camera
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
         this._gizmo.setSize(
@@ -109,6 +124,17 @@ class GizmoSceneObject extends SceneObject {
                 Math.tan(mainCameraFovRadians) *
                 1.9
         )
+
+        /** Translating the obj changes to the mirabuf scene object */
+        if (this._parentObject) {
+            this._parentObject.DisablePhysics()
+            if (this.isDragging) {
+                this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
+                    this.UpdateBodyPositionAndRotation(rn)
+                    this._parentObject?.UpdateNodeParts(rn, this.obj.matrix)
+                })
+            }
+        }
 
         // creating enter key and escape key event listeners
         if (InputSystem.isKeyPressed("Enter") && this._parentObject) {
@@ -126,7 +152,7 @@ class GizmoSceneObject extends SceneObject {
 
     public Dispose(): void {
         this._gizmo.detach()
-        if (this._parentObject) this._parentObject.RemoveGizmo()
+        this._parentObject?.EnablePhysics()
         World.SceneRenderer.RemoveObject(this._obj)
         World.SceneRenderer.RemoveObject(this._gizmo)
     }
@@ -136,7 +162,7 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.setMode(mode)
     }
 
-    /** updates body position and rotation for each body from the parent object */
+    /** updates body position and rotation for each body from the parent mirabuf */
     public UpdateBodyPositionAndRotation(rn: RigidNodeReadOnly) {
         if (!this._parentObject) return
         World.PhysicsSystem.SetBodyPosition(
@@ -147,6 +173,12 @@ class GizmoSceneObject extends SceneObject {
             this._parentObject.mechanism.GetBodyByNodeId(rn.id)!,
             ThreeQuaternion_JoltQuat(this._obj.quaternion)
         )
+    }
+
+    /**  */
+    public UpdateGizmoObjectPositionAndRotation(gizmoTransformation: THREE.Matrix4) {
+        this._obj.position.setFromMatrixPosition(gizmoTransformation)
+        this._obj.quaternion.setFromRotationMatrix(gizmoTransformation)
     }
 }
 

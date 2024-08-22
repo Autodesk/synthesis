@@ -4,7 +4,7 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4, ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -46,8 +46,6 @@ class MirabufSceneObject extends SceneObject {
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
     private _scoringZones: ScoringZoneSceneObject[] = []
-
-    private _gizmo: GizmoSceneObject | undefined
 
     private _nameTag: SceneOverlayTag | undefined
 
@@ -155,40 +153,15 @@ class MirabufSceneObject extends SceneObject {
 
         // Intake
         this.UpdateIntakeSensor()
-
         this.UpdateScoringZones()
 
-        // Adding a transform gizmo to the assembly when it spawns
-        this._gizmo = new GizmoSceneObject(
-            new THREE.Mesh(
-                new THREE.SphereGeometry(3.0),
-                new THREE.MeshBasicMaterial({ transparent: true, opacity: 0 })
-            ),
-            "translate",
-            3,
-            this
-        )
+        new GizmoSceneObject(undefined, "translate", 3, this)
     }
 
     public Update(): void {
         const brainIndex = this._brain instanceof SynthesisBrain ? this._brain.brainIndex ?? -1 : -1
         if (InputSystem.getInput("eject", brainIndex)) {
             this.Eject()
-        }
-
-        /* Translates gizmo translations to the mirabuf assembly */
-        if (this._gizmo) {
-            this.DisablePhysics()
-            if (this._gizmo.isDragging) {
-                this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-                    this._gizmo?.UpdateBodyPositionAndRotation(rn)
-                    this.UpdateNodeParts(rn, this._gizmo!.obj.matrix)
-                })
-            }
-
-            this.UpdateBatches()
-            this.UpdateNameTag()
-            return
         }
 
         /** Updating the position of all mirabuf nodes */
@@ -224,10 +197,6 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
-        if (this._gizmo) {
-            World.SceneRenderer.RemoveSceneObject(this._gizmo.id)
-        }
-
         if (this._intakeSensor) {
             World.SceneRenderer.RemoveSceneObject(this._intakeSensor.id)
             this._intakeSensor = undefined
@@ -305,7 +274,7 @@ class MirabufSceneObject extends SceneObject {
         return mesh
     }
 
-    private UpdateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
+    public UpdateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
         rn.parts.forEach(part => {
             const partTransform = this._mirabufInstance.parser.globalTransforms
                 .get(part)!
@@ -406,10 +375,6 @@ class MirabufSceneObject extends SceneObject {
         this._ejectorPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.ejector
 
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
-    }
-
-    public RemoveGizmo() {
-        this._gizmo = undefined
     }
 
     public EnablePhysics() {
