@@ -331,12 +331,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
         selectedGamepieces = gamepieceConfigTab.getGamepieces()
 
-        if generalConfigTab.exportMode == ExportMode.ROBOT:
-            units = generalConfigTab.selectedUnits
-        else:
-            assert generalConfigTab.exportMode == ExportMode.FIELD
-            units = gamepieceConfigTab.selectedUnits
-
         exporterOptions = ExporterOptions(
             str(savepath),
             name,
@@ -345,7 +339,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             joints=selectedJoints,
             wheels=selectedWheels,
             gamepieces=selectedGamepieces,
-            preferredUnits=units,
             robotWeight=generalConfigTab.robotWeight,
             autoCalcRobotWeight=generalConfigTab.autoCalculateWeight,
             autoCalcGamepieceWeight=gamepieceConfigTab.autoCalculateWeight,

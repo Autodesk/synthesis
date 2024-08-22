@@ -36,7 +36,6 @@ import ThemeEditorModal from "@/modals/configuring/theme-editor/ThemeEditorModal
 import MatchModeModal from "@/modals/spawning/MatchModeModal"
 import RobotSwitchPanel from "@/panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
-import ConfigureSubsystemsPanel from "@/ui/panels/configuring/ConfigureSubsystemsPanel.tsx"
 import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
@@ -46,7 +45,6 @@ import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import ConfigureRobotBrainPanel from "./ui/panels/configuring/ConfigureRobotBrainPanel.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
@@ -228,17 +226,10 @@ const initialPanels: ReactElement[] = [
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
-    <ConfigureRobotBrainPanel
-        key="config-robot-brain"
-        panelId="config-robot-brain"
-        openLocation="right"
-        sidePadding={8}
-    />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
-    <ConfigureSubsystemsPanel key="subsystem-config" panelId="subsystem-config" openLocation="right" sidePadding={8} />,
 ]
 
 export default Synthesis

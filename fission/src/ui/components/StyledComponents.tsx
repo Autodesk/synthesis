@@ -64,6 +64,7 @@ export class SynthesisIcons {
     public static EditLarge = (<IoPencil size={"1.25rem"} />)
     public static LeftArrowLarge = (<FaArrowLeft size={"1.25rem"} />)
     public static BugLarge = (<FaBug size={"1.25rem"} />)
+    public static XmarkLarge = (<FaXmark size={"1.25rem"} />)
 
     public static OpenHudIcon = (
         <FaAngleRight
