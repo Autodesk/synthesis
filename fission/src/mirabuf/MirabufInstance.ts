@@ -53,6 +53,8 @@ const fillerMaterials = [
     }),
 ]
 
+type Color = { A: number; B: number; G: number; R: number }
+
 const transformVerts = (mesh: mirabuf.IMesh) => {
     const newVerts = new Float32Array(mesh.verts!.length)
     for (let i = 0; i < mesh.verts!.length; i += 3) {
@@ -128,11 +130,15 @@ class MirabufInstance {
      * Parses all mirabuf appearances into ThreeJS and Jolt materials.
      */
     private LoadMaterials(materialStyle: MaterialStyle) {
-        (
-            Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!) as [string, mirabuf.Color][]
-        ).forEach(([appearanceId, { A, B, G, R }]) => {
-            const hex = (A << 24) | (R << 16) | (G << 8) | B
-            const opacity = A / 255.0
+        ;(
+            Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!) as [
+                string,
+                mirabuf.material.Appearance,
+            ][]
+        ).forEach(([appearanceId, appearance]) => {
+            const { A, B, G, R } = appearance.albedo ?? {}
+            const [hex, opacity] =
+                A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
 
             const material =
                 materialStyle === MaterialStyle.Regular
