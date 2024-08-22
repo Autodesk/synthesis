@@ -41,7 +41,7 @@ class Joystick {
 
     private onPointerUp(event: PointerEvent) {
         if (this.activePointerId !== event.pointerId) return
-        this.stickPosition = { x: 0, y: 0 }
+    this.stickPosition = { x: 0, y: 0 }
         this.stickElement.style.transform = `translate(-50%, -50%)`
         this.baseRect = null
     }

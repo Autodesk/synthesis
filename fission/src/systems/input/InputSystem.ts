@@ -183,14 +183,16 @@ class InputSystem extends WorldSystem {
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this)
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
 
-        InputSystem.leftJoystick = new Joystick(
-            document.getElementById("joystick-base-left")!,
-            document.getElementById("joystick-stick-left")!
-        )
-        InputSystem.rightJoystick = new Joystick(
-            document.getElementById("joystick-base-right")!,
-            document.getElementById("joystick-stick-right")!
-        )
+        window.onload = () => {
+            InputSystem.leftJoystick = new Joystick(
+                document.getElementById("joystick-base-left")!,
+                document.getElementById("joystick-stick-left")!
+            )
+            InputSystem.rightJoystick = new Joystick(
+                document.getElementById("joystick-base-right")!,
+                document.getElementById("joystick-stick-right")!
+            )
+        }
 
         // Initialize an event that's triggered when the user exits/enters the page
         document.addEventListener("visibilitychange", () => {
