@@ -1,5 +1,4 @@
 import importlib.machinery
-import importlib.util
 import os
 import subprocess
 import sys
@@ -22,10 +21,14 @@ PIP_DEPENDENCY_VERSION_MAP: dict[str, str] = {
 
 
 @logFailure
-def getInternalFusionPythonInstillationFolder() -> str:
+def getInternalFusionPythonInstillationFolder() -> str | os.PathLike[str]:
     # Thank you Kris Kaplan
     # Find the folder location where the Autodesk python instillation keeps the 'os' standard library module.
-    pythonStandardLibraryModulePath = importlib.machinery.PathFinder.find_spec("os", sys.path).origin
+    pythonOSModulePath = importlib.machinery.PathFinder.find_spec("os", sys.path)
+    if pythonOSModulePath:
+        pythonStandardLibraryModulePath = pythonOSModulePath.origin or "ERROR"
+    else:
+        raise BaseException("Could not locate spec 'os'")
 
     # Depending on platform, adjust to folder to where the python executable binaries are stored.
     if SYSTEM == "Windows":
@@ -37,10 +40,10 @@ def getInternalFusionPythonInstillationFolder() -> str:
     return folder
 
 
-def executeCommand(*args: str) -> subprocess.CompletedProcess:
+def executeCommand(*args: str) -> subprocess.CompletedProcess[str]:
     logger.debug(f"Running Command -> {' '.join(args)}")
     try:
-        result: subprocess.CompletedProcess = subprocess.run(
+        result: subprocess.CompletedProcess[str] = subprocess.run(
             args, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True
         )
         logger.debug(f"Command Output:\n{result.stdout}")
@@ -50,18 +53,6 @@ def executeCommand(*args: str) -> subprocess.CompletedProcess:
         logger.error(f"Exit code: {error.returncode}")
         logger.error(f"Output:\n{error.stderr}")
         raise error
-
-
-@logFailure
-def verifyCompiledProtoImports() -> bool:
-    protoModules = ["assembly_pb2", "joint_pb2", "material_pb2", "types_pb2"]
-    for module in protoModules:
-        # Absolute imports must be set up by this point for importlib to be able to find each module.
-        spec = importlib.util.find_spec(f"proto.proto_out.{module}")
-        if spec is None:
-            return False
-
-    return True
 
 
 def getInstalledPipPackages(pythonExecutablePath: str) -> dict[str, str]:
@@ -83,10 +74,6 @@ def packagesOutOfDate(installedPackages: dict[str, str]) -> bool:
 def resolveDependencies() -> bool | None:
     app = adsk.core.Application.get()
     ui = app.userInterface
-    if not verifyCompiledProtoImports():
-        ui.messageBox("Missing required compiled protobuf files.")
-        return False
-
     if app.isOffLine:
         # If we have gotten this far that means that an import error was thrown for possible missing
         # dependencies... And we can't try to download them because we have no internet... ¯\_(ツ)_/¯

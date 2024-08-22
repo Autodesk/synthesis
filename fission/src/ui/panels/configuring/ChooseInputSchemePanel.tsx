@@ -21,7 +21,9 @@ import { useEffect, useReducer } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurePanel"
 import { setSelectedScheme } from "./assembly-config/interfaces/inputs/ConfigureInputsInterface"
 
+/** We store the selected brain index globally to specify which robot the input scheme should be bound to. */
 let selectedBrainIndexGlobal: number | undefined = undefined
+
 // eslint-disable-next-line react-refresh/only-export-components
 export function setSelectedBrainIndexGlobal(index: number | undefined) {
     selectedBrainIndexGlobal = index
@@ -150,8 +152,6 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 InputSystem.brainIndexSchemeMap.set(getBrainIndex(), DefaultInputs.newBlankScheme)
                 openModal("assign-new-scheme")
             })}
-
-            <Box height="12px"></Box>
         </Panel>
     )
 }

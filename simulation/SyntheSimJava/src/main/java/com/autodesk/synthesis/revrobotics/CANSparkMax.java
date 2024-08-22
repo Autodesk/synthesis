@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import com.autodesk.synthesis.CANEncoder;
 import com.autodesk.synthesis.CANMotor;
-// import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
 import com.revrobotics.CANSparkBase;
 import com.revrobotics.REVLibError;
 

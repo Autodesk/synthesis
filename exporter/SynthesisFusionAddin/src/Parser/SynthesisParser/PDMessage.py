@@ -33,7 +33,7 @@ class PDMessage:
 
         self.progressDialog = progressDialog
 
-    def _format(self):
+    def _format(self) -> str:
         # USE FORMATTING TO CENTER THESE BAD BOIS
         # TABS DO NOTHING HALP
         out = f"{self.assemblyName} parsing:\n"
@@ -45,44 +45,44 @@ class PDMessage:
 
         return out
 
-    def addComponent(self, name=None):
+    def addComponent(self, name: str | None = None) -> None:
         self.currentValue += 1
         self.currentCompCount += 1
         self.currentMessage = f"Exporting Component {name}"
         self.update()
 
-    def addOccurrence(self, name=None):
+    def addOccurrence(self, name: str | None = None) -> None:
         self.currentValue += 1
         self.currentOccCount += 1
         self.currentMessage = f"Exporting Occurrence {name}"
         self.update()
 
-    def addMaterial(self, name=None):
+    def addMaterial(self, name: str | None = None) -> None:
         self.currentValue += 1
         self.currentMatCount += 1
         self.currentMessage = f"Exporting Physical Material {name}"
         self.update()
 
-    def addAppearance(self, name=None):
+    def addAppearance(self, name: str | None = None) -> None:
         self.currentValue += 1
         self.currentAppCount += 1
         self.currentMessage = f"Exporting Appearance Material {name}"
         self.update()
 
-    def addJoint(self, name=None):
+    def addJoint(self, name: str | None = None) -> None:
         self.currentMessage = f"Connecting Joints {name}"
         self.update()
 
-    def update(self):
+    def update(self) -> None:
         self.progressDialog.message = self._format()
         self.progressDialog.progressValue = self.currentValue
         self.value = self.currentValue
 
     def wasCancelled(self) -> bool:
-        return self.progressDialog.wasCancelled
+        return self.progressDialog.wasCancelled  # type: ignore[no-any-return]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._format()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self._format()

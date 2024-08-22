@@ -40,13 +40,11 @@ import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
 import World from "@/systems/World.ts"
-import { AddRobotsModal, AddFieldsModal, SpawningModal } from "@/modals/spawning/SpawningModals.tsx"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
 import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
-import ConfigureRobotBrainPanel from "./ui/panels/configuring/ConfigureRobotBrainPanel.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
@@ -60,7 +58,6 @@ import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSc
 import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
-import ResetAllInputsModal from "./ui/modals/configuring/inputs/ResetAllInputsModal.tsx"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 
@@ -165,7 +162,7 @@ function Synthesis() {
                         closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
-                            <Scene useStats={true} key="scene-in-toast-provider" />
+                            <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
@@ -192,9 +189,6 @@ function Synthesis() {
 
 const initialModals = [
     <SettingsModal key="settings" modalId="settings" />,
-    <SpawningModal key="spawning" modalId="spawning" />,
-    <AddRobotsModal key="add-robot" modalId="add-robot" />,
-    <AddFieldsModal key="add-field" modalId="add-field" />,
     <ViewModal key="view" modalId="view" />,
     <DownloadAssetsModal key="download-assets" modalId="download-assets" />,
     <RoboRIOModal key="roborio" modalId="roborio" />,
@@ -220,7 +214,6 @@ const initialModals = [
     <MatchModeModal key="match-mode" modalId="match-mode" />,
     <ConfigMotorModal key="config-motor" modalId="config-motor" />,
     <ImportLocalMirabufModal key="import-local-mirabuf" modalId="import-local-mirabuf" />,
-    <ResetAllInputsModal key="reset-inputs" modalId="reset-inputs" />,
     <APSManagementModal key="aps-management" modalId="aps-management" />,
 ]
 
@@ -231,12 +224,6 @@ const initialPanels: ReactElement[] = [
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
-    <ConfigureRobotBrainPanel
-        key="config-robot-brain"
-        panelId="config-robot-brain"
-        openLocation="right"
-        sidePadding={8}
-    />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,

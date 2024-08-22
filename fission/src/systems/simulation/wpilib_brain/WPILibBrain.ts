@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
@@ -54,7 +53,10 @@ function GetFieldType(field: string): FieldType {
     }
 }
 
-export const simMap = new Map<SimType, Map<string, any>>()
+type DeviceName = string
+type DeviceData = Map<string, number>
+
+export const simMap = new Map<SimType, Map<DeviceName, DeviceData>>()
 
 export class SimGeneric {
     private constructor() {}
@@ -78,10 +80,10 @@ export class SimGeneric {
             return undefined
         }
 
-        return (data[field] as T | undefined) ?? defaultValue
+        return (data.get(field) as T | undefined) ?? defaultValue
     }
 
-    public static Set<T>(simType: SimType, device: string, field: string, value: T): boolean {
+    public static Set<T extends number>(simType: SimType, device: string, field: string, value: T): boolean {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a write or both field type`)
@@ -100,12 +102,9 @@ export class SimGeneric {
             return false
         }
 
-        const selectedData: any = {}
+        const selectedData: { [key: string]: number } = {}
         selectedData[field] = value
-
-        data[field] = value
-
-        console.log("field " + field + " device " + device + " value " + value)
+        data.set(field, value)
 
         worker.postMessage({
             command: "update",
@@ -136,7 +135,7 @@ export class SimPWM {
 export class SimCAN {
     private constructor() {}
 
-    public static GetDeviceWithID(id: number, type: SimType): any {
+    public static GetDeviceWithID(id: number, type: SimType): DeviceData | undefined {
         const id_exp = /.*\[(\d+)\]/g
         const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type)
         for (const [_simType, data] of entries) {
@@ -154,14 +153,6 @@ export class SimCAN {
 
 export class SimCANMotor {
     private constructor() {}
-
-    // public static GetDutyCycle(device: string): number | undefined {
-    //     return SimGeneric.Get("CANMotor", device, CANMOTOR_DUTY_CYCLE, 0.0)
-    // }
-    //
-    // public static SetSupplyVoltage(device: string, voltage: number): boolean {
-    //     return SimGeneric.Set("CANMotor", device, CANMOTOR_SUPPLY_VOLTAGE, voltage)
-    // }
 
     public static GetPercentOutput(device: string): number | undefined {
         return SimGeneric.Get(SimType.CANMotor, device, CANMOTOR_PERCENT_OUTPUT, 0.0)
@@ -215,8 +206,14 @@ export class SimGyro {
     }
 }
 
+type WSMessage = {
+    type: string // might be a SimType
+    device: string // device name
+    data: Map<string, number>
+}
+
 worker.addEventListener("message", (eventData: MessageEvent) => {
-    let data: any | undefined
+    let data: WSMessage | undefined
 
     if (typeof eventData.data == "object") {
         data = eventData.data
@@ -229,25 +226,26 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         }
     }
 
-    if (!data?.type || !Object.values(SimType).includes(data.type) || data.device.split(" ")[0] != "SYN") return
+    if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type) || data.device.split(" ")[0] != "SYN")
+        return
 
-    UpdateSimMap(data.type, data.device, data.data)
+    UpdateSimMap(data.type as SimType, data.device, data.data)
 })
 
-function UpdateSimMap(type: SimType, device: string, updateData: any) {
+function UpdateSimMap(type: SimType, device: string, updateData: DeviceData) {
     let typeMap = simMap.get(type)
     if (!typeMap) {
-        typeMap = new Map<string, any>()
+        typeMap = new Map<string, DeviceData>()
         simMap.set(type, typeMap)
     }
 
     let currentData = typeMap.get(device)
     if (!currentData) {
-        currentData = {}
+        currentData = new Map<string, number>()
         typeMap.set(device, currentData)
     }
 
-    Object.entries(updateData).forEach(([key, value]) => (currentData[key] = value))
+    Object.entries(updateData).forEach(([key, value]) => currentData.set(key, value))
 
     window.dispatchEvent(new SimMapUpdateEvent(false))
 }

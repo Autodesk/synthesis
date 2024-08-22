@@ -21,24 +21,20 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
     if (miraObjs.length > 0) {
+        // TODO: make the object selectable
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
         simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
         stimuli = simLayer?.stimuli.filter(s => s instanceof EncoderStimulus) ?? []
         brain = simLayer?.brain as WPILibBrain
     }
 
-    let devices: [string, unknown][] = []
+    const devices: [string, unknown][] = [...(simMap.get(SimType.CANEncoder)?.entries() ?? [])] // ugly
 
-    const encoders = simMap.get(SimType.CANEncoder)
-    if (encoders) {
-        devices = [...encoders.entries()]
-    }
-
-    const stimMap: { [key: string]: EncoderStimulus } = {}
+    const stimMap = new Map<string, EncoderStimulus>()
 
     stimuli.forEach(stim => {
         const label = `${stim.constructor.name} ${stim.info?.name && "(" + stim.info!.name + ")"}`
-        stimMap[label] = stim
+        stimMap.set(label, stim)
     })
 
     const [selectedDevice, setSelectedDevice] = useState<string>(devices[0] && devices[0][0])
@@ -61,7 +57,11 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
             <Dropdown label="Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
-            <Dropdown label="Stimuli" options={Object.keys(stimMap)} onSelect={s => setSelectedStimulus(stimMap[s])} />
+            <Dropdown
+                label="Stimuli"
+                options={[...stimMap.keys()]}
+                onSelect={s => setSelectedStimulus(stimMap.get(s))}
+            />
         </Modal>
     )
 }
