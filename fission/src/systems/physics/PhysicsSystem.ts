@@ -1181,7 +1181,7 @@ function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
 
     bpInterface.MapObjectToBroadPhaseLayer(LAYER_FIELD, BP_LAYER_FIELD)
     bpInterface.MapObjectToBroadPhaseLayer(LAYER_GENERAL_DYNAMIC, BP_LAYER_GENERAL_DYNAMIC)
-    bpRobotLayers.map((bpRobot, i) => {
+    bpRobotLayers.forEach((bpRobot, i) => {
         bpInterface.MapObjectToBroadPhaseLayer(RobotLayers[i], bpRobot)
     })
 
