@@ -2,6 +2,18 @@ from typing import Any
 
 import adsk.core
 
+from src import gm
+
+
+class PersistentEventHandler:
+    """Auto adds itself to the global handler list on creation."""
+
+    # Inherit order matters here, `PersistentEventHandler` should come first
+    # ex: class HButtonCommandCreatedEvent(PersistentEventHandler, adsk.core.CommandCreatedEventHandler)
+    def __init__(self) -> None:
+        super().__init__()
+        gm.handlers.append(self)
+
 
 class HButtonCommandCreatedEvent(adsk.core.CommandCreatedEventHandler):
     """## Abstraction of CreatedEvent as its mostly useless in this context

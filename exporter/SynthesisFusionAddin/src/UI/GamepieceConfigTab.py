@@ -273,7 +273,7 @@ class GamepieceConfigTab:
     @logFailure
     def handleSelectionEvent(self, args: adsk.core.SelectionEventArgs, selectedOcc: adsk.fusion.Occurrence) -> None:
         selectionInput = args.activeInput
-        rootComponent = adsk.core.Application.get().activeDocument.design.rootComponent
+        rootComponent = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct).rootComponent
         occurrenceList: list[adsk.fusion.Occurrence] = rootComponent.allOccurrencesByComponent(selectedOcc.component)
         for occ in occurrenceList:
             if not self.addGamepiece(occ):

@@ -32,7 +32,7 @@ class ExporterOptions:
     # Python's `os` module can return `None` when attempting to find the home directory if the
     # user's computer has conflicting configs of some sort. This has happened and should be accounted
     # for accordingly.
-    fileLocation: str | None = field(
+    fileLocation: str | os.PathLike[str] | None = field(
         default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~"))
     )
     name: str | None = field(default=None)
@@ -52,7 +52,7 @@ class ExporterOptions:
     compressOutput: bool = field(default=True)
     exportAsPart: bool = field(default=False)
 
-    exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
+    exportLocation: ExportLocation = field(default=ExportLocation.DOWNLOAD)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
     visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)

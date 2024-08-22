@@ -2,7 +2,14 @@ import adsk.core
 import adsk.fusion
 
 from src.Logging import logFailure
-from src.Types import Joint, JointParentType, SignalType, Wheel, WheelType
+from src.Types import (
+    SELECTABLE_JOINT_TYPES,
+    Joint,
+    JointParentType,
+    SignalType,
+    Wheel,
+    WheelType,
+)
 from src.UI import IconPaths
 from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
@@ -479,20 +486,24 @@ class JointConfigTab:
     def handleSelectionEvent(self, args: adsk.core.SelectionEventArgs, selectedJoint: adsk.fusion.Joint) -> None:
         selectionInput = args.activeInput
         jointType = selectedJoint.jointMotion.jointType
-        if jointType == adsk.fusion.JointTypes.RevoluteJointType or jointType == adsk.fusion.JointTypes.SliderJointType:
-            if not self.addJoint(selectedJoint):
-                ui = adsk.core.Application.get().userInterface
-                result = ui.messageBox(
-                    "You have already selected this joint.\n" "Would you like to remove it?",
-                    "Synthesis: Remove Joint Confirmation",
-                    adsk.core.MessageBoxButtonTypes.YesNoButtonType,
-                    adsk.core.MessageBoxIconTypes.QuestionIconType,
-                )
+        if not jointType in SELECTABLE_JOINT_TYPES:
+            ui = adsk.core.Application.get().userInterface
+            ui.messageBox("The selected joint is not currently supported by Synthesis.")
+            return
 
-                if result == adsk.core.DialogResults.DialogYes:
-                    self.removeJoint(selectedJoint)
+        if not self.addJoint(selectedJoint):
+            ui = adsk.core.Application.get().userInterface
+            result = ui.messageBox(
+                "You have already selected this joint.\n" "Would you like to remove it?",
+                "Synthesis: Remove Joint Confirmation",
+                adsk.core.MessageBoxButtonTypes.YesNoButtonType,
+                adsk.core.MessageBoxIconTypes.QuestionIconType,
+            )
 
-            selectionInput.isEnabled = selectionInput.isVisible = False
+            if result == adsk.core.DialogResults.DialogYes:
+                self.removeJoint(selectedJoint)
+
+        selectionInput.isEnabled = selectionInput.isVisible = False
 
     @logFailure
     def handlePreviewEvent(self, args: adsk.core.CommandEventArgs) -> None:

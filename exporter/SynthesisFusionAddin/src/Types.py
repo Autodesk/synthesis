@@ -85,6 +85,8 @@ class ModelHierarchy(Enum):
 KG: TypeAlias = float
 LBS: TypeAlias = float
 PRIMITIVES = (bool, str, int, float, type(None))
+
+# All currently supported Fusion joints
 SELECTABLE_JOINT_TYPES = (adsk.fusion.JointTypes.RevoluteJointType, adsk.fusion.JointTypes.SliderJointType)
 
 
