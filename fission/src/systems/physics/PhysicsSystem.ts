@@ -23,6 +23,7 @@ import {
     OnContactValidateData,
     PhysicsEvent,
 } from "./ContactEvents"
+import PreferencesSystem from "../preferences/PreferencesSystem"
 
 export type JoltBodyIndexAndSequence = number
 
@@ -60,6 +61,9 @@ export function GetLastDeltaT(): number {
 const FLOOR_FRICTION = 0.7
 const SUSPENSION_MIN_FACTOR = 0.1
 const SUSPENSION_MAX_FACTOR = 0.3
+
+// Motor constant
+const VELOCITY_DEFAULT = 30
 
 /**
  * The PhysicsSystem handles all Jolt Physics interactions within Synthesis.
@@ -353,13 +357,39 @@ class PhysicsSystem extends WorldSystem {
             const constraints: Jolt.Constraint[] = []
             let listener: Jolt.PhysicsStepListener | undefined = undefined
 
+            // Motor velocity and acceleration. Prioritizes preferences then mirabuf.
+            const prefMotors = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "").motors
+            const prefMotor = prefMotors ? prefMotors.filter(x => x.name == jInst.info?.name) : undefined
+            const miraMotor = jointData.motorDefinitions![jDef.motorReference]
+
+            let maxVel = VELOCITY_DEFAULT
+            let maxForce
+            if (prefMotor && prefMotor[0]) {
+                maxVel = prefMotor[0].maxVelocity
+                maxForce = prefMotor[0].maxForce
+            } else if (miraMotor && miraMotor.simpleMotor) {
+                maxVel = miraMotor.simpleMotor.maxVelocity ?? VELOCITY_DEFAULT
+                maxForce = miraMotor.simpleMotor.stallTorque
+            }
+
             switch (jDef.jointMotionType!) {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
+                        const prefVel = PreferencesSystem.getRobotPreferences(
+                            parser.assembly.info?.name ?? ""
+                        ).driveVelocity
+                        if (prefVel > 0) maxVel = prefVel
+
+                        const prefAcc = PreferencesSystem.getRobotPreferences(
+                            parser.assembly.info?.name ?? ""
+                        ).driveAcceleration
+                        if (prefAcc > 0) maxForce = prefAcc
+
                         if (parser.directedGraph.GetAdjacencyList(rnA.id).length > 0) {
                             const res = this.CreateWheelConstraint(
                                 jInst,
                                 jDef,
+                                maxForce ?? 1.5,
                                 bodyA,
                                 bodyB,
                                 parser.assembly.info!.version!
@@ -371,6 +401,7 @@ class PhysicsSystem extends WorldSystem {
                             const res = this.CreateWheelConstraint(
                                 jInst,
                                 jDef,
+                                maxForce ?? 1.5,
                                 bodyB,
                                 bodyA,
                                 parser.assembly.info!.version!
@@ -381,12 +412,19 @@ class PhysicsSystem extends WorldSystem {
                         }
                     } else {
                         constraints.push(
-                            this.CreateHingeConstraint(jInst, jDef, bodyA, bodyB, parser.assembly.info!.version!)
+                            this.CreateHingeConstraint(
+                                jInst,
+                                jDef,
+                                maxForce ?? 50,
+                                bodyA,
+                                bodyB,
+                                parser.assembly.info!.version!
+                            )
                         )
                     }
                     break
                 case mirabuf.joint.JointMotion.SLIDER:
-                    constraints.push(this.CreateSliderConstraint(jInst, jDef, bodyA, bodyB))
+                    constraints.push(this.CreateSliderConstraint(jInst, jDef, maxForce ?? 200, bodyA, bodyB))
                     break
                 default:
                     console.debug("Unsupported joint detected. Skipping...")
@@ -399,6 +437,7 @@ class PhysicsSystem extends WorldSystem {
                         parentBody: bodyIdA,
                         childBody: bodyIdB,
                         constraint: x,
+                        maxVelocity: maxVel ?? VELOCITY_DEFAULT,
                         info: jInst.info ?? undefined, // remove possibility for null
                     })
                 )
@@ -422,6 +461,7 @@ class PhysicsSystem extends WorldSystem {
     private CreateHingeConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
+        torque: number,
         bodyA: Jolt.Body,
         bodyB: Jolt.Body,
         versionNum: number
@@ -471,7 +511,11 @@ class PhysicsSystem extends WorldSystem {
             hingeConstraintSettings.mLimitsMax = -lower
         }
 
+        hingeConstraintSettings.mMotorSettings.mMaxTorqueLimit = torque
+        hingeConstraintSettings.mMotorSettings.mMinTorqueLimit = -torque
+
         const constraint = hingeConstraintSettings.Create(bodyA, bodyB)
+        this._constraints.push(constraint)
         this._joltPhysSystem.AddConstraint(constraint)
 
         return constraint
@@ -490,6 +534,7 @@ class PhysicsSystem extends WorldSystem {
     private CreateSliderConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
+        maxForce: number,
         bodyA: Jolt.Body,
         bodyB: Jolt.Body
     ): Jolt.Constraint {
@@ -535,6 +580,9 @@ class PhysicsSystem extends WorldSystem {
             sliderConstraintSettings.mLimitsMin = -halfRange
         }
 
+        sliderConstraintSettings.mMotorSettings.mMaxForceLimit = maxForce
+        sliderConstraintSettings.mMotorSettings.mMinForceLimit = -maxForce
+
         const constraint = sliderConstraintSettings.Create(bodyA, bodyB)
 
         this._constraints.push(constraint)
@@ -546,6 +594,7 @@ class PhysicsSystem extends WorldSystem {
     public CreateWheelConstraint(
         jointInstance: mirabuf.joint.JointInstance,
         jointDefinition: mirabuf.joint.Joint,
+        maxAcc: number,
         bodyMain: Jolt.Body,
         bodyWheel: Jolt.Body,
         versionNum: number
@@ -592,8 +641,11 @@ class PhysicsSystem extends WorldSystem {
         vehicleSettings.mWheels.clear()
         vehicleSettings.mWheels.push_back(wheelSettings)
 
+        // Other than maxTorque, these controller settings are not being used as of now
+        // because ArcadeDriveBehavior goes directly to the WheelDrivers.
+        // MaxTorque is only used as communication for WheelDriver to get maxAcceleration
         const controllerSettings = new JOLT.WheeledVehicleControllerSettings()
-        controllerSettings.mEngine.mMaxTorque = 1500.0
+        controllerSettings.mEngine.mMaxTorque = maxAcc
         controllerSettings.mTransmission.mClutchStrength = 10.0
         controllerSettings.mTransmission.mGearRatios.clear()
         controllerSettings.mTransmission.mGearRatios.push_back(2)

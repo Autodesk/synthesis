@@ -1,7 +1,5 @@
 import importlib.machinery
-import importlib.util
 import os
-import platform
 import subprocess
 import sys
 from pathlib import Path
@@ -9,10 +7,10 @@ from pathlib import Path
 import adsk.core
 import adsk.fusion
 
-from .Logging import getLogger, logFailure
+from src import SYSTEM
+from src.Logging import getLogger, logFailure
 
 logger = getLogger()
-system = platform.system()
 
 # Since the Fusion python runtime is separate from the system python runtime we need to do some funky things
 # in order to download and install python packages separate from the standard library.
@@ -23,27 +21,29 @@ PIP_DEPENDENCY_VERSION_MAP: dict[str, str] = {
 
 
 @logFailure
-def getInternalFusionPythonInstillationFolder() -> str:
+def getInternalFusionPythonInstillationFolder() -> str | os.PathLike[str]:
     # Thank you Kris Kaplan
     # Find the folder location where the Autodesk python instillation keeps the 'os' standard library module.
-    pythonStandardLibraryModulePath = importlib.machinery.PathFinder.find_spec("os", sys.path).origin
+    pythonOSModulePath = importlib.machinery.PathFinder.find_spec("os", sys.path)
+    if pythonOSModulePath:
+        pythonStandardLibraryModulePath = pythonOSModulePath.origin or "ERROR"
+    else:
+        raise BaseException("Could not locate spec 'os'")
 
     # Depending on platform, adjust to folder to where the python executable binaries are stored.
-    if system == "Windows":
+    if SYSTEM == "Windows":
         folder = f"{Path(pythonStandardLibraryModulePath).parents[1]}"
-    elif system == "Darwin":
-        folder = f"{Path(pythonStandardLibraryModulePath).parents[2]}/bin"
     else:
-        # TODO: System string should be moved to __init__ after GH-1013
-        raise RuntimeError("Unsupported platform.")
+        assert SYSTEM == "Darwin"
+        folder = f"{Path(pythonStandardLibraryModulePath).parents[2]}/bin"
 
     return folder
 
 
-def executeCommand(*args: str) -> subprocess.CompletedProcess:
+def executeCommand(*args: str) -> subprocess.CompletedProcess[str]:
     logger.debug(f"Running Command -> {' '.join(args)}")
     try:
-        result: subprocess.CompletedProcess = subprocess.run(
+        result: subprocess.CompletedProcess[str] = subprocess.run(
             args, shell=False, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, check=True
         )
         logger.debug(f"Command Output:\n{result.stdout}")
@@ -53,18 +53,6 @@ def executeCommand(*args: str) -> subprocess.CompletedProcess:
         logger.error(f"Exit code: {error.returncode}")
         logger.error(f"Output:\n{error.stderr}")
         raise error
-
-
-@logFailure
-def verifyCompiledProtoImports() -> bool:
-    protoModules = ["assembly_pb2", "joint_pb2", "material_pb2", "types_pb2"]
-    for module in protoModules:
-        # Absolute imports must be set up by this point for importlib to be able to find each module.
-        spec = importlib.util.find_spec(f"proto.proto_out.{module}")
-        if spec is None:
-            return False
-
-    return True
 
 
 def getInstalledPipPackages(pythonExecutablePath: str) -> dict[str, str]:
@@ -86,10 +74,6 @@ def packagesOutOfDate(installedPackages: dict[str, str]) -> bool:
 def resolveDependencies() -> bool | None:
     app = adsk.core.Application.get()
     ui = app.userInterface
-    if not verifyCompiledProtoImports():
-        ui.messageBox("Missing required compiled protobuf files.")
-        return False
-
     if app.isOffLine:
         # If we have gotten this far that means that an import error was thrown for possible missing
         # dependencies... And we can't try to download them because we have no internet... ¯\_(ツ)_/¯
@@ -100,7 +84,7 @@ def resolveDependencies() -> bool | None:
     adsk.doEvents()
 
     pythonFolder = getInternalFusionPythonInstillationFolder()
-    pythonExecutableFile = "python.exe" if system == "Windows" else "python"  # Confirming 110% everything is fine.
+    pythonExecutableFile = "python.exe" if SYSTEM == "Windows" else "python"  # Confirming 110% everything is fine.
     pythonExecutablePath = os.path.join(pythonFolder, pythonExecutableFile)
 
     progressBar = ui.createProgressDialog()
@@ -109,7 +93,7 @@ def resolveDependencies() -> bool | None:
     progressBar.show("Synthesis", f"Installing dependencies...", 0, len(PIP_DEPENDENCY_VERSION_MAP) * 2 + 2, 0)
 
     # Install pip manually on macos as it is not included by default? Really?
-    if system == "Darwin" and not os.path.exists(os.path.join(pythonFolder, "pip")):
+    if SYSTEM == "Darwin" and not os.path.exists(os.path.join(pythonFolder, "pip")):
         pipInstallScriptPath = os.path.join(pythonFolder, "get-pip.py")
         if not os.path.exists(pipInstallScriptPath):
             executeCommand("curl", "https://bootstrap.pypa.io/get-pip.py", "-o", pipInstallScriptPath)

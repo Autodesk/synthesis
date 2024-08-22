@@ -1,12 +1,16 @@
-from ..general_imports import *
-from ..Logging import logFailure
-from . import Handlers, OsHelper
+from typing import Any, Callable
+
+import adsk.core
+
+from src import INTERNAL_ID, gm
+from src.Logging import logFailure
+from src.UI import Handlers, OsHelper
 
 
 # no longer used
 class HPalette:
-    handlers = []
-    events = []
+    handlers: list[Any] = []
+    events: list[adsk.core.Event] = []
 
     def __init__(
         self,
@@ -17,8 +21,8 @@ class HPalette:
         resizeable: bool,
         width: int,
         height: int,
-        *argv,
-    ):
+        *argv: Any,
+    ) -> None:
         """#### Creates a HPalette Object with a number of function pointers that correspond to a action on the js side.
 
         Arguments:
@@ -67,9 +71,12 @@ class HPalette:
 
             self.palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateLeft
 
-            onHTML = Handlers.HPaletteHTMLEventHandler(self)
-            self.palette.incomingFromHTML.add(onHTML)
-            self.handlers.append(onHTML)
+            # Transition: AARD-1765
+            # Should be removed later as this is no longer used, would have been
+            # impossible to add typing for this block.
+            # onHTML = Handlers.HPaletteHTMLEventHandler(self)
+            # self.palette.incomingFromHTML.add(onHTML)
+            # self.handlers.append(onHTML)
 
         self.palette.isVisible = True
 
@@ -84,7 +91,7 @@ class HPalette:
 
 
 class HButton:
-    handlers = []
+    handlers: list[Any] = []
     """ Keeps all handler classes alive which is essential apparently. - used in command events """
 
     @logFailure
@@ -92,11 +99,11 @@ class HButton:
         self,
         name: str,
         location: str,
-        check_func: object,
-        exec_func: object,
+        check_func: Callable[..., bool],
+        exec_func: Callable[..., Any],
         description: str = "No Description",
         command: bool = False,
-    ):
+    ) -> None:
         """# Creates a new HButton Class.
 
         Arguments:
@@ -168,7 +175,7 @@ class HButton:
         self.buttonControl.isPromotedByDefault = flag
         self.buttonControl.isPromoted = flag
 
-    def deleteMe(self):
+    def deleteMe(self) -> None:
         """## Custom deleteMe method to easily deconstruct button data.
 
         This somehow doesn't work if I keep local references to all of these definitions.
@@ -184,7 +191,7 @@ class HButton:
         if ctrl:
             ctrl.deleteMe()
 
-    def scrub(self):
+    def scrub(self) -> None:
         """### In-case I make a mistake or a crash happens early it can scrub the command.
 
         It can only be called if the ID is not currently in the buttons list.
@@ -193,7 +200,7 @@ class HButton:
         """
         self.deleteMe()
 
-    def __str__(self):
+    def __str__(self) -> str:
         """### Retrieves the button unique ID and treats it as a string.
         Returns:
             *str* -- button unique ID.

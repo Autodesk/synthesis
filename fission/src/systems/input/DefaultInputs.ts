@@ -1,6 +1,7 @@
 import { InputScheme } from "./InputSchemeManager"
 import { AxisInput, ButtonInput, EmptyModifierState } from "./InputSystem"
 
+/** The purpose of this class is to store any defaults related to the input system. */
 class DefaultInputs {
     static ernie = () => {
         return {
@@ -11,6 +12,10 @@ class DefaultInputs {
             inputs: [
                 new AxisInput("arcadeDrive", "KeyW", "KeyS"),
                 new AxisInput("arcadeTurn", "KeyD", "KeyA"),
+
+                new AxisInput("swerveForward", "KeyW", "KeyS"),
+                new AxisInput("swerveStrafe", "KeyD", "KeyA"),
+                new AxisInput("swerveTurn", "ArrowRight", "ArrowLeft"),
 
                 new ButtonInput("intake", "KeyE"),
                 new ButtonInput("eject", "KeyQ"),
@@ -91,8 +96,8 @@ class DefaultInputs {
                     shift: false,
                     meta: false,
                 }),
-                new AxisInput("joint 5", "KeyN", "true", -1, false, false, -1, -1, EmptyModifierState, {
-                    ctrl: false,
+                new AxisInput("joint 5", "KeyN", "KeyN", -1, false, false, -1, -1, EmptyModifierState, {
+                    ctrl: true,
                     alt: false,
                     shift: false,
                     meta: false,
@@ -133,6 +138,7 @@ class DefaultInputs {
         }
     }
 
+    /** We like this guy */
     public static hunter = () => {
         return {
             schemeName: "Hunter",
@@ -187,7 +193,8 @@ class DefaultInputs {
         }
     }
 
-    public static get defaultInputCopies() {
+    /** @returns {InputScheme[]} New copies of the default input schemes without reference to any others. */
+    public static get defaultInputCopies(): InputScheme[] {
         return [
             DefaultInputs.ernie(),
             DefaultInputs.luna(),
@@ -197,6 +204,7 @@ class DefaultInputs {
         ]
     }
 
+    /** @returns {InputScheme} A new blank input scheme with no control bound. */
     public static get newBlankScheme(): InputScheme {
         return {
             schemeName: "",

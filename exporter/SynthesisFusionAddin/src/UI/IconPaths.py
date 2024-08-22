@@ -1,6 +1,6 @@
 import os
 
-from . import OsHelper
+from src.UI import OsHelper
 
 """
 Dictionaries that store all the icon paths in ConfigCommand. All path strings are OS-independent

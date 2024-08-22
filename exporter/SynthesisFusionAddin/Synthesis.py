@@ -1,39 +1,50 @@
 import os
 import sys
+from typing import Any
 
 import adsk.core
 
-# Currently required for `resolveDependencies()`, will be required for absolute imports.
+# Required for absolute imports.
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-from .src.Dependencies import resolveDependencies  # isort:skip
+from src.Dependencies import resolveDependencies
+from src.Logging import logFailure, setupLogger
 
-# Transition: AARD-1741
-# Import order should be removed in AARD-1737 and `setupLogger()` moved to `__init__.py`
-from .src.Logging import getLogger, logFailure, setupLogger  # isort:skip
-
-setupLogger()
+logger = setupLogger()
 
 try:
-    from .src.general_imports import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
-    from .src.UI import (
-        HUI,
-        Camera,
-        ConfigCommand,
-        MarkingMenu,
-        ShowAPSAuthCommand,
-        ShowWebsiteCommand,
+    # Attempt to import required pip dependencies to verify their installation.
+    import requests
+
+    from src.Proto import (
+        assembly_pb2,
+        joint_pb2,
+        material_pb2,
+        motor_pb2,
+        signal_pb2,
+        types_pb2,
     )
-    from .src.UI.Toolbar import Toolbar
-except (ImportError, ModuleNotFoundError) as error:
-    getLogger().warn(f"Running resolve dependencies with error of:\n{error}")
+except (ImportError, ModuleNotFoundError, BaseException) as error:  # BaseException required to catch proto.VersionError
+    logger.warn(f"Running resolve dependencies with error of:\n{error}")
     result = resolveDependencies()
     if result:
         adsk.core.Application.get().userInterface.messageBox("Installed required dependencies.\nPlease restart Fusion.")
 
 
+from src import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
+from src.UI import (
+    HUI,
+    Camera,
+    ConfigCommand,
+    MarkingMenu,
+    ShowAPSAuthCommand,
+    ShowWebsiteCommand,
+)
+from src.UI.Toolbar import Toolbar
+
+
 @logFailure
-def run(_):
+def run(_context: dict[str, Any]) -> None:
     """## Entry point to application from Fusion.
 
     Arguments:
@@ -53,7 +64,7 @@ def run(_):
 
 
 @logFailure
-def stop(_):
+def stop(_context: dict[str, Any]) -> None:
     """## Fusion exit point - deconstructs buttons and handlers
 
     Arguments:
@@ -68,28 +79,8 @@ def stop(_):
 
     # nm.deleteMe()
 
-    logger = getLogger(INTERNAL_ID)
     logger.cleanupHandlers()
-
-    for file in gm.files:
-        try:
-            os.remove(file)
-        except OSError:
-            pass
-
-    # removes path so that proto files don't get confused
-
-    import sys
-
-    path = os.path.abspath(os.path.dirname(__file__))
-
-    path_proto_files = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "proto", "proto_out"))
-
-    if path in sys.path:
-        sys.path.remove(path)
-
-    if path_proto_files in sys.path:
-        sys.path.remove(path_proto_files)
+    gm.clear()
 
 
 @logFailure

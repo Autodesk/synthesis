@@ -1,30 +1,28 @@
-import logging.handlers
-import traceback
+from typing import Callable
 
 import adsk.core
 import adsk.fusion
 
-from ..Logging import logFailure
+from src.Logging import getLogger, logFailure
 
 # Ripped all the boiler plate from the example code: https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-c90ce6a2-c282-11e6-a365-3417ebc87622
 
 # global mapping list of event handlers to keep them referenced for the duration of the command
 # handlers = {}
-handlers = []
-cmdDefs = []
-entities = []
-occurrencesOfComponents = {}
+handlers: list[adsk.core.CommandEventHandler] = []
+cmdDefs: list[adsk.core.CommandDefinition] = []
+entities: list[adsk.fusion.Occurrence] = []
+
+logger = getLogger()
 
 
 @logFailure(messageBox=True)
-def setupMarkingMenu(ui: adsk.core.UserInterface):
+def setupMarkingMenu(ui: adsk.core.UserInterface) -> None:
     handlers.clear()
 
     @logFailure(messageBox=True)
-    def setLinearMarkingMenu(args):
-        menuArgs = adsk.core.MarkingMenuEventArgs.cast(args)
-
-        linearMenu = menuArgs.linearMarkingMenu
+    def setLinearMarkingMenu(args: adsk.core.MarkingMenuEventArgs) -> None:
+        linearMenu = args.linearMarkingMenu
         linearMenu.controls.addSeparator("LinearSeparator")
 
         synthDropDown = linearMenu.controls.addDropDown("Synthesis", "", "synthesis")
@@ -50,14 +48,16 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                     cmdEnableCollision = ui.commandDefinitions.itemById("EnableCollision")
                     synthDropDown.controls.addCommand(cmdEnableCollision)
 
-    def setCollisionAttribute(occ: adsk.fusion.Occurrence, isEnabled: bool = True):
+    def setCollisionAttribute(occ: adsk.fusion.Occurrence, isEnabled: bool = True) -> None:
         attr = occ.attributes.itemByName("synthesis", "collision_off")
         if attr == None and not isEnabled:
             occ.attributes.add("synthesis", "collision_off", "true")
         elif attr != None and isEnabled:
             attr.deleteMe()
 
-    def applyToSelfAndAllChildren(occ: adsk.fusion.Occurrence, modFunc):
+    def applyToSelfAndAllChildren(
+        occ: adsk.fusion.Occurrence, modFunc: Callable[[adsk.fusion.Occurrence], None]
+    ) -> None:
         modFunc(occ)
         childLists = []
         childLists.append(occ.childOccurrences)
@@ -71,22 +71,16 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                     childLists.append(o.childOccurrences)
 
     class MyCommandCreatedEventHandler(adsk.core.CommandCreatedEventHandler):
-        def __init__(self):
-            super().__init__()
-
         @logFailure(messageBox=True)
-        def notify(self, args):
+        def notify(self, args: adsk.core.CommandCreatedEventArgs) -> None:
             command = args.command
             onCommandExcute = MyCommandExecuteHandler()
             handlers.append(onCommandExcute)
             command.execute.add(onCommandExcute)
 
     class MyCommandExecuteHandler(adsk.core.CommandEventHandler):
-        def __init__(self):
-            super().__init__()
-
         @logFailure(messageBox=True)
-        def notify(self, args):
+        def notify(self, args: adsk.core.CommandEventArgs) -> None:
             command = args.firingEvent.sender
             cmdDef = command.parentCommandDefinition
             if cmdDef:
@@ -129,14 +123,9 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
                 ui.messageBox("No CommandDefinition")
 
     class MyMarkingMenuHandler(adsk.core.MarkingMenuEventHandler):
-        def __init__(self):
-            super().__init__()
-
         @logFailure(messageBox=True)
-        def notify(self, args):
+        def notify(self, args: adsk.core.CommandEventArgs) -> None:
             setLinearMarkingMenu(args)
-
-            global occurrencesOfComponents
 
             # selected entities
             global entities
@@ -202,11 +191,12 @@ def setupMarkingMenu(ui: adsk.core.UserInterface):
 
 
 @logFailure(messageBox=True)
-def stopMarkingMenu(ui: adsk.core.UserInterface):
+def stopMarkingMenu(ui: adsk.core.UserInterface) -> None:
     for obj in cmdDefs:
         if obj.isValid:
             obj.deleteMe()
         else:
-            ui.messageBox(str(obj) + " is not a valid object")
+            logger.warn(f"{str(obj)} is not a valid object")
 
+    cmdDefs.clear()
     handlers.clear()

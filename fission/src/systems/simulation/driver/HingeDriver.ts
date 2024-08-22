@@ -3,20 +3,22 @@ import Driver, { DriverControlMode } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
+import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+
+const MAX_TORQUE_WITHOUT_GRAV = 100
 
 class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
 
     private _controlMode: DriverControlMode = DriverControlMode.Velocity
-    private _targetVelocity: number = 0.0
     private _targetAngle: number
+    private _maxTorqueWithGrav: number = 0.0
+    public accelerationDirection: number = 0.0
+    public maxVelocity: number
 
-    public get targetVelocity(): number {
-        return this._targetVelocity
-    }
-    public set targetVelocity(radsPerSec: number) {
-        this._targetVelocity = radsPerSec
-    }
+    private _prevAng: number = 0.0
+
+    private _gravityChange?: (event: PreferenceEvent) => void
 
     public get targetAngle(): number {
         return this._targetAngle
@@ -25,13 +27,14 @@ class HingeDriver extends Driver {
         this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
     }
 
-    public set minTorqueLimit(nm: number) {
-        const motorSettings = this._constraint.GetMotorSettings()
-        motorSettings.mMinTorqueLimit = nm
+    public get maxForce() {
+        return this._constraint.GetMotorSettings().mMaxTorqueLimit
     }
-    public set maxTorqueLimit(nm: number) {
+
+    public set maxForce(nm: number) {
         const motorSettings = this._constraint.GetMotorSettings()
-        motorSettings.mMaxTorqueLimit = nm
+        motorSettings.set_mMaxTorqueLimit(nm)
+        motorSettings.set_mMinTorqueLimit(-nm)
     }
 
     public get controlMode(): DriverControlMode {
@@ -57,10 +60,12 @@ class HingeDriver extends Driver {
         }
     }
 
-    public constructor(constraint: Jolt.HingeConstraint, info?: mirabuf.IInfo) {
+    public constructor(constraint: Jolt.HingeConstraint, maxVelocity: number, info?: mirabuf.IInfo) {
         super(info)
 
         this._constraint = constraint
+        this.maxVelocity = maxVelocity
+        this._targetAngle = this._constraint.GetCurrentAngle()
 
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
@@ -68,21 +73,41 @@ class HingeDriver extends Driver {
         // These values were selected based on the suggestions of the documentation for stiff control.
         springSettings.mFrequency = 20 * (1.0 / GetLastDeltaT())
         springSettings.mDamping = 0.995
-
         motorSettings.mSpringSettings = springSettings
-        motorSettings.mMinTorqueLimit = -200.0
-        motorSettings.mMaxTorqueLimit = 200.0
 
-        this._targetAngle = this._constraint.GetCurrentAngle()
+        this._maxTorqueWithGrav = motorSettings.get_mMaxTorqueLimit()
+        if (!PreferencesSystem.getGlobalPreference("SubsystemGravity")) {
+            motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
+            motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
+        }
 
         this.controlMode = DriverControlMode.Velocity
+
+        this._gravityChange = (event: PreferenceEvent) => {
+            if (event.prefName == "SubsystemGravity") {
+                const motorSettings = this._constraint.GetMotorSettings()
+                if (event.prefValue) {
+                    motorSettings.set_mMaxTorqueLimit(this._maxTorqueWithGrav)
+                    motorSettings.set_mMinTorqueLimit(-this._maxTorqueWithGrav)
+                } else {
+                    motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
+                    motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
+                }
+            }
+        }
+
+        PreferencesSystem.addEventListener(this._gravityChange)
     }
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetAngularVelocity(this._targetVelocity)
+            this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
-            this._constraint.SetTargetAngle(this._targetAngle)
+            let ang = this._targetAngle
+
+            if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this.maxVelocity
+            if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this.maxVelocity
+            this._constraint.SetTargetAngle(ang)
         }
     }
 }

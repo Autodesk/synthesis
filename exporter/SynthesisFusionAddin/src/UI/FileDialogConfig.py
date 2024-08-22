@@ -1,15 +1,15 @@
-from typing import Union
+import os
+import tempfile
+from pathlib import Path
 
 import adsk.core
 import adsk.fusion
 
-from ..general_imports import *
-
-# from ..proto_out import Configuration_pb2
-from ..Types import OString
+from src import gm
+from src.Types import OString
 
 
-def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | bool:
+def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | os.PathLike[str] | None:
     """Function to generate the Save File Dialog for the Hellion Data files
 
     Args:
@@ -17,11 +17,11 @@ def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = Non
         defaultName (str): default name for the saving file
 
     Returns:
-        bool: False if canceled
+        None: if canceled
         str: full file path
     """
 
-    fileDialog: adsk.core.FileDialog = gm.ui.createFileDialog()
+    fileDialog = gm.ui.createFileDialog()
     fileDialog.isMultiSelectEnabled = False
 
     fileDialog.title = "Save Export Result"
@@ -40,10 +40,28 @@ def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = Non
     fileDialog.filterIndex = 0
     dialogResult = fileDialog.showSave()
 
-    if dialogResult == adsk.core.DialogResults.DialogOK:
-        return fileDialog.filename
-    else:
+    if dialogResult != adsk.core.DialogResults.DialogOK:
+        return None
+
+    canWrite = isWriteableDirectory(Path(fileDialog.filename).parent)
+    if not canWrite:
+        gm.ui.messageBox("Synthesis does not have the required permissions to write to this directory.")
+        return saveFileDialog(defaultPath, defaultName)
+
+    return fileDialog.filename or ""
+
+
+def isWriteableDirectory(path: str | os.PathLike[str]) -> bool:
+    if not os.access(path, os.W_OK):
         return False
+
+    try:
+        with tempfile.NamedTemporaryFile(dir=path, delete=True) as f:
+            f.write(b"test")
+    except OSError:
+        return False
+
+    return True
 
 
 def generateFilePath() -> str:
@@ -55,7 +73,9 @@ def generateFilePath() -> str:
     Returns:
         str: file path
     """
-    tempPath = OString.TempPath("").getPath()
+    # Transition: AARD-1765
+    # Ignoring the type for now, will revisit in the OString refactor
+    tempPath = OString.TempPath("").getPath()  # type: ignore
     return str(tempPath)
 
 
@@ -78,5 +98,4 @@ def generateFileName() -> str:
     return "{0}_{1}.mira".format(name, version)
 
 
-def OpenFileDialog():
-    pass
+def OpenFileDialog() -> None: ...
