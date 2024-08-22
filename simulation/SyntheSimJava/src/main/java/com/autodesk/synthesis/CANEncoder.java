@@ -36,7 +36,7 @@ public class CANEncoder {
     /**
      * Gets the current position of the encoder, simulated.
      * 
-     * @return Current Position.
+     * @return Current position in revolutions.
      */
     public double getPosition() {
         return m_position.get();
@@ -45,7 +45,7 @@ public class CANEncoder {
     /**
      * Gets the current velocity of the encoder, simulated.
      * 
-     * @return Current Velocity.
+     * @return Current velocity in revolutions per second.
      */
     public double getVelocity() {
         return m_velocity.get();
