@@ -181,24 +181,8 @@ class MirabufSceneObject extends SceneObject {
             this.DisablePhysics()
             if (this._gizmo.isDragging) {
                 this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-                    World.PhysicsSystem.SetBodyPosition(
-                        this._mechanism.GetBodyByNodeId(rn.id)!,
-                        ThreeMatrix4_JoltMat44(this._gizmo!.obj.matrix).GetTranslation()
-                    )
-                    World.PhysicsSystem.SetBodyRotation(
-                        this._mechanism.GetBodyByNodeId(rn.id)!,
-                        ThreeQuaternion_JoltQuat(this._gizmo!.obj.quaternion)
-                    )
-
-                    rn.parts.forEach(part => {
-                        const partTransform = this._mirabufInstance.parser.globalTransforms
-                            .get(part)!
-                            .clone()
-                            .premultiply(this._gizmo!.obj.matrix)
-
-                        const meshes = this._mirabufInstance.meshes.get(part) ?? []
-                        meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
-                    })
+                    this._gizmo?.UpdateBodyPositionAndRotation(rn)
+                    this.UpdateNodeParts(rn, this._gizmo!.obj.matrix)
                 })
             }
 
@@ -212,14 +196,7 @@ class MirabufSceneObject extends SceneObject {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
             const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
-            rn.parts.forEach(part => {
-                const partTransform = this._mirabufInstance.parser.globalTransforms
-                    .get(part)!
-                    .clone()
-                    .premultiply(transform)
-                const meshes = this._mirabufInstance.meshes.get(part) ?? []
-                meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
-            })
+            this.UpdateNodeParts(rn, transform)
 
             if (isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
@@ -326,6 +303,17 @@ class MirabufSceneObject extends SceneObject {
         mesh.castShadow = true
 
         return mesh
+    }
+
+    private UpdateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
+        rn.parts.forEach(part => {
+            const partTransform = this._mirabufInstance.parser.globalTransforms
+                .get(part)!
+                .clone()
+                .premultiply(transform)
+            const meshes = this._mirabufInstance.meshes.get(part) ?? []
+            meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
+        })
     }
 
     /** Updates the batch computations */

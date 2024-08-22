@@ -4,6 +4,8 @@ import InputSystem from "../input/InputSystem"
 import World from "../World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Object3D, PerspectiveCamera } from "three"
+import { ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeConversions"
+import { RigidNodeReadOnly } from "@/mirabuf/MirabufParser"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
 
@@ -132,6 +134,19 @@ class GizmoSceneObject extends SceneObject {
     /** changes the mode of the gizmo */
     public SetMode(mode: GizmoMode) {
         this._gizmo.setMode(mode)
+    }
+
+    /** updates body position and rotation for each body from the parent object */
+    public UpdateBodyPositionAndRotation(rn: RigidNodeReadOnly) {
+        if (!this._parentObject) return
+        World.PhysicsSystem.SetBodyPosition(
+            this._parentObject.mechanism.GetBodyByNodeId(rn.id)!,
+            ThreeMatrix4_JoltMat44(this._obj.matrix).GetTranslation()
+        )
+        World.PhysicsSystem.SetBodyRotation(
+            this._parentObject.mechanism.GetBodyByNodeId(rn.id)!,
+            ThreeQuaternion_JoltQuat(this._obj.quaternion)
+        )
     }
 }
 
