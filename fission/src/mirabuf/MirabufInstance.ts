@@ -53,8 +53,6 @@ const fillerMaterials = [
     }),
 ]
 
-type Color = { A: number; B: number; G: number; R: number }
-
 const transformVerts = (mesh: mirabuf.IMesh) => {
     const newVerts = new Float32Array(mesh.verts!.length)
     for (let i = 0; i < mesh.verts!.length; i += 3) {
@@ -130,7 +128,7 @@ class MirabufInstance {
      * Parses all mirabuf appearances into ThreeJS and Jolt materials.
      */
     private LoadMaterials(materialStyle: MaterialStyle) {
-        ;(
+        (
             Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!) as [
                 string,
                 mirabuf.material.Appearance,
