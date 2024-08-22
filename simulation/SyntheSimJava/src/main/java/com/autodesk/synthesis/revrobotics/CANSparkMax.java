@@ -21,7 +21,7 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
      * Creates a new CANSparkMax, wrapped with simulation support.
      * 
      * @param deviceId  CAN Device ID.
-     * @param motorType Motortype. For Simulation purposes, this is discarded at the
+     * @param motorType Motor type. For Simulation purposes, this is discarded at the
      *                  moment.
      *
      * See original documentation for more information https://codedocs.revrobotics.com/java/com/revrobotics/cansparkmax
@@ -54,7 +54,7 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
     /**
      * Sets the neutralDeadband of the real and simulated motors
      *
-     * @param n The new neutralDeadband
+     * @param n The new neutral deadband
      */
     void setNeutralDeadband(double n) {
         this.m_motor.setNeutralDeadband(n);
@@ -77,27 +77,31 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
 
     /** 
      * Gets a simulation-supported SparkAbsoluteEncoder containing the position and velocity of the motor in fission.
-     * All information returned by this class besides position and velocity is from the real motor
-     * Use instead on getAbsoluteEncoder(), everything except for the name of the method works exactly the same
+     * All information returned by this class besides position and velocity is from the real motor.
+     * Use instead of getAbsoluteEncoder(), everything except for the name of the method works exactly the same.
 
-     * @return thewsimulation-supported SparkAbsoluteEncoder.
-     *
-     *      */
+     * @return The simulation-supported SparkAbsoluteEncoder.
+     */
     public com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder getAbsoluteEncoderSim() {
         return new SparkAbsoluteEncoder(super.getAbsoluteEncoder(), this.m_encoder);
     }
 
+    /**
+     * Adds a follower to this motor controller.
+     *
+     * @param f The new follower
+     */
     void newFollower(CANSparkMax f) {
         this.followers.add(f);
     }
 
     /** 
-     * Causes a simulation-supported leader to follow another simulation-supported leader
-     * The real versions of these motors will also follow each other
+     * Causes a simulation-supported leader to follow another simulation-supported leader.
+     * The real versions of these motors will also follow each other.
      *
      * @param leader The motor for this robot to follow
      *
-     * @return a library error indicating failure or success
+     * @return A library error indicating failure or success
      */
     @Override
     public REVLibError follow(CANSparkBase leader) {

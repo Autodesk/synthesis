@@ -6,9 +6,18 @@ import com.ctre.phoenix6.StatusCode;
 
 //import com.ctre.phoenix6.configs.TalonFXConfigurator
 
+/**
+ * TalonFXConfigurator wrapper to add proper WPILib HALSim support.
+ */
 public class TalonFXConfigurator extends com.ctre.phoenix6.configs.TalonFXConfigurator {
     private TalonFX devicePtr;
 
+    /**
+     * Creates a new TalonFXConfigurator, wrapped with simulation support.
+     * 
+     * @param id Device ID
+     * @param device The motor to configure
+     */
     public TalonFXConfigurator(DeviceIdentifier id, TalonFX device) {
         super(id);
         // awful, jank solution, please help
@@ -19,7 +28,7 @@ public class TalonFXConfigurator extends com.ctre.phoenix6.configs.TalonFXConfig
     /**
      * Applies a torque configuration to a TalonFX motor and passes the new neutral deadband to the simulated motor in fission if applicable
      *
-     * @param The new torque configuration for this motor
+     * @param newTorqueCurrent The new torque configuration for this motor
      */
     @Override
     public StatusCode apply(TorqueCurrentConfigs newTorqueCurrent) {
