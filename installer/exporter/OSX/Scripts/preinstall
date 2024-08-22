@@ -1,0 +1,7 @@
+#!/bin/bash
+
+FUSION_ADDIN_LOCATION=~/Library/Application\ Support/Autodesk/ApplicationPlugins/
+
+if [ ! -d "$FUSION_ADDIN_LOCATION" ]; then
+  mkdir -p "$FUSION_ADDIN_LOCATION"
+fi

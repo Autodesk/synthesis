@@ -206,7 +206,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 min={MIN_ZONE_SIZE}
                 max={MAX_ZONE_SIZE}
                 value={zoneSize}
-                label="Size"
+                label="Zone Size"
                 format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                 onChange={(_, vel: number | number[]) => {
                     setZoneSize(vel as number)

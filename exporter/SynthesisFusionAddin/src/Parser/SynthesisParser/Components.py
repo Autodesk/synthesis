@@ -45,7 +45,7 @@ def _MapAllComponents(
         else:
             partDefinition.dynamic = True
 
-        def processBody(body: adsk.fusion.BRepBody | adsk.fusion.MeshBody):
+        def processBody(body: adsk.fusion.BRepBody | adsk.fusion.MeshBody) -> None:
             if progressDialog.wasCancelled():
                 raise RuntimeError("User canceled export")
             if body.isLightBulbOn:
@@ -77,7 +77,7 @@ def _ParseComponentRoot(
     progressDialog: PDMessage,
     options: ExporterOptions,
     partsData: assembly_pb2.Parts,
-    material_map: dict,
+    material_map: dict[str, material_pb2.Appearance],
     node: types_pb2.Node,
 ) -> None:
     mapConstant = guid_component(component)
@@ -108,7 +108,7 @@ def __parseChildOccurrence(
     progressDialog: PDMessage,
     options: ExporterOptions,
     partsData: assembly_pb2.Parts,
-    material_map: dict,
+    material_map: dict[str, material_pb2.Appearance],
     node: types_pb2.Node,
 ) -> None:
     if occurrence.isLightBulbOn is False:
@@ -172,10 +172,10 @@ def __parseChildOccurrence(
 # saw online someone used this to get the correct context but oh boy does it look pricey
 # I think if I can make all parts relative to a parent it should return that parents transform maybe
 # TESTED AND VERIFIED - but unoptimized
-def GetMatrixWorld(occurrence):
-    matrix = occurrence.transform
+def GetMatrixWorld(occurrence: adsk.fusion.Occurrence) -> adsk.core.Matrix3D:
+    matrix = occurrence.transform2
     while occurrence.assemblyContext:
-        matrix.transformBy(occurrence.assemblyContext.transform)
+        matrix.transformBy(occurrence.assemblyContext.transform2)
         occurrence = occurrence.assemblyContext
     return matrix
 
@@ -185,7 +185,7 @@ def _ParseBRep(
     body: adsk.fusion.BRepBody,
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
-) -> any:
+) -> None:
     meshManager = body.meshManager
     calc = meshManager.createMeshCalculator()
     calc.setQuality(options.visualQuality)
@@ -207,7 +207,7 @@ def _ParseMesh(
     meshBody: adsk.fusion.MeshBody,
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
-) -> any:
+) -> None:
     mesh = meshBody.displayMesh
 
     fill_info(trimesh, meshBody)

@@ -33,8 +33,8 @@ class SchemeSelectionOption extends SelectMenuOption {
     constructor(scheme: InputScheme) {
         const robotName = findSchemeRobotName(scheme)
         super(
-            `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}` +
-                (robotName ? ` [${robotName}]` : "")
+            `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`,
+            robotName ? `Bound to: ${robotName}` : undefined
         )
         this.scheme = scheme
     }

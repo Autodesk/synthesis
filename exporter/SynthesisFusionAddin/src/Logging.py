@@ -7,19 +7,19 @@ import sys
 import time
 import traceback
 from datetime import date, datetime
-from typing import cast
+from typing import Any, Callable, cast
 
 import adsk.core
 
-from src import INTERNAL_ID
-from src.UI.OsHelper import getOSPath
+from src import INTERNAL_ID, IS_RELEASE, SUPPORT_PATH
+from src.Util import makeDirectories
 
 MAX_LOG_FILES_TO_KEEP = 10
 TIMING_LEVEL = 25
 
 
 class SynthesisLogger(logging.Logger):
-    def timing(self, msg: str, *args: any, **kwargs: any) -> None:
+    def timing(self, msg: str, *args: Any, **kwargs: Any) -> None:
         return self.log(TIMING_LEVEL, msg, *args, **kwargs)
 
     def cleanupHandlers(self) -> None:
@@ -30,14 +30,17 @@ class SynthesisLogger(logging.Logger):
 def setupLogger() -> SynthesisLogger:
     now = datetime.now().strftime("%H-%M-%S")
     today = date.today()
-    logFileFolder = getOSPath(f"{pathlib.Path(__file__).parent.parent}", "logs")
-    logFiles = [os.path.join(logFileFolder, file) for file in os.listdir(logFileFolder) if file.endswith(".log")]
-    logFiles.sort()
-    if len(logFiles) >= MAX_LOG_FILES_TO_KEEP:
-        for file in logFiles[: len(logFiles) - MAX_LOG_FILES_TO_KEEP]:
-            os.remove(file)
+    if IS_RELEASE:
+        logFileFolder = makeDirectories(os.path.join(SUPPORT_PATH, "Logs"))
+    else:
+        logFileFolder = makeDirectories(os.path.join(f"{pathlib.Path(__file__).parent.parent}", "logs"))
+        logFiles = [os.path.join(logFileFolder, file) for file in os.listdir(logFileFolder) if file.endswith(".log")]
+        logFiles.sort()
+        if len(logFiles) >= MAX_LOG_FILES_TO_KEEP:
+            for file in logFiles[: len(logFiles) - MAX_LOG_FILES_TO_KEEP]:
+                os.remove(file)
 
-    logFileName = f"{logFileFolder}{getOSPath(f'{INTERNAL_ID}-{today}-{now}.log')}"
+    logFileName = os.path.join(logFileFolder, f"{today}-{now}.log")
     logHandler = logging.handlers.WatchedFileHandler(logFileName, mode="w")
     logHandler.setFormatter(logging.Formatter("%(name)s - %(levelname)s - %(message)s"))
 
@@ -46,27 +49,28 @@ def setupLogger() -> SynthesisLogger:
     logger = getLogger(INTERNAL_ID)
     logger.setLevel(10)  # Debug
     logger.addHandler(logHandler)
-    return cast(SynthesisLogger, logger)
+    return logger
 
 
 def getLogger(name: str | None = None) -> SynthesisLogger:
     if not name:
         # Inspect the caller stack to automatically get the module from which the function is being called from.
-        name = f"{INTERNAL_ID}.{'.'.join(inspect.getmodule(inspect.stack()[1][0]).__name__.split('.')[1:])}"
+        pyModule = inspect.getmodule(inspect.stack()[1][0])
+        name = f"{INTERNAL_ID}.{'.'.join(pyModule.__name__.split('.')[1:])}" if pyModule else INTERNAL_ID
 
     return cast(SynthesisLogger, logging.getLogger(name))
 
 
 # Log function failure decorator.
-def logFailure(func: callable = None, /, *, messageBox: bool = False) -> callable:
-    def wrap(func: callable) -> callable:
+def logFailure(func: Callable[..., Any] | None = None, /, *, messageBox: bool = False) -> Callable[..., Any]:
+    def wrap(func: Callable[..., Any]) -> Callable[..., Any]:
         @functools.wraps(func)
-        def wrapper(*args: any, **kwargs: any) -> any:
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             try:
                 return func(*args, **kwargs)
             except BaseException:
                 excType, excValue, excTrace = sys.exc_info()
-                tb = traceback.TracebackException(excType, excValue, excTrace)
+                tb = traceback.TracebackException(excType or BaseException, excValue or BaseException(), excTrace)
                 formattedTb = "".join(list(tb.format())[2:])  # Remove the wrapper func from the traceback.
                 clsName = ""
                 if args and hasattr(args[0], "__class__"):
@@ -88,8 +92,8 @@ def logFailure(func: callable = None, /, *, messageBox: bool = False) -> callabl
 
 
 # Time function decorator.
-def timed(func: callable) -> callable:
-    def wrapper(*args: any, **kwargs: any) -> any:
+def timed(func: Callable[..., Any]) -> Callable[..., Any]:
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
         startTime = time.perf_counter()
         result = func(*args, **kwargs)
         endTime = time.perf_counter()
