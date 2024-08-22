@@ -24,6 +24,10 @@ function TouchControls() {
         TouchControlsEvent.Listen(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
         TouchControlsEvent.Listen(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
 
+        console.log("TouchControls loaded")
+        const event = new Event("touchcontrolsloaded")
+        window.dispatchEvent(event)
+
         return () => {
             TouchControlsEvent.RemoveListener(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
             TouchControlsEvent.RemoveListener(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
@@ -125,7 +129,9 @@ export class TouchControlsEvent extends Event {
 
 /** Notates the left and right joysticks with their x and y axis */
 export const enum TouchControlsJoystick {
-    LEFT,
-    RIGHT,
+    LEFT_X,
+    LEFT_Y,
+    RIGHT_X,
+    RIGHT_Y,
     NONE,
 }

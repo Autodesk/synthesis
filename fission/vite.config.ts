@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 import * as path from 'path'
 import react from '@vitejs/plugin-react-swc'
 import basicSsl from '@vitejs/plugin-basic-ssl'
-import glsl from 'vite-plugin-glsl';
+import glsl from 'vite-plugin-glsl'
 
 const basePath = "/fission/"
 const serverPort = 3000

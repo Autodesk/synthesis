@@ -183,7 +183,7 @@ class InputSystem extends WorldSystem {
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this)
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
 
-        window.onload = () => {
+        window.addEventListener("touchcontrolsloaded", () => {
             InputSystem.leftJoystick = new Joystick(
                 document.getElementById("joystick-base-left")!,
                 document.getElementById("joystick-stick-left")!
@@ -192,7 +192,7 @@ class InputSystem extends WorldSystem {
                 document.getElementById("joystick-base-right")!,
                 document.getElementById("joystick-stick-right")!
             )
-        }
+        })
 
         // Initialize an event that's triggered when the user exits/enters the page
         document.addEventListener("visibilitychange", () => {
@@ -345,12 +345,15 @@ class InputSystem extends WorldSystem {
     }
 
     // Returns a number between -1 and 1 from the touch controls
-    public static getTouchControlsAxis(axisNumber: TouchControlsJoystick): number {
+    public static getTouchControlsAxis(axisType: TouchControlsJoystick): number {
         let value: number
-        if (axisNumber === TouchControlsJoystick.LEFT) value = -InputSystem.leftJoystick.y
-        else value = InputSystem.rightJoystick.x
 
-        return value
+        if (axisType === TouchControlsJoystick.LEFT_Y) value = -InputSystem.leftJoystick.y
+        else if (axisType === TouchControlsJoystick.RIGHT_X) value = InputSystem.rightJoystick.x
+        else if (axisType === TouchControlsJoystick.RIGHT_Y) value = -InputSystem.rightJoystick.y
+        else value = InputSystem.leftJoystick.x
+
+        return value!
     }
 }
 

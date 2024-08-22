@@ -87,10 +87,11 @@ const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
 interface EditInputProps {
     input: Input
     useGamepad: boolean
+    useTouchControls: boolean
     onInputChanged: () => void
 }
 
-const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInputChanged }) => {
+const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTouchControls, onInputChanged }) => {
     const [selectedInput, setSelectedInput] = useState<string>("")
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
     const [chosenKey, setChosenKey] = useState<string>("")
@@ -305,18 +306,37 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
         )
     }
 
+    // const TouchControlsAxisSelection = () => {
+    //     if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
+
+    //     return (
+    //         <>
+    //             <Box
+    //                 display="flex"
+    //                 flexDirection={"row"}
+    //                 gap="10px"
+    //                 alignItems={"center"}
+    //                 justifyContent={"space-between"}
+    //                 width={"98%"}
+    //             >
+    //                 <Label>{toTitleCase(input.inputName)}</Label>
+    //                 <Dropdown
+    //                     key={input.inputName}
+    //                     defaultValue={touchControlsAxes[input.touchControlsAxisNumber + 1]}
+    //                     options={touchControlsAxes}
+    //                     onSelect={value => {
+    //                         setSelectedInput(input.inputName)
+    //                         setChosenTouchControlsAxis(touchControlsAxes.indexOf(value))
+    //                     }}
+    //                 />
+    //             </Box>
+    //         </>
+    //     )
+    // }
+
     /** Show the correct selection mode based on input type and how it's configured */
     const inputConfig = () => {
-        if (!useGamepad) {
-            // Keyboard button
-            if (input instanceof ButtonInput) {
-                return KeyboardButtonSelection()
-            }
-            // Keyboard Axis
-            else if (input instanceof AxisInput) {
-                return KeyboardAxisSelection()
-            }
-        } else {
+        if (useGamepad) {
             // Joystick Button
             if (input instanceof ButtonInput) {
                 return JoystickButtonSelection()
@@ -352,6 +372,20 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
                     </div>
                 )
             }
+        } else if (useTouchControls) {
+            // here
+            if (input instanceof AxisInput) {
+                return <></>
+            }
+        } else {
+            // Keyboard button
+            if (input instanceof ButtonInput) {
+                return KeyboardButtonSelection()
+            }
+            // Keyboard Axis
+            else if (input instanceof AxisInput) {
+                return KeyboardAxisSelection()
+            }
         }
     }
 
@@ -375,7 +409,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
     /** Input detection for setting inputs */
     useEffect(() => {
         // // Assign keyboard inputs when a key is pressed
-        if (!useGamepad && selectedInput && chosenKey) {
+        if (!useGamepad && !useTouchControls && selectedInput && chosenKey) {
             if (selectedInput.startsWith("pos")) {
                 if (!(input instanceof AxisInput)) return
                 input.posKeyCode = chosenKey
@@ -429,7 +463,17 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, onInp
             setChosenGamepadAxis(-1)
             setSelectedInput("")
         }
-    }, [chosenKey, chosenButton, chosenGamepadAxis, input, modifierState, onInputChanged, selectedInput, useGamepad])
+    }, [
+        chosenKey,
+        chosenButton,
+        chosenGamepadAxis,
+        input,
+        modifierState,
+        onInputChanged,
+        selectedInput,
+        useGamepad,
+        useTouchControls,
+    ])
 
     return (
         <Box

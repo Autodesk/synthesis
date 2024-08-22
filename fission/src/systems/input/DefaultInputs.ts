@@ -332,7 +332,7 @@ class DefaultInputs {
                     undefined,
                     undefined,
                     undefined,
-                    TouchControlsJoystick.LEFT
+                    TouchControlsJoystick.LEFT_Y
                 ),
                 new AxisInput(
                     "arcadeTurn",
@@ -343,11 +343,8 @@ class DefaultInputs {
                     undefined,
                     undefined,
                     undefined,
-                    TouchControlsJoystick.RIGHT
+                    TouchControlsJoystick.RIGHT_X
                 ),
-
-                new ButtonInput("intake", "Semicolon"),
-                new ButtonInput("eject", "KeyL"),
             ],
         }
     }
