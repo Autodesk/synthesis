@@ -13,8 +13,16 @@ JointParentType = Enum("JointParentType", ["ROOT", "END"])
 WheelType = Enum("WheelType", ["STANDARD", "OMNI", "MECANUM"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
-PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
 ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
+UnitSystem = Enum("UnitSystem", ["METRIC", "IMPERIAL"])
+
+FUSION_UNIT_SYSTEM: dict[int, UnitSystem] = {
+    adsk.fusion.DistanceUnits.MillimeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.CentimeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.MeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.InchDistanceUnits: UnitSystem.IMPERIAL,
+    adsk.fusion.DistanceUnits.FootDistanceUnits: UnitSystem.IMPERIAL,
+}
 
 
 @dataclass
@@ -74,18 +82,8 @@ class ModelHierarchy(Enum):
     SingleMesh = 3
 
 
-LBS: TypeAlias = float
 KG: TypeAlias = float
-
-
-def toLbs(kgs: KG) -> LBS:
-    return LBS(round(kgs * 2.2062, 2))
-
-
-def toKg(pounds: LBS) -> KG:
-    return KG(round(pounds / 2.2062, 2))
-
-
+LBS: TypeAlias = float
 PRIMITIVES = (bool, str, int, float, type(None))
 SELECTABLE_JOINT_TYPES = (adsk.fusion.JointTypes.RevoluteJointType, adsk.fusion.JointTypes.SliderJointType)
 
