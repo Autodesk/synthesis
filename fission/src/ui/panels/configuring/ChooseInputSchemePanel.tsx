@@ -73,7 +73,6 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             sidePadding={8}
             acceptEnabled={false}
             icon={SynthesisIcons.Gamepad}
-            cancelEnabled={selectedBrainIndexGlobal != undefined}
             cancelName="Close"
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
