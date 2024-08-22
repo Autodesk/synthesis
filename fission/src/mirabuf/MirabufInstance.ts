@@ -128,32 +128,29 @@ class MirabufInstance {
      * Parses all mirabuf appearances into ThreeJS and Jolt materials.
      */
     private LoadMaterials(materialStyle: MaterialStyle) {
-        (
-            Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!) as [
-                string,
-                mirabuf.material.Appearance,
-            ][]
-        ).forEach(([appearanceId, appearance]) => {
-            const { A, B, G, R } = appearance.albedo ?? {}
-            const [hex, opacity] =
-                A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
+        Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!).forEach(
+            ([appearanceId, appearance]) => {
+                const { A, B, G, R } = appearance.albedo ?? {}
+                const [hex, opacity] =
+                    A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
 
-            const material =
-                materialStyle === MaterialStyle.Regular
-                    ? new THREE.MeshPhongMaterial({
-                          color: hex,
-                          shininess: 0.0,
-                          shadowSide: THREE.DoubleSide,
-                          opacity: opacity,
-                          transparent: opacity < 1.0,
-                      })
-                    : materialStyle === MaterialStyle.Normals
-                      ? new THREE.MeshNormalMaterial()
-                      : World.SceneRenderer.CreateToonMaterial(hex, 5)
+                const material =
+                    materialStyle === MaterialStyle.Regular
+                        ? new THREE.MeshPhongMaterial({
+                              color: hex,
+                              shininess: 0.0,
+                              shadowSide: THREE.DoubleSide,
+                              opacity: opacity,
+                              transparent: opacity < 1.0,
+                          })
+                        : materialStyle === MaterialStyle.Normals
+                          ? new THREE.MeshNormalMaterial()
+                          : World.SceneRenderer.CreateToonMaterial(hex, 5)
 
-            World.SceneRenderer.SetupMaterial(material)
-            this._materials.set(appearanceId, material)
-        })
+                World.SceneRenderer.SetupMaterial(material)
+                this._materials.set(appearanceId, material)
+            }
+        )
     }
 
     /**
