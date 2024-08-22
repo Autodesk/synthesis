@@ -5,7 +5,6 @@
 package frc.robot;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.hardware.TalonFX;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkBase.IdleMode;
 // import com.revrobotics.CANSparkMax;
@@ -15,21 +14,24 @@ import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
 import edu.wpi.first.wpilibj.SPI;
+
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
-import edu.wpi.first.wpilibj.simulation.ADXRS450_GyroSim;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.XboxController;
 
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
-// import com.autodesk.synthesis.Joystick;
 import com.autodesk.synthesis.Gyro;
+import com.autodesk.synthesis.ctre.TalonFX;
 
 /**
- * The VM is configured to automatically run this class, and to call the functions corresponding to
- * each mode, as described in the TimedRobot documentation. If you change the name of this class or
- * the package after creating this project, you must also update the build.gradle file in the
+ * The VM is configured to automatically run this class, and to call the
+ * functions corresponding to
+ * each mode, as described in the TimedRobot documentation. If you change the
+ * name of this class or
+ * the package after creating this project, you must also update the
+ * build.gradle file in the
  * project.
  */
 public class Robot extends TimedRobot {
@@ -40,7 +42,6 @@ public class Robot extends TimedRobot {
 
   private Spark m_Spark1 = new Spark(0);
   private Spark m_Spark2 = new Spark(1);
-  private CANSparkMax m_SparkMax = new CANSparkMax(1, MotorType.kBrushless);
   private TalonFX m_Talon = new TalonFX(2);
   private XboxController m_Controller = new XboxController(0);
   private Gyro m_Gyro = new Gyro("Test Gyro", 1);
@@ -49,6 +50,13 @@ public class Robot extends TimedRobot {
   // with a measurement range from -8 to 8 G's
   private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
   private Pigeon2 m_Pigeon2 = new Pigeon2(0);
+
+  private CANSparkMax m_SparkMax1 = new CANSparkMax(1, MotorType.kBrushless);
+  private CANSparkMax m_SparkMax2 = new CANSparkMax(2, MotorType.kBrushless);
+  private CANSparkMax m_SparkMax3 = new CANSparkMax(3, MotorType.kBrushless);
+  private CANSparkMax m_SparkMax4 = new CANSparkMax(4, MotorType.kBrushless);
+  private CANSparkMax m_SparkMax5 = new CANSparkMax(5, MotorType.kBrushless);
+  private CANSparkMax m_SparkMax6 = new CANSparkMax(6, MotorType.kBrushless);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -94,8 +102,25 @@ public class Robot extends TimedRobot {
 
     m_Spark1.set(0.5);
     m_Spark2.set(-0.5);
-    m_SparkMax.set(1.0);
     m_Talon.set(-1.0);
+
+    double position = m_SparkMax1.getAbsoluteEncoderSim().getPosition();
+
+    if (position >= 20) {
+        m_SparkMax1.set(0.0);
+        m_SparkMax2.set(0.0);
+        m_SparkMax3.set(0.0);
+        m_SparkMax4.set(0.0);
+        m_SparkMax5.set(0.0);
+        m_SparkMax6.set(0.0);
+    } else {
+        m_SparkMax1.set(1.0);
+        m_SparkMax2.set(1.0);
+        m_SparkMax3.set(1.0);
+        m_SparkMax4.set(1.0);
+        m_SparkMax5.set(1.0);
+        m_SparkMax6.set(1.0);
+    }
 
     switch (m_autoSelected) {
       case kCustomAuto:
@@ -110,7 +135,7 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() { }
 
   /** This function is called periodically during operator control. */
   @Override
@@ -120,36 +145,49 @@ public class Robot extends TimedRobot {
     System.out.println(m_Gyro.getAngleY());
     // m_Spark1.set(0.25);
     // m_Spark2.set(0.25);
-    m_SparkMax.set(0.75);
     m_Talon.set(-0.5);
+    m_SparkMax1.set(-0.75);
+    m_SparkMax2.set(-0.75);
+    m_SparkMax3.set(-0.75);
+    m_SparkMax4.set(-0.75);
+    m_SparkMax5.set(-0.75);
+    m_SparkMax6.set(-0.75);
   }
+
 
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {
-    m_Spark1.set(0.0);
-    m_Spark2.set(0.0);
-    m_SparkMax.set(0.0);
-    m_Talon.set(0.0);
+      m_SparkMax1.set(0.0);
+      m_SparkMax2.set(0.0);
+      m_SparkMax3.set(0.0);
+      m_SparkMax4.set(0.0);
+      m_SparkMax5.set(0.0);
+      m_SparkMax6.set(0.0);
   }
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {}
+  public void disabledPeriodic() {
+  }
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {}
+  public void testInit() {
+  }
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {}
+  public void testPeriodic() {
+  }
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {}
+  public void simulationInit() {
+  }
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {}
+  public void simulationPeriodic() {
+  }
 }

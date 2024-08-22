@@ -1,18 +1,18 @@
 import adsk.core
 import adsk.fusion
 
-from ..Logging import logFailure
-from ..Parser.ExporterOptions import (
-    ExporterOptions,
-    ExportLocation,
-    ExportMode,
-    PreferredUnits,
+from src.Logging import logFailure
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Types import KG, ExportLocation, ExportMode, UnitSystem
+from src.UI.CreateCommandInputsHelper import createBooleanInput
+from src.UI.GamepieceConfigTab import GamepieceConfigTab
+from src.UI.JointConfigTab import JointConfigTab
+from src.Util import (
+    convertMassUnitsFrom,
+    convertMassUnitsTo,
+    designMassCalculation,
+    getFusionUnitSystem,
 )
-from ..Types import KG, toKg, toLbs
-from . import IconPaths
-from .CreateCommandInputsHelper import createBooleanInput, createTableInput
-from .GamepieceConfigTab import GamepieceConfigTab
-from .JointConfigTab import JointConfigTab
 
 
 class GeneralConfigTab:
@@ -21,7 +21,6 @@ class GeneralConfigTab:
     previousFrictionOverrideCheckboxState: bool
     previousSelectedUnitDropdownIndex: int
     previousSelectedModeDropdownIndex: int
-    currentUnits: PreferredUnits
     jointConfigTab: JointConfigTab
     gamepieceConfigTab: GamepieceConfigTab
 
@@ -49,27 +48,13 @@ class GeneralConfigTab:
             "exportLocation", "Export Location", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
         )
 
-        upload: bool = exporterOptions.exportLocation == ExportLocation.UPLOAD
+        upload = exporterOptions.exportLocation == ExportLocation.UPLOAD
         dropdownExportLocation.listItems.add("Upload", upload)
         dropdownExportLocation.listItems.add("Download", not upload)
         dropdownExportLocation.tooltip = "Export Location"
         dropdownExportLocation.tooltipDescription = (
             "<hr>Do you want to upload this mirabuf file to APS, or download it to your local machine?"
         )
-
-        weightTableInput = createTableInput(
-            "weightTable",
-            "Weight Table",
-            generalTabInputs,
-            4,
-            "2:1:1",
-            1,
-        )
-        weightTableInput.tablePresentationStyle = 2  # Transparent background
-
-        weightName = generalTabInputs.addStringValueInput("weightName", "Weight")
-        weightName.value = "Weight"
-        weightName.isReadOnly = True
 
         autoCalcWeightButton = createBooleanInput(
             "autoCalcWeightButton",
@@ -80,44 +65,15 @@ class GeneralConfigTab:
         )
         self.previousAutoCalcWeightCheckboxState = exporterOptions.autoCalcRobotWeight
 
-        self.currentUnits = exporterOptions.preferredUnits
-        imperialUnits = self.currentUnits == PreferredUnits.IMPERIAL
-        if imperialUnits:
-            # ExporterOptions always contains the metric value
-            displayWeight = toLbs(exporterOptions.robotWeight)
-        else:
-            displayWeight = exporterOptions.robotWeight
+        displayWeight = convertMassUnitsFrom(exporterOptions.robotWeight)
 
+        fusUnitSystem = getFusionUnitSystem()
         weightInput = generalTabInputs.addValueInput(
             "weightInput",
-            "Weight Input",
+            f"Weight {'(lbs)' if fusUnitSystem is UnitSystem.IMPERIAL else '(kg)'}",
             "",
             adsk.core.ValueInput.createByReal(displayWeight),
         )
-        weightInput.tooltip = "Robot weight"
-        weightInput.tooltipDescription = (
-            f"<tt>(in {'pounds' if self.currentUnits == PreferredUnits.IMPERIAL else 'kilograms'})"
-            "</tt><hr>This is the weight of the entire robot assembly."
-        )
-        weightInput.isEnabled = not exporterOptions.autoCalcRobotWeight
-
-        weightUnitDropdown = generalTabInputs.addDropDownCommandInput(
-            "weightUnitDropdown",
-            "Weight Unit",
-            adsk.core.DropDownStyles.LabeledIconDropDownStyle,
-        )
-
-        # Invisible white space characters are required in the list item name field to make this work.
-        # I have no idea why, Fusion API needs some special education help - Brandon
-        weightUnitDropdown.listItems.add("‎", imperialUnits, IconPaths.massIcons["LBS"])
-        weightUnitDropdown.listItems.add("‎", not imperialUnits, IconPaths.massIcons["KG"])
-        weightUnitDropdown.tooltip = "Unit of Mass"
-        weightUnitDropdown.tooltipDescription = "<hr>Configure the unit of mass for the weight calculation."
-        self.previousSelectedUnitDropdownIndex = int(not imperialUnits)
-
-        weightTableInput.addCommandInput(weightName, 0, 0)
-        weightTableInput.addCommandInput(weightInput, 0, 1)
-        weightTableInput.addCommandInput(weightUnitDropdown, 0, 2)
 
         createBooleanInput(
             "compressOutputButton",
@@ -157,8 +113,12 @@ class GeneralConfigTab:
         if exporterOptions.exportMode == ExportMode.FIELD:
             autoCalcWeightButton.isVisible = False
             exportAsPartButton.isVisible = False
-            weightInput.isVisible = weightTableInput.isVisible = False
+            weightInput.isVisible = False
             frictionOverrideButton.isVisible = frictionCoefficient.isVisible = False
+
+    @property
+    def isActive(self) -> bool:
+        return self.generalOptionsTab.isActive or False
 
     @property
     def exportMode(self) -> ExportMode:
@@ -176,36 +136,26 @@ class GeneralConfigTab:
         compressButton: adsk.core.BoolValueCommandInput = self.generalOptionsTab.children.itemById(
             "compressOutputButton"
         )
-        return compressButton.value
+        return compressButton.value or False
 
     @property
     def exportAsPart(self) -> bool:
         exportAsPartButton: adsk.core.BoolValueCommandInput = self.generalOptionsTab.children.itemById(
             "exportAsPartButton"
         )
-        return exportAsPartButton.value
-
-    @property
-    def selectedUnits(self) -> PreferredUnits:
-        return self.currentUnits
+        return exportAsPartButton.value or False
 
     @property
     def robotWeight(self) -> KG:
-        weightInput: adsk.core.ValueCommandInput = self.generalOptionsTab.children.itemById(
-            "weightTable"
-        ).getInputAtPosition(0, 1)
-        if self.currentUnits == PreferredUnits.METRIC:
-            return KG(weightInput.value)
-        else:
-            assert self.currentUnits == PreferredUnits.IMPERIAL
-            return toKg(weightInput.value)
+        weightInput: adsk.core.ValueCommandInput = self.generalOptionsTab.children.itemById("weightInput")
+        return convertMassUnitsTo(weightInput.value)
 
     @property
     def autoCalculateWeight(self) -> bool:
         autoCalcWeightButton: adsk.core.BoolValueCommandInput = self.generalOptionsTab.children.itemById(
             "autoCalcWeightButton"
         )
-        return autoCalcWeightButton.value
+        return autoCalcWeightButton.value or False
 
     @property
     def exportLocation(self) -> ExportLocation:
@@ -223,25 +173,26 @@ class GeneralConfigTab:
         overrideFrictionButton: adsk.core.BoolValueCommandInput = self.generalOptionsTab.children.itemById(
             "frictionOverride"
         )
-        return overrideFrictionButton.value
+        return overrideFrictionButton.value or False
 
     @property
     def frictionOverrideCoeff(self) -> float:
         frictionSlider: adsk.core.FloatSliderCommandInput = self.generalOptionsTab.children.itemById(
             "frictionCoefficient"
         )
-        return frictionSlider.valueOne
+        return frictionSlider.valueOne or -1.0
 
     @logFailure
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs) -> None:
+        autoCalcWeightButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("autoCalcWeightButton")
+        weightInput: adsk.core.ValueCommandInput = args.inputs.itemById("weightInput")
+        exportAsPartButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("exportAsPartButton")
+        overrideFrictionButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("frictionOverride")
+        frictionSlider: adsk.core.FloatSliderCommandInput = args.inputs.itemById("frictionCoefficient")
         commandInput = args.input
         if commandInput.id == "exportModeDropdown":
             modeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
-            autoCalcWeightButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("autoCalcWeightButton")
-            weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
-            exportAsPartButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("exportAsPartButton")
-            overrideFrictionButton: adsk.core.BoolValueCommandInput = args.inputs.itemById("frictionOverride")
-            frictionSlider: adsk.core.FloatSliderCommandInput = args.inputs.itemById("frictionCoefficient")
+
             if modeDropdown.selectedItem.index == self.previousSelectedModeDropdownIndex:
                 return
 
@@ -250,7 +201,7 @@ class GeneralConfigTab:
                 self.gamepieceConfigTab.isVisible = False
 
                 autoCalcWeightButton.isVisible = True
-                weightTable.isVisible = True
+                weightInput.isVisible = True
                 exportAsPartButton.isVisible = True
                 overrideFrictionButton.isVisible = True
                 frictionSlider.isVisible = overrideFrictionButton.value
@@ -260,46 +211,19 @@ class GeneralConfigTab:
                 self.gamepieceConfigTab.isVisible = True
 
                 autoCalcWeightButton.isVisible = False
-                weightTable.isVisible = False
+                weightInput.isVisible = False
                 exportAsPartButton.isVisible = False
                 overrideFrictionButton.isVisible = frictionSlider.isVisible = False
 
             self.previousSelectedModeDropdownIndex = modeDropdown.selectedItem.index
-
-        elif commandInput.id == "weightUnitDropdown":
-            weightUnitDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
-            weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
-            weightInput: adsk.core.ValueCommandInput = weightTable.getInputAtPosition(0, 1)
-            if weightUnitDropdown.selectedItem.index == self.previousSelectedUnitDropdownIndex:
-                return
-
-            if weightUnitDropdown.selectedItem.index == 0:
-                self.currentUnits = PreferredUnits.IMPERIAL
-                weightInput.value = toLbs(weightInput.value)
-                weightInput.tooltipDescription = (
-                    "<tt>(in pounds)</tt><hr>This is the weight of the entire robot assembly."
-                )
-            else:
-                assert weightUnitDropdown.selectedItem.index == 1
-                self.currentUnits = PreferredUnits.METRIC
-                weightInput.value = toKg(weightInput.value)
-                weightInput.tooltipDescription = (
-                    "<tt>(in kilograms)</tt><hr>This is the weight of the entire robot assembly."
-                )
-
-            self.previousSelectedUnitDropdownIndex = weightUnitDropdown.selectedItem.index
 
         elif commandInput.id == "autoCalcWeightButton":
             autoCalcWeightButton = adsk.core.BoolValueCommandInput.cast(commandInput)
             if autoCalcWeightButton.value == self.previousAutoCalcWeightCheckboxState:
                 return
 
-            weightTable: adsk.core.TableCommandInput = args.inputs.itemById("weightTable")
-            weightInput: adsk.core.ValueCommandInput = weightTable.getInputAtPosition(0, 1)
-
             if autoCalcWeightButton.value:
-                robotMass = designMassCalculation()
-                weightInput.value = robotMass if self.currentUnits is PreferredUnits.METRIC else toLbs(robotMass)
+                weightInput.value = designMassCalculation()
                 weightInput.isEnabled = False
             else:
                 weightInput.isEnabled = True
@@ -308,27 +232,8 @@ class GeneralConfigTab:
 
         elif commandInput.id == "frictionOverride":
             frictionOverrideButton = adsk.core.BoolValueCommandInput.cast(commandInput)
-            frictionSlider: adsk.core.FloatSliderCommandInput = args.inputs.itemById("frictionCoefficient")
             if frictionOverrideButton.value == self.previousFrictionOverrideCheckboxState:
                 return
 
             frictionSlider.isVisible = frictionOverrideButton.value
-
             self.previousFrictionOverrideCheckboxState = frictionOverrideButton.value
-
-
-# TODO: Perhaps move this into a different module
-@logFailure
-def designMassCalculation() -> KG:
-    app = adsk.core.Application.get()
-    mass = 0.0
-    for body in [x for x in app.activeDocument.design.rootComponent.bRepBodies if x.isLightBulbOn]:
-        physical = body.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
-        mass += physical.mass
-
-    for occ in [x for x in app.activeDocument.design.rootComponent.allOccurrences if x.isLightBulbOn]:
-        for body in [x for x in occ.component.bRepBodies if x.isLightBulbOn]:
-            physical = body.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
-            mass += physical.mass
-
-    return KG(round(mass, 2))

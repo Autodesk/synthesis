@@ -15,6 +15,7 @@ import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { DefaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import InputSystem from "@/systems/input/InputSystem"
 
 class SynthesisBrain extends Brain {
@@ -28,6 +29,18 @@ class SynthesisBrain extends Brain {
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
 
+    public get assemblyName(): string {
+        return this._assemblyName
+    }
+
+    public get behaviors(): Behavior[] {
+        return this._behaviors
+    }
+
+    // Tracks the number of each specific mira file spawned
+    public static numberRobotsSpawned: { [key: string]: number } = {}
+
+    /** @returns {string} The name of the input scheme attached to this brain. */
     public get inputSchemeName(): string {
         const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
         if (scheme == undefined) return "Not Configured"
@@ -35,10 +48,15 @@ class SynthesisBrain extends Brain {
         return scheme.schemeName
     }
 
+    /** @returns {number} The unique index used to identify this brain. */
     public get brainIndex(): number {
         return this._brainIndex
     }
 
+    /**
+     * @param mechanism The mechanism this brain will control.
+     * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
+     */
     public constructor(mechanism: Mechanism, assemblyName: string) {
         super(mechanism)
 
@@ -77,7 +95,7 @@ class SynthesisBrain extends Brain {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
 
-    // Creates an instance of ArcadeDriveBehavior and automatically configures it
+    /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */
     private configureArcadeDriveBehavior() {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
@@ -122,7 +140,7 @@ class SynthesisBrain extends Brain {
         )
     }
 
-    // Creates instances of ArmBehavior and automatically configures them
+    /** Creates instances of ArmBehavior and automatically configures them. */
     private configureArmBehaviors() {
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof HingeDriver
@@ -132,14 +150,34 @@ class SynthesisBrain extends Brain {
         ) as HingeStimulus[]
 
         for (let i = 0; i < hingeDrivers.length; i++) {
+            let sequentialConfig = PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.find(
+                sc => sc.jointIndex == this._currentJointIndex
+            )
+
+            if (sequentialConfig == undefined) {
+                sequentialConfig = DefaultSequentialConfig(this._currentJointIndex, "Arm")
+
+                if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
+                    PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
+
+                PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.push(sequentialConfig)
+                PreferencesSystem.savePreferences()
+            }
+
             this._behaviors.push(
-                new GenericArmBehavior(hingeDrivers[i], hingeStimuli[i], this._currentJointIndex, this._brainIndex)
+                new GenericArmBehavior(
+                    hingeDrivers[i],
+                    hingeStimuli[i],
+                    this._currentJointIndex,
+                    this._brainIndex,
+                    sequentialConfig
+                )
             )
             this._currentJointIndex++
         }
     }
 
-    // Creates instances of ElevatorBehavior and automatically configures them
+    /** Creates instances of ElevatorBehavior and automatically configures them. */
     private configureElevatorBehaviors() {
         const sliderDrivers: SliderDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof SliderDriver
@@ -149,18 +187,34 @@ class SynthesisBrain extends Brain {
         ) as SliderStimulus[]
 
         for (let i = 0; i < sliderDrivers.length; i++) {
+            let sequentialConfig = PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.find(
+                sc => sc.jointIndex == this._currentJointIndex
+            )
+
+            if (sequentialConfig == undefined) {
+                sequentialConfig = DefaultSequentialConfig(this._currentJointIndex, "Elevator")
+
+                if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
+                    PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
+
+                PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig?.push(sequentialConfig)
+                PreferencesSystem.savePreferences()
+            }
+
             this._behaviors.push(
                 new GenericElevatorBehavior(
                     sliderDrivers[i],
                     sliderStimuli[i],
                     this._currentJointIndex,
-                    this._brainIndex
+                    this._brainIndex,
+                    sequentialConfig
                 )
             )
             this._currentJointIndex++
         }
     }
 
+    /** Gets field preferences and handles any field specific configuration. */
     private configureField() {
         PreferencesSystem.getFieldPreferences(this._assemblyName)
 

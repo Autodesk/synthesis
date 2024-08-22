@@ -2,7 +2,7 @@ import os
 import platform
 
 
-def getOSPath(*argv) -> str:
+def getOSPath(*argv: str) -> str:
     """Takes n strings and constructs a OS specific path
 
     Returns:
@@ -17,7 +17,7 @@ def getOSPath(*argv) -> str:
     return path
 
 
-def getOSPathPalette(*argv) -> str:
+def getOSPathPalette(*argv: str) -> str:
     """## This is a different delimeter than the resources path."""
     path = ""
     for arg in argv:
@@ -25,7 +25,7 @@ def getOSPathPalette(*argv) -> str:
     return path
 
 
-def getDesktop():
+def getDesktop() -> str:
     """Gets the Desktop Path.
 
     Returns:
@@ -37,7 +37,7 @@ def getDesktop():
         return os.path.join(os.path.join(os.environ["USERPROFILE"]), "Desktop/")
 
 
-def getOS():
+def getOS() -> str:
     """## Returns platform as a string
 
     - Darwin

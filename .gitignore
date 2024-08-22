@@ -1,5 +1,8 @@
 .vs/
 .vscode/
-/build/
+build/
+dist/
 *.log
 .DS_Store
+*.pkg
+*.exe

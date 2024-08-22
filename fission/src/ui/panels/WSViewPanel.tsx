@@ -26,6 +26,14 @@ const TypoStyled = styled(Typography)({
     color: "white",
 })
 
+function formatMap(map: Map<string, number>): string {
+    let entries: string = ""
+    map.forEach((value, key) => {
+        entries += `${key} : ${value}`
+    })
+    return entries
+}
+
 function generateTableBody() {
     const names: SimType[] = ["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro", "Accel"]
 
@@ -45,7 +53,7 @@ function generateTableBody() {
                                     <TypoStyled>{x[0]}</TypoStyled>
                                 </TableCell>
                                 <TableCell>
-                                    <TypoStyled>{JSON.stringify(x[1])}</TypoStyled>
+                                    <TypoStyled>{formatMap(x[1])}</TypoStyled>
                                 </TableCell>
                             </TableRow>
                         ))
@@ -66,10 +74,10 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
             SimGeneric.Set(simType, device, field, JSON.parse(value))
             break
         case "boolean":
-            SimGeneric.Set(simType, device, field, value.toLowerCase() == "true")
+            SimGeneric.Set(simType, device, field, parseInt(value)) // 1 or 0 (change to float if needed)
             break
         default:
-            SimGeneric.Set(simType, device, field, value)
+            SimGeneric.Set(simType, device, field, parseFloat(value))
             break
     }
 }
@@ -155,7 +163,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         <Button
                             value={"Set"}
                             onClick={() =>
-                                setGeneric(selectedType ?? "PWM", selectedDevice, field, value, selectedValueType)
+                                setGeneric(selectedType ?? SimType.PWM, selectedDevice, field, value, selectedValueType)
                             }
                         />
                     </Box>

@@ -12,6 +12,7 @@ import { PWMOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver from "@/systems/simulation/driver/Driver"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -33,9 +34,9 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     let devices: [string, unknown][] = []
-    const pwms = simMap.get("PWM")
+    const pwms = simMap.get(SimType.PWM)
     if (pwms) {
-        devices = [...pwms.entries()].filter(([_, data]) => data["<init"])
+        devices = [...pwms.entries()].filter(([_, data]) => data.get("<init"))
     }
 
     return (

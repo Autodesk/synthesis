@@ -7,7 +7,7 @@ import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
-import WPILibBrain, { simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { CANOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -20,7 +20,6 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
     const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([])
 
-    const numPorts = 8
     let drivers: Driver[] = []
     let simLayer
     let brain: WPILibBrain
@@ -34,6 +33,11 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         brain = new WPILibBrain(mechanism)
         simLayer?.SetBrain(brain)
     }
+
+    const cans = simMap.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
+    const devices: [string, Map<string, number>][] = [...cans.entries()]
+        .filter(([_, data]) => data.get("<init"))
+        .reverse()
 
     return (
         <Modal
@@ -64,16 +68,18 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Container className="w-max">
                     <Label>Ports</Label>
                     <ScrollView className="h-full px-2">
-                        {[...Array(numPorts).keys()].map(p => (
+                        {devices.map(([p, _]) => (
                             <Checkbox
                                 key={p}
                                 label={p.toString()}
                                 defaultState={false}
                                 onClick={checked => {
-                                    if (checked && !checkedPorts.includes(p)) {
-                                        setCheckedPorts([...checkedPorts, p])
-                                    } else if (!checked && checkedPorts.includes(p)) {
-                                        setCheckedPorts(checkedPorts.filter(a => a != p))
+                                    const port = parseInt(p.split("[")[1].split("]")[0])
+                                    console.log(port)
+                                    if (checked && !checkedPorts.includes(port)) {
+                                        setCheckedPorts([...checkedPorts, port])
+                                    } else if (!checked && checkedPorts.includes(port)) {
+                                        setCheckedPorts(checkedPorts.filter(a => a != port))
                                     }
                                 }}
                             />
