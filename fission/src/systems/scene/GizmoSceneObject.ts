@@ -19,18 +19,22 @@ class GizmoSceneObject extends SceneObject {
 
     private _size: number
 
+    /** @returns the instance of the transform gizmo itself */
     public get gizmo() {
         return this._gizmo
     }
 
+    /** @returns Object3D that is attached to transform gizmo */
     public get obj() {
         return this._obj
     }
 
+    /** @returns true if gizmo is currently being dragged */
     public get isDragging() {
         return this._gizmo.dragging
     }
 
+    /** @returns the id of the parent scene object */
     public get parentObjectId() {
         return this._parentObject?.id
     }
@@ -55,7 +59,7 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo = new TransformControls(World.SceneRenderer.mainCamera, World.SceneRenderer.renderer.domElement)
         this._gizmo.setMode(mode)
 
-        World.SceneRenderer.RegisterSceneObject(this)
+        World.SceneRenderer.RegisterGizmoSceneObject(this)
     }
 
     public Setup(): void {
@@ -179,6 +183,11 @@ class GizmoSceneObject extends SceneObject {
     public UpdateGizmoObjectPositionAndRotation(gizmoTransformation: THREE.Matrix4) {
         this._obj.position.setFromMatrixPosition(gizmoTransformation)
         this._obj.quaternion.setFromRotationMatrix(gizmoTransformation)
+    }
+
+    /** @return true if gizmo is attached to mirabufSceneObject */
+    public HasParent(): boolean {
+        return this._parentObject !== undefined
     }
 }
 

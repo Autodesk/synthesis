@@ -31,6 +31,7 @@ class SceneRenderer extends WorldSystem {
     private _antiAliasPass: EffectPass
 
     private _sceneObjects: Map<number, SceneObject>
+    private _gizmosOnMirabuf: Map<number, GizmoSceneObject> // maps of all the gizmos that are attached to a mirabuf scene object
 
     private _orbitControls: OrbitControls
 
@@ -60,6 +61,7 @@ class SceneRenderer extends WorldSystem {
         super()
 
         this._sceneObjects = new Map()
+        this._gizmosOnMirabuf = new Map()
 
         this._mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
         this._mainCamera.position.set(-2.5, 2, 2.5)
@@ -229,20 +231,29 @@ class SceneRenderer extends WorldSystem {
         return id
     }
 
+    /** Registers gizmos that are attached to a parent mirabufsceneobject  */
+    public RegisterGizmoSceneObject(obj: GizmoSceneObject): number {
+        if (obj.HasParent()) this._gizmosOnMirabuf.set(obj.parentObjectId!, obj)
+        return this.RegisterSceneObject(obj)
+    }
+
     public RemoveAllSceneObjects() {
         this._sceneObjects.forEach(obj => obj.Dispose())
+        this._gizmosOnMirabuf.clear()
         this._sceneObjects.clear()
     }
 
     public RemoveSceneObject(id: number) {
         const obj = this._sceneObjects.get(id)
+
+        // If the object is a mirabuf object, remove the gizmo as well
         if (obj instanceof MirabufSceneObject) {
-            Array.from(this._sceneObjects.values())
-                .filter(x => x instanceof GizmoSceneObject)
-                .forEach(x => {
-                    if ((x as GizmoSceneObject).parentObjectId === obj.id) this.RemoveSceneObject(x.id)
-                })
+            const objGizmo = this._gizmosOnMirabuf.get(id)
+            if (this._gizmosOnMirabuf.delete(id)) objGizmo!.Dispose()
+        } else if (obj instanceof GizmoSceneObject && obj.HasParent()) {
+            this._gizmosOnMirabuf.delete(obj.parentObjectId!)
         }
+
         if (this._sceneObjects.delete(id)) {
             obj!.Dispose()
         }

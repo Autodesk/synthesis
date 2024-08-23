@@ -279,8 +279,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             >
                 <ToggleButton value={"translate"}>Move</ToggleButton>
                 <ToggleButton value={"scale"}>Scale</ToggleButton>
+                <ToggleButton value={"rotate"}>Rotate</ToggleButton>
             </ToggleButtonGroup>
-            <ToggleButton value={"rotate"}>Rotate</ToggleButton>
         </div>
     )
 }
