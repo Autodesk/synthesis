@@ -4,7 +4,6 @@ import EditInputInterface from "./EditInputInterface"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { ConfigurationSavedEvent } from "../../ConfigurePanel"
 import { SectionDivider } from "@/ui/components/StyledComponents"
-import { MainHUD_AddToast } from "@/ui/components/MainHUD"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
