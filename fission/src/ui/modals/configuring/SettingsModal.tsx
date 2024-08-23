@@ -65,7 +65,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 saveSettings()
             }}
         >
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh]">
                 <Label size={LabelSize.Medium}>Screen Settings</Label>
                 <Box alignSelf={"center"}>
                     <Button
@@ -125,11 +125,12 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         }}
                     />
                     <Checkbox
-                        label="Subsystem Realistic Gravity"
+                        label="Realistic Subsystem Gravity"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
                         onClick={checked => {
                             setSubsystemGravity(checked)
                         }}
+                        tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
                     />
                     <Checkbox
                         label="Show Score Zones"

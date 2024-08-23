@@ -10,8 +10,9 @@ export type MirabufCacheID = string
 
 export interface MirabufCacheInfo {
     id: MirabufCacheID
-    cacheKey: string
     miraType: MiraType
+    cacheKey: string
+    buffer?: ArrayBuffer
     name?: string
     thumbnailStorageID?: string
 }
@@ -29,10 +30,10 @@ const root = await navigator.storage.getDirectory()
 const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, { create: true })
 const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, { create: true })
 
-export const backUpRobots: Map<MirabufCacheID, ArrayBuffer> = new Map<MirabufCacheID, ArrayBuffer>()
-export const backUpFields: Map<MirabufCacheID, ArrayBuffer> = new Map<MirabufCacheID, ArrayBuffer>()
+export let backUpRobots: MapCache = {}
+export let backUpFields: MapCache = {}
 
-const canOPFS = await (async () => {
+export const canOPFS = await (async () => {
     try {
         if (robotFolderHandle.name == robotsDirName) {
             robotFolderHandle.entries
@@ -52,6 +53,21 @@ const canOPFS = await (async () => {
         }
     } catch (e) {
         console.log(`No access to OPFS`)
+
+        // Copy-pasted from RemoveAll()
+        for await (const key of robotFolderHandle.keys()) {
+            robotFolderHandle.removeEntry(key)
+        }
+        for await (const key of fieldFolderHandle.keys()) {
+            fieldFolderHandle.removeEntry(key)
+        }
+
+        window.localStorage.setItem(robotsDirName, "{}")
+        window.localStorage.setItem(fieldsDirName, "{}")
+
+        backUpRobots = {}
+        backUpFields = {}
+
         return false
     }
 })()
@@ -75,11 +91,10 @@ class MirabufCachingService {
      */
     public static GetCacheMap(miraType: MiraType): MapCache {
         if (
-            (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") == MIRABUF_LOCALSTORAGE_GENERATION
+            (window.localStorage.getItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY) ?? "") != MIRABUF_LOCALSTORAGE_GENERATION
         ) {
             window.localStorage.setItem(MIRABUF_LOCALSTORAGE_GENERATION_KEY, MIRABUF_LOCALSTORAGE_GENERATION)
-            window.localStorage.setItem(robotsDirName, "{}")
-            window.localStorage.setItem(fieldsDirName, "{}")
+            this.RemoveAll()
             return {}
         }
 
@@ -188,16 +203,19 @@ class MirabufCachingService {
         try {
             const map: MapCache = this.GetCacheMap(miraType)
             const id = map[key].id
+            const _buffer = miraType == MiraType.ROBOT ? backUpRobots[id].buffer : backUpFields[id].buffer
             const _name = map[key].name
             const _thumbnailStorageID = map[key].thumbnailStorageID
             const info: MirabufCacheInfo = {
                 id: id,
                 cacheKey: key,
                 miraType: miraType,
+                buffer: _buffer,
                 name: name ?? _name,
                 thumbnailStorageID: thumbnailStorageID ?? _thumbnailStorageID,
             }
             map[key] = info
+            miraType == MiraType.ROBOT ? (backUpRobots[id] = info) : (backUpFields[id] = info)
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
             return true
         } catch (e) {
@@ -243,7 +261,7 @@ class MirabufCachingService {
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
             const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
             const buff =
-                cache.get(id) ??
+                cache[id]?.buffer ??
                 (await (async () => {
                     const fileHandle = canOPFS
                         ? await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(id, {
@@ -299,7 +317,7 @@ class MirabufCachingService {
 
             const backUpCache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
             if (backUpCache) {
-                backUpCache.delete(id)
+                delete backUpCache[id]
             }
 
             World.AnalyticsSystem?.Event("Cache Remove", {
@@ -318,18 +336,20 @@ class MirabufCachingService {
      * Removes all Mirabuf files from the caching services. Mostly for debugging purposes.
      */
     public static async RemoveAll() {
-        for await (const key of robotFolderHandle.keys()) {
-            robotFolderHandle.removeEntry(key)
-        }
-        for await (const key of fieldFolderHandle.keys()) {
-            fieldFolderHandle.removeEntry(key)
+        if (canOPFS) {
+            for await (const key of robotFolderHandle.keys()) {
+                robotFolderHandle.removeEntry(key)
+            }
+            for await (const key of fieldFolderHandle.keys()) {
+                fieldFolderHandle.removeEntry(key)
+            }
         }
 
-        window.localStorage.removeItem(robotsDirName)
-        window.localStorage.removeItem(fieldsDirName)
+        window.localStorage.setItem(robotsDirName, "{}")
+        window.localStorage.setItem(fieldsDirName, "{}")
 
-        backUpRobots.clear()
-        backUpFields.clear()
+        backUpRobots = {}
+        backUpFields = {}
     }
 
     // Optional name for when assembly is being decoded anyway like in CacheAndGetLocal()
@@ -339,10 +359,10 @@ class MirabufCachingService {
         miraType?: MiraType,
         name?: string
     ): Promise<MirabufCacheInfo | undefined> {
-        const backupID = Date.now().toString()
         try {
+            const backupID = Date.now().toString()
             if (!miraType) {
-                console.log("Double loading")
+                console.debug("Double loading")
                 miraType = this.AssemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
             }
 
@@ -350,8 +370,8 @@ class MirabufCachingService {
             const map: MapCache = this.GetCacheMap(miraType)
             const info: MirabufCacheInfo = {
                 id: backupID,
-                cacheKey: key,
                 miraType: miraType,
+                cacheKey: key,
                 name: name,
             }
             map[key] = info
@@ -377,7 +397,14 @@ class MirabufCachingService {
 
             // Store in hash
             const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
-            cache.set(backupID, miraBuff)
+            const mapInfo: MirabufCacheInfo = {
+                id: backupID,
+                miraType: miraType,
+                cacheKey: key,
+                buffer: miraBuff,
+                name: name,
+            }
+            cache[backupID] = mapInfo
 
             return info
         } catch (e) {

@@ -3,6 +3,7 @@ import { alpha, styled } from "@mui/system"
 import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
 import { colorNameToVar } from "../ThemeContext"
 
+/** The clickable button for a dropdown that shows the selected item and opens the menu. Custom styling over the MUI material button.*/
 const CustomButton = styled(Button)({
     "border": `2px solid ${colorNameToVar("InteractiveElementRight")}`,
     "color": colorNameToVar("InteractiveElementText"),
@@ -40,6 +41,7 @@ const CustomButton = styled(Button)({
     },
 })
 
+/** The menu that appears when the dropdown is opened and allows an item to be selected. Custom styling over the MUI material menu. */
 const CustomMenu = styled(Menu)({
     "& .MuiPaper-root": {
         backgroundColor: colorNameToVar("BackgroundSecondary"),
@@ -65,13 +67,24 @@ const CustomMenu = styled(Menu)({
 
 interface DropdownProps {
     options: string[]
-    defaultValue?: string
     onSelect: (value: string) => void
+    defaultValue?: string
     label?: string
     className?: string
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, defaultValue, onSelect, label }) => {
+/**
+ * Dropdown component that renders a button which, when clicked, displays a dropdown menu with a list of selectable options.
+ *
+ * @param {DropdownProps} props - The properties object.
+ * @param {string[]} props.options - An array of strings representing the dropdown options.
+ * @param {function} props.onSelect - Callback function to handle selection of an option.
+ * @param {string} [props.defaultValue] - The default selected value for the dropdown.
+ * @param {string} [props.label] - An optional label to be displayed above the dropdown.
+ *
+ * @returns {JSX.Element} The rendered Dropdown component.
+ */
+const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, label }) => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [selectedValue, setSelectedValue] = useState<string>(defaultValue || "")
     const buttonRef = useRef<HTMLButtonElement>(null)
@@ -83,14 +96,17 @@ const Dropdown: React.FC<DropdownProps> = ({ options, defaultValue, onSelect, la
         }
     }, [])
 
+    /** Handles clicking the button to open the dropdown  menu. */
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget)
     }
 
+    /** Handles closing the dropdown menu. */
     const handleClose = () => {
         setAnchorEl(null)
     }
 
+    /** Handles the selection of a dropdown option. */
     const handleSelect = (value: string) => {
         setSelectedValue(value)
         onSelect(value)
