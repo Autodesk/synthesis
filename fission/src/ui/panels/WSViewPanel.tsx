@@ -35,7 +35,9 @@ function formatMap(map: Map<string, number>): string {
 }
 
 function generateTableBody() {
-    const names: SimType[] = ["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro", "Accel"]
+    const names: SimType[] = [SimType.PWM, SimType.SimDevice, SimType.CANMotor, SimType.CANEncoder, SimType.Gyro, SimType.Accel, SimType.DIO, SimType.AI, SimType.AO]
+
+    console.log(simMap)
 
     return (
         <TableBody>
@@ -43,7 +45,7 @@ function generateTableBody() {
                 simMap.has(name) ? (
                     [...simMap.get(name)!.entries()]
                         // most devices don't have <init field but we want to hide the ones that do
-                        .filter(x => !Object.keys(x[1]).includes("<init") || x[1]["<init"] == true)
+                        .filter(x => !Object.keys(x[1]).includes("<init") || !!(x[1].get("<init") ?? false) == true)
                         .map(x => (
                             <TableRow key={x[0]}>
                                 <TableCell>

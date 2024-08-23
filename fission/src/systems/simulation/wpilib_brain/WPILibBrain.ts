@@ -5,8 +5,8 @@ import WPILibWSWorker from "./WPILibWSWorker?worker"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
-import { SimOutputGroup } from "./SimOutput"
-import { SimAccelInput, SimGyroInput, SimInput } from "./SimInput"
+import { SimAnalogOutput, SimOutput, SimOutputGroup } from "./SimOutput"
+import { SimAccelInput, SimInput, SimDIO as SimDIOIn, SimAnalogInput } from "./SimInput"
 
 const worker = new WPILibWSWorker()
 const PWM_SPEED = "<speed"
@@ -25,11 +25,15 @@ const CANENCODER_VELOCITY = ">velocity"
 
 export enum SimType {
     PWM = "PWM",
+    SimDevice = "SimDevice",
     CANMotor = "CANMotor",
     Solenoid = "Solenoid",
     CANEncoder = "CANEncoder",
     Gyro = "Gyro",
     Accel = "Accel",
+    DIO = "DIO",
+    AI = "AI",
+    AO = "AO"
 }
 
 enum FieldType {
@@ -62,6 +66,8 @@ export const simMap = new Map<SimType, Map<DeviceName, DeviceData>>()
 export class SimGeneric {
     private constructor() { }
 
+    public static Get<T>(simType: SimType, device: string, field: string): T | undefined;
+    public static Get<T>(simType: SimType, device: string, field: string, defaultValue: T): T;
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Read && fieldType != FieldType.Both) {
@@ -195,27 +201,27 @@ export class SimGyro {
     private constructor() { }
 
     public static SetAngleX(device: string, angle: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">angle_x", angle)
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_x", angle)
     }
 
     public static SetAngleY(device: string, angle: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">angle_y", angle)
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_y", angle)
     }
 
     public static SetAngleZ(device: string, angle: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">angle_z", angle)
+        return SimGeneric.Set(SimType.Gyro, device, ">angle_z", angle)
     }
 
     public static SetRateX(device: string, rate: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">rate_x", rate)
+        return SimGeneric.Set(SimType.Gyro, device, ">rate_x", rate)
     }
 
     public static SetRateY(device: string, rate: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">rate_y", rate)
+        return SimGeneric.Set(SimType.Gyro, device, ">rate_y", rate)
     }
 
     public static SetRateZ(device: string, rate: number): boolean {
-        return SimGeneric.Set("Gyro", device, ">rate_z", rate)
+        return SimGeneric.Set(SimType.Gyro, device, ">rate_z", rate)
     }
 }
 
@@ -223,15 +229,92 @@ export class SimAccel {
     private constructor() { }
 
     public static SetX(device: string, accel: number): boolean {
-        return SimGeneric.Set("Accel", device, ">x", accel)
+        return SimGeneric.Set(SimType.Accel, device, ">x", accel)
     }
 
     public static SetY(device: string, accel: number): boolean {
-        return SimGeneric.Set("Accel", device, ">y", accel)
+        return SimGeneric.Set(SimType.Accel, device, ">y", accel)
     }
 
     public static SetZ(device: string, accel: number): boolean {
-        return SimGeneric.Set("Accel", device, ">z", accel)
+        return SimGeneric.Set(SimType.Accel, device, ">z", accel)
+    }
+}
+
+export class SimDIO {
+    private constructor() { }
+
+    public static SetValue(device: string, value: boolean): boolean {
+        return SimGeneric.Set(SimType.DIO, device, "<>value", +value);
+    }
+
+    public static GetValue(device: string): boolean {
+        return SimGeneric.Get(SimType.DIO, device, "<>value", false)
+    }
+}
+
+export class SimAI {
+    constructor() { }
+
+    public static SetValue(device: string, value: number): boolean {
+        return SimGeneric.Set(SimType.AI, device, ">voltage", value)
+    }
+
+    /**
+     * The number of averaging bits
+     */
+    public static GetAvgBits(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<avg_bits")
+    }
+    /**
+     * The number of oversampling bits
+     */
+    public static GetOversampleBits(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<oversample_bits")
+    }
+    /**
+     * Input voltage, in volts
+     */
+    public static SetVoltage(device: string, voltage: number) {
+        return SimGeneric.Set(SimType.AI, device, ">voltage", voltage)
+    }
+    /**
+     * If the accumulator is initialized in the robot program
+     */
+    public static GetAccumInit(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<accum_init")
+    }
+    /**
+     * The accumulated value
+     */
+    public static SetAccumValue(device: string, accum_value: number) {
+        return SimGeneric.Set(SimType.AI, device, ">accum_value", accum_value)
+    }
+    /**
+     * The number of accumulated values
+     */
+    public static SetAccumCount(device: string, accum_count: number) {
+        return SimGeneric.Set(SimType.AI, device, ">accum_count", accum_count)
+    }
+    /**
+     * The center value of the accumulator
+     */
+    public static GetAccumCenter(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<accum_center")
+    }
+    /**
+     * The accumulator's deadband
+     */
+    public static GetAccumDeadband(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<accum_deadband")
+    }
+}
+
+export class SimAO {
+    constructor() { }
+
+    public static GetVoltage(device: string): number {
+        return SimGeneric.Get(SimType.AI, device, ">voltage", 0.0)
     }
 }
 
@@ -282,7 +365,7 @@ function UpdateSimMap(type: SimType, device: string, updateData: DeviceData) {
 class WPILibBrain extends Brain {
     private _simLayer: SimulationLayer
 
-    private _simOutputs: SimOutputGroup[] = []
+    private _simOutputs: SimOutput[] = []
     private _simInputs: SimInput[] = []
 
     constructor(mechanism: Mechanism) {
@@ -297,9 +380,13 @@ class WPILibBrain extends Brain {
 
         // this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
         // this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
+        // this.addSimInput(new SimDIOIn("In[0]", () => Math.random() > 0.5))
+        // this.addSimInput(new SimDIOIn("Out[1]"))
+        // this.addSimInput(new SimAnalogInput("In[0]", () => Math.random() * 12))
+        // this.addSimOutput(new SimAnalogOutput("Out[1]"))
     }
 
-    public addSimOutputGroup(device: SimOutputGroup) {
+    public addSimOutput(device: SimOutput) {
         this._simOutputs.push(device)
     }
 
@@ -310,6 +397,7 @@ class WPILibBrain extends Brain {
     public Update(deltaT: number): void {
         this._simOutputs.forEach(d => d.Update(deltaT))
         this._simInputs.forEach(i => i.Update(deltaT))
+        console.log(simMap)
     }
 
     public Enable(): void {

@@ -2,7 +2,7 @@ import Driver from "../driver/Driver"
 import HingeDriver from "../driver/HingeDriver"
 import SliderDriver from "../driver/SliderDriver"
 import WheelDriver from "../driver/WheelDriver"
-import { SimCAN, SimPWM, SimType } from "./WPILibBrain"
+import { SimAO, SimCAN, SimPWM, SimType } from "./WPILibBrain"
 
 // TODO: Averaging is probably not the right solution (if we want large output groups)
 // We can keep averaging, but we need a better ui for creating one to one (or just small) output groups
@@ -10,14 +10,24 @@ import { SimCAN, SimPWM, SimType } from "./WPILibBrain"
 // We instead want a system where every driver gets (a) unique motor(s) that control it
 // That way a single driver might get the average of two motors or something, if it has two motors to control it
 // A system where motors a drivers are visually "linked" with "threads" in the UI would work well in my opinion
-export abstract class SimOutputGroup {
+
+export abstract class SimOutput {
     public name: string
+
+    constructor(name: string) {
+        this.name = name
+    }
+
+    public abstract Update(deltaT: number): void
+}
+
+export abstract class SimOutputGroup extends SimOutput {
     public ports: number[]
     public drivers: Driver[]
     public type: SimType
 
     public constructor(name: string, ports: number[], drivers: Driver[], type: SimType) {
-        this.name = name
+        super(name)
         this.ports = ports
         this.drivers = drivers
         this.type = type
@@ -71,4 +81,16 @@ export class CANOutputGroup extends SimOutputGroup {
             d.Update(deltaT)
         })
     }
+}
+
+export class SimAnalogOutput extends SimOutput {
+    public constructor(name: string) {
+        super(name)
+    }
+
+    public GetVoltage(): number {
+        return SimAO.GetVoltage(this.name)
+    }
+
+    public Update(_deltaT: number) { }
 }

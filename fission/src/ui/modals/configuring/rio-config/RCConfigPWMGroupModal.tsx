@@ -47,7 +47,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 // no eslint complain
-                brain.addSimOutputGroup(new PWMOutputGroup(name, checkedPorts, checkedDrivers))
+                brain.addSimOutput(new PWMOutputGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
             }}
             onCancel={() => {

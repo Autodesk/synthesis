@@ -13,6 +13,10 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogGyro;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.AnalogOutput;
+import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DigitalOutput;
 import edu.wpi.first.wpilibj.SPI;
 
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -50,6 +54,10 @@ public class Robot extends TimedRobot {
   // with a measurement range from -8 to 8 G's
   private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
   private Pigeon2 m_Pigeon2 = new Pigeon2(0);
+  private DigitalInput m_DI = new DigitalInput(0);
+  private DigitalOutput m_DO = new DigitalOutput(1);
+  private AnalogInput m_AI = new AnalogInput(0);
+  private AnalogOutput m_AO = new AnalogOutput(1);
 
   private CANSparkMax m_SparkMax1 = new CANSparkMax(1, MotorType.kBrushless);
   private CANSparkMax m_SparkMax2 = new CANSparkMax(2, MotorType.kBrushless);
@@ -94,6 +102,8 @@ public class Robot extends TimedRobot {
     m_autoSelected = m_chooser.getSelected();
     // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
     System.out.println("Auto selected: " + m_autoSelected);
+    m_DO.set(true);
+    m_AO.setVoltage(0.0);
   }
 
   /** This function is called periodically during autonomous. */
@@ -135,14 +145,17 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() { }
+  public void teleopInit() {
+    m_DO.set(false);
+    m_AO.setVoltage(6.0);
+  }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
     m_Spark1.set(m_Controller.getLeftY());
     m_Spark2.set(-m_Controller.getRightY());
-    System.out.println(m_Gyro.getAngleY());
+    System.out.println(m_DI.get());
     // m_Spark1.set(0.25);
     // m_Spark2.set(0.25);
     m_Talon.set(-0.5);
@@ -164,6 +177,7 @@ public class Robot extends TimedRobot {
       m_SparkMax4.set(0.0);
       m_SparkMax5.set(0.0);
       m_SparkMax6.set(0.0);
+      m_AO.setVoltage(12.0);
   }
 
   /** This function is called periodically when disabled. */

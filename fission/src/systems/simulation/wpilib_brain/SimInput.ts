@@ -1,6 +1,6 @@
 import World from "@/systems/World"
 import EncoderStimulus from "../stimulus/EncoderStimulus"
-import { SimCANEncoder, SimGyro, SimAccel } from "./WPILibBrain"
+import { SimCANEncoder, SimGyro, SimAccel, SimDIO as WSSimDIO, SimAI } from "./WPILibBrain"
 import Mechanism from "@/systems/physics/Mechanism"
 import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -118,5 +118,47 @@ export class SimAccelInput implements SimInput {
         SimAccel.SetX(this._device, this.GetAxis("x"))
         SimAccel.SetY(this._device, this.GetAxis("y"))
         SimAccel.SetZ(this._device, this.GetAxis("z"))
+    }
+}
+
+export class SimDIO implements SimInput {
+    private _device: string
+    private _valueSupplier?: () => boolean
+
+    /**
+     * Creates a Simulation Digital Input/Output object.
+     *
+     * @param device Device ID
+     * @param valueSupplier Called each frame and returns what the value should be set to. Don't specify if DIO should be treated as an output.
+     */
+    constructor(device: string, valueSupplier?: () => boolean) {
+        this._device = device
+        this._valueSupplier = valueSupplier
+    }
+
+    public SetValue(value: boolean) {
+        WSSimDIO.SetValue(this._device, value);
+    }
+
+    public GetValue(): boolean {
+        return WSSimDIO.GetValue(this._device)
+    }
+
+    public Update(_deltaT: number) {
+        if (this._valueSupplier) this.SetValue(this._valueSupplier())
+    }
+}
+
+export class SimAnalogInput implements SimInput {
+    private _device: string
+    private _valueSupplier: () => number
+
+    constructor(device: string, valueSupplier: () => number) {
+        this._device = device
+        this._valueSupplier = valueSupplier
+    }
+
+    public Update(_deltaT: number) {
+        SimAI.SetValue(this._device, this._valueSupplier())
     }
 }
