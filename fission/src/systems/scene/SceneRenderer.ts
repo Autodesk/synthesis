@@ -15,6 +15,7 @@ import Jolt from "@barclah/jolt-physics"
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
+import { GraphicsPreferences } from "../preferences/PreferenceTypes"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -27,8 +28,6 @@ class SceneRenderer extends WorldSystem {
     private _renderer: THREE.WebGLRenderer
     private _skybox: THREE.Mesh
     private _composer: EffectComposer
-
-    private _antiAliasPass: EffectPass
 
     private _sceneObjects: Map<number, SceneObject>
 
@@ -65,11 +64,11 @@ class SceneRenderer extends WorldSystem {
         this._scene = new THREE.Scene()
 
         this._renderer = new THREE.WebGLRenderer({
-            // Following parameters are used to optimize post-processing
             powerPreference: "high-performance",
             antialias: false,
             stencil: false,
-            depth: false,
+            depth: !PreferencesSystem.getGraphicsPreferences().antiAliasing,
+            // logarithmicDepthBuffer: true,
         })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
@@ -78,7 +77,7 @@ class SceneRenderer extends WorldSystem {
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
         // Adding the lighting uisng quality preferences
-        this.ChangeLighting(PreferencesSystem.getGlobalPreference<string>("QualitySettings"))
+        this.ChangeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
@@ -111,9 +110,11 @@ class SceneRenderer extends WorldSystem {
         this._composer = new EffectComposer(this._renderer)
         this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
 
-        const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
-        this._antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
-        this._composer.addPass(this._antiAliasPass)
+        if (PreferencesSystem.getGraphicsPreferences().antiAliasing) {
+            const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+            const antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
+            this._composer.addPass(antiAliasPass)
+        }
 
         // Orbit controls
         this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
@@ -127,6 +128,7 @@ class SceneRenderer extends WorldSystem {
         this._mainCamera.updateProjectionMatrix()
     }
 
+    /** Function to disable or enable the antiAliasingPass */
     public Update(deltaT: number): void {
         this._sceneObjects.forEach(obj => {
             obj.Update()
@@ -164,7 +166,7 @@ class SceneRenderer extends WorldSystem {
      *
      * @param quality: string representing the quality of lighting - "Low", "Medium", "High"
      */
-    public ChangeLighting(quality: string): void {
+    public ChangeLighting(fancyShadows: boolean): void {
         // removing the previous lighting method
         if (this._light instanceof THREE.DirectionalLight) {
             this._scene.remove(this._light)
@@ -174,13 +176,14 @@ class SceneRenderer extends WorldSystem {
         }
 
         // setting the shadow map size
-        const shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
+        const graphicsSettings = PreferencesSystem.getGraphicsPreferences()
+        const shadowMapSize = Math.min(graphicsSettings.shadowMapSize, this._renderer.capabilities.maxTextureSize)
 
         // setting the light to a basic directional light
-        if (quality === "Low" || quality === "Medium") {
+        if (!fancyShadows) {
             const shadowCamSize = 15
 
-            this._light = new THREE.DirectionalLight(0xffffff, 5.0)
+            this._light = new THREE.DirectionalLight(0xffffff, graphicsSettings.lightIntensity)
             this._light.position.set(-1.0, 3.0, 2.0)
             this._light.castShadow = true
             this._light.shadow.camera.top = shadowCamSize
@@ -192,40 +195,77 @@ class SceneRenderer extends WorldSystem {
             this._light.shadow.bias = 0.0
             this._light.shadow.normalBias = 0.01
             this._scene.add(this._light)
-        } else if (quality === "High") {
-            // setting light to cascading shadows
-            this._light = new CSM({
-                parent: this._scene,
-                camera: this._mainCamera,
-                cascades: 4,
-                lightDirection: new THREE.Vector3(1.0, -3.0, -2.0).normalize(),
-                lightIntensity: 5,
-                shadowMapSize: shadowMapSize,
-                mode: "custom",
-                maxFar: 30,
-                shadowBias: -0.00001,
-                customSplitsCallback: (cascades: number, near: number, far: number, breaks: number[]) => {
-                    const blend = 0.7
-                    for (let i = 1; i < cascades; i++) {
-                        const uniformFactor = (near + ((far - near) * i) / cascades) / far
-                        const logarithmicFactor = (near * (far / near) ** (i / cascades)) / far
-                        const combinedFactor = uniformFactor * (1 - blend) + logarithmicFactor * blend
+        } else {
+            // setting the light to a cascading shadow map
+            this.CreateCSM(graphicsSettings)
 
-                        breaks.push(combinedFactor)
-                    }
-
-                    breaks.push(1)
-                },
-            })
-
-            // setting up the materials for all objects in the scene
-            this._light.fade = true
-            this._scene.children.forEach(child => {
-                if (child instanceof THREE.Mesh) {
-                    if (this._light instanceof CSM) this._light.setupMaterial(child.material)
-                }
-            })
+            // setting up all the materials
+            this.SetupCSMMaterials()
         }
+    }
+
+    public CreateCSM(settings: GraphicsPreferences) {
+        this._light = new CSM({
+            parent: this._scene,
+            camera: this._mainCamera,
+            cascades: settings.cascades,
+            lightDirection: new THREE.Vector3(1.0, -3.0, -2.0).normalize(),
+            lightIntensity: settings.lightIntensity,
+            shadowMapSize: settings.shadowMapSize,
+            mode: "custom",
+            maxFar: settings.maxFar,
+            shadowBias: -0.00001,
+            customSplitsCallback: (cascades: number, near: number, far: number, breaks: number[]) => {
+                const blend = 0.7
+                for (let i = 1; i < cascades; i++) {
+                    const uniformFactor = (near + ((far - near) * i) / cascades) / far
+                    const logarithmicFactor = (near * (far / near) ** (i / cascades)) / far
+                    const combinedFactor = uniformFactor * (1 - blend) + logarithmicFactor * blend
+
+                    breaks.push(combinedFactor)
+                }
+
+                breaks.push(1)
+            },
+        })
+        this._light.fade = true
+    }
+
+    private SetupCSMMaterials() {
+        this._scene.children.forEach(child => {
+            if (child instanceof THREE.Mesh) {
+                if (this._light instanceof CSM) this._light.setupMaterial(child.material)
+            }
+        })
+    }
+
+    /** Sets the light intensity for both directional light and csm */
+    public setLightIntensity(intensity: number) {
+        if (this._light instanceof THREE.DirectionalLight) {
+            this._light.intensity = intensity
+        } else if (this._light instanceof CSM) {
+            this._light.lightIntensity = intensity
+
+            this._light.createLights()
+            this._light.injectInclude()
+            this._light.updateFrustums()
+            this._light.update()
+            console.log(this._light.lightIntensity)
+        }
+    }
+
+    /** Changes the settings of the cascading shadows from the Quality Settings Panel */
+    public changeCSMSettings(settings: GraphicsPreferences) {
+        if (!(this._light instanceof CSM)) return
+
+        this._light.maxFar = settings.maxFar
+        this._light.shadowMapSize = Math.min(settings.shadowMapSize, this._renderer.capabilities.maxTextureSize)
+        this._light.cascades = settings.cascades
+
+        this._light.createLights()
+        this._light.injectInclude()
+        this._light.updateFrustums()
+        this._light.update()
     }
 
     public RegisterSceneObject<T extends SceneObject>(obj: T): number {

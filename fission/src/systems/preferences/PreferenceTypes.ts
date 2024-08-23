@@ -3,7 +3,6 @@ import { Vector3Tuple } from "three"
 
 /** Names of all global preferences. */
 export type GlobalPreference =
-    | "QualitySettings"
     | "ZoomSensitivity"
     | "PitchSensitivity"
     | "YawSensitivity"
@@ -17,13 +16,13 @@ export type GlobalPreference =
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
+export const GraphicsPreferenceKey: string = "Quality"
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
-    QualitySettings: "High" as QualitySetting,
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
@@ -36,7 +35,25 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     SubsystemGravity: false,
 }
 
-export type QualitySetting = "Low" | "Medium" | "High"
+export type GraphicsPreferences = {
+    lightIntensity: number
+    fancyShadows: boolean
+    maxFar: number
+    cascades: number
+    shadowMapSize: number
+    antiAliasing: boolean
+}
+
+export function DefaultGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: false,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
+        antiAliasing: false,
+    }
+}
 
 export type IntakePreferences = {
     deltaTransformation: number[]
