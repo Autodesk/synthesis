@@ -13,7 +13,7 @@ import { Box } from "@mui/material"
 import { Spacer } from "@/ui/components/StyledComponents"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal, closeModal } = useModalControlContext()
+    const { closeModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
 
     const [zoomSensitivity, setZoomSensitivity] = useState<number>(
