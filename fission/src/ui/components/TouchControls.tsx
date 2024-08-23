@@ -58,10 +58,10 @@ function TouchControls() {
             <input ref={inputRef} className="hidden" />
             <div
                 id="place-assembly-button"
-                className={`absolute top-5 right-5 w-36 h-36 touch-none bg-gray-100 bg-opacity-20 rounded-full ${isPlaceButtonVisible ? "" : "hidden"}`}
+                className={`absolute top-5 right-5 w-[8vw] min-w-20 min-h-20 aspect-square touch-none bg-gray-100 bg-opacity-20 rounded-md flex justify-center items-center ${isPlaceButtonVisible ? "" : "hidden"}`}
                 onClick={PlaceMirabufAssembly}
             >
-                <Label></Label>
+                <Label className="px-2 py-2 text-main-text text-center">Place Assembly</Label>
             </div>
 
             <div
