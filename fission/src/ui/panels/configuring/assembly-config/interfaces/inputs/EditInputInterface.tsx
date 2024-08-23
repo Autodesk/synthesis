@@ -55,6 +55,7 @@ const gamepadButtons: string[] = [
 ]
 
 const gamepadAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
+const touchControlsAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
 
 // Converts a key code to displayable character (ex: KeyA -> "A")
 const keyCodeToCharacter = (code: string) => {
@@ -94,6 +95,7 @@ interface EditInputProps {
 const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTouchControls, onInputChanged }) => {
     const [selectedInput, setSelectedInput] = useState<string>("")
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
+    const [chosenTouchControlsAxis, setChosenTouchControlsAxis] = useState<number>(-1)
     const [chosenKey, setChosenKey] = useState<string>("")
     const [modifierState, setModifierState] = useState<ModifierState>(EmptyModifierState)
     const [chosenButton, setChosenButton] = useState<number>(-1)
@@ -306,33 +308,33 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         )
     }
 
-    // const TouchControlsAxisSelection = () => {
-    //     if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
+    const TouchControlsAxisSelection = () => {
+        if (!(input instanceof AxisInput)) throw new Error("Input not axis type")
 
-    //     return (
-    //         <>
-    //             <Box
-    //                 display="flex"
-    //                 flexDirection={"row"}
-    //                 gap="10px"
-    //                 alignItems={"center"}
-    //                 justifyContent={"space-between"}
-    //                 width={"98%"}
-    //             >
-    //                 <Label>{toTitleCase(input.inputName)}</Label>
-    //                 <Dropdown
-    //                     key={input.inputName}
-    //                     defaultValue={touchControlsAxes[input.touchControlsAxisNumber + 1]}
-    //                     options={touchControlsAxes}
-    //                     onSelect={value => {
-    //                         setSelectedInput(input.inputName)
-    //                         setChosenTouchControlsAxis(touchControlsAxes.indexOf(value))
-    //                     }}
-    //                 />
-    //             </Box>
-    //         </>
-    //     )
-    // }
+        return (
+            <>
+                <Box
+                    display="flex"
+                    flexDirection={"row"}
+                    gap="10px"
+                    alignItems={"center"}
+                    justifyContent={"space-between"}
+                    width={"98%"}
+                >
+                    <Label>{toTitleCase(input.inputName)}</Label>
+                    <Dropdown
+                        key={input.inputName}
+                        defaultValue={touchControlsAxes[input.touchControlAxis]}
+                        options={touchControlsAxes}
+                        onSelect={value => {
+                            setSelectedInput(input.inputName)
+                            setChosenTouchControlsAxis(touchControlsAxes.indexOf(value))
+                        }}
+                    />
+                </Box>
+            </>
+        )
+    }
 
     /** Show the correct selection mode based on input type and how it's configured */
     const inputConfig = () => {
@@ -375,7 +377,20 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         } else if (useTouchControls) {
             // here
             if (input instanceof AxisInput) {
-                return <></>
+                return (
+                    <div key={input.inputName}>
+                        {TouchControlsAxisSelection()}
+                        {/* // Button to invert the joystick axis */}
+                        <Checkbox
+                            label="Invert Joystick"
+                            defaultState={input.joystickInverted}
+                            onClick={val => {
+                                input.joystickInverted = val
+                            }}
+                        />
+                        <SectionDivider />
+                    </div>
+                )
             }
         } else {
             // Keyboard button
@@ -463,6 +478,16 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
             setChosenGamepadAxis(-1)
             setSelectedInput("")
         }
+
+        if (useTouchControls && selectedInput && chosenTouchControlsAxis != -1) {
+            if (!(input instanceof AxisInput)) return
+
+            input.touchControlAxis = chosenTouchControlsAxis
+
+            onInputChanged()
+            setChosenTouchControlsAxis(-1)
+            setSelectedInput("")
+        }
     }, [
         chosenKey,
         chosenButton,
@@ -473,6 +498,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         selectedInput,
         useGamepad,
         useTouchControls,
+        chosenTouchControlsAxis,
     ])
 
     return (

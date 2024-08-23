@@ -1,4 +1,4 @@
-import { TouchControlsJoystick } from "@/ui/components/TouchControls"
+import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
@@ -69,7 +69,7 @@ class AxisInput extends Input {
     public negKeyModifiers: ModifierState
 
     public gamepadAxisNumber: number
-    public touchControlAxis: TouchControlsJoystick
+    public touchControlAxis: TouchControlsAxes
     public joystickInverted: boolean
     public useGamepadButtons: boolean
     public posGamepadButton: number
@@ -98,7 +98,7 @@ class AxisInput extends Input {
         useGamepadButtons?: boolean,
         posGamepadButton?: number,
         negGamepadButton?: number,
-        touchControlAxis?: TouchControlsJoystick,
+        touchControlAxis?: TouchControlsAxes,
         posKeyModifiers?: ModifierState,
         negKeyModifiers?: ModifierState
     ) {
@@ -110,7 +110,7 @@ class AxisInput extends Input {
         this.negKeyModifiers = negKeyModifiers ?? EmptyModifierState
 
         this.gamepadAxisNumber = gamepadAxisNumber ?? -1
-        this.touchControlAxis = touchControlAxis ?? TouchControlsJoystick.NONE
+        this.touchControlAxis = touchControlAxis ?? TouchControlsAxes.NONE
         this.joystickInverted = joystickInverted ?? false
 
         this.useGamepadButtons = useGamepadButtons ?? false
@@ -345,12 +345,12 @@ class InputSystem extends WorldSystem {
     }
 
     // Returns a number between -1 and 1 from the touch controls
-    public static getTouchControlsAxis(axisType: TouchControlsJoystick): number {
+    public static getTouchControlsAxis(axisType: TouchControlsAxes): number {
         let value: number
 
-        if (axisType === TouchControlsJoystick.LEFT_Y) value = -InputSystem.leftJoystick.y
-        else if (axisType === TouchControlsJoystick.RIGHT_X) value = InputSystem.rightJoystick.x
-        else if (axisType === TouchControlsJoystick.RIGHT_Y) value = -InputSystem.rightJoystick.y
+        if (axisType === TouchControlsAxes.LEFT_Y) value = -InputSystem.leftJoystick.y
+        else if (axisType === TouchControlsAxes.RIGHT_X) value = InputSystem.rightJoystick.x
+        else if (axisType === TouchControlsAxes.RIGHT_Y) value = -InputSystem.rightJoystick.y
         else value = InputSystem.leftJoystick.x
 
         return value!

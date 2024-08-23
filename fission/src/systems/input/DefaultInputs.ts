@@ -1,4 +1,4 @@
-import { TouchControlsJoystick } from "@/ui/components/TouchControls"
+import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import { InputScheme } from "./InputSchemeManager"
 import { AxisInput, ButtonInput, EmptyModifierState } from "./InputSystem"
 
@@ -27,7 +27,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: false,
@@ -45,7 +45,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: false,
@@ -63,7 +63,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: false,
@@ -81,7 +81,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: false,
@@ -99,7 +99,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: false,
@@ -140,7 +140,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: true,
@@ -158,7 +158,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: true,
@@ -176,7 +176,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: true,
@@ -194,7 +194,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: true,
@@ -212,7 +212,7 @@ class DefaultInputs {
                     false,
                     -1,
                     -1,
-                    TouchControlsJoystick.NONE,
+                    TouchControlsAxes.NONE,
                     EmptyModifierState,
                     {
                         ctrl: true,
@@ -332,7 +332,7 @@ class DefaultInputs {
                     undefined,
                     undefined,
                     undefined,
-                    TouchControlsJoystick.LEFT_Y
+                    TouchControlsAxes.LEFT_Y
                 ),
                 new AxisInput(
                     "arcadeTurn",
@@ -343,7 +343,7 @@ class DefaultInputs {
                     undefined,
                     undefined,
                     undefined,
-                    TouchControlsJoystick.RIGHT_X
+                    TouchControlsAxes.RIGHT_X
                 ),
             ],
         }
