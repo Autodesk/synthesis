@@ -38,6 +38,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     @logFailure(messageBox=True)
     def notify(self, args: adsk.core.CommandCreatedEventArgs) -> None:
         cmd = args.command
+        global INPUTS_ROOT
+        INPUTS_ROOT = cmd.commandInputs
+
         gm.ui.activeSelections.clear()
         onExecute = ConfigureCommandExecuteHandler()
         cmd.execute.add(onExecute)
@@ -63,10 +66,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         cmd.isExecutedWhenPreEmpted = False
         cmd.okButtonText = "Export"
         cmd.setDialogSize(800, 350)
-
-        global INPUTS_ROOT
-        INPUTS_ROOT = cmd.commandInputs
-
         cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
 
         global generalConfigTab
@@ -120,36 +119,35 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
 
     @logFailure(messageBox=True)
     def notify(self, _: adsk.core.CommandEventArgs) -> None:
+        design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         exporterOptions = ExporterOptions().readFromDesign()
-        processedFileName = gm.app.activeDocument.name.replace(" ", "_")
-        if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
-            savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
 
-            if not savepath:
-                # save was canceled
-                return
+        designNameSplit = design.rootComponent.name.split(" ")
+        if len(designNameSplit) > 1:
+            docName, docVersion = designNameSplit[:2]
+        else:
+            docName = designNameSplit[0]
+            docVersion = ""
+
+        processedFileName = gm.app.activeDocument.name.replace(" ", "_")
+        defaultFileName = "_".join([docName, docVersion]) + ".mira" if docVersion else f"{docName}.mira"
+        if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
+            savepath = FileDialogConfig.saveFileDialog(exporterOptions.fileLocation, defaultFileName)
         else:
             savepath = processedFileName
 
-        adsk.doEvents()
-
-        design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
-
-        nameSplit = design.rootComponent.name.split(" ")
-        if len(nameSplit) < 2:
-            gm.ui.messageBox("Please open the robot design you would like to export", "Synthesis: Error")
+        if not savepath:  # User cancelled the save dialog
             return
 
-        name = nameSplit[0]
-        version = nameSplit[1]
+        adsk.doEvents()
 
         selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
         selectedGamepieces = gamepieceConfigTab.getGamepieces()
 
         exporterOptions = ExporterOptions(
             savepath,
-            name,
-            version,
+            docName,
+            docVersion,
             materials=0,
             joints=selectedJoints,
             wheels=selectedWheels,
