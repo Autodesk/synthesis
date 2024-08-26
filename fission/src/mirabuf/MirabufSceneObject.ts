@@ -453,7 +453,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             name: "Move",
             func: () => {
                 this.EnableTransformControls()
-            }
+            },
         })
 
         if (this.miraType == MiraType.ROBOT) {

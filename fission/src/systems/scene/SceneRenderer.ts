@@ -478,7 +478,7 @@ class SceneRenderer extends WorldSystem {
 
     /**
      * Context Menu handler for the scene canvas.
-     * 
+     *
      * @param e Mouse event data.
      */
     public OnContextMenu(e: InteractionEnd) {
