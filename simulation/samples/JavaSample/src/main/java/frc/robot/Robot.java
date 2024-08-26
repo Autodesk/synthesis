@@ -4,20 +4,9 @@
 
 package frc.robot;
 
-import com.ctre.phoenix6.hardware.Pigeon2;
-import com.kauailabs.navx.frc.AHRS;
-import com.revrobotics.CANSparkBase.IdleMode;
-// import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.ADXL362;
-import edu.wpi.first.wpilibj.ADXRS450_Gyro;
-import edu.wpi.first.wpilibj.AnalogGyro;
-import edu.wpi.first.wpilibj.AnalogInput;
-import edu.wpi.first.wpilibj.AnalogOutput;
-import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.DigitalOutput;
-import edu.wpi.first.wpilibj.SPI;
+import com.autodesk.synthesis.io.*;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
@@ -26,7 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
-import com.autodesk.synthesis.Gyro;
 import com.autodesk.synthesis.ctre.TalonFX;
 
 /**
@@ -48,12 +36,7 @@ public class Robot extends TimedRobot {
   private Spark m_Spark2 = new Spark(1);
   private TalonFX m_Talon = new TalonFX(2);
   private XboxController m_Controller = new XboxController(0);
-  private Gyro m_Gyro = new Gyro("Test Gyro", 1);
-  private AHRS m_NavX = new AHRS();
-  // Creates an ADXL362 accelerometer object on the MXP SPI port
-  // with a measurement range from -8 to 8 G's
-  private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
-  private Pigeon2 m_Pigeon2 = new Pigeon2(0);
+
   private DigitalInput m_DI = new DigitalInput(0);
   private DigitalOutput m_DO = new DigitalOutput(1);
   private AnalogInput m_AI = new AnalogInput(0);
@@ -155,9 +138,9 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     m_Spark1.set(m_Controller.getLeftY());
     m_Spark2.set(-m_Controller.getRightY());
-    System.out.println(m_DI.get());
-    // m_Spark1.set(0.25);
-    // m_Spark2.set(0.25);
+    System.out.println("IN: " + m_DI.get());
+    System.out.println("OUT: " + m_DO.get());
+    System.out.println("AI: " + m_AI.getVoltage());
     m_Talon.set(-0.5);
     m_SparkMax1.set(-0.75);
     m_SparkMax2.set(-0.75);

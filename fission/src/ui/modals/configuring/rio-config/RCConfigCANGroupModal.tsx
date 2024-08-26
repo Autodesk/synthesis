@@ -25,13 +25,11 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     let brain: WPILibBrain
 
     const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-    console.log(`Number of mirabuf scene objects: ${miraObjs.length}`)
     if (miraObjs.length > 0) {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
         simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
-        brain = new WPILibBrain(mechanism)
-        simLayer?.SetBrain(brain)
+        brain = simLayer?.brain as WPILibBrain
     }
 
     const cans = simMap.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
@@ -49,14 +47,6 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 // no eslint complain
                 brain.addSimOutput(new CANOutputGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
-                const replacer = (_: unknown, value: unknown) => {
-                    if (value instanceof Map) {
-                        return Object.fromEntries(value)
-                    } else {
-                        return value
-                    }
-                }
-                console.log(JSON.stringify(simMap, replacer))
             }}
             onCancel={() => {
                 openModal("roborio")
@@ -92,7 +82,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {drivers.map((driver, idx) => (
                             <Checkbox
                                 key={`${driver.constructor.name}-${idx}`}
-                                label={driver.constructor.name}
+                                label={`${driver.constructor.name} ${driver.info?.name && '(' + driver.info!.name + ')'}`}
                                 defaultState={false}
                                 onClick={checked => {
                                     if (checked && !checkedDrivers.includes(driver)) {

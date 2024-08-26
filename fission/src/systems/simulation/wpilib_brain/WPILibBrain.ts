@@ -1,6 +1,7 @@
 import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
+import Lazy from "@/util/Lazy.ts"
 import WPILibWSWorker from "./WPILibWSWorker?worker"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
@@ -8,7 +9,8 @@ import World from "@/systems/World"
 import { SimAnalogOutput, SimOutput, SimOutputGroup } from "./SimOutput"
 import { SimAccelInput, SimInput, SimDIO as SimDIOIn, SimAnalogInput } from "./SimInput"
 
-const worker = new WPILibWSWorker()
+const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
+
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
 
@@ -113,7 +115,7 @@ export class SimGeneric {
         selectedData[field] = value
         data.set(field, value)
 
-        worker.postMessage({
+        worker.getValue().postMessage({
             command: "update",
             data: {
                 type: simType,
@@ -324,7 +326,7 @@ type WSMessage = {
     data: Map<string, number>
 }
 
-worker.addEventListener("message", (eventData: MessageEvent) => {
+worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     let data: WSMessage | undefined
 
     if (typeof eventData.data == "object") {
@@ -338,7 +340,7 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         }
     }
 
-    if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type) || data.device.split(" ")[0] != "SYN")
+    if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type))// || data.device.split(" ")[0] != "SYN")
         return
 
     UpdateSimMap(data.type as SimType, data.device, data.data)
@@ -380,10 +382,10 @@ class WPILibBrain extends Brain {
 
         // this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
         // this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
-        // this.addSimInput(new SimDIOIn("In[0]", () => Math.random() > 0.5))
-        // this.addSimInput(new SimDIOIn("Out[1]"))
-        // this.addSimInput(new SimAnalogInput("In[0]", () => Math.random() * 12))
-        // this.addSimOutput(new SimAnalogOutput("Out[1]"))
+        // this.addSimInput(new SimDIOIn("SYN DI[0]", () => Math.random() > 0.5))
+        // this.addSimInput(new SimDIOIn("SYN DO[1]"))
+        // this.addSimInput(new SimAnalogInput("SYN AI[0]", () => Math.random() * 12))
+        // this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
     }
 
     public addSimOutput(device: SimOutput) {
@@ -397,15 +399,14 @@ class WPILibBrain extends Brain {
     public Update(deltaT: number): void {
         this._simOutputs.forEach(d => d.Update(deltaT))
         this._simInputs.forEach(i => i.Update(deltaT))
-        console.log(simMap)
     }
 
     public Enable(): void {
-        worker.postMessage({ command: "connect" })
+        worker.getValue().postMessage({ command: "connect" })
     }
 
     public Disable(): void {
-        worker.postMessage({ command: "disconnect" })
+        worker.getValue().postMessage({ command: "disconnect" })
     }
 }
 

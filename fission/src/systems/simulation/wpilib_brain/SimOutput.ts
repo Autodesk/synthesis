@@ -45,7 +45,6 @@ export class PWMOutputGroup extends SimOutputGroup {
         const average =
             this.ports.reduce((sum, port) => {
                 const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-                console.debug(port, speed)
                 return sum + speed
             }, 0) / this.ports.length
 
