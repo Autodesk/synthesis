@@ -144,7 +144,7 @@ export class CustomOrbitControls extends CameraControls {
 
     public interactionStart(start: InteractionStart) {
         // If primary button, make Pointer be down
-        if (this._activePointerType < 0) {
+        if (this._activePointerType < start.interactionType) {
             switch (start.interactionType) {
                 case PRIMARY_MOUSE_INTERACTION:
                     this._activePointerType = PRIMARY_MOUSE_INTERACTION

@@ -14,9 +14,6 @@ interface ContextMenuStateData {
 function ContextMenu() {
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
-    // const { currentTheme, themes } = useTheme()
-    // const theme = useMemo(() => themes[currentTheme], [currentTheme, themes])
-
     useEffect(() => {
         const func = (e: ContextSupplierEvent) => {
             setState({ data: e.data, location: [e.mousePosition[0], e.mousePosition[1]] })
@@ -32,7 +29,7 @@ function ContextMenu() {
         <></>
     ) : (
         <Box
-            id="CANCEL"
+            key="CANCEL"
             component="div"
             display="flex"
             sx={{
@@ -46,7 +43,7 @@ function ContextMenu() {
             onContextMenu={e => e.preventDefault()}
         >
             <Box
-                id="MENU"
+                key="MENU"
                 component="div"
                 display="flex"
                 sx={{
@@ -64,6 +61,7 @@ function ContextMenu() {
                 onPointerDown={e => e.stopPropagation()}
             >
                 <Box
+                    key="CONTEXT-HEADER"
                     component="div"
                     display="flex"
                     sx={{
@@ -77,6 +75,7 @@ function ContextMenu() {
                 </Box>
                 {state.data.items.map(x => (
                     <Button
+                        key={x.name}
                         size={ButtonSize.Small}
                         className={"w-full text-sm"}
                         value={x.name}

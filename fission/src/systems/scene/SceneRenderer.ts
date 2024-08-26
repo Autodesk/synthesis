@@ -189,6 +189,7 @@ class SceneRenderer extends WorldSystem {
         if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
             new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
 
+        this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)
 
         this._composer.render(deltaT)

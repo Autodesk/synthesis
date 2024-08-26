@@ -1,5 +1,3 @@
-import * as THREE from "three"
-
 export const PRIMARY_MOUSE_INTERACTION = 0
 export const MIDDLE_MOUSE_INTERACTION = 1
 export const SECONDARY_MOUSE_INTERACTION = 2
@@ -26,8 +24,6 @@ export interface InteractionEnd {
 
 /**
  * Handler for all screen interactions with Mouse, Pen, and Touch controls.
- *
- * Mouse and Pen controls are stateless, whereas Touch controls are stateful
  */
 class ScreenInteractionHandler {
     private _primaryTouch: number | undefined
@@ -37,6 +33,9 @@ class ScreenInteractionHandler {
     private _movementThresholdMet: boolean = false
     private _doubleTapInteraction: boolean = false
     private _pointerPosition: [number, number] | undefined
+
+    private _lastPinchSeparation: number | undefined
+    private _lastPinchPosition: [number, number] | undefined;
 
     private _pointerMove: (ev: PointerEvent) => void
     private _wheelMove: (ev: WheelEvent) => void
@@ -52,6 +51,44 @@ class ScreenInteractionHandler {
     public interactionMove: ((i: InteractionMove) => void) | undefined
     public contextMenu: ((i: InteractionEnd) => void) | undefined
 
+    /**
+     * Caculates the distance between the primary and secondary touch positions.
+     * 
+     * @returns Distance in pixels. Undefined if primary or secondary touch positions are undefined.
+     */
+    public get pinchSeparation(): number | undefined {
+        if (this._primaryTouchPosition == undefined || this._secondaryTouchPosition == undefined) {
+            return undefined
+        }
+
+        const diff = [
+            this._primaryTouchPosition[0] - this._secondaryTouchPosition[0],
+            this._primaryTouchPosition[1] - this._secondaryTouchPosition[1]
+        ]
+        return Math.sqrt((diff[0] ** 2) + (diff[1] ** 2))
+    }
+
+    /**
+     * Gets the midpoint between the primary and secondary touch positions.
+     * 
+     * @returns Midpoint between primary and secondary touch positions. Undefined if touch positions are undefined.
+     */
+    public get pinchPosition(): [number, number] | undefined {
+        if (this._primaryTouchPosition == undefined || this._secondaryTouchPosition == undefined) {
+            return undefined
+        }
+
+        return [
+            (this._primaryTouchPosition[0] + this._secondaryTouchPosition[0]) / 2.0,
+            (this._primaryTouchPosition[1] + this._secondaryTouchPosition[1]) / 2.0
+        ]
+    }
+
+    /**
+     * Adds event listeners to dom element and wraps interaction events around original dom events.
+     * 
+     * @param domElement Element to attach events to. Generally canvas for our application.
+     */
     public constructor(domElement: HTMLElement) {
         this._domElement = domElement
 
@@ -79,6 +116,9 @@ class ScreenInteractionHandler {
         this._domElement.addEventListener("touchmove", this._touchMove)
     }
 
+    /**
+     * Disposes attached event handlers on the selected dom element.
+     */
     public dispose() {
         this._domElement.removeEventListener("pointermove", this._pointerMove)
         this._domElement.removeEventListener("wheel", this._wheelMove)
@@ -91,6 +131,17 @@ class ScreenInteractionHandler {
         this._domElement.removeEventListener("touchmove", this._touchMove)
     }
 
+    /**
+     * This method intercepts pointer move events and translates them into interaction move events accordingly. Pen and mouse movements have
+     * very minimal parsing, while touch movements are split into two categories. Either you have only a primary touch on the screen, in which
+     * it has, again, very minimal parsing. However, if there is a secondary touch, it simply updates the tracked positions, without dispatching
+     * any events. The touches positions are then translated into pinch and pan movements inside the update method.
+     * 
+     * Pointer movements need to move half the recorded pointers width or height (depending on direction of movement) in order to begin updating
+     * the position data and dispatch events.
+     * 
+     * @param e Pointer Event data.
+     */
     private pointerMove(e: PointerEvent) {
         if (!this.interactionMove) {
             return
@@ -115,11 +166,7 @@ class ScreenInteractionHandler {
         } else {
             if (e.pointerId == this._primaryTouch) {
                 if (!this._movementThresholdMet) {
-                    const delta = [
-                        Math.abs(e.clientX - this._primaryTouchPosition![0]),
-                        Math.abs(e.clientY - this._primaryTouchPosition![1]),
-                    ]
-                    if (delta[0] > e.width || delta[1] > e.height) {
+                    if (this.checkMovementThreshold(this._primaryTouchPosition!, e)) {
                         this._movementThresholdMet = true
                     } else {
                         return
@@ -127,17 +174,16 @@ class ScreenInteractionHandler {
                 }
 
                 this._primaryTouchPosition = [e.clientX, e.clientY]
-                this.interactionMove({
-                    interactionType: PRIMARY_MOUSE_INTERACTION,
-                    movement: [e.movementX, e.movementY],
-                })
+                
+                if (this._secondaryTouch == undefined) {
+                    this.interactionMove({
+                        interactionType: PRIMARY_MOUSE_INTERACTION,
+                        movement: [e.movementX, e.movementY],
+                    })
+                }
             } else if (e.pointerId == this._secondaryTouch) {
                 if (!this._movementThresholdMet) {
-                    const delta = [
-                        Math.abs(e.clientX - this._secondaryTouchPosition![0]),
-                        Math.abs(e.clientY - this._secondaryTouchPosition![1]),
-                    ]
-                    if (delta[0] > e.width || delta[1] > e.height) {
+                    if (this.checkMovementThreshold(this._secondaryTouchPosition!, e)) {
                         this._movementThresholdMet = true
                     } else {
                         return
@@ -145,24 +191,15 @@ class ScreenInteractionHandler {
                 }
 
                 this._secondaryTouchPosition = [e.clientX, e.clientY]
-                if (this._primaryTouchPosition) {
-                    // This shouldn't happen, but you never know
-                    const scalingDir = new THREE.Vector2(
-                        this._secondaryTouchPosition[0],
-                        this._secondaryTouchPosition[1]
-                    ).sub(new THREE.Vector2(this._primaryTouchPosition[0], this._primaryTouchPosition[1]))
-
-                    const scale = scalingDir.normalize().dot(new THREE.Vector2(e.movementX, e.movementY))
-
-                    this.interactionMove({
-                        interactionType: PRIMARY_MOUSE_INTERACTION,
-                        scale: scale * -0.06,
-                    })
-                }
             }
         }
     }
 
+    /**
+     * Intercepts wheel events and passes them along via the interaction move event.
+     * 
+     * @param e Wheel event data.
+     */
     private wheelMove(e: WheelEvent) {
         if (!this.interactionMove) {
             return
@@ -171,13 +208,47 @@ class ScreenInteractionHandler {
         this.interactionMove({ interactionType: -1, scale: e.deltaY * 0.01 })
     }
 
+    /**
+     * The primary role of update within screen interaction handler is to parse the double touches on the screen into
+     * pinch and pan movement, then dispatch the data via the interaction move events.
+     * 
+     * @param _ Unused deltaT variable.
+     */
+    public update(_: number) {
+        if (this._secondaryTouch != undefined && this._movementThresholdMet) {
+            // Calculate current pinch position and separation
+            const pinchSep = this.pinchSeparation!
+            const pinchPos = this.pinchPosition!
+            
+            // If previous ones exist, determine delta and send events
+            if (this._lastPinchPosition != undefined && this._lastPinchSeparation != undefined) {
+                this.interactionMove?.({
+                    interactionType: SECONDARY_MOUSE_INTERACTION,
+                    scale: (pinchSep - this._lastPinchSeparation) * -0.03,
+                })
+
+                this.interactionMove?.({
+                    interactionType: SECONDARY_MOUSE_INTERACTION,
+                    movement: [ 
+                        pinchPos[0] - this._lastPinchPosition[0],
+                        pinchPos[1] - this._lastPinchPosition[1]
+                    ]
+                })
+            }
+
+            // Load current into last
+            this._lastPinchSeparation = pinchSep
+            this._lastPinchPosition = pinchPos
+        }
+    }
+
     private pointerDown(e: PointerEvent) {
         if (!this.interactionStart) {
             return
         }
 
         if (e.pointerType == "touch") {
-            if (!this._primaryTouch) {
+            if (this._primaryTouch == undefined) {
                 this._primaryTouch = e.pointerId
                 this._primaryTouchPosition = [e.clientX, e.clientY]
                 this._movementThresholdMet = false
@@ -185,10 +256,18 @@ class ScreenInteractionHandler {
                     interactionType: PRIMARY_MOUSE_INTERACTION,
                     position: this._primaryTouchPosition,
                 })
-            } else if (!this._secondaryTouch) {
+            } else if (this._secondaryTouch == undefined) {
                 this._secondaryTouch = e.pointerId
                 this._secondaryTouchPosition = [e.clientX, e.clientY]
                 this._doubleTapInteraction = true
+
+                this._lastPinchSeparation = undefined
+                this._lastPinchPosition = undefined
+
+                this.interactionStart({
+                    interactionType: SECONDARY_MOUSE_INTERACTION,
+                    position: this._secondaryTouchPosition,
+                })
             }
         } else {
             if (e.button >= 0 && e.button <= 2) {
@@ -211,21 +290,31 @@ class ScreenInteractionHandler {
             if (e.pointerId == this._primaryTouch) {
                 this._primaryTouch = this._secondaryTouch
                 this._secondaryTouch = undefined
-                if (!this._primaryTouch) {
-                    const end: InteractionEnd = {
+                if (this._primaryTouch != undefined) {
+                    this.interactionEnd({
+                        interactionType: SECONDARY_MOUSE_INTERACTION,
+                        position: [e.clientX, e.clientY],
+                    })
+                } else {
+                    this.interactionEnd({
                         interactionType: PRIMARY_MOUSE_INTERACTION,
                         position: [e.clientX, e.clientY],
-                    }
-                    this.interactionEnd(end)
+                    })
                     if (this._doubleTapInteraction && !this._movementThresholdMet && this.contextMenu) {
-                        this.contextMenu(end)
+                        this.contextMenu({
+                            interactionType: -1,
+                            position: this.pinchPosition!,
+                        })
                     }
                     this._doubleTapInteraction = false
                 }
                 // Reset continuous tracking
             } else if (e.pointerId == this._secondaryTouch) {
                 this._secondaryTouch = undefined
-                // Reset continuous tracking
+                this.interactionEnd({
+                    interactionType: SECONDARY_MOUSE_INTERACTION,
+                    position: [e.clientX, e.clientY],
+                })
             }
         } else {
             if (e.button >= 0 && e.button <= 2) {
@@ -239,6 +328,22 @@ class ScreenInteractionHandler {
                 }
             }
         }
+    }
+
+    /**
+     * Checks if a given position has moved from the origin given a specified threshold.
+     * 
+     * @param origin Origin to move away from.
+     * @param ptr Pointer data.
+     * @returns True if latest is outside of the box around origin with sides the length of thresholds * 2.
+     */
+    private checkMovementThreshold(origin: [number, number], ptr: PointerEvent): boolean {
+        const delta = [
+            Math.abs(ptr.clientX - origin[0]),
+            Math.abs(ptr.clientY - origin[1]),
+        ]
+        
+        return delta[0] > ptr.width / 2.0 || delta[1] > ptr.height / 2.0
     }
 }
 
