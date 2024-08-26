@@ -35,13 +35,23 @@ function formatMap(map: Map<string, number>): string {
 }
 
 function generateTableBody() {
-    const names: SimType[] = [SimType.PWM, SimType.SimDevice, SimType.CANMotor, SimType.CANEncoder, SimType.Gyro, SimType.Accel, SimType.DIO, SimType.AI, SimType.AO]
+    const names: SimType[] = [
+        SimType.PWM,
+        SimType.SimDevice,
+        SimType.CANMotor,
+        SimType.CANEncoder,
+        SimType.Gyro,
+        SimType.Accel,
+        SimType.DIO,
+        SimType.AI,
+        SimType.AO,
+    ]
 
     console.log(simMap)
 
     return (
         <TableBody>
-            {names.map(name => 
+            {names.map(name =>
                 simMap.has(name) ? (
                     [...simMap.get(name)!.entries()]
                         // most devices don't have <init field but we want to hide the ones that do

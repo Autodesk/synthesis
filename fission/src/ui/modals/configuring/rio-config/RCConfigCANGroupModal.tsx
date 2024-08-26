@@ -82,7 +82,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         {drivers.map((driver, idx) => (
                             <Checkbox
                                 key={`${driver.constructor.name}-${idx}`}
-                                label={`${driver.constructor.name} ${driver.info?.name && '(' + driver.info!.name + ')'}`}
+                                label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
                                 defaultState={false}
                                 onClick={checked => {
                                     if (checked && !checkedDrivers.includes(driver)) {

@@ -137,7 +137,7 @@ export class SimDIO implements SimInput {
     }
 
     public SetValue(value: boolean) {
-        WSSimDIO.SetValue(this._device, value);
+        WSSimDIO.SetValue(this._device, value)
     }
 
     public GetValue(): boolean {

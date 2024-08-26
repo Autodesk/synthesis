@@ -91,5 +91,5 @@ export class SimAnalogOutput extends SimOutput {
         return SimAO.GetVoltage(this.name)
     }
 
-    public Update(_deltaT: number) { }
+    public Update(_deltaT: number) {}
 }

@@ -6,8 +6,8 @@ import WPILibWSWorker from "./WPILibWSWorker?worker"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
-import { SimAnalogOutput, SimOutput, SimOutputGroup } from "./SimOutput"
-import { SimAccelInput, SimInput, SimDIO as SimDIOIn, SimAnalogInput } from "./SimInput"
+import { SimOutput } from "./SimOutput"
+import { SimInput } from "./SimInput"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -35,7 +35,7 @@ export enum SimType {
     Accel = "Accel",
     DIO = "DIO",
     AI = "AI",
-    AO = "AO"
+    AO = "AO",
 }
 
 enum FieldType {
@@ -66,10 +66,10 @@ type DeviceData = Map<string, number>
 export const simMap = new Map<SimType, Map<DeviceName, DeviceData>>()
 
 export class SimGeneric {
-    private constructor() { }
+    private constructor() {}
 
-    public static Get<T>(simType: SimType, device: string, field: string): T | undefined;
-    public static Get<T>(simType: SimType, device: string, field: string, defaultValue: T): T;
+    public static Get<T>(simType: SimType, device: string, field: string): T | undefined
+    public static Get<T>(simType: SimType, device: string, field: string, defaultValue: T): T
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Read && fieldType != FieldType.Both) {
@@ -130,7 +130,7 @@ export class SimGeneric {
 }
 
 export class SimPWM {
-    private constructor() { }
+    private constructor() {}
 
     public static GetSpeed(device: string): number | undefined {
         return SimGeneric.Get(SimType.PWM, device, PWM_SPEED, 0.0)
@@ -142,7 +142,7 @@ export class SimPWM {
 }
 
 export class SimCAN {
-    private constructor() { }
+    private constructor() {}
 
     public static GetDeviceWithID(id: number, type: SimType): DeviceData | undefined {
         const id_exp = /.*\[(\d+)\]/g
@@ -161,7 +161,7 @@ export class SimCAN {
 }
 
 export class SimCANMotor {
-    private constructor() { }
+    private constructor() {}
 
     public static GetPercentOutput(device: string): number | undefined {
         return SimGeneric.Get(SimType.CANMotor, device, CANMOTOR_PERCENT_OUTPUT, 0.0)
@@ -188,7 +188,7 @@ export class SimCANMotor {
     }
 }
 export class SimCANEncoder {
-    private constructor() { }
+    private constructor() {}
 
     public static SetVelocity(device: string, velocity: number): boolean {
         return SimGeneric.Set(SimType.CANEncoder, device, CANENCODER_VELOCITY, velocity)
@@ -200,7 +200,7 @@ export class SimCANEncoder {
 }
 
 export class SimGyro {
-    private constructor() { }
+    private constructor() {}
 
     public static SetAngleX(device: string, angle: number): boolean {
         return SimGeneric.Set(SimType.Gyro, device, ">angle_x", angle)
@@ -228,7 +228,7 @@ export class SimGyro {
 }
 
 export class SimAccel {
-    private constructor() { }
+    private constructor() {}
 
     public static SetX(device: string, accel: number): boolean {
         return SimGeneric.Set(SimType.Accel, device, ">x", accel)
@@ -244,10 +244,10 @@ export class SimAccel {
 }
 
 export class SimDIO {
-    private constructor() { }
+    private constructor() {}
 
     public static SetValue(device: string, value: boolean): boolean {
-        return SimGeneric.Set(SimType.DIO, device, "<>value", +value);
+        return SimGeneric.Set(SimType.DIO, device, "<>value", +value)
     }
 
     public static GetValue(device: string): boolean {
@@ -256,7 +256,7 @@ export class SimDIO {
 }
 
 export class SimAI {
-    constructor() { }
+    constructor() {}
 
     public static SetValue(device: string, value: number): boolean {
         return SimGeneric.Set(SimType.AI, device, ">voltage", value)
@@ -313,7 +313,7 @@ export class SimAI {
 }
 
 export class SimAO {
-    constructor() { }
+    constructor() {}
 
     public static GetVoltage(device: string): number {
         return SimGeneric.Get(SimType.AI, device, ">voltage", 0.0)
@@ -340,8 +340,7 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
         }
     }
 
-    if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type))// || data.device.split(" ")[0] != "SYN")
-        return
+    if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type)) return
 
     UpdateSimMap(data.type as SimType, data.device, data.data)
 })
