@@ -110,6 +110,14 @@ class GeneralConfigTab:
         frictionCoefficient.tooltip = "<i>Friction coefficients range from 0 (ice) to 1 (rubber).</i>"
         frictionCoefficient.isVisible = exporterOptions.frictionOverride
 
+        createBooleanInput(
+            "openSynthesisOnExportButton",
+            "Open Synthesis on Export",
+            generalTabInputs,
+            checked=exporterOptions.openSynthesisUponExport,
+            tooltip="Launch the Synthesis website upon export.",
+        )
+
         if exporterOptions.exportMode == ExportMode.FIELD:
             autoCalcWeightButton.isVisible = False
             exportAsPartButton.isVisible = False
@@ -181,6 +189,13 @@ class GeneralConfigTab:
             "frictionCoefficient"
         )
         return frictionSlider.valueOne or -1.0
+
+    @property
+    def openSynthesisUponExport(self) -> bool:
+        openSynthesisButton: adsk.core.BoolValueCommandInput = self.generalOptionsTab.children.itemById(
+            "openSynthesisOnExportButton"
+        )
+        return openSynthesisButton.value or False
 
     @logFailure
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs) -> None:

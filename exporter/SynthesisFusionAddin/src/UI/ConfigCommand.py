@@ -3,12 +3,13 @@ Central location for which all UI is generated and handled for the main configur
 """
 
 import os
+import webbrowser
 from typing import Any
 
 import adsk.core
 import adsk.fusion
 
-from src import gm
+from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
@@ -127,10 +128,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             docName, docVersion = designNameSplit[:2]
         else:
             docName = designNameSplit[0]
-            docVersion = ""
+            docVersion = "v0"
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
-        defaultFileName = "_".join([docName, docVersion]) + ".mira" if docVersion else f"{docName}.mira"
+        defaultFileName = f"{'_'.join([docName, docVersion])}.mira"
         if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
             savepath = FileDialogConfig.saveFileDialog(exporterOptions.fileLocation, defaultFileName)
         else:
@@ -161,12 +162,18 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             exportAsPart=generalConfigTab.exportAsPart,
             frictionOverride=generalConfigTab.overrideFriction,
             frictionOverrideCoeff=generalConfigTab.frictionOverrideCoeff,
+            openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
 
         Parser(exporterOptions).export()
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
+
+        if generalConfigTab.openSynthesisUponExport:
+            res = webbrowser.open(APP_WEBSITE_URL)
+            if not res:
+                gm.ui.messageBox("Failed to open Synthesis in your default browser.")
 
 
 class CommandExecutePreviewHandler(PersistentEventHandler, adsk.core.CommandEventHandler):
