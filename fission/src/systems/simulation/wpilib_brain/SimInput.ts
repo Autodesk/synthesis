@@ -1,20 +1,25 @@
 import World from "@/systems/World"
 import EncoderStimulus from "../stimulus/EncoderStimulus"
-import { SimCANEncoder, SimGyro, SimAccel, SimDIO as WSSimDIO, SimAI } from "./WPILibBrain"
+import { SimCANEncoder, SimGyro, SimAccel, SimDIO, SimAI } from "./WPILibBrain"
 import Mechanism from "@/systems/physics/Mechanism"
 import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
-export interface SimInput {
-    Update: (deltaT: number) => void
+export abstract class SimInput {
+    constructor(protected _device: string) {}
+
+    public abstract Update(deltaT: number): void
+
+    public get device(): string {
+        return this._device
+    }
 }
 
-export class SimEncoderInput implements SimInput {
-    private _device: string
+export class SimEncoderInput extends SimInput {
     private _stimulus: EncoderStimulus
 
     constructor(device: string, stimulus: EncoderStimulus) {
-        this._device = device
+        super(device)
         this._stimulus = stimulus
     }
 
@@ -24,8 +29,7 @@ export class SimEncoderInput implements SimInput {
     }
 }
 
-export class SimGyroInput implements SimInput {
-    private _device: string
+export class SimGyroInput extends SimInput {
     private _robot: Mechanism
     private _joltID?: Jolt.BodyID
     private _joltBody?: Jolt.Body
@@ -35,7 +39,7 @@ export class SimGyroInput implements SimInput {
     private static AXIS_Z: Jolt.Vec3 = new JOLT.Vec3(0, 0, 1)
 
     constructor(device: string, robot: Mechanism) {
-        this._device = device
+        super(device)
         this._robot = robot
         this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
 
@@ -86,14 +90,13 @@ export class SimGyroInput implements SimInput {
     }
 }
 
-export class SimAccelInput implements SimInput {
-    private _device: string
+export class SimAccelInput extends SimInput {
     private _robot: Mechanism
     private _joltID?: Jolt.BodyID
     private _joltBody?: Jolt.Body
 
     constructor(device: string, robot: Mechanism) {
-        this._device = device
+        super(device)
         this._robot = robot
         this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
 
@@ -121,27 +124,26 @@ export class SimAccelInput implements SimInput {
     }
 }
 
-export class SimDIO implements SimInput {
-    private _device: string
-    private _valueSupplier?: () => boolean
+export class SimDigitalInput extends SimInput {
+    private _valueSupplier: () => boolean
 
     /**
-     * Creates a Simulation Digital Input/Output object.
+     * Creates a Simulation Digital Input object.
      *
      * @param device Device ID
-     * @param valueSupplier Called each frame and returns what the value should be set to. Don't specify if DIO should be treated as an output.
+     * @param valueSupplier Called each frame and returns what the value should be set to
      */
-    constructor(device: string, valueSupplier?: () => boolean) {
-        this._device = device
+    constructor(device: string, valueSupplier: () => boolean) {
+        super(device)
         this._valueSupplier = valueSupplier
     }
 
-    public SetValue(value: boolean) {
-        WSSimDIO.SetValue(this._device, value)
+    private SetValue(value: boolean) {
+        SimDIO.SetValue(this._device, value)
     }
 
     public GetValue(): boolean {
-        return WSSimDIO.GetValue(this._device)
+        return SimDIO.GetValue(this._device)
     }
 
     public Update(_deltaT: number) {
@@ -149,12 +151,11 @@ export class SimDIO implements SimInput {
     }
 }
 
-export class SimAnalogInput implements SimInput {
-    private _device: string
+export class SimAnalogInput extends SimInput {
     private _valueSupplier: () => number
 
     constructor(device: string, valueSupplier: () => number) {
-        this._device = device
+        super(device)
         this._valueSupplier = valueSupplier
     }
 

@@ -26,7 +26,7 @@ const TypoStyled = styled(Typography)({
     color: "white",
 })
 
-function formatMap(map: Map<string, number>): string {
+function formatMap(map: Map<string, number | boolean | string>): string {
     let entries: string = ""
     map.forEach((value, key) => {
         entries += `${key} : ${value}`

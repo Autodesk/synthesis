@@ -2,23 +2,16 @@ import Driver from "../driver/Driver"
 import HingeDriver from "../driver/HingeDriver"
 import SliderDriver from "../driver/SliderDriver"
 import WheelDriver from "../driver/WheelDriver"
-import { SimAO, SimCAN, SimPWM, SimType } from "./WPILibBrain"
-
-// TODO: Averaging is probably not the right solution (if we want large output groups)
-// We can keep averaging, but we need a better ui for creating one to one (or just small) output groups
-// The issue is that if a drivetrain is one output group, then each driver is given the average of all the motors
-// We instead want a system where every driver gets (a) unique motor(s) that control it
-// That way a single driver might get the average of two motors or something, if it has two motors to control it
-// A system where motors a drivers are visually "linked" with "threads" in the UI would work well in my opinion
+import { SimAO, SimCAN, SimDIO, SimPWM, SimType } from "./WPILibBrain"
 
 export abstract class SimOutput {
-    public name: string
-
-    constructor(name: string) {
-        this.name = name
-    }
+    constructor(protected _name: string) {}
 
     public abstract Update(deltaT: number): void
+
+    public get name(): string {
+        return this._name
+    }
 }
 
 export abstract class SimOutputGroup extends SimOutput {
@@ -68,7 +61,7 @@ export class CANOutputGroup extends SimOutputGroup {
         const average =
             this.ports.reduce((sum, port) => {
                 const device = SimCAN.GetDeviceWithID(port, SimType.CANMotor)
-                return sum + (device?.get("<percentOutput") ?? 0)
+                return sum + +(device?.get("<percentOutput") ?? 0)
             }, 0) / this.ports.length
 
         this.drivers.forEach(d => {
@@ -82,13 +75,34 @@ export class CANOutputGroup extends SimOutputGroup {
     }
 }
 
+export class SimDigitalOutput extends SimOutput {
+    /**
+     * Creates a Simulation Digital Input/Output object.
+     *
+     * @param device Device ID
+     */
+    constructor(name: string) {
+        super(name)
+    }
+
+    public SetValue(value: boolean) {
+        SimDIO.SetValue(this._name, value)
+    }
+
+    public GetValue(): boolean {
+        return SimDIO.GetValue(this._name)
+    }
+
+    public Update(_deltaT: number) {}
+}
+
 export class SimAnalogOutput extends SimOutput {
     public constructor(name: string) {
         super(name)
     }
 
     public GetVoltage(): number {
-        return SimAO.GetVoltage(this.name)
+        return SimAO.GetVoltage(this._name)
     }
 
     public Update(_deltaT: number) {}

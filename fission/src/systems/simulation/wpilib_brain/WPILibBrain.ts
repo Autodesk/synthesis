@@ -61,7 +61,7 @@ function GetFieldType(field: string): FieldType {
 }
 
 type DeviceName = string
-type DeviceData = Map<string, number>
+type DeviceData = Map<string, number | boolean | string>
 
 export const simMap = new Map<SimType, Map<DeviceName, DeviceData>>()
 
@@ -92,7 +92,7 @@ export class SimGeneric {
         return (data.get(field) as T | undefined) ?? defaultValue
     }
 
-    public static Set<T extends number>(simType: SimType, device: string, field: string, value: T): boolean {
+    public static Set<T extends number | boolean>(simType: SimType, device: string, field: string, value: T): boolean {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a write or both field type`)
@@ -111,7 +111,7 @@ export class SimGeneric {
             return false
         }
 
-        const selectedData: { [key: string]: number } = {}
+        const selectedData: { [key: string]: number | boolean } = {}
         selectedData[field] = value
         data.set(field, value)
 
@@ -247,7 +247,7 @@ export class SimDIO {
     private constructor() {}
 
     public static SetValue(device: string, value: boolean): boolean {
-        return SimGeneric.Set(SimType.DIO, device, "<>value", +value)
+        return SimGeneric.Set(SimType.DIO, device, "<>value", value)
     }
 
     public static GetValue(device: string): boolean {
@@ -381,8 +381,8 @@ class WPILibBrain extends Brain {
 
         // this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
         // this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
-        // this.addSimInput(new SimDIOIn("SYN DI[0]", () => Math.random() > 0.5))
-        // this.addSimInput(new SimDIOIn("SYN DO[1]"))
+        // this.addSimInput(new SimDigitalInput("SYN DI[0]", () => Math.random() > 0.5))
+        // this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
         // this.addSimInput(new SimAnalogInput("SYN AI[0]", () => Math.random() * 12))
         // this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
     }
