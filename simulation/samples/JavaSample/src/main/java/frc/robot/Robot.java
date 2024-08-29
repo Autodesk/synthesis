@@ -8,6 +8,9 @@ import com.revrobotics.CANSparkLowLevel.MotorType;
 
 import com.autodesk.synthesis.io.*;
 
+import edu.wpi.first.wpilibj.SPI;
+
+import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -36,6 +39,8 @@ public class Robot extends TimedRobot {
   private Spark m_Spark2 = new Spark(1);
   private TalonFX m_Talon = new TalonFX(2);
   private XboxController m_Controller = new XboxController(0);
+
+  private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
 
   private DigitalInput m_DI = new DigitalInput(0);
   private DigitalOutput m_DO = new DigitalOutput(1);

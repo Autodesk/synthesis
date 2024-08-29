@@ -94,33 +94,30 @@ export class SimAccelInput extends SimInput {
     private _robot: Mechanism
     private _joltID?: Jolt.BodyID
     private _joltBody?: Jolt.Body
+    private _prevVel: Jolt.Vec3
 
     constructor(device: string, robot: Mechanism) {
         super(device)
         this._robot = robot
         this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
+        this._prevVel = new JOLT.Vec3(0, 0, 0)
 
         if (this._joltID) this._joltBody = World.PhysicsSystem.GetBody(this._joltID)
     }
 
-    private GetAxis(axis: "x" | "y" | "z"): number {
-        const forces = this._joltBody?.GetAccumulatedForce()
-        if (!forces) return 0
+    public Update(deltaT: number) {
+        const newVel = this._joltBody?.GetLinearVelocity()
+        if (!newVel) return;
 
-        switch (axis) {
-            case "x":
-                return forces.GetX()
-            case "y":
-                return forces.GetY()
-            case "z":
-                return forces.GetZ()
-        }
-    }
+        const x = (newVel.GetX() - this._prevVel.GetX()) / deltaT
+        const y = (newVel.GetY() - this._prevVel.GetY()) / deltaT
+        const z = (newVel.GetZ() - this._prevVel.GetZ()) / deltaT
 
-    public Update(_deltaT: number) {
-        SimAccel.SetX(this._device, this.GetAxis("x"))
-        SimAccel.SetY(this._device, this.GetAxis("y"))
-        SimAccel.SetZ(this._device, this.GetAxis("z"))
+        SimAccel.SetX(this._device, x)
+        SimAccel.SetY(this._device, y)
+        SimAccel.SetZ(this._device, z)
+
+        this._prevVel = new JOLT.Vec3(newVel.GetX(), newVel.GetY(), newVel.GetZ())
     }
 }
 
