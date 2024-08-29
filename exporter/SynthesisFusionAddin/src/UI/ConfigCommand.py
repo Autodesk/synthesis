@@ -3,6 +3,7 @@ Central location for which all UI is generated and handled for the main configur
 """
 
 import os
+import re
 import webbrowser
 from typing import Any
 
@@ -123,12 +124,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         exporterOptions = ExporterOptions().readFromDesign()
 
-        designNameSplit = design.rootComponent.name.split(" ")
-        if len(designNameSplit) > 1:
-            docName, docVersion = designNameSplit[:2]
-        else:
-            docName = designNameSplit[0]
-            docVersion = "v0"
+        fullName = design.rootComponent.name
+        versionMatch = re.search(r"v\d+", fullName)
+        docName = (fullName[: versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
+        docVersion = versionMatch.group() if versionMatch else "v0"
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
         defaultFileName = f"{'_'.join([docName, docVersion])}.mira"
