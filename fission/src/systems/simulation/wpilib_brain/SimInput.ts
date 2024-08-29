@@ -107,7 +107,7 @@ export class SimAccelInput extends SimInput {
 
     public Update(deltaT: number) {
         const newVel = this._joltBody?.GetLinearVelocity()
-        if (!newVel) return;
+        if (!newVel) return
 
         const x = (newVel.GetX() - this._prevVel.GetX()) / deltaT
         const y = (newVel.GetY() - this._prevVel.GetY()) / deltaT
