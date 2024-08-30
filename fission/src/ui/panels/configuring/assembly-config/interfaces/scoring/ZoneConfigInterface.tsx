@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Input from "@/components/Input"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
@@ -11,12 +11,13 @@ import World from "@/systems/World"
 import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+// import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
-import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import GizmoSceneObject/*, { GizmoMode } */ from "@/systems/scene/GizmoSceneObject"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 /**
  * Saves ejector configuration to selected field.
@@ -119,8 +120,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [destroy] = useState<boolean>(selectedZone.destroyGamepiece)
     const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
 
-    const [transformGizmo, setTransformGizmo] = useState<GizmoSceneObject | undefined>(undefined)
-    const [transformMode, setTransformMode] = useState<GizmoMode>("translate")
+    const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const { currentTheme, themes } = useTheme()
     const theme = useMemo(() => {
@@ -128,8 +128,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     }, [currentTheme, themes])
 
     const saveEvent = useCallback(() => {
-        if (transformGizmo && selectedField) {
-            save(selectedField, selectedZone, name, alliance, points, destroy, persistent, transformGizmo, selectedNode)
+        if (gizmoRef.current && selectedField) {
+            save(selectedField, selectedZone, name, alliance, points, destroy, persistent, gizmoRef.current, selectedNode)
             saveAllZones()
         }
     }, [
@@ -140,7 +140,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         points,
         destroy,
         persistent,
-        transformGizmo,
         selectedNode,
         saveAllZones,
     ])
@@ -166,7 +165,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         const zone = selectedZone
 
         if (!field || !zone) {
-            setTransformGizmo(undefined)
             return
         }
 
@@ -194,14 +192,11 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         gizmo.obj.rotation.setFromQuaternion(props.rotation)
         gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
 
-        setTransformGizmo(gizmo)
-
         return () => {
             World.SceneRenderer.RemoveSceneObject(gizmo.id)
-            setTransformGizmo(undefined)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [theme])
+    }, [theme, gizmoRef.current])
 
     /** Sets the selected node if it is a part of the currently loaded field */
     const trySetSelectedNode = useCallback(
@@ -231,8 +226,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
                 onClick={() => {
                     setAlliance(alliance == "blue" ? "red" : "blue")
-                    if (transformGizmo)
-                        (transformGizmo.obj as THREE.Mesh).material = alliance == "blue" ? redMaterial : blueMaterial
+                    if (gizmoRef.current)
+                        (gizmoRef.current.obj as THREE.Mesh).material = alliance == "blue" ? redMaterial : blueMaterial
                 }}
                 colorOverrideClass={`bg-match-${alliance}-alliance`}
             />
@@ -264,23 +259,12 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
             {/** Switch between transform control modes */}
 
-            <ToggleButtonGroup
-                value={transformMode}
-                exclusive
-                onChange={(_, v) => {
-                    if (v == undefined) return
-
-                    setTransformMode(v)
-                    transformGizmo?.SetMode(v)
-                }}
-                sx={{
-                    alignSelf: "center",
-                }}
-            >
-                <ToggleButton value={"translate"}>Move</ToggleButton>
-                <ToggleButton value={"scale"}>Scale</ToggleButton>
-                <ToggleButton value={"rotate"}>Rotate</ToggleButton>
-            </ToggleButtonGroup>
+            {(selectedField && selectedZone) ? <TransformGizmoControl
+                key="zone-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+            /> : <></>}
         </div>
     )
 }
