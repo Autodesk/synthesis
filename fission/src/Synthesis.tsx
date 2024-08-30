@@ -41,9 +41,9 @@ import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 import PokerPanel from "@/panels/PokerPanel.tsx"
 import World from "@/systems/World.ts"
 import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
+// import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import Skybox from "./ui/components/Skybox.tsx"
-import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
+// import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
@@ -54,8 +54,8 @@ import Lazy from "./util/Lazy.ts"
 import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
 import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
 import DebugPanel from "./ui/panels/DebugPanel.tsx"
-import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
-import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
+// import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
+// import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
 import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
@@ -203,8 +203,8 @@ const initialModals = [
     <ChooseSingleplayerModeModal key="singleplayer-mode" modalId="singleplayer-mode" />,
     <PracticeSettingsModal key="practice-settings" modalId="practice-settings" />,
     <DeleteThemeModal key="delete-theme" modalId="delete-theme" />,
-    <NewInputSchemeModal key="new-scheme" modalId="new-scheme" />,
-    <AssignNewSchemeModal key="assign-new-scheme" modalId="assign-new-scheme" />,
+    // <NewInputSchemeModal key="new-scheme" modalId="new-scheme" />,
+    // <AssignNewSchemeModal key="assign-new-scheme" modalId="assign-new-scheme" />,
     <DeleteAllThemesModal key="delete-all-themes" modalId="delete-all-themes" />,
     <NewThemeModal key="new-theme" modalId="new-theme" />,
     <RCCreateDeviceModal key="create-device" modalId="create-device" />,
@@ -222,9 +222,9 @@ const initialPanels: ReactElement[] = [
     <DriverStationPanel key="driver-station" panelId="driver-station" />,
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
-    <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
+    // <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
     <PokerPanel key="poker" panelId="poker" />,
-    <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
+    // <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,

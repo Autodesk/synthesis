@@ -6,18 +6,18 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useEffect, useMemo, useReducer, useState } from "react"
-import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
-import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
+// import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+// import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/ui/components/Button"
-import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
-import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
+// import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
+// import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+// import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+// import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
+// import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 
 enum ConfigMode {
@@ -125,7 +125,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     }
 }
 
-const robotModes = [
+const robotModes: ConfigModeSelectionOption[] = [
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
     new ConfigModeSelectionOption(
@@ -140,7 +140,9 @@ const robotModes = [
     ),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
-const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
+const fieldModes: ConfigModeSelectionOption[] = [
+    new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)
+]
 
 interface ConfigModeSelectionProps {
     configurationType: ConfigurationType
@@ -171,39 +173,40 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
     switch (configMode) {
         case ConfigMode.INTAKE:
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
-        case ConfigMode.EJECTOR:
-            return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
-        case ConfigMode.SUBSYSTEMS:
-            return <ConfigureSubsystemsInterface selectedRobot={assembly} />
-        case ConfigMode.CONTROLS: {
-            const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
-            const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        // case ConfigMode.EJECTOR:
+        //     return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
+        // case ConfigMode.SUBSYSTEMS:
+        //     return <ConfigureSubsystemsInterface selectedRobot={assembly} />
+        // case ConfigMode.CONTROLS: {
+        //     const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
+        //     const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
-            return (
-                <>
-                    <Button
-                        value="Set Scheme"
-                        onClick={() => {
-                            setSelectedBrainIndexGlobal(brainIndex)
-                            openPanel("choose-scheme")
-                        }}
-                    />
-                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} />}
-                </>
-            )
-        }
-        case ConfigMode.SEQUENTIAL:
-            return <SequentialBehaviorsInterface selectedRobot={assembly} />
-        case ConfigMode.SCORING_ZONES: {
-            const zones = assembly.fieldPreferences?.scoringZones
-            if (zones == undefined) {
-                console.error("Field does not contain scoring zone preferences!")
-                return <Label>ERROR: Field does not contain scoring zone configuration!</Label>
-            }
-            return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
-        }
+        //     return (
+        //         <>
+        //             <Button
+        //                 value="Set Scheme"
+        //                 onClick={() => {
+        //                     setSelectedBrainIndexGlobal(brainIndex)
+        //                     openPanel("choose-scheme")
+        //                 }}
+        //             />
+        //             {scheme && <ConfigureSchemeInterface selectedScheme={scheme} />}
+        //         </>
+        //     )
+        // }
+        // case ConfigMode.SEQUENTIAL:
+        //     return <SequentialBehaviorsInterface selectedRobot={assembly} />
+        // case ConfigMode.SCORING_ZONES: {
+        //     const zones = assembly.fieldPreferences?.scoringZones
+        //     if (zones == undefined) {
+        //         console.error("Field does not contain scoring zone preferences!")
+        //         return <Label>ERROR: Field does not contain scoring zone configuration!</Label>
+        //     }
+        //     return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
+        // }
         default:
-            throw new Error(`Config mode ${configMode} has no associated interface`)
+            return <></>
+            // throw new Error(`Config mode ${configMode} has no associated interface`)
     }
 }
 
@@ -270,7 +273,8 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <ToggleButton value={ConfigurationType.INPUTS}>Inputs</ToggleButton>
                 </ToggleButtonGroup>
                 {configurationType == ConfigurationType.INPUTS ? (
-                    <ChangeInputsInterface />
+                    // <ChangeInputsInterface />
+                    <></>
                 ) : (
                     <>
                         {/** Select menu to pick a robot or field */}
