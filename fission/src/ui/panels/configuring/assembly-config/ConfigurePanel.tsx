@@ -6,19 +6,21 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useEffect, useMemo, useReducer, useState } from "react"
-// import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
-// import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
+import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/ui/components/Button"
-// import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
-// import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
+import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
+import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-// import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
-// import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
-// import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
+import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
+import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
+import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
 
 enum ConfigMode {
     SUBSYSTEMS,
@@ -27,23 +29,6 @@ enum ConfigMode {
     CONTROLS,
     SEQUENTIAL,
     SCORING_ZONES,
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export enum ConfigurationType {
-    ROBOT,
-    FIELD,
-    INPUTS,
-}
-
-let selectedConfigurationType: ConfigurationType = ConfigurationType.ROBOT
-// eslint-disable-next-line react-refresh/only-export-components
-export function setSelectedConfigurationType(type: ConfigurationType) {
-    selectedConfigurationType = type
-}
-
-function getConfigurationType() {
-    return selectedConfigurationType
 }
 
 /** Option for selecting a robot of field */
@@ -173,57 +158,40 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
     switch (configMode) {
         case ConfigMode.INTAKE:
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
-        // case ConfigMode.EJECTOR:
-        //     return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
-        // case ConfigMode.SUBSYSTEMS:
-        //     return <ConfigureSubsystemsInterface selectedRobot={assembly} />
-        // case ConfigMode.CONTROLS: {
-        //     const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
-        //     const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
+        case ConfigMode.EJECTOR:
+            return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
+        case ConfigMode.SUBSYSTEMS:
+            return <ConfigureSubsystemsInterface selectedRobot={assembly} />
+        case ConfigMode.CONTROLS: {
+            const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
+            const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
-        //     return (
-        //         <>
-        //             <Button
-        //                 value="Set Scheme"
-        //                 onClick={() => {
-        //                     setSelectedBrainIndexGlobal(brainIndex)
-        //                     openPanel("choose-scheme")
-        //                 }}
-        //             />
-        //             {scheme && <ConfigureSchemeInterface selectedScheme={scheme} />}
-        //         </>
-        //     )
-        // }
-        // case ConfigMode.SEQUENTIAL:
-        //     return <SequentialBehaviorsInterface selectedRobot={assembly} />
-        // case ConfigMode.SCORING_ZONES: {
-        //     const zones = assembly.fieldPreferences?.scoringZones
-        //     if (zones == undefined) {
-        //         console.error("Field does not contain scoring zone preferences!")
-        //         return <Label>ERROR: Field does not contain scoring zone configuration!</Label>
-        //     }
-        //     return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
-        // }
+            return (
+                <>
+                    <Button
+                        value="Set Scheme"
+                        onClick={() => {
+                            setSelectedBrainIndexGlobal(brainIndex)
+                            openPanel("choose-scheme")
+                        }}
+                    />
+                    {scheme && <ConfigureSchemeInterface selectedScheme={scheme} />}
+                </>
+            )
+        }
+        case ConfigMode.SEQUENTIAL:
+            return <SequentialBehaviorsInterface selectedRobot={assembly} />
+        case ConfigMode.SCORING_ZONES: {
+            const zones = assembly.fieldPreferences?.scoringZones
+            if (zones == undefined) {
+                console.error("Field does not contain scoring zone preferences!")
+                return <Label>ERROR: Field does not contain scoring zone configuration!</Label>
+            }
+            return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
+        }
         default:
             return <></>
             // throw new Error(`Config mode ${configMode} has no associated interface`)
-    }
-}
-
-/** An event to save whatever configuration interface is open when it is closed */
-export class ConfigurationSavedEvent extends Event {
-    public constructor() {
-        super("ConfigurationSaved")
-
-        window.dispatchEvent(this)
-    }
-
-    public static Listen(func: (e: Event) => void) {
-        window.addEventListener("ConfigurationSaved", func)
-    }
-
-    public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener("ConfigurationSaved", func)
     }
 }
 
@@ -273,8 +241,8 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <ToggleButton value={ConfigurationType.INPUTS}>Inputs</ToggleButton>
                 </ToggleButtonGroup>
                 {configurationType == ConfigurationType.INPUTS ? (
-                    // <ChangeInputsInterface />
-                    <></>
+                    <ChangeInputsInterface />
+                    // <></>
                 ) : (
                     <>
                         {/** Select menu to pick a robot or field */}
