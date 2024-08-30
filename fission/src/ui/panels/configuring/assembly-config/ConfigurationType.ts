@@ -1,4 +1,3 @@
- 
 export enum ConfigurationType {
     ROBOT,
     FIELD,
@@ -6,7 +5,7 @@ export enum ConfigurationType {
 }
 
 let selectedConfigurationType: ConfigurationType = ConfigurationType.ROBOT
- 
+
 export function setSelectedConfigurationType(type: ConfigurationType) {
     selectedConfigurationType = type
 }
