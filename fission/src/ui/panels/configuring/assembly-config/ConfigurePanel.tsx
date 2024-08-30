@@ -126,7 +126,7 @@ const robotModes: ConfigModeSelectionOption[] = [
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
 const fieldModes: ConfigModeSelectionOption[] = [
-    new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)
+    new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES),
 ]
 
 interface ConfigModeSelectionProps {

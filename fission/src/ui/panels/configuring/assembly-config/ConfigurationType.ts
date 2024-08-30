@@ -1,4 +1,4 @@
-// eslint-disable-next-line react-refresh/only-export-components
+ 
 export enum ConfigurationType {
     ROBOT,
     FIELD,
@@ -6,7 +6,7 @@ export enum ConfigurationType {
 }
 
 let selectedConfigurationType: ConfigurationType = ConfigurationType.ROBOT
-// eslint-disable-next-line react-refresh/only-export-components
+ 
 export function setSelectedConfigurationType(type: ConfigurationType) {
     selectedConfigurationType = type
 }

@@ -7,7 +7,10 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
-import { setSelectedConfigurationType, ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
+import {
+    setSelectedConfigurationType,
+    ConfigurationType,
+} from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 
 const AssignNewSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openPanel } = usePanelControlContext()
