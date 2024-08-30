@@ -190,8 +190,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         }
         default:
-            return <></>
-            // throw new Error(`Config mode ${configMode} has no associated interface`)
+            throw new Error(`Config mode ${configMode} has no associated interface`)
     }
 }
 
@@ -242,7 +241,6 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 </ToggleButtonGroup>
                 {configurationType == ConfigurationType.INPUTS ? (
                     <ChangeInputsInterface />
-                    // <></>
                 ) : (
                     <>
                         {/** Select menu to pick a robot or field */}
