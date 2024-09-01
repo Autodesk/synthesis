@@ -1,6 +1,7 @@
 import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
+/** Names of all global preferences. */
 export type GlobalPreference =
     | "QualitySettings"
     | "ZoomSensitivity"
@@ -12,10 +13,15 @@ export type GlobalPreference =
     | "InputSchemes"
     | "RenderSceneTags"
     | "RenderScoreboard"
+    | "SubsystemGravity"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
 
+/**
+ * Default values for GlobalPreferences as a fallback if they are not configured by the user.
+ * Every global preference should have a default value.
+ */
 export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     QualitySettings: "High" as QualitySetting,
     ZoomSensitivity: 15,
@@ -27,6 +33,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
+    SubsystemGravity: false,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"
@@ -43,8 +50,10 @@ export type EjectorPreferences = {
     parentNode: string | undefined
 }
 
+/** The behavior types that can be sequenced. */
 export type BehaviorType = "Elevator" | "Arm"
 
+/** Data for sequencing and inverting elevator and behaviors. */
 export type SequentialBehaviorPreferences = {
     jointIndex: number
     parentJointIndex: number | undefined
@@ -52,6 +61,7 @@ export type SequentialBehaviorPreferences = {
     inverted: boolean
 }
 
+/** Default preferences for a joint with not parent specified and inverted set to false. */
 export function DefaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
     return {
         jointIndex: index,
@@ -63,9 +73,18 @@ export function DefaultSequentialConfig(index: number, type: BehaviorType): Sequ
 
 export type RobotPreferences = {
     inputsSchemes: InputScheme[]
+    motors: MotorPreferences[]
     intake: IntakePreferences
     ejector: EjectorPreferences
+    driveVelocity: number
+    driveAcceleration: number
     sequentialConfig?: SequentialBehaviorPreferences[]
+}
+
+export type MotorPreferences = {
+    name: string
+    maxVelocity: number
+    maxForce: number
 }
 
 export type Alliance = "red" | "blue"
@@ -82,6 +101,7 @@ export type ScoringZonePreferences = {
 }
 
 export type FieldPreferences = {
+    // TODO: implement this
     defaultSpawnLocation: Vector3Tuple
     scoringZones: ScoringZonePreferences[]
 }
@@ -89,6 +109,7 @@ export type FieldPreferences = {
 export function DefaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
+        motors: [],
         intake: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             zoneDiameter: 0.5,
@@ -99,6 +120,8 @@ export function DefaultRobotPreferences(): RobotPreferences {
             ejectorVelocity: 1,
             parentNode: undefined,
         },
+        driveVelocity: 0,
+        driveAcceleration: 0,
     }
 }
 

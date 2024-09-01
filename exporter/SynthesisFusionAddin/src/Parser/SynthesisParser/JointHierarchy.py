@@ -1,15 +1,15 @@
 import enum
-from typing import Union
+from typing import Any, Iterator, cast
 
 import adsk.core
 import adsk.fusion
-from proto.proto_out import joint_pb2, types_pb2
 
 from src import gm
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import guid_component, guid_occurrence
+from src.Proto import joint_pb2, types_pb2
 
 logger = getLogger()
 
@@ -18,12 +18,12 @@ logger = getLogger()
 
 # this is more of a tree - todo rewrite
 class GraphNode:
-    def __init__(self, data: any):
+    def __init__(self, data: Any) -> None:
         self.data = data
         self.previous = None
-        self.edges = list()
+        self.edges: list[GraphEdge] = list()
 
-    def iter(self, filter_relationship=[]):
+    def iter(self, filter_relationship: list[enum.Enum] = []) -> Iterator["GraphNode"]:
         """Generator for Node Iterator that does not have the given relationship
 
         Args:
@@ -37,19 +37,35 @@ class GraphNode:
             if edge.relationship not in filter_relationship:
                 yield from edge.node.iter(filter_relationship=filter_relationship)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator["GraphNode"]:
         for edge in self.edges:
             yield edge.node
 
-    def allChildren(self):
+    def allChildren(self) -> list["GraphNode"]:
         nodes = [self]
         for edge in self.edges:
-            nodes.extend(edge.node.allNodes())
+            nodes.extend(edge.node.allChildren())
         return nodes
 
 
+class RelationshipBase(enum.Enum): ...
+
+
+class OccurrenceRelationship(RelationshipBase):
+    TRANSFORM = 1  # As in hierarchy parenting
+    CONNECTION = 2  # As in a rigid joint or other designator
+    GROUP = 3  # As in a Rigid Grouping
+    NEXT = 4  # As in next_joint in list
+    END = 5  # Orphaned child relationship
+
+
+class JointRelationship(RelationshipBase):
+    GROUND = 1  # This currently has no bearing
+    ROTATIONAL = 2  # This currently has no bearing
+
+
 class GraphEdge:
-    def __init__(self, relationship: enum.Enum, node: GraphNode):
+    def __init__(self, relationship: RelationshipBase | None, node: GraphNode) -> None:
         """A GraphEdge representing a edge in the GraphNode
 
         Args:
@@ -59,10 +75,15 @@ class GraphEdge:
         self.relationship = relationship
         self.node = node
 
-    def print(self):
-        print(f"Edge Containing {self.relationship.name} -> {self.node}")
+    def print(self) -> None:
+        if self.relationship is None:
+            name = "None"
+        else:
+            name = self.relationship.name
 
-    def __iter__(self):
+        print(f"Edge Containing {name} -> {self.node}")
+
+    def __iter__(self) -> Iterator["GraphEdge"]:
         """Iterator for Edges within this edge
 
         Yields:
@@ -71,34 +92,21 @@ class GraphEdge:
         return (edge for edge in self.node.edges)
 
 
-class OccurrenceRelationship(enum.Enum):
-    TRANSFORM = 1  # As in hierarchy parenting
-    CONNECTION = 2  # As in a rigid joint or other designator
-    GROUP = 3  # As in a Rigid Grouping
-    NEXT = 4  # As in next_joint in list
-    END = 5  # Orphaned child relationship
-
-
-class JointRelationship(enum.Enum):
-    GROUND = 1  # This currently has no bearing
-    ROTATIONAL = 2  # This currently has no bearing
-
-
 # ______________________ INDIVIDUAL JOINT CHAINS ____________________________
 
 
 class DynamicOccurrenceNode(GraphNode):
-    def __init__(self, occurrence: adsk.fusion.Occurrence, isGround=False, previous=None):
+    def __init__(self, occurrence: adsk.fusion.Occurrence, isGround: bool = False, previous: GraphNode | None = None):
         super().__init__(occurrence)
         self.isGround = isGround
         self.name = occurrence.name
 
-    def print(self):
+    def print(self) -> None:
         print(f"\n\t-------{self.data.name}-------")
         for edge in self.edges:
             edge.print()
 
-    def getConnectedAxis(self) -> list:
+    def getConnectedAxis(self) -> list[Any]:
         """Gets all Axis with the NEXT relationship
 
         Returns:
@@ -109,10 +117,10 @@ class DynamicOccurrenceNode(GraphNode):
             if edge.relationship == OccurrenceRelationship.NEXT:
                 nextItems.append(edge.node.data)
             else:
-                nextItems.extend(edge.node.getConnectedAxis())
+                nextItems.extend(cast(DynamicOccurrenceNode, edge.node).getConnectedAxis())
         return nextItems
 
-    def getConnectedAxisTokens(self) -> list:
+    def getConnectedAxisTokens(self) -> list[str]:
         """Gets all Axis with the NEXT relationship
 
         Returns:
@@ -123,18 +131,20 @@ class DynamicOccurrenceNode(GraphNode):
             if edge.relationship == OccurrenceRelationship.NEXT:
                 nextItems.append(edge.node.data.entityToken)
             else:
-                nextItems.extend(edge.node.getConnectedAxisTokens())
+                nextItems.extend(cast(DynamicOccurrenceNode, edge.node).getConnectedAxisTokens())
         return nextItems
 
 
 class DynamicEdge(GraphEdge):
-    def __init__(self, relationship: OccurrenceRelationship, node: DynamicOccurrenceNode):
-        super().__init__(relationship, node)
-
     # should print all in this class
-    def print(self):
-        print(f"\t\t - {self.relationship.name} -> {self.node.data.name}")
-        self.node.print()
+    def print(self) -> None:
+        if self.relationship is None:
+            name = "None"
+        else:
+            name = self.relationship.name
+
+        print(f"\t\t - {name} -> {self.node.data.name}")
+        cast(DynamicOccurrenceNode, self.node).print()
 
 
 # ______________________ ENTIRE SIMULATION STRUCTURE _______________________
@@ -143,10 +153,10 @@ class DynamicEdge(GraphEdge):
 class SimulationNode(GraphNode):
     def __init__(
         self,
-        dynamicJoint: DynamicOccurrenceNode,
+        dynamicJoint: DynamicOccurrenceNode | None,
         joint: adsk.fusion.Joint,
-        grounded=False,
-    ):
+        grounded: bool = False,
+    ) -> None:
         super().__init__(dynamicJoint)
         self.joint = joint
         self.grounded = grounded
@@ -156,30 +166,30 @@ class SimulationNode(GraphNode):
         else:
             self.name = self.joint.name
 
-    def print(self):
+    def print(self) -> None:
         print(f"Simulation Node for joint : {self.name} ")
 
-    def printLink(self):
+    def printLink(self) -> None:
         if self.grounded:
             print(f"GROUND -- {self.data.data.name}")
         else:
             print(f"--> {self.data.data.name}")
 
         for edge in self.edges:
-            edge.node.printLink()
+            cast(SimulationNode, edge.node).printLink()
 
 
-class SimulationEdge(GraphEdge):
-    def __init__(self, relationship: JointRelationship, node: SimulationNode):
-        super().__init__(relationship, node)
+class SimulationEdge(GraphEdge): ...
 
 
 # ______________________________ PARSER ___________________________________
 
 
 class JointParser:
+    grounded: adsk.fusion.Occurrence
+
     @logFailure
-    def __init__(self, design):
+    def __init__(self, design: adsk.fusion.Design) -> None:
         # Create hierarchy with just joint assembly
         # - Assembly
         #   - Grounded
@@ -211,15 +221,16 @@ class JointParser:
             gm.ui.messageBox("There is not currently a Grounded Component in the assembly, stopping kinematic export.")
             raise RuntimeWarning("There is no grounded component")
 
-        self.currentTraversal = dict()
-        self.groundedConnections = []
+        self.currentTraversal: dict[str, DynamicOccurrenceNode | bool] = dict()
+        self.groundedConnections: list[adsk.fusion.Occurrence] = []
 
         # populate the rigidJoints connected to a given occurrence
-        self.rigidJoints = dict()
+        # Transition: AARD-1765
+        # self.rigidJoints = dict()
         # populate all joints
-        self.dynamicJoints = dict()
+        self.dynamicJoints: dict[str, adsk.fusion.Joint] = dict()
 
-        self.simulationNodesRef = dict()
+        self.simulationNodesRef: dict[str, SimulationNode] = dict()
 
         # TODO: need to look through every single joint and find the starting point that is connected to ground
         # Next add that occurrence to the graph and then traverse down that path etc
@@ -243,13 +254,13 @@ class JointParser:
         # self.groundSimNode.printLink()
 
     @logFailure
-    def __getAllJoints(self):
+    def __getAllJoints(self) -> None:
         for joint in list(self.design.rootComponent.allJoints) + list(self.design.rootComponent.allAsBuiltJoints):
             if joint and joint.occurrenceOne and joint.occurrenceTwo:
                 occurrenceOne = joint.occurrenceOne
                 occurrenceTwo = joint.occurrenceTwo
             else:
-                return None
+                return
 
             if occurrenceOne is None:
                 try:
@@ -286,19 +297,19 @@ class JointParser:
                     logger.error(
                         f"Occurrences that connect joints could not be found\n\t1: {occurrenceOne}\n\t2: {occurrenceTwo}"
                     )
-                    return None
+                    return
             else:
                 if oneEntityToken == self.grounded.entityToken:
                     self.groundedConnections.append(occurrenceTwo)
                 elif twoEntityToken == self.grounded.entityToken:
                     self.groundedConnections.append(occurrenceOne)
 
-    def _linkAllAxis(self):
+    def _linkAllAxis(self) -> None:
         # looks through each simulation nood starting with ground and orders them using edges
         # self.groundSimNode is ground
         self._recurseLink(self.groundSimNode)
 
-    def _recurseLink(self, simNode: SimulationNode):
+    def _recurseLink(self, simNode: SimulationNode) -> None:
         connectedAxisNodes = [
             self.simulationNodesRef.get(componentKeys, None) for componentKeys in simNode.data.getConnectedAxisTokens()
         ]
@@ -309,7 +320,7 @@ class JointParser:
                 simNode.edges.append(edge)
                 self._recurseLink(connectedAxis)
 
-    def _lookForGroundedJoints(self):
+    def _lookForGroundedJoints(self) -> None:
         grounded_token = self.grounded.entityToken
         rootDynamicJoint = self.groundSimNode.data
 
@@ -322,7 +333,7 @@ class JointParser:
                 is_ground=False,
             )
 
-    def _populateAxis(self, occ_token: str, joint: adsk.fusion.Joint):
+    def _populateAxis(self, occ_token: str, joint: adsk.fusion.Joint) -> None:
         occ = self.design.findEntityByToken(occ_token)[0]
 
         if occ is None:
@@ -339,21 +350,21 @@ class JointParser:
     def _populateNode(
         self,
         occ: adsk.fusion.Occurrence,
-        prev: DynamicOccurrenceNode,
-        relationship: OccurrenceRelationship,
-        is_ground=False,
-    ):
+        prev: DynamicOccurrenceNode | None,
+        relationship: OccurrenceRelationship | None,
+        is_ground: bool = False,
+    ) -> DynamicOccurrenceNode | None:
         if occ.isGrounded and not is_ground:
-            return
+            return None
         elif (relationship == OccurrenceRelationship.NEXT) and (prev is not None):
             node = DynamicOccurrenceNode(occ)
             edge = DynamicEdge(relationship, node)
             prev.edges.append(edge)
-            return
+            return None
         elif ((occ.entityToken in self.dynamicJoints.keys()) and (prev is not None)) or self.currentTraversal.get(
             occ.entityToken
         ) is not None:
-            return
+            return None
 
         node = DynamicOccurrenceNode(occ)
 
@@ -363,6 +374,7 @@ class JointParser:
             self._populateNode(occurrence, node, OccurrenceRelationship.TRANSFORM, is_ground=is_ground)
 
         # if not is_ground:  # THIS IS A BUG - OCCURRENCE ACCESS VIOLATION
+        # this is the current reason for wrapping in try except pass
         try:
             for joint in occ.joints:
                 if joint and joint.occurrenceOne and joint.occurrenceTwo:
@@ -391,7 +403,7 @@ class JointParser:
                 else:
                     continue
         except:
-            pass  # This is to temporarily bypass the bug
+            pass
 
         if prev is not None:
             edge = DynamicEdge(relationship, node)
@@ -403,7 +415,7 @@ class JointParser:
 
 def searchForGrounded(
     occ: adsk.fusion.Occurrence,
-) -> Union[adsk.fusion.Occurrence, None]:
+) -> adsk.fusion.Occurrence | None:
     """Search for a grounded component or occurrence in the assembly
 
     Args:
@@ -442,7 +454,7 @@ def BuildJointPartHierarchy(
     joints: joint_pb2.Joints,
     options: ExporterOptions,
     progressDialog: PDMessage,
-):
+) -> None:
     try:
         progressDialog.currentMessage = f"Constructing Simulation Hierarchy"
         progressDialog.update()
@@ -466,10 +478,10 @@ def BuildJointPartHierarchy(
             raise RuntimeError("User canceled export")
 
     except Warning:
-        return False
+        pass
 
 
-def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog):
+def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog: PDMessage) -> None:
     if progressDialog.wasCancelled():
         raise RuntimeError("User canceled export")
 
@@ -494,15 +506,15 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
 
     # next in line to be populated
     for edge in simNode.edges:
-        populateJoint(edge.node, joints, progressDialog)
+        populateJoint(cast(SimulationNode, edge.node), joints, progressDialog)
 
 
 def createTreeParts(
     dynNode: DynamicOccurrenceNode,
-    relationship: OccurrenceRelationship,
+    relationship: RelationshipBase | None,
     node: types_pb2.Node,
-    progressDialog,
-):
+    progressDialog: PDMessage,
+) -> None:
     if progressDialog.wasCancelled():
         raise RuntimeError("User canceled export")
 
@@ -531,5 +543,5 @@ def createTreeParts(
     # recurse and add all children connections
     for edge in dynNode.edges:
         child_node = types_pb2.Node()
-        createTreeParts(edge.node, edge.relationship, child_node, progressDialog)
+        createTreeParts(cast(DynamicOccurrenceNode, edge.node), edge.relationship, child_node, progressDialog)
         node.children.append(child_node)

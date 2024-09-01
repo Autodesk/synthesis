@@ -1,20 +1,15 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Label, { LabelSize } from "@/ui/components/Label"
-import { FaArrowRightArrowLeft, FaXmark } from "react-icons/fa6"
-import { Box, Button as MUIButton, styled, alpha, Icon } from "@mui/material"
+import { Box, Button as MUIButton, styled, alpha } from "@mui/material"
 import Button, { ButtonSize } from "@/ui/components/Button"
 import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
-import Checkbox from "@/ui/components/Checkbox"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { ConfigurationSavedEvent } from "../ConfigurePanel"
-import { SectionLabel } from "@/ui/components/StyledComponents"
-
-const UnselectParentIcon = <FaXmark size={"1.25rem"} />
-const InvertIcon = <FaArrowRightArrowLeft size={"1.25rem"} style={{ transform: "rotate(90deg)" }} />
+import { SectionLabel, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 /** Grey label for a child behavior name */
 const ChildLabelStyled = styled(Label)({
@@ -113,19 +108,8 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
             />
 
             {/* Spacer between the CustomButton and invert button */}
-            <Box width={"16px"} />
-
-            <Box display="flex" position="relative" alignSelf={"center"} alignItems={"center"}>
-                {/* Invert joint icon & checkbox */}
-                <Icon>{InvertIcon}</Icon>
-                <Checkbox
-                    label={""}
-                    defaultState={behavior.inverted}
-                    onClick={val => (behavior.inverted = val)}
-                    hideLabel={true}
-                />
-            </Box>
-
+            {/*             <Box width={"16px"} />
+             */}
             <Box display="flex" position="relative" alignSelf={"center"} alignItems={"center"}>
                 {/* Button to set the parent of this behavior */}
                 <Button
@@ -133,7 +117,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                     size={ButtonSize.Small}
                     value={
                         lookingForParent == behavior || behavior.parentJointIndex != undefined
-                            ? UnselectParentIcon
+                            ? SynthesisIcons.XmarkLarge
                             : "follow"
                     }
                     onClick={() => {
@@ -145,6 +129,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                     colorOverrideClass={hasChild ? "bg-background hover:brightness-100" : undefined}
                 />
             </Box>
+            {Spacer(0, 5)}
         </Box>
     )
 }
@@ -213,6 +198,7 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
 
     const saveEvent = useCallback(() => {
         if (selectedRobot == undefined || behaviors == undefined) return
+
         PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName).sequentialConfig = behaviors
         PreferencesSystem.savePreferences()
     }, [behaviors, selectedRobot])

@@ -21,7 +21,6 @@ from src.Types import (
     Joint,
     ModelHierarchy,
     PhysicalDepth,
-    PreferredUnits,
     Wheel,
     encodeNestedObjects,
     makeObjectFromJson,
@@ -36,17 +35,14 @@ class ExporterOptions:
     fileLocation: str | None = field(
         default=(os.getenv("HOME") if platform.system() == "Windows" else os.path.expanduser("~"))
     )
-    name: str = field(default=None)
-    version: str = field(default=None)
+    name: str | None = field(default=None)
+    version: str | None = field(default=None)
     materials: int = field(default=0)
     exportMode: ExportMode = field(default=ExportMode.ROBOT)
-    wheels: list[Wheel] = field(default=None)
-    joints: list[Joint] = field(default=None)
-    gamepieces: list[Gamepiece] = field(default=None)
-    preferredUnits: PreferredUnits = field(default=PreferredUnits.IMPERIAL)
-
-    # Always stored in kg regardless of 'preferredUnits'
-    robotWeight: KG = field(default=0.0)
+    wheels: list[Wheel] = field(default_factory=list)
+    joints: list[Joint] = field(default_factory=list)
+    gamepieces: list[Gamepiece] = field(default_factory=list)
+    robotWeight: KG = field(default=KG(0.0))
     autoCalcRobotWeight: bool = field(default=False)
     autoCalcGamepieceWeight: bool = field(default=False)
 
@@ -57,6 +53,7 @@ class ExporterOptions:
     exportAsPart: bool = field(default=False)
 
     exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
+    openSynthesisUponExport: bool = field(default=False)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
     visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)

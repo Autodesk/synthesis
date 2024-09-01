@@ -33,8 +33,8 @@ class SchemeSelectionOption extends SelectMenuOption {
     constructor(scheme: InputScheme) {
         const robotName = findSchemeRobotName(scheme)
         super(
-            `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}` +
-                (robotName ? ` [${robotName}]` : "")
+            `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`,
+            robotName ? `Bound to: ${robotName}` : undefined
         )
         this.scheme = scheme
     }
@@ -77,10 +77,19 @@ const ConfigureInputsInterface = () => {
                     // Fetch current custom schemes
                     InputSchemeManager.saveSchemes()
                     InputSchemeManager.resetDefaultSchemes()
-                    const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
 
-                    // Find and remove this input scheme
+                    // Find the scheme to remove in preferences
+                    const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
                     const index = schemes.indexOf(val.scheme)
+
+                    // If currently bound to a robot, remove the binding
+                    for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
+                        if (value == schemes[index]) {
+                            InputSystem.brainIndexSchemeMap.delete(key)
+                        }
+                    }
+
+                    // Find and remove this input scheme from preferences
                     schemes.splice(index, 1)
 
                     // Save to preferences

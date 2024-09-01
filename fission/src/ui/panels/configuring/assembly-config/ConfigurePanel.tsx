@@ -6,10 +6,7 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useEffect, useMemo, useReducer, useState } from "react"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -18,12 +15,17 @@ import Button from "@/ui/components/Button"
 import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
+import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 
 enum ConfigMode {
-    INTAKE,
+    SUBSYSTEMS,
     EJECTOR,
-    MOTORS,
+    INTAKE,
     CONTROLS,
+    SEQUENTIAL,
     SCORING_ZONES,
 }
 
@@ -117,8 +119,8 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
 class ConfigModeSelectionOption extends SelectMenuOption {
     configMode: ConfigMode
 
-    constructor(name: string, configMode: ConfigMode) {
-        super(name)
+    constructor(name: string, configMode: ConfigMode, tooltip?: string) {
+        super(name, tooltip)
         this.configMode = configMode
     }
 }
@@ -126,7 +128,16 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 const robotModes = [
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
-    new ConfigModeSelectionOption("Sequential Joints", ConfigMode.MOTORS),
+    new ConfigModeSelectionOption(
+        "Configure Joints",
+        ConfigMode.SUBSYSTEMS,
+        "Set the velocities, torques, and accelerations of your robot's motors."
+    ),
+    new ConfigModeSelectionOption(
+        "Sequence Joints",
+        ConfigMode.SEQUENTIAL,
+        "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+    ),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
 const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
@@ -162,8 +173,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
         case ConfigMode.EJECTOR:
             return <ConfigureShotTrajectoryInterface selectedRobot={assembly} />
-        case ConfigMode.MOTORS:
-            return <SequentialBehaviorsInterface selectedRobot={assembly} />
+        case ConfigMode.SUBSYSTEMS:
+            return <ConfigureSubsystemsInterface selectedRobot={assembly} />
         case ConfigMode.CONTROLS: {
             const brainIndex = (assembly.brain as SynthesisBrain).brainIndex
             const scheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
@@ -181,6 +192,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                 </>
             )
         }
+        case ConfigMode.SEQUENTIAL:
+            return <SequentialBehaviorsInterface selectedRobot={assembly} />
         case ConfigMode.SCORING_ZONES: {
             const zones = assembly.fieldPreferences?.scoringZones
             if (zones == undefined) {
@@ -224,8 +237,8 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     return (
         <Panel
-            name={"Configure Objects"}
-            icon={SynthesisIcons.Gear}
+            name={"Configure Assets"}
+            icon={SynthesisIcons.Wrench}
             panelId={panelId}
             cancelEnabled={false}
             openLocation="right"
