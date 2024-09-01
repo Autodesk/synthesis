@@ -92,7 +92,7 @@ $ ./gradlew simulateNative
 
 ### Enabling WebSockets
 
-![debug-tools-panel](img/synthesis/code-sim/debug-tools.png)
+![debug tools panel](img/code-sim/debug-tools.png)
 
 Inside the debug tools panel, configure the robot in the scene to use web socket control by pressing the "WS Test" button.
 
@@ -106,13 +106,13 @@ Next, press the "RoboRIO" button. This will open the RoboRIO Configuration panel
 
 Motorcontrollers can be configured with either PWM or CAN (if using SyntheSim). On the left it will populate with ports currently active from your robot code, and on the right it will populate with drivers that be controlled, along with a name at the top.
 
-![can-configuration](img/synthesis/code-sim/can-config.png)
+![can configuration](img/code-sim/can-config.png)
 
 #### Encoders
 
 You can select a given input device created by your robot code, and map it to a corresponding stimuli inside of Synthesis (ie. one of your wheels).
 
-![encoder-configuration](img/synthesis/code-sim/encoder-config.png)
+![encoder configuration](img/code-sim/encoder-config.png)
 
 #### Digital IO, Analog IO, and Gyros
 

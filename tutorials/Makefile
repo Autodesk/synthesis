@@ -1,6 +1,6 @@
-.PHONY: all FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode RobotBuilder Utilities
+.PHONY: all FusionExporter CodeSimulation APS PracticeMode Utilities
 
-all: FusionExporter CodeSimulation ConfigMode PracticeMode MatchMode ReplayMode RobotBuilder Utilities
+all: FusionExporter CodeSimulation APS PracticeMode Utilities
 
 OUTPUT_DIRECTORY := ./out/
 
@@ -10,20 +10,11 @@ FusionExporter:
 CodeSimulation:
 	claat export -o $(OUTPUT_DIRECTORY) CodeSimulation.md
 
-ConfigMode:
-	claat export -o $(OUTPUT_DIRECTORY) ConfigMode.md
-
-MatchMode:
-	claat export -o $(OUTPUT_DIRECTORY) MatchMode.md
+APS:
+	claat export -o $(OUTPUT_DIRECTORY) APS.md
 
 PracticeMode:
 	claat export -o $(OUTPUT_DIRECTORY) PracticeMode.md
-
-ReplayMode:
-	claat export -o $(OUTPUT_DIRECTORY) ReplayMode.md
-
-RobotBuilder:
-	claat export -o $(OUTPUT_DIRECTORY) RobotBuilder.md
 
 Utilities:
 	claat export -o $(OUTPUT_DIRECTORY) Utilities.md
