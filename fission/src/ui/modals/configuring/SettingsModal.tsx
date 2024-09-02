@@ -1,22 +1,22 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { FaGear } from "react-icons/fa6"
 import Label, { LabelSize } from "@/components/Label"
 import Dropdown from "@/components/Dropdown"
-import Slider from "@/components/Slider"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
-import { Spacer } from "@/ui/components/StyledComponents"
+import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import World from "@/systems/World"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [qualitySettings, setQualitySettings] = useState<string>(
         PreferencesSystem.getGlobalPreference<string>("QualitySettings")
     )
-    const [zoomSensitivity, setZoomSensitivity] = useState<number>(
+
+    // Disabled until camera settings are implemented
+    /* const [zoomSensitivity, setZoomSensitivity] = useState<number>(
         PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")
     )
     const [pitchSensitivity, setPitchSensitivity] = useState<number>(
@@ -24,11 +24,15 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
     const [yawSensitivity, setYawSensitivity] = useState<number>(
         PreferencesSystem.getGlobalPreference<number>("YawSensitivity")
-    )
+    ) */
+
     const [reportAnalytics, setReportAnalytics] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")
     )
-    const [useMetric, setUseMetric] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("UseMetric"))
+
+    // Disabled until use metric is implemented
+    // const [useMetric, setUseMetric] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("UseMetric"))
+
     const [renderScoringZones, setRenderScoringZones] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
     )
@@ -44,15 +48,18 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
-        PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
-        PreferencesSystem.setGlobalPreference<number>("PitchSensitivity", pitchSensitivity)
-        PreferencesSystem.setGlobalPreference<number>("YawSensitivity", yawSensitivity)
+
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
-        PreferencesSystem.setGlobalPreference<boolean>("UseMetric", useMetric)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
+
+        // Disabled until these settings are implemented
+        /* PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
+        PreferencesSystem.setGlobalPreference<number>("PitchSensitivity", pitchSensitivity)
+        PreferencesSystem.setGlobalPreference<number>("YawSensitivity", yawSensitivity)
+        PreferencesSystem.setGlobalPreference<boolean>("UseMetric", useMetric) */
 
         PreferencesSystem.savePreferences()
     }
@@ -60,13 +67,13 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Settings"
-            icon={<FaGear />}
+            icon={SynthesisIcons.GearLarge}
             modalId={modalId}
             onAccept={() => {
                 saveSettings()
             }}
         >
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
                 <Label size={LabelSize.Medium}>Screen Settings</Label>
                 <Dropdown
                     label="Quality Settings"
@@ -77,7 +84,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         World.SceneRenderer.ChangeLighting(selected)
                     }}
                 />
-                {Spacer(5)}
+
+                {/* Disabled until these settings are implemented */}
+                {/*   {Spacer(5)}
                 <Label size={LabelSize.Medium}>Camera Settings</Label>
                 <Slider
                     min={1}
@@ -106,7 +115,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setYawSensitivity(value as number)}
                     tooltipText="Moving the camera left and right."
-                />
+                />*/}
                 {Spacer(20)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
@@ -118,19 +127,22 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         }}
                         tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                     />
-                    <Checkbox
+                    {/* Disabled until this settings is implemented */}
+                    {/*  <Checkbox
                         label="Use Metric"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("UseMetric")}
                         onClick={checked => {
                             setUseMetric(checked)
                         }}
-                    />
+                        tooltipText="Metric measurements. (ex: meters instead of feet)"
+                    /> */}
                     <Checkbox
-                        label="Subsystem Realistic Gravity"
+                        label="Realistic Subsystem Gravity"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
                         onClick={checked => {
                             setSubsystemGravity(checked)
                         }}
+                        tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
                     />
                     <Checkbox
                         label="Show Score Zones"

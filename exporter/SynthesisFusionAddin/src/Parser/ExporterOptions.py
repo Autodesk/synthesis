@@ -21,7 +21,6 @@ from src.Types import (
     Joint,
     ModelHierarchy,
     PhysicalDepth,
-    PreferredUnits,
     Wheel,
     encodeNestedObjects,
     makeObjectFromJson,
@@ -43,10 +42,7 @@ class ExporterOptions:
     wheels: list[Wheel] = field(default_factory=list)
     joints: list[Joint] = field(default_factory=list)
     gamepieces: list[Gamepiece] = field(default_factory=list)
-    preferredUnits: PreferredUnits = field(default=PreferredUnits.IMPERIAL)
-
-    # Always stored in kg regardless of 'preferredUnits'
-    robotWeight: KG = field(default=0.0)
+    robotWeight: KG = field(default=KG(0.0))
     autoCalcRobotWeight: bool = field(default=False)
     autoCalcGamepieceWeight: bool = field(default=False)
 
@@ -57,6 +53,7 @@ class ExporterOptions:
     exportAsPart: bool = field(default=False)
 
     exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
+    openSynthesisUponExport: bool = field(default=False)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
     visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)

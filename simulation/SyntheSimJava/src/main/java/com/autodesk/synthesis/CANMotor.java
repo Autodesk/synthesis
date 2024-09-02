@@ -96,7 +96,7 @@ public class CANMotor {
     /**
      * Get the supply current, simulated.
      * 
-     * @return Supply Current.
+     * @return Supply current in amps.
      */
     public double getSupplyCurrent() {
         return m_supplyCurrent.get();
@@ -105,7 +105,7 @@ public class CANMotor {
     /**
      * Get the motor current, simulated.
      * 
-     * @return Motor Current.
+     * @return Motor current in amps.
      */
     public double getMotorCurrent() {
         return m_motorCurrent.get();
@@ -114,7 +114,7 @@ public class CANMotor {
     /**
      * Get the Bus Voltage, simulated.
      * 
-     * @return Bus Voltage
+     * @return Bus voltage
      */
     public double getBusVoltage() {
         return m_busVoltage.get();

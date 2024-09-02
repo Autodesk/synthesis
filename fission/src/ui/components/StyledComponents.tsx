@@ -3,7 +3,6 @@ import Label, { LabelSize } from "./Label"
 import Button, { ButtonProps, ButtonSize } from "./Button"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
-import { AiOutlinePlus } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
 import { AiFillWarning } from "react-icons/ai"
 import { BsCodeSquare } from "react-icons/bs"
@@ -58,12 +57,14 @@ export class SynthesisIcons {
     /** Large icons: used for icon buttons */
     public static DeleteLarge = (<IoTrashBin size={"1.25rem"} />)
     public static DownloadLarge = (<HiDownload size={"1.25rem"} />)
-    public static AddLarge = (<AiOutlinePlus size={"1.25rem"} />)
+    public static AddLarge = (<FaPlus size={"1.25rem"} />)
+    public static GearLarge = (<FaGear size={"1.25rem"} />)
     public static RefreshLarge = (<BiRefresh size={"1.25rem"} />)
     public static SelectLarge = (<IoCheckmark size={"1.25rem"} />)
     public static EditLarge = (<IoPencil size={"1.25rem"} />)
     public static LeftArrowLarge = (<FaArrowLeft size={"1.25rem"} />)
     public static BugLarge = (<FaBug size={"1.25rem"} />)
+    public static XmarkLarge = (<FaXmark size={"1.25rem"} />)
 
     public static OpenHudIcon = (
         <FaAngleRight
@@ -121,28 +122,30 @@ export const EditButton = (onClick: () => void) => {
     return <PositiveButton value={SynthesisIcons.EditLarge} onClick={onClick} />
 }
 
-export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick }) => {
+export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick, id }) => {
     return (
         <Button
             size={ButtonSize.Medium}
             value={value}
             onClick={onClick}
             colorOverrideClass="bg-cancel-button hover:brightness-90"
+            id={id}
         />
     )
 }
 
-export const DeleteButton = (onClick: () => void) => {
-    return <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={onClick} />
+export const DeleteButton = (onClick: () => void, id?: string) => {
+    return <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={onClick} id={id} />
 }
 
-export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick }) => {
+export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick, id }) => {
     return (
         <Button
             value={value}
             onClick={onClick}
             colorOverrideClass="bg-[#00000000] hover:brightness-90"
             sizeOverrideClass="p-[0.25rem]"
+            id={id}
             className="h-fit"
         />
     )
@@ -152,8 +155,8 @@ export const RefreshButton = (onClick: () => void) => {
     return <ButtonIcon value={SynthesisIcons.RefreshLarge} onClick={onClick} />
 }
 
-export const AddButtonInteractiveColor = (onClick: () => void) => {
-    return <Button value={SynthesisIcons.AddLarge} onClick={onClick} />
+export const AddButtonInteractiveColor = (onClick: () => void, id?: string) => {
+    return <Button value={SynthesisIcons.AddLarge} onClick={onClick} id={id} />
 }
 
 export const CustomTooltip = (text: string) => {
