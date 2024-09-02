@@ -1,6 +1,6 @@
-.PHONY: all FusionExporter CodeSimulation APS PracticeMode Utilities
+.PHONY: all FusionExporter CodeSimulation APS ConfigureAssets Utilities
 
-all: FusionExporter CodeSimulation APS PracticeMode Utilities
+all: FusionExporter CodeSimulation APS ConfigureAssets Utilities
 
 OUTPUT_DIRECTORY := ./out/
 
@@ -13,8 +13,8 @@ CodeSimulation:
 APS:
 	claat export -o $(OUTPUT_DIRECTORY) APS.md
 
-PracticeMode:
-	claat export -o $(OUTPUT_DIRECTORY) PracticeMode.md
+ConfigureAssets:
+	claat export -o $(OUTPUT_DIRECTORY) ConfigureAssets.md
 
 Utilities:
 	claat export -o $(OUTPUT_DIRECTORY) Utilities.md
