@@ -84,7 +84,12 @@ function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     )
 }
 
-function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+function SpawnCachedMira(
+    info: MirabufCacheInfo,
+    type: MiraType,
+    openPanel: (panelId: string) => void,
+    progressHandle?: ProgressHandle
+) {
     if (!progressHandle) {
         progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
     }
@@ -95,6 +100,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                 CreateMirabuf(assembly).then(x => {
                     if (x) {
                         World.SceneRenderer.RegisterSceneObject(x)
+                        if (x.miraType == MiraType.ROBOT) openPanel("choose-scheme")
                         progressHandle.Done()
                     } else {
                         progressHandle.Fail()
@@ -193,7 +199,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Select a mirabuf assembly from the cache.
     const selectCache = useCallback(
         (info: MirabufCacheInfo, type: MiraType) => {
-            SpawnCachedMira(info, type)
+            SpawnCachedMira(info, type, openPanel)
 
             showTooltip("controls", [
                 { control: "WASD", description: "Drive" },
@@ -203,10 +209,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
+            if (type == MiraType.ROBOT) setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
         },
         [showTooltip, closePanel, panelId, openPanel]
     )
@@ -220,7 +223,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             MirabufCachingService.CacheRemote(info.src, type)
                 .then(cacheInfo => {
                     if (cacheInfo) {
-                        SpawnCachedMira(cacheInfo, type, status)
+                        SpawnCachedMira(cacheInfo, type, openPanel, status)
                     } else {
                         status.Fail("Failed to cache")
                     }
@@ -229,10 +232,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
+            if (type == MiraType.ROBOT) setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
         },
         [closePanel, panelId, openPanel]
     )
@@ -245,7 +245,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             MirabufCachingService.CacheAPS(data, type)
                 .then(cacheInfo => {
                     if (cacheInfo) {
-                        SpawnCachedMira(cacheInfo, type, status)
+                        SpawnCachedMira(cacheInfo, type, openPanel, status)
                     } else {
                         status.Fail("Failed to cache")
                     }
@@ -254,10 +254,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
+            if (type == MiraType.ROBOT) setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
         },
         [closePanel, panelId, openPanel]
     )

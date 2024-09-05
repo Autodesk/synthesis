@@ -36,7 +36,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
     hideLabel,
     onClick,
     tooltipText,
-}) => {
+}: CheckboxProps): JSX.Element => {
     const [state] = useState(defaultState)
     return (
         <Box
@@ -72,6 +72,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
                     },
                 }}
                 defaultChecked={stateOverride != null ? undefined : state}
+                // checked={state}
                 id="checkbox-switch"
             />
         </Box>

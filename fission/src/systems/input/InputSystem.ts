@@ -1,3 +1,5 @@
+import { TouchControlsAxes } from "@/ui/components/TouchControls"
+import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
 
@@ -18,8 +20,8 @@ abstract class Input {
         this.inputName = inputName
     }
 
-    /** @returns {number} a number between -1 and 1 for this input. */
-    abstract getValue(useGamepad: boolean): number
+    // Returns the current value of the input. Range depends on input type
+    abstract getValue(useGamepad: boolean, useTouchControls: boolean): number
 }
 
 /** Represents any user input that is a single true/false button. */
@@ -67,6 +69,7 @@ class AxisInput extends Input {
     public negKeyModifiers: ModifierState
 
     public gamepadAxisNumber: number
+    public touchControlAxis: TouchControlsAxes
     public joystickInverted: boolean
     public useGamepadButtons: boolean
     public posGamepadButton: number
@@ -95,6 +98,7 @@ class AxisInput extends Input {
         useGamepadButtons?: boolean,
         posGamepadButton?: number,
         negGamepadButton?: number,
+        touchControlAxis?: TouchControlsAxes,
         posKeyModifiers?: ModifierState,
         negKeyModifiers?: ModifierState
     ) {
@@ -106,6 +110,7 @@ class AxisInput extends Input {
         this.negKeyModifiers = negKeyModifiers ?? EmptyModifierState
 
         this.gamepadAxisNumber = gamepadAxisNumber ?? -1
+        this.touchControlAxis = touchControlAxis ?? TouchControlsAxes.NONE
         this.joystickInverted = joystickInverted ?? false
 
         this.useGamepadButtons = useGamepadButtons ?? false
@@ -118,7 +123,7 @@ class AxisInput extends Input {
      * @returns {number} KEYBOARD: 1 if positive pressed, -1 if negative pressed, or 0 if none or both are pressed.
      * @returns {number} GAMEPAD: a number between -1 and 1 with a deadband in the middle.
      */
-    getValue(useGamepad: boolean): number {
+    getValue(useGamepad: boolean, useTouchControls: boolean): number {
         if (useGamepad) {
             // Gamepad joystick axis
             if (!this.useGamepadButtons)
@@ -129,6 +134,10 @@ class AxisInput extends Input {
                 (InputSystem.isGamepadButtonPressed(this.posGamepadButton) ? 1 : 0) -
                 (InputSystem.isGamepadButtonPressed(this.negGamepadButton) ? 1 : 0)
             )
+        }
+
+        if (useTouchControls) {
+            return InputSystem.getTouchControlsAxis(this.touchControlAxis) * (this.joystickInverted ? -1 : 1)
         }
 
         // Keyboard button axis
@@ -152,6 +161,9 @@ class InputSystem extends WorldSystem {
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
 
+    private static leftJoystick: Joystick
+    private static rightJoystick: Joystick
+
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
 
@@ -170,6 +182,17 @@ class InputSystem extends WorldSystem {
 
         this.gamepadDisconnected = this.gamepadDisconnected.bind(this)
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
+
+        window.addEventListener("touchcontrolsloaded", () => {
+            InputSystem.leftJoystick = new Joystick(
+                document.getElementById("joystick-base-left")!,
+                document.getElementById("joystick-stick-left")!
+            )
+            InputSystem.rightJoystick = new Joystick(
+                document.getElementById("joystick-base-right")!,
+                document.getElementById("joystick-stick-right")!
+            )
+        })
 
         // Initialize an event that's triggered when the user exits/enters the page
         document.addEventListener("visibilitychange", () => {
@@ -270,7 +293,7 @@ class InputSystem extends WorldSystem {
 
         if (targetScheme == null || targetInput == null) return 0
 
-        return targetInput.getValue(targetScheme.usesGamepad)
+        return targetInput.getValue(targetScheme.usesGamepad, targetScheme.usesTouchControls)
     }
 
     /**
@@ -318,6 +341,18 @@ class InputSystem extends WorldSystem {
         if (button == null) return false
 
         return button.pressed
+    }
+
+    // Returns a number between -1 and 1 from the touch controls
+    public static getTouchControlsAxis(axisType: TouchControlsAxes): number {
+        let value: number
+
+        if (axisType === TouchControlsAxes.LEFT_Y) value = -InputSystem.leftJoystick.y
+        else if (axisType === TouchControlsAxes.RIGHT_X) value = InputSystem.rightJoystick.x
+        else if (axisType === TouchControlsAxes.RIGHT_Y) value = -InputSystem.rightJoystick.y
+        else value = InputSystem.leftJoystick.x
+
+        return value!
     }
 }
 

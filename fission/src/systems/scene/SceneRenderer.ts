@@ -15,6 +15,7 @@ import Jolt from "@barclah/jolt-physics"
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -35,6 +36,8 @@ class SceneRenderer extends WorldSystem {
     private _orbitControls: OrbitControls
     private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
 
+    private _isPlacingAssembly: boolean = false
+
     private _light: THREE.DirectionalLight | CSM | undefined
 
     public get sceneObjects() {
@@ -51,6 +54,15 @@ class SceneRenderer extends WorldSystem {
 
     public get renderer(): THREE.WebGLRenderer {
         return this._renderer
+    }
+
+    public get isPlacingAssembly() {
+        return this._isPlacingAssembly
+    }
+
+    public set isPlacingAssembly(value: boolean) {
+        new TouchControlsEvent(TouchControlsEventKeys.PLACE_BUTTON, value)
+        this._isPlacingAssembly = value
     }
 
     public constructor() {

@@ -1,36 +1,39 @@
-import { defineConfig } from "vitest/config"
-import * as path from "path"
-import react from "@vitejs/plugin-react-swc"
-import glsl from "vite-plugin-glsl"
+import { defineConfig } from 'vitest/config'
+import * as path from 'path'
+import react from '@vitejs/plugin-react-swc'
+import basicSsl from '@vitejs/plugin-basic-ssl'
+import glsl from 'vite-plugin-glsl'
 
 const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
 
-const useLocal = true
+const useLocal = false
+const useSsl = false
+
+const plugins = [
+    react(), glsl({
+        include: [                   // Glob pattern, or array of glob patterns to import
+          '**/*.glsl', '**/*.wgsl',
+          '**/*.vert', '**/*.frag',
+          '**/*.vs', '**/*.fs'
+        ],
+        exclude: undefined,          // Glob pattern, or array of glob patterns to ignore
+        warnDuplicatedImports: true, // Warn if the same chunk was imported multiple times
+        defaultExtension: 'glsl',    // Shader suffix when no extension is specified
+        compress: false,             // Compress output shader code
+        watch: true,                 // Recompile shader on change
+        root: '/'                    // Directory for root imports
+    })
+]
+
+if (useSsl) {
+    plugins.push(basicSsl())
+}
 
 // https://vitejs.dev/config/
 export default defineConfig({
-    plugins: [
-        react(),
-        glsl({
-            include: [
-                // Glob pattern, or array of glob patterns to import
-                "**/*.glsl",
-                "**/*.wgsl",
-                "**/*.vert",
-                "**/*.frag",
-                "**/*.vs",
-                "**/*.fs",
-            ],
-            exclude: undefined, // Glob pattern, or array of glob patterns to ignore
-            warnDuplicatedImports: true, // Warn if the same chunk was imported multiple times
-            defaultExtension: "glsl", // Shader suffix when no extension is specified
-            compress: false, // Compress output shader code
-            watch: true, // Recompile shader on change
-            root: "/", // Directory for root imports
-        }),
-    ],
+    plugins: plugins,
     resolve: {
         alias: [
             { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },

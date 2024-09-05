@@ -10,6 +10,7 @@ import { UserIcon } from "./UserIcon"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
+import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 
 type ButtonProps = {
     value: string
@@ -56,6 +57,8 @@ const MainHUD: React.FC = () => {
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
+
+    const touchCompatibility = matchMedia("(hover: none)").matches
 
     MainHUD_AddToast = addToast
 
@@ -156,6 +159,15 @@ const MainHUD: React.FC = () => {
                             openPanel("debug")
                         }}
                     />
+                    {touchCompatibility ? (
+                        <MainHUDButton
+                            value={"Touch Controls"}
+                            icon={SynthesisIcons.Gamepad}
+                            onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
+                        />
+                    ) : (
+                        <></>
+                    )}
                 </Box>
                 {userInfo ? (
                     <MainHUDButton

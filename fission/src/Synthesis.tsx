@@ -60,6 +60,7 @@ import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
+import TouchControls from "./ui/components/TouchControls.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -164,10 +165,11 @@ function Synthesis() {
                         <ToastProvider key="toast-provider">
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
+                            <TouchControls />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
-                                <div className="absolute w-full h-full left-0 top-0" key={"modal-element"}>
+                                <div className="fixed w-full h-full left-0 top-0" key={"modal-element"}>
                                     {modalElement}
                                 </div>
                             )}
