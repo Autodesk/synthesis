@@ -15,7 +15,7 @@ import {
 } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import Button from "@/ui/components/Button"
 import { Spacer } from "@/ui/components/StyledComponents"
 

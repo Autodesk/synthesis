@@ -15,9 +15,9 @@ import {
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/ThemeContext"
-import { ConfigurationSavedEvent } from "../ConfigurePanel"
 import Button from "@/ui/components/Button"
 import { Spacer } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1

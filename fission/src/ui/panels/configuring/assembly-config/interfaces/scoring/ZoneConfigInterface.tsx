@@ -16,7 +16,7 @@ import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGro
 import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
-import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 
 /**
  * Saves ejector configuration to selected field.

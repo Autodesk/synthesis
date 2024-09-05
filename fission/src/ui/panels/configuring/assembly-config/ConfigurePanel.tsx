@@ -19,6 +19,8 @@ import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterf
 import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
+import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
+import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
 
 enum ConfigMode {
     SUBSYSTEMS,
@@ -27,23 +29,6 @@ enum ConfigMode {
     CONTROLS,
     SEQUENTIAL,
     SCORING_ZONES,
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export enum ConfigurationType {
-    ROBOT,
-    FIELD,
-    INPUTS,
-}
-
-let selectedConfigurationType: ConfigurationType = ConfigurationType.ROBOT
-// eslint-disable-next-line react-refresh/only-export-components
-export function setSelectedConfigurationType(type: ConfigurationType) {
-    selectedConfigurationType = type
-}
-
-function getConfigurationType() {
-    return selectedConfigurationType
 }
 
 /** Option for selecting a robot of field */
@@ -125,7 +110,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     }
 }
 
-const robotModes = [
+const robotModes: ConfigModeSelectionOption[] = [
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
     new ConfigModeSelectionOption(
@@ -140,7 +125,9 @@ const robotModes = [
     ),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
-const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
+const fieldModes: ConfigModeSelectionOption[] = [
+    new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES),
+]
 
 interface ConfigModeSelectionProps {
     configurationType: ConfigurationType
@@ -204,23 +191,6 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
-    }
-}
-
-/** An event to save whatever configuration interface is open when it is closed */
-export class ConfigurationSavedEvent extends Event {
-    public constructor() {
-        super("ConfigurationSaved")
-
-        window.dispatchEvent(this)
-    }
-
-    public static Listen(func: (e: Event) => void) {
-        window.addEventListener("ConfigurationSaved", func)
-    }
-
-    public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener("ConfigurationSaved", func)
     }
 }
 

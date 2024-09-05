@@ -5,8 +5,11 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { usePanelControlContext } from "@/ui/PanelContext"
-import { ConfigurationType, setSelectedConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
+import {
+    ConfigurationType,
+    setSelectedConfigurationType,
+} from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 
 const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openPanel } = usePanelControlContext()
