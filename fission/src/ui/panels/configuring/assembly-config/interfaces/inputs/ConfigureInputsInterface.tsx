@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import InputSystem from "@/systems/input/InputSystem"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"

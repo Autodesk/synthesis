@@ -18,8 +18,8 @@ import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { Box } from "@mui/material"
 import { useEffect, useReducer } from "react"
-import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurePanel"
 import { setSelectedScheme } from "./assembly-config/interfaces/inputs/ConfigureInputsInterface"
+import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurationType"
 
 /** We store the selected brain index globally to specify which robot the input scheme should be bound to. */
 let selectedBrainIndexGlobal: number | undefined = undefined
