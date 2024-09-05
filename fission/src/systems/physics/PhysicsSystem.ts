@@ -62,6 +62,8 @@ const FLOOR_FRICTION = 0.7
 const SUSPENSION_MIN_FACTOR = 0.1
 const SUSPENSION_MAX_FACTOR = 0.3
 
+const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
+
 // Motor constant
 const VELOCITY_DEFAULT = 30
 
@@ -660,7 +662,14 @@ class PhysicsSystem extends WorldSystem {
             let shapesAdded = 0
 
             let totalMass = 0
-            let frictionOverride = 0
+
+            type FrictionPairing = {
+                dynamic: number,
+                static: number,
+                weight: number
+            }
+            const frictionAccum: FrictionPairing[] = []
+
             const comAccum = new mirabuf.Vector3()
 
             const minBounds = new JOLT.Vec3(1000000.0, 1000000.0, 1000000.0)
@@ -701,8 +710,14 @@ class PhysicsSystem extends WorldSystem {
                 JOLT.destroy(transform)
 
                 // Set friction override once to any of the parts' values
-                if (!frictionOverride && partDefinition?.frictionOverride)
-                    frictionOverride = partDefinition.frictionOverride
+                const physicalMaterial = parser.assembly.data!.materials!.physicalMaterials![partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY]
+                const frictionPairing: FrictionPairing = {
+                    dynamic: partDefinition?.frictionOverride ?? physicalMaterial.dynamicFriction!,
+                    static: partDefinition?.frictionOverride ?? physicalMaterial.staticFriction!,
+                    weight: partDefinition.physicalData?.area ?? 1.0
+                }
+                frictionAccum.push(frictionPairing)
+                // console.debug(`(${frictionPairing.dynamic.toFixed(3), frictionPairing.static.toFixed(3)}) [${frictionPairing.weight.toFixed(3)}]`)
 
                 if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
 
@@ -741,7 +756,21 @@ class PhysicsSystem extends WorldSystem {
                 rnToBodies.set(rn.id, body.GetID())
 
                 // Set Friction Here
-                if (frictionOverride) body.SetFriction(frictionOverride)
+                let staticFriction = 0.0
+                let dynamicFriction = 0.0
+                let weightSum = 0.0
+                frictionAccum.forEach(pairing => {
+                    staticFriction += pairing.static * pairing.weight
+                    dynamicFriction += pairing.dynamic * pairing.weight
+                    weightSum += pairing.weight
+                })
+                staticFriction /= weightSum == 0.0 ? 1.0 : weightSum
+                dynamicFriction /= weightSum == 0.0 ? 1.0 : weightSum
+
+                // I guess this is an okay substitute.
+                const friction = (staticFriction + dynamicFriction) / 2.0
+                body.SetFriction(friction)
+                console.debug(`Friction: ${friction}`)
 
                 // Little testing components
                 this._bodies.push(body.GetID())

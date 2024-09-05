@@ -3,6 +3,9 @@ import adsk.fusion
 
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
+from src.Parser.SynthesisParser.Utilities import (
+    guid_occurrence
+)
 from src.Types import Gamepiece, UnitSystem
 from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
@@ -198,7 +201,8 @@ class GamepieceConfigTab:
     def getGamepieces(self) -> list[Gamepiece]:
         gamepieces: list[Gamepiece] = []
         for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
-            gamepieceEntityToken = self.selectedGamepieceList[row - 1].entityToken
+            occ = self.selectedGamepieceList[row - 1]
+            gamepieceEntityToken = guid_occurrence(occ)
             gamepieceWeight = convertMassUnitsTo(self.gamepieceTable.getInputAtPosition(row, 1).value)
             gamepieceFrictionCoefficient = self.gamepieceTable.getInputAtPosition(row, 2).valueOne
             gamepieces.append(Gamepiece(gamepieceEntityToken, gamepieceWeight, gamepieceFrictionCoefficient))
