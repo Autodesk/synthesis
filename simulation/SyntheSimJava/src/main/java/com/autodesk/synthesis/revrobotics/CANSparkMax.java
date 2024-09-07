@@ -37,7 +37,7 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
      * Sets the percent output of the real and simulated motors
      * Setting a follower doesn't break the simulated follower - leader relationship, which it does for exclusively non-simulated motors
      *
-     * @param percentOutput The new percent output of the motor
+     * @param percent The new percent output of the motor
      *
      * See the original documentation for more information 
      */
