@@ -56,7 +56,7 @@ class ExporterOptions:
     openSynthesisUponExport: bool = field(default=False)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
-    visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)
+    visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.NormalQualityTriangleMesh)
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
     physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
 

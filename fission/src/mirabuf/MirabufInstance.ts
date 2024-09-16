@@ -134,11 +134,15 @@ class MirabufInstance {
                 const [hex, opacity] =
                     A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
 
+                console.debug(`${appearance.metallic}, ${appearance.roughness}`)
+
                 const material =
                     materialStyle === MaterialStyle.Regular
-                        ? new THREE.MeshPhongMaterial({
+                        ? new THREE.MeshStandardMaterial({
+                              // No specular?
                               color: hex,
-                              shininess: 0.0,
+                              roughness: appearance.roughness ?? 0.5,
+                              metalness: appearance.metallic ?? 0.0,
                               shadowSide: THREE.DoubleSide,
                               opacity: opacity,
                               transparent: opacity < 1.0,

@@ -52,6 +52,8 @@ const MAX_SUBSTEPS = 6
 const STANDARD_SUB_STEPS = 4
 const TIMESTEP_ADJUSTMENT = 0.0001
 
+const SIGNIFICANT_FRICTION_THRESHOLD = 0.05
+
 let lastDeltaT = STANDARD_SIMULATION_PERIOD
 export function GetLastDeltaT(): number {
     return lastDeltaT
@@ -59,6 +61,7 @@ export function GetLastDeltaT(): number {
 
 // Friction constants
 const FLOOR_FRICTION = 0.7
+const DEFAULT_FRICTION = 0.7
 const SUSPENSION_MIN_FACTOR = 0.1
 const SUSPENSION_MAX_FACTOR = 0.3
 
@@ -651,6 +654,8 @@ class PhysicsSystem extends WorldSystem {
     public CreateBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
         const rnToBodies = new Map<string, Jolt.BodyID>()
 
+        console.debug(parser.assembly.data?.materials)
+
         if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
             throw new Error("No layer reserve for dynamic assembly")
         }
@@ -664,8 +669,8 @@ class PhysicsSystem extends WorldSystem {
             let totalMass = 0
 
             type FrictionPairing = {
-                dynamic: number,
-                static: number,
+                dynamic: number
+                static: number
                 weight: number
             }
             const frictionAccum: FrictionPairing[] = []
@@ -710,14 +715,42 @@ class PhysicsSystem extends WorldSystem {
                 JOLT.destroy(transform)
 
                 // Set friction override once to any of the parts' values
-                const physicalMaterial = parser.assembly.data!.materials!.physicalMaterials![partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY]
+                console.debug(
+                    `Physical Material: ${partInstance.physicalMaterial}, Part Name: ${partInstance.info?.name}`
+                )
+                const physicalMaterial =
+                    parser.assembly.data!.materials!.physicalMaterials![
+                        partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY
+                    ]
+                console.debug(physicalMaterial)
+                console.debug(
+                    `Override: ${partDefinition?.frictionOverride == null || partDefinition?.frictionOverride == undefined}`
+                )
+
+                let frictionOverride: number | undefined =
+                    partDefinition?.frictionOverride == null ? undefined : partDefinition?.frictionOverride
+                if ((partDefinition?.frictionOverride ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD) {
+                    frictionOverride = undefined
+                }
+
+                if (
+                    (physicalMaterial.dynamicFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD ||
+                    (physicalMaterial.staticFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD
+                ) {
+                    physicalMaterial.dynamicFriction = DEFAULT_FRICTION
+                    physicalMaterial.staticFriction = DEFAULT_FRICTION
+                }
+
+                // TODO: Consider using roughness as dynamic friction.
                 const frictionPairing: FrictionPairing = {
-                    dynamic: partDefinition?.frictionOverride ?? physicalMaterial.dynamicFriction!,
-                    static: partDefinition?.frictionOverride ?? physicalMaterial.staticFriction!,
-                    weight: partDefinition.physicalData?.area ?? 1.0
+                    dynamic: frictionOverride ?? physicalMaterial.dynamicFriction!,
+                    static: frictionOverride ?? physicalMaterial.staticFriction!,
+                    weight: partDefinition.physicalData?.area ?? 1.0,
                 }
                 frictionAccum.push(frictionPairing)
-                // console.debug(`(${frictionPairing.dynamic.toFixed(3), frictionPairing.static.toFixed(3)}) [${frictionPairing.weight.toFixed(3)}]`)
+                console.debug(
+                    `(${frictionPairing.dynamic.toFixed(3)}, ${frictionPairing.static.toFixed(3)}) [${frictionPairing.weight.toFixed(3)}]`
+                )
 
                 if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
 
