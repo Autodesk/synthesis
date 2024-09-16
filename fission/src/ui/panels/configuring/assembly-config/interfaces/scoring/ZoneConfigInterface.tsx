@@ -215,6 +215,15 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         },
         [selectedField]
     )
+    
+    const gizmoComponent = useMemo(() => {
+        return (selectedField && selectedZone) ? (<TransformGizmoControl
+            key="zone-transform-gizmo"
+            size={1.5}
+            gizmoRef={gizmoRef}
+            defaultMode="translate"
+        />) : (<></>);
+    }, [selectedField, selectedZone])
 
     return (
         <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">
@@ -259,12 +268,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
             {/** Switch between transform control modes */}
 
-            {(selectedField && selectedZone) ? <TransformGizmoControl
-                key="zone-transform-gizmo"
-                size={1.5}
-                gizmoRef={gizmoRef}
-                defaultMode="translate"
-            /> : <></>}
+            {gizmoComponent}
         </div>
     )
 }

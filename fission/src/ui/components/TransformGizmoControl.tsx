@@ -28,6 +28,10 @@ function TransformGizmoControl({
         )
 
         gizmoRef.current = gizmo
+
+        return () => {
+            World.SceneRenderer.RemoveSceneObject(gizmo.id)
+        }
     }, [gizmoRef, defaultMesh, size, parent])
 
     useEffect(() => {
@@ -35,7 +39,7 @@ function TransformGizmoControl({
             if (gizmoRef.current) {
                 World.SceneRenderer.RemoveSceneObject(gizmoRef.current.id)
                 gizmoRef.current = undefined
-            }  
+            }
         }
     }, [gizmoRef])
 
