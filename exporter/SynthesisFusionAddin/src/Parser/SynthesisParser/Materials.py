@@ -207,10 +207,6 @@ def getMaterialAppearance(
 
     properties = fusionAppearance.appearanceProperties
 
-    arr = []
-    for x in range(properties.count):
-        arr.append(properties.item(x))
-
     roughnessProp = properties.itemById("surface_roughness")
     if roughnessProp:
         appearance.roughness = roughnessProp.value

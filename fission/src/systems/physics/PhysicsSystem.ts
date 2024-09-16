@@ -714,18 +714,10 @@ class PhysicsSystem extends WorldSystem {
                 JOLT.destroy(partMax)
                 JOLT.destroy(transform)
 
-                // Set friction override once to any of the parts' values
-                console.debug(
-                    `Physical Material: ${partInstance.physicalMaterial}, Part Name: ${partInstance.info?.name}`
-                )
                 const physicalMaterial =
                     parser.assembly.data!.materials!.physicalMaterials![
                         partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY
                     ]
-                console.debug(physicalMaterial)
-                console.debug(
-                    `Override: ${partDefinition?.frictionOverride == null || partDefinition?.frictionOverride == undefined}`
-                )
 
                 let frictionOverride: number | undefined =
                     partDefinition?.frictionOverride == null ? undefined : partDefinition?.frictionOverride
@@ -748,9 +740,6 @@ class PhysicsSystem extends WorldSystem {
                     weight: partDefinition.physicalData?.area ?? 1.0,
                 }
                 frictionAccum.push(frictionPairing)
-                console.debug(
-                    `(${frictionPairing.dynamic.toFixed(3)}, ${frictionPairing.static.toFixed(3)}) [${frictionPairing.weight.toFixed(3)}]`
-                )
 
                 if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
 
@@ -803,7 +792,6 @@ class PhysicsSystem extends WorldSystem {
                 // I guess this is an okay substitute.
                 const friction = (staticFriction + dynamicFriction) / 2.0
                 body.SetFriction(friction)
-                console.debug(`Friction: ${friction}`)
 
                 // Little testing components
                 this._bodies.push(body.GetID())
