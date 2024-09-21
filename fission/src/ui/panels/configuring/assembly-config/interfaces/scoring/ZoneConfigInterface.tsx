@@ -9,14 +9,12 @@ import Jolt from "@barclah/jolt-physics"
 import * as THREE from "three"
 import World from "@/systems/World"
 import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/ThemeContext"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-// import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import GizmoSceneObject/*, { GizmoMode } */ from "@/systems/scene/GizmoSceneObject"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 /**
@@ -100,18 +98,23 @@ interface ZoneConfigProps {
 const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
     //Official FIRST hex
     // TODO: Do we want to eventually make these editable?
-    const redMaterial = new THREE.MeshPhongMaterial({
-        color: 0xed1c24,
-        shininess: 0.0,
-        opacity: 0.7,
-        transparent: true,
-    })
-    const blueMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0066b3,
-        shininess: 0.0,
-        opacity: 0.7,
-        transparent: true,
-    }) //0x0000ff
+    const redMaterial = useMemo(() => {
+        return new THREE.MeshPhongMaterial({
+            color: 0xed1c24,
+            shininess: 0.0,
+            opacity: 0.7,
+            transparent: true,
+        })
+    }, [])
+
+    const blueMaterial = useMemo(() => {
+        return new THREE.MeshPhongMaterial({
+            color: 0x0066b3,
+            shininess: 0.0,
+            opacity: 0.7,
+            transparent: true,
+        })
+    }, [])
 
     const [name, setName] = useState<string>(selectedZone.name)
     const [alliance, setAlliance] = useState<Alliance>(selectedZone.alliance)
@@ -121,11 +124,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
-
-    const { currentTheme, themes } = useTheme()
-    const theme = useMemo(() => {
-        return themes[currentTheme]
-    }, [currentTheme, themes])
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedField) {
@@ -152,6 +150,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         }
     }, [saveEvent])
 
+    /** Holds a pause for the duration of the interface component */
     useEffect(() => {
         World.PhysicsSystem.HoldPause()
 
@@ -160,43 +159,55 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         }
     }, [])
 
-    useEffect(() => {
-        const field = selectedField
-        const zone = selectedZone
+    /** Creates the default mesh for the gizmo */
+    const defaultGizmoMesh = useMemo(() => {
+        console.debug('Default Gizmo Mesh Recreation')
 
-        if (!field || !zone) {
-            return
+        if (!selectedZone) {
+            console.debug('No zone selected')
+            return undefined
         }
 
-        const gizmo = new GizmoSceneObject(
-            new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), zone.alliance == "blue" ? blueMaterial : redMaterial),
-            "translate",
-            1.5
-        )
+        return new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), selectedZone.alliance == "blue" ? blueMaterial : redMaterial)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedZone, selectedZone.alliance, blueMaterial, redMaterial])
 
-        ;((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
+    /** Creates TransformGizmoControl component and sets up target mesh. */
+    const gizmoComponent = useMemo(() => {
+        if (selectedField && selectedZone) {
+            const postGizmoCreation = (gizmo: GizmoSceneObject) => {
+                ((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
+        
+                const deltaTransformation = Array_ThreeMatrix4(selectedZone.deltaTransformation)
+        
+                let nodeBodyId = selectedField.mechanism.nodeToBody.get(selectedZone.parentNode ?? selectedField.rootNodeId)
+                if (!nodeBodyId) {
+                    // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+                    nodeBodyId = selectedField.mechanism.nodeToBody.get(selectedField.rootNodeId)!
+                }
+        
+                /** W = L x R. See save() for math details */
+                const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+                const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
+        
+                gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
+                gizmo.obj.rotation.setFromQuaternion(props.rotation)
+                gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
+            }
 
-        const deltaTransformation = Array_ThreeMatrix4(zone.deltaTransformation)
-
-        let nodeBodyId = field.mechanism.nodeToBody.get(zone.parentNode ?? field.rootNodeId)
-        if (!nodeBodyId) {
-            // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
-            nodeBodyId = field.mechanism.nodeToBody.get(field.rootNodeId)!
+            return (<TransformGizmoControl
+                key="zone-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+                defaultMesh={defaultGizmoMesh}
+                postGizmoCreation={postGizmoCreation}
+            />)
+        } else {
+            gizmoRef.current = undefined
+            return (<></>)
         }
-
-        /** W = L x R. See save() for math details */
-        const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
-        const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
-
-        gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
-        gizmo.obj.rotation.setFromQuaternion(props.rotation)
-        gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
-
-        return () => {
-            World.SceneRenderer.RemoveSceneObject(gizmo.id)
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [theme, gizmoRef.current])
+    }, [selectedField, selectedZone, defaultGizmoMesh])
 
     /** Sets the selected node if it is a part of the currently loaded field */
     const trySetSelectedNode = useCallback(
@@ -215,15 +226,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         },
         [selectedField]
     )
-    
-    const gizmoComponent = useMemo(() => {
-        return (selectedField && selectedZone) ? (<TransformGizmoControl
-            key="zone-transform-gizmo"
-            size={1.5}
-            gizmoRef={gizmoRef}
-            defaultMode="translate"
-        />) : (<></>);
-    }, [selectedField, selectedZone])
 
     return (
         <div className="flex flex-col gap-2 bg-background-secondary rounded-md p-2">

@@ -13,7 +13,8 @@ interface TransformGizmoControlProps {
     translateDisabled?: boolean,
     rotateDisabled?: boolean,
     scaleDisabled?: boolean,
-    sx?: SxProps<Theme>
+    sx?: SxProps<Theme>,
+    postGizmoCreation?: (gizmo: GizmoSceneObject) => void;
 }
 
 export default TransformGizmoControlProps;

@@ -154,8 +154,6 @@ class MirabufSceneObject extends SceneObject {
         // Intake
         this.UpdateIntakeSensor()
         this.UpdateScoringZones()
-
-        new GizmoSceneObject(undefined, "translate", 3, this)
     }
 
     public Update(): void {
@@ -358,6 +356,7 @@ class MirabufSceneObject extends SceneObject {
     }
 
     /**
+     * Calculates the bounding box of the mirabuf object.
      *
      * @returns The bounding box of the mirabuf object.
      */
@@ -368,6 +367,15 @@ class MirabufSceneObject extends SceneObject {
         })
 
         return box
+    }
+
+    /**
+     * Once a gizmo is created and attached to this mirabuf object, this will be executed to align the gizmo correctly.
+     * 
+     * @param gizmo Gizmo attached to the mirabuf object
+     */
+    public PostGizmoCreation(gizmo: GizmoSceneObject) {
+        // TODO: Move to the center of the bot/field
     }
 
     private getPreferences(): void {

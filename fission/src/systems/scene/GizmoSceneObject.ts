@@ -40,17 +40,14 @@ class GizmoSceneObject extends SceneObject {
     }
 
     public constructor(
-        obj: THREE.Mesh = new THREE.Mesh(
-            new THREE.SphereGeometry(0.2),
-            new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-        ),
         mode: GizmoMode,
         size: number,
+        obj?: THREE.Mesh,
         parentObject?: MirabufSceneObject
     ) {
         super()
 
-        this._obj = obj
+        this._obj = obj ?? new THREE.Mesh(new THREE.PlaneGeometry(1,1))
         this._parentObject = parentObject
         this._mainCamera = World.SceneRenderer.mainCamera
 

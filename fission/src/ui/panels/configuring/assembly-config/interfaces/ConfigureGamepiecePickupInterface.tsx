@@ -1,5 +1,5 @@
 import * as THREE from "three"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import SelectButton from "@/components/SelectButton"
 import World from "@/systems/World"
 import Slider from "@/ui/components/Slider"
@@ -18,6 +18,7 @@ import Button from "@/ui/components/Button"
 import { Spacer } from "@/ui/components/StyledComponents"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -90,14 +91,15 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
-    const [transformGizmo, setTransformGizmo] = useState<GizmoSceneObject | undefined>(undefined)
+    
+    const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
-        if (transformGizmo && selectedRobot) {
-            save(zoneSize, transformGizmo, selectedRobot, selectedNode)
+        if (gizmoRef.current && selectedRobot) {
+            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode)
             selectedRobot.UpdateIntakeSensor()
         }
-    }, [transformGizmo, selectedRobot, selectedNode, zoneSize])
+    }, [selectedRobot, selectedNode, zoneSize])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -108,53 +110,58 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [saveEvent])
 
     useEffect(() => {
-        if (!transformGizmo) {
+        if (!gizmoRef.current) {
             return
         }
 
-        transformGizmo.obj.scale.set(zoneSize, zoneSize, zoneSize)
-    }, [zoneSize, transformGizmo])
+        gizmoRef.current.obj.scale.set(zoneSize, zoneSize, zoneSize)
+    }, [zoneSize])
 
-    // Not sure I like this, but made it a state and effect rather than a memo to add the cleanup to the end
-    useEffect(() => {
-        if (!selectedRobot?.intakePreferences) {
-            setTransformGizmo(undefined)
-            return
-        }
-
-        const gizmo = new GizmoSceneObject(
-            new THREE.Mesh(
-                new THREE.SphereGeometry(0.5),
-                World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightSelect.color))
-            ),
-            "translate",
-            1.5
+    const placeholderMesh = useMemo(() => {
+        return new THREE.Mesh(
+            new THREE.SphereGeometry(0.5),
+            World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
         )
+    }, [theme])
 
-        ;((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
+    const gizmoComponent = useMemo(() => {
+        if (selectedRobot?.intakePreferences) {
+            const postGizmoCreation = (gizmo: GizmoSceneObject) => {
+                ((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
 
-        const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences.deltaTransformation)
+                const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences!.deltaTransformation)
 
-        let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
-            selectedRobot.intakePreferences.parentNode ?? selectedRobot.rootNodeId
-        )
-        if (!nodeBodyId) {
-            // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
-            nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.rootNodeId)!
+                let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
+                    selectedRobot.intakePreferences!.parentNode ?? selectedRobot.rootNodeId
+                )
+                if (!nodeBodyId) {
+                    // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+                    nodeBodyId = selectedRobot.mechanism.nodeToBody.get(selectedRobot.rootNodeId)!
+                }
+
+                /** W = L x R. See save() for math details */
+                const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+                const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
+
+                gizmo.UpdateGizmoObjectPositionAndRotation(gizmoTransformation)
+            }
+
+            return (<TransformGizmoControl
+                key="pickup-transform-gizmo"
+                size={1.5}
+                gizmoRef={gizmoRef}
+                defaultMode="translate"
+                defaultMesh={placeholderMesh}
+                scaleDisabled={true}
+                rotateDisabled={true}
+                postGizmoCreation={postGizmoCreation}
+            />)
+        } else {
+            gizmoRef.current = undefined
+            return (<></>)
         }
-
-        /** W = L x R. See save() for math details */
-        const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
-        const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
-
-        gizmo.UpdateGizmoObjectPositionAndRotation(gizmoTransformation)
-        setTransformGizmo(gizmo)
-
-        return () => {
-            World.SceneRenderer.RemoveSceneObject(gizmo.id)
-            setTransformGizmo(undefined)
-        }
-    }, [selectedRobot, theme])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedRobot?.intakePreferences, placeholderMesh])
 
     useEffect(() => {
         if (selectedRobot?.intakePreferences) {
@@ -211,16 +218,17 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }}
                 step={0.01}
             />
+            {gizmoComponent}
             {Spacer(10)}
             <Button
                 value="Reset"
                 onClick={() => {
-                    if (transformGizmo) {
+                    if (gizmoRef.current) {
                         const robotTransformation = JoltMat44_ThreeMatrix4(
                             World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
                         )
-                        transformGizmo.obj.position.setFromMatrixPosition(robotTransformation)
-                        transformGizmo.obj.rotation.setFromRotationMatrix(robotTransformation)
+                        gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
+                        gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)
                     }
                     setZoneSize(0.5)
                     setSelectedNode(selectedRobot?.rootNodeId)

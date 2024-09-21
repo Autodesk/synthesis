@@ -1,10 +1,18 @@
 import { useEffect, useState } from "react";
 import TransformGizmoControlProps from "./TransformGizmoControlProps";
-// import * as THREE from 'three';
 import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject";
 import { ToggleButton, ToggleButtonGroup } from "./ToggleButtonGroup";
 import World from "@/systems/World";
 
+/**
+ * Creates GizmoSceneObject and gives you a toggle button group to control the modes of the gizmo.
+ * The lifetime of the gizmo is entirely handles within this component and will be recreated depending
+ * on the updates made to the parameters provided. You can setup initial properties of the gizmo with
+ * the `postGizmoCreation` handle.
+ * 
+ * @param param0 Transform Gizmo Controls.
+ * @returns TransformGizmoControl component.
+ */
 function TransformGizmoControl({
     defaultMesh,
     gizmoRef,
@@ -14,25 +22,31 @@ function TransformGizmoControl({
     translateDisabled,
     rotateDisabled,
     scaleDisabled,
-    sx
+    sx,
+    postGizmoCreation
 }: TransformGizmoControlProps) {
 
     const [mode, setMode] = useState<GizmoMode>(defaultMode)
 
     useEffect(() => {
+        console.debug('Gizmo Recreation')
+
         const gizmo = new GizmoSceneObject(
-            defaultMesh,
             "translate",
             size,
+            defaultMesh,
             parent
         )
+
+        parent?.PostGizmoCreation(gizmo)
+        postGizmoCreation?.(gizmo)
 
         gizmoRef.current = gizmo
 
         return () => {
             World.SceneRenderer.RemoveSceneObject(gizmo.id)
         }
-    }, [gizmoRef, defaultMesh, size, parent])
+    }, [gizmoRef, defaultMesh, size, parent, postGizmoCreation])
 
     useEffect(() => {
         return () => {
@@ -43,8 +57,13 @@ function TransformGizmoControl({
         }
     }, [gizmoRef])
 
+    const disableOptions = 2 >=
+        ((translateDisabled ? 1 : 0)
+        + (rotateDisabled ? 1 : 0)
+        + (scaleDisabled ? 1 : 0))
+
     // If there are no modes enabled, consider the UI pointless.
-    return (translateDisabled && rotateDisabled && scaleDisabled) ? (<></>) : (
+    return disableOptions ? (<></>) : (
         <ToggleButtonGroup
             value={mode}
             exclusive

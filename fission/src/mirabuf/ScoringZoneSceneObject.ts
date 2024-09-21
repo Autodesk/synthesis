@@ -58,8 +58,6 @@ class ScoringZoneSceneObject extends SceneObject {
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
         super()
 
-        console.debug("Trying to create scoring zone...")
-
         this._parentAssembly = parentAssembly
         this._prefs = this._parentAssembly.fieldPreferences?.scoringZones[index]
         this._toRender = render ?? PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
@@ -138,8 +136,6 @@ class ScoringZoneSceneObject extends SceneObject {
                     }
                     OnContactRemovedEvent.AddListener(this._collisionRemoved)
                 }
-
-                console.debug("Scoring zone created successfully")
             }
         }
     }
@@ -195,8 +191,6 @@ class ScoringZoneSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
-        console.debug("Destroying scoring zone")
-
         if (this._joltBodyId) {
             World.PhysicsSystem.DestroyBodyIds(this._joltBodyId)
             if (this._mesh) {
