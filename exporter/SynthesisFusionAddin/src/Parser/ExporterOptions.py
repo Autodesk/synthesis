@@ -53,6 +53,7 @@ class ExporterOptions:
     exportAsPart: bool = field(default=False)
 
     exportLocation: ExportLocation = field(default=ExportLocation.UPLOAD)
+    openSynthesisUponExport: bool = field(default=False)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
     visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)

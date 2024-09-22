@@ -7,7 +7,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
-import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {

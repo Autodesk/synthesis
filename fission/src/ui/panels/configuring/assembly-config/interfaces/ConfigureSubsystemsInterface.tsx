@@ -1,7 +1,7 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import React, { useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import World from "@/systems/World"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"

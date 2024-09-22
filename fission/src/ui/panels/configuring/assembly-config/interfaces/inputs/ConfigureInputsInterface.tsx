@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import InputSystem from "@/systems/input/InputSystem"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
@@ -77,10 +77,19 @@ const ConfigureInputsInterface = () => {
                     // Fetch current custom schemes
                     InputSchemeManager.saveSchemes()
                     InputSchemeManager.resetDefaultSchemes()
-                    const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
 
-                    // Find and remove this input scheme
+                    // Find the scheme to remove in preferences
+                    const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
                     const index = schemes.indexOf(val.scheme)
+
+                    // If currently bound to a robot, remove the binding
+                    for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
+                        if (value == schemes[index]) {
+                            InputSystem.brainIndexSchemeMap.delete(key)
+                        }
+                    }
+
+                    // Find and remove this input scheme from preferences
                     schemes.splice(index, 1)
 
                     // Save to preferences

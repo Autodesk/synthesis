@@ -8,7 +8,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import { SectionLabel, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 
 /** Grey label for a child behavior name */
