@@ -3,6 +3,8 @@ import TransformGizmoControlProps from "./TransformGizmoControlProps";
 import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject";
 import { ToggleButton, ToggleButtonGroup } from "./ToggleButtonGroup";
 import World from "@/systems/World";
+import Button, { ButtonSize } from "./Button";
+import * as THREE from "three"
 
 /**
  * Creates GizmoSceneObject and gives you a toggle button group to control the modes of the gizmo.
@@ -30,8 +32,6 @@ function TransformGizmoControl({
     const [gizmo, setGizmo] = useState<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => {
-        console.debug('Gizmo Recreation')
-
         const gizmo = new GizmoSceneObject(
             "translate",
             size,
@@ -70,25 +70,35 @@ function TransformGizmoControl({
 
     // If there are no modes enabled, consider the UI pointless.
     return disableOptions ? (<></>) : (
-        <ToggleButtonGroup
-            value={mode}
-            exclusive
-            onChange={(_, v) => {
-                if (v == undefined) return
+        <>
+            <ToggleButtonGroup
+                value={mode}
+                exclusive
+                onChange={(_, v) => {
+                    if (v == undefined) return
 
-                setMode(v)
-                gizmo?.SetMode(v)
-            }}
-            sx={{
-                ...(sx ?? {}),
-                alignSelf: "center",
-            }}
-        >
-            {/* { translateDisabled ? <></> : <ToggleButton value={"translate"}>Move</ToggleButton> }
-            { rotateDisabled ? <></> : <ToggleButton value={"rotate"}>Rotate</ToggleButton> }
-            { scaleDisabled ? <></> : <ToggleButton value={"scale"}>Scale</ToggleButton> } */}
-            { buttons }
-        </ToggleButtonGroup>
+                    setMode(v)
+                    gizmo?.SetMode(v)
+                }}
+                sx={{
+                    ...(sx ?? {}),
+                    alignSelf: "center",
+                }}
+            >
+                {/* { translateDisabled ? <></> : <ToggleButton value={"translate"}>Move</ToggleButton> }
+                { rotateDisabled ? <></> : <ToggleButton value={"rotate"}>Rotate</ToggleButton> }
+                { scaleDisabled ? <></> : <ToggleButton value={"scale"}>Scale</ToggleButton> } */}
+                { buttons }
+            </ToggleButtonGroup>
+            {rotateDisabled ? <></> : <Button
+                value={"Reset Orientation"}
+                size={ButtonSize.Small}
+                className="self-center"
+                onClick={() => {
+                    gizmo?.SetRotation(new THREE.Quaternion(0,0,0,1))
+                }}
+            />}
+        </>
     )
 }
 

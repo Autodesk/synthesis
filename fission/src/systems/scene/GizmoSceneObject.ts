@@ -7,13 +7,13 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Object3D, PerspectiveCamera } from "three"
 import { ThreeQuaternion_JoltQuat, JoltMat44_ThreeMatrix4, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { threeMatrix4ToString } from "@/util/debug/DebugPrint"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
 
 class GizmoSceneObject extends SceneObject {
     private _gizmo: TransformControls
     private _obj: Object3D
+    private _forceUpdate: boolean = false
 
     private _parentObject: MirabufSceneObject | undefined
     private _relativeTransformations?: Map<RigidNodeId, THREE.Matrix4>
@@ -66,10 +66,7 @@ class GizmoSceneObject extends SceneObject {
         
         if (this._parentObject) {
             this._relativeTransformations = new Map<RigidNodeId, THREE.Matrix4>()
-            const c = this._obj.matrix.clone()
-            console.debug(`Clone:\n${threeMatrix4ToString(c)}`)
-
-            const gizmoTransformInv = c.invert()
+            const gizmoTransformInv = this._obj.matrix.clone().invert()
 
             /** Due to the limited math functionality exposed to JS for Jolt, we need everything in ThreeJS. */
             this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
@@ -153,7 +150,8 @@ class GizmoSceneObject extends SceneObject {
         /** Translating the obj changes to the mirabuf scene object */
         if (this._parentObject) {
             this._parentObject.DisablePhysics()
-            if (this.isDragging) {
+            if (this.isDragging || this._forceUpdate) {
+                this._forceUpdate = false
                 this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
                     this.UpdateNodeTransform(rn.id)
                 })
@@ -167,6 +165,8 @@ class GizmoSceneObject extends SceneObject {
         this._parentObject?.EnablePhysics()
         World.SceneRenderer.RemoveObject(this._obj)
         World.SceneRenderer.RemoveObject(this._gizmo)
+
+        this._relativeTransformations?.clear()
     }
 
     /** changes the mode of the gizmo */
@@ -174,7 +174,11 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.setMode(mode)
     }
 
-    /** updates body position and rotation for each body from the parent mirabuf */
+    /**
+     * Updates a given node to follow the gizmo.
+     * 
+     * @param rnId Target node to update.
+     */
     public UpdateNodeTransform(rnId: RigidNodeId) {
         if (!this._parentObject || !this._relativeTransformations || !this._relativeTransformations.has(rnId)) return
 
@@ -194,8 +198,13 @@ class GizmoSceneObject extends SceneObject {
         )
     }
 
-    /**  */
-    public UpdateGizmoObjectPositionAndRotation(gizmoTransformation: THREE.Matrix4) {
+    /**
+     * Updates the gizmos location.
+     * 
+     * @param gizmoTransformation Transform for the gizmo to take on.
+     */
+    public SetTransform(gizmoTransformation: THREE.Matrix4) {
+        // Super hacky, prolly has something to do with how the transform controls update the attached object.
         const position = new THREE.Vector3(0,0,0)
         const rotation = new THREE.Quaternion(0,0,0,1)
         const scale = new THREE.Vector3(1,1,1)
@@ -204,6 +213,19 @@ class GizmoSceneObject extends SceneObject {
 
         this._obj.position.setFromMatrixPosition(gizmoTransformation)
         this._obj.rotation.setFromRotationMatrix(gizmoTransformation)
+
+        this._forceUpdate = true
+    }
+
+    public SetRotation(rotation: THREE.Quaternion) {
+        const position = new THREE.Vector3(0,0,0)
+        const scale = new THREE.Vector3(1,1,1)
+        this._obj.matrix.decompose(position, new THREE.Quaternion(0,0,0,1), scale)
+        this._obj.matrix.compose(position, rotation, scale)
+
+        this._obj.rotation.setFromQuaternion(rotation)
+
+        this._forceUpdate = true
     }
 
     /** @return true if gizmo is attached to mirabufSceneObject */

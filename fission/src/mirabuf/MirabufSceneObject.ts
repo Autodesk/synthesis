@@ -21,7 +21,6 @@ import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import { threeMatrix4ToString } from "@/util/debug/DebugPrint"
 
 const DEBUG_BODIES = false
 
@@ -176,6 +175,8 @@ class MirabufSceneObject extends SceneObject {
         this.UpdateScoringZones()
 
         setSpotlightAssembly(this)
+
+        this.UpdateBatches()
     }
 
     public Update(): void {
@@ -410,10 +411,7 @@ class MirabufSceneObject extends SceneObject {
 
         const jBody = World.PhysicsSystem.GetBody(jRootId)
         const comTransform = JoltMat44_ThreeMatrix4(jBody.GetCenterOfMassTransform())
-        gizmo.UpdateGizmoObjectPositionAndRotation(comTransform)
-
-        console.debug(`Source:\n${threeMatrix4ToString(comTransform)}`)
-        console.debug(`New:\n${threeMatrix4ToString(gizmo.obj.matrix)}`)
+        gizmo.SetTransform(comTransform)
     }
 
     private getPreferences(): void {
