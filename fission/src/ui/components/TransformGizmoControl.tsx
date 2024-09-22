@@ -27,6 +27,7 @@ function TransformGizmoControl({
 }: TransformGizmoControlProps) {
 
     const [mode, setMode] = useState<GizmoMode>(defaultMode)
+    const [gizmo, setGizmo] = useState<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => {
         console.debug('Gizmo Recreation')
@@ -41,7 +42,9 @@ function TransformGizmoControl({
         parent?.PostGizmoCreation(gizmo)
         postGizmoCreation?.(gizmo)
 
-        gizmoRef.current = gizmo
+        if (gizmoRef) gizmoRef.current = gizmo
+
+        setGizmo(gizmo)
 
         return () => {
             World.SceneRenderer.RemoveSceneObject(gizmo.id)
@@ -50,17 +53,19 @@ function TransformGizmoControl({
 
     useEffect(() => {
         return () => {
-            if (gizmoRef.current) {
-                World.SceneRenderer.RemoveSceneObject(gizmoRef.current.id)
-                gizmoRef.current = undefined
-            }
+            if (gizmoRef) gizmoRef.current = undefined
         }
     }, [gizmoRef])
 
-    const disableOptions = 2 >=
+    const disableOptions = 2 <=
         ((translateDisabled ? 1 : 0)
         + (rotateDisabled ? 1 : 0)
         + (scaleDisabled ? 1 : 0))
+
+    const buttons = []
+    if (!translateDisabled) buttons.push((<ToggleButton key="translate-button" value={"translate"}>Move</ToggleButton>))
+    if (!rotateDisabled) buttons.push((<ToggleButton key="rotate-button" value={"rotate"}>Rotate</ToggleButton>))
+    if (!scaleDisabled) buttons.push((<ToggleButton key="scale-button" value={"scale"}>Scale</ToggleButton>))
 
     // If there are no modes enabled, consider the UI pointless.
     return disableOptions ? (<></>) : (
@@ -71,16 +76,17 @@ function TransformGizmoControl({
                 if (v == undefined) return
 
                 setMode(v)
-                gizmoRef.current?.SetMode(v)
+                gizmo?.SetMode(v)
             }}
             sx={{
                 ...(sx ?? {}),
                 alignSelf: "center",
             }}
         >
-            { translateDisabled ? <></> : <ToggleButton value={"translate"}>Move</ToggleButton> }
-            { scaleDisabled ? <></> : <ToggleButton value={"scale"}>Scale</ToggleButton> }
+            {/* { translateDisabled ? <></> : <ToggleButton value={"translate"}>Move</ToggleButton> }
             { rotateDisabled ? <></> : <ToggleButton value={"rotate"}>Rotate</ToggleButton> }
+            { scaleDisabled ? <></> : <ToggleButton value={"scale"}>Scale</ToggleButton> } */}
+            { buttons }
         </ToggleButtonGroup>
     )
 }

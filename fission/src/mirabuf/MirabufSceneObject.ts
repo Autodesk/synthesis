@@ -29,6 +29,23 @@ interface RnDebugMeshes {
     comMesh: THREE.Mesh
 }
 
+/**
+ * The goal with the spotlight assembly is to provide a contextual target assembly
+ * the user would like to modifiy. Generally this will be which even assembly was
+ * last spawned in, however, systems (such as the configuration UI) can elect
+ * assemblies to be in the spotlight when moving from interface to interface.
+ */
+let spotlightAssembly: number | undefined
+
+export function setSpotlightAssembly(assembly: MirabufSceneObject) {
+    spotlightAssembly = assembly.id
+}
+
+// TODO: If nothing is in the spotlight, select last entry before defaulting to undefined
+export function getSpotlightAssembly(): MirabufSceneObject | undefined {
+    return World.SceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
+}
+
 class MirabufSceneObject extends SceneObject {
     private _assemblyName: string
     private _mirabufInstance: MirabufInstance
@@ -146,14 +163,18 @@ class MirabufSceneObject extends SceneObject {
         })
 
         // Simulation
-        World.SimulationSystem.RegisterMechanism(this._mechanism)
-        const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-        this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
-        simLayer.SetBrain(this._brain)
+        if (this.miraType == MiraType.ROBOT) {
+            World.SimulationSystem.RegisterMechanism(this._mechanism)
+            const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
+            this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
+            simLayer.SetBrain(this._brain)    
+        }
 
         // Intake
         this.UpdateIntakeSensor()
         this.UpdateScoringZones()
+
+        setSpotlightAssembly(this)
     }
 
     public Update(): void {

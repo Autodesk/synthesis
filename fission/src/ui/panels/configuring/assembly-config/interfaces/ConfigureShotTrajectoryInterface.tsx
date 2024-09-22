@@ -19,6 +19,7 @@ import Button from "@/ui/components/Button"
 import { Spacer } from "@/ui/components/StyledComponents"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -163,10 +164,10 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     }, [selectedRobot])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause()
+        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause()
+            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 

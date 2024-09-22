@@ -19,6 +19,7 @@ import { Spacer } from "@/ui/components/StyledComponents"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -173,10 +174,10 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [selectedRobot])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause()
+        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause()
+            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 

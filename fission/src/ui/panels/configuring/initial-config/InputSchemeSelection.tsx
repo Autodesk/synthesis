@@ -13,7 +13,7 @@ import {
 } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
 import { useReducer } from "react"
-import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurePanel"
+import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
 

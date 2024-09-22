@@ -47,7 +47,7 @@ class GizmoSceneObject extends SceneObject {
     ) {
         super()
 
-        this._obj = obj ?? new THREE.Mesh(new THREE.PlaneGeometry(1,1))
+        this._obj = obj ?? new THREE.Mesh()
         this._parentObject = parentObject
         this._mainCamera = World.SceneRenderer.mainCamera
 

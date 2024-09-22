@@ -16,6 +16,7 @@ import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualPropert
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 
 /**
  * Saves ejector configuration to selected field.
@@ -152,10 +153,10 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
     /** Holds a pause for the duration of the interface component */
     useEffect(() => {
-        World.PhysicsSystem.HoldPause()
+        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause()
+            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 

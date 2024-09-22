@@ -60,6 +60,8 @@ import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
+import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
+import InitialConfigPanel from "./ui/panels/configuring/InitialConfigPanel.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -162,6 +164,7 @@ function Synthesis() {
                         closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
+                            <GlobalUIComponent />
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
                             <MainHUD key={"main-hud"} />
@@ -228,6 +231,7 @@ const initialPanels: ReactElement[] = [
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
+    <InitialConfigPanel key="initial-config" panelId="initial-config" />,
 ]
 
 export default Synthesis

@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 interface TransformGizmoControlProps {
     defaultMesh?: THREE.Mesh,
-    gizmoRef: MutableRefObject<GizmoSceneObject | undefined>,
+    gizmoRef?: MutableRefObject<GizmoSceneObject | undefined>,
     size: number,
     parent?: MirabufSceneObject,
     defaultMode: GizmoMode,
