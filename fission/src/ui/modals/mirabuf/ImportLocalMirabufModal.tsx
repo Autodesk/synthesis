@@ -60,7 +60,10 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
                                 Global_OpenPanel?.("initial-config")
                             }
-                        }).finally(() => setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500))
+                        })
+                        .finally(() =>
+                            setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+                        )
                 }
             }}
         >

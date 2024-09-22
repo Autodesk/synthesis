@@ -167,7 +167,7 @@ class MirabufSceneObject extends SceneObject {
             World.SimulationSystem.RegisterMechanism(this._mechanism)
             const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
             this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
-            simLayer.SetBrain(this._brain)    
+            simLayer.SetBrain(this._brain)
         }
 
         // Intake
@@ -183,7 +183,7 @@ class MirabufSceneObject extends SceneObject {
 
         const offset = new JOLT.Vec3(
             -(bounds.min.x + bounds.max.x) / 2.0,
-            0.1 + ((bounds.max.y - bounds.min.y) / 2.0) - ((bounds.min.y + bounds.max.y) / 2.0),
+            0.1 + (bounds.max.y - bounds.min.y) / 2.0 - (bounds.min.y + bounds.max.y) / 2.0,
             -(bounds.min.z + bounds.max.z) / 2.0
         )
 
@@ -420,7 +420,7 @@ class MirabufSceneObject extends SceneObject {
 
     /**
      * Once a gizmo is created and attached to this mirabuf object, this will be executed to align the gizmo correctly.
-     * 
+     *
      * @param gizmo Gizmo attached to the mirabuf object
      */
     public PostGizmoCreation(gizmo: GizmoSceneObject) {
@@ -433,9 +433,9 @@ class MirabufSceneObject extends SceneObject {
         const jBody = World.PhysicsSystem.GetBody(jRootId)
         if (jBody.IsStatic()) {
             const aaBox = jBody.GetWorldSpaceBounds()
-            const mat = new THREE.Matrix4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)
+            const mat = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
             const center = aaBox.mMin.Add(aaBox.mMax).Div(2.0)
-            mat.compose(JoltVec3_ThreeVector3(center), new THREE.Quaternion(0,0,0,1), new THREE.Vector3(1,1,1))
+            mat.compose(JoltVec3_ThreeVector3(center), new THREE.Quaternion(0, 0, 0, 1), new THREE.Vector3(1, 1, 1))
             gizmo.SetTransform(mat)
         } else {
             gizmo.SetTransform(JoltMat44_ThreeMatrix4(jBody.GetCenterOfMassTransform()))

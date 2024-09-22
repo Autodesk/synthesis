@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import TransformGizmoControlProps from "./TransformGizmoControlProps";
-import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject";
-import { ToggleButton, ToggleButtonGroup } from "./ToggleButtonGroup";
-import World from "@/systems/World";
-import Button, { ButtonSize } from "./Button";
+import { useEffect, useState } from "react"
+import TransformGizmoControlProps from "./TransformGizmoControlProps"
+import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
+import { ToggleButton, ToggleButtonGroup } from "./ToggleButtonGroup"
+import World from "@/systems/World"
+import Button, { ButtonSize } from "./Button"
 import * as THREE from "three"
 
 /**
@@ -11,7 +11,7 @@ import * as THREE from "three"
  * The lifetime of the gizmo is entirely handles within this component and will be recreated depending
  * on the updates made to the parameters provided. You can setup initial properties of the gizmo with
  * the `postGizmoCreation` handle.
- * 
+ *
  * @param param0 Transform Gizmo Controls.
  * @returns TransformGizmoControl component.
  */
@@ -25,23 +25,16 @@ function TransformGizmoControl({
     rotateDisabled,
     scaleDisabled,
     sx,
-    postGizmoCreation
+    postGizmoCreation,
 }: TransformGizmoControlProps) {
-
     const [mode, setMode] = useState<GizmoMode>(defaultMode)
     const [gizmo, setGizmo] = useState<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => {
-        const gizmo = new GizmoSceneObject(
-            "translate",
-            size,
-            defaultMesh,
-            parent,
-            (gizmo: GizmoSceneObject) => {
-                parent?.PostGizmoCreation(gizmo)
-                postGizmoCreation?.(gizmo)
-            }
-        )
+        const gizmo = new GizmoSceneObject("translate", size, defaultMesh, parent, (gizmo: GizmoSceneObject) => {
+            parent?.PostGizmoCreation(gizmo)
+            postGizmoCreation?.(gizmo)
+        })
 
         if (gizmoRef) gizmoRef.current = gizmo
 
@@ -58,18 +51,32 @@ function TransformGizmoControl({
         }
     }, [gizmoRef])
 
-    const disableOptions = 2 <=
-        ((translateDisabled ? 1 : 0)
-        + (rotateDisabled ? 1 : 0)
-        + (scaleDisabled ? 1 : 0))
+    const disableOptions = 2 <= (translateDisabled ? 1 : 0) + (rotateDisabled ? 1 : 0) + (scaleDisabled ? 1 : 0)
 
     const buttons = []
-    if (!translateDisabled) buttons.push((<ToggleButton key="translate-button" value={"translate"}>Move</ToggleButton>))
-    if (!rotateDisabled) buttons.push((<ToggleButton key="rotate-button" value={"rotate"}>Rotate</ToggleButton>))
-    if (!scaleDisabled) buttons.push((<ToggleButton key="scale-button" value={"scale"}>Scale</ToggleButton>))
+    if (!translateDisabled)
+        buttons.push(
+            <ToggleButton key="translate-button" value={"translate"}>
+                Move
+            </ToggleButton>
+        )
+    if (!rotateDisabled)
+        buttons.push(
+            <ToggleButton key="rotate-button" value={"rotate"}>
+                Rotate
+            </ToggleButton>
+        )
+    if (!scaleDisabled)
+        buttons.push(
+            <ToggleButton key="scale-button" value={"scale"}>
+                Scale
+            </ToggleButton>
+        )
 
     // If there are no modes enabled, consider the UI pointless.
-    return disableOptions ? (<></>) : (
+    return disableOptions ? (
+        <></>
+    ) : (
         <>
             <ToggleButtonGroup
                 value={mode}
@@ -88,18 +95,22 @@ function TransformGizmoControl({
                 {/* { translateDisabled ? <></> : <ToggleButton value={"translate"}>Move</ToggleButton> }
                 { rotateDisabled ? <></> : <ToggleButton value={"rotate"}>Rotate</ToggleButton> }
                 { scaleDisabled ? <></> : <ToggleButton value={"scale"}>Scale</ToggleButton> } */}
-                { buttons }
+                {buttons}
             </ToggleButtonGroup>
-            {rotateDisabled ? <></> : <Button
-                value={"Reset Orientation"}
-                size={ButtonSize.Small}
-                className="self-center"
-                onClick={() => {
-                    gizmo?.SetRotation(new THREE.Quaternion(0,0,0,1))
-                }}
-            />}
+            {rotateDisabled ? (
+                <></>
+            ) : (
+                <Button
+                    value={"Reset Orientation"}
+                    size={ButtonSize.Small}
+                    className="self-center"
+                    onClick={() => {
+                        gizmo?.SetRotation(new THREE.Quaternion(0, 0, 0, 1))
+                    }}
+                />
+            )}
         </>
     )
 }
 
-export default TransformGizmoControl;
+export default TransformGizmoControl

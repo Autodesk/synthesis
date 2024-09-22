@@ -128,20 +128,20 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedField) {
-            save(selectedField, selectedZone, name, alliance, points, destroy, persistent, gizmoRef.current, selectedNode)
+            save(
+                selectedField,
+                selectedZone,
+                name,
+                alliance,
+                points,
+                destroy,
+                persistent,
+                gizmoRef.current,
+                selectedNode
+            )
             saveAllZones()
         }
-    }, [
-        selectedField,
-        selectedZone,
-        name,
-        alliance,
-        points,
-        destroy,
-        persistent,
-        selectedNode,
-        saveAllZones,
-    ])
+    }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -162,15 +162,18 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
     /** Creates the default mesh for the gizmo */
     const defaultGizmoMesh = useMemo(() => {
-        console.debug('Default Gizmo Mesh Recreation')
+        console.debug("Default Gizmo Mesh Recreation")
 
         if (!selectedZone) {
-            console.debug('No zone selected')
+            console.debug("No zone selected")
             return undefined
         }
 
-        return new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), selectedZone.alliance == "blue" ? blueMaterial : redMaterial)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        return new THREE.Mesh(
+            new THREE.BoxGeometry(1, 1, 1),
+            selectedZone.alliance == "blue" ? blueMaterial : redMaterial
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedZone, selectedZone.alliance, blueMaterial, redMaterial])
 
     /** Creates TransformGizmoControl component and sets up target mesh. */
@@ -178,35 +181,41 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         if (selectedField && selectedZone) {
             const postGizmoCreation = (gizmo: GizmoSceneObject) => {
                 ((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
-        
+
                 const deltaTransformation = Array_ThreeMatrix4(selectedZone.deltaTransformation)
-        
-                let nodeBodyId = selectedField.mechanism.nodeToBody.get(selectedZone.parentNode ?? selectedField.rootNodeId)
+
+                let nodeBodyId = selectedField.mechanism.nodeToBody.get(
+                    selectedZone.parentNode ?? selectedField.rootNodeId
+                )
                 if (!nodeBodyId) {
                     // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
                     nodeBodyId = selectedField.mechanism.nodeToBody.get(selectedField.rootNodeId)!
                 }
-        
+
                 /** W = L x R. See save() for math details */
-                const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+                const fieldTransformation = JoltMat44_ThreeMatrix4(
+                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                )
                 const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
-        
+
                 gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
                 gizmo.obj.rotation.setFromQuaternion(props.rotation)
                 gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
             }
 
-            return (<TransformGizmoControl
-                key="zone-transform-gizmo"
-                size={1.5}
-                gizmoRef={gizmoRef}
-                defaultMode="translate"
-                defaultMesh={defaultGizmoMesh}
-                postGizmoCreation={postGizmoCreation}
-            />)
+            return (
+                <TransformGizmoControl
+                    key="zone-transform-gizmo"
+                    size={1.5}
+                    gizmoRef={gizmoRef}
+                    defaultMode="translate"
+                    defaultMesh={defaultGizmoMesh}
+                    postGizmoCreation={postGizmoCreation}
+                />
+            )
         } else {
             gizmoRef.current = undefined
-            return (<></>)
+            return <></>
         }
     }, [selectedField, selectedZone, defaultGizmoMesh])
 

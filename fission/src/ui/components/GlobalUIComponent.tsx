@@ -8,9 +8,9 @@ import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
  * So this is Hunter's kinda cursed approach to de-react-ifying some of our UI controls.
  * Essentially, this component will expose context controls for our UI, which allows
  * non-UI components (such as APSDataManagement) to use UI controls (such as addToast).
- * 
+ *
  * Stored in a component to ensure a lifetime is followed with this handles.
- * 
+ *
  * @returns Global UI Component
  */
 function GlobalUIComponent() {
@@ -42,7 +42,7 @@ function GlobalUIComponent() {
         }
     }, [addToast])
 
-    return (<></>)
+    return <></>
 }
 
 export default GlobalUIComponent

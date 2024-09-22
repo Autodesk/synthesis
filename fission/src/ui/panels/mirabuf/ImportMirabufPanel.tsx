@@ -110,7 +110,8 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                 console.error("Failed to spawn robot")
             }
         })
-        .catch(() => progressHandle.Fail()).finally(() => {
+        .catch(() => progressHandle.Fail())
+        .finally(() => {
             setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
         })
 }

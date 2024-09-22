@@ -24,7 +24,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
         <>
             {/** A scroll view with buttons to select default and custom input schemes */}
             <>
-            {/** The label and divider at the top of the scroll view */}
+                {/** The label and divider at the top of the scroll view */}
                 <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${InputSchemeManager.availableInputSchemes.length} Input Schemes`}
                 </SectionLabel>

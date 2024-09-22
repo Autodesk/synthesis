@@ -92,7 +92,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
-    
+
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
@@ -141,27 +141,31 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }
 
                 /** W = L x R. See save() for math details */
-                const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+                const robotTransformation = JoltMat44_ThreeMatrix4(
+                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
                 gizmo.SetTransform(gizmoTransformation)
             }
 
-            return (<TransformGizmoControl
-                key="pickup-transform-gizmo"
-                size={1.5}
-                gizmoRef={gizmoRef}
-                defaultMode="translate"
-                defaultMesh={placeholderMesh}
-                scaleDisabled={true}
-                rotateDisabled={true}
-                postGizmoCreation={postGizmoCreation}
-            />)
+            return (
+                <TransformGizmoControl
+                    key="pickup-transform-gizmo"
+                    size={1.5}
+                    gizmoRef={gizmoRef}
+                    defaultMode="translate"
+                    defaultMesh={placeholderMesh}
+                    scaleDisabled={true}
+                    rotateDisabled={true}
+                    postGizmoCreation={postGizmoCreation}
+                />
+            )
         } else {
             gizmoRef.current = undefined
-            return (<></>)
+            return <></>
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedRobot?.intakePreferences, placeholderMesh])
 
     useEffect(() => {

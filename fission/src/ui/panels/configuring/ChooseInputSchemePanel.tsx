@@ -2,9 +2,7 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import {
-    SynthesisIcons,
-} from "@/ui/components/StyledComponents"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { useEffect, useMemo } from "react"
@@ -64,12 +62,16 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
-                {brainIndex != undefined ? (<InputSchemeSelection
-                    brainIndex={brainIndex}
-                    onSelect={() => closePanel(panelId)}
-                    onEdit={() => openPanel("configure")}
-                    onCreateNew={() => openModal("assign-new-scheme")}
-                />) : (<></>)}
+                {brainIndex != undefined ? (
+                    <InputSchemeSelection
+                        brainIndex={brainIndex}
+                        onSelect={() => closePanel(panelId)}
+                        onEdit={() => openPanel("configure")}
+                        onCreateNew={() => openModal("assign-new-scheme")}
+                    />
+                ) : (
+                    <></>
+                )}
             </div>
         </Panel>
     )

@@ -47,7 +47,7 @@ class GizmoSceneObject extends SceneObject {
         size: number,
         obj?: THREE.Mesh,
         parentObject?: MirabufSceneObject,
-        postGizmoCreation?: (gizmo: GizmoSceneObject) => void,
+        postGizmoCreation?: (gizmo: GizmoSceneObject) => void
     ) {
         super()
 
@@ -63,7 +63,7 @@ class GizmoSceneObject extends SceneObject {
         World.SceneRenderer.RegisterGizmoSceneObject(this)
 
         postGizmoCreation?.(this)
-        
+
         if (this._parentObject) {
             this._relativeTransformations = new Map<RigidNodeId, THREE.Matrix4>()
             const gizmoTransformInv = this._obj.matrix.clone().invert()
@@ -72,7 +72,7 @@ class GizmoSceneObject extends SceneObject {
             this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
                 const jBodyId = this._parentObject!.mechanism.GetBodyByNodeId(rn.id)
                 if (!jBodyId) return
-    
+
                 const worldTransform = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(jBodyId).GetWorldTransform())
                 const relativeTransform = worldTransform.premultiply(gizmoTransformInv)
                 this._relativeTransformations!.set(rn.id, relativeTransform)
@@ -176,7 +176,7 @@ class GizmoSceneObject extends SceneObject {
 
     /**
      * Updates a given node to follow the gizmo.
-     * 
+     *
      * @param rnId Target node to update.
      */
     public UpdateNodeTransform(rnId: RigidNodeId) {
@@ -187,27 +187,27 @@ class GizmoSceneObject extends SceneObject {
 
         const relativeTransform = this._relativeTransformations.get(rnId)!
         const worldTransform = relativeTransform.clone().premultiply(this._obj.matrix)
-        const position = new THREE.Vector3(0,0,0)
-        const rotation = new THREE.Quaternion(0,0,0,1)
-        worldTransform.decompose(position, rotation, new THREE.Vector3(1,1,1))
+        const position = new THREE.Vector3(0, 0, 0)
+        const rotation = new THREE.Quaternion(0, 0, 0, 1)
+        worldTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
         World.PhysicsSystem.SetBodyPositionAndRotation(
             jBodyId,
             ThreeVector3_JoltVec3(position),
-            ThreeQuaternion_JoltQuat(rotation),
+            ThreeQuaternion_JoltQuat(rotation)
         )
     }
 
     /**
      * Updates the gizmos location.
-     * 
+     *
      * @param gizmoTransformation Transform for the gizmo to take on.
      */
     public SetTransform(gizmoTransformation: THREE.Matrix4) {
         // Super hacky, prolly has something to do with how the transform controls update the attached object.
-        const position = new THREE.Vector3(0,0,0)
-        const rotation = new THREE.Quaternion(0,0,0,1)
-        const scale = new THREE.Vector3(1,1,1)
+        const position = new THREE.Vector3(0, 0, 0)
+        const rotation = new THREE.Quaternion(0, 0, 0, 1)
+        const scale = new THREE.Vector3(1, 1, 1)
         gizmoTransformation.decompose(position, rotation, scale)
         this._obj.matrix.compose(position, rotation, scale)
 
@@ -218,9 +218,9 @@ class GizmoSceneObject extends SceneObject {
     }
 
     public SetRotation(rotation: THREE.Quaternion) {
-        const position = new THREE.Vector3(0,0,0)
-        const scale = new THREE.Vector3(1,1,1)
-        this._obj.matrix.decompose(position, new THREE.Quaternion(0,0,0,1), scale)
+        const position = new THREE.Vector3(0, 0, 0)
+        const scale = new THREE.Vector3(1, 1, 1)
+        this._obj.matrix.decompose(position, new THREE.Quaternion(0, 0, 0, 1), scale)
         this._obj.matrix.compose(position, rotation, scale)
 
         this._obj.rotation.setFromQuaternion(rotation)

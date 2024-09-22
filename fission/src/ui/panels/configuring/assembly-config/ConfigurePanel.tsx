@@ -193,13 +193,15 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         }
         case ConfigMode.MOVE: {
-            return <TransformGizmoControl
-                key={"config-move-gizmo"}
-                defaultMode="translate"
-                scaleDisabled={true}
-                size={3.0}
-                parent={assembly}
-            />
+            return (
+                <TransformGizmoControl
+                    key={"config-move-gizmo"}
+                    defaultMode="translate"
+                    scaleDisabled={true}
+                    size={3.0}
+                    parent={assembly}
+                />
+            )
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)

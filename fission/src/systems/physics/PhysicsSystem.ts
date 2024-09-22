@@ -167,7 +167,7 @@ class PhysicsSystem extends WorldSystem {
      * Releases a pause.
      *
      * @param ref String to reference your hold.
-     * 
+     *
      * @returns Whether or not your hold was successfully removed.
      */
     public ReleasePause(ref: string): boolean {
@@ -1080,7 +1080,12 @@ class PhysicsSystem extends WorldSystem {
         )
     }
 
-    public SetBodyPositionAndRotation(id: Jolt.BodyID, position: Jolt.RVec3, rotation: Jolt.Quat, activate: boolean = true): void {
+    public SetBodyPositionAndRotation(
+        id: Jolt.BodyID,
+        position: Jolt.RVec3,
+        rotation: Jolt.Quat,
+        activate: boolean = true
+    ): void {
         if (!this.IsBodyAdded(id)) {
             return
         }

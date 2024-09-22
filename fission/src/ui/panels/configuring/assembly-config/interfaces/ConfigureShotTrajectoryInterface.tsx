@@ -131,27 +131,31 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 }
 
                 /** W = L x R. See save() for math details */
-                const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+                const robotTransformation = JoltMat44_ThreeMatrix4(
+                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
                 gizmo.obj.position.setFromMatrixPosition(gizmoTransformation)
                 gizmo.obj.rotation.setFromRotationMatrix(gizmoTransformation)
             }
 
-            return (<TransformGizmoControl
-                key="shot-transform-gizmo"
-                size={1.5}
-                gizmoRef={gizmoRef}
-                defaultMode="translate"
-                defaultMesh={placeholderMesh}
-                scaleDisabled={true}
-                postGizmoCreation={postGizmoCreation}
-            />)
+            return (
+                <TransformGizmoControl
+                    key="shot-transform-gizmo"
+                    size={1.5}
+                    gizmoRef={gizmoRef}
+                    defaultMode="translate"
+                    defaultMesh={placeholderMesh}
+                    scaleDisabled={true}
+                    postGizmoCreation={postGizmoCreation}
+                />
+            )
         } else {
             gizmoRef.current = undefined
-            return (<></>)
+            return <></>
         }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [placeholderMesh, selectedRobot.ejectorPreferences])
 
     useEffect(() => {
