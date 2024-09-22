@@ -15,7 +15,7 @@ class GizmoSceneObject extends SceneObject {
     private _obj: Object3D
     private _forceUpdate: boolean = false
 
-    private _parentObject: MirabufSceneObject | undefined
+    private _parentObject?: MirabufSceneObject
     private _relativeTransformations?: Map<RigidNodeId, THREE.Matrix4>
 
     private _mainCamera: PerspectiveCamera
