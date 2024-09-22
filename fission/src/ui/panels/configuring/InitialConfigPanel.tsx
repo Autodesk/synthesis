@@ -8,7 +8,7 @@ import {
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { useEffect } from "react"
-import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurationType"
+import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurePanel"
 import { setSelectedScheme } from "./assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
 
@@ -24,7 +24,7 @@ function getBrainIndex() {
     return selectedBrainIndexGlobal != undefined ? selectedBrainIndexGlobal : SynthesisBrain.brainIndexMap.size - 1
 }
 
-const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
 
@@ -62,6 +62,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             sidePadding={8}
             acceptEnabled={false}
             icon={SynthesisIcons.Gamepad}
+            cancelEnabled={selectedBrainIndexGlobal != undefined}
             cancelName="Close"
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
@@ -77,4 +78,4 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     )
 }
 
-export default ChooseInputSchemePanel
+export default InitialConfigPanel
