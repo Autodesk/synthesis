@@ -118,7 +118,8 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     const gizmoComponent = useMemo(() => {
         if (selectedRobot?.ejectorPreferences) {
             const postGizmoCreation = (gizmo: GizmoSceneObject) => {
-                ((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
+                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+                material.depthTest = false
 
                 const deltaTransformation = Array_ThreeMatrix4(selectedRobot.ejectorPreferences!.deltaTransformation)
 

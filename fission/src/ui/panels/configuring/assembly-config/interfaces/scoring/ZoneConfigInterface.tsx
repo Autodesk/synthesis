@@ -180,7 +180,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const gizmoComponent = useMemo(() => {
         if (selectedField && selectedZone) {
             const postGizmoCreation = (gizmo: GizmoSceneObject) => {
-                ((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
+                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+                material.depthTest = false
 
                 const deltaTransformation = Array_ThreeMatrix4(selectedZone.deltaTransformation)
 

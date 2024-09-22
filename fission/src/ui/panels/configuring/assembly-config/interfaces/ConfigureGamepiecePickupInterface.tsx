@@ -128,7 +128,8 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     const gizmoComponent = useMemo(() => {
         if (selectedRobot?.intakePreferences) {
             const postGizmoCreation = (gizmo: GizmoSceneObject) => {
-                ((gizmo.obj as THREE.Mesh).material as THREE.Material).depthTest = false
+                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+                material.depthTest = false
 
                 const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences!.deltaTransformation)
 
