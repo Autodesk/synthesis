@@ -5,15 +5,18 @@ import InputSystem from "../input/InputSystem"
 import World from "../World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Object3D, PerspectiveCamera } from "three"
-import { ThreeMatrix4_JoltMat44, ThreeQuaternion_JoltQuat } from "@/util/TypeConversions"
-import { RigidNodeReadOnly } from "@/mirabuf/MirabufParser"
+import { ThreeQuaternion_JoltQuat, JoltMat44_ThreeMatrix4, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import { threeMatrix4ToString } from "@/util/debug/DebugPrint"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
 
 class GizmoSceneObject extends SceneObject {
     private _gizmo: TransformControls
     private _obj: Object3D
+
     private _parentObject: MirabufSceneObject | undefined
+    private _relativeTransformations?: Map<RigidNodeId, THREE.Matrix4>
 
     private _mainCamera: PerspectiveCamera
 
@@ -43,7 +46,8 @@ class GizmoSceneObject extends SceneObject {
         mode: GizmoMode,
         size: number,
         obj?: THREE.Mesh,
-        parentObject?: MirabufSceneObject
+        parentObject?: MirabufSceneObject,
+        postGizmoCreation?: (gizmo: GizmoSceneObject) => void,
     ) {
         super()
 
@@ -57,6 +61,26 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.setMode(mode)
 
         World.SceneRenderer.RegisterGizmoSceneObject(this)
+
+        postGizmoCreation?.(this)
+        
+        if (this._parentObject) {
+            this._relativeTransformations = new Map<RigidNodeId, THREE.Matrix4>()
+            const c = this._obj.matrix.clone()
+            console.debug(`Clone:\n${threeMatrix4ToString(c)}`)
+
+            const gizmoTransformInv = c.invert()
+
+            /** Due to the limited math functionality exposed to JS for Jolt, we need everything in ThreeJS. */
+            this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
+                const jBodyId = this._parentObject!.mechanism.GetBodyByNodeId(rn.id)
+                if (!jBodyId) return
+    
+                const worldTransform = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(jBodyId).GetWorldTransform())
+                const relativeTransform = worldTransform.premultiply(gizmoTransformInv)
+                this._relativeTransformations!.set(rn.id, relativeTransform)
+            })
+        }
     }
 
     public Setup(): void {
@@ -131,9 +155,9 @@ class GizmoSceneObject extends SceneObject {
             this._parentObject.DisablePhysics()
             if (this.isDragging) {
                 this._parentObject.mirabufInstance.parser.rigidNodes.forEach(rn => {
-                    this.UpdateBodyPositionAndRotation(rn)
-                    this._parentObject?.UpdateNodeParts(rn, this.obj.matrix)
+                    this.UpdateNodeTransform(rn.id)
                 })
+                this._parentObject.UpdateMeshTransforms()
             }
         }
     }
@@ -151,22 +175,35 @@ class GizmoSceneObject extends SceneObject {
     }
 
     /** updates body position and rotation for each body from the parent mirabuf */
-    public UpdateBodyPositionAndRotation(rn: RigidNodeReadOnly) {
-        if (!this._parentObject) return
-        World.PhysicsSystem.SetBodyPosition(
-            this._parentObject.mechanism.GetBodyByNodeId(rn.id)!,
-            ThreeMatrix4_JoltMat44(this._obj.matrix).GetTranslation()
-        )
-        World.PhysicsSystem.SetBodyRotation(
-            this._parentObject.mechanism.GetBodyByNodeId(rn.id)!,
-            ThreeQuaternion_JoltQuat(this._obj.quaternion)
+    public UpdateNodeTransform(rnId: RigidNodeId) {
+        if (!this._parentObject || !this._relativeTransformations || !this._relativeTransformations.has(rnId)) return
+
+        const jBodyId = this._parentObject.mechanism.GetBodyByNodeId(rnId)
+        if (!jBodyId) return
+
+        const relativeTransform = this._relativeTransformations.get(rnId)!
+        const worldTransform = relativeTransform.clone().premultiply(this._obj.matrix)
+        const position = new THREE.Vector3(0,0,0)
+        const rotation = new THREE.Quaternion(0,0,0,1)
+        worldTransform.decompose(position, rotation, new THREE.Vector3(1,1,1))
+
+        World.PhysicsSystem.SetBodyPositionAndRotation(
+            jBodyId,
+            ThreeVector3_JoltVec3(position),
+            ThreeQuaternion_JoltQuat(rotation),
         )
     }
 
     /**  */
     public UpdateGizmoObjectPositionAndRotation(gizmoTransformation: THREE.Matrix4) {
+        const position = new THREE.Vector3(0,0,0)
+        const rotation = new THREE.Quaternion(0,0,0,1)
+        const scale = new THREE.Vector3(1,1,1)
+        gizmoTransformation.decompose(position, rotation, scale)
+        this._obj.matrix.compose(position, rotation, scale)
+
         this._obj.position.setFromMatrixPosition(gizmoTransformation)
-        this._obj.quaternion.setFromRotationMatrix(gizmoTransformation)
+        this._obj.rotation.setFromRotationMatrix(gizmoTransformation)
     }
 
     /** @return true if gizmo is attached to mirabufSceneObject */

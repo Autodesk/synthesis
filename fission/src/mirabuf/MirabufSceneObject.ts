@@ -21,6 +21,7 @@ import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import { threeMatrix4ToString } from "@/util/debug/DebugPrint"
 
 const DEBUG_BODIES = false
 
@@ -183,33 +184,7 @@ class MirabufSceneObject extends SceneObject {
             this.Eject()
         }
 
-        /** Updating the position of all mirabuf nodes */
-        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-            if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
-            const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-            const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
-            this.UpdateNodeParts(rn, transform)
-
-            if (isNaN(body.GetPosition().GetX())) {
-                const vel = body.GetLinearVelocity()
-                const pos = body.GetPosition()
-                console.warn(
-                    `Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
-                )
-            }
-            // console.debug(`POSITION: ${body.GetPosition().GetX()}, ${body.GetPosition().GetY()}, ${body.GetPosition().GetZ()}`)
-
-            if (this._debugBodies) {
-                const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
-                colliderMesh.position.setFromMatrixPosition(transform)
-                colliderMesh.rotation.setFromRotationMatrix(transform)
-
-                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform())
-
-                comMesh.position.setFromMatrixPosition(comTransform)
-                comMesh.rotation.setFromRotationMatrix(comTransform)
-            }
-        })
+        this.UpdateMeshTransforms()
 
         this.UpdateBatches()
         this.UpdateNameTag()
@@ -291,6 +266,37 @@ class MirabufSceneObject extends SceneObject {
         mesh.castShadow = true
 
         return mesh
+    }
+
+    /**
+     * Matches mesh transforms to their Jolt counterparts.
+     */
+    public UpdateMeshTransforms() {
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
+            const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+            const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
+            this.UpdateNodeParts(rn, transform)
+
+            if (isNaN(body.GetPosition().GetX())) {
+                const vel = body.GetLinearVelocity()
+                const pos = body.GetPosition()
+                console.warn(
+                    `Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
+                )
+            }
+
+            if (this._debugBodies) {
+                const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
+                colliderMesh.position.setFromMatrixPosition(transform)
+                colliderMesh.rotation.setFromRotationMatrix(transform)
+
+                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform())
+
+                comMesh.position.setFromMatrixPosition(comTransform)
+                comMesh.rotation.setFromRotationMatrix(comTransform)
+            }
+        })
     }
 
     public UpdateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
@@ -396,7 +402,18 @@ class MirabufSceneObject extends SceneObject {
      * @param gizmo Gizmo attached to the mirabuf object
      */
     public PostGizmoCreation(gizmo: GizmoSceneObject) {
-        // TODO: Move to the center of the bot/field
+        const jRootId = this.GetRootNodeId()
+        if (!jRootId) {
+            console.error("No root node found.")
+            return
+        }
+
+        const jBody = World.PhysicsSystem.GetBody(jRootId)
+        const comTransform = JoltMat44_ThreeMatrix4(jBody.GetCenterOfMassTransform())
+        gizmo.UpdateGizmoObjectPositionAndRotation(comTransform)
+
+        console.debug(`Source:\n${threeMatrix4ToString(comTransform)}`)
+        console.debug(`New:\n${threeMatrix4ToString(gizmo.obj.matrix)}`)
     }
 
     private getPreferences(): void {

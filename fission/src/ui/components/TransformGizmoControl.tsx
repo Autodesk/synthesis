@@ -36,11 +36,12 @@ function TransformGizmoControl({
             "translate",
             size,
             defaultMesh,
-            parent
+            parent,
+            (gizmo: GizmoSceneObject) => {
+                parent?.PostGizmoCreation(gizmo)
+                postGizmoCreation?.(gizmo)
+            }
         )
-
-        parent?.PostGizmoCreation(gizmo)
-        postGizmoCreation?.(gizmo)
 
         if (gizmoRef) gizmoRef.current = gizmo
 
