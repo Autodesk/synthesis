@@ -17,7 +17,7 @@ import { ConfigurationType, setSelectedConfigurationType } from "@/panels/config
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
 
-function InputSchemeSelection({ getBrainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
+function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
     const [_, update] = useReducer(x => !x, false)
 
     return (
@@ -54,12 +54,12 @@ function InputSchemeSelection({ getBrainIndex, onSelect, onEdit, onCreateNew }: 
                             >
                                 {/** Select button */}
                                 {SelectButton(() => {
-                                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
+                                    InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
                                     onSelect?.()
                                 })}
                                 {/** Edit button - same as select but opens the inputs modal */}
                                 {EditButton(() => {
-                                    InputSystem.brainIndexSchemeMap.set(getBrainIndex(), scheme)
+                                    InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
                                     setSelectedConfigurationType(ConfigurationType.INPUTS)
                                     setSelectedScheme(scheme)
@@ -95,7 +95,7 @@ function InputSchemeSelection({ getBrainIndex, onSelect, onEdit, onCreateNew }: 
             </>
             {/** New scheme with a randomly assigned name button */}
             {AddButtonInteractiveColor(() => {
-                InputSystem.brainIndexSchemeMap.set(getBrainIndex(), DefaultInputs.newBlankScheme)
+                InputSystem.brainIndexSchemeMap.set(brainIndex, DefaultInputs.newBlankScheme)
                 onCreateNew?.()
             })}
         </>

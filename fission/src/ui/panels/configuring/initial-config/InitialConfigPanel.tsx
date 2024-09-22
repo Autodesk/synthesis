@@ -8,9 +8,9 @@ import {
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { useEffect, useMemo } from "react"
-import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurationType"
-import { setSelectedScheme } from "./assembly-config/interfaces/inputs/ConfigureInputsInterface"
-import InputSchemeSelection from "./initial-config/InputSchemeSelection"
+import { ConfigurationType, setSelectedConfigurationType } from "../assembly-config/ConfigurationType"
+import { setSelectedScheme } from "../assembly-config/interfaces/inputs/ConfigureInputsInterface"
+import InputSchemeSelection from "./InputSchemeSelection"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -83,7 +83,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     parent={targetAssembly}
                 />) : (<></>)}
                 {brainIndex != undefined ? (<InputSchemeSelection
-                    getBrainIndex={() => brainIndex}
+                    brainIndex={brainIndex}
                     onSelect={() => closePanel(panelId)}
                     onEdit={() => openPanel("configure")}
                     onCreateNew={() => openModal("assign-new-scheme")}

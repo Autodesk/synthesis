@@ -61,7 +61,7 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
-import InitialConfigPanel from "./ui/panels/configuring/InitialConfigPanel.tsx"
+import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 
 const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 

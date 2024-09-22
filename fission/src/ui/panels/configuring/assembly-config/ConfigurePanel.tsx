@@ -1,5 +1,5 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
@@ -12,7 +12,6 @@ import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/ui/components/Button"
-import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
@@ -21,6 +20,7 @@ import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajecto
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
 import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 enum ConfigMode {
     SUBSYSTEMS,
@@ -29,6 +29,7 @@ enum ConfigMode {
     CONTROLS,
     SEQUENTIAL,
     SCORING_ZONES,
+    MOVE,
 }
 
 /** Option for selecting a robot of field */
@@ -111,6 +112,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 }
 
 const robotModes: ConfigModeSelectionOption[] = [
+    new ConfigModeSelectionOption("Move", ConfigMode.MOVE),
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
     new ConfigModeSelectionOption(
@@ -126,6 +128,7 @@ const robotModes: ConfigModeSelectionOption[] = [
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
 const fieldModes: ConfigModeSelectionOption[] = [
+    new ConfigModeSelectionOption("Move", ConfigMode.MOVE),
     new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES),
 ]
 
@@ -171,7 +174,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                     <Button
                         value="Set Scheme"
                         onClick={() => {
-                            setSelectedBrainIndexGlobal(brainIndex)
+                            setSpotlightAssembly(assembly)
                             openPanel("choose-scheme")
                         }}
                     />
@@ -188,6 +191,15 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                 return <Label>ERROR: Field does not contain scoring zone configuration!</Label>
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
+        }
+        case ConfigMode.MOVE: {
+            return <TransformGizmoControl
+                key={"config-move-gizmo"}
+                defaultMode="translate"
+                scaleDisabled={true}
+                size={3.0}
+                parent={assembly}
+            />
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)

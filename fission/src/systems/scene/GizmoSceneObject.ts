@@ -136,19 +136,6 @@ class GizmoSceneObject extends SceneObject {
                 })
             }
         }
-
-        // creating enter key and escape key event listeners
-        if (InputSystem.isKeyPressed("Enter") && this._parentObject) {
-            // confirming placement of object
-            if (this._parentObject !== undefined) this._parentObject.EnablePhysics()
-            World.SceneRenderer.RemoveSceneObject(this.id)
-            return
-        } else if (InputSystem.isKeyPressed("Escape") && this._parentObject) {
-            // cancelling the creation of the mirabuf scene object
-            World.SceneRenderer.RemoveSceneObject(this._parentObject.id)
-            World.SceneRenderer.RemoveSceneObject(this.id)
-            return
-        }
     }
 
     public Dispose(): void {
