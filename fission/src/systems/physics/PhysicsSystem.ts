@@ -115,7 +115,7 @@ class PhysicsSystem extends WorldSystem {
         const ground = this.CreateBox(
             new THREE.Vector3(5.0, 0.5, 5.0),
             undefined,
-            new THREE.Vector3(0.0, -2.0, 0.0),
+            new THREE.Vector3(0.0, -0.5, 0.0),
             undefined
         )
         ground.SetFriction(FLOOR_FRICTION)
@@ -1056,7 +1056,7 @@ class PhysicsSystem extends WorldSystem {
      * @param id The id of the body
      * @param position The new position of the body
      */
-    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3, activate: boolean = true): void {
+    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.RVec3, activate: boolean = true): void {
         if (!this.IsBodyAdded(id)) {
             return
         }
@@ -1080,7 +1080,7 @@ class PhysicsSystem extends WorldSystem {
         )
     }
 
-    public SetBodyPositionAndRotation(id: Jolt.BodyID, position: Jolt.Vec3, rotation: Jolt.Quat, activate: boolean = true): void {
+    public SetBodyPositionAndRotation(id: Jolt.BodyID, position: Jolt.RVec3, rotation: Jolt.Quat, activate: boolean = true): void {
         if (!this.IsBodyAdded(id)) {
             return
         }

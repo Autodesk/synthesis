@@ -4,7 +4,7 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -177,6 +177,27 @@ class MirabufSceneObject extends SceneObject {
         setSpotlightAssembly(this)
 
         this.UpdateBatches()
+
+        const bounds = this.ComputeBoundingBox()
+        if (!Number.isFinite(bounds.min.y)) return
+
+        const offset = new JOLT.Vec3(
+            -(bounds.min.x + bounds.max.x) / 2.0,
+            0.1 + ((bounds.max.y - bounds.min.y) / 2.0) - ((bounds.min.y + bounds.max.y) / 2.0),
+            -(bounds.min.z + bounds.max.z) / 2.0
+        )
+
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            const jBodyId = this._mechanism.GetBodyByNodeId(rn.id)
+            if (!jBodyId) return
+
+            const newPos = World.PhysicsSystem.GetBody(jBodyId).GetPosition().Add(offset)
+            World.PhysicsSystem.SetBodyPosition(jBodyId, newPos)
+
+            JOLT.destroy(newPos)
+        })
+
+        this.UpdateMeshTransforms()
     }
 
     public Update(): void {
@@ -410,8 +431,15 @@ class MirabufSceneObject extends SceneObject {
         }
 
         const jBody = World.PhysicsSystem.GetBody(jRootId)
-        const comTransform = JoltMat44_ThreeMatrix4(jBody.GetCenterOfMassTransform())
-        gizmo.SetTransform(comTransform)
+        if (jBody.IsStatic()) {
+            const aaBox = jBody.GetWorldSpaceBounds()
+            const mat = new THREE.Matrix4(1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1)
+            const center = aaBox.mMin.Add(aaBox.mMax).Div(2.0)
+            mat.compose(JoltVec3_ThreeVector3(center), new THREE.Quaternion(0,0,0,1), new THREE.Vector3(1,1,1))
+            gizmo.SetTransform(mat)
+        } else {
+            gizmo.SetTransform(JoltMat44_ThreeMatrix4(jBody.GetCenterOfMassTransform()))
+        }
     }
 
     private getPreferences(): void {
