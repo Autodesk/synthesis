@@ -115,7 +115,7 @@ class GizmoSceneObject extends SceneObject {
                 }
                 case "rotate": {
                     // snap if alt is pressed
-                    event.target.rotationSnap = isAlt ? (Math.PI * (1.0 / 12.0)) : null
+                    event.target.rotationSnap = isAlt ? Math.PI * (1.0 / 12.0) : null
 
                     // disable scale gizmos added to the same object
                     const gizmos = [...World.SceneRenderer.gizmosOnMirabuf.values()]
