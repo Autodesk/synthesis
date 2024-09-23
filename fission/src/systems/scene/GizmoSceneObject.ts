@@ -92,13 +92,7 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
             // disable orbit controls when dragging the transform gizmo
             const gizmoDragging = World.SceneRenderer.IsAnyGizmoDragging()
-            if (!event.value && !gizmoDragging) {
-                World.SceneRenderer.orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
-            } else if (!event.value && gizmoDragging) {
-                World.SceneRenderer.orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
-            } else {
-                World.SceneRenderer.orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
-            }
+            World.SceneRenderer.orbitControls.enabled = !event.value && !gizmoDragging
 
             if (event.target.mode === "translate") {
                 // disable other gizmos when translating
