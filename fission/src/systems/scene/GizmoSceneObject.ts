@@ -94,28 +94,32 @@ class GizmoSceneObject extends SceneObject {
             const gizmoDragging = World.SceneRenderer.IsAnyGizmoDragging()
             World.SceneRenderer.orbitControls.enabled = !event.value && !gizmoDragging
 
-            if (event.target.mode === "translate") {
-                // disable other gizmos when translating
-                Array.from(World.SceneRenderer.sceneObjects.values())
-                    .filter(obj => obj instanceof GizmoSceneObject)
-                    .forEach(obj => {
+            const isShift = InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft")
+            const isAlt = InputSystem.isKeyPressed("AltRight") || InputSystem.isKeyPressed("AltLeft")
+
+            switch (event.target.mode) {
+                case "translate": {
+                    // snap if alt is pressed
+                    event.target.translationSnap = isAlt ? 0.1 : null
+
+                    // disable other gizmos when translating
+                    const gizmos = [...World.SceneRenderer.gizmosOnMirabuf.values()]
+                    gizmos.forEach(obj => {
                         if (obj.gizmo.object === event.target.object && obj.gizmo.mode !== "translate") {
                             obj.gizmo.dragging = false
                             obj.gizmo.enabled = !event.value
                             return
                         }
                     })
-            } else if (
-                event.target.mode === "scale" &&
-                (InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft"))
-            ) {
-                // scale uniformly if shift is pressed
-                event.target.axis = "XYZE"
-            } else if (event.target.mode === "rotate") {
-                // scale on all axes
-                Array.from(World.SceneRenderer.sceneObjects.values())
-                    .filter(obj => obj instanceof GizmoSceneObject)
-                    .forEach(obj => {
+                    break
+                }
+                case "rotate": {
+                    // snap if alt is pressed
+                    event.target.rotationSnap = isAlt ? (Math.PI * (1.0 / 12.0)) : null
+
+                    // disable scale gizmos added to the same object
+                    const gizmos = [...World.SceneRenderer.gizmosOnMirabuf.values()]
+                    gizmos.forEach(obj => {
                         if (
                             obj.gizmo.mode === "scale" &&
                             event.target !== obj.gizmo &&
@@ -126,12 +130,31 @@ class GizmoSceneObject extends SceneObject {
                             return
                         }
                     })
+                    break
+                }
+                case "scale": {
+                    // snap if alt is pressed
+                    event.target.setScaleSnap(isAlt ? 0.1 : null)
+
+                    // scale uniformly if shift is pressed
+                    event.target.axis = isShift ? "XYZE" : null
+                    break
+                }
+                default: {
+                    console.error("Invalid gizmo state")
+                    break
+                }
             }
         })
     }
 
     public Update(): void {
         this._gizmo.updateMatrixWorld()
+
+        if (!this.gizmo.object) {
+            console.error("No object added to gizmo")
+            return
+        }
 
         // updating the size of the gizmo based on the distance from the camera
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180

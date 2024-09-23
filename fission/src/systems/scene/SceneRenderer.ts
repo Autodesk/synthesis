@@ -57,6 +57,13 @@ class SceneRenderer extends WorldSystem {
         return this._orbitControls
     }
 
+    /**
+     * Collection that maps Mirabuf objects to active GizmoSceneObjects
+     */
+    public get gizmosOnMirabuf() {
+        return this._gizmosOnMirabuf
+    }
+
     public constructor() {
         super()
 
@@ -341,9 +348,7 @@ class SceneRenderer extends WorldSystem {
 
     /** returns whether any gizmos are being currently dragged */
     public IsAnyGizmoDragging(): boolean {
-        return Array.from(this._sceneObjects.values())
-            .filter(obj => obj instanceof GizmoSceneObject)
-            .some(obj => obj.gizmo.dragging)
+        return [...this._gizmosOnMirabuf.values()].some(obj => obj.gizmo.dragging)
     }
 
     /**

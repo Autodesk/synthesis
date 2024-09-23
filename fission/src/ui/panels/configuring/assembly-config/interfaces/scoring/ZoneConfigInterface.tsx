@@ -55,7 +55,6 @@ function save(
     gizmo: GizmoSceneObject,
     selectedNode?: RigidNodeId
 ) {
-    console.log("save")
     if (!field?.fieldPreferences || !gizmo) {
         return
     }
