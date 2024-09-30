@@ -55,6 +55,7 @@ public class CANMotor {
         m_motorCurrent = m_device.createDouble("motorCurrent", Direction.kInput, 120.0);
         m_busVoltage = m_device.createDouble("busVoltage", Direction.kInput, 12.0);
         m_busVoltage.set(0.0); // disable CANMotor inputs
+        m_init.set(true);
     }
 
     /**

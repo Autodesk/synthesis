@@ -20,6 +20,7 @@ public class TalonFX extends com.ctre.phoenix6.hardware.TalonFX {
         super(deviceNumber);
 
         this.m_motor = new CANMotor("SYN TalonFX", deviceNumber, 0.0, false, 0.3);
+        this.m_encoder = new CANEncoder("SYN TalonFX", deviceNumber);
     }
 
     /// I think we're getting percentOutput and speed mixed up

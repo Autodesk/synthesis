@@ -18,6 +18,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
+import com.kauailabs.navx.frc.AHRS;
 import com.autodesk.synthesis.ctre.TalonFX;
 
 /**
@@ -37,10 +38,11 @@ public class Robot extends TimedRobot {
 
   private Spark m_Spark1 = new Spark(0);
   private Spark m_Spark2 = new Spark(1);
-  private TalonFX m_Talon = new TalonFX(2);
+  private TalonFX m_Talon = new TalonFX(7);
   private XboxController m_Controller = new XboxController(0);
 
   private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
+  private AHRS m_Gyro = new AHRS();
 
   private DigitalInput m_DI = new DigitalInput(0);
   private DigitalOutput m_DO = new DigitalOutput(1);
@@ -141,18 +143,21 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    m_Spark1.set(m_Controller.getLeftY());
-    m_Spark2.set(-m_Controller.getRightY());
-    System.out.println("IN: " + m_DI.get());
-    System.out.println("OUT: " + m_DO.get());
-    System.out.println("AI: " + m_AI.getVoltage());
-    m_Talon.set(-0.5);
-    m_SparkMax1.set(-0.75);
-    m_SparkMax2.set(-0.75);
+    m_SparkMax1.set(m_Controller.getLeftY());
+    m_SparkMax2.set(-m_Controller.getRightY());
+    m_Talon.set(m_Controller.getLeftX());
+    System.out.println("LeftX: " + m_Controller.getLeftX());
+    // System.out.println("OUT: " + m_DO.get());
+    // System.out.println("AI: " + m_AI.getVoltage());
+    // m_Talon.set(-0.5);
+    // m_SparkMax1.set(-0.75);
+    // m_SparkMax2.set(-0.75);
     m_SparkMax3.set(-0.75);
     m_SparkMax4.set(-0.75);
     m_SparkMax5.set(-0.75);
     m_SparkMax6.set(-0.75);
+
+    m_SparkMax1.getEncoder().setPosition(0.0);
   }
 
 

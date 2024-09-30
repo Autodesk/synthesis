@@ -31,6 +31,8 @@ public class CANEncoder {
         m_init = m_device.createBoolean("init", Direction.kOutput, true);
         m_position = m_device.createDouble("position", Direction.kInput, 0.0);
         m_velocity = m_device.createDouble("velocity", Direction.kInput, 0.0);
+
+        m_init.set(true);
     }
 
     /**
