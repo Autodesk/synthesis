@@ -6,8 +6,8 @@ import WPILibWSWorker from "./WPILibWSWorker?worker"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
-import { SimOutput } from "./SimOutput"
-import { SimInput } from "./SimInput"
+import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
+import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -145,7 +145,7 @@ export class SimCAN {
     private constructor() {}
 
     public static GetDeviceWithID(id: number, type: SimType): DeviceData | undefined {
-        const id_exp = /.*\[(\d+)\]/g
+        const id_exp = /SYN.*\[(\d+)\]/g
         const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type)
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
@@ -380,11 +380,11 @@ class WPILibBrain extends Brain {
         }
 
         // this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
-        // this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
-        // this.addSimInput(new SimDigitalInput("SYN DI[0]", () => Math.random() > 0.5))
-        // this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
-        // this.addSimInput(new SimAnalogInput("SYN AI[0]", () => Math.random() * 12))
-        // this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
+        this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
+        this.addSimInput(new SimDigitalInput("SYN DI[0]", () => Math.random() > 0.5))
+        this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
+        this.addSimInput(new SimAnalogInput("SYN AI[0]", () => Math.random() * 12))
+        this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
     }
 
     public addSimOutput(device: SimOutput) {

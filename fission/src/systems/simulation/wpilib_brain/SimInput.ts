@@ -4,6 +4,8 @@ import { SimCANEncoder, SimGyro, SimAccel, SimDIO, SimAI } from "./WPILibBrain"
 import Mechanism from "@/systems/physics/Mechanism"
 import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { JoltQuat_ThreeQuaternion, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
+import * as THREE from 'three'
 
 export abstract class SimInput {
     constructor(protected _device: string) {}
@@ -93,31 +95,32 @@ export class SimGyroInput extends SimInput {
 export class SimAccelInput extends SimInput {
     private _robot: Mechanism
     private _joltID?: Jolt.BodyID
-    private _joltBody?: Jolt.Body
-    private _prevVel: Jolt.Vec3
+    private _prevVel: THREE.Vector3
 
     constructor(device: string, robot: Mechanism) {
         super(device)
         this._robot = robot
         this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
-        this._prevVel = new JOLT.Vec3(0, 0, 0)
-
-        if (this._joltID) this._joltBody = World.PhysicsSystem.GetBody(this._joltID)
+        this._prevVel = new THREE.Vector3(0,0,0)
     }
 
     public Update(deltaT: number) {
-        const newVel = this._joltBody?.GetLinearVelocity()
-        if (!newVel) return
+        if (!this._joltID) return
+        const body = World.PhysicsSystem.GetBody(this._joltID)
 
-        const x = (newVel.GetX() - this._prevVel.GetX()) / deltaT
-        const y = (newVel.GetY() - this._prevVel.GetY()) / deltaT
-        const z = (newVel.GetZ() - this._prevVel.GetZ()) / deltaT
+        const rot = JoltQuat_ThreeQuaternion(body.GetRotation())
+        const mat = new THREE.Matrix4().makeRotationFromQuaternion(rot).transpose()
+        const newVel = JoltVec3_ThreeVector3(body.GetLinearVelocity()).applyMatrix4(mat)
+
+        const x = (newVel.x - this._prevVel.x) / deltaT
+        const y = (newVel.y - this._prevVel.y) / deltaT
+        const z = (newVel.y - this._prevVel.y) / deltaT
 
         SimAccel.SetX(this._device, x)
         SimAccel.SetY(this._device, y)
         SimAccel.SetZ(this._device, z)
 
-        this._prevVel = new JOLT.Vec3(newVel.GetX(), newVel.GetY(), newVel.GetZ())
+        this._prevVel = newVel
     }
 }
 

@@ -1,5 +1,5 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SimMapUpdateEvent, SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import {
     Box,
     Stack,
@@ -12,11 +12,13 @@ import {
     TableRow,
     Typography,
 } from "@mui/material"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useReducer, useState } from "react"
 import Dropdown from "../components/Dropdown"
 import Input from "../components/Input"
 import Button from "../components/Button"
 import { SynthesisIcons } from "../components/StyledComponents"
+
+const TABLE_UPDATE_INTERVAL = 250
 
 type ValueType = "string" | "number" | "object" | "boolean"
 
@@ -46,8 +48,6 @@ function generateTableBody() {
         SimType.AI,
         SimType.AO,
     ]
-
-    console.log(simMap)
 
     return (
         <TableBody>
@@ -95,7 +95,9 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
 }
 
 const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const [tb, setTb] = useState(generateTableBody())
+    // const [tb, setTb] = useState(generateTableBody())
+
+    const [table, updateTable] = useReducer((_) => generateTableBody(), generateTableBody())
 
     const [selectedType, setSelectedType] = useState<SimType | undefined>()
     const [selectedDevice, setSelectedDevice] = useState<string | undefined>()
@@ -115,17 +117,14 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         setSelectedDevice(undefined)
     }, [selectedType])
 
-    const onSimMapUpdate = useCallback((_: Event) => {
-        setTb(generateTableBody())
-    }, [])
-
     useEffect(() => {
-        window.addEventListener(SimMapUpdateEvent.TYPE, onSimMapUpdate)
+        const func = () => { updateTable() }
+        const id: NodeJS.Timeout = setInterval(func, TABLE_UPDATE_INTERVAL)
 
         return () => {
-            window.removeEventListener(SimMapUpdateEvent.TYPE, onSimMapUpdate)
+            clearTimeout(id)
         }
-    }, [onSimMapUpdate])
+    }, [updateTable])
 
     return (
         <Panel
@@ -155,7 +154,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             </TableCell>
                         </TableRow>
                     </TableHead>
-                    {tb}
+                    {table}
                 </Table>
             </TableContainer>
             <Stack>
