@@ -8,6 +8,7 @@ import World from "@/systems/World"
 
 import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
 import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
+import { Random } from "@/util/Random"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -381,9 +382,9 @@ class WPILibBrain extends Brain {
 
         this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
         this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
-        this.addSimInput(new SimDigitalInput("SYN DI[0]", () => Math.random() > 0.5))
+        this.addSimInput(new SimDigitalInput("SYN DI[0]", () => Random() > 0.5))
         this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
-        this.addSimInput(new SimAnalogInput("SYN AI[0]", () => Math.random() * 12))
+        this.addSimInput(new SimAnalogInput("SYN AI[0]", () => Random() * 12))
         this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
     }
 
