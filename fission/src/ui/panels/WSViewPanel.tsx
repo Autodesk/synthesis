@@ -1,5 +1,5 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SimMapUpdateEvent, SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import {
     Box,
     Stack,
@@ -12,11 +12,13 @@ import {
     TableRow,
     Typography,
 } from "@mui/material"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useReducer, useState } from "react"
 import Dropdown from "../components/Dropdown"
 import Input from "../components/Input"
 import Button from "../components/Button"
 import { SynthesisIcons } from "../components/StyledComponents"
+
+const TABLE_UPDATE_INTERVAL = 250
 
 type ValueType = "string" | "number" | "object" | "boolean"
 
@@ -26,7 +28,7 @@ const TypoStyled = styled(Typography)({
     color: "white",
 })
 
-function formatMap(map: Map<string, number>): string {
+function formatMap(map: Map<string, number | boolean | string>): string {
     let entries: string = ""
     map.forEach((value, key) => {
         entries += `${key} : ${value}`
@@ -35,16 +37,29 @@ function formatMap(map: Map<string, number>): string {
 }
 
 function generateTableBody() {
+    const names: SimType[] = [
+        SimType.PWM,
+        SimType.SimDevice,
+        SimType.CANMotor,
+        SimType.CANEncoder,
+        SimType.Gyro,
+        SimType.Accel,
+        SimType.DIO,
+        SimType.AI,
+        SimType.AO,
+    ]
+
     return (
         <TableBody>
-            {simMap.has(SimType.PWM) ? (
-                [...simMap.get(SimType.PWM)!.entries()]
-                    .filter(x => x[1].get("<init") == 1)
-                    .map(x => {
-                        return (
+            {names.map(name =>
+                simMap.has(name) ? (
+                    [...simMap.get(name)!.entries()]
+                        // most devices don't have <init field but we want to hide the ones that do
+                        .filter(x => !Object.keys(x[1]).includes("<init") || !!(x[1].get("<init") ?? false) == true)
+                        .map(x => (
                             <TableRow key={x[0]}>
                                 <TableCell>
-                                    <TypoStyled>PWM</TypoStyled>
+                                    <TypoStyled>{name}</TypoStyled>
                                 </TableCell>
                                 <TableCell>
                                     <TypoStyled>{x[0]}</TypoStyled>
@@ -53,67 +68,10 @@ function generateTableBody() {
                                     <TypoStyled>{formatMap(x[1])}</TypoStyled>
                                 </TableCell>
                             </TableRow>
-                        )
-                    })
-            ) : (
-                <></>
-            )}
-            {simMap.has(SimType.CANMotor) ? (
-                [...simMap.get(SimType.CANMotor)!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>CAN Motor</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
-            )}
-            {simMap.has(SimType.CANEncoder) ? (
-                [...simMap.get(SimType.CANEncoder)!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>CAN Encoder</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
-            )}
-            {simMap.has(SimType.Gyro) ? (
-                [...simMap.get(SimType.Gyro)!.entries()].map(x => {
-                    return (
-                        <TableRow key={x[0]}>
-                            <TableCell>
-                                <TypoStyled>Gyro</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{x[0]}</TypoStyled>
-                            </TableCell>
-                            <TableCell>
-                                <TypoStyled>{formatMap(x[1])}</TypoStyled>
-                            </TableCell>
-                        </TableRow>
-                    )
-                })
-            ) : (
-                <></>
+                        ))
+                ) : (
+                    <></>
+                )
             )}
         </TableBody>
     )
@@ -137,7 +95,9 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
 }
 
 const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const [tb, setTb] = useState(generateTableBody())
+    // const [tb, setTb] = useState(generateTableBody())
+
+    const [table, updateTable] = useReducer(_ => generateTableBody(), generateTableBody())
 
     const [selectedType, setSelectedType] = useState<SimType | undefined>()
     const [selectedDevice, setSelectedDevice] = useState<string | undefined>()
@@ -157,17 +117,16 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         setSelectedDevice(undefined)
     }, [selectedType])
 
-    const onSimMapUpdate = useCallback((_: Event) => {
-        setTb(generateTableBody())
-    }, [])
-
     useEffect(() => {
-        window.addEventListener(SimMapUpdateEvent.TYPE, onSimMapUpdate)
+        const func = () => {
+            updateTable()
+        }
+        const id: NodeJS.Timeout = setInterval(func, TABLE_UPDATE_INTERVAL)
 
         return () => {
-            window.removeEventListener(SimMapUpdateEvent.TYPE, onSimMapUpdate)
+            clearTimeout(id)
         }
-    }, [onSimMapUpdate])
+    }, [updateTable])
 
     return (
         <Panel
@@ -197,7 +156,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             </TableCell>
                         </TableRow>
                     </TableHead>
-                    {tb}
+                    {table}
                 </Table>
             </TableContainer>
             <Stack>

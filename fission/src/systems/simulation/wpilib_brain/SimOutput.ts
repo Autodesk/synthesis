@@ -2,22 +2,25 @@ import Driver from "../driver/Driver"
 import HingeDriver from "../driver/HingeDriver"
 import SliderDriver from "../driver/SliderDriver"
 import WheelDriver from "../driver/WheelDriver"
-import { SimCAN, SimPWM, SimType } from "./WPILibBrain"
+import { SimAO, SimCAN, SimDIO, SimPWM, SimType } from "./WPILibBrain"
 
-// TODO: Averaging is probably not the right solution (if we want large output groups)
-// We can keep averaging, but we need a better ui for creating one to one (or just small) output groups
-// The issue is that if a drivetrain is one output group, then each driver is given the average of all the motors
-// We instead want a system where every driver gets (a) unique motor(s) that control it
-// That way a single driver might get the average of two motors or something, if it has two motors to control it
-// A system where motors a drivers are visually "linked" with "threads" in the UI would work well in my opinion
-export abstract class SimOutputGroup {
-    public name: string
+export abstract class SimOutput {
+    constructor(protected _name: string) {}
+
+    public abstract Update(deltaT: number): void
+
+    public get name(): string {
+        return this._name
+    }
+}
+
+export abstract class SimOutputGroup extends SimOutput {
     public ports: number[]
     public drivers: Driver[]
     public type: SimType
 
     public constructor(name: string, ports: number[], drivers: Driver[], type: SimType) {
-        this.name = name
+        super(name)
         this.ports = ports
         this.drivers = drivers
         this.type = type
@@ -35,7 +38,6 @@ export class PWMOutputGroup extends SimOutputGroup {
         const average =
             this.ports.reduce((sum, port) => {
                 const speed = SimPWM.GetSpeed(`${port}`) ?? 0
-                console.debug(port, speed)
                 return sum + speed
             }, 0) / this.ports.length
 
@@ -59,7 +61,7 @@ export class CANOutputGroup extends SimOutputGroup {
         const average =
             this.ports.reduce((sum, port) => {
                 const device = SimCAN.GetDeviceWithID(port, SimType.CANMotor)
-                return sum + (device?.get("<percentOutput") ?? 0)
+                return sum + ((device?.get("<percentOutput") as number | undefined) ?? 0)
             }, 0) / this.ports.length
 
         this.drivers.forEach(d => {
@@ -71,4 +73,37 @@ export class CANOutputGroup extends SimOutputGroup {
             d.Update(deltaT)
         })
     }
+}
+
+export class SimDigitalOutput extends SimOutput {
+    /**
+     * Creates a Simulation Digital Input/Output object.
+     *
+     * @param device Device ID
+     */
+    constructor(name: string) {
+        super(name)
+    }
+
+    public SetValue(value: boolean) {
+        SimDIO.SetValue(this._name, value)
+    }
+
+    public GetValue(): boolean {
+        return SimDIO.GetValue(this._name)
+    }
+
+    public Update(_deltaT: number) {}
+}
+
+export class SimAnalogOutput extends SimOutput {
+    public constructor(name: string) {
+        super(name)
+    }
+
+    public GetVoltage(): number {
+        return SimAO.GetVoltage(this._name)
+    }
+
+    public Update(_deltaT: number) {}
 }

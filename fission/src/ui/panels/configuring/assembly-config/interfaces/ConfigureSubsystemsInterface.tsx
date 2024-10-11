@@ -55,7 +55,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => DefaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
-        []
+        [selectedRobot.assemblyName, selectedRobot.brain]
     )
 
     const drivers = useMemo(() => {
