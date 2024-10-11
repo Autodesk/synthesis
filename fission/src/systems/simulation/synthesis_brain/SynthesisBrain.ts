@@ -18,6 +18,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DefaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import InputSystem from "@/systems/input/InputSystem"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { Global_AddToast } from "@/ui/components/GlobalUIControls"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -94,7 +95,12 @@ class SynthesisBrain extends Brain {
     }
 
     public clearControls(): void {
-        InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
+        if (InputSystem.brainIndexSchemeMap.delete(this._brainIndex)) {
+            Global_AddToast?.("info", "Controls", "Successfully cleared controls.")
+        } else {
+            Global_AddToast?.("warning", "Controls", "Failed to cleared controls.")
+        }
+        
     }
 
     /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */

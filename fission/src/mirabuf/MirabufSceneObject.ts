@@ -244,7 +244,9 @@ class MirabufSceneObject extends SceneObject {
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
 
-        if (this._brain && this._brain instanceof SynthesisBrain) this._brain?.clearControls()
+        if (this._brain && this._brain instanceof SynthesisBrain) {
+            this._brain.clearControls()
+        }
     }
 
     public Eject() {

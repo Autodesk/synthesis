@@ -5,7 +5,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
-import { useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "../assembly-config/ConfigurationType"
 import { setSelectedScheme } from "../assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelection from "./InputSchemeSelection"
@@ -56,6 +56,33 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [targetAssembly])
 
+    const closeFinish = useCallback(() => {
+        if (targetAssembly?.miraType == MiraType.ROBOT) {
+            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+
+            if (brainIndex == undefined) return
+
+            if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
+
+            const scheme = InputSchemeManager.availableInputSchemes[0]
+
+            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+
+            setSelectedConfigurationType(ConfigurationType.INPUTS)
+            setSelectedScheme(scheme)
+        }
+
+        closePanel(panelId)
+    }, [closePanel, panelId, targetAssembly])
+
+    const closeDelete = useCallback(() => {
+        if (targetAssembly) {
+            World.SceneRenderer.RemoveSceneObject(targetAssembly.id)
+        }
+
+        closePanel(panelId)
+    }, [closePanel, panelId, targetAssembly])
+
     const brainIndex = useMemo(() => {
         return SynthesisBrain.GetBrainIndex(targetAssembly)
     }, [targetAssembly])
@@ -66,10 +93,13 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             panelId={panelId}
             openLocation={"right"}
             sidePadding={8}
-            acceptEnabled={false}
+            acceptEnabled={true}
+            acceptName="Finish"
+            onAccept={() => closeFinish()}
             icon={SynthesisIcons.Gamepad}
             cancelEnabled={true}
-            cancelName="Close"
+            cancelName="Delete"
+            onCancel={() => closeDelete()}
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
@@ -87,7 +117,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 {brainIndex != undefined ? (
                     <InputSchemeSelection
                         brainIndex={brainIndex}
-                        onSelect={() => closePanel(panelId)}
+                        onSelect={() => {}}
                         onEdit={() => openPanel("configure")}
                         onCreateNew={() => openModal("assign-new-scheme")}
                     />

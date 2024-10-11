@@ -56,6 +56,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                                 {SelectButton(() => {
                                     InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
                                     onSelect?.()
+                                    update()
                                 })}
                                 {/** Edit button - same as select but opens the inputs modal */}
                                 {EditButton(() => {
