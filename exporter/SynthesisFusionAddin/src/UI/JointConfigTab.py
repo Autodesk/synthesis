@@ -1,14 +1,10 @@
-import logging
-import traceback
-
 import adsk.core
 import adsk.fusion
 
-from ..general_imports import INTERNAL_ID
-from ..Logging import logFailure
-from ..Types import Joint, JointParentType, SignalType, Wheel, WheelType
-from . import IconPaths
-from .CreateCommandInputsHelper import (
+from src.Logging import logFailure
+from src.Types import Joint, JointParentType, SignalType, Wheel, WheelType
+from src.UI import IconPaths
+from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
     createTableInput,
     createTextBoxInput,
@@ -105,6 +101,18 @@ class JointConfigTab:
         self.jointConfigTable.addToolbarCommandInput(jointSelectCancelButton)
 
         self.reset()
+
+    @property
+    def isVisible(self) -> bool:
+        return self.jointConfigTab.isVisible or False
+
+    @isVisible.setter
+    def isVisible(self, value: bool) -> None:
+        self.jointConfigTab.isVisible = value
+
+    @property
+    def isActive(self) -> bool:
+        return self.jointConfigTab.isActive or False
 
     @logFailure
     def addJoint(self, fusionJoint: adsk.fusion.Joint, synJoint: Joint | None = None) -> bool:
@@ -260,6 +268,7 @@ class JointConfigTab:
         )
 
         self.previousWheelCheckboxState.append(isWheel)
+        return True
 
     @logFailure
     def addWheel(self, joint: adsk.fusion.Joint, wheel: Wheel | None = None) -> None:
@@ -297,6 +306,9 @@ class JointConfigTab:
         signalType.tooltip = "Wheel signal type is linked with the respective joint signal type."
         i = self.selectedJointList.index(joint)
         jointSignalType = SignalType(self.jointConfigTable.getInputAtPosition(i + 1, 3).selectedItem.index + 1)
+
+        # Invisible white space characters are required in the list item name field to make this work.
+        # I have no idea why, Fusion API needs some special education help - Brandon
         signalType.listItems.add("‎", jointSignalType is SignalType.PWM, IconPaths.signalIcons["PWM"])
         signalType.listItems.add("‎", jointSignalType is SignalType.CAN, IconPaths.signalIcons["CAN"])
         signalType.listItems.add("‎", jointSignalType is SignalType.PASSIVE, IconPaths.signalIcons["PASSIVE"])
@@ -396,6 +408,14 @@ class JointConfigTab:
         self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
     ) -> None:
         commandInput = args.input
+        jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
+        jointTable: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
+        jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
+        jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
+            "jointSelectCancelButton"
+        )
+        jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
+
         if commandInput.id == "wheelType":
             wheelTypeDropdown = adsk.core.DropDownCommandInput.cast(commandInput)
             position = self.wheelConfigTable.getPosition(wheelTypeDropdown)[1]
@@ -436,22 +456,12 @@ class JointConfigTab:
                 wheelSignalItems.listItems.item(signalTypeDropdown.selectedItem.index).isSelected = True
 
         elif commandInput.id == "jointAddButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
-            jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "jointSelectCancelButton"
-            )
-            jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
-
             jointSelection.isVisible = jointSelection.isEnabled = True
             jointSelection.clearSelection()
             jointAddButton.isEnabled = jointRemoveButton.isEnabled = False
             jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = True
 
         elif commandInput.id == "jointRemoveButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointTable: adsk.core.TableCommandInput = args.inputs.itemById("jointTable")
-
             jointAddButton.isEnabled = True
 
             if jointTable.selectedRow == -1 or jointTable.selectedRow == 0:
@@ -461,12 +471,6 @@ class JointConfigTab:
                 self.removeIndexedJoint(jointTable.selectedRow - 1)  # selectedRow is 1 indexed
 
         elif commandInput.id == "jointSelectCancelButton":
-            jointAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointAddButton")
-            jointRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("jointRemoveButton")
-            jointSelectCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById(
-                "jointSelectCancelButton"
-            )
-            jointSelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("jointSelection")
             jointSelection.isEnabled = jointSelection.isVisible = False
             jointSelectCancelButton.isEnabled = jointSelectCancelButton.isVisible = False
             jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
@@ -498,9 +502,7 @@ class JointConfigTab:
         jointSelectCancelButton: adsk.core.BoolValueCommandInput = commandInputs.itemById("jointSelectCancelButton")
         jointSelection: adsk.core.SelectionCommandInput = commandInputs.itemById("jointSelection")
 
-        if self.jointConfigTable.rowCount <= 1:
-            jointRemoveButton.isEnabled = False
-
+        jointRemoveButton.isEnabled = self.jointConfigTable.rowCount > 1
         if not jointSelection.isEnabled:
-            jointAddButton.isEnabled = jointRemoveButton.isEnabled = True
+            jointAddButton.isEnabled = True
             jointSelectCancelButton.isVisible = jointSelectCancelButton.isEnabled = False

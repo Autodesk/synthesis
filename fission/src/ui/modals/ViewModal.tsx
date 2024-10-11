@@ -1,14 +1,13 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import Dropdown from "@/components/Dropdown"
-import { FaMagnifyingGlass } from "react-icons/fa6"
 import { TooltipControl, useTooltipControlContext } from "@/ui/TooltipContext"
+import Dropdown from "../components/Dropdown"
+import { SynthesisIcons } from "../components/StyledComponents"
 
 type ViewType = "Orbit" | "Freecam" | "Overview" | "Driver Station"
 
 const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { showTooltip } = useTooltipControlContext()
-
     const [view, setView] = useState<ViewType>("Orbit")
 
     const controls: { [key in ViewType]: TooltipControl[] } = {
@@ -32,13 +31,17 @@ const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Camera View"}
-            icon={<FaMagnifyingGlass />}
+            icon={SynthesisIcons.MagnifyingGlass}
             modalId={modalId}
             onAccept={() => showTooltip("controls", controls[view])}
         >
             <Dropdown
+                defaultValue={"Orbit"}
                 options={["Orbit", "Freecam", "Overview", "Driver Station"] as ViewType[]}
-                onSelect={(v: string) => setView(v as ViewType)}
+                onSelect={val => {
+                    setView(val as ViewType)
+                }}
+                label={"Camera View"}
             />
         </Modal>
     )

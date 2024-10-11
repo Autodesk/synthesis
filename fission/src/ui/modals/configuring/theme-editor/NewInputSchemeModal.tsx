@@ -1,21 +1,25 @@
 import React, { useState } from "react"
 import Input from "@/components/Input"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { GrFormClose } from "react-icons/gr"
-import { useModalControlContext } from "@/ui/ModalContext"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import InputSystem from "@/systems/input/InputSystem"
 import DefaultInputs from "@/systems/input/DefaultInputs"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { usePanelControlContext } from "@/ui/PanelContext"
+import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
+import {
+    ConfigurationType,
+    setSelectedConfigurationType,
+} from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 
 const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext()
+    const { openPanel } = usePanelControlContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
 
     return (
         <Modal
             name="New Input Scheme"
-            icon={<GrFormClose />}
+            icon={SynthesisIcons.AddLarge}
             modalId={modalId}
             onAccept={() => {
                 const scheme = DefaultInputs.newBlankScheme
@@ -24,8 +28,9 @@ const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 InputSchemeManager.addCustomScheme(scheme)
                 InputSchemeManager.saveSchemes()
 
-                InputSystem.selectedScheme = scheme
-                openModal("change-inputs")
+                setSelectedConfigurationType(ConfigurationType.INPUTS)
+                setSelectedScheme(scheme)
+                openPanel("configure")
             }}
             cancelEnabled={false}
         >

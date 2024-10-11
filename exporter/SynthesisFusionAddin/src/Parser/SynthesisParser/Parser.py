@@ -5,16 +5,21 @@ import adsk.core
 import adsk.fusion
 from google.protobuf.json_format import MessageToJson
 
-from proto.proto_out import assembly_pb2, types_pb2
-
-from ...APS.APS import getAuth, upload_mirabuf
-from ...general_imports import *
-from ...Logging import getLogger, logFailure, timed
-from ...Types import ExportLocation, ExportMode
-from ...UI.Camera import captureThumbnail, clearIconCache
-from ..ExporterOptions import ExporterOptions
-from . import Components, JointHierarchy, Joints, Materials, PDMessage
-from .Utilities import *
+from src import gm
+from src.APS.APS import getAuth, upload_mirabuf
+from src.Logging import getLogger, logFailure, timed
+from src.Parser.ExporterOptions import ExporterOptions
+from src.Parser.SynthesisParser import (
+    Components,
+    JointHierarchy,
+    Joints,
+    Materials,
+    PDMessage,
+)
+from src.Parser.SynthesisParser.Utilities import fill_info
+from src.Proto import assembly_pb2, types_pb2
+from src.Types import ExportLocation, ExportMode
+from src.UI.Camera import captureThumbnail, clearIconCache
 
 logger = getLogger()
 
@@ -34,7 +39,7 @@ class Parser:
         app = adsk.core.Application.get()
         design: adsk.fusion.Design = app.activeDocument.design
 
-        if not getAuth():
+        if self.exporterOptions.exportLocation == ExportLocation.UPLOAD and not getAuth():
             app.userInterface.messageBox("APS Login Required for Uploading.", "APS Login")
             return
 
@@ -174,8 +179,7 @@ class Parser:
             logger.debug("Uploading file to APS")
             project = app.data.activeProject
             if not project.isValid:
-                gm.ui.messageBox("Project is invalid", "")
-                return False  # add throw later
+                raise RuntimeError("Project is invalid")
             project_id = project.id
             folder_id = project.rootFolder.id
             file_name = f"{self.exporterOptions.fileLocation}.mira"
@@ -184,18 +188,17 @@ class Parser:
         else:
             assert self.exporterOptions.exportLocation == ExportLocation.DOWNLOAD
             # check if entire path exists and create if not since gzip doesn't do that.
-            path = pathlib.Path(self.exporterOptions.fileLocation).parent
+            path = pathlib.Path(str(self.exporterOptions.fileLocation)).parent
             path.mkdir(parents=True, exist_ok=True)
+            self.pdMessage.currentMessage = "Saving File..."
+            self.pdMessage.update()
             if self.exporterOptions.compressOutput:
                 logger.debug("Compressing file")
-                with gzip.open(self.exporterOptions.fileLocation, "wb", 9) as f:
-                    self.pdMessage.currentMessage = "Saving File..."
-                    self.pdMessage.update()
+                with gzip.open(str(self.exporterOptions.fileLocation), "wb", 9) as f:
                     f.write(assembly_out.SerializeToString())
             else:
-                f = open(self.exporterOptions.fileLocation, "wb")
-                f.write(assembly_out.SerializeToString())
-                f.close()
+                with open(str(self.exporterOptions.fileLocation), "wb") as f:
+                    f.write(assembly_out.SerializeToString())
 
         _ = progressDialog.hide()
 

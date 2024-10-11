@@ -1,5 +1,5 @@
 import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react"
-import Label, { LabelSize } from "@/components/Label"
+import { LabelSize } from "@/components/Label"
 import {
     Data,
     GetMirabufFiles,
@@ -8,86 +8,45 @@ import {
     MirabufFilesUpdateEvent,
     RequestMirabufFiles,
 } from "@/aps/APSDataManagement"
-import MirabufCachingService, { MirabufCacheInfo, MirabufRemoteInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, {
+    backUpFields,
+    backUpRobots,
+    canOPFS,
+    MirabufCacheInfo,
+    MirabufRemoteInfo,
+    MiraType,
+} from "@/mirabuf/MirabufLoader"
 import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { Box, Divider, styled } from "@mui/material"
-import { HiDownload } from "react-icons/hi"
-import Button, { ButtonProps, ButtonSize } from "@/ui/components/Button"
+import { Box } from "@mui/material"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { IoTrashBin } from "react-icons/io5"
-import { AiOutlinePlus } from "react-icons/ai"
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { usePanelControlContext } from "@/ui/PanelContext"
+import { useModalControlContext } from "@/ui/ModalContext"
 import TaskStatus from "@/util/TaskStatus"
-import { BiRefresh } from "react-icons/bi"
+import {
+    PositiveButton,
+    SectionDivider,
+    SectionLabel,
+    DeleteButton,
+    RefreshButton,
+    SynthesisIcons,
+} from "@/ui/components/StyledComponents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
-
-const DownloadIcon = <HiDownload size={"1.25rem"} />
-const AddIcon = <AiOutlinePlus size={"1.25rem"} />
-const DeleteIcon = <IoTrashBin size={"1.25rem"} />
-const RefreshIcon = <BiRefresh size={"1.25rem"} />
-
-const LabelStyled = styled(Label)({
-    fontWeight: 700,
-    margin: "0pt",
-})
-
-const DividerStyled = styled(Divider)({
-    borderColor: "white",
-})
-
-const ButtonPrimary: React.FC<ButtonProps> = ({ value, onClick }) => {
-    return (
-        <Button
-            size={ButtonSize.Medium}
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-accept-button hover:brightness-90"
-        ></Button>
-    )
-}
-
-const ButtonSecondary: React.FC<ButtonProps> = ({ value, onClick }) => {
-    return (
-        <Button
-            size={ButtonSize.Medium}
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-cancel-button hover:brightness-90"
-        ></Button>
-    )
-}
-
-const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick }) => {
-    return (
-        <Button
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-[#00000000] hover:brightness-90"
-            sizeOverrideClass="p-[0.25rem]"
-        ></Button>
-    )
-}
+import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import Button from "@/ui/components/Button"
+import { setSelectedBrainIndexGlobal } from "../configuring/ChooseInputSchemePanel"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 interface ItemCardProps {
     id: string
     name: string
     primaryButtonNode: ReactNode
-    secondaryButtonNode?: ReactNode
     primaryOnClick: () => void
     secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({
-    id,
-    name,
-    primaryButtonNode,
-    secondaryButtonNode,
-    primaryOnClick,
-    secondaryOnClick,
-}) => {
+const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
     return (
         <Box
             component={"div"}
@@ -97,7 +56,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
             alignItems={"center"}
             gap={"1rem"}
         >
-            <LabelStyled className="text-wrap break-all">{name.replace(/.mira$/, "")}</LabelStyled>
+            <SectionLabel className="text-wrap break-all">{name.replace(/.mira$/, "")}</SectionLabel>
             <Box
                 component={"div"}
                 display={"flex"}
@@ -107,10 +66,8 @@ const ItemCard: React.FC<ItemCardProps> = ({
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                <ButtonPrimary value={primaryButtonNode} onClick={primaryOnClick} />
-                {secondaryButtonNode && secondaryOnClick && (
-                    <ButtonSecondary value={secondaryButtonNode} onClick={secondaryOnClick} />
-                )}
+                <PositiveButton value={primaryButtonNode} onClick={primaryOnClick} />
+                {secondaryOnClick && DeleteButton(secondaryOnClick)}
             </Box>
         </Box>
     )
@@ -122,7 +79,9 @@ export type MiraManifest = {
 }
 
 function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
-    return Object.values(MirabufCachingService.GetCacheMap(miraType))
+    return Object.values(
+        canOPFS ? MirabufCachingService.GetCacheMap(miraType) : miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+    )
 }
 
 function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
@@ -154,6 +113,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { showTooltip } = useTooltipControlContext()
     const { closePanel, openPanel } = usePanelControlContext()
+    const { openModal } = useModalControlContext()
 
     const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(GetCacheInfo(MiraType.FIELD))
@@ -188,6 +148,11 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         } else {
             setFiles(GetMirabufFiles())
         }
+    }, [])
+
+    useEffect(() => {
+        closePanel("configure")
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // Get Default Mirabuf Data, Load into manifest.
@@ -238,7 +203,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [showTooltip, closePanel, panelId, openPanel]
     )
@@ -261,7 +229,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [closePanel, panelId, openPanel]
     )
@@ -283,7 +254,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [closePanel, panelId, openPanel]
     )
@@ -295,12 +269,11 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: info.name || info.cacheKey || "Unnamed Robot",
                     id: info.id,
-                    primaryButtonNode: AddIcon,
+                    primaryButtonNode: SynthesisIcons.AddLarge,
                     primaryOnClick: () => {
                         console.log(`Selecting cached robot: ${info.cacheKey}`)
                         selectCache(info, MiraType.ROBOT)
                     },
-                    secondaryButtonNode: DeleteIcon,
                     secondaryOnClick: () => {
                         console.log(`Deleting cache of: ${info.cacheKey}`)
                         MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.ROBOT)
@@ -319,12 +292,11 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: info.name || info.cacheKey || "Unnamed Field",
                     id: info.id,
-                    primaryButtonNode: AddIcon,
+                    primaryButtonNode: SynthesisIcons.AddLarge,
                     primaryOnClick: () => {
                         console.log(`Selecting cached field: ${info.cacheKey}`)
                         selectCache(info, MiraType.FIELD)
                     },
-                    secondaryButtonNode: DeleteIcon,
                     secondaryOnClick: () => {
                         console.log(`Deleting cache of: ${info.cacheKey}`)
                         MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.FIELD)
@@ -345,7 +317,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             ItemCard({
                 name: path.displayName,
                 id: path.src,
-                primaryButtonNode: DownloadIcon,
+                primaryButtonNode: SynthesisIcons.DownloadLarge,
                 primaryOnClick: () => {
                     console.log(`Selecting remote: ${path}`)
                     selectRemote(path, MiraType.ROBOT)
@@ -363,7 +335,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             ItemCard({
                 name: path.displayName,
                 id: path.src,
-                primaryButtonNode: DownloadIcon,
+                primaryButtonNode: SynthesisIcons.DownloadLarge,
                 primaryOnClick: () => {
                     console.log(`Selecting remote: ${path}`)
                     selectRemote(path, MiraType.FIELD)
@@ -379,7 +351,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: file.attributes.displayName!,
                     id: file.id,
-                    primaryButtonNode: DownloadIcon,
+                    primaryButtonNode: SynthesisIcons.DownloadLarge,
                     primaryOnClick: () => {
                         console.debug(file.raw)
                         selectAPS(file, viewType)
@@ -391,8 +363,8 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     return (
         <Panel
-            name={"Select Mirabuf"}
-            icon={AddIcon}
+            name={"Spawn Asset"}
+            icon={SynthesisIcons.AddLarge}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Back"
@@ -412,22 +384,22 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 </ToggleButtonGroup>
                 {viewType == MiraType.ROBOT ? (
                     <>
-                        <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedRobotElements
                                 ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length == 1 ? "" : "s"}`
                                 : "Loading Saved Robots"}
-                        </LabelStyled>
-                        <DividerStyled />
+                        </SectionLabel>
+                        <SectionDivider />
                         {cachedRobotElements}
                     </>
                 ) : (
                     <>
-                        <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedFieldElements
                                 ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
                                 : "Loading Saved Fields"}
-                        </LabelStyled>
-                        <DividerStyled />
+                        </SectionLabel>
+                        <SectionDivider />
                         {cachedFieldElements}
                     </>
                 )}
@@ -440,40 +412,39 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     justifyContent={"center"}
                     alignItems={"center"}
                 >
-                    <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {hubElements
                             ? `${hubElements.length} Remote Asset${hubElements.length == 1 ? "" : "s"}`
                             : filesStatus.message}
-                    </LabelStyled>
-                    {hubElements && filesStatus.isDone ? (
-                        <ButtonIcon value={RefreshIcon} onClick={() => RequestMirabufFiles()} />
-                    ) : (
-                        <></>
-                    )}
+                    </SectionLabel>
+                    {hubElements && filesStatus.isDone ? RefreshButton(() => RequestMirabufFiles()) : <></>}
                 </Box>
-                <DividerStyled />
+                <SectionDivider />
                 {hubElements}
                 {viewType == MiraType.ROBOT ? (
                     <>
-                        <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteRobotElements
                                 ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length == 1 ? "" : "s"}`
                                 : "Loading Default Robots"}
-                        </LabelStyled>
-                        <DividerStyled />
+                        </SectionLabel>
+                        <SectionDivider />
                         {remoteRobotElements}
                     </>
                 ) : (
                     <>
-                        <LabelStyled size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteFieldElements
                                 ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length == 1 ? "" : "s"}`
                                 : "Loading Default Fields"}
-                        </LabelStyled>
-                        <DividerStyled />
+                        </SectionLabel>
+                        <SectionDivider />
                         {remoteFieldElements}
                     </>
                 )}
+                <Box alignSelf={"center"}>
+                    <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
+                </Box>
             </div>
         </Panel>
     )

@@ -1,6 +1,7 @@
-from ..general_imports import *
-from ..Logging import logFailure
-from ..strings import INTERNAL_ID
+import adsk.core
+
+from src import INTERNAL_ID, gm
+from src.Logging import logFailure
 
 
 class Toolbar:
@@ -9,27 +10,23 @@ class Toolbar:
     - holds handlers
     """
 
-    uid = None
-    tab = None
-    panels = []
-    controls = []
+    uid: str
+    tab: adsk.core.ToolbarTab
+    panels: list[str] = []
+    controls: list[str] = []
 
     @logFailure
     def __init__(self, name: str):
         self.uid = f"{name}_{INTERNAL_ID}_toolbar"
         self.name = name
 
-        designWorkspace = gm.ui.workspaces.itemById("FusionSolidEnvironment")
+        designWorkspace = gm.ui.workspaces.itemById("FusionSolidEnvironment") or adsk.core.Workspace()
+        allDesignTabs = designWorkspace.toolbarTabs
+        self.tab = allDesignTabs.itemById(self.uid)
+        if self.tab is None:
+            self.tab = allDesignTabs.add(self.uid, name)
 
-        if designWorkspace:
-            allDesignTabs = designWorkspace.toolbarTabs
-
-            self.tab = allDesignTabs.itemById(self.uid)
-
-            if self.tab is None:
-                self.tab = allDesignTabs.add(self.uid, name)
-
-            self.tab.activate()
+        self.tab.activate()
 
     def getPanel(self, name: str, visibility: bool = True) -> str | None:
         """# Gets a control for a panel to the tabbed toolbar

@@ -1,8 +1,11 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { useModalControlContext } from "@/ui/ModalContext"
-import { FaPlus } from "react-icons/fa6"
 import Dropdown from "@/components/Dropdown"
+import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 type DeviceType = "PWM" | "CAN" | "Encoder"
 
@@ -13,11 +16,20 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Create Device"
-            icon={<FaPlus />}
+            icon={SynthesisIcons.Add}
             modalId={modalId}
             acceptName="Next"
             onAccept={() => {
                 console.log(type)
+                const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(
+                    x => x[1] instanceof MirabufSceneObject
+                )
+                if (miraObjs.length > 0) {
+                    const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+                    const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+                    console.log("simlayer", simLayer)
+                    if (!(simLayer?.brain instanceof WPILibBrain)) simLayer?.SetBrain(new WPILibBrain(mechanism))
+                }
                 switch (type) {
                     case "PWM":
                         openModal("config-pwm")

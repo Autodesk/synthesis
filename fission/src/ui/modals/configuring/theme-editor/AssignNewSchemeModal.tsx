@@ -1,21 +1,26 @@
 import React, { useState } from "react"
 import Input from "@/components/Input"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { GrFormClose } from "react-icons/gr"
-import { useModalControlContext } from "@/ui/ModalContext"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { usePanelControlContext } from "@/ui/PanelContext"
+import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
+import {
+    setSelectedConfigurationType,
+    ConfigurationType,
+} from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 
 const AssignNewSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { openModal } = useModalControlContext()
+    const { openPanel } = usePanelControlContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
 
     return (
         <Modal
             name="New Input Scheme"
-            icon={<GrFormClose />}
+            icon={SynthesisIcons.Xmark}
             modalId={modalId}
             onAccept={() => {
                 const scheme = InputSystem.brainIndexSchemeMap.get(SynthesisBrain.brainIndexMap.size - 1)
@@ -24,12 +29,12 @@ const AssignNewSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
                 scheme.schemeName = name
 
-                InputSystem.selectedScheme = scheme
                 InputSchemeManager.addCustomScheme(scheme)
-
                 InputSchemeManager.saveSchemes()
 
-                openModal("change-inputs")
+                setSelectedConfigurationType(ConfigurationType.INPUTS)
+                setSelectedScheme(scheme)
+                openPanel("configure")
             }}
             cancelEnabled={false}
         >

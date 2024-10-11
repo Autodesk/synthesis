@@ -1,15 +1,12 @@
-import logging
-import traceback
-
 import adsk.core
 import adsk.fusion
 
-from ..general_imports import *
-from ..Logging import logFailure
+from src import gm
+from src.Logging import logFailure
 
 
 @logFailure
-def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels) -> None:
+def createTextGraphics(wheel: adsk.fusion.Occurrence, _wheels: list[adsk.fusion.Occurrence]) -> None:
     design = gm.app.activeDocument.design
 
     boundingBox = wheel.boundingBox  # occurrence bounding box
