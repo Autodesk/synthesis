@@ -33,28 +33,8 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         closePanel("import-mirabuf")
-
-        /** If the panel is closed before a scheme is selected, defaults to the top of the list */
-        if (targetAssembly?.miraType == MiraType.ROBOT) {
-            return () => {
-                const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
-
-                if (brainIndex == undefined) return
-
-                if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
-
-                const scheme = InputSchemeManager.availableInputSchemes[0]
-
-                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
-
-                setSelectedConfigurationType(ConfigurationType.INPUTS)
-                setSelectedScheme(scheme)
-            }
-        } else {
-            return () => {}
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [targetAssembly])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
