@@ -97,7 +97,7 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
 const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // const [tb, setTb] = useState(generateTableBody())
 
-    const [table, updateTable] = useReducer((_) => generateTableBody(), generateTableBody())
+    const [table, updateTable] = useReducer(_ => generateTableBody(), generateTableBody())
 
     const [selectedType, setSelectedType] = useState<SimType | undefined>()
     const [selectedDevice, setSelectedDevice] = useState<string | undefined>()
@@ -118,7 +118,9 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [selectedType])
 
     useEffect(() => {
-        const func = () => { updateTable() }
+        const func = () => {
+            updateTable()
+        }
         const id: NodeJS.Timeout = setInterval(func, TABLE_UPDATE_INTERVAL)
 
         return () => {

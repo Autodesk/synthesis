@@ -5,7 +5,7 @@ import Mechanism from "@/systems/physics/Mechanism"
 import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { JoltQuat_ThreeQuaternion, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
-import * as THREE from 'three'
+import * as THREE from "three"
 
 export abstract class SimInput {
     constructor(protected _device: string) {}
@@ -101,7 +101,7 @@ export class SimAccelInput extends SimInput {
         super(device)
         this._robot = robot
         this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
-        this._prevVel = new THREE.Vector3(0,0,0)
+        this._prevVel = new THREE.Vector3(0, 0, 0)
     }
 
     public Update(deltaT: number) {

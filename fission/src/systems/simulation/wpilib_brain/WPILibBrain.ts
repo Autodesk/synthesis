@@ -379,7 +379,7 @@ class WPILibBrain extends Brain {
             return
         }
 
-        // this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
+        this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
         this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
         this.addSimInput(new SimDigitalInput("SYN DI[0]", () => Math.random() > 0.5))
         this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
