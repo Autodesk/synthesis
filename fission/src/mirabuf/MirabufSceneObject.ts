@@ -100,9 +100,7 @@ class MirabufSceneObject extends SceneObject {
         progressHandle?.Update("Creating mechanism...", 0.9)
 
         this._mechanism = World.PhysicsSystem.CreateMechanismFromParser(this._mirabufInstance.parser)
-        if (this._mechanism.layerReserve) {
-            this._physicsLayerReserve = this._mechanism.layerReserve
-        }
+        if (this._mechanism.layerReserve) this._physicsLayerReserve = this._mechanism.layerReserve
 
         this._debugBodies = null
 
@@ -111,11 +109,11 @@ class MirabufSceneObject extends SceneObject {
         this.getPreferences()
 
         // creating nametag for robots
-        if (this.miraType === MiraType.ROBOT) {
-            this._nameTag = new SceneOverlayTag(() =>
-                this._brain instanceof SynthesisBrain ? this._brain.inputSchemeName : "Not Configured"
-            )
-        }
+        if (this.miraType !== MiraType.ROBOT) return
+
+        this._nameTag = new SceneOverlayTag(() =>
+            this._brain instanceof SynthesisBrain ? this._brain.inputSchemeName : "Not Configured"
+        )
     }
 
     public Setup(): void {
@@ -163,9 +161,7 @@ class MirabufSceneObject extends SceneObject {
 
     public Update(): void {
         const brainIndex = this._brain instanceof SynthesisBrain ? this._brain.brainIndex ?? -1 : -1
-        if (InputSystem.getInput("eject", brainIndex)) {
-            this.Eject()
-        }
+        if (InputSystem.getInput("eject", brainIndex)) this.Eject()
 
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
@@ -191,7 +187,7 @@ class MirabufSceneObject extends SceneObject {
                     this.DisableTransformControls()
                     return
                 } else if (InputSystem.isKeyPressed("Escape")) {
-                    // cancelling the creation of the mirabuf scene object
+                    // canceling the creation of the mirabuf scene object
                     World.SceneRenderer.RemoveSceneObject(this.id)
                     return
                 }
@@ -230,16 +226,16 @@ class MirabufSceneObject extends SceneObject {
         })
 
         /* Updating the position of the name tag according to the robots position on screen */
-        if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
-            const boundingBox = this.ComputeBoundingBox()
-            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
-                new THREE.Vector3(
-                    (boundingBox.max.x + boundingBox.min.x) / 2,
-                    boundingBox.max.y + 0.1,
-                    (boundingBox.max.z + boundingBox.min.z) / 2
-                )
+        if (!this._nameTag || !PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) return
+
+        const boundingBox = this.ComputeBoundingBox()
+        this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
+            new THREE.Vector3(
+                (boundingBox.max.x + boundingBox.min.x) / 2,
+                boundingBox.max.y + 0.1,
+                (boundingBox.max.z + boundingBox.min.z) / 2
             )
-        }
+        )
     }
 
     public Dispose(): void {
@@ -279,9 +275,7 @@ class MirabufSceneObject extends SceneObject {
     }
 
     public Eject() {
-        if (!this._ejectable) {
-            return
-        }
+        if (!this._ejectable) return
 
         this._ejectable.Eject()
         World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
@@ -336,9 +330,7 @@ class MirabufSceneObject extends SceneObject {
 
     public SetEjectable(bodyId?: Jolt.BodyID, removeExisting: boolean = false): boolean {
         if (this._ejectable) {
-            if (!removeExisting) {
-                return false
-            }
+            if (!removeExisting) return false
 
             World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
             this._ejectable = undefined

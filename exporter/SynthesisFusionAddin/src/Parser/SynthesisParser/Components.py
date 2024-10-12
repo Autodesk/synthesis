@@ -189,6 +189,8 @@ def _ParseBRep(
     meshManager = body.meshManager
     calc = meshManager.createMeshCalculator()
     calc.setQuality(options.visualQuality)
+    calc.maxNormalDeviation = 3.14159 * (1.0 / 6.0)
+    calc.surfaceTolerance = 0.5
     mesh = calc.calculate()
 
     fill_info(trimesh, body)

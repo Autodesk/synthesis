@@ -7,7 +7,7 @@ const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
 
-const useLocal = true
+const useLocal = false
 
 // https://vitejs.dev/config/
 export default defineConfig({

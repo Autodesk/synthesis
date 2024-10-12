@@ -207,6 +207,10 @@ def getMaterialAppearance(
 
     properties = fusionAppearance.appearanceProperties
 
+    roughnessProp = properties.itemById("surface_roughness")
+    if roughnessProp:
+        appearance.roughness = roughnessProp.value
+
     # Thank Liam for this.
     modelItem = properties.itemById("interior_model")
     if modelItem:
@@ -214,11 +218,15 @@ def getMaterialAppearance(
         baseColor = None
 
         if matModelType == 0:
+            reflectanceProp = properties.itemById("opaque_f0")
+            if reflectanceProp:
+                appearance.metallic = reflectanceProp.value
             baseColor = properties.itemById("opaque_albedo").value
             if baseColor:
                 baseColor.opacity = 255
         elif matModelType == 1:
             baseColor = properties.itemById("metal_f0").value
+            appearance.metallic = 0.8
             if baseColor:
                 baseColor.opacity = 255
         elif matModelType == 2:
