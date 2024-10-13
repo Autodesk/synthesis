@@ -21,6 +21,10 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
+import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { setSelectedBrainIndexGlobal } from "@/ui/panels/configuring/ChooseInputSchemePanel"
+import { MainHUD_OpenPanel } from "@/ui/components/MainHUD"
 
 const DEBUG_BODIES = false
 
@@ -29,7 +33,7 @@ interface RnDebugMeshes {
     comMesh: THREE.Mesh
 }
 
-class MirabufSceneObject extends SceneObject {
+class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _assemblyName: string
     private _mirabufInstance: MirabufInstance
     private _mechanism: Mechanism
@@ -433,6 +437,81 @@ class MirabufSceneObject extends SceneObject {
 
     public GetRootNodeId(): Jolt.BodyID | undefined {
         return this._mechanism.GetBodyByNodeId(this._mechanism.rootBody)
+    }
+
+    public LoadFocusTransform(mat: THREE.Matrix4) {
+        const com = World.PhysicsSystem.GetBody(
+            this._mechanism.nodeToBody.get(this.rootNodeId)!
+        ).GetCenterOfMassTransform()
+        mat.copy(JoltMat44_ThreeMatrix4(com))
+    }
+
+    public getSupplierData(): ContextData {
+        const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
+
+        data.items.push({
+            name: "Move",
+            func: () => {
+                this.EnableTransformControls()
+            },
+        })
+
+        if (this.miraType == MiraType.ROBOT) {
+            const brainIndex = (this.brain as SynthesisBrain)?.brainIndex
+            if (brainIndex != undefined) {
+                data.items.push({
+                    name: "Set Scheme",
+                    func: () => {
+                        setSelectedBrainIndexGlobal(brainIndex)
+                        MainHUD_OpenPanel("choose-scheme")
+                    },
+                })
+            }
+        }
+
+        if (World.SceneRenderer.currentCameraControls.controlsType == "Orbit") {
+            const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
+            if (cameraControls.focusProvider == this) {
+                data.items.push({
+                    name: "Camera: Unfocus",
+                    func: () => {
+                        cameraControls.focusProvider = undefined
+                    },
+                })
+
+                if (cameraControls.locked) {
+                    data.items.push({
+                        name: "Camera: Unlock",
+                        func: () => {
+                            cameraControls.locked = false
+                        },
+                    })
+                } else {
+                    data.items.push({
+                        name: "Camera: Lock",
+                        func: () => {
+                            cameraControls.locked = true
+                        },
+                    })
+                }
+            } else {
+                data.items.push({
+                    name: "Camera: Focus",
+                    func: () => {
+                        cameraControls.focusProvider = this
+                    },
+                })
+            }
+        }
+
+        data.items.push({
+            name: "Remove",
+            func: () => {
+                World.SceneRenderer.RemoveSceneObject(this.id)
+            },
+        })
+
+        return data
     }
 }
 

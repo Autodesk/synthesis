@@ -1,23 +1,33 @@
 import * as THREE from "three"
-import SceneObject from "./SceneObject"
-import WorldSystem from "../WorldSystem"
+import SceneObject from "@/systems/scene/SceneObject"
+import WorldSystem from "@/systems/WorldSystem"
 
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 
 import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
 import { Theme } from "@/ui/ThemeContext"
-import InputSystem from "../input/InputSystem"
 import Jolt from "@barclah/jolt-physics"
+import InputSystem from "@/systems/input/InputSystem"
+import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
+import World from "../World"
+import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
+import { MainHUD_OpenPanel } from "@/ui/components/MainHUD"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
+
+const STANDARD_ASPECT = 16.0 / 9.0
+const STANDARD_CAMERA_FOV_X = 110.0
+const STANDARD_CAMERA_FOV_Y = STANDARD_CAMERA_FOV_X / STANDARD_ASPECT
 
 let nextSceneObjectId = 1
 
@@ -32,10 +42,11 @@ class SceneRenderer extends WorldSystem {
 
     private _sceneObjects: Map<number, SceneObject>
 
-    private _orbitControls: OrbitControls
+    private _cameraControls: CameraControls
     private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
 
     private _light: THREE.DirectionalLight | CSM | undefined
+    private _screenInteractionHandler: ScreenInteractionHandler
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -53,13 +64,18 @@ class SceneRenderer extends WorldSystem {
         return this._renderer
     }
 
+    public get currentCameraControls(): CameraControls {
+        return this._cameraControls
+    }
+
     public constructor() {
         super()
 
         this._sceneObjects = new Map()
         this._transformControls = new Map()
 
-        this._mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
+        const aspect = window.innerWidth / window.innerHeight
+        this._mainCamera = new THREE.PerspectiveCamera(STANDARD_CAMERA_FOV_Y, aspect, 0.1, 1000)
         this._mainCamera.position.set(-2.5, 2, 2.5)
 
         this._scene = new THREE.Scene()
@@ -116,14 +132,35 @@ class SceneRenderer extends WorldSystem {
         this._composer.addPass(this._antiAliasPass)
 
         // Orbit controls
-        this._orbitControls = new OrbitControls(this._mainCamera, this._renderer.domElement)
-        this._orbitControls.update()
+        this._screenInteractionHandler = new ScreenInteractionHandler(this._renderer.domElement)
+        this._screenInteractionHandler.contextMenu = e => this.OnContextMenu(e)
+
+        this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
+    }
+
+    public SetCameraControls(controlsType: CameraControlsType) {
+        this._cameraControls.dispose()
+        switch (controlsType) {
+            case "Orbit":
+                this._cameraControls = new CustomOrbitControls(this._mainCamera, this._screenInteractionHandler)
+                break
+        }
     }
 
     public UpdateCanvasSize() {
-        this._renderer.setSize(window.innerWidth, window.innerHeight)
+        this._renderer.setSize(window.innerWidth, window.innerHeight, true)
+
+        const vec = new THREE.Vector2(0, 0)
+        this._renderer.getSize(vec)
         // No idea why height would be zero, but just incase.
-        this._mainCamera.aspect = window.innerWidth / window.innerHeight
+        this._mainCamera.aspect = window.innerHeight > 0 ? window.innerWidth / window.innerHeight : 1.0
+
+        if (this._mainCamera.aspect < STANDARD_ASPECT) {
+            this._mainCamera.fov = STANDARD_CAMERA_FOV_Y
+        } else {
+            this._mainCamera.fov = STANDARD_CAMERA_FOV_X / this._mainCamera.aspect
+        }
+
         this._mainCamera.updateProjectionMatrix()
     }
 
@@ -152,11 +189,16 @@ class SceneRenderer extends WorldSystem {
         if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
             new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
 
+        this._screenInteractionHandler.update(deltaT)
+        this._cameraControls.update(deltaT)
+
         this._composer.render(deltaT)
+        // this._renderer.render(this._scene, this._mainCamera)
     }
 
     public Destroy(): void {
         this.RemoveAllSceneObjects()
+        this._screenInteractionHandler.dispose()
     }
 
     /**
@@ -349,11 +391,11 @@ class SceneRenderer extends WorldSystem {
             (event: { target: TransformControls; value: unknown }) => {
                 const isAnyGizmoDragging = Array.from(this._transformControls.keys()).some(gizmo => gizmo.dragging)
                 if (!event.value && !isAnyGizmoDragging) {
-                    this._orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
+                    this._cameraControls.enabled = true // enable orbit controls when not dragging another transform gizmo
                 } else if (!event.value && isAnyGizmoDragging) {
-                    this._orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
+                    this._cameraControls.enabled = false // disable orbit controls when dragging another transform gizmo
                 } else {
-                    this._orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
+                    this._cameraControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
                 }
 
                 if (event.target.mode === "translate") {
@@ -432,6 +474,43 @@ class SceneRenderer extends WorldSystem {
      */
     public SetupMaterial(material: THREE.Material) {
         if (this._light instanceof CSM) this._light.setupMaterial(material)
+    }
+
+    /**
+     * Context Menu handler for the scene canvas.
+     *
+     * @param e Mouse event data.
+     */
+    public OnContextMenu(e: InteractionEnd) {
+        // Cast ray into physics scene.
+        const origin = World.SceneRenderer.mainCamera.position
+
+        const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.position[0], e.position[1])
+        const dir = worldSpace.sub(origin).normalize().multiplyScalar(40.0)
+
+        const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
+
+        // Use any associations to determine ContextData.
+        let miraSupplierData: ContextData | undefined = undefined
+        if (res) {
+            const assoc = World.PhysicsSystem.GetBodyAssociation(res.data.mBodyID) as RigidNodeAssociate
+            if (assoc?.sceneObject) {
+                miraSupplierData = assoc.sceneObject.getSupplierData()
+            }
+        }
+
+        // All else fails, present default options.
+        if (!miraSupplierData) {
+            miraSupplierData = { title: "The Scene", items: [] }
+            miraSupplierData.items.push({
+                name: "Add",
+                func: () => {
+                    MainHUD_OpenPanel("import-mirabuf")
+                },
+            })
+        }
+
+        ContextSupplierEvent.Dispatch(miraSupplierData, e.position)
     }
 }
 
