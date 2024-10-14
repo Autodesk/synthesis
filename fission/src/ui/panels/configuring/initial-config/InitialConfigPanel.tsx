@@ -90,6 +90,8 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         scaleDisabled={true}
                         size={3.0}
                         parent={targetAssembly}
+                        onAccept={closeFinish}
+                        onCancel={closeDelete}
                     />
                 ) : (
                     <></>

@@ -4,6 +4,7 @@ import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
 import { ToggleButton, ToggleButtonGroup } from "./ToggleButtonGroup"
 import World from "@/systems/World"
 import Button, { ButtonSize } from "./Button"
+import InputSystem from "@/systems/input/InputSystem"
 import * as THREE from "three"
 
 /**
@@ -26,6 +27,8 @@ function TransformGizmoControl({
     scaleDisabled,
     sx,
     postGizmoCreation,
+    onAccept,
+    onCancel,
 }: TransformGizmoControlProps) {
     const [mode, setMode] = useState<GizmoMode>(defaultMode)
     const [gizmo, setGizmo] = useState<GizmoSceneObject | undefined>(undefined)
@@ -72,6 +75,25 @@ function TransformGizmoControl({
                 Scale
             </ToggleButton>
         )
+
+    useEffect(() => {
+        const func = () => {
+            // creating enter key and escape key event listeners
+            if (InputSystem.isKeyPressed("Enter")) {
+                onAccept?.(gizmo)
+            } else if (InputSystem.isKeyPressed("Escape")) {
+                onCancel?.(gizmo)
+            }
+
+            cancelAnimationFrame(animHandle)
+            animHandle = requestAnimationFrame(func)
+        }
+        let animHandle = requestAnimationFrame(func)
+
+        return () => {
+            cancelAnimationFrame(animHandle)
+        }
+    }, [gizmo, onAccept, onCancel])
 
     // If there are no modes enabled, consider the UI pointless.
     return disableOptions ? (

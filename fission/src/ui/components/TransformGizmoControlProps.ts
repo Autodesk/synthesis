@@ -15,6 +15,8 @@ interface TransformGizmoControlProps {
     scaleDisabled?: boolean
     sx?: SxProps<Theme>
     postGizmoCreation?: (gizmo: GizmoSceneObject) => void
+    onAccept?: (gizmo: GizmoSceneObject | undefined) => void
+    onCancel?: (gizmo: GizmoSceneObject | undefined) => void
 }
 
 export default TransformGizmoControlProps
