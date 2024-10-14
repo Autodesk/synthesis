@@ -3,7 +3,6 @@ import Button from "../components/Button"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { MainHUD_AddToast } from "../components/MainHUD"
 import { ToastType } from "../ToastContext"
 import { Random } from "@/util/Random"
 import MirabufCachingService, {
@@ -21,6 +20,7 @@ import Label from "../components/Label"
 import { colorNameToVar } from "../ThemeContext"
 import { SynthesisIcons } from "../components/StyledComponents"
 import { useModalControlContext } from "../ModalContext"
+import { Global_AddToast } from "../components/GlobalUIControls"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -85,7 +85,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         value={"Toasts"}
                         onClick={() => {
                             const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
-                            MainHUD_AddToast(type, type, "This is a test toast to test the toast system")
+                            Global_AddToast?.(type, type, "This is a test toast to test the toast system")
                         }}
                         className="w-full"
                     />

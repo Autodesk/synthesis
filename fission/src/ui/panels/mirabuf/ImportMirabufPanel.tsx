@@ -35,8 +35,8 @@ import {
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import Button from "@/ui/components/Button"
-import { setSelectedBrainIndexGlobal } from "../configuring/ChooseInputSchemePanel"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 
 interface ItemCardProps {
     id: string
@@ -89,6 +89,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
         progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
     }
 
+    World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_SPAWNING)
     MirabufCachingService.Get(info.id, type)
         .then(assembly => {
             if (assembly) {
@@ -96,6 +97,8 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                     if (x) {
                         World.SceneRenderer.RegisterSceneObject(x)
                         progressHandle.Done()
+
+                        Global_OpenPanel?.("initial-config")
                     } else {
                         progressHandle.Fail()
                     }
@@ -108,11 +111,14 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
             }
         })
         .catch(() => progressHandle.Fail())
+        .finally(() => {
+            setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+        })
 }
 
 const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { showTooltip } = useTooltipControlContext()
-    const { closePanel, openPanel } = usePanelControlContext()
+    const { closePanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
 
     const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
@@ -202,13 +208,8 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             ])
 
             closePanel(panelId)
-
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
         },
-        [showTooltip, closePanel, panelId, openPanel]
+        [showTooltip, closePanel, panelId]
     )
 
     // Cache a selected remote mirabuf assembly, load from cache.
@@ -228,13 +229,8 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .catch(() => status.Fail())
 
             closePanel(panelId)
-
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
         },
-        [closePanel, panelId, openPanel]
+        [closePanel, panelId]
     )
 
     const selectAPS = useCallback(
@@ -253,13 +249,8 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .catch(() => status.Fail())
 
             closePanel(panelId)
-
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
         },
-        [closePanel, panelId, openPanel]
+        [closePanel, panelId]
     )
 
     // Generate Item cards for cached robots.

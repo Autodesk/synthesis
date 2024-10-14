@@ -17,6 +17,7 @@ import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavi
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DefaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import InputSystem from "@/systems/input/InputSystem"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -63,6 +64,7 @@ class SynthesisBrain extends Brain {
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
         this._assemblyName = assemblyName
 
+        // I'm not fixing this right now, but this is going to become an issue...
         this._brainIndex = SynthesisBrain.brainIndexMap.size
         SynthesisBrain.brainIndexMap.set(this._brainIndex, this)
 
@@ -219,6 +221,10 @@ class SynthesisBrain extends Brain {
         PreferencesSystem.getFieldPreferences(this._assemblyName)
 
         /** Put any field configuration here */
+    }
+
+    public static GetBrainIndex(assembly: MirabufSceneObject | undefined): number | undefined {
+        return (assembly?.brain as SynthesisBrain)?.brainIndex
     }
 }
 

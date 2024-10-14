@@ -9,6 +9,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -84,10 +85,10 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
     useEffect(() => {
         saveZones(zones, selectedField)
 
-        World.PhysicsSystem.HoldPause()
+        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause()
+            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [selectedField, zones])
 

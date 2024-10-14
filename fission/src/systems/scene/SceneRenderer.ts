@@ -1,20 +1,20 @@
 import * as THREE from "three"
-import SceneObject from "./SceneObject"
 import WorldSystem from "../WorldSystem"
+import SceneObject from "./SceneObject"
+import GizmoSceneObject from "./GizmoSceneObject"
 
-import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js"
 
-import vertexShader from "@/shaders/vertex.glsl"
 import fragmentShader from "@/shaders/fragment.glsl"
+import vertexShader from "@/shaders/vertex.glsl"
 import { Theme } from "@/ui/ThemeContext"
-import InputSystem from "../input/InputSystem"
 import Jolt from "@barclah/jolt-physics"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -31,9 +31,9 @@ class SceneRenderer extends WorldSystem {
     private _antiAliasPass: EffectPass
 
     private _sceneObjects: Map<number, SceneObject>
+    private _gizmosOnMirabuf: Map<number, GizmoSceneObject> // maps of all the gizmos that are attached to a mirabuf scene object
 
     private _orbitControls: OrbitControls
-    private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
 
     private _light: THREE.DirectionalLight | CSM | undefined
 
@@ -53,11 +53,22 @@ class SceneRenderer extends WorldSystem {
         return this._renderer
     }
 
+    public get orbitControls() {
+        return this._orbitControls
+    }
+
+    /**
+     * Collection that maps Mirabuf objects to active GizmoSceneObjects
+     */
+    public get gizmosOnMirabuf() {
+        return this._gizmosOnMirabuf
+    }
+
     public constructor() {
         super()
 
         this._sceneObjects = new Map()
-        this._transformControls = new Map()
+        this._gizmosOnMirabuf = new Map()
 
         this._mainCamera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
         this._mainCamera.position.set(-2.5, 2, 2.5)
@@ -84,7 +95,7 @@ class SceneRenderer extends WorldSystem {
         this._scene.add(ambientLight)
 
         const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR))
-        ground.position.set(0.0, -2.0, 0.0)
+        ground.position.set(0.0, -0.5, 0.0)
         ground.receiveShadow = true
         ground.castShadow = true
         this._scene.add(ground)
@@ -138,15 +149,6 @@ class SceneRenderer extends WorldSystem {
         if (this._light instanceof CSM) this._light.update()
 
         this._skybox.position.copy(this._mainCamera.position)
-
-        const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
-        this._transformControls.forEach((size, tc) => {
-            tc.setSize(
-                (size / this._mainCamera.position.distanceTo(tc.object!.position)) *
-                    Math.tan(mainCameraFovRadians) *
-                    1.9
-            )
-        })
 
         // Update the tags each frame if they are enabled in preferences
         if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
@@ -236,13 +238,29 @@ class SceneRenderer extends WorldSystem {
         return id
     }
 
+    /** Registers gizmos that are attached to a parent mirabufsceneobject  */
+    public RegisterGizmoSceneObject(obj: GizmoSceneObject): number {
+        if (obj.HasParent()) this._gizmosOnMirabuf.set(obj.parentObjectId!, obj)
+        return this.RegisterSceneObject(obj)
+    }
+
     public RemoveAllSceneObjects() {
         this._sceneObjects.forEach(obj => obj.Dispose())
+        this._gizmosOnMirabuf.clear()
         this._sceneObjects.clear()
     }
 
     public RemoveSceneObject(id: number) {
         const obj = this._sceneObjects.get(id)
+
+        // If the object is a mirabuf object, remove the gizmo as well
+        if (obj instanceof MirabufSceneObject) {
+            const objGizmo = this._gizmosOnMirabuf.get(id)
+            if (this._gizmosOnMirabuf.delete(id)) objGizmo!.Dispose()
+        } else if (obj instanceof GizmoSceneObject && obj.HasParent()) {
+            this._gizmosOnMirabuf.delete(obj.parentObjectId!)
+        }
+
         if (this._sceneObjects.delete(id)) {
             obj!.Dispose()
         }
@@ -328,83 +346,9 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
-    /**
-     * Attach new transform gizmo to Mesh
-     *
-     * @param obj Mesh to attach gizmo to
-     * @param mode Transform mode (translate, rotate, scale)
-     * @param size Size of the gizmo
-     * @returns void
-     */
-    public AddTransformGizmo(obj: THREE.Object3D, mode: "translate" | "rotate" | "scale" = "translate", size: number) {
-        const transformControl = new TransformControls(this._mainCamera, this._renderer.domElement)
-        transformControl.setMode(mode)
-        transformControl.attach(obj)
-
-        // allowing the transform gizmos to rotate with the object
-        transformControl.space = "local"
-
-        transformControl.addEventListener(
-            "dragging-changed",
-            (event: { target: TransformControls; value: unknown }) => {
-                const isAnyGizmoDragging = Array.from(this._transformControls.keys()).some(gizmo => gizmo.dragging)
-                if (!event.value && !isAnyGizmoDragging) {
-                    this._orbitControls.enabled = true // enable orbit controls when not dragging another transform gizmo
-                } else if (!event.value && isAnyGizmoDragging) {
-                    this._orbitControls.enabled = false // disable orbit controls when dragging another transform gizmo
-                } else {
-                    this._orbitControls.enabled = !event.value // disable orbit controls when dragging transform gizmo
-                }
-
-                if (event.target.mode === "translate") {
-                    this._transformControls.forEach((_size, tc) => {
-                        // disable other transform gizmos when translating
-                        if (tc.object === event.target.object && tc.mode !== "translate") {
-                            tc.dragging = false
-                            tc.enabled = !event.value
-                            return
-                        }
-                    })
-                } else if (
-                    event.target.mode === "scale" &&
-                    (InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft"))
-                ) {
-                    // scale uniformly if shift is pressed
-                    transformControl.axis = "XYZE"
-                } else if (event.target.mode === "rotate") {
-                    // scale on all axes
-                    this._transformControls.forEach((_size, tc) => {
-                        // disable scale transform gizmo when scaling
-                        if (tc.mode === "scale" && tc !== event.target && tc.object === event.target.object) {
-                            tc.dragging = false
-                            tc.enabled = !event.value
-                            return
-                        }
-                    })
-                }
-            }
-        )
-
-        this._transformControls.set(transformControl, size)
-        this._scene.add(transformControl)
-
-        return transformControl
-    }
-
-    /**
-     * Remove transform gizmos from Mesh
-     *
-     * @param obj Mesh to remove gizmo from
-     * @returns void
-     */
-    public RemoveTransformGizmos(obj: THREE.Object3D) {
-        this._transformControls.forEach((_, tc) => {
-            if (tc.object === obj) {
-                tc.detach()
-                this._scene.remove(tc)
-                this._transformControls.delete(tc)
-            }
-        })
+    /** returns whether any gizmos are being currently dragged */
+    public IsAnyGizmoDragging(): boolean {
+        return [...this._gizmosOnMirabuf.values()].some(obj => obj.gizmo.dragging)
     }
 
     /**

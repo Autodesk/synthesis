@@ -1,5 +1,5 @@
 import World from "@/systems/World"
-import { MainHUD_AddToast } from "@/ui/components/MainHUD"
+import { Global_AddToast } from "@/ui/components/GlobalUIControls"
 import { Mutex } from "async-mutex"
 
 const APS_AUTH_KEY = "aps_auth"
@@ -14,7 +14,7 @@ export const ENDPOINT_SYNTHESIS_CHALLENGE = `/api/aps/challenge`
 
 const ENDPOINT_AUTODESK_AUTHENTICATION_AUTHORIZE = "https://developer.api.autodesk.com/authentication/v2/authorize"
 const ENDPOINT_AUTODESK_AUTHENTICATION_TOKEN = "https://developer.api.autodesk.com/authentication/v2/token"
-const ENDPOINT_AUTODESK_REVOKE_TOKEN = "https://developer.api.autodesk.com/authentication/v2/revoke"
+const ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE = "https://developer.api.autodesk.com/authentication/v2/revoke"
 const ENDPOINT_AUTODESK_USERINFO = "https://api.userprofile.autodesk.com/userinfo"
 
 export interface APSAuth {
@@ -163,7 +163,7 @@ class APS {
                 ["client_id", CLIENT_ID],
             ] as string[][]),
         }
-        const res = await fetch(ENDPOINT_AUTODESK_REVOKE_TOKEN, opts)
+        const res = await fetch(ENDPOINT_AUTODESK_AUTHENTICATION_REVOKE, opts)
         if (!res.ok) {
             console.log("Failed to revoke auth token:\n")
             return false
@@ -205,7 +205,7 @@ class APS {
             } catch (e) {
                 console.error(e)
                 World.AnalyticsSystem?.Exception("APS Login Failure")
-                MainHUD_AddToast("error", "Error signing in.", "Please try again.")
+                Global_AddToast?.("error", "Error signing in.", "Please try again.")
             }
         })
     }
@@ -236,7 +236,7 @@ class APS {
                 const json = await res.json()
                 if (!res.ok) {
                     if (shouldRelog) {
-                        MainHUD_AddToast("warning", "Must Re-signin.", json.userMessage)
+                        Global_AddToast?.("warning", "Must Re-signin.", json.userMessage)
                         this.auth = undefined
                         await this.requestAuthCode()
                         return false
@@ -249,13 +249,13 @@ class APS {
                 if (this.auth) {
                     await this.loadUserInfo(this.auth)
                     if (APS.userInfo) {
-                        MainHUD_AddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                        Global_AddToast?.("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
                     }
                 }
                 return true
             } catch (e) {
                 World.AnalyticsSystem?.Exception("APS Login Failure")
-                MainHUD_AddToast("error", "Error signing in.", "Please try again.")
+                Global_AddToast?.("error", "Error signing in.", "Please try again.")
                 this.auth = undefined
                 await this.requestAuthCode()
                 return false
@@ -281,7 +281,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.AnalyticsSystem?.Exception("APS Login Failure")
-                MainHUD_AddToast("error", "Error signing in.", json.userMessage)
+                Global_AddToast?.("error", "Error signing in.", json.userMessage)
                 this.auth = undefined
                 return
             }
@@ -293,7 +293,7 @@ class APS {
             if (auth) {
                 await this.loadUserInfo(auth)
                 if (APS.userInfo) {
-                    MainHUD_AddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                    Global_AddToast?.("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
                 }
             } else {
                 console.error("Couldn't get auth data.")
@@ -306,7 +306,7 @@ class APS {
         if (retry_login) {
             this.auth = undefined
             World.AnalyticsSystem?.Exception("APS Login Failure")
-            MainHUD_AddToast("error", "Error signing in.", "Please try again.")
+            Global_AddToast?.("error", "Error signing in.", "Please try again.")
         }
     }
 
@@ -327,7 +327,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.AnalyticsSystem?.Exception("APS Failure: User Info")
-                MainHUD_AddToast("error", "Error fetching user data.", json.userMessage)
+                Global_AddToast?.("error", "Error fetching user data.", json.userMessage)
                 this.auth = undefined
                 await this.requestAuthCode()
                 return
@@ -347,7 +347,7 @@ class APS {
         } catch (e) {
             console.error(e)
             World.AnalyticsSystem?.Exception("APS Login Failure: User Info")
-            MainHUD_AddToast("error", "Error signing in.", "Please try again.")
+            Global_AddToast?.("error", "Error signing in.", "Please try again.")
             this.auth = undefined
         }
     }
@@ -363,7 +363,7 @@ class APS {
         } catch (e) {
             console.error(e)
             World.AnalyticsSystem?.Exception("APS Login Failure: Code Challenge")
-            MainHUD_AddToast("error", "Error signing in.", "Please try again.")
+            Global_AddToast?.("error", "Error signing in.", "Please try again.")
         }
     }
 }

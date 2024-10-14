@@ -4,13 +4,12 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@barclah/jolt-physics"
-import { JoltMat44_ThreeMatrix4 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import InputSystem from "@/systems/input/InputSystem"
-import TransformGizmos from "@/ui/components/TransformGizmos"
 import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
@@ -21,12 +20,30 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 
 const DEBUG_BODIES = false
 
 interface RnDebugMeshes {
     colliderMesh: THREE.Mesh
     comMesh: THREE.Mesh
+}
+
+/**
+ * The goal with the spotlight assembly is to provide a contextual target assembly
+ * the user would like to modifiy. Generally this will be which even assembly was
+ * last spawned in, however, systems (such as the configuration UI) can elect
+ * assemblies to be in the spotlight when moving from interface to interface.
+ */
+let spotlightAssembly: number | undefined
+
+export function setSpotlightAssembly(assembly: MirabufSceneObject) {
+    spotlightAssembly = assembly.id
+}
+
+// TODO: If nothing is in the spotlight, select last entry before defaulting to undefined
+export function getSpotlightAssembly(): MirabufSceneObject | undefined {
+    return World.SceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
 }
 
 class MirabufSceneObject extends SceneObject {
@@ -37,8 +54,6 @@ class MirabufSceneObject extends SceneObject {
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
-
-    private _transformGizmos: TransformGizmos | undefined
 
     private _intakePreferences: IntakePreferences | undefined
     private _ejectorPreferences: EjectorPreferences | undefined
@@ -106,8 +121,6 @@ class MirabufSceneObject extends SceneObject {
 
         this._debugBodies = null
 
-        this.EnableTransformControls() // adding transform gizmo to mirabuf object on its creation
-
         this.getPreferences()
 
         // creating nametag for robots
@@ -150,15 +163,41 @@ class MirabufSceneObject extends SceneObject {
         })
 
         // Simulation
-        World.SimulationSystem.RegisterMechanism(this._mechanism)
-        const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-        this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
-        simLayer.SetBrain(this._brain)
+        if (this.miraType == MiraType.ROBOT) {
+            World.SimulationSystem.RegisterMechanism(this._mechanism)
+            const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
+            this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
+            simLayer.SetBrain(this._brain)
+        }
 
         // Intake
         this.UpdateIntakeSensor()
-
         this.UpdateScoringZones()
+
+        setSpotlightAssembly(this)
+
+        this.UpdateBatches()
+
+        const bounds = this.ComputeBoundingBox()
+        if (!Number.isFinite(bounds.min.y)) return
+
+        const offset = new JOLT.Vec3(
+            -(bounds.min.x + bounds.max.x) / 2.0,
+            0.1 + (bounds.max.y - bounds.min.y) / 2.0 - (bounds.min.y + bounds.max.y) / 2.0,
+            -(bounds.min.z + bounds.max.z) / 2.0
+        )
+
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            const jBodyId = this._mechanism.GetBodyByNodeId(rn.id)
+            if (!jBodyId) return
+
+            const newPos = World.PhysicsSystem.GetBody(jBodyId).GetPosition().Add(offset)
+            World.PhysicsSystem.SetBodyPosition(jBodyId, newPos)
+
+            JOLT.destroy(newPos)
+        })
+
+        this.UpdateMeshTransforms()
     }
 
     public Update(): void {
@@ -167,79 +206,10 @@ class MirabufSceneObject extends SceneObject {
             this.Eject()
         }
 
-        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
-            if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
-            const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-            const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
-            rn.parts.forEach(part => {
-                const partTransform = this._mirabufInstance.parser.globalTransforms
-                    .get(part)!
-                    .clone()
-                    .premultiply(transform)
-                const meshes = this._mirabufInstance.meshes.get(part) ?? []
-                meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
-            })
+        this.UpdateMeshTransforms()
 
-            /**
-             * Update the position and rotation of the body to match the position of the transform gizmo.
-             *
-             * This block of code should only be executed if the transform gizmo exists.
-             */
-            if (this._transformGizmos) {
-                if (InputSystem.isKeyPressed("Enter")) {
-                    // confirming placement of the mirabuf object
-                    this.DisableTransformControls()
-                    return
-                } else if (InputSystem.isKeyPressed("Escape")) {
-                    // cancelling the creation of the mirabuf scene object
-                    World.SceneRenderer.RemoveSceneObject(this.id)
-                    return
-                }
-
-                // if the gizmo is being dragged, copy the mesh position and rotation to the Mirabuf body
-                if (this._transformGizmos.isBeingDragged()) {
-                    this._transformGizmos.UpdateMirabufPositioning(this, rn)
-                    World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
-                }
-            }
-
-            if (isNaN(body.GetPosition().GetX())) {
-                const vel = body.GetLinearVelocity()
-                const pos = body.GetPosition()
-                console.warn(
-                    `Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
-                )
-            }
-            // console.debug(`POSITION: ${body.GetPosition().GetX()}, ${body.GetPosition().GetY()}, ${body.GetPosition().GetZ()}`)
-
-            if (this._debugBodies) {
-                const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
-                colliderMesh.position.setFromMatrixPosition(transform)
-                colliderMesh.rotation.setFromRotationMatrix(transform)
-
-                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform())
-
-                comMesh.position.setFromMatrixPosition(comTransform)
-                comMesh.rotation.setFromRotationMatrix(comTransform)
-            }
-        })
-
-        this._mirabufInstance.batches.forEach(x => {
-            x.computeBoundingBox()
-            x.computeBoundingSphere()
-        })
-
-        /* Updating the position of the name tag according to the robots position on screen */
-        if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
-            const boundingBox = this.ComputeBoundingBox()
-            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
-                new THREE.Vector3(
-                    (boundingBox.max.x + boundingBox.min.x) / 2,
-                    boundingBox.max.y + 0.1,
-                    (boundingBox.max.z + boundingBox.min.z) / 2
-                )
-            )
-        }
+        this.UpdateBatches()
+        this.UpdateNameTag()
     }
 
     public Dispose(): void {
@@ -261,7 +231,6 @@ class MirabufSceneObject extends SceneObject {
         })
 
         this._nameTag?.Dispose()
-        this.DisableTransformControls()
         World.SimulationSystem.UnregisterMechanism(this._mechanism)
         World.PhysicsSystem.DestroyMechanism(this._mechanism)
         this._mirabufInstance.Dispose(World.SceneRenderer.scene)
@@ -275,7 +244,9 @@ class MirabufSceneObject extends SceneObject {
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
 
-        if (this._brain && this._brain instanceof SynthesisBrain) this._brain?.clearControls()
+        if (this._brain && this._brain instanceof SynthesisBrain) {
+            this._brain.clearControls()
+        }
     }
 
     public Eject() {
@@ -319,6 +290,70 @@ class MirabufSceneObject extends SceneObject {
         mesh.castShadow = true
 
         return mesh
+    }
+
+    /**
+     * Matches mesh transforms to their Jolt counterparts.
+     */
+    public UpdateMeshTransforms() {
+        this._mirabufInstance.parser.rigidNodes.forEach(rn => {
+            if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
+            const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
+            const transform = JoltMat44_ThreeMatrix4(body.GetWorldTransform())
+            this.UpdateNodeParts(rn, transform)
+
+            if (isNaN(body.GetPosition().GetX())) {
+                const vel = body.GetLinearVelocity()
+                const pos = body.GetPosition()
+                console.warn(
+                    `Invalid Position.\nPosition => ${pos.GetX()}, ${pos.GetY()}, ${pos.GetZ()}\nVelocity => ${vel.GetX()}, ${vel.GetY()}, ${vel.GetZ()}`
+                )
+            }
+
+            if (this._debugBodies) {
+                const { colliderMesh, comMesh } = this._debugBodies.get(rn.id)!
+                colliderMesh.position.setFromMatrixPosition(transform)
+                colliderMesh.rotation.setFromRotationMatrix(transform)
+
+                const comTransform = JoltMat44_ThreeMatrix4(body.GetCenterOfMassTransform())
+
+                comMesh.position.setFromMatrixPosition(comTransform)
+                comMesh.rotation.setFromRotationMatrix(comTransform)
+            }
+        })
+    }
+
+    public UpdateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
+        rn.parts.forEach(part => {
+            const partTransform = this._mirabufInstance.parser.globalTransforms
+                .get(part)!
+                .clone()
+                .premultiply(transform)
+            const meshes = this._mirabufInstance.meshes.get(part) ?? []
+            meshes.forEach(([batch, id]) => batch.setMatrixAt(id, partTransform))
+        })
+    }
+
+    /** Updates the batch computations */
+    private UpdateBatches() {
+        this._mirabufInstance.batches.forEach(x => {
+            x.computeBoundingBox()
+            x.computeBoundingSphere()
+        })
+    }
+
+    /** Updates the position of the nametag relative to the robots position */
+    private UpdateNameTag() {
+        if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
+            const boundingBox = this.ComputeBoundingBox()
+            this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
+                new THREE.Vector3(
+                    (boundingBox.max.x + boundingBox.min.x) / 2,
+                    boundingBox.max.y + 0.1,
+                    (boundingBox.max.z + boundingBox.min.z) / 2
+                )
+            )
+        }
     }
 
     public UpdateIntakeSensor() {
@@ -372,34 +407,7 @@ class MirabufSceneObject extends SceneObject {
     }
 
     /**
-     * Changes the mode of the mirabuf object from being interacted with to being placed.
-     */
-    public EnableTransformControls(): void {
-        if (this._transformGizmos) return
-
-        this._transformGizmos = new TransformGizmos(
-            new THREE.Mesh(
-                new THREE.SphereGeometry(3.0),
-                new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0 })
-            )
-        )
-        this._transformGizmos.AddMeshToScene()
-        this._transformGizmos.CreateGizmo("translate", 5.0)
-
-        this.DisablePhysics()
-    }
-
-    /**
-     * Changes the mode of the mirabuf object from being placed to being interacted with.
-     */
-    public DisableTransformControls(): void {
-        if (!this._transformGizmos) return
-        this._transformGizmos?.RemoveGizmos()
-        this._transformGizmos = undefined
-        this.EnablePhysics()
-    }
-
-    /**
+     * Calculates the bounding box of the mirabuf object.
      *
      * @returns The bounding box of the mirabuf object.
      */
@@ -412,6 +420,30 @@ class MirabufSceneObject extends SceneObject {
         return box
     }
 
+    /**
+     * Once a gizmo is created and attached to this mirabuf object, this will be executed to align the gizmo correctly.
+     *
+     * @param gizmo Gizmo attached to the mirabuf object
+     */
+    public PostGizmoCreation(gizmo: GizmoSceneObject) {
+        const jRootId = this.GetRootNodeId()
+        if (!jRootId) {
+            console.error("No root node found.")
+            return
+        }
+
+        const jBody = World.PhysicsSystem.GetBody(jRootId)
+        if (jBody.IsStatic()) {
+            const aaBox = jBody.GetWorldSpaceBounds()
+            const mat = new THREE.Matrix4(1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1)
+            const center = aaBox.mMin.Add(aaBox.mMax).Div(2.0)
+            mat.compose(JoltVec3_ThreeVector3(center), new THREE.Quaternion(0, 0, 0, 1), new THREE.Vector3(1, 1, 1))
+            gizmo.SetTransform(mat)
+        } else {
+            gizmo.SetTransform(JoltMat44_ThreeMatrix4(jBody.GetCenterOfMassTransform()))
+        }
+    }
+
     private getPreferences(): void {
         this._intakePreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.intake
         this._ejectorPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.ejector
@@ -419,13 +451,13 @@ class MirabufSceneObject extends SceneObject {
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
     }
 
-    private EnablePhysics() {
+    public EnablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
     }
 
-    private DisablePhysics() {
+    public DisablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })

@@ -9,6 +9,8 @@ import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { usePanelControlContext } from "@/ui/PanelContext"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
@@ -49,15 +51,19 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     ])
 
                     const hashBuffer = await selectedFile.arrayBuffer()
+                    World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_SPAWNING)
                     await MirabufCachingService.CacheAndGetLocal(hashBuffer, miraType)
                         .then(x => CreateMirabuf(x!))
                         .then(x => {
                             if (x) {
                                 World.SceneRenderer.RegisterSceneObject(x)
+
+                                Global_OpenPanel?.("initial-config")
                             }
                         })
-
-                    if (miraType == MiraType.ROBOT) openPanel("choose-scheme")
+                        .finally(() =>
+                            setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+                        )
                 }
             }}
         >
