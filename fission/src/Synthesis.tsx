@@ -58,6 +58,7 @@ import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
+import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
@@ -222,6 +223,7 @@ const initialPanels: ReactElement[] = [
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
+    <WiringPanel key="wiring" panelId="wiring" />,
 ]
 
 export default Synthesis
