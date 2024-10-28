@@ -1,48 +1,38 @@
 import { getFontSize } from "./Utility"
 
 export class DOMUnitExpression {
-    public value: DOMUnit
+    public exprA: DOMUnitExpression | DOMUnit
+    public exprB?: DOMUnitExpression | DOMUnit
     public op?: (a: number, b: number) => number
-    public expr?: DOMUnitExpression
 
-    private constructor(value: DOMUnit, op?: (a: number, b: number) => number, expr?: DOMUnitExpression) {
-        this.value = value
+    private constructor(exprA: DOMUnitExpression | DOMUnit, exprB?: DOMUnitExpression | DOMUnit, op?: (a: number, b: number) => number) {
+        this.exprA = exprA
+        this.exprB = exprB
         this.op = op
-        this.expr = expr
     }
 
     public static fromUnit(value: number, type?: DOMUnitTypes): DOMUnitExpression {
         return new DOMUnitExpression(new DOMUnit(value, type ?? "px"))
     }
 
-    public evaluate(element: Element): number {
-        if (this.op && this.expr) {
-            return this.op(this.value.evaluate(element), this.expr.evaluate(element))
+    public evaluate(element: Element, verbose: boolean = false): number {
+        if (this.op && this.exprB) {
+            return this.op(this.exprA.evaluate(element), this.exprB.evaluate(element))
         } else {
-            return this.value.evaluate(element)
+            return this.exprA.evaluate(element)
         }
     }
 
     public add(b: DOMUnit | DOMUnitExpression): DOMUnitExpression {
-        if (this.op && this.expr) {
-            this.expr.add(b)
-        } else {
-            this.op = (a, b) => a + b
-            this.expr = b instanceof DOMUnitExpression ? b : new DOMUnitExpression(b)    
-        }
-
-        return this;
+        return new DOMUnitExpression(this, b, (x, y) => x + y)
     }
 
     public sub(b: DOMUnit | DOMUnitExpression): DOMUnitExpression {
-        if (this.op && this.expr) {
-            this.expr.sub(b)
-        } else {
-            this.op = (a, b) => a - b
-            this.expr = b instanceof DOMUnitExpression ? b : new DOMUnitExpression(b)
-        }
+        return new DOMUnitExpression(this, b, (x, y) => x - y)
+    }
 
-        return this
+    public mul(b: DOMUnit | DOMUnitExpression): DOMUnitExpression {
+        return new DOMUnitExpression(this, b, (x, y) => x * y)
     }
 }
 
@@ -57,7 +47,9 @@ export class DOMUnit {
         this.type = type
     }
 
-    public evaluate(element: Element): number {
+    public evaluate(element: Element, verbose: boolean = false): number {
+        if (verbose)
+            console.debug(`${this.value} ${this.type} END UNIT`)
         switch (this.type) {
             case "px":
                 return this.value
