@@ -4,6 +4,7 @@ import Label, { LabelSize } from "@/ui/components/Label"
 import { colorNameToVar } from "@/ui/ThemeContext"
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import { DOMUnit, DOMUnitExpression } from "@/util/Units"
+import { ReactFlow, Node as FlowNode, Edge as FlowEdge } from "@xyflow/react"
 
 const DEBUG_EDGE_CONTROL_LINES = false
 
@@ -497,6 +498,15 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
         return graph
     }, [])
 
+    const nodes: FlowNode[] = useMemo<FlowNode[]>(() => [
+        { id: "1", position: { x: 0, y: 0 }, data: { label: "Test 1" } },
+        { id: "2", position: { x: 0, y: 100 }, data: { label: "Test 2" } },
+    ], [])
+
+    const edges: FlowEdge[] = useMemo<FlowEdge[]>(() => [
+        { id: "e1-2", source: "1", target: "2" }
+    ], [])
+
     return (
         <Panel
             name="Wiring Panel"
@@ -505,7 +515,8 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             openLocation={"center"}
             full
         >
-            <GraphComp graph={graph} />
+            <ReactFlow nodes={nodes} edges={edges} />
+            {/* <GraphComp graph={graph} /> */}
             <div className="flex flex-row justify-between">
                 <Label className="text-interactive-element-solid font-medium" size={LabelSize.Large}>Stimuli</Label>
                 <Label className="text-interactive-element-solid font-medium" size={LabelSize.Large}>Code IO</Label>
