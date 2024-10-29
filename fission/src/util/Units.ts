@@ -34,6 +34,10 @@ export class DOMUnitExpression {
     public mul(b: DOMUnit | DOMUnitExpression): DOMUnitExpression {
         return new DOMUnitExpression(this, b, (x, y) => x * y)
     }
+
+    public div(b: DOMUnit | DOMUnitExpression): DOMUnitExpression {
+        return new DOMUnitExpression(this, b, (x, y) => x / y)
+    }
 }
 
 type DOMUnitTypes = "px" | "rem" | "w" | "h"

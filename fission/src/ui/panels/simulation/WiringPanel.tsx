@@ -5,16 +5,23 @@ import { colorNameToVar } from "@/ui/ThemeContext"
 import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import { DOMUnitExpression } from "@/util/Units"
 
+const DEBUG_EDGE_CONTROL_LINES = false
+
+const EDGE_FLAT = 0.1
 const EDGE_CURVE = 0.3
-const NODE_SIZE = DOMUnitExpression.fromUnit(10)
-const EDGE_FLAT = NODE_SIZE.mul(DOMUnitExpression.fromUnit(Math.SQRT2)).add(DOMUnitExpression.fromUnit(10))
-const NODE_LABEL_Y_OFFSET = NODE_SIZE.add(DOMUnitExpression.fromUnit(5))
-const JUNCTION_SIZE = NODE_SIZE.add(DOMUnitExpression.fromUnit(2))
+const EDGE_CURVE_MIN = DOMUnitExpression.fromUnit(2, "rem")
+const NODE_SIZE = DOMUnitExpression.fromUnit(0.5, "rem")
+const EDGE_FLAT_MAX = NODE_SIZE.mul(DOMUnitExpression.fromUnit(Math.SQRT2)).add(DOMUnitExpression.fromUnit(1, "rem"))
+const NODE_LABEL_Y_OFFSET = NODE_SIZE.add(DOMUnitExpression.fromUnit(0.325, "rem"))
+const JUNCTION_SIZE = NODE_SIZE.add(DOMUnitExpression.fromUnit(0.125, "rem"))
+const MODULE_HEIGHT = DOMUnitExpression.fromUnit(0.95, "h")
+const MODULE_SPAN_Y = MODULE_HEIGHT.sub(DOMUnitExpression.fromUnit(4, "rem"))
+const MODULE_SPAN_Y_HALF = MODULE_SPAN_Y.div(DOMUnitExpression.fromUnit(2, "px"))
+const MODULE_NODE_OFFSET = DOMUnitExpression.fromUnit(3, "rem")
 
 type NodeDirection = "in" | "out"
 
-let nextJunctIndex = 0
-let nextEdgeIndex = 0
+let nextId = 0
 
 class Node {
     public x: DOMUnitExpression
@@ -64,7 +71,7 @@ class Junction {
 
     public constructor(graph: Graph, x?: DOMUnitExpression, y?: DOMUnitExpression) {
         this.graph = graph
-        this._id = nextJunctIndex++
+        this._id = nextId++
         this._x = x ?? DOMUnitExpression.fromUnit(0)
         this._y = y ?? DOMUnitExpression.fromUnit(0)
         this._nodeIn = graph.createNode(`junct_in_${this._id}`, "in")
@@ -86,19 +93,24 @@ function EdgeComp({ from, to, graph, element }: { from: string, to: string, grap
     const [nodeFrom, nodeTo] = useMemo(() => [ graph.nodes.get(from)!, graph.nodes.get(to)!], [from, graph, to])
 
     const [fromX, fromY] = [nodeFrom.x.evaluate(element), nodeFrom.y.evaluate(element)]
-    const spanX = nodeTo.x.evaluate(element) - fromX
-    const spanY = nodeTo.y.evaluate(element) - fromY
+    const [toX, toY] = [nodeTo.x.evaluate(element), nodeTo.y.evaluate(element)]
+    const spanX = Math.abs(toX - fromX)
 
-    let flatSign = 1
-
-    if (spanX < 0) {
-        flatSign = -1
-    }
+    const flatMax = EDGE_FLAT_MAX.evaluate(element)
+    const flat = Math.min(spanX * EDGE_FLAT, flatMax)
+    const curveMin = EDGE_CURVE_MIN.evaluate(element)
+    const curve = Math.max(spanX * EDGE_CURVE, curveMin)
 
     const cmds = `
         M ${fromX} ${fromY}
-        h ${flatSign * EDGE_FLAT.evaluate(element)}
+        h ${flat}
+        C ${fromX + flat + curve},${fromY} ${toX - flat - curve},${toY} ${toX - flat},${toY}
+        L ${toX} ${toY}
+    `
 
+    const debugCmds = `
+        M ${fromX + flat} ${fromY}
+        L ${fromX + flat + curve},${fromY} ${toX - flat - curve},${toY} ${toX - flat},${toY}
     `
 
     // const cmds = `
@@ -110,7 +122,23 @@ function EdgeComp({ from, to, graph, element }: { from: string, to: string, grap
 
     return (
         <svg key={`${from}-${to}`}>
-            <path strokeWidth={"0.125rem"} stroke="white" fill="none" d={cmds} />
+            <path
+                strokeWidth={"0.125rem"}
+                stroke="white"
+                strokeOpacity="0.7"
+                fill="none"
+                d={cmds}
+            />
+            {DEBUG_EDGE_CONTROL_LINES ? (
+                <path
+                    strokeWidth={"0.125rem"}
+                    strokeDasharray="10,4"
+                    strokeOpacity="0.3"
+                    stroke="white"
+                    fill="none"
+                    d={debugCmds}
+                />
+            ) : <></> }
         </svg>
     )
 }
@@ -127,8 +155,6 @@ function JunctionComp({ junct, element }: { junct: Junction, element: Element })
                     L ${junct.nodeOut.x.evaluate(element)} ${junct.nodeOut.y.evaluate(element)}
                 `}
             />
-            {/* <NodeComp node={junct.nodeIn} element={element} />
-            <NodeComp node={junct.nodeOut} element={element} /> */}
         </>
     )
 }
@@ -163,20 +189,94 @@ function NodeComp({ node, element }: { node: Node, element: Element }) {
             <path
                 d={pathCmds}
                 onClick={onClick}
-                fill={colorNameToVar("InteractiveBackground")}
+                fill={colorNameToVar("Background")}
                 strokeWidth={"0.125rem"}
                 stroke={colorNameToVar("InteractiveElementSolid")}
             />
             {label ? (<text
                 style={{ userSelect: "none" }}
-                fontSize="1rem"
-                textAnchor="middle"
+                fontSize="0.75rem"
+                textAnchor={node.direction === "out" ? "end" : "start"}
                 fill="white"
-                x={x} y={y - nodeLabelOffset}>
+                dominantBaseline="central"
+                x={x + (node.direction === "out" ? -1 : 1) * nodeLabelOffset} y={y /*- nodeLabelOffset*/}>
                     {label}
                 </text>
             ) : (<></>)}
         </svg>
+    )
+}
+
+class Module {
+    private _inNodes: string[]
+    private _outNodes: string[]
+
+    private _id: number
+
+    public x: DOMUnitExpression
+    public y: DOMUnitExpression
+
+    public graph: Graph
+
+    public get id() { return this._id }
+
+    public constructor(graph: Graph, inNodes: { id: string, label: string }[], outNodes: { id: string, label: string }[], x?: DOMUnitExpression, y?: DOMUnitExpression) {
+        this.graph = graph
+        this._id = nextId++
+        this.x = x ?? DOMUnitExpression.fromUnit(0.5, "w")
+        this.y = y ?? DOMUnitExpression.fromUnit(0.5, "h")
+        this._inNodes = []
+        this._outNodes = []
+
+        inNodes.forEach((x, i) => {
+            const y = MODULE_SPAN_Y.mul(DOMUnitExpression.fromUnit((i + 1) / (inNodes.length + 1), "px"))
+            const node = graph.createNode(
+                x.id,
+                "in",
+                x.label,
+                this.x.sub(MODULE_NODE_OFFSET),
+                this.y.sub(MODULE_SPAN_Y_HALF).add(y)
+            )
+            this._inNodes.push(node.id)
+        })
+        outNodes.forEach((x, i) => {
+            const y = MODULE_SPAN_Y.mul(DOMUnitExpression.fromUnit((i + 1) / (outNodes.length + 1), "px"))
+            const node = graph.createNode(
+                x.id,
+                "out",
+                x.label,
+                this.x.add(MODULE_NODE_OFFSET),
+                this.y.sub(MODULE_SPAN_Y_HALF).add(y)
+            )
+            this._outNodes.push(node.id)
+        })
+    }
+}
+
+function ModuleComp({ module, element }: { module: Module, element: Element }) {
+    const x = module.x.evaluate(element)
+    const y = module.y.evaluate(element)
+
+    const spanYHalf = MODULE_SPAN_Y_HALF.evaluate(element)
+    const spanXHalf = MODULE_NODE_OFFSET.evaluate(element)
+
+    return (
+        <>
+            <path key={module.id}
+                strokeWidth={"0.125rem"}
+                stroke="white"
+                strokeDasharray="20 10"
+                fill="none"
+                d={`
+                    M ${x - spanXHalf} ${y - spanYHalf}
+                    L
+                        ${x + spanXHalf} ${y - spanYHalf}
+                        ${x + spanXHalf} ${y + spanYHalf}
+                        ${x - spanXHalf} ${y + spanYHalf}
+                    Z
+                `}
+            />
+        </>
     )
 }
 
@@ -185,16 +285,19 @@ class Graph {
     private _juncts: Map<number, Junction>
     private _edges: Map<number, { from: string, to: string }>
     private _adjacency: Map<string, Set<number>>
+    private _modules: Module[]
 
     public get nodes() { return this._nodes }
     public get juncts() { return this._juncts }
     public get edges() { return this._edges }
+    public get modules() { return this._modules }
 
     public constructor() {
         this._nodes = new Map<string, Node>()
         this._juncts = new Map<number, Junction>()
         this._edges = new Map<number, { from: string, to: string }>
         this._adjacency = new Map<string, Set<number>>()
+        this._modules = []
     }
 
     public createNode(id: string, direction: NodeDirection, label?: string, x?: DOMUnitExpression, y?: DOMUnitExpression): Node {
@@ -211,7 +314,7 @@ class Graph {
     }
 
     public createEdge(nodeA: string, nodeB: string) {
-        const edgeId = nextEdgeIndex++
+        const edgeId = nextId++
         const a = this._nodes.get(nodeA)
         const b = this._nodes.get(nodeB)
         if (!(a && b)) {
@@ -227,6 +330,12 @@ class Graph {
         }
         this._adjacency.get(nodeA)!.add(edgeId)
         this._adjacency.get(nodeB)!.add(edgeId)
+    }
+
+    public createModule(inNodes: { id: string, label: string }[], outNodes: { id: string, label: string }[], x?: DOMUnitExpression, y?: DOMUnitExpression): Module {
+        const module = new Module(this, inNodes, outNodes, x, y)
+        this._modules.push(module)
+        return module
     }
 
     public removeEdge(edgeId: number): boolean {
@@ -260,7 +369,6 @@ function GraphComp({ graph }: { graph: Graph }) {
     const svgRef = useRef<SVGSVGElement | null>(null)
 
     const [renderHook, forceRenderer] = useReducer(x => !x, false)
-    const [test, setTest] = useState<boolean>(false)
 
     useEffect(() => {
         const anim = () => {
@@ -277,15 +385,10 @@ function GraphComp({ graph }: { graph: Graph }) {
         }
     }, [])
 
-    if (!test && svgRef.current != null) {
-        setTest(true)
-        const out = EDGE_FLAT.evaluate(svgRef.current, true)
-        console.debug(`Final Evaluation: ${out} px`)
-    }
-
     const comps = useMemo(() => {
         return svgRef.current != null ? (
             <>
+                {graph.modules.map(x => <ModuleComp module={x} element={svgRef.current!} />)}
                 {[...graph.edges.values()].map(x => <EdgeComp from={x.from} to={x.to} graph={graph} element={svgRef.current!} />)}
                 {[...graph.juncts.values()].map(x => <JunctionComp junct={x} element={svgRef.current!} />)}
                 {[...graph.nodes.values()].map(x => <NodeComp node={x} element={svgRef.current!} />)}
@@ -302,7 +405,6 @@ function GraphComp({ graph }: { graph: Graph }) {
 }
 
 function WiringPanel({ panelId }: PanelPropsImpl) {
-
     const graph = useMemo(() => {
         const graph = new Graph()
         graph.createNode("A", "out", "Node A",
@@ -313,24 +415,39 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             DOMUnitExpression.fromUnit(0.9, "w"),
             DOMUnitExpression.fromUnit(0.6, "h")
         )
-        graph.createNode("X", "out", "Node X",
-            DOMUnitExpression.fromUnit(0.5, "w"),
-            DOMUnitExpression.fromUnit(0.7, "h")
-        )
-        graph.createNode("Y", "in", "Node Y",
-            DOMUnitExpression.fromUnit(0.5, "w"),
-            DOMUnitExpression.fromUnit(0.9, "h")
-        )
 
-        const junct = graph.createJunction(
-            DOMUnitExpression.fromUnit(0.5, "w"),
-            DOMUnitExpression.fromUnit(0.4, "h")
-        )
+        graph.createModule([
+            { id: "i1", label: "In 1" },
+            { id: "i2", label: "In 2" },
+            { id: "i3", label: "In 3" },
+            { id: "i4", label: "In 4" },
+        ], [
+            { id: "o1", label: "Out 1" },
+            { id: "o2", label: "Out 2" },
+        ])
 
-        graph.createEdge("A", "B")
-        graph.createEdge("A", junct.nodeIn.id)
-        graph.createEdge(junct.nodeOut.id, "B")
-        graph.createEdge("X", "Y")
+        // graph.createNode("X", "out", "Node X",
+        //     DOMUnitExpression.fromUnit(0.5, "w"),
+        //     DOMUnitExpression.fromUnit(0.7, "h")
+        // )
+        // graph.createNode("Y", "in", "Node Y",
+        //     DOMUnitExpression.fromUnit(0.5, "w"),
+        //     DOMUnitExpression.fromUnit(0.9, "h")
+        // )
+
+        // const junct = graph.createJunction(
+        //     DOMUnitExpression.fromUnit(0.5, "w"),
+        //     DOMUnitExpression.fromUnit(0.4, "h")
+        // )
+
+        graph.createEdge("A", "i1")
+        graph.createEdge("A", "i3")
+        graph.createEdge("o1", "B")
+
+        // graph.createEdge("A", "B")
+        // graph.createEdge("A", junct.nodeIn.id)
+        // graph.createEdge(junct.nodeOut.id, "B")
+        // graph.createEdge("X", "Y")
 
         return graph
     }, [])
@@ -341,9 +458,14 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             icon={SynthesisIcons.SteeringWheel}
             panelId={panelId}
             openLocation={"center"}
+            full
         >
-            <div className="w-[70vw] h-[70vh]">
-                <Label size={LabelSize.Large}>Hunter's Messy Brain</Label>
+            <div>
+                <div className="absolute bottom-0 left-0 right-0 flex flex-row justify-between">
+                    <Label className="text-interactive-element-solid font-medium" size={LabelSize.Large}>Stimuli</Label>
+                    <Label className="text-interactive-element-solid font-medium" size={LabelSize.Large}>Code IO</Label>
+                    <Label className="text-interactive-element-solid font-medium" size={LabelSize.Large}>Drivers</Label>
+                </div>
                 <GraphComp graph={graph} />
             </div>
         </Panel>
