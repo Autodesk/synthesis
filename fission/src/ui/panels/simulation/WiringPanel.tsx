@@ -1,23 +1,32 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import Label, { LabelSize } from "@/ui/components/Label"
-import { useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react"
-import { DOMUnit, DOMUnitExpression } from "@/util/Units"
+import { useCallback } from "react"
 import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, addEdge, Controls } from "@xyflow/react"
 
 import '@xyflow/react/dist/style.css';
+import TextUpdaterNode from "./TextUpdaterNode"
 
-function 
+const initialNodes: FlowNode[] = [
+    // { id: "1", position: { x: 0, y: 0 }, data: { label: "Test 1" }, type: "input" },
+    // { id: "2", position: { x: 0, y: 100 }, data: { label: "Test 2" }, type: "output" },
+    {
+        id: 'node-1',
+        type: 'textUpdater',
+        position: { x: 0, y: 0 },
+        data: { value: 123 },
+    }
+]
+
+const initialEdges: FlowEdge[] = []
+// const initialEdges: FlowEdge[] = [
+//     { id: "e1-2", source: "1", target: "2" }
+// ]
+
+const nodeTypes = { textUpdater: TextUpdaterNode }
 
 function WiringPanel({ panelId }: PanelPropsImpl) {
-    const initialNodes: FlowNode[] = useMemo<FlowNode[]>(() => [
-        { id: "1", position: { x: 0, y: 0 }, data: { label: "Test 1" }, type: "input" },
-        { id: "2", position: { x: 0, y: 100 }, data: { label: "Test 2" }, type: "output" },
-    ], [])
-
-    const initialEdges: FlowEdge[] = useMemo<FlowEdge[]>(() => [
-        { id: "e1-2", source: "1", target: "2" }
-    ], [])
+    
 
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
@@ -44,6 +53,7 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
+                    nodeTypes={nodeTypes}
                     fitView
                 >
                     <Controls />
