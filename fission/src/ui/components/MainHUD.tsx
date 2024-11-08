@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { BiMenuAltLeft } from "react-icons/bi"
 import { FaXmark } from "react-icons/fa6"
 import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
@@ -8,8 +7,9 @@ import logo from "@/assets/autodesk_logo.png"
 import { ToastType, useToastContext } from "@/ui/ToastContext"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
-import { Button } from "@mui/base/Button"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
+import { Button } from "@mui/base"
+import { Box } from "@mui/material"
 
 type ButtonProps = {
     value: string
@@ -23,11 +23,23 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={onClick}
-            className={`relative flex flex-row cursor-pointer bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""} items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0`}
+            className={`relative flex flex-row
+                cursor-pointer
+                bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
+                items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0
+                transform
+                transition-transform
+                hover:scale-[1.015]
+                active:scale-[1.03]`}
         >
             {larger && icon}
             {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
-            <span className={`px-2 ${larger ? "py-2" : "py-1 ml-6"} text-main-text cursor-pointer`}>{value}</span>
+            <span
+                className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} text-main-text cursor-pointer`}
+                style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
+            >
+                {value}
+            </span>
         </Button>
     )
 }
@@ -58,12 +70,36 @@ const MainHUD: React.FC = () => {
     return (
         <>
             {!isOpen && (
-                <button
-                    onClick={() => setIsOpen(!isOpen)}
-                    className="absolute left-6 top-6 focus:outline-0 focus-visible:outline-0"
+                <Box
+                    display="flex"
+                    alignItems={"center"}
+                    height="100%"
+                    position={"absolute"}
+                    sx={{ top: "0", left: "0" }}
                 >
-                    <BiMenuAltLeft size={40} className="text-main-hud-close-icon" />
-                </button>
+                    <Box
+                        position="absolute"
+                        width={"5vw"}
+                        minWidth={"50px"}
+                        maxWidth={"60px"}
+                        style={{ aspectRatio: " 1 / 1.5" }}
+                        className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
+                        sx={{
+                            borderTopRightRadius: "100px",
+                            borderBottomRightRadius: "100px",
+                            borderTopLeftRadius: "0",
+                            borderBottomLeftRadius: "0",
+                        }}
+                    >
+                        <Box className="flex w-full h-full items-center justify-center">
+                            <ButtonIcon
+                                onClick={() => setIsOpen(!isOpen)}
+                                value={SynthesisIcons.OpenHudIcon}
+                                className=""
+                            />
+                        </Box>
+                    </Box>
+                </Box>
             )}
             <motion.div
                 initial="closed"
@@ -72,9 +108,18 @@ const MainHUD: React.FC = () => {
                 className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
-                    <img src={logo} className="w-[80%] h-[100%] object-contain" />
+                    <img
+                        src={logo}
+                        className="w-[80%] h-[100%] object-contain"
+                        style={{
+                            userSelect: "none",
+                            MozUserSelect: "none",
+                            msUserSelect: "none",
+                            WebkitUserSelect: "none",
+                        }}
+                    />
                     <ButtonIcon
-                        value={<FaXmark color="bg-icon" size={20} className="text-main-hud-close-icon" />}
+                        value={<FaXmark color="bg-icon" size={23} className="text-main-hud-close-icon" />}
                         onClick={() => setIsOpen(false)}
                     />
                 </div>
@@ -84,60 +129,40 @@ const MainHUD: React.FC = () => {
                     larger={true}
                     onClick={() => openPanel("import-mirabuf")}
                 />
-                <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
+                <Box
+                    display="flex"
+                    flexDirection={"column"}
+                    sx={{ backgroundColor: "black", borderRadius: "7px", padding: "3px" }}
+                >
                     <MainHUDButton
-                        value={"Manage Assemblies"}
-                        icon={SynthesisIcons.Wrench}
-                        onClick={() => openModal("manage-assemblies")}
-                    />
-                    <MainHUDButton
-                        value={"Settings"}
+                        value={"General Settings"}
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
                     />
-                    {/* <MainHUDButton
+                    {/*                     <MainHUDButton
                         value={"View"}
                         icon={SynthesisIcons.MagnifyingGlass}
                         onClick={() => openModal("view")}
                     /> */}
                     <MainHUDButton
-                        value={"Controls"}
-                        icon={SynthesisIcons.Gamepad}
-                        onClick={() => openModal("change-inputs")}
-                    />
-                    <MainHUDButton
-                        value={"Import Local Mira"}
-                        icon={SynthesisIcons.Import}
-                        onClick={() => openModal("import-local-mirabuf")}
-                    />
-                </div>
-                <div className="flex flex-col gap-0 bg-background w-full rounded-3xl">
-                    <MainHUDButton
-                        value={"Edit Scoring Zones"}
-                        icon={SynthesisIcons.Basketball}
-                        onClick={() => {
-                            openPanel("scoring-zones")
-                        }}
-                    />
-                    <MainHUDButton
-                        value={"Configure"}
-                        icon={SynthesisIcons.Gear}
-                        onClick={() => openModal("config-robot")}
+                        value={"Configure Assets"}
+                        icon={SynthesisIcons.Wrench}
+                        onClick={() => openPanel("configure")}
                     />
                     <MainHUDButton
                         value={"Debug Tools"}
-                        icon={SynthesisIcons.ScrewdriverWrench}
+                        icon={SynthesisIcons.Bug}
                         onClick={() => {
                             openPanel("debug")
                         }}
                     />
-                </div>
+                </Box>
                 {userInfo ? (
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}
                         icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
-                        onClick={() => APS.logout()}
+                        onClick={() => openModal("aps-management")}
                     />
                 ) : (
                     <MainHUDButton

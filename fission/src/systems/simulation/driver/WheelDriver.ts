@@ -14,13 +14,25 @@ class WheelDriver extends Driver {
     public device?: string
     private _reversed: boolean
 
-    private _targetWheelSpeed: number = 0.0
+    public accelerationDirection: number = 0.0
+    private _prevVel: number = 0.0
+    public maxVelocity = 30.0
+    private _maxAcceleration = 1.5
 
-    public get targetWheelSpeed(): number {
-        return this._targetWheelSpeed
+    public _targetVelocity = () => {
+        let vel = this.accelerationDirection * (this._reversed ? -1 : 1) * this.maxVelocity
+
+        if (vel - this._prevVel < -this._maxAcceleration) vel = this._prevVel - this._maxAcceleration
+        if (vel - this._prevVel > this._maxAcceleration) vel = this._prevVel + this._maxAcceleration
+
+        return vel
     }
-    public set targetWheelSpeed(radsPerSec: number) {
-        this._targetWheelSpeed = radsPerSec
+
+    public get maxForce(): number {
+        return this._maxAcceleration
+    }
+    public set maxForce(acc: number) {
+        this._maxAcceleration = acc
     }
 
     public get constraint(): Jolt.VehicleConstraint {
@@ -29,6 +41,7 @@ class WheelDriver extends Driver {
 
     public constructor(
         constraint: Jolt.VehicleConstraint,
+        maxVel: number,
         info?: mirabuf.IInfo,
         deviceType?: SimType,
         device?: string,
@@ -37,6 +50,10 @@ class WheelDriver extends Driver {
         super(info)
 
         this._constraint = constraint
+        this.maxVelocity = maxVel
+        const controller = JOLT.castObject(this._constraint.GetController(), JOLT.WheeledVehicleController)
+        this._maxAcceleration = controller.GetEngine().mMaxTorque
+
         this._reversed = reversed
         this.deviceType = deviceType
         this.device = device
@@ -46,7 +63,9 @@ class WheelDriver extends Driver {
     }
 
     public Update(_: number): void {
-        this._wheel.SetAngularVelocity(this._targetWheelSpeed * (this._reversed ? -1 : 1))
+        const vel = this._targetVelocity()
+        this._wheel.SetAngularVelocity(vel)
+        this._prevVel = vel
     }
 
     public set reversed(val: boolean) {

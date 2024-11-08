@@ -16,24 +16,20 @@
 
 """
 
-import logging
-import traceback
 from typing import Union
 
 import adsk
 
-from proto.proto_out import types_pb2
-
-from ...general_imports import INTERNAL_ID
-from ...Logging import logFailure
+from src.Logging import logFailure
+from src.Proto import types_pb2
 
 
 @logFailure
 def GetPhysicalProperties(
     fusionObject: Union[adsk.fusion.BRepBody, adsk.fusion.Occurrence, adsk.fusion.Component],
     physicalProperties: types_pb2.PhysicalProperties,
-    level=1,
-):
+    level: int = 1,
+) -> None:
     """Will populate a physical properties section of an exported file
 
     Args:

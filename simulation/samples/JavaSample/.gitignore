@@ -1,4 +1,7 @@
-*.json
+networktables.json
+simgui-ds.json
+simgui-window.json
+simgui.json
 
 .gradle/
 .vscode/

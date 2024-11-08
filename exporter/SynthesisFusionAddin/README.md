@@ -33,15 +33,14 @@ We use `VSCode` Primarily, download it to interact with our code or use your own
 
 ### How to Build + Run
 
-1. See root [`README`](/README.md) on how to run `init` script
-2. Open `Autodesk Fusion`
-3. Select `UTILITIES` from the top bar
-4. Click `ADD-INS` Button
-5. Click `Add-Ins` tab at the top of Scripts and Add-Ins dialog
-6. Press + Button under **My Add-Ins**
-7. Navigate to the containing folder for this Addin and click open at bottom - _clone-directory_/synthesis/exporters/SynthesisFusionAddin
-8. Synthesis should be an option - select it and click run at the bottom of the dialog
-9. There should now be a button that says Synthesis in your utilities menu
+1. Open `Autodesk Fusion`
+2. Select `UTILITIES` from the top bar
+3. Click `ADD-INS` Button
+4. Click `Add-Ins` tab at the top of Scripts and Add-Ins dialog
+5. Press + Button under **My Add-Ins**
+6. Navigate to the containing folder for this Addin and click open at bottom - _clone-directory_/synthesis/exporters/SynthesisFusionAddin
+7. Synthesis should be an option - select it and click run at the bottom of the dialog
+8. There should now be a button that says Synthesis in your utilities menu
    - If there is no button there may be a problem - see below for [checking log file](#debug-non-start)
 
 ---

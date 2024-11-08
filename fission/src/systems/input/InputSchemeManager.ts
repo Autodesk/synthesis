@@ -129,20 +129,6 @@ class InputSchemeManager {
         PreferencesSystem.setGlobalPreference("InputSchemes", customizedSchemes)
         PreferencesSystem.savePreferences()
     }
-
-    /** Returns a copy of a scheme without references to the original in any way */
-    public static copyScheme(scheme: InputScheme): InputScheme {
-        const copiedInputs: Input[] = []
-        scheme.inputs.forEach(i => copiedInputs.push(i.getCopy()))
-
-        return {
-            schemeName: scheme.schemeName,
-            descriptiveName: scheme.descriptiveName,
-            customized: scheme.customized,
-            usesGamepad: scheme.usesGamepad,
-            inputs: copiedInputs,
-        }
-    }
 }
 
 export default InputSchemeManager

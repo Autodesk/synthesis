@@ -13,8 +13,8 @@ import InputSystem from "../input/InputSystem"
 import Jolt from "@barclah/jolt-physics"
 
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import {} from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
+import { CSM } from "three/examples/jsm/csm/CSM.js"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -34,6 +34,8 @@ class SceneRenderer extends WorldSystem {
 
     private _orbitControls: OrbitControls
     private _transformControls: Map<TransformControls, number> // maps all rendered transform controls to their size
+
+    private _light: THREE.DirectionalLight | CSM | undefined
 
     public get sceneObjects() {
         return this._sceneObjects
@@ -75,25 +77,10 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 3.0)
-        directionalLight.position.set(-1.0, 3.0, 2.0)
-        directionalLight.castShadow = true
-        this._scene.add(directionalLight)
+        // Adding the lighting uisng quality preferences
+        this.ChangeLighting(PreferencesSystem.getGlobalPreference<string>("QualitySettings"))
 
-        const shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
-        const shadowCamSize = 15
-        console.debug(`Shadow Map Size: ${shadowMapSize}`)
-
-        directionalLight.shadow.camera.top = shadowCamSize
-        directionalLight.shadow.camera.bottom = -shadowCamSize
-        directionalLight.shadow.camera.left = -shadowCamSize
-        directionalLight.shadow.camera.right = shadowCamSize
-        directionalLight.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize)
-        directionalLight.shadow.blurSamples = 16
-        directionalLight.shadow.normalBias = 0.01
-        directionalLight.shadow.bias = 0.0
-
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.1)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
 
         const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR))
@@ -145,6 +132,11 @@ class SceneRenderer extends WorldSystem {
             obj.Update()
         })
 
+        this._mainCamera.updateMatrixWorld()
+
+        // updating the CSM light if it is enabled
+        if (this._light instanceof CSM) this._light.update()
+
         this._skybox.position.copy(this._mainCamera.position)
 
         const mainCameraFovRadians = (Math.PI * (this._mainCamera.fov * 0.5)) / 180
@@ -165,6 +157,75 @@ class SceneRenderer extends WorldSystem {
 
     public Destroy(): void {
         this.RemoveAllSceneObjects()
+    }
+
+    /**
+     * Changes the quality of lighting between cascading shadows and directional lights
+     *
+     * @param quality: string representing the quality of lighting - "Low", "Medium", "High"
+     */
+    public ChangeLighting(quality: string): void {
+        // removing the previous lighting method
+        if (this._light instanceof THREE.DirectionalLight) {
+            this._scene.remove(this._light)
+        } else if (this._light instanceof CSM) {
+            this._light.dispose()
+            this._light.remove()
+        }
+
+        // setting the shadow map size
+        const shadowMapSize = Math.min(4096, this._renderer.capabilities.maxTextureSize)
+
+        // setting the light to a basic directional light
+        if (quality === "Low" || quality === "Medium") {
+            const shadowCamSize = 15
+
+            this._light = new THREE.DirectionalLight(0xffffff, 5.0)
+            this._light.position.set(-1.0, 3.0, 2.0)
+            this._light.castShadow = true
+            this._light.shadow.camera.top = shadowCamSize
+            this._light.shadow.camera.bottom = -shadowCamSize
+            this._light.shadow.camera.left = -shadowCamSize
+            this._light.shadow.camera.right = shadowCamSize
+            this._light.shadow.mapSize = new THREE.Vector2(shadowMapSize, shadowMapSize)
+            this._light.shadow.blurSamples = 16
+            this._light.shadow.bias = 0.0
+            this._light.shadow.normalBias = 0.01
+            this._scene.add(this._light)
+        } else if (quality === "High") {
+            // setting light to cascading shadows
+            this._light = new CSM({
+                parent: this._scene,
+                camera: this._mainCamera,
+                cascades: 4,
+                lightDirection: new THREE.Vector3(1.0, -3.0, -2.0).normalize(),
+                lightIntensity: 5,
+                shadowMapSize: shadowMapSize,
+                mode: "custom",
+                maxFar: 30,
+                shadowBias: -0.00001,
+                customSplitsCallback: (cascades: number, near: number, far: number, breaks: number[]) => {
+                    const blend = 0.7
+                    for (let i = 1; i < cascades; i++) {
+                        const uniformFactor = (near + ((far - near) * i) / cascades) / far
+                        const logarithmicFactor = (near * (far / near) ** (i / cascades)) / far
+                        const combinedFactor = uniformFactor * (1 - blend) + logarithmicFactor * blend
+
+                        breaks.push(combinedFactor)
+                    }
+
+                    breaks.push(1)
+                },
+            })
+
+            // setting up the materials for all objects in the scene
+            this._light.fade = true
+            this._scene.children.forEach(child => {
+                if (child instanceof THREE.Mesh) {
+                    if (this._light instanceof CSM) this._light.setupMaterial(child.material)
+                }
+            })
+        }
     }
 
     public RegisterSceneObject<T extends SceneObject>(obj: T): number {
@@ -190,6 +251,7 @@ class SceneRenderer extends WorldSystem {
     public CreateSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
+            if (this._light instanceof CSM) this._light.setupMaterial(material)
             return new THREE.Mesh(geo, material)
         } else {
             return new THREE.Mesh(geo, this.CreateToonMaterial())
@@ -213,10 +275,13 @@ class SceneRenderer extends WorldSystem {
         }
         const gradientMap = new THREE.DataTexture(colors, colors.length, 1, format)
         gradientMap.needsUpdate = true
-        return new THREE.MeshToonMaterial({
+        const material = new THREE.MeshToonMaterial({
             color: color,
+            shadowSide: THREE.DoubleSide,
             gradientMap: gradientMap,
         })
+        if (this._light instanceof CSM) this._light.setupMaterial(material)
+        return material
     }
 
     /**
@@ -249,7 +314,7 @@ class SceneRenderer extends WorldSystem {
         return [(window.innerWidth * (screenSpace.x + 1.0)) / 2.0, (window.innerHeight * (1.0 - screenSpace.y)) / 2.0]
     }
 
-    /** 
+    /**
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
@@ -358,6 +423,15 @@ class SceneRenderer extends WorldSystem {
      */
     public RemoveObject(obj: THREE.Object3D) {
         this._scene.remove(obj)
+    }
+
+    /**
+     * Sets up the threejs material for cascading shadows if the CSM is enabled
+     *
+     * @param material
+     */
+    public SetupMaterial(material: THREE.Material) {
+        if (this._light instanceof CSM) this._light.setupMaterial(material)
     }
 }
 

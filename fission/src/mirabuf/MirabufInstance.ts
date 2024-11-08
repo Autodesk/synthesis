@@ -146,6 +146,7 @@ class MirabufInstance {
                     material = new THREE.MeshPhongMaterial({
                         color: hex,
                         shininess: 0.0,
+                        shadowSide: THREE.DoubleSide,
                         opacity: opacity,
                         transparent: opacity < 1.0,
                     })
@@ -156,6 +157,7 @@ class MirabufInstance {
                     console.debug("Toon Material")
                 }
 
+                World.SceneRenderer.SetupMaterial(material!)
                 this._materials.set(appearanceId, material!)
             }
         )

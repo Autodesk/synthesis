@@ -8,13 +8,21 @@ import {
     MirabufFilesUpdateEvent,
     RequestMirabufFiles,
 } from "@/aps/APSDataManagement"
-import MirabufCachingService, { MirabufCacheInfo, MirabufRemoteInfo, MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, {
+    backUpFields,
+    backUpRobots,
+    canOPFS,
+    MirabufCacheInfo,
+    MirabufRemoteInfo,
+    MiraType,
+} from "@/mirabuf/MirabufLoader"
 import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { usePanelControlContext } from "@/ui/PanelContext"
+import { useModalControlContext } from "@/ui/ModalContext"
 import TaskStatus from "@/util/TaskStatus"
 import {
     PositiveButton,
@@ -26,6 +34,9 @@ import {
 } from "@/ui/components/StyledComponents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import Button from "@/ui/components/Button"
+import { setSelectedBrainIndexGlobal } from "../configuring/ChooseInputSchemePanel"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 interface ItemCardProps {
     id: string
@@ -68,7 +79,9 @@ export type MiraManifest = {
 }
 
 function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
-    return Object.values(MirabufCachingService.GetCacheMap(miraType))
+    return Object.values(
+        canOPFS ? MirabufCachingService.GetCacheMap(miraType) : miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+    )
 }
 
 function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
@@ -100,6 +113,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { showTooltip } = useTooltipControlContext()
     const { closePanel, openPanel } = usePanelControlContext()
+    const { openModal } = useModalControlContext()
 
     const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(GetCacheInfo(MiraType.FIELD))
@@ -134,6 +148,11 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         } else {
             setFiles(GetMirabufFiles())
         }
+    }, [])
+
+    useEffect(() => {
+        closePanel("configure")
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // Get Default Mirabuf Data, Load into manifest.
@@ -184,7 +203,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [showTooltip, closePanel, panelId, openPanel]
     )
@@ -207,7 +229,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [closePanel, panelId, openPanel]
     )
@@ -229,7 +254,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
 
-            if (type == MiraType.ROBOT) openPanel("choose-scheme")
+            if (type == MiraType.ROBOT) {
+                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
+                openPanel("choose-scheme")
+            }
         },
         [closePanel, panelId, openPanel]
     )
@@ -335,7 +363,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     return (
         <Panel
-            name={"Select Mirabuf"}
+            name={"Spawn Asset"}
             icon={SynthesisIcons.AddLarge}
             panelId={panelId}
             acceptEnabled={false}
@@ -414,6 +442,9 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         {remoteFieldElements}
                     </>
                 )}
+                <Box alignSelf={"center"}>
+                    <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
+                </Box>
             </div>
         </Panel>
     )

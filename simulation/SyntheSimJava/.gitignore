@@ -3,4 +3,9 @@
 .vscode
 
 # Ignore Gradle build output directory
-build
+build/
+ctre-sil/
+bin/
+
+.settings/
+.classpath

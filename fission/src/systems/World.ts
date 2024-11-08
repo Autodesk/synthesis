@@ -14,7 +14,7 @@ class World {
     private static _physicsSystem: PhysicsSystem
     private static _simulationSystem: SimulationSystem
     private static _inputSystem: InputSystem
-    private static _analyticsSystem: AnalyticsSystem | undefined
+    private static _analyticsSystem: AnalyticsSystem | undefined = undefined
 
     private static _accumTimes: AccumTimes = {
         frames: 0,

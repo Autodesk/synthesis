@@ -1,6 +1,6 @@
 import os
 
-from . import OsHelper
+from src.UI import OsHelper
 
 """
 Dictionaries that store all the icon paths in ConfigCommand. All path strings are OS-independent
@@ -30,11 +30,6 @@ gamepieceIcons = {
 mouseIcons = {
     "add": resources + os.path.join("MousePreselectIcons", "mouse-add-icon.png"),
     "remove": resources + os.path.join("MousePreselectIcons", "mouse-remove-icon.png"),
-}
-
-massIcons = {
-    "KG": resources + os.path.join("kg_icon"),  # resource folder
-    "LBS": resources + os.path.join("lbs_icon"),  # resource folder
 }
 
 signalIcons = {

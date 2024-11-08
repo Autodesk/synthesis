@@ -29,7 +29,12 @@ type LabelProps = {
 }
 
 const Label: React.FC<LabelProps> = ({ children, size, className }) => (
-    <span className={`text-main-text h-min ${labelSizeToClassName(size)} ${className}`}>{children}</span>
+    <span
+        className={`text-main-text h-min ${labelSizeToClassName(size)} ${className}`}
+        style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
+    >
+        {children}
+    </span>
 )
 
 export default Label

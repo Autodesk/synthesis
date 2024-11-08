@@ -1,14 +1,29 @@
-# Synthesis Exporter Installer
+# Synthesis Exporter Installers
 
-## Creating the installer
-### Windows
-1. Run `setup.bat`. This will copy the Synthesis exporter into the current directory.
-2. Zip together the `install.bat` script and the `Synthesis` directory.
+This `readme` is for developers of Synthesis or those looking to build the installers themselves, if you are just looking for how to install our Fusion Exporter please navigate to [`/installer/`](../).
 
-### MacOS
-1. Run `create.sh`. This will copy the Synthesis exporter into the current directory and create a zip file with the necessary files.
+## Windows
 
-## Using the installer
-1. Download the zip file.
-2. Unzip it anywhere (likely your Downloads folder).
-3. Run the `install.bat` (`install.sh` for MacOS) script.
+The windows installer has the following prerequisites:
+- Python `3.9` or newer and pip.
+- And that's it!
+
+### To Build:
+
+Once you have verified that python and pip are installed on your computer:
+- Open a powershell window and navigate to [`/installer/exporter/Windows/`]
+- Run `./build.bat` in powershell.
+- After some time you should see `installer.exe` in your current directory.
+- And that's it! You have now built the Synthesis Exporter Installer for Windows!
+- You can then run the `.exe` from file explorer or alternatively, for debugging purposes, run `./installer.exe` from the terminal.
+
+## MacOS
+
+The Mac installer has zero prerequisites. Hooray!
+
+### To Build:
+
+- Navigate to [`/installer/exporter/OSX/`](./OSX/).
+- Run `./build.sh` in your terminal.
+- You should then find `SynthesisExporterInstaller.pkg` in your current directory.
+- And that's it! You now have built the Synthesis Exporter Installer for MacOS!

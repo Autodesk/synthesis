@@ -1,9 +1,11 @@
 import os
 import pathlib
 import platform
-from dataclasses import dataclass, field, fields, is_dataclass
+from dataclasses import MISSING, dataclass, field, fields, is_dataclass
 from enum import Enum, EnumType
-from typing import Union, get_origin
+from typing import Any, TypeAlias, get_args, get_origin
+
+import adsk.fusion
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
@@ -11,24 +13,32 @@ JointParentType = Enum("JointParentType", ["ROOT", "END"])
 WheelType = Enum("WheelType", ["STANDARD", "OMNI", "MECANUM"])
 SignalType = Enum("SignalType", ["PWM", "CAN", "PASSIVE"])
 ExportMode = Enum("ExportMode", ["ROBOT", "FIELD"])  # Dynamic / Static export
-PreferredUnits = Enum("PreferredUnits", ["METRIC", "IMPERIAL"])
 ExportLocation = Enum("ExportLocation", ["UPLOAD", "DOWNLOAD"])
+UnitSystem = Enum("UnitSystem", ["METRIC", "IMPERIAL"])
+
+FUSION_UNIT_SYSTEM: dict[int, UnitSystem] = {
+    adsk.fusion.DistanceUnits.MillimeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.CentimeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.MeterDistanceUnits: UnitSystem.METRIC,
+    adsk.fusion.DistanceUnits.InchDistanceUnits: UnitSystem.IMPERIAL,
+    adsk.fusion.DistanceUnits.FootDistanceUnits: UnitSystem.IMPERIAL,
+}
 
 
 @dataclass
 class Wheel:
-    jointToken: str = field(default=None)
-    wheelType: WheelType = field(default=None)
-    signalType: SignalType = field(default=None)
+    jointToken: str = field(default="")
+    wheelType: WheelType = field(default=WheelType.STANDARD)
+    signalType: SignalType = field(default=SignalType.PWM)
 
 
 @dataclass
 class Joint:
-    jointToken: str = field(default=None)
-    parent: JointParentType = field(default=None)
-    signalType: SignalType = field(default=None)
-    speed: float = field(default=None)
-    force: float = field(default=None)
+    jointToken: str = field(default="")
+    parent: JointParentType = field(default=JointParentType.ROOT)
+    signalType: SignalType = field(default=SignalType.PWM)
+    speed: float = field(default=float("-inf"))
+    force: float = field(default=float("-inf"))
 
     # Transition: AARD-1865
     # Should consider changing how the parser handles wheels and joints as there is overlap between
@@ -39,9 +49,9 @@ class Joint:
 
 @dataclass
 class Gamepiece:
-    occurrenceToken: str = field(default=None)
-    weight: float = field(default=None)
-    friction: float = field(default=None)
+    occurrenceToken: str = field(default="")
+    weight: float = field(default=float("-inf"))
+    friction: float = field(default=float("-inf"))
 
 
 class PhysicalDepth(Enum):
@@ -72,26 +82,12 @@ class ModelHierarchy(Enum):
     SingleMesh = 3
 
 
-class LBS(float):
-    """Mass Unit in Pounds."""
-
-
-class KG(float):
-    """Mass Unit in Kilograms."""
-
-
-def toLbs(kgs: float) -> LBS:
-    return LBS(round(kgs * 2.2062, 2))
-
-
-def toKg(pounds: float) -> KG:
-    return KG(round(pounds / 2.2062, 2))
-
-
+KG: TypeAlias = float
+LBS: TypeAlias = float
 PRIMITIVES = (bool, str, int, float, type(None))
 
 
-def encodeNestedObjects(obj: any) -> any:
+def encodeNestedObjects(obj: Any) -> Any:
     if isinstance(obj, Enum):
         return obj.value
     elif hasattr(obj, "__dict__"):
@@ -101,13 +97,13 @@ def encodeNestedObjects(obj: any) -> any:
         return obj
 
 
-def makeObjectFromJson(objType: type, data: any) -> any:
+def makeObjectFromJson(objType: type, data: Any) -> Any:
     if isinstance(objType, EnumType):
         return objType(data)
     elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
         return data
     elif get_origin(objType) is list:
-        return [makeObjectFromJson(objType.__args__[0], item) for item in data]
+        return [makeObjectFromJson(get_args(objType)[0], item) for item in data]
 
     obj = objType()
     assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
@@ -115,13 +111,13 @@ def makeObjectFromJson(objType: type, data: any) -> any:
         if field.name in data:
             setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
         else:
-            setattr(obj, field.name, field.default)
+            setattr(obj, field.name, field.default_factory if field.default_factory is not MISSING else field.default)
 
     return obj
 
 
 class OString:
-    def __init__(self, path: object, fileName: str):
+    def __init__(self, path: str | os.PathLike[str] | list[str], fileName: str):
         """Generate a string for the operating system that matches fusion requirements
 
         Args:
@@ -142,7 +138,7 @@ class OString:
             str: OString [ - ['test', 'test2]  - 'test.hell' ]
         """
         # return f"OString [\n-\t[{self.literals!r} \n-\t{self.fileName}\n]"
-        return f"{os.path.join(self.path, self.fileName)}"
+        return f"{os.path.join(str(self.path), self.fileName)}"
 
     def __eq__(self, value: object) -> bool:
         """Equals operator for this class
@@ -179,7 +175,7 @@ class OString:
         else:
             raise OSError(2, "No Operating System Recognized", f"{osName}")
 
-    def AssertEquals(self, comparing: object):
+    def AssertEquals(self, comparing: object) -> bool:
         """Compares the two OString objects
 
         Args:
@@ -190,21 +186,21 @@ class OString:
         """
         return comparing == self
 
-    def getPath(self) -> Union[str, object]:
+    def getPath(self) -> str | os.PathLike[str]:
         """Returns a OSPath from literals and filename
 
         Returns:
             Path | str: OsPath that is cross platform
         """
-        return os.path.join(self.path, self.fileName)
+        return os.path.join(str(self.path), self.fileName)
 
-    def getDirectory(self) -> Union[str, object]:
+    def getDirectory(self) -> str | os.PathLike[str]:
         """Returns a OSPath from literals and filename
 
         Returns:
             Path | str: OsPath that is cross platform
         """
-        return self.path
+        return self.path if not isinstance(self.path, list) else "".join(self.path)
 
     def exists(self) -> bool:
         """Check to see if Directory and File exist in the current system
@@ -216,7 +212,7 @@ class OString:
             return True
         return False
 
-    def serialize(self) -> str:
+    def serialize(self) -> str | os.PathLike[str]:
         """Serialize the OString to be storred in a temp doc
 
         Returns:
@@ -225,7 +221,7 @@ class OString:
         return self.getPath()
 
     @classmethod
-    def deserialize(cls, serialized) -> object:
+    def deserialize(cls, serialized: str | os.PathLike[str]) -> object:
         path, file = os.path.split(serialized)
         if path is None or file is None:
             raise RuntimeError(f"Can not parse OString Path supplied \n {serialized}")
@@ -273,7 +269,7 @@ class OString:
         """
         if cls._os() == "Windows":
             if os.getenv("APPDATA") is not None:
-                path = os.path.join(os.getenv("APPDATA"), "..", "Local", "Temp")
+                path = os.path.join(os.getenv("APPDATA") or "", "..", "Local", "Temp")
                 return cls(path, fileName)
         return None
 

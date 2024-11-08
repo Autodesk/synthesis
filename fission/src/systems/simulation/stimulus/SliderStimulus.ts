@@ -1,5 +1,6 @@
 import Jolt from "@barclah/jolt-physics"
 import EncoderStimulus from "./EncoderStimulus"
+import { mirabuf } from "@/proto/mirabuf"
 
 class SliderStimulus extends EncoderStimulus {
     private _slider: Jolt.SliderConstraint
@@ -12,8 +13,8 @@ class SliderStimulus extends EncoderStimulus {
         return this._velocity
     }
 
-    public constructor(slider: Jolt.SliderConstraint) {
-        super()
+    public constructor(slider: Jolt.SliderConstraint, info?: mirabuf.IInfo) {
+        super(info)
 
         this._slider = slider
     }
