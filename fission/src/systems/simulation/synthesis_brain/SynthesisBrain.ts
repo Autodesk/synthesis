@@ -106,8 +106,8 @@ class SynthesisBrain extends Brain {
 
         // Two body constraints are part of wheels and are used to determine which way a wheel is facing
         const fixedConstraints: Jolt.TwoBodyConstraint[] = this._mechanism.constraints
-            .filter(mechConstraint => mechConstraint.constraint instanceof JOLT.TwoBodyConstraint)
-            .map(mechConstraint => mechConstraint.constraint as Jolt.TwoBodyConstraint)
+            .filter(mechConstraint => mechConstraint.primaryConstraint instanceof JOLT.TwoBodyConstraint)
+            .map(mechConstraint => mechConstraint.primaryConstraint as Jolt.TwoBodyConstraint)
 
         const leftWheels: WheelDriver[] = []
         const leftStimuli: WheelRotationStimulus[] = []

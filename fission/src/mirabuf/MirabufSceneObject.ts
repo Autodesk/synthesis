@@ -167,6 +167,10 @@ class MirabufSceneObject extends SceneObject {
             this.Eject()
         }
 
+        if (this._transformGizmos) {
+            this._mechanism.ghostBodies.forEach(x => World.PhysicsSystem.DisablePhysicsForBody(x))
+        }
+
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
@@ -423,12 +427,14 @@ class MirabufSceneObject extends SceneObject {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.EnablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
+        this._mechanism.ghostBodies.forEach(x => World.PhysicsSystem.EnablePhysicsForBody(x))
     }
 
     private DisablePhysics() {
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             World.PhysicsSystem.DisablePhysicsForBody(this._mechanism.GetBodyByNodeId(rn.id)!)
         })
+        this._mechanism.ghostBodies.forEach(x => World.PhysicsSystem.DisablePhysicsForBody(x))
     }
 
     public GetRootNodeId(): Jolt.BodyID | undefined {
