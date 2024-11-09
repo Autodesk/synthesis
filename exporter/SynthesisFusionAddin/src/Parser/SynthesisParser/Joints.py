@@ -350,7 +350,7 @@ def fillBallJointMotion(ballMotion: adsk.fusion.BallJointMotion, proto_joint: jo
     """
 
     # proto_joint.joint_motion_type = joint_pb2.JointMotion.REVOLUTE
-    proto_joint.joint_motion_type = joint_pb2.JointMotion.CUSTOM
+    proto_joint.joint_motion_type = joint_pb2.JointMotion.BALL
     customDofs = proto_joint.custom
 
     pitchDof = joint_pb2.DOF()
