@@ -1,14 +1,17 @@
 import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
+import Lazy from "@/util/Lazy.ts"
 import WPILibWSWorker from "./WPILibWSWorker?worker"
 import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
-import { SimOutputGroup } from "./SimOutput"
-import { SimInput } from "./SimInput"
+import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
+import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
+import { Random } from "@/util/Random"
 
-const worker = new WPILibWSWorker()
+const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
+
 const PWM_SPEED = "<speed"
 const PWM_POSITION = "<position"
 
@@ -25,10 +28,15 @@ const CANENCODER_VELOCITY = ">velocity"
 
 export enum SimType {
     PWM = "PWM",
+    SimDevice = "SimDevice",
     CANMotor = "CANMotor",
     Solenoid = "Solenoid",
     CANEncoder = "CANEncoder",
     Gyro = "Gyro",
+    Accel = "Accel",
+    DIO = "DIO",
+    AI = "AI",
+    AO = "AO",
 }
 
 enum FieldType {
@@ -54,13 +62,15 @@ function GetFieldType(field: string): FieldType {
 }
 
 type DeviceName = string
-type DeviceData = Map<string, number>
+type DeviceData = Map<string, number | boolean | string>
 
 export const simMap = new Map<SimType, Map<DeviceName, DeviceData>>()
 
 export class SimGeneric {
     private constructor() {}
 
+    public static Get<T>(simType: SimType, device: string, field: string): T | undefined
+    public static Get<T>(simType: SimType, device: string, field: string, defaultValue: T): T
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Read && fieldType != FieldType.Both) {
@@ -83,7 +93,7 @@ export class SimGeneric {
         return (data.get(field) as T | undefined) ?? defaultValue
     }
 
-    public static Set<T extends number>(simType: SimType, device: string, field: string, value: T): boolean {
+    public static Set<T extends number | boolean>(simType: SimType, device: string, field: string, value: T): boolean {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a write or both field type`)
@@ -102,11 +112,11 @@ export class SimGeneric {
             return false
         }
 
-        const selectedData: { [key: string]: number } = {}
+        const selectedData: { [key: string]: number | boolean } = {}
         selectedData[field] = value
         data.set(field, value)
 
-        worker.postMessage({
+        worker.getValue().postMessage({
             command: "update",
             data: {
                 type: simType,
@@ -136,7 +146,7 @@ export class SimCAN {
     private constructor() {}
 
     public static GetDeviceWithID(id: number, type: SimType): DeviceData | undefined {
-        const id_exp = /.*\[(\d+)\]/g
+        const id_exp = /SYN.*\[(\d+)\]/g
         const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type)
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
@@ -204,6 +214,111 @@ export class SimGyro {
     public static SetAngleZ(device: string, angle: number): boolean {
         return SimGeneric.Set(SimType.Gyro, device, ">angle_z", angle)
     }
+
+    public static SetRateX(device: string, rate: number): boolean {
+        return SimGeneric.Set(SimType.Gyro, device, ">rate_x", rate)
+    }
+
+    public static SetRateY(device: string, rate: number): boolean {
+        return SimGeneric.Set(SimType.Gyro, device, ">rate_y", rate)
+    }
+
+    public static SetRateZ(device: string, rate: number): boolean {
+        return SimGeneric.Set(SimType.Gyro, device, ">rate_z", rate)
+    }
+}
+
+export class SimAccel {
+    private constructor() {}
+
+    public static SetX(device: string, accel: number): boolean {
+        return SimGeneric.Set(SimType.Accel, device, ">x", accel)
+    }
+
+    public static SetY(device: string, accel: number): boolean {
+        return SimGeneric.Set(SimType.Accel, device, ">y", accel)
+    }
+
+    public static SetZ(device: string, accel: number): boolean {
+        return SimGeneric.Set(SimType.Accel, device, ">z", accel)
+    }
+}
+
+export class SimDIO {
+    private constructor() {}
+
+    public static SetValue(device: string, value: boolean): boolean {
+        return SimGeneric.Set(SimType.DIO, device, "<>value", value)
+    }
+
+    public static GetValue(device: string): boolean {
+        return SimGeneric.Get(SimType.DIO, device, "<>value", false)
+    }
+}
+
+export class SimAI {
+    constructor() {}
+
+    public static SetValue(device: string, value: number): boolean {
+        return SimGeneric.Set(SimType.AI, device, ">voltage", value)
+    }
+
+    /**
+     * The number of averaging bits
+     */
+    public static GetAvgBits(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<avg_bits")
+    }
+    /**
+     * The number of oversampling bits
+     */
+    public static GetOversampleBits(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<oversample_bits")
+    }
+    /**
+     * Input voltage, in volts
+     */
+    public static SetVoltage(device: string, voltage: number) {
+        return SimGeneric.Set(SimType.AI, device, ">voltage", voltage)
+    }
+    /**
+     * If the accumulator is initialized in the robot program
+     */
+    public static GetAccumInit(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<accum_init")
+    }
+    /**
+     * The accumulated value
+     */
+    public static SetAccumValue(device: string, accum_value: number) {
+        return SimGeneric.Set(SimType.AI, device, ">accum_value", accum_value)
+    }
+    /**
+     * The number of accumulated values
+     */
+    public static SetAccumCount(device: string, accum_count: number) {
+        return SimGeneric.Set(SimType.AI, device, ">accum_count", accum_count)
+    }
+    /**
+     * The center value of the accumulator
+     */
+    public static GetAccumCenter(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<accum_center")
+    }
+    /**
+     * The accumulator's deadband
+     */
+    public static GetAccumDeadband(device: string) {
+        return SimGeneric.Get(SimType.AI, device, "<accum_deadband")
+    }
+}
+
+export class SimAO {
+    constructor() {}
+
+    public static GetVoltage(device: string): number {
+        return SimGeneric.Get(SimType.AI, device, ">voltage", 0.0)
+    }
 }
 
 type WSMessage = {
@@ -212,7 +327,7 @@ type WSMessage = {
     data: Map<string, number>
 }
 
-worker.addEventListener("message", (eventData: MessageEvent) => {
+worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     let data: WSMessage | undefined
 
     if (typeof eventData.data == "object") {
@@ -226,8 +341,7 @@ worker.addEventListener("message", (eventData: MessageEvent) => {
         }
     }
 
-    if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type) || data.device.split(" ")[0] != "SYN")
-        return
+    if (!data?.type || !(Object.values(SimType) as string[]).includes(data.type)) return
 
     UpdateSimMap(data.type as SimType, data.device, data.data)
 })
@@ -253,7 +367,7 @@ function UpdateSimMap(type: SimType, device: string, updateData: DeviceData) {
 class WPILibBrain extends Brain {
     private _simLayer: SimulationLayer
 
-    private _simOutputs: SimOutputGroup[] = []
+    private _simOutputs: SimOutput[] = []
     private _simInputs: SimInput[] = []
 
     constructor(mechanism: Mechanism) {
@@ -265,9 +379,16 @@ class WPILibBrain extends Brain {
             console.warn("SimulationLayer is undefined")
             return
         }
+
+        this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
+        this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
+        this.addSimInput(new SimDigitalInput("SYN DI[0]", () => Random() > 0.5))
+        this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
+        this.addSimInput(new SimAnalogInput("SYN AI[0]", () => Random() * 12))
+        this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
     }
 
-    public addSimOutputGroup(device: SimOutputGroup) {
+    public addSimOutput(device: SimOutput) {
         this._simOutputs.push(device)
     }
 
@@ -281,11 +402,11 @@ class WPILibBrain extends Brain {
     }
 
     public Enable(): void {
-        worker.postMessage({ command: "connect" })
+        worker.getValue().postMessage({ command: "connect" })
     }
 
     public Disable(): void {
-        worker.postMessage({ command: "disconnect" })
+        worker.getValue().postMessage({ command: "disconnect" })
     }
 }
 

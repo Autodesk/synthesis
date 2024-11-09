@@ -2,3 +2,5 @@
 .vscode/
 .wpilib/
 build/
+.settings/
+

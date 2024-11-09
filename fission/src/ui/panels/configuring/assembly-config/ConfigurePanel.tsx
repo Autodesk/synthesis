@@ -1,5 +1,5 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
@@ -12,39 +12,16 @@ import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/ui/components/Button"
-import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
 import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
-
-enum ConfigMode {
-    SUBSYSTEMS,
-    EJECTOR,
-    INTAKE,
-    CONTROLS,
-    SEQUENTIAL,
-    SCORING_ZONES,
-}
-
-// eslint-disable-next-line react-refresh/only-export-components
-export enum ConfigurationType {
-    ROBOT,
-    FIELD,
-    INPUTS,
-}
-
-let selectedConfigurationType: ConfigurationType = ConfigurationType.ROBOT
-// eslint-disable-next-line react-refresh/only-export-components
-export function setSelectedConfigurationType(type: ConfigurationType) {
-    selectedConfigurationType = type
-}
-
-function getConfigurationType() {
-    return selectedConfigurationType
-}
+import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
+import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { ConfigMode } from "./ConfigurePanelControls"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -125,7 +102,8 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     }
 }
 
-const robotModes = [
+const robotModes: ConfigModeSelectionOption[] = [
+    new ConfigModeSelectionOption("Move", ConfigMode.MOVE),
     new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
     new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
     new ConfigModeSelectionOption(
@@ -140,7 +118,10 @@ const robotModes = [
     ),
     new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
 ]
-const fieldModes = [new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)]
+const fieldModes: ConfigModeSelectionOption[] = [
+    new ConfigModeSelectionOption("Move", ConfigMode.MOVE),
+    new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES),
+]
 
 interface ConfigModeSelectionProps {
     configurationType: ConfigurationType
@@ -184,7 +165,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                     <Button
                         value="Set Scheme"
                         onClick={() => {
-                            setSelectedBrainIndexGlobal(brainIndex)
+                            setSpotlightAssembly(assembly)
                             openPanel("choose-scheme")
                         }}
                     />
@@ -202,25 +183,19 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         }
+        case ConfigMode.MOVE: {
+            return (
+                <TransformGizmoControl
+                    key={"config-move-gizmo"}
+                    defaultMode="translate"
+                    scaleDisabled={true}
+                    size={3.0}
+                    parent={assembly}
+                />
+            )
+        }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
-    }
-}
-
-/** An event to save whatever configuration interface is open when it is closed */
-export class ConfigurationSavedEvent extends Event {
-    public constructor() {
-        super("ConfigurationSaved")
-
-        window.dispatchEvent(this)
-    }
-
-    public static Listen(func: (e: Event) => void) {
-        window.addEventListener("ConfigurationSaved", func)
-    }
-
-    public static RemoveListener(func: (e: Event) => void) {
-        window.removeEventListener("ConfigurationSaved", func)
     }
 }
 
@@ -255,7 +230,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 <ToggleButtonGroup
                     value={configurationType}
                     exclusive
-                    onChange={(_, v) => {
+                    onChange={(_: never, v: ConfigurationType) => {
                         v != null && setConfigurationType(v)
                         setSelectedAssembly(undefined)
                         new ConfigurationSavedEvent()

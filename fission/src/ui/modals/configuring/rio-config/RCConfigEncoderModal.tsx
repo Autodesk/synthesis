@@ -56,7 +56,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Dropdown label="Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
+            <Dropdown label="CAN Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
             <Dropdown
                 label="Stimuli"
                 options={[...stimMap.keys()]}

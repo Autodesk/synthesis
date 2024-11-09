@@ -47,9 +47,7 @@ import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePan
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
-import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
-import Lazy from "./util/Lazy.ts"
 
 import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
 import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
@@ -62,8 +60,8 @@ import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
 import ContextMenu from "./ui/components/ContextMenu.tsx"
-
-const worker = new Lazy<Worker>(() => new WPILibWSWorker())
+import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
+import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
@@ -94,8 +92,6 @@ function Synthesis() {
         if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
             setConsentPopupDisable(false)
         }
-
-        worker.getValue()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -164,6 +160,7 @@ function Synthesis() {
                         closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
+                            <GlobalUIComponent />
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
                             <ContextMenu />
@@ -232,6 +229,7 @@ const initialPanels: ReactElement[] = [
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
+    <InitialConfigPanel key="initial-config" panelId="initial-config" />,
 ]
 
 export default Synthesis
