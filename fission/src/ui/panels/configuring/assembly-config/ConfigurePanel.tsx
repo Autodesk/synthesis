@@ -46,7 +46,11 @@ function makeSelectionOption(configurationType: ConfigurationType, assembly: Mir
     )
 }
 
-const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configurationType, onAssemblySelected, selectedAssembly }) => {
+const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
+    configurationType,
+    onAssemblySelected,
+    selectedAssembly,
+}) => {
     // Update is used when a robot or field is deleted to update the select menu
     const [u, update] = useReducer(x => !x, false)
     const { openPanel } = usePanelControlContext()
@@ -78,7 +82,9 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
     /** Robot or field select menu */
     return (
         <SelectMenu
-            options={(configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly => makeSelectionOption(configurationType, assembly))}
+            options={(configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly =>
+                makeSelectionOption(configurationType, assembly)
+            )}
             onOptionSelected={val => {
                 onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)
             }}
@@ -92,7 +98,9 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
                 openPanel("import-mirabuf")
             }}
             noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : "fields"} spawned!`}
-            defaultSelectedOption={selectedAssembly ? makeSelectionOption(configurationType, selectedAssembly) : undefined}
+            defaultSelectedOption={
+                selectedAssembly ? makeSelectionOption(configurationType, selectedAssembly) : undefined
+            }
         />
     )
 }
@@ -107,24 +115,30 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 }
 
 const robotModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
-    [ ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE) ],
-    [ ConfigMode.INTAKE, new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE) ],
-    [ ConfigMode.EJECTOR, new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR) ],
-    [ ConfigMode.SUBSYSTEMS, new ConfigModeSelectionOption(
-        "Configure Joints",
+    [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
+    [ConfigMode.INTAKE, new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE)],
+    [ConfigMode.EJECTOR, new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR)],
+    [
         ConfigMode.SUBSYSTEMS,
-        "Set the velocities, torques, and accelerations of your robot's motors."
-    )],
-    [ ConfigMode.SEQUENTIAL, new ConfigModeSelectionOption(
-        "Sequence Joints",
+        new ConfigModeSelectionOption(
+            "Configure Joints",
+            ConfigMode.SUBSYSTEMS,
+            "Set the velocities, torques, and accelerations of your robot's motors."
+        ),
+    ],
+    [
         ConfigMode.SEQUENTIAL,
-        "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
-    )],
-    [ ConfigMode.CONTROLS, new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS) ],
+        new ConfigModeSelectionOption(
+            "Sequence Joints",
+            ConfigMode.SEQUENTIAL,
+            "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+        ),
+    ],
+    [ConfigMode.CONTROLS, new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS)],
 ])
 const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
-    [ ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE) ],
-    [ ConfigMode.SCORING_ZONES, new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES) ],
+    [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
+    [ConfigMode.SCORING_ZONES, new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)],
 ])
 
 interface ConfigModeSelectionProps {
@@ -133,7 +147,11 @@ interface ConfigModeSelectionProps {
     selectedMode?: ConfigMode
 }
 
-const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ configurationType, onModeSelected, selectedMode }) => {
+const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({
+    configurationType,
+    onModeSelected,
+    selectedMode,
+}) => {
     return (
         <SelectMenu
             options={configurationType == ConfigurationType.ROBOT ? [...robotModes.values()] : [...fieldModes.values()]}
@@ -142,7 +160,13 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ configuration
             }}
             defaultHeaderText="Select a Configuration Mode"
             indentation={1}
-            defaultSelectedOption={selectedMode ? (configurationType == ConfigurationType.ROBOT ? robotModes.get(selectedMode)! : fieldModes.get(selectedMode)!) : undefined}
+            defaultSelectedOption={
+                selectedMode
+                    ? configurationType == ConfigurationType.ROBOT
+                        ? robotModes.get(selectedMode)!
+                        : fieldModes.get(selectedMode)!
+                    : undefined
+            }
         />
     )
 }

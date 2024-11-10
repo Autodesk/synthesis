@@ -143,7 +143,7 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
                     />
-                    { /** Will be coming soonish...tm */ }
+                    {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
                         value={"View"}
                         icon={SynthesisIcons.MagnifyingGlass}

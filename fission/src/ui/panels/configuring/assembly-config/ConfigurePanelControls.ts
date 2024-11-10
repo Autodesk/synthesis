@@ -11,15 +11,15 @@ export enum ConfigMode {
 }
 
 export type ConfigurePanelSettings = {
-    configMode: ConfigMode,
-    selectedAssembly: MirabufSceneObject,
+    configMode: ConfigMode
+    selectedAssembly: MirabufSceneObject
 }
 
 let configurePanelSettings: ConfigurePanelSettings | undefined = undefined
 
 export function popConfigurePanelSettings(): ConfigurePanelSettings | undefined {
     const tmp = configurePanelSettings
-    configurePanelSettings = undefined;
+    configurePanelSettings = undefined
     return tmp
 }
 
