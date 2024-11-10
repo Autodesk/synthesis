@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Input from "@/components/Input"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
@@ -6,17 +6,17 @@ import NumberInput from "@/components/NumberInput"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SelectButton from "@/ui/components/SelectButton"
 import Jolt from "@barclah/jolt-physics"
-import TransformGizmos, { GizmoTransformMode } from "@/ui/components/TransformGizmos"
 import * as THREE from "three"
 import World from "@/systems/World"
 import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/ThemeContext"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 
 /**
  * Saves ejector configuration to selected field.
@@ -52,10 +52,9 @@ function save(
     points: number,
     destroy: boolean,
     persistent: boolean,
-    gizmo: TransformGizmos,
+    gizmo: GizmoSceneObject,
     selectedNode?: RigidNodeId
 ) {
-    console.log("save")
     if (!field?.fieldPreferences || !gizmo) {
         return
     }
@@ -71,7 +70,7 @@ function save(
     const translation = new THREE.Vector3(0, 0, 0)
     const rotation = new THREE.Quaternion(0, 0, 0, 1)
     const scale = new THREE.Vector3(1, 1, 1)
-    gizmo.mesh.matrixWorld.decompose(translation, rotation, scale)
+    gizmo.obj.matrixWorld.decompose(translation, rotation, scale)
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
     const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
@@ -99,18 +98,23 @@ interface ZoneConfigProps {
 const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
     //Official FIRST hex
     // TODO: Do we want to eventually make these editable?
-    const redMaterial = new THREE.MeshPhongMaterial({
-        color: 0xed1c24,
-        shininess: 0.0,
-        opacity: 0.7,
-        transparent: true,
-    })
-    const blueMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0066b3,
-        shininess: 0.0,
-        opacity: 0.7,
-        transparent: true,
-    }) //0x0000ff
+    const redMaterial = useMemo(() => {
+        return new THREE.MeshPhongMaterial({
+            color: 0xed1c24,
+            shininess: 0.0,
+            opacity: 0.7,
+            transparent: true,
+        })
+    }, [])
+
+    const blueMaterial = useMemo(() => {
+        return new THREE.MeshPhongMaterial({
+            color: 0x0066b3,
+            shininess: 0.0,
+            opacity: 0.7,
+            transparent: true,
+        })
+    }, [])
 
     const [name, setName] = useState<string>(selectedZone.name)
     const [alliance, setAlliance] = useState<Alliance>(selectedZone.alliance)
@@ -119,31 +123,24 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [destroy] = useState<boolean>(selectedZone.destroyGamepiece)
     const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
 
-    const [transformGizmo, setTransformGizmo] = useState<TransformGizmos | undefined>(undefined)
-    const [transformMode, setTransformMode] = useState<GizmoTransformMode>("translate")
-
-    const { currentTheme, themes } = useTheme()
-    const theme = useMemo(() => {
-        return themes[currentTheme]
-    }, [currentTheme, themes])
+    const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
-        if (transformGizmo && selectedField) {
-            save(selectedField, selectedZone, name, alliance, points, destroy, persistent, transformGizmo, selectedNode)
+        if (gizmoRef.current && selectedField) {
+            save(
+                selectedField,
+                selectedZone,
+                name,
+                alliance,
+                points,
+                destroy,
+                persistent,
+                gizmoRef.current,
+                selectedNode
+            )
             saveAllZones()
         }
-    }, [
-        selectedField,
-        selectedZone,
-        name,
-        alliance,
-        points,
-        destroy,
-        persistent,
-        transformGizmo,
-        selectedNode,
-        saveAllZones,
-    ])
+    }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -153,55 +150,74 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
         }
     }, [saveEvent])
 
+    /** Holds a pause for the duration of the interface component */
     useEffect(() => {
-        World.PhysicsSystem.HoldPause()
+        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause()
+            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 
-    useEffect(() => {
-        const field = selectedField
-        const zone = selectedZone
+    /** Creates the default mesh for the gizmo */
+    const defaultGizmoMesh = useMemo(() => {
+        console.debug("Default Gizmo Mesh Recreation")
 
-        if (!field || !zone) {
-            setTransformGizmo(undefined)
-            return
+        if (!selectedZone) {
+            console.debug("No zone selected")
+            return undefined
         }
 
-        const gizmo = new TransformGizmos(
-            new THREE.Mesh(new THREE.BoxGeometry(1, 1, 1), zone.alliance == "blue" ? blueMaterial : redMaterial)
+        return new THREE.Mesh(
+            new THREE.BoxGeometry(1, 1, 1),
+            selectedZone.alliance == "blue" ? blueMaterial : redMaterial
         )
-
-        ;(gizmo.mesh.material as THREE.Material).depthTest = false
-        gizmo.AddMeshToScene()
-        gizmo.CreateGizmo("translate", 1.5)
-
-        const deltaTransformation = Array_ThreeMatrix4(zone.deltaTransformation)
-
-        let nodeBodyId = field.mechanism.nodeToBody.get(zone.parentNode ?? field.rootNodeId)
-        if (!nodeBodyId) {
-            // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
-            nodeBodyId = field.mechanism.nodeToBody.get(field.rootNodeId)!
-        }
-
-        /** W = L x R. See save() for math details */
-        const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
-        const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
-
-        gizmo.mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
-        gizmo.mesh.rotation.setFromQuaternion(props.rotation)
-        gizmo.mesh.scale.set(props.scale.x, props.scale.y, props.scale.z)
-
-        setTransformGizmo(gizmo)
-
-        return () => {
-            gizmo.RemoveGizmos()
-            setTransformGizmo(undefined)
-        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [theme])
+    }, [selectedZone, selectedZone.alliance, blueMaterial, redMaterial])
+
+    /** Creates TransformGizmoControl component and sets up target mesh. */
+    const gizmoComponent = useMemo(() => {
+        if (selectedField && selectedZone) {
+            const postGizmoCreation = (gizmo: GizmoSceneObject) => {
+                const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
+                material.depthTest = false
+
+                const deltaTransformation = Array_ThreeMatrix4(selectedZone.deltaTransformation)
+
+                let nodeBodyId = selectedField.mechanism.nodeToBody.get(
+                    selectedZone.parentNode ?? selectedField.rootNodeId
+                )
+                if (!nodeBodyId) {
+                    // In the event that something about the id generation for the rigid nodes changes and parent node id is no longer in use
+                    nodeBodyId = selectedField.mechanism.nodeToBody.get(selectedField.rootNodeId)!
+                }
+
+                /** W = L x R. See save() for math details */
+                const fieldTransformation = JoltMat44_ThreeMatrix4(
+                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                )
+                const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
+
+                gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
+                gizmo.obj.rotation.setFromQuaternion(props.rotation)
+                gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
+            }
+
+            return (
+                <TransformGizmoControl
+                    key="zone-transform-gizmo"
+                    size={1.5}
+                    gizmoRef={gizmoRef}
+                    defaultMode="translate"
+                    defaultMesh={defaultGizmoMesh}
+                    postGizmoCreation={postGizmoCreation}
+                />
+            )
+        } else {
+            gizmoRef.current = undefined
+            return <></>
+        }
+    }, [selectedField, selectedZone, defaultGizmoMesh])
 
     /** Sets the selected node if it is a part of the currently loaded field */
     const trySetSelectedNode = useCallback(
@@ -231,9 +247,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
                 onClick={() => {
                     setAlliance(alliance == "blue" ? "red" : "blue")
-                    if (transformGizmo) {
-                        transformGizmo.mesh.material = alliance == "blue" ? redMaterial : blueMaterial
-                    }
+                    if (gizmoRef.current)
+                        (gizmoRef.current.obj as THREE.Mesh).material = alliance == "blue" ? redMaterial : blueMaterial
                 }}
                 colorOverrideClass={`bg-match-${alliance}-alliance`}
             />
@@ -265,23 +280,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
             {/** Switch between transform control modes */}
 
-            <ToggleButtonGroup
-                value={transformMode}
-                exclusive
-                onChange={(_, v) => {
-                    if (v == undefined) return
-
-                    setTransformMode(v)
-                    transformGizmo?.SwitchGizmo(v, 1.5)
-                }}
-                sx={{
-                    alignSelf: "center",
-                }}
-            >
-                <ToggleButton value={"translate"}>Move</ToggleButton>
-                <ToggleButton value={"scale"}>Scale</ToggleButton>
-                <ToggleButton value={"rotate"}>Rotate</ToggleButton>
-            </ToggleButtonGroup>
+            {gizmoComponent}
         </div>
     )
 }

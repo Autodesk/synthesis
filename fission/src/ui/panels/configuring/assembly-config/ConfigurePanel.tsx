@@ -1,18 +1,17 @@
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useEffect, useMemo, useReducer, useState } from "react"
+import { useEffect, useMemo, useReducer, useState, MouseEvent } from "react"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Button from "@/ui/components/Button"
-import { setSelectedBrainIndexGlobal } from "../ChooseInputSchemePanel"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
@@ -21,15 +20,8 @@ import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajecto
 import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
 import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
 import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
-
-enum ConfigMode {
-    SUBSYSTEMS,
-    EJECTOR,
-    INTAKE,
-    CONTROLS,
-    SEQUENTIAL,
-    SCORING_ZONES,
-}
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -44,9 +36,21 @@ class AssemblySelectionOption extends SelectMenuOption {
 interface ConfigurationSelectionProps {
     configurationType: ConfigurationType
     onAssemblySelected: (assembly: MirabufSceneObject | undefined) => void
+    selectedAssembly?: MirabufSceneObject
 }
 
-const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configurationType, onAssemblySelected }) => {
+function makeSelectionOption(configurationType: ConfigurationType, assembly: MirabufSceneObject) {
+    return new AssemblySelectionOption(
+        `${configurationType == ConfigurationType.ROBOT ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}]` : ""} ${assembly.assemblyName}`,
+        assembly
+    )
+}
+
+const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
+    configurationType,
+    onAssemblySelected,
+    selectedAssembly,
+}) => {
     // Update is used when a robot or field is deleted to update the select menu
     const [u, update] = useReducer(x => !x, false)
     const { openPanel } = usePanelControlContext()
@@ -78,12 +82,9 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
     /** Robot or field select menu */
     return (
         <SelectMenu
-            options={(configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly => {
-                return new AssemblySelectionOption(
-                    `${configurationType == ConfigurationType.ROBOT ? `[${InputSystem.brainIndexSchemeMap.get((assembly.brain as SynthesisBrain).brainIndex)?.schemeName ?? "-"}]` : ""} ${assembly.assemblyName}`,
-                    assembly
-                )
-            })}
+            options={(configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly =>
+                makeSelectionOption(configurationType, assembly)
+            )}
             onOptionSelected={val => {
                 onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)
             }}
@@ -97,6 +98,9 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({ configuratio
                 openPanel("import-mirabuf")
             }}
             noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : "fields"} spawned!`}
+            defaultSelectedOption={
+                selectedAssembly ? makeSelectionOption(configurationType, selectedAssembly) : undefined
+            }
         />
     )
 }
@@ -110,39 +114,59 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     }
 }
 
-const robotModes: ConfigModeSelectionOption[] = [
-    new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE),
-    new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR),
-    new ConfigModeSelectionOption(
-        "Configure Joints",
+const robotModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
+    [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
+    [ConfigMode.INTAKE, new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE)],
+    [ConfigMode.EJECTOR, new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR)],
+    [
         ConfigMode.SUBSYSTEMS,
-        "Set the velocities, torques, and accelerations of your robot's motors."
-    ),
-    new ConfigModeSelectionOption(
-        "Sequence Joints",
+        new ConfigModeSelectionOption(
+            "Configure Joints",
+            ConfigMode.SUBSYSTEMS,
+            "Set the velocities, torques, and accelerations of your robot's motors."
+        ),
+    ],
+    [
         ConfigMode.SEQUENTIAL,
-        "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
-    ),
-    new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS),
-]
-const fieldModes: ConfigModeSelectionOption[] = [
-    new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES),
-]
+        new ConfigModeSelectionOption(
+            "Sequence Joints",
+            ConfigMode.SEQUENTIAL,
+            "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+        ),
+    ],
+    [ConfigMode.CONTROLS, new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS)],
+])
+const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
+    [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
+    [ConfigMode.SCORING_ZONES, new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)],
+])
 
 interface ConfigModeSelectionProps {
     configurationType: ConfigurationType
     onModeSelected: (mode: ConfigMode | undefined) => void
+    selectedMode?: ConfigMode
 }
 
-const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ configurationType, onModeSelected }) => {
+const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({
+    configurationType,
+    onModeSelected,
+    selectedMode,
+}) => {
     return (
         <SelectMenu
-            options={configurationType == ConfigurationType.ROBOT ? robotModes : fieldModes}
+            options={configurationType == ConfigurationType.ROBOT ? [...robotModes.values()] : [...fieldModes.values()]}
             onOptionSelected={val => {
                 onModeSelected((val as ConfigModeSelectionOption)?.configMode)
             }}
             defaultHeaderText="Select a Configuration Mode"
             indentation={1}
+            defaultSelectedOption={
+                selectedMode
+                    ? configurationType == ConfigurationType.ROBOT
+                        ? robotModes.get(selectedMode)!
+                        : fieldModes.get(selectedMode)!
+                    : undefined
+            }
         />
     )
 }
@@ -151,10 +175,11 @@ interface ConfigInterfaceProps {
     configMode: ConfigMode
     assembly: MirabufSceneObject
     openPanel: (panelId: string) => void
+    closePanel: (panelId: string) => void
 }
 
 /** The interface for the actual configuration */
-const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly, openPanel }) => {
+const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly, openPanel, closePanel }) => {
     switch (configMode) {
         case ConfigMode.INTAKE:
             return <ConfigureGamepiecePickupInterface selectedRobot={assembly} />
@@ -171,7 +196,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                     <Button
                         value="Set Scheme"
                         onClick={() => {
-                            setSelectedBrainIndexGlobal(brainIndex)
+                            setSpotlightAssembly(assembly)
                             openPanel("choose-scheme")
                         }}
                     />
@@ -189,6 +214,19 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         }
+        case ConfigMode.MOVE: {
+            return (
+                <TransformGizmoControl
+                    key={"config-move-gizmo"}
+                    defaultMode="translate"
+                    scaleDisabled={true}
+                    size={3.0}
+                    parent={assembly}
+                    onAccept={() => closePanel("configure")}
+                    onCancel={() => closePanel("configure")}
+                />
+            )
+        }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -201,6 +239,12 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
 
     useEffect(() => {
+        const settings = popConfigurePanelSettings()
+        if (settings) {
+            setConfigMode(settings.configMode)
+            setSelectedAssembly(settings.selectedAssembly)
+        }
+
         closePanel("choose-scheme")
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -225,8 +269,11 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 <ToggleButtonGroup
                     value={configurationType}
                     exclusive
-                    onChange={(_, v) => {
-                        v != null && setConfigurationType(v)
+                    onChange={(_: MouseEvent<HTMLElement>, v: ConfigurationType) => {
+                        if (v != null) {
+                            setConfigurationType(v)
+                            setSelectedConfigurationType(v)
+                        }
                         setSelectedAssembly(undefined)
                         new ConfigurationSavedEvent()
                         setConfigMode(undefined)
@@ -253,6 +300,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 setConfigMode(undefined)
                                 setSelectedAssembly(a)
                             }}
+                            selectedAssembly={selectedAssembly}
                         />
                         {/** Nested select menu to pick a configuration mode */}
                         {selectedAssembly != undefined && (
@@ -262,6 +310,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     if (configMode != undefined) new ConfigurationSavedEvent()
                                     setConfigMode(mode)
                                 }}
+                                selectedMode={configMode}
                             />
                         )}
                         {/** The interface for the selected configuration mode */}
@@ -270,6 +319,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 configMode={configMode}
                                 assembly={selectedAssembly}
                                 openPanel={openPanel}
+                                closePanel={closePanel}
                             />
                         )}
                     </>

@@ -27,6 +27,10 @@ import PreferencesSystem from "../preferences/PreferencesSystem"
 
 export type JoltBodyIndexAndSequence = number
 
+export const PAUSE_REF_ASSEMBLY_SPAWNING = "assembly-spawning"
+export const PAUSE_REF_ASSEMBLY_CONFIG = "assembly-config"
+export const PAUSE_REF_ASSEMBLY_MOVE = "assembly-move"
+
 /**
  * Layers used for determining enabled/disabled collisions.
  */
@@ -84,12 +88,12 @@ class PhysicsSystem extends WorldSystem {
 
     private _physicsEventQueue: PhysicsEvent[] = []
 
-    private _pauseCounter = 0
+    private _pauseSet = new Set<string>()
 
     private _bodyAssociations: Map<JoltBodyIndexAndSequence, BodyAssociate>
 
     public get isPaused(): boolean {
-        return this._pauseCounter > 0
+        return this._pauseSet.size > 0
     }
 
     /**
@@ -116,7 +120,7 @@ class PhysicsSystem extends WorldSystem {
         const ground = this.CreateBox(
             new THREE.Vector3(5.0, 0.5, 5.0),
             undefined,
-            new THREE.Vector3(0.0, -2.0, 0.0),
+            new THREE.Vector3(0.0, -0.5, 0.0),
             undefined
         )
         ground.SetFriction(FLOOR_FRICTION)
@@ -151,26 +155,28 @@ class PhysicsSystem extends WorldSystem {
     /**
      * Holds a pause.
      *
-     * The pause works off of a request counter.
+     * @param ref String to reference your hold.
      */
-    public HoldPause() {
-        this._pauseCounter++
+    public HoldPause(ref: string) {
+        this._pauseSet.add(ref)
     }
 
     /**
      * Forces all holds on the pause to be released.
      */
     public ForceUnpause() {
-        this._pauseCounter = 0
+        this._pauseSet.clear()
     }
 
     /**
      * Releases a pause.
      *
-     * The pause works off of a request counter.
+     * @param ref String to reference your hold.
+     *
+     * @returns Whether or not your hold was successfully removed.
      */
-    public ReleasePause() {
-        if (this._pauseCounter) this._pauseCounter--
+    public ReleasePause(ref: string): boolean {
+        return this._pauseSet.delete(ref)
     }
 
     /**
@@ -976,7 +982,9 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public Update(deltaT: number): void {
-        if (this._pauseCounter > 0) return
+        if (this._pauseSet.size > 0) {
+            return
+        }
 
         const diffDeltaT = deltaT - lastDeltaT
 
@@ -1064,8 +1072,10 @@ class PhysicsSystem extends WorldSystem {
      * @param id The id of the body
      * @param position The new position of the body
      */
-    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.Vec3, activate: boolean = true): void {
-        if (!this.IsBodyAdded(id)) return
+    public SetBodyPosition(id: Jolt.BodyID, position: Jolt.RVec3, activate: boolean = true): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
 
         this._joltBodyInterface.SetPosition(
             id,
@@ -1079,6 +1089,24 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltBodyInterface.SetRotation(
             id,
+            rotation,
+            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
+    }
+
+    public SetBodyPositionAndRotation(
+        id: Jolt.BodyID,
+        position: Jolt.RVec3,
+        rotation: Jolt.Quat,
+        activate: boolean = true
+    ): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetPositionAndRotation(
+            id,
+            position,
             rotation,
             activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
         )
