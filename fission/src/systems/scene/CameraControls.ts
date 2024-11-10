@@ -191,7 +191,8 @@ export class CustomOrbitControls extends CameraControls {
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 
-        this._focusProvider?.LoadFocusTransform(this._focus)
+        if (this.enabled)
+            this._focusProvider?.LoadFocusTransform(this._focus)
 
         // Generate delta of spherical coordinates
         const omega: SphericalCoords = this.enabled

@@ -134,20 +134,21 @@ const MainHUD: React.FC = () => {
                     sx={{ backgroundColor: "black", borderRadius: "7px", padding: "3px" }}
                 >
                     <MainHUDButton
-                        value={"General Settings"}
-                        icon={SynthesisIcons.Gear}
-                        onClick={() => openModal("settings")}
-                    />
-                    <MainHUDButton
-                        value={"View"}
-                        icon={SynthesisIcons.MagnifyingGlass}
-                        onClick={() => openModal("view")}
-                    />
-                    <MainHUDButton
                         value={"Configure Assets"}
                         icon={SynthesisIcons.Wrench}
                         onClick={() => openPanel("configure")}
                     />
+                    <MainHUDButton
+                        value={"General Settings"}
+                        icon={SynthesisIcons.Gear}
+                        onClick={() => openModal("settings")}
+                    />
+                    { /** Will be coming soonish...tm */ }
+                    {/* <MainHUDButton
+                        value={"View"}
+                        icon={SynthesisIcons.MagnifyingGlass}
+                        onClick={() => openModal("view")}
+                    /> */}
                     <MainHUDButton
                         value={"Debug Tools"}
                         icon={SynthesisIcons.Bug}

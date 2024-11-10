@@ -92,7 +92,7 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.addEventListener("dragging-changed", (event: { target: TransformControls; value: unknown }) => {
             // disable orbit controls when dragging the transform gizmo
             const gizmoDragging = World.SceneRenderer.IsAnyGizmoDragging()
-            World.SceneRenderer.orbitControls.enabled = !event.value && !gizmoDragging
+            World.SceneRenderer.currentCameraControls.enabled = !event.value && !gizmoDragging
 
             const isShift = InputSystem.isKeyPressed("ShiftRight") || InputSystem.isKeyPressed("ShiftLeft")
             const isAlt = InputSystem.isKeyPressed("AltRight") || InputSystem.isKeyPressed("AltLeft")

@@ -17,8 +17,10 @@ export type ConfigurePanelSettings = {
 
 let configurePanelSettings: ConfigurePanelSettings | undefined = undefined
 
-export function getConfigurePanelSettings(): ConfigurePanelSettings | undefined {
-    return configurePanelSettings
+export function popConfigurePanelSettings(): ConfigurePanelSettings | undefined {
+    const tmp = configurePanelSettings
+    configurePanelSettings = undefined;
+    return tmp
 }
 
 export function setNextConfigurePanelSettings(settings: ConfigurePanelSettings) {

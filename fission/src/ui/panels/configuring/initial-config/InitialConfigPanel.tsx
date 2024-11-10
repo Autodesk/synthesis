@@ -38,18 +38,18 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
+            setSelectedConfigurationType(ConfigurationType.ROBOT)
             const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
 
             if (brainIndex == undefined) return
-
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
             const scheme = InputSchemeManager.availableInputSchemes[0]
-
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
-            setSelectedConfigurationType(ConfigurationType.INPUTS)
             setSelectedScheme(scheme)
+        } else {
+            setSelectedConfigurationType(ConfigurationType.FIELD)
         }
 
         closePanel(panelId)

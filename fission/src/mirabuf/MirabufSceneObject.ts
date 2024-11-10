@@ -25,6 +25,7 @@ import { CustomOrbitControls } from "@/systems/scene/CameraControls"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import { ConfigMode, setNextConfigurePanelSettings } from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { ConfigurationType, setSelectedConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 
 const DEBUG_BODIES = false
 
@@ -484,10 +485,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         data.items.push({
             name: "Move",
             func: () => {
+                setSelectedConfigurationType(this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD)
                 setNextConfigurePanelSettings({
                     configMode: ConfigMode.MOVE,
                     selectedAssembly: this
                 })
+                Global_OpenPanel?.("configure")
             },
         })
 
