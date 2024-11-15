@@ -123,7 +123,7 @@ interface SelectMenuProps {
     onOptionSelected: (val: SelectMenuOption | undefined) => void
 
     // Function to return a default value
-    defaultSelectedOption?: (options: SelectMenuOption[]) => SelectMenuOption | undefined
+    defaultSelectedOption?: SelectMenuOption | undefined
     defaultHeaderText: string
     noOptionsText?: string
     indentation?: number
@@ -160,11 +160,16 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     deleteCondition,
     onAddClicked,
 }) => {
-    const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(defaultSelectedOption?.(options))
+    const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(defaultSelectedOption)
+
+    // I have no idea why, but this would actually update state to default selection.
+    useEffect(() => {
+        setSelectedOption(defaultSelectedOption)
+    }, [defaultSelectedOption])
 
     // If the selected option no longer exists as an option, deselect it
     useEffect(() => {
-        if (!options.some(o => o.name === selectedOption?.name)) {
+        if (selectedOption && !options.some(o => o.name === selectedOption.name)) {
             setSelectedOption(undefined)
             onOptionSelected(undefined)
         }

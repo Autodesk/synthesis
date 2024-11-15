@@ -4,12 +4,13 @@ import { useModalControlContext } from "@/ui/ModalContext"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
 import logo from "@/assets/autodesk_logo.png"
-import { ToastType, useToastContext } from "@/ui/ToastContext"
+import { useToastContext } from "@/ui/ToastContext"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { UserIcon } from "./UserIcon"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
+import { setAddToast } from "./GlobalUIControls"
 
 type ButtonProps = {
     value: string
@@ -44,8 +45,6 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     )
 }
 
-export let MainHUD_AddToast: (type: ToastType, title: string, description: string) => void = (_a, _b, _c) => {}
-
 const variants = {
     open: { opacity: 1, y: "-50%", x: 0 },
     closed: { opacity: 0, y: "-50%", x: "-100%" },
@@ -57,7 +56,7 @@ const MainHUD: React.FC = () => {
     const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
 
-    MainHUD_AddToast = addToast
+    setAddToast(addToast)
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
 
@@ -135,20 +134,21 @@ const MainHUD: React.FC = () => {
                     sx={{ backgroundColor: "black", borderRadius: "7px", padding: "3px" }}
                 >
                     <MainHUDButton
-                        value={"General Settings"}
-                        icon={SynthesisIcons.Gear}
-                        onClick={() => openModal("settings")}
-                    />
-                    {/*                     <MainHUDButton
-                        value={"View"}
-                        icon={SynthesisIcons.MagnifyingGlass}
-                        onClick={() => openModal("view")}
-                    /> */}
-                    <MainHUDButton
                         value={"Configure Assets"}
                         icon={SynthesisIcons.Wrench}
                         onClick={() => openPanel("configure")}
                     />
+                    <MainHUDButton
+                        value={"General Settings"}
+                        icon={SynthesisIcons.Gear}
+                        onClick={() => openModal("settings")}
+                    />
+                    {/** Will be coming soonish...tm */}
+                    {/* <MainHUDButton
+                        value={"View"}
+                        icon={SynthesisIcons.MagnifyingGlass}
+                        onClick={() => openModal("view")}
+                    /> */}
                     <MainHUDButton
                         value={"Debug Tools"}
                         icon={SynthesisIcons.Bug}

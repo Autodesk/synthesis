@@ -234,8 +234,6 @@ class MirabufInstance {
             }
         }
 
-        console.debug(batchMap)
-
         // Construct batched meshes
         batchMap.forEach((materialBodyMap, material) => {
             const count = countMap.get(material)!

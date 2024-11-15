@@ -67,7 +67,7 @@ class ExporterOptions:
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
             if attribute:
-                attrJsonData = makeObjectFromJson(field.type, json.loads(attribute.value))
+                attrJsonData = makeObjectFromJson(type(field.type), json.loads(attribute.value))
                 setattr(self, field.name, attrJsonData)
 
         return self

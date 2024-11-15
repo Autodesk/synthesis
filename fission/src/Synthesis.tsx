@@ -59,6 +59,10 @@ import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
+import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
+import ContextMenu from "./ui/components/ContextMenu.tsx"
+import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
+import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
@@ -157,8 +161,10 @@ function Synthesis() {
                         closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
+                            <GlobalUIComponent />
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
+                            <ContextMenu />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
@@ -224,6 +230,8 @@ const initialPanels: ReactElement[] = [
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
     <WiringPanel key="wiring" panelId="wiring" />,
+    <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
+    <InitialConfigPanel key="initial-config" panelId="initial-config" />,
 ]
 
 export default Synthesis
