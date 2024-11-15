@@ -1,41 +1,20 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import Label, { LabelSize } from "@/ui/components/Label"
-import { useCallback } from "react"
+import { useCallback, useMemo, useState } from "react"
 import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, addEdge, Controls } from "@xyflow/react"
 
 import '@xyflow/react/dist/style.css';
 import RobotIONode from "./RobotIONode"
 import SimInputNode from "./SimInputNode"
 import SimOutputNode from "./SimOutputNode"
-
-const initialNodes: FlowNode[] = [
-    // { id: "1", position: { x: 0, y: 0 }, data: { label: "Test 1" }, type: "input" },
-    // { id: "2", position: { x: 0, y: 100 }, data: { label: "Test 2" }, type: "output" },
-    {
-        id: 'robot-io-node',
-        type: 'robotIO',
-        position: { x: 0, y: 0 },
-        data: {
-            input: [ "Encoder 1", "Encoder 2" ],
-            output: [ "CAN 0", "CAN 1", "CAN 2", "CAN 3" ],
-        },
-    }, {
-        id: 'sim-input-node',
-        type: 'simInput',
-        position: { x: 400, y: 0 },
-        data: {
-            input: [ "Wheel 1", "Wheel 2", "Wheel 3", "Wheel 4", "Wheel 5", "Wheel 6" ],
-        },
-    }, {
-        id: 'sim-output-node',
-        type: 'simOutput',
-        position: { x: -400, y: 0 },
-        data: {
-            output: [ "Wheel 1", "Wheel 2", "Wheel 3", "Wheel 4", "Wheel 5", "Wheel 6", "IR 1" ],
-        },
-    }
-]
+import WPILibBrain, { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { ConfigState } from "./SimConfigControls"
+import Label, { LabelSize } from "@/ui/components/Label";
+import ScrollView from "@/ui/components/ScrollView";
+import Checkbox from "@/ui/components/Checkbox";
+import Driver from "@/systems/simulation/driver/Driver";
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
+import World from "@/systems/World";
 
 const initialEdges: FlowEdge[] = []
 // const initialEdges: FlowEdge[] = [
@@ -44,9 +23,117 @@ const initialEdges: FlowEdge[] = []
 
 const nodeTypes = { robotIO: RobotIONode, simInput: SimInputNode, simOutput: SimOutputNode }
 
-function WiringPanel({ panelId }: PanelPropsImpl) {
+type ConfigComponentProps = {
+    setConfigState: (state: ConfigState) => void,
+}
 
-    const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
+function getDriverSignals(): Driver[] {
+    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    if (miraObjs.length > 0) {
+        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
+        const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        return simLayer?.drivers ?? []
+        // brain = simLayer?.brain as WPILibBrain
+    }
+    return []
+}
+
+function getCANDevices(): [string, Map<string, number | boolean | string>][] {
+    const cans = simMap.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
+    return [...cans.entries()].filter(([_, data]) => data.get("<init")).reverse()
+}
+
+function generateNodes(setConfigState: (state: ConfigState) => void): FlowNode[] {
+    const ioNode = {
+        id: 'robot-io-node',
+        type: 'robotIO',
+        position: { x: 0, y: 0 },
+        data: {
+            onEdit: () => setConfigState("robotIO"),
+            input: [ "Encoder 1", "Encoder 2" ],
+            output: [ "CAN 0", "CAN 1", "CAN 2", "CAN 3" ],
+        },
+    }
+
+    const outNode = {
+        id: 'sim-output-node',
+        type: 'simOutput',
+        position: { x: -400, y: 0 },
+        data: {
+            onEdit: () => setConfigState("simOut"),
+            output: [ "Wheel 1", "Wheel 2", "Wheel 3", "Wheel 4", "Wheel 5", "Wheel 6", "IR 1" ],
+        },
+    }
+
+    const driverSignals = getDriverSignals()
+
+    const inNode = {
+        id: 'sim-input-node',
+        type: 'simInput',
+        position: { x: 400, y: 0 },
+        data: {
+            onEdit: () => setConfigState("simIn"),
+            input: driverSignals.map(x => `${x.constructor.name} ${x.info?.name && "(" + x.info!.name + ")"}`),
+        },
+    }
+
+    return [ioNode, outNode, inNode]
+}
+
+function RobotIOComponent({ setConfigState }: ConfigComponentProps) {
+    const canDevices = useMemo(() => {
+        return getCANDevices()
+    }, [])
+
+    return (
+        <div className="flex flex-col w-full">
+            <Label className="text-center" size={LabelSize.Medium}>Configure your Robot Input/Output</Label>
+            <div className="grid grid-flow-col gap-4">
+                <div>
+                    <Label>CAN Devices</Label>
+                    <ScrollView className="h-full px-2">
+                        {canDevices.map(([p, _]) => (
+                            <Checkbox
+                                key={p}
+                                label={`${p.toString()}`}
+                                defaultState={false}
+                                // onClick={checked => {
+                                //     if (checked && !checkedDrivers.includes(driver)) {
+                                //         setCheckedDrivers([...checkedDrivers, driver])
+                                //     } else if (!checked && checkedDrivers.includes(driver)) {
+                                //         setCheckedDrivers(checkedDrivers.filter(a => a != driver))
+                                //     }
+                                // }}
+                            />
+                        ))}
+                    </ScrollView>
+                </div>
+                <div>
+                    <Label>Output Signals</Label>
+                    <ScrollView className="h-full px-2">
+                        {/* {drivers.map((driver, idx) => (
+                            <Checkbox
+                                key={`${driver.constructor.name}-${idx}`}
+                                label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
+                                defaultState={false}
+                                // onClick={checked => {
+                                //     if (checked && !checkedDrivers.includes(driver)) {
+                                //         setCheckedDrivers([...checkedDrivers, driver])
+                                //     } else if (!checked && checkedDrivers.includes(driver)) {
+                                //         setCheckedDrivers(checkedDrivers.filter(a => a != driver))
+                                //     }
+                                // }}
+                            />
+                        ))} */}
+                    </ScrollView>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+function WiringComponent({ setConfigState }: ConfigComponentProps) {
+    const [nodes, setNodes, onNodesChange] = useNodesState(generateNodes(setConfigState));
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
     const onEdgeDoubleClick = useCallback((_: React.MouseEvent, edge: FlowEdge) => {
@@ -60,6 +147,26 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
     );
 
     return (
+        <ReactFlow
+            colorMode="dark"
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onEdgeDoubleClick={onEdgeDoubleClick}
+            nodeTypes={nodeTypes}
+            fitView
+        >
+            <Controls />
+        </ReactFlow>
+    )
+}
+
+function WiringPanel({ panelId }: PanelPropsImpl) {
+    const [configState, setConfigState] = useState<ConfigState>("wiring")
+
+    return (
         <Panel
             name="Wiring Panel"
             icon={SynthesisIcons.SteeringWheel}
@@ -67,26 +174,9 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             openLocation={"center"}
             full
         >
-            <div className="bg-gray-500 flex grow">
-                <ReactFlow
-                    colorMode="dark"
-                    nodes={nodes}
-                    edges={edges}
-                    onNodesChange={onNodesChange}
-                    onEdgesChange={onEdgesChange}
-                    onConnect={onConnect}
-                    onEdgeDoubleClick={onEdgeDoubleClick}
-                    nodeTypes={nodeTypes}
-                    fitView
-                >
-                    <Controls />
-                </ReactFlow>
-            </div>
-            {/* <GraphComp graph={graph} /> */}
-            <div className="flex flex-row justify-between">
-                <Label className="text-interactive-element-solid font-medium" size={LabelSize.Large}>Stimuli</Label>
-                <Label className="text-interactive-element-solid font-medium" size={LabelSize.Large}>Code IO</Label>
-                <Label className="text-interactive-element-solid font-medium" size={LabelSize.Large}>Drivers</Label>
+            <div className="flex grow">
+                {configState === "wiring" ? <WiringComponent setConfigState={setConfigState} /> : <></>}
+                {configState === "robotIO" ? <RobotIOComponent setConfigState={setConfigState} /> : <></>}
             </div>
         </Panel>
     )

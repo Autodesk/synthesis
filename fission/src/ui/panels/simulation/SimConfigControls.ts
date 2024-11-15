@@ -1,0 +1,1 @@
+export type ConfigState = "wiring" | "simIn" | "simOut" | "robotIO"

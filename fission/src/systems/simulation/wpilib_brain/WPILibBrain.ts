@@ -80,13 +80,13 @@ export class SimGeneric {
 
         const map = simMap.get(simType)
         if (!map) {
-            console.warn(`No '${simType}' devices found`)
+            // console.warn(`No '${simType}' devices found`)
             return undefined
         }
 
         const data = map.get(device)
         if (!data) {
-            console.warn(`No '${simType}' device '${device}' found`)
+            // console.warn(`No '${simType}' device '${device}' found`)
             return undefined
         }
 
@@ -102,13 +102,13 @@ export class SimGeneric {
 
         const map = simMap.get(simType)
         if (!map) {
-            console.warn(`No '${simType}' devices found`)
+            // console.warn(`No '${simType}' devices found`)
             return false
         }
 
         const data = map.get(device)
         if (!data) {
-            console.warn(`No '${simType}' device '${device}' found`)
+            // console.warn(`No '${simType}' device '${device}' found`)
             return false
         }
 
