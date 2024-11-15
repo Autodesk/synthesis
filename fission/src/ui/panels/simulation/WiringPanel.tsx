@@ -5,16 +5,35 @@ import { useCallback } from "react"
 import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, addEdge, Controls } from "@xyflow/react"
 
 import '@xyflow/react/dist/style.css';
-import TextUpdaterNode from "./TextUpdaterNode"
+import RobotIONode from "./RobotIONode"
+import SimInputNode from "./SimInputNode"
+import SimOutputNode from "./SimOutputNode"
 
 const initialNodes: FlowNode[] = [
     // { id: "1", position: { x: 0, y: 0 }, data: { label: "Test 1" }, type: "input" },
     // { id: "2", position: { x: 0, y: 100 }, data: { label: "Test 2" }, type: "output" },
     {
-        id: 'node-1',
-        type: 'textUpdater',
+        id: 'robot-io-node',
+        type: 'robotIO',
         position: { x: 0, y: 0 },
-        data: { value: 123 },
+        data: {
+            input: [ "Encoder 1", "Encoder 2" ],
+            output: [ "CAN 0", "CAN 1", "CAN 2", "CAN 3" ],
+        },
+    }, {
+        id: 'sim-input-node',
+        type: 'simInput',
+        position: { x: 400, y: 0 },
+        data: {
+            input: [ "Wheel 1", "Wheel 2", "Wheel 3", "Wheel 4", "Wheel 5", "Wheel 6" ],
+        },
+    }, {
+        id: 'sim-output-node',
+        type: 'simOutput',
+        position: { x: -400, y: 0 },
+        data: {
+            output: [ "Wheel 1", "Wheel 2", "Wheel 3", "Wheel 4", "Wheel 5", "Wheel 6", "IR 1" ],
+        },
     }
 ]
 
@@ -23,13 +42,16 @@ const initialEdges: FlowEdge[] = []
 //     { id: "e1-2", source: "1", target: "2" }
 // ]
 
-const nodeTypes = { textUpdater: TextUpdaterNode }
+const nodeTypes = { robotIO: RobotIONode, simInput: SimInputNode, simOutput: SimOutputNode }
 
 function WiringPanel({ panelId }: PanelPropsImpl) {
-    
 
     const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+    const onEdgeDoubleClick = useCallback((_: React.MouseEvent, edge: FlowEdge) => {
+        setEdges(edges.filter(x => x.id != edge.id))
+    }, [edges, setEdges])
     
     const onConnect = useCallback(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -53,6 +75,7 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
                     onNodesChange={onNodesChange}
                     onEdgesChange={onEdgesChange}
                     onConnect={onConnect}
+                    onEdgeDoubleClick={onEdgeDoubleClick}
                     nodeTypes={nodeTypes}
                     fitView
                 >
