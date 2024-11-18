@@ -26,6 +26,8 @@ const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 const CANENCODER_POSITION = ">position"
 const CANENCODER_VELOCITY = ">velocity"
 
+const RECONNECT = false
+
 export enum SimType {
     PWM = "PWM",
     SimDevice = "SimDevice",
@@ -402,11 +404,11 @@ class WPILibBrain extends Brain {
     }
 
     public Enable(): void {
-        worker.getValue().postMessage({ command: "connect" })
+        worker.getValue().postMessage({ command: "enable", reconnect: RECONNECT })
     }
 
     public Disable(): void {
-        worker.getValue().postMessage({ command: "disconnect" })
+        worker.getValue().postMessage({ command: "disable" })
     }
 }
 

@@ -1,144 +1,278 @@
+/* eslint-disable @typescript-eslint/ban-types */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import '@xyflow/react/dist/style.css'
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import { useCallback, useMemo, useState } from "react"
-import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, addEdge, Controls } from "@xyflow/react"
-
-import '@xyflow/react/dist/style.css';
-import RobotIONode from "./RobotIONode"
-import SimInputNode from "./SimInputNode"
-import SimOutputNode from "./SimOutputNode"
-import WPILibBrain, { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { ConfigState } from "./SimConfigControls"
+import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
+import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
+import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, addEdge, NodeProps } from "@xyflow/react"
+import { ConfigState, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, SimConfig } from "./SimConfigShared"
 import Label, { LabelSize } from "@/ui/components/Label";
 import ScrollView from "@/ui/components/ScrollView";
 import Checkbox from "@/ui/components/Checkbox";
-import Driver from "@/systems/simulation/driver/Driver";
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
 import World from "@/systems/World";
-
-const initialEdges: FlowEdge[] = []
-// const initialEdges: FlowEdge[] = [
-//     { id: "e1-2", source: "1", target: "2" }
-// ]
-
-const nodeTypes = { robotIO: RobotIONode, simInput: SimInputNode, simOutput: SimOutputNode }
+import Button from "@/ui/components/Button";
+import { usePanelControlContext } from "@/ui/PanelContext";
+import { Global_AddToast } from "@/ui/components/GlobalUIControls";
+import { SimConfigData } from "./SimConfigShared";
+import FlowControls from "./FlowControls";
+import JunctionNode from "./JunctionNode";
+import WiringNode from "./WiringNode";
+import { SimType } from '@/systems/simulation/wpilib_brain/WPILibBrain'
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void,
+    selectedAssembly: MirabufSceneObject,
+    simConfig: SimConfigData,
 }
 
-function getDriverSignals(): Driver[] {
-    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-    if (miraObjs.length > 0) {
-        const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-        const simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
-        return simLayer?.drivers ?? []
-        // brain = simLayer?.brain as WPILibBrain
-    }
-    return []
-}
+type NodeType = ComponentType<NodeProps & {
+    data: any;
+    type: any;
+}>
 
-function getCANDevices(): [string, Map<string, number | boolean | string>][] {
-    const cans = simMap.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
-    return [...cans.entries()].filter(([_, data]) => data.get("<init")).reverse()
-}
+// This took way too long
+const nodeTypes: Record<string, NodeType> = [
+        WiringNode,
+        JunctionNode
+    ].reduce<{ [k: string]: NodeType }>((prev, next) => { prev[next.name] = next; return prev }, {})
+const initialEdges: FlowEdge[] = []
 
-function generateNodes(setConfigState: (state: ConfigState) => void): FlowNode[] {
+function generateNodes(assembly: MirabufSceneObject, simConfig: SimConfigData, refreshGraph: () => void, setConfigState: (state: ConfigState) => void): FlowNode[] {
     const ioNode = {
-        id: 'robot-io-node',
-        type: 'robotIO',
-        position: { x: 0, y: 0 },
+        id: NODE_ID_ROBOT_IO,
+        type: WiringNode.name,
+        position: simConfig.robotIOPosition,
         data: {
+            title: "Robot IO",
             onEdit: () => setConfigState("robotIO"),
-            input: [ "Encoder 1", "Encoder 2" ],
-            output: [ "CAN 0", "CAN 1", "CAN 2", "CAN 3" ],
+            simConfig: simConfig,
+            input: [...simConfig.robotIn.entries()].filter(([_, x]) => x.enabled),
+            output: [...simConfig.robotOut.entries()].filter(([_, x]) => x.enabled),
         },
     }
 
     const outNode = {
-        id: 'sim-output-node',
-        type: 'simOutput',
-        position: { x: -400, y: 0 },
+        id: NODE_ID_SIM_OUT,
+        type: WiringNode.name,
+        position: simConfig.simOutPosition,
         data: {
-            onEdit: () => setConfigState("simOut"),
-            output: [ "Wheel 1", "Wheel 2", "Wheel 3", "Wheel 4", "Wheel 5", "Wheel 6", "IR 1" ],
+            title: "Sim Output",
+            onEdit: () => setConfigState("simIO"),
+            simConfig: simConfig,
+            output: [...simConfig.simOut.entries()].filter(([_, x]) => x.enabled),
         },
     }
-
-    const driverSignals = getDriverSignals()
 
     const inNode = {
-        id: 'sim-input-node',
-        type: 'simInput',
-        position: { x: 400, y: 0 },
+        id: NODE_ID_SIM_IN,
+        type: WiringNode.name,
+        position: simConfig.simInPosition,
         data: {
-            onEdit: () => setConfigState("simIn"),
-            input: driverSignals.map(x => `${x.constructor.name} ${x.info?.name && "(" + x.info!.name + ")"}`),
+            title: "Sim Input",
+            onEdit: () => setConfigState("simIO"),
+            input: [...simConfig.simIn.entries()].filter(([_, x]) => x.enabled),
         },
     }
 
-    return [ioNode, outNode, inNode]
+    const junctions: FlowNode[] = [...simConfig.junctions.entries()].map(([k, v]) => {
+        return {
+            id: k,
+            type: JunctionNode.name,
+            position: v.position,
+            data: {
+                onDelete: () => {
+                    SimConfig.DeleteJunction(simConfig, k)
+                    refreshGraph()
+                }
+            }
+        }
+    })
+
+    return [ioNode, outNode, inNode, ...junctions]
 }
 
-function RobotIOComponent({ setConfigState }: ConfigComponentProps) {
-    const canDevices = useMemo(() => {
-        return getCANDevices()
-    }, [])
-
+function SimIOComponent({ setConfigState, selectedAssembly, simConfig }: ConfigComponentProps) {
     return (
-        <div className="flex flex-col w-full">
-            <Label className="text-center" size={LabelSize.Medium}>Configure your Robot Input/Output</Label>
-            <div className="grid grid-flow-col gap-4">
-                <div>
-                    <Label>CAN Devices</Label>
+        <div className="flex flex-col w-full gap-4">
+            <Label className="text-center" size={LabelSize.Medium}>Configure the Simulation's IO Modules</Label>
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    columnGap: "1rem"
+                }}
+            >
+                <div className="flex flex-col justify-center grow">
+                    <Label className="text-center">Output</Label>
                     <ScrollView className="h-full px-2">
-                        {canDevices.map(([p, _]) => (
+                        {[...simConfig.simOut.entries()].map(([k, v]) => (
                             <Checkbox
-                                key={p}
-                                label={`${p.toString()}`}
-                                defaultState={false}
-                                // onClick={checked => {
-                                //     if (checked && !checkedDrivers.includes(driver)) {
-                                //         setCheckedDrivers([...checkedDrivers, driver])
-                                //     } else if (!checked && checkedDrivers.includes(driver)) {
-                                //         setCheckedDrivers(checkedDrivers.filter(a => a != driver))
-                                //     }
-                                // }}
+                                key={k}
+                                label={`${v.displayName}`}
+                                defaultState={v.enabled}
+                                onClick={checked => {
+                                    v.enabled = checked
+                                }}
                             />
                         ))}
                     </ScrollView>
                 </div>
-                <div>
-                    <Label>Output Signals</Label>
+                <div className="flex flex-col justify-center grow">
+                    <Label className="text-center">Input</Label>
                     <ScrollView className="h-full px-2">
-                        {/* {drivers.map((driver, idx) => (
+                        {[...simConfig.simIn.entries()].map(([k, v]) => (
                             <Checkbox
-                                key={`${driver.constructor.name}-${idx}`}
-                                label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
-                                defaultState={false}
-                                // onClick={checked => {
-                                //     if (checked && !checkedDrivers.includes(driver)) {
-                                //         setCheckedDrivers([...checkedDrivers, driver])
-                                //     } else if (!checked && checkedDrivers.includes(driver)) {
-                                //         setCheckedDrivers(checkedDrivers.filter(a => a != driver))
-                                //     }
-                                // }}
+                                key={k}
+                                label={`${v.displayName}`}
+                                defaultState={v.enabled}
+                                onClick={checked => {
+                                    v.enabled = checked
+                                }}
                             />
-                        ))} */}
+                        ))}
                     </ScrollView>
                 </div>
             </div>
+            <Button className="self-center" value={"Back to wiring view"} onClick={() => setConfigState("wiring")} />
         </div>
     )
 }
 
-function WiringComponent({ setConfigState }: ConfigComponentProps) {
-    const [nodes, setNodes, onNodesChange] = useNodesState(generateNodes(setConfigState));
+function RobotIOComponent({ setConfigState, selectedAssembly, simConfig }: ConfigComponentProps) {
+
+    const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
+        const canEncoders: JSX.Element[] = []
+        const canMotors: JSX.Element[] = []
+        const pwmDevices: JSX.Element[] = []
+        const accelerometers: JSX.Element[] = []
+
+        simConfig.robotIn.forEach((v, k) => {
+            const checkbox = (
+                <Checkbox
+                    key={k}
+                    label={`${v.displayName}`}
+                    defaultState={v.enabled}
+                    onClick={checked => {
+                        v.enabled = checked
+                    }}
+                />
+            )
+
+            switch (v.type!) {
+                case SimType.CANEncoder:
+                    canEncoders.push(checkbox)
+                    break
+                case SimType.Accel:
+                    accelerometers.push(checkbox)
+            }
+        })
+
+        simConfig.robotOut.forEach((v, k) => {
+            const checkbox = (
+                <Checkbox
+                    key={k}
+                    label={`${v.displayName}`}
+                    defaultState={v.enabled}
+                    onClick={checked => {
+                        v.enabled = checked
+                    }}
+                />
+            )
+
+            switch (v.type!) {
+                case SimType.CANMotor:
+                    canMotors.push(checkbox)
+                    break
+                case SimType.PWM:
+                    pwmDevices.push(checkbox)
+                    break
+            }
+        })
+
+        return [canEncoders, canMotors, pwmDevices, accelerometers]
+    }, [simConfig])
+
+    return (
+        <div className="flex flex-col w-full gap-4">
+            <Label className="text-center" size={LabelSize.Medium}>Configure your Robot's IO Module</Label>
+            <div
+                style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    columnGap: "1rem"
+                }}
+            >
+                <div className="flex flex-col justify-center grow">
+                    <Label className="text-center">Input</Label>
+                    <ScrollView className="h-full px-2">
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            CAN Encoders
+                        </SectionLabel>
+                        <SectionDivider />
+                        {canEncoders}
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            Accelerometers
+                        </SectionLabel>
+                        <SectionDivider />
+                        {accelerometers}
+                    </ScrollView>
+                </div>
+                <div className="flex flex-col justify-center grow">
+                    <Label className="text-center">Output</Label>
+                    <ScrollView className="h-full px-2">
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            CAN Motors
+                        </SectionLabel>
+                        <SectionDivider />
+                        {canMotors}
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            PWM Devices
+                        </SectionLabel>
+                        <SectionDivider />
+                        {pwmDevices}
+                    </ScrollView>
+                </div>
+            </div>
+            <Button className="self-center" value={"Back to wiring view"} onClick={() => setConfigState("wiring")} />
+        </div>
+    )
+}
+
+function WiringComponent({ setConfigState, selectedAssembly, simConfig }: ConfigComponentProps) {
+    const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[]);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+    const [refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
+
+    // Essentially a callback, but it can use it's self.
+    useEffect(() => {
+        setNodes(generateNodes(selectedAssembly, simConfig, refreshGraph, setConfigState))
+    }, [selectedAssembly, setConfigState, setNodes, simConfig, refreshHook])
 
     const onEdgeDoubleClick = useCallback((_: React.MouseEvent, edge: FlowEdge) => {
         setEdges(edges.filter(x => x.id != edge.id))
     }, [edges, setEdges])
+
+    const onNodeDragStop = useCallback((_event: React.MouseEvent, node: FlowNode, _nodes: FlowNode[]) => {
+        switch (node.id) {
+            case NODE_ID_ROBOT_IO:
+                simConfig.robotIOPosition = node.position
+                break
+            case NODE_ID_SIM_IN:
+                simConfig.simInPosition = node.position
+                break
+            case NODE_ID_SIM_OUT:
+                simConfig.simOutPosition = node.position
+                break
+            default: {
+                const junct = simConfig.junctions.get(node.id)
+                if (junct) {
+                    junct.position = node.position
+                }
+                break
+            }
+        }
+    }, [simConfig])
     
     const onConnect = useCallback(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -146,11 +280,17 @@ function WiringComponent({ setConfigState }: ConfigComponentProps) {
         [setEdges],
     );
 
+    const onCreateJunction = useCallback(() => {
+        SimConfig.MakeJunction(simConfig)
+        refreshGraph()
+    }, [refreshGraph, simConfig])
+
     return (
         <ReactFlow
             colorMode="dark"
             nodes={nodes}
             edges={edges}
+            onNodeDragStop={onNodeDragStop}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
@@ -158,13 +298,34 @@ function WiringComponent({ setConfigState }: ConfigComponentProps) {
             nodeTypes={nodeTypes}
             fitView
         >
-            <Controls />
+            {/* <Controls /> */}
+            <FlowControls onCreateJunction={onCreateJunction} />
         </ReactFlow>
     )
 }
 
 function WiringPanel({ panelId }: PanelPropsImpl) {
     const [configState, setConfigState] = useState<ConfigState>("wiring")
+    const { closePanel } = usePanelControlContext();
+
+    const selectedAssembly = useMemo(() => {
+        const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+        if (miraObjs.length > 0) {
+            return miraObjs[0][1] as MirabufSceneObject
+        } else {
+            // TEMPORARY: Will be moved to config panel to ensure selected assembly
+            Global_AddToast?.("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
+            closePanel(panelId)
+        }
+    }, [closePanel, panelId])
+
+    const simConfig = useMemo(() => {
+        if (!selectedAssembly)
+            return
+        
+        // Generate Default Config
+        return SimConfig.Default(selectedAssembly)
+    }, [selectedAssembly])
 
     return (
         <Panel
@@ -173,12 +334,13 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             panelId={panelId}
             openLocation={"center"}
             full
-        >
+        >{selectedAssembly && simConfig ? (
             <div className="flex grow">
-                {configState === "wiring" ? <WiringComponent setConfigState={setConfigState} /> : <></>}
-                {configState === "robotIO" ? <RobotIOComponent setConfigState={setConfigState} /> : <></>}
+                {configState === "wiring" ? <WiringComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} /> : <></>}
+                {configState === "robotIO" ? <RobotIOComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} /> : <></>}
+                {configState === "simIO" ? <SimIOComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} /> : <></>}
             </div>
-        </Panel>
+        ) : (<>ERRR</>)}</Panel>
     )
 }
 

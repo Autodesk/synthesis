@@ -1,9 +1,9 @@
 import JOLT from "@/util/loading/JoltSyncLoader"
-import Mechanism from "../physics/Mechanism"
+import Mechanism, { MechanismConstraint } from "../physics/Mechanism"
 import WorldSystem from "../WorldSystem"
 import Brain from "./Brain"
-import Driver from "./driver/Driver"
-import Stimulus from "./stimulus/Stimulus"
+import Driver, { makeDriverID } from "./driver/Driver"
+import Stimulus, { makeStimulusID } from "./stimulus/Stimulus"
 import HingeDriver from "./driver/HingeDriver"
 import WheelDriver from "./driver/WheelDriver"
 import SliderDriver from "./driver/SliderDriver"
@@ -85,25 +85,25 @@ class SimulationLayer {
         this._mechanism.constraints.forEach(x => {
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint)
-                const driver = new HingeDriver(hinge, x.maxVelocity, x.info)
+                const driver = new HingeDriver(makeDriverID(x), hinge, x.maxVelocity, x.info)
                 this._drivers.push(driver)
-                const stim = new HingeStimulus(hinge, x.info)
+                const stim = new HingeStimulus(makeStimulusID(x), hinge, x.info)
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
-                const driver = new WheelDriver(vehicle, x.maxVelocity, x.info)
+                const driver = new WheelDriver(makeDriverID(x), vehicle, x.maxVelocity, x.info)
                 this._drivers.push(driver)
-                const stim = new WheelRotationStimulus(vehicle.GetWheel(0), x.info)
+                const stim = new WheelRotationStimulus(makeStimulusID(x), vehicle.GetWheel(0), x.info)
                 this._stimuli.push(stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
-                const driver = new SliderDriver(slider, x.maxVelocity, x.info)
+                const driver = new SliderDriver(makeDriverID(x), slider, x.maxVelocity, x.info)
                 this._drivers.push(driver)
-                const stim = new SliderStimulus(slider, x.info)
+                const stim = new SliderStimulus(makeStimulusID(x), slider, x.info)
                 this._stimuli.push(stim)
             }
         })
-        this._stimuli.push(new ChassisStimulus(mechanism.nodeToBody.get(mechanism.rootBody)!))
+        this._stimuli.push(new ChassisStimulus({ type: "chassis", guid: "unknown" }, mechanism.nodeToBody.get(mechanism.rootBody)!))
     }
 
     public Update(deltaT: number) {

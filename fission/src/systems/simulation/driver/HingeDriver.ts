@@ -1,5 +1,5 @@
 import Jolt from "@barclah/jolt-physics"
-import Driver, { DriverControlMode } from "./Driver"
+import Driver, { DriverControlMode, DriverID } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
@@ -60,8 +60,8 @@ class HingeDriver extends Driver {
         }
     }
 
-    public constructor(constraint: Jolt.HingeConstraint, maxVelocity: number, info?: mirabuf.IInfo) {
-        super(info)
+    public constructor(id: DriverID, constraint: Jolt.HingeConstraint, maxVelocity: number, info?: mirabuf.IInfo) {
+        super(id, info)
 
         this._constraint = constraint
         this.maxVelocity = maxVelocity
@@ -109,6 +109,10 @@ class HingeDriver extends Driver {
             if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this.maxVelocity
             this._constraint.SetTargetAngle(ang)
         }
+    }
+
+    public DisplayName(): string {
+        return `${this.info?.name ?? "-"} [Hinge]`
     }
 }
 

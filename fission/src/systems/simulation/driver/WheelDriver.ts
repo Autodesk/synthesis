@@ -1,5 +1,5 @@
 import Jolt from "@barclah/jolt-physics"
-import Driver from "./Driver"
+import Driver, { DriverID } from "./Driver"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { SimType } from "../wpilib_brain/WPILibBrain"
 import { mirabuf } from "@/proto/mirabuf"
@@ -40,6 +40,7 @@ class WheelDriver extends Driver {
     }
 
     public constructor(
+        id: DriverID,
         constraint: Jolt.VehicleConstraint,
         maxVel: number,
         info?: mirabuf.IInfo,
@@ -47,7 +48,7 @@ class WheelDriver extends Driver {
         device?: string,
         reversed: boolean = false
     ) {
-        super(info)
+        super(id, info)
 
         this._constraint = constraint
         this.maxVelocity = maxVel
@@ -70,6 +71,10 @@ class WheelDriver extends Driver {
 
     public set reversed(val: boolean) {
         this._reversed = val
+    }
+
+    public DisplayName(): string {
+        return `${this.info?.name ?? "-"} [Wheel]`
     }
 }
 
