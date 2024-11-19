@@ -1,9 +1,9 @@
 import JOLT from "@/util/loading/JoltSyncLoader"
-import Mechanism, { MechanismConstraint } from "../physics/Mechanism"
+import Mechanism from "../physics/Mechanism"
 import WorldSystem from "../WorldSystem"
 import Brain from "./Brain"
 import Driver, { makeDriverID } from "./driver/Driver"
-import Stimulus, { makeStimulusID } from "./stimulus/Stimulus"
+import Stimulus, { makeStimulusID, StimulusType } from "./stimulus/Stimulus"
 import HingeDriver from "./driver/HingeDriver"
 import WheelDriver from "./driver/WheelDriver"
 import SliderDriver from "./driver/SliderDriver"
@@ -63,47 +63,48 @@ class SimulationLayer {
     private _mechanism: Mechanism
     private _brain?: Brain
 
-    private _drivers: Driver[]
-    private _stimuli: Stimulus[]
+    private _drivers: Map<string, Driver>
+    private _stimuli: Map<string, Stimulus>
 
     public get brain() {
         return this._brain
     }
     public get drivers() {
-        return this._drivers
+        return [...this._drivers.values()]
     }
     public get stimuli() {
-        return this._stimuli
+        return [...this._stimuli.values()]
     }
 
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
 
         // Generate standard drivers and stimuli
-        this._drivers = []
-        this._stimuli = []
+        this._drivers = new Map()
+        this._stimuli = new Map()
         this._mechanism.constraints.forEach(x => {
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint)
                 const driver = new HingeDriver(makeDriverID(x), hinge, x.maxVelocity, x.info)
-                this._drivers.push(driver)
+                this._drivers.set(JSON.stringify(driver.id), driver)
                 const stim = new HingeStimulus(makeStimulusID(x), hinge, x.info)
-                this._stimuli.push(stim)
+                this._stimuli.set(JSON.stringify(stim.id), stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
                 const driver = new WheelDriver(makeDriverID(x), vehicle, x.maxVelocity, x.info)
-                this._drivers.push(driver)
+                this._drivers.set(JSON.stringify(driver.id), driver)
                 const stim = new WheelRotationStimulus(makeStimulusID(x), vehicle.GetWheel(0), x.info)
-                this._stimuli.push(stim)
+                this._stimuli.set(JSON.stringify(stim.id), stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
                 const driver = new SliderDriver(makeDriverID(x), slider, x.maxVelocity, x.info)
-                this._drivers.push(driver)
+                this._drivers.set(JSON.stringify(driver.id), driver)
                 const stim = new SliderStimulus(makeStimulusID(x), slider, x.info)
-                this._stimuli.push(stim)
+                this._stimuli.set(JSON.stringify(stim.id), stim)
             }
         })
-        this._stimuli.push(new ChassisStimulus({ type: "chassis", guid: "unknown" }, mechanism.nodeToBody.get(mechanism.rootBody)!))
+        const chassisStim = new ChassisStimulus({ type: StimulusType.Stim_ChassisAccel, guid: "unknown" }, mechanism.nodeToBody.get(mechanism.rootBody)!)
+        this._stimuli.set(JSON.stringify(chassisStim), chassisStim)
     }
 
     public Update(deltaT: number) {

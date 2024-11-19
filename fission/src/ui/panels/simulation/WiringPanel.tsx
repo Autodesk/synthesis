@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import '@xyflow/react/dist/style.css'
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -27,8 +25,8 @@ type ConfigComponentProps = {
 }
 
 type NodeType = ComponentType<NodeProps & {
-    data: any;
-    type: any;
+    data: Record<string, unknown>;
+    type: string;
 }>
 
 // This took way too long
@@ -38,7 +36,7 @@ const nodeTypes: Record<string, NodeType> = [
     ].reduce<{ [k: string]: NodeType }>((prev, next) => { prev[next.name] = next; return prev }, {})
 const initialEdges: FlowEdge[] = []
 
-function generateNodes(assembly: MirabufSceneObject, simConfig: SimConfigData, refreshGraph: () => void, setConfigState: (state: ConfigState) => void): FlowNode[] {
+function generateNodes(simConfig: SimConfigData, refreshGraph: () => void, setConfigState: (state: ConfigState) => void): FlowNode[] {
     const ioNode = {
         id: NODE_ID_ROBOT_IO,
         type: WiringNode.name,
@@ -92,7 +90,7 @@ function generateNodes(assembly: MirabufSceneObject, simConfig: SimConfigData, r
     return [ioNode, outNode, inNode, ...junctions]
 }
 
-function SimIOComponent({ setConfigState, selectedAssembly, simConfig }: ConfigComponentProps) {
+function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     return (
         <div className="flex flex-col w-full gap-4">
             <Label className="text-center" size={LabelSize.Medium}>Configure the Simulation's IO Modules</Label>
@@ -139,7 +137,7 @@ function SimIOComponent({ setConfigState, selectedAssembly, simConfig }: ConfigC
     )
 }
 
-function RobotIOComponent({ setConfigState, selectedAssembly, simConfig }: ConfigComponentProps) {
+function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
@@ -239,15 +237,15 @@ function RobotIOComponent({ setConfigState, selectedAssembly, simConfig }: Confi
     )
 }
 
-function WiringComponent({ setConfigState, selectedAssembly, simConfig }: ConfigComponentProps) {
+function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[]);
     const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
     const [refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
 
     // Essentially a callback, but it can use it's self.
     useEffect(() => {
-        setNodes(generateNodes(selectedAssembly, simConfig, refreshGraph, setConfigState))
-    }, [selectedAssembly, setConfigState, setNodes, simConfig, refreshHook])
+        setNodes(generateNodes(simConfig, refreshGraph, setConfigState))
+    }, [setConfigState, setNodes, simConfig, refreshHook])
 
     const onEdgeDoubleClick = useCallback((_: React.MouseEvent, edge: FlowEdge) => {
         setEdges(edges.filter(x => x.id != edge.id))

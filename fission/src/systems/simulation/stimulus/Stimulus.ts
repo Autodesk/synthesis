@@ -1,8 +1,13 @@
 import { mirabuf } from "@/proto/mirabuf"
 import { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { Supplier } from "../Nora"
 
-type StimulusType = "chassis" | "encoder" | "unknown"
+export enum StimulusType {
+    Stim_ChassisAccel = "Stim_ChassisAccel",
+    Stim_Encoder = "Stim_Encoder",
+    Stim_Unknown = "Stim_Unknown",
+}
 
 export type StimulusID = {
     type: StimulusType,
@@ -11,12 +16,12 @@ export type StimulusID = {
 }
 
 export function makeStimulusID(constraint: MechanismConstraint): StimulusID {
-    let stimulusType: StimulusType = "unknown"
+    let stimulusType: StimulusType = StimulusType.Stim_Unknown
     switch (constraint.constraint.GetSubType()) {
         case JOLT.EConstraintSubType_Hinge:
         case JOLT.EConstraintSubType_Slider:
         case JOLT.EConstraintSubType_Vehicle:
-            stimulusType = "encoder"
+            stimulusType = StimulusType.Stim_Encoder
             break
     }
 
@@ -27,7 +32,7 @@ export function makeStimulusID(constraint: MechanismConstraint): StimulusID {
     }
 }
 
-abstract class Stimulus {
+abstract class Stimulus implements Supplier {
     private _id: StimulusID
     private _info?: mirabuf.IInfo
 
@@ -35,17 +40,22 @@ abstract class Stimulus {
         this._id = id
         this._info = info
     }
-
+    
     public abstract Update(deltaT: number): void
-
+    
     public get id() {
         return this._id
     }
-
+    
+    public get idStr() {
+        return JSON.stringify(this._id)
+    }
+    
     public get info() {
         return this._info
     }
-
+    
+    public abstract getSupplierValue(): unknown
     public abstract DisplayName(): string
 }
 

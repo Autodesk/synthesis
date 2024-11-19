@@ -1,6 +1,6 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import Driver from "@/systems/simulation/driver/Driver"
-import Stimulus from "@/systems/simulation/stimulus/Stimulus"
+import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
+import Stimulus, { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import { Random } from "@/util/Random"
@@ -19,20 +19,100 @@ export const JUNCTION_OUT_PREFIX = "junctOut"
 
 export type ConfigState = "wiring" | "simIO" | "robotIO"
 
+type HandleType = SimType | StimulusType | DriverType
+
 export type ConfigItemInfo = {
     id: string,
     displayName: string,
     enabled: boolean,
-    type?: SimType
+    type: HandleType
+}
+
+// Maps source types to target types.
+const TYPE_COMPATABILITIES: { [source in HandleType]: HandleType[] } = {
+    PWM: [
+        DriverType.Driv_Hinge,
+        DriverType.Driv_Slider,
+        DriverType.Driv_Wheel,
+    ],
+    SimDevice: [],
+    CANMotor: [
+        DriverType.Driv_Hinge,
+        DriverType.Driv_Slider,
+        DriverType.Driv_Wheel,
+    ],
+    Solenoid: [
+        DriverType.Driv_Slider,
+    ],
+    CANEncoder: [],
+    Gyro: [],
+    Accel: [],
+    DIO: [],
+    AI: [],
+    AO: [
+        DriverType.Driv_Hinge,
+        DriverType.Driv_Slider,
+        DriverType.Driv_Wheel,
+    ],
+    Stim_ChassisAccel: [
+        SimType.Accel,
+    ],
+    Stim_Encoder: [
+        SimType.CANEncoder,
+        DriverType.Driv_Hinge,
+        DriverType.Driv_Slider,
+        DriverType.Driv_Wheel,
+    ],
+    Stim_Unknown: [],
+    Driv_Hinge: [],
+    Driv_Wheel: [],
+    Driv_Slider: [],
+    Driv_Unknown: [],
+}
+
+const TYPE_DIRECTIONS: { [type in HandleType]: "source" | "target" } = {
+    PWM: "source",
+    SimDevice: "source",
+    CANMotor: "source",
+    Solenoid: "source",
+    CANEncoder: "target",
+    Gyro: "target",
+    Accel: "target",
+    DIO: "target", // Uhhhhhh
+    AI: "target",
+    AO: "source",
+    Stim_ChassisAccel: "source",
+    Stim_Encoder: "source",
+    Stim_Unknown: "source",
+    Driv_Hinge: "target",
+    Driv_Wheel: "target",
+    Driv_Slider: "target",
+    Driv_Unknown: "target"
 }
 
 export const configItemInfoCompare: (a: [string, ConfigItemInfo], b: [string, ConfigItemInfo]) => number
     = ([_aK, aV], [_bK, bV]) => aV.displayName.localeCompare(bV.displayName)
 
+type DataHandle = {
+    id: string,
+    type: HandleType,
+    origin: string,
+    isJunction: false,
+    dir: "source" | "target",
+}
+
+type JunctionHandle = {
+    id: string,
+    dir: "source" | "target",
+    isJunction: true,
+}
+
 export type JunctionInfo = {
     inHandle: string,
     outHandle: string,
     position: XYPosition,
+    sourceType?: HandleType,
+    targetType?: HandleType
 }
 
 export type FlowControlsProps = {
@@ -94,6 +174,25 @@ function displayNameAccel(id: string) {
     }
 }
 
+function decodeHandleId(id: string): DataHandle | JunctionHandle | undefined {
+    const parts = id.split(":")
+    if (parts.length < 2) {
+        return undefined
+    }
+    
+    switch (parts[0]) {
+        case SIM_IN_PREFIX:
+        case SIM_OUT_PREFIX:
+        case ROBOT_IN_PREFIX:
+        case ROBOT_OUT_PREFIX:
+            return { id: parts[2], type: parts[1] as HandleType, origin: parts[0], isJunction: false, dir: TYPE_DIRECTIONS[parts[1] as HandleType] }
+        case JUNCTION_IN_PREFIX:
+        case JUNCTION_OUT_PREFIX:
+            return { id: parts[1], dir: parts[0] == JUNCTION_IN_PREFIX ? "target" : "source", isJunction: true }
+    }
+    return undefined
+}
+
 export type SimConfigData = {
     simOut: Map<string, ConfigItemInfo>
     simIn: Map<string, ConfigItemInfo>
@@ -102,7 +201,7 @@ export type SimConfigData = {
 
     junctions: Map<string, JunctionInfo>
 
-    connections: { source: string, target: string }[]
+    connections: Map<string, string>
 
     simOutPosition: XYPosition
     simInPosition: XYPosition
@@ -126,7 +225,7 @@ export class SimConfig {
 
             junctions: new Map(),
 
-            connections: [],
+            connections: new Map(),
 
             simInPosition: { x: 800, y: 0 },
             simOutPosition: { x: -800, y: 0 },
@@ -134,11 +233,11 @@ export class SimConfig {
         }
         getDriverSignals(assembly).forEach(x => {
             if (x.info?.GUID)
-                config.simIn.set(x.info.GUID, { id: x.info.GUID, displayName: x.DisplayName(), enabled: true })
+                config.simIn.set(`${SIM_IN_PREFIX}:${x.id.type}:${x.info.GUID}`, { id: x.info.GUID, displayName: x.DisplayName(), enabled: true, type: x.id.type })
         })
         getStimulusSignals(assembly).forEach(x => {
             if (x.info?.GUID)
-                config.simOut.set(x.info.GUID, { id: x.info.GUID, displayName: x.DisplayName(), enabled: true })
+                config.simOut.set(`${SIM_OUT_PREFIX}:${x.id.type}:${x.info.GUID}`, { id: x.info.GUID, displayName: x.DisplayName(), enabled: true, type: x.id.type })
         })
         getCANMotors().forEach(([id, _]) => {
             config.robotOut.set(`${ROBOT_OUT_PREFIX}:${SimType.CANMotor}:${id}`, { id: id, displayName: displayNameCAN(id), enabled: true, type: SimType.CANMotor })
@@ -171,9 +270,43 @@ export class SimConfig {
         return config.junctions.delete(id)
     }
 
-    public static MakeEdge(config: SimConfigData, source: string, target: string): boolean {
-        switch (source.substring(0, source.indexOf(":"))) {
-            case ROBOT_IN_PREFIX:
+    private static determineHandleType(config: SimConfigData, handle: DataHandle | JunctionHandle): HandleType | undefined {
+        if (!handle.isJunction)
+            return handle.type;
+
+        const junct = config.junctions.get(handle.id)!
+        return handle.dir == "source" ? junct?.sourceType : junct?.targetType
+    }
+
+    private static validateGraph(config: SimConfigData, source: string, target: string): boolean {
+        const validatedSources = new Set<string>()
+        const checkList: string[] = [...config.simOut.keys(), ...config.robotOut.keys()]
+        while (checkList.length > 0) {
+            const sourceId = checkList.pop()
         }
+    }
+
+    private static validateEdge(config: SimConfigData, source: string, target: string): boolean {
+        const sourceHandle = decodeHandleId(source)
+        const targetHandle = decodeHandleId(target)
+        if (sourceHandle == undefined || targetHandle == undefined)
+            return false
+
+        if (sourceHandle.dir == targetHandle.dir)
+            return false
+
+        const sourceHandleType = this.determineHandleType(config, sourceHandle)
+        const targetHandleType = this.determineHandleType(config, targetHandle)
+        if (sourceHandleType == undefined || targetHandleType == undefined) {
+            console.debug("Two empty junctions connected to eachother,")
+        }
+    }
+
+    public static MakeEdge(config: SimConfigData, source: string, target: string): boolean {
+        if (!this.validateEdge(config, source, target))
+            return false
+
+        config.connections.push({ source: source, target: target })
+        return true
     }
 }

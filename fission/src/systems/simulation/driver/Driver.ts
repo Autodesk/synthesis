@@ -1,8 +1,14 @@
 import { mirabuf } from "@/proto/mirabuf"
 import { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
+import { Receiver } from "../Nora"
 
-type DriverType = "hinge" | "wheel" | "slider" | "unknown"
+export enum DriverType {
+    Driv_Hinge = "Driv_Hinge",
+    Driv_Wheel = "Driv_Wheel",
+    Driv_Slider = "Driv_Slider",
+    Driv_Unknown = "Driv_Unknown",
+}
 
 export type DriverID = {
     type: DriverType,
@@ -11,16 +17,16 @@ export type DriverID = {
 }
 
 export function makeDriverID(constraint: MechanismConstraint): DriverID {
-    let driverType: DriverType = "unknown"
+    let driverType: DriverType = DriverType.Driv_Unknown
     switch (constraint.constraint.GetSubType()) {
         case JOLT.EConstraintSubType_Hinge:
-            driverType = "hinge"
+            driverType = DriverType.Driv_Hinge
             break
         case JOLT.EConstraintSubType_Slider:
-            driverType = "slider"
+            driverType = DriverType.Driv_Slider
             break
         case JOLT.EConstraintSubType_Vehicle:
-            driverType = "wheel"
+            driverType = DriverType.Driv_Wheel
             break
     }
 
@@ -31,7 +37,7 @@ export function makeDriverID(constraint: MechanismConstraint): DriverID {
     }
 }
 
-abstract class Driver {
+abstract class Driver implements Receiver {
     private _id: DriverID
     private _info?: mirabuf.IInfo
 
@@ -46,10 +52,15 @@ abstract class Driver {
         return this._id
     }
 
+    public get idStr() {
+        return JSON.stringify(this._id)
+    }
+
     public get info() {
         return this._info
     }
 
+    public abstract setReceiverValue(val: unknown): void;
     public abstract DisplayName(): string
 }
 
