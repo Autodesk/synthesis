@@ -2,8 +2,10 @@ import Jolt from "@barclah/jolt-physics"
 import Stimulus, { StimulusID } from "./Stimulus"
 import World from "@/systems/World"
 import { mirabuf } from "@/proto/mirabuf"
+import { NoraNumber3, NoraTypes } from "../Nora"
 
 class ChassisStimulus extends Stimulus {
+    
     private _body: Jolt.Body
     private _mass: number
 
@@ -29,6 +31,12 @@ class ChassisStimulus extends Stimulus {
 
     public Update(_: number): void {}
 
+    public getSupplierType(): NoraTypes {
+        return NoraTypes.Number3
+    }
+    public getSupplierValue(): NoraNumber3 {
+        throw new Error("Method not implemented.")
+    }
     public DisplayName(): string {
         return "Chassis"
     }

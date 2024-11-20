@@ -2,8 +2,10 @@ import Jolt from "@barclah/jolt-physics"
 import EncoderStimulus from "./EncoderStimulus"
 import { mirabuf } from "@/proto/mirabuf"
 import { StimulusID } from "./Stimulus"
+import { NoraTypes, NoraNumber } from "../Nora"
 
 class HingeStimulus extends EncoderStimulus {
+    
     private _accum: boolean = false
     private _hingeAngleAccum: number = 0.0
     private _hinge: Jolt.HingeConstraint
@@ -43,6 +45,12 @@ class HingeStimulus extends EncoderStimulus {
         this._hingeAngleAccum = 0.0
     }
 
+    public getSupplierType(): NoraTypes {
+        return NoraTypes.Number
+    }
+    public getSupplierValue(): NoraNumber {
+        throw new Error("Method not implemented.")
+    }
     public DisplayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`
     }

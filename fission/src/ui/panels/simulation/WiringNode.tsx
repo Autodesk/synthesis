@@ -1,17 +1,21 @@
 import Button from "@/ui/components/Button"
 import { Connection, Edge, Handle, NodeProps, Position } from "@xyflow/react"
-import { ConfigItemInfo, configItemInfoCompare, SimConfig, SimConfigData } from "./SimConfigShared"
+import { ConfigItemInfo, configItemInfoCompare, genId, genIdToSavedId, savedIdToGenId, SimConfig, SimConfigData } from "./SimConfigShared"
 import { useCallback, useMemo } from "react"
+import { FaXmark } from "react-icons/fa6"
+import { DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 function WiringNode({ data, isConnectable }: NodeProps) {
     const robotInput = data["input"] as ([string, ConfigItemInfo][] | undefined)
     const robotOutput = data["output"] as ([string, ConfigItemInfo][] | undefined)
-    const onEdit = data["onEdit"] as (() => void)
+    const onEdit = data["onEdit"] as ((() => void) | undefined)
+    const onDelete = data["onDelete"] as ((() => void) | undefined)
     const simConfig = data["simConfig"] as SimConfigData
     const title = data["title"] as string
 
     const validateConnection = useCallback((edge: Edge | Connection) => {
-        return SimConfig.MakeEdge(simConfig, edge.source, edge.target)
+        // return true
+        return SimConfig.ValidateConnection(simConfig, genIdToSavedId(edge.sourceHandle as string)!, genIdToSavedId(edge.targetHandle as string)!)
     }, [simConfig])
 
     const inputHandles = useMemo(() => robotInput ? (
@@ -27,7 +31,7 @@ function WiringNode({ data, isConnectable }: NodeProps) {
                         key={i}
                         type="target"
                         position={Position.Left}
-                        id={x[0]}
+                        id={savedIdToGenId(x[0])}
                         isConnectable={isConnectable}
                     />
                 </div>)
@@ -48,9 +52,10 @@ function WiringNode({ data, isConnectable }: NodeProps) {
                         key={i}
                         type="source"
                         position={Position.Right}
-                        id={x[0]}
+                        id={savedIdToGenId(x[0])}
                         isConnectable={isConnectable}
                         isValidConnection={validateConnection}
+                        
                     />
                 </div>)
             })}
@@ -83,9 +88,12 @@ function WiringNode({ data, isConnectable }: NodeProps) {
                 {inputHandles}
                 {outputHandles}
             </div>
-            <div className="flex justify-center px-4">
-                <Button value={"Edit"} onClick={onEdit} />
-            </div>
+            {onEdit || onDelete ? (
+                <div className="flex justify-center px-4">
+                    {onEdit ? EditButton(onEdit) : <></>}
+                    {onDelete ? DeleteButton(onDelete) : <></>}
+                </div>
+            ) : (<></>)}
         </div>
     )
 }

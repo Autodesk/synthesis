@@ -9,6 +9,7 @@ import World from "@/systems/World"
 import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
 import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
 import { Random } from "@/util/Random"
+import { NoraTypes } from "../Nora"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -46,6 +47,32 @@ enum FieldType {
     Write = 1,
     Both = 2,
     Unknown = -1,
+}
+
+export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
+    [SimType.PWM]: NoraTypes.Number,
+    [SimType.SimDevice]: undefined,
+    [SimType.CANMotor]: NoraTypes.Number,
+    [SimType.Solenoid]: NoraTypes.Number,
+    [SimType.CANEncoder]: undefined,
+    [SimType.Gyro]: undefined,
+    [SimType.Accel]: undefined,
+    [SimType.DIO]: undefined, // ?
+    [SimType.AI]: undefined,
+    [SimType.AO]: NoraTypes.Number
+}
+
+export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
+    [SimType.PWM]: undefined,
+    [SimType.SimDevice]: undefined,
+    [SimType.CANMotor]: undefined,
+    [SimType.Solenoid]: undefined,
+    [SimType.CANEncoder]: NoraTypes.Number,
+    [SimType.Gyro]: NoraTypes.Number3, // Wrong but its fine
+    [SimType.Accel]: NoraTypes.Number3,
+    [SimType.DIO]: undefined, // ?
+    [SimType.AI]: NoraTypes.Number,
+    [SimType.AO]: undefined
 }
 
 function GetFieldType(field: string): FieldType {

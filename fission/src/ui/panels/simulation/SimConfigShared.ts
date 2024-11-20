@@ -1,120 +1,69 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
-import { NoraType, NoraTypes } from "@/systems/simulation/Nora"
+import { NoraTypes } from "@/systems/simulation/Nora"
 import Stimulus, { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
-import { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { receiverTypeMap, simMap, SimType, supplierTypeMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import { Random } from "@/util/Random"
 import { XYPosition } from "@xyflow/react"
+import WiringNode from "./WiringNode"
 
-export const NODE_ID_ROBOT_IO = "robot-io-node"
-export const NODE_ID_SIM_OUT = "sim-output-node"
-export const NODE_ID_SIM_IN = "sim-input-node"
-
-export const ROBOT_IN_PREFIX = "robotIn"
-export const ROBOT_OUT_PREFIX = "robotOut"
-export const SIM_IN_PREFIX = "simIn"
-export const SIM_OUT_PREFIX = "simOut"
-export const JUNCTION_IN_PREFIX = "junctIn"
-export const JUNCTION_OUT_PREFIX = "junctOut"
-
-export type ConfigState = "wiring" | "simIO" | "robotIO"
-
-type HandleType = SimType | StimulusType | DriverType
-
-export type ConfigItemInfo = {
-    id: string,
-    displayName: string,
-    enabled: boolean,
-    type: HandleType
+let id = 0
+export function genId(): number {
+    return ++id
 }
 
-// Maps source types to target types.
-const TYPE_COMPATABILITIES: { [source in HandleType]: HandleType[] } = {
-    PWM: [
-        DriverType.Driv_Hinge,
-        DriverType.Driv_Slider,
-        DriverType.Driv_Wheel,
-    ],
-    SimDevice: [],
-    CANMotor: [
-        DriverType.Driv_Hinge,
-        DriverType.Driv_Slider,
-        DriverType.Driv_Wheel,
-    ],
-    Solenoid: [
-        DriverType.Driv_Slider,
-    ],
-    CANEncoder: [],
-    Gyro: [],
-    Accel: [],
-    DIO: [],
-    AI: [],
-    AO: [
-        DriverType.Driv_Hinge,
-        DriverType.Driv_Slider,
-        DriverType.Driv_Wheel,
-    ],
-    Stim_ChassisAccel: [
-        SimType.Accel,
-    ],
-    Stim_Encoder: [
-        SimType.CANEncoder,
-        DriverType.Driv_Hinge,
-        DriverType.Driv_Slider,
-        DriverType.Driv_Wheel,
-    ],
-    Stim_Unknown: [],
-    Driv_Hinge: [],
-    Driv_Wheel: [],
-    Driv_Slider: [],
-    Driv_Unknown: [],
+const savedToGenMap = new Map<string, string>()
+const genToSavedMap = new Map<string, string>()
+function makeMapping(savedId: string): string {
+    const genId = (++id).toString()
+    savedToGenMap.set(savedId, genId)
+    genToSavedMap.set(genId, savedId)
+    return genId
 }
-
-const TYPE_DIRECTIONS: { [type in HandleType]: "source" | "target" } = {
-    PWM: "source",
-    SimDevice: "source",
-    CANMotor: "source",
-    Solenoid: "source",
-    CANEncoder: "target",
-    Gyro: "target",
-    Accel: "target",
-    DIO: "target", // Uhhhhhh
-    AI: "target",
-    AO: "source",
-    Stim_ChassisAccel: "source",
-    Stim_Encoder: "source",
-    Stim_Unknown: "source",
-    Driv_Hinge: "target",
-    Driv_Wheel: "target",
-    Driv_Slider: "target",
-    Driv_Unknown: "target"
+export function savedIdToGenId(savedId: string): string {
+    const genId = savedToGenMap.get(savedId)
+    if (genId != undefined) {
+        return genId
+    } else {
+        return makeMapping(savedId)
+    }
+}
+export function genIdToSavedId(genId: string): string | undefined {
+    return genToSavedMap.get(genId)
 }
 
 export const configItemInfoCompare: (a: [string, ConfigItemInfo], b: [string, ConfigItemInfo]) => number
     = ([_aK, aV], [_bK, bV]) => aV.displayName.localeCompare(bV.displayName)
 
-type SourceHandle = {
+export const NODE_ID_ROBOT_IO = "robot-io-node"
+export const NODE_ID_SIM_OUT = "sim-output-node"
+export const NODE_ID_SIM_IN = "sim-input-node"
+
+export type ConfigState = "wiring" | "simIO" | "robotIO"
+export type HandleType = SimType | StimulusType | DriverType
+export type ConfigItemInfo = {
+    id: string,
+    displayName: string,
+    enabled: boolean,
+    noraType: NoraTypes,
+    handleType?: HandleType
+}
+
+export type SourceHandle = {
     nodeId: string
     isSource: true
     noraType: NoraTypes
-    handleType: HandleType
+    handleType?: HandleType
     supplierId: string
 }
 
-type TargetHandle = {
+export type TargetHandle = {
     nodeId: string
     isSource: false
     noraType: NoraTypes
-    handleType: HandleType
-}
-
-export type JunctionInfo = {
-    inHandle: string,
-    outHandle: string,
-    position: XYPosition,
-    sourceType?: HandleType,
-    targetType?: HandleType
+    handleType?: HandleType
+    receiverId: string
 }
 
 export type FlowControlsProps = {
@@ -176,43 +125,19 @@ function displayNameAccel(id: string) {
     }
 }
 
-function decodeHandleId(id: string): DataHandle | JunctionHandle | undefined {
-    const parts = id.split(":")
-    if (parts.length < 2) {
-        return undefined
-    }
-    
-    switch (parts[0]) {
-        case SIM_IN_PREFIX:
-        case SIM_OUT_PREFIX:
-        case ROBOT_IN_PREFIX:
-        case ROBOT_OUT_PREFIX:
-            return { id: parts[2], type: parts[1] as HandleType, origin: parts[0], isJunction: false, dir: TYPE_DIRECTIONS[parts[1] as HandleType] }
-        case JUNCTION_IN_PREFIX:
-        case JUNCTION_OUT_PREFIX:
-            return { id: parts[1], dir: parts[0] == JUNCTION_IN_PREFIX ? "target" : "source", isJunction: true }
-    }
-    return undefined
+export type NodeInfo = {
+    id: string,
+    type: string,
+    position: XYPosition
 }
 
 export type SimConfigData = {
-    simOut: Map<string, ConfigItemInfo>
-    simIn: Map<string, ConfigItemInfo>
-    robotIn: Map<string, ConfigItemInfo>
-    robotOut: Map<string, ConfigItemInfo>
+    sourceHandles: Map<string, ConfigItemInfo>
+    targetHandles: Map<string, ConfigItemInfo>
 
-    junctions: Map<string, JunctionInfo>
+    connections: Map<string, string[]>
 
-    connections: Map<string, string>
-
-    simOutPosition: XYPosition
-    simInPosition: XYPosition
-    robotIOPosition: XYPosition
-}
-
-function genJunctionId(config: SimConfigData): string {
-    const id = (Random() * 10000).toFixed()
-    return config.junctions.has(id) ? genJunctionId(config) : id
+    nodes: Map<string, NodeInfo>
 }
 
 export class SimConfig {
@@ -220,95 +145,212 @@ export class SimConfig {
 
     public static Default(assembly: MirabufSceneObject) {
         const config: SimConfigData = {
-            simOut: new Map(),
-            simIn: new Map(),
-            robotIn: new Map(),
-            robotOut: new Map(),
-
-            junctions: new Map(),
+            sourceHandles: new Map(),
+            targetHandles: new Map(),
 
             connections: new Map(),
 
-            simInPosition: { x: 800, y: 0 },
-            simOutPosition: { x: -800, y: 0 },
-            robotIOPosition: { x: 0, y: 0 },
+            nodes: new Map(),
         }
+        config.nodes.set(NODE_ID_ROBOT_IO, { id: NODE_ID_ROBOT_IO, type: WiringNode.name, position: { x: 0, y: 0 } })
+        config.nodes.set(NODE_ID_SIM_IN, { id: NODE_ID_SIM_IN, type: WiringNode.name, position: { x: 800, y: 0 } })
+        config.nodes.set(NODE_ID_SIM_OUT, { id: NODE_ID_SIM_OUT, type: WiringNode.name, position: { x: -800, y: 0 } })
         getDriverSignals(assembly).forEach(x => {
-            if (x.info?.GUID)
-                config.simIn.set(`${SIM_IN_PREFIX}:${x.id.type}:${x.info.GUID}`, { id: x.info.GUID, displayName: x.DisplayName(), enabled: true, type: x.id.type })
+            if (x.info?.GUID) {
+                const handle: TargetHandle = {
+                    nodeId: NODE_ID_SIM_IN,
+                    isSource: false,
+                    handleType: x.id.type,
+                    noraType: x.getReceiverType(),
+                    receiverId: x.idStr
+                }
+                const id = JSON.stringify(handle)
+                this.AddTargetHandle(config, id, { id: id, displayName: x.DisplayName(), enabled: true, noraType: handle.noraType, handleType: x.id.type })
+            }
         })
         getStimulusSignals(assembly).forEach(x => {
-            if (x.info?.GUID)
-                config.simOut.set(`${SIM_OUT_PREFIX}:${x.id.type}:${x.info.GUID}`, { id: x.info.GUID, displayName: x.DisplayName(), enabled: true, type: x.id.type })
+            if (x.info?.GUID) {
+                const handle: SourceHandle = {
+                    nodeId: NODE_ID_SIM_OUT,
+                    isSource: true,
+                    handleType: x.id.type,
+                    noraType: x.getSupplierType(),
+                    supplierId: x.idStr
+                }
+                const id = JSON.stringify(handle)
+                this.AddSourceHandle(config, id, { id: id, displayName: x.DisplayName(), enabled: true, noraType: handle.noraType, handleType: x.id.type })
+            }
         })
         getCANMotors().forEach(([id, _]) => {
-            config.robotOut.set(`${ROBOT_OUT_PREFIX}:${SimType.CANMotor}:${id}`, { id: id, displayName: displayNameCAN(id), enabled: true, type: SimType.CANMotor })
+            const handle: SourceHandle = {
+                nodeId: NODE_ID_ROBOT_IO,
+                isSource: true,
+                handleType: SimType.CANMotor,
+                noraType: supplierTypeMap[SimType.CANMotor]!,
+                supplierId: id
+            }
+            const handleId = JSON.stringify(handle)
+            this.AddSourceHandle(config, handleId, { id: handleId, displayName: displayNameCAN(id), enabled: true, noraType: handle.noraType, handleType: SimType.CANMotor })
         })
         getCANEncoder().forEach(([id, _]) => {
-            config.robotIn.set(`${ROBOT_IN_PREFIX}:${SimType.CANEncoder}:${id}`, { id: id, displayName: displayNameCAN(id), enabled: true, type: SimType.CANEncoder })
+            const handle: TargetHandle = {
+                nodeId: NODE_ID_ROBOT_IO,
+                isSource: false,
+                handleType: SimType.CANEncoder,
+                noraType: receiverTypeMap[SimType.CANEncoder]!,
+                receiverId: id
+            }
+            const handleId = JSON.stringify(handle)
+            this.AddTargetHandle(config, handleId, { id: handleId, displayName: displayNameCAN(id), enabled: true, noraType: handle.noraType, handleType: SimType.CANEncoder })
         })
         getPWMDevices().forEach(([id, _]) => {
-            config.robotOut.set(`${ROBOT_OUT_PREFIX}:${SimType.PWM}:${id}`, { id: id, displayName: displayNamePWM(id), enabled: true, type: SimType.PWM })
+            const handle: SourceHandle = {
+                nodeId: NODE_ID_ROBOT_IO,
+                isSource: true,
+                handleType: SimType.PWM,
+                noraType: supplierTypeMap[SimType.PWM]!,
+                supplierId: id
+            }
+            const handleId = JSON.stringify(handle)
+            this.AddSourceHandle(config, handleId, { id: handleId, displayName: displayNamePWM(id), enabled: true, noraType: handle.noraType, handleType: SimType.PWM })
         })
         getAccelDevices().forEach(([id, data]) => {
-            config.robotIn.set(`${ROBOT_IN_PREFIX}:${SimType.Accel}:${id}`, { id: id, displayName: displayNameAccel(id), enabled: data.get("<init") == true, type: SimType.Accel })
+            const handle: TargetHandle = {
+                nodeId: NODE_ID_ROBOT_IO,
+                isSource: false,
+                handleType: SimType.Accel,
+                noraType: receiverTypeMap[SimType.Accel]!,
+                receiverId: id
+            }
+            const handleId = JSON.stringify(handle)
+            this.AddTargetHandle(config, handleId, { id: id, displayName: displayNameAccel(id), enabled: data.get("<init") == true, noraType: handle.noraType, handleType: SimType.Accel })
         })
 
         return config
     }
 
-    public static MakeJunction(config: SimConfigData): string {
-        const id = genJunctionId(config)
-        config.junctions.set(id, {
-            outHandle: `${JUNCTION_OUT_PREFIX}:${id}`,
-            inHandle: `${JUNCTION_IN_PREFIX}:${id}`,
-            position: { x: 0, y: 0 },
+    private static genJunctionId(config: SimConfigData): string {
+        const id = (Random() * 10000).toFixed()
+        return config.nodes.has(id) ? this.genJunctionId(config) : id
+    }
+
+    public static AddTargetHandle(config: SimConfigData, id: string, info: ConfigItemInfo): boolean {
+        if (config.targetHandles.has(id))
+            return false
+        config.targetHandles.set(id, info)
+        return true
+    }
+
+    public static AddSourceHandle(config: SimConfigData, id: string, info: ConfigItemInfo): boolean {
+        if (config.sourceHandles.has(id))
+            return false
+        config.sourceHandles.set(id, info)
+        config.connections.set(id, [])
+        return true
+    }
+
+    public static RemoveTargetHandle(config: SimConfigData, id: string): boolean {
+        if (!config.targetHandles.has(id))
+            return false;
+        [...config.connections.keys()].forEach(x => {
+            config.connections.set(x, config.connections.get(x)!.filter(y => y != id))
         })
+        return true
+    }
+
+    public static RemoveSourceHandle(config: SimConfigData, id: string): boolean {
+        return config.connections.delete(id)
+    }
+
+    // private static AddNode(config: SimConfigData, info: NodeInfo, handleCreator: HandleCreator): boolean {
+    //     if (config.nodes.has(info.id))
+    //         return false
+    //     config.nodes.set(info.id, info)
+    //     handleCreator.createNodeHandles(config)
+    //     return true
+    // }
+
+    public static DeleteNode(config: SimConfigData, id: string): boolean {
+        if (!config.nodes.has(id))
+            return false
+        const targetHandles: string[] = []
+        const sourceHandles: string[] = []
+        config.targetHandles.forEach((_, k) => {
+            const handle = JSON.parse(k) as TargetHandle
+            if (handle.nodeId == id) {
+                targetHandles.push(k)
+            }
+        })
+        config.sourceHandles.forEach((_, k) => {
+            const handle = JSON.parse(k) as SourceHandle
+            if (handle.nodeId == id)
+                sourceHandles.push(k)
+        })
+        targetHandles.forEach(x => this.RemoveTargetHandle(config, x))
+        sourceHandles.forEach(x => this.RemoveSourceHandle(config, x))
+        return config.nodes.delete(id)
+    }
+
+    public static AddJunctionNode(config: SimConfigData): string {
+        const id = this.genJunctionId(config)
+        config.nodes.set(id, {
+            id: id,
+            type: WiringNode.name,
+            position: { x: 0, y: 0 }
+        })
+        const targetHandle: TargetHandle = {
+            nodeId: id,
+            handleType: SimType.SimDevice,
+            isSource: false,
+            noraType: NoraTypes.Number,
+            receiverId: `target_${id}`
+        }
+        const targetId = JSON.stringify(targetHandle)
+        const sourceHandle: SourceHandle = {
+            nodeId: id,
+            handleType: SimType.SimDevice,
+            isSource: true,
+            noraType: NoraTypes.Number,
+            supplierId: `source_${id}`
+        }
+        const sourceId = JSON.stringify(sourceHandle)
+        this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: NoraTypes.Number })
+        this.AddSourceHandle(config, sourceId, { displayName: "Out", enabled: true, id: sourceId, noraType: NoraTypes.Number })
         return id
     }
 
-    public static DeleteJunction(config: SimConfigData, id: string): boolean {
-        // TODO: Handle connections to junction.
-        return config.junctions.delete(id)
+    // private static determineHandleType(config: SimConfigData, handle: DataHandle | JunctionHandle): HandleType | undefined {
+    //     if (!handle.isJunction)
+    //         return handle.type;
+
+    //     const junct = config.junctions.get(handle.id)!
+    //     return handle.dir == "source" ? junct?.sourceType : junct?.targetType
+    // }
+
+    // private static validateGraph(config: SimConfigData, source: string, target: string): boolean {
+    //     const validatedSources = new Set<string>()
+    //     const checkList: string[] = [...config.simOut.keys(), ...config.robotOut.keys()]
+    //     while (checkList.length > 0) {
+    //         const sourceId = checkList.pop()
+    //     }
+    // }
+
+    public static ValidateConnection(config: SimConfigData, sourceId: string, targetId: string): boolean {
+        const sourceInfo = config.sourceHandles.get(sourceId)
+        const targetInfo = config.targetHandles.get(targetId)
+        if (sourceInfo == undefined || targetInfo == undefined)
+            return false
+
+        return sourceInfo.noraType == targetInfo.noraType
     }
 
-    private static determineHandleType(config: SimConfigData, handle: DataHandle | JunctionHandle): HandleType | undefined {
-        if (!handle.isJunction)
-            return handle.type;
-
-        const junct = config.junctions.get(handle.id)!
-        return handle.dir == "source" ? junct?.sourceType : junct?.targetType
-    }
-
-    private static validateGraph(config: SimConfigData, source: string, target: string): boolean {
-        const validatedSources = new Set<string>()
-        const checkList: string[] = [...config.simOut.keys(), ...config.robotOut.keys()]
-        while (checkList.length > 0) {
-            const sourceId = checkList.pop()
+    public static MakeEdge(config: SimConfigData, sourceId: string, targetId: string): boolean {
+        if (!this.ValidateConnection(config, sourceId, targetId)) {
+            console.debug("Failed to make edge")
+            return false
         }
-    }
 
-    private static validateEdge(config: SimConfigData, source: string, target: string): boolean {
-        const sourceHandle = decodeHandleId(source)
-        const targetHandle = decodeHandleId(target)
-        if (sourceHandle == undefined || targetHandle == undefined)
-            return false
-
-        if (sourceHandle.dir == targetHandle.dir)
-            return false
-
-        const sourceHandleType = this.determineHandleType(config, sourceHandle)
-        const targetHandleType = this.determineHandleType(config, targetHandle)
-        if (sourceHandleType == undefined || targetHandleType == undefined) {
-            console.debug("Two empty junctions connected to eachother,")
-        }
-    }
-
-    public static MakeEdge(config: SimConfigData, source: string, target: string): boolean {
-        if (!this.validateEdge(config, source, target))
-            return false
-
-        config.connections.push({ source: source, target: target })
+        config.connections.get(sourceId)!.push(targetId)
         return true
     }
 }

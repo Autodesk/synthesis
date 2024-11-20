@@ -1,7 +1,7 @@
 import { mirabuf } from "@/proto/mirabuf"
 import { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { Supplier } from "../Nora"
+import { NoraType, NoraTypes, Supplier } from "../Nora"
 
 export enum StimulusType {
     Stim_ChassisAccel = "Stim_ChassisAccel",
@@ -55,7 +55,8 @@ abstract class Stimulus implements Supplier {
         return this._info
     }
     
-    public abstract getSupplierValue(): unknown
+    public abstract getSupplierType(): NoraTypes
+    public abstract getSupplierValue(): NoraType
     public abstract DisplayName(): string
 }
 

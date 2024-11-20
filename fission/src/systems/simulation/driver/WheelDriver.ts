@@ -3,6 +3,7 @@ import Driver, { DriverID } from "./Driver"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { SimType } from "../wpilib_brain/WPILibBrain"
 import { mirabuf } from "@/proto/mirabuf"
+import { NoraNumber, NoraTypes } from "../Nora"
 
 const LATERIAL_FRICTION = 0.6
 const LONGITUDINAL_FRICTION = 0.8
@@ -73,6 +74,12 @@ class WheelDriver extends Driver {
         this._reversed = val
     }
 
+    public getReceiverType(): NoraTypes {
+        return NoraTypes.Number
+    }
+    public setReceiverValue(val: NoraNumber): void {
+        this.accelerationDirection = val
+    }
     public DisplayName(): string {
         return `${this.info?.name ?? "-"} [Wheel]`
     }
