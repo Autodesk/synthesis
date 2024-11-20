@@ -1,5 +1,6 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
+import { NoraType, NoraTypes } from "@/systems/simulation/Nora"
 import Stimulus, { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
@@ -93,18 +94,19 @@ const TYPE_DIRECTIONS: { [type in HandleType]: "source" | "target" } = {
 export const configItemInfoCompare: (a: [string, ConfigItemInfo], b: [string, ConfigItemInfo]) => number
     = ([_aK, aV], [_bK, bV]) => aV.displayName.localeCompare(bV.displayName)
 
-type DataHandle = {
-    id: string,
-    type: HandleType,
-    origin: string,
-    isJunction: false,
-    dir: "source" | "target",
+type SourceHandle = {
+    nodeId: string
+    isSource: true
+    noraType: NoraTypes
+    handleType: HandleType
+    supplierId: string
 }
 
-type JunctionHandle = {
-    id: string,
-    dir: "source" | "target",
-    isJunction: true,
+type TargetHandle = {
+    nodeId: string
+    isSource: false
+    noraType: NoraTypes
+    handleType: HandleType
 }
 
 export type JunctionInfo = {

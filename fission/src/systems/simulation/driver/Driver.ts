@@ -1,7 +1,7 @@
 import { mirabuf } from "@/proto/mirabuf"
 import { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { Receiver } from "../Nora"
+import { NoraType, NoraTypes, Receiver } from "../Nora"
 
 export enum DriverType {
     Driv_Hinge = "Driv_Hinge",
@@ -60,7 +60,8 @@ abstract class Driver implements Receiver {
         return this._info
     }
 
-    public abstract setReceiverValue(val: unknown): void;
+    public abstract setReceiverValue(val: NoraType): void
+    public abstract getReceiverType(): NoraTypes
     public abstract DisplayName(): string
 }
 

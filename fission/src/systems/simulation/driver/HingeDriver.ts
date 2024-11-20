@@ -4,6 +4,7 @@ import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+import { NoraNumber, NoraTypes } from "../Nora"
 
 const MAX_TORQUE_WITHOUT_GRAV = 100
 
@@ -109,6 +110,14 @@ class HingeDriver extends Driver {
             if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this.maxVelocity
             this._constraint.SetTargetAngle(ang)
         }
+    }
+
+    public getReceiverType(): NoraTypes {
+        return NoraTypes.Number
+    }
+
+    public setReceiverValue(val: NoraNumber): void {
+        this.accelerationDirection = val
     }
 
     public DisplayName(): string {

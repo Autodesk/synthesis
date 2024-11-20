@@ -6,19 +6,34 @@ describe("Nora Tests", () => {
         vi.resetAllMocks()
     })
 
-    test("Parameter Assertion", () => {
-        const testSupplier: Supplier = {
-            getSupplierValue() {
-                return "0.5"
-            }
+    test("Hashmap Testing", () => {
+        type KeyType = {
+            id: number
+            src: string
+            objs: number[]
         }
 
-        const testReceiver: Receiver = {
-            setReceiverValue(val: [ number ]) {
-                console.debug(`Received Value: ${val[0]}`)
-            }
+        const map = new Map<KeyType, number>()
+
+        const keyA: KeyType = {
+            id: 0,
+            src: "a",
+            objs: [ 1, 2 ]
+        }
+        
+        const keyB: KeyType = {
+            id: 1,
+            src: "b",
+            objs: [ 3, 4 ]
         }
 
-        expect(() => testReceiver.setReceiverValue(testSupplier.getSupplierValue())).toThrowError()
+        const keyACopy = JSON.parse(JSON.stringify(keyA))
+
+        map.set(keyA, 5)
+        map.set(keyB, 10)
+
+        expect(map.get(keyA)).toBe(5)
+        expect(map.get(keyB)).toBe(10)
+        expect(map.get(keyACopy)).toBe(5)
     })
 })
