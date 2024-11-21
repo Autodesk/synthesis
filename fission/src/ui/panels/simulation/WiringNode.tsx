@@ -19,7 +19,7 @@ function WiringNode({ data, isConnectable }: NodeProps) {
     }, [simConfig])
 
     const inputHandles = useMemo(() => robotInput ? (
-        <div className="flex flex-col gap-4 justify-center">
+        <div className="flex flex-col gap-4 justify-between">
             {robotInput.sort(configItemInfoCompare).map((x, i) => {
                 return (<div
                     key={i}
@@ -40,7 +40,7 @@ function WiringNode({ data, isConnectable }: NodeProps) {
     ) : (<></>), [isConnectable, robotInput])
 
     const outputHandles = useMemo(() => robotOutput ? (
-        <div className="flex flex-col gap-4 justify-center">
+        <div className="flex flex-col gap-4 justify-between">
             {robotOutput.sort(configItemInfoCompare).map((x, i) => {
                 return (<div
                     key={i}

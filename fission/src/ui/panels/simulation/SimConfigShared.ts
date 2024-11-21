@@ -350,6 +350,11 @@ export class SimConfig {
             return false
         }
 
+        if (config.connections.get(sourceId)!.some(x => x == targetId)) {
+            console.debug("Connection already exists")
+            return false
+        }
+
         config.connections.get(sourceId)!.push(targetId)
         return true
     }

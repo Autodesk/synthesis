@@ -30,9 +30,8 @@ type NodeType = ComponentType<NodeProps & {
 
 // This took way too long
 const nodeTypes: Record<string, NodeType> = [
-        WiringNode
-    ].reduce<{ [k: string]: NodeType }>((prev, next) => { prev[next.name] = next; return prev }, {})
-const initialEdges: FlowEdge[] = []
+    WiringNode
+].reduce<{ [k: string]: NodeType }>((prev, next) => { prev[next.name] = next; return prev }, {})
 
 function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setConfigState: (state: ConfigState) => void): [FlowNode[], FlowEdge[]] {
 
@@ -343,7 +342,7 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
             edges={edges}
             onNodeDragStop={onNodeDragStop}
             onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
+            onEdgesChange={undefined}
             onConnect={onConnect}
             onEdgeDoubleClick={onEdgeDoubleClick}
             nodeTypes={nodeTypes}
