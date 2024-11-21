@@ -1,25 +1,28 @@
 export enum NoraTypes {
     Number = "num",
-    Number3 = "num3",
+    Number2 = "[num,num]",
+    Number3 = "[num,num,num]",
     Unknown = "unknown",
 }
 
 export type NoraNumber = number
-export type NoraNumber3 = [ number, number, number ]
+export type NoraNumber2 = [ NoraNumber, NoraNumber ]
+export type NoraNumber3 = [ NoraNumber, NoraNumber, NoraNumber ]
 export type NoraUnknown = unknown
 
-export type NoraType = NoraNumber | NoraNumber3 | NoraUnknown
+export type NoraType = NoraNumber | NoraNumber2 | NoraNumber3 | NoraUnknown
 
-export type Supplier = {
-    getSupplierType(): NoraTypes
-    getSupplierValue(): NoraType
+// Needed?
+// export function constructNoraType(...types: NoraTypes[]): NoraTypes {
+//     return `[${types.join(",")}]` as NoraTypes
+// }
+
+export function deconstructNoraType(type: NoraTypes): NoraTypes[] | undefined {
+    if (type.charAt(0) != "[" || type.charAt(type.length - 1) != "]")
+        return undefined
+    return type.substring(1, type.length - 1).split(",") as NoraTypes[]
 }
 
-export type Receiver = {
-    getReceiverType(): NoraTypes
-    setReceiverValue(val: NoraType): void
-}
-
-export function validate(s: Supplier, r: Receiver): boolean {
-    return s.getSupplierType() === r.getReceiverType()
+export function isNoraDeconstructable(type: NoraTypes): boolean {
+    return type.charAt(0) == "[" && type.charAt(type.length - 1) == "]"
 }

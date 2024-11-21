@@ -1,6 +1,6 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
-import { NoraTypes } from "@/systems/simulation/Nora"
+import { deconstructNoraType, NoraTypes } from "@/systems/simulation/Nora"
 import Stimulus, { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import { receiverTypeMap, simMap, SimType, supplierTypeMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
@@ -229,9 +229,9 @@ export class SimConfig {
         return config
     }
 
-    private static genJunctionId(config: SimConfigData): string {
-        const id = (Random() * 10000).toFixed()
-        return config.nodes.has(id) ? this.genJunctionId(config) : id
+    private static getNodeId(config: SimConfigData): string {
+        const id = (Random() * 1000000).toFixed()
+        return config.nodes.has(id) ? this.getNodeId(config) : id
     }
 
     public static AddTargetHandle(config: SimConfigData, id: string, info: ConfigItemInfo): boolean {
@@ -292,7 +292,7 @@ export class SimConfig {
     }
 
     public static AddJunctionNode(config: SimConfigData): string {
-        const id = this.genJunctionId(config)
+        const id = this.getNodeId(config)
         config.nodes.set(id, {
             id: id,
             type: WiringNode.name,
@@ -317,6 +317,78 @@ export class SimConfig {
         this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: NoraTypes.Number })
         this.AddSourceHandle(config, sourceId, { displayName: "Out", enabled: true, id: sourceId, noraType: NoraTypes.Number })
         return id
+    }
+
+    public static AddDeconstructorNode(config: SimConfigData, targetNoraType: NoraTypes, positionHint?: XYPosition): string | undefined {
+        const types = deconstructNoraType(targetNoraType)
+        if (types == undefined || types.length == 0)
+            return undefined
+
+        const id = this.getNodeId(config)
+        config.nodes.set(id, {
+            id: id,
+            type: WiringNode.name,
+            position: positionHint ?? { x: 0, y: 0 }
+        })
+        const targetHandle: TargetHandle = {
+            nodeId: id,
+            handleType: SimType.SimDevice,
+            isSource: false,
+            noraType: targetNoraType,
+            receiverId: `target_${id}`
+        }
+        const targetId = JSON.stringify(targetHandle)
+        this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: targetHandle.noraType })
+
+        types.forEach((sourceType, i) => {
+            const sourceHandle: SourceHandle = {
+                nodeId: id,
+                handleType: SimType.SimDevice,
+                isSource: true,
+                noraType: sourceType,
+                supplierId: `source_${i}_${id}`
+            }
+            const sourceId = JSON.stringify(sourceHandle)
+            this.AddSourceHandle(config, sourceId, { displayName: `Out ${i + 1}`, enabled: true, id: sourceId, noraType: sourceHandle.noraType })
+        })
+
+        return targetId
+    }
+
+    public static AddConstructorNode(config: SimConfigData, sourceNoraType: NoraTypes, positionHint?: XYPosition): string | undefined {
+        const types = deconstructNoraType(sourceNoraType)
+        if (types == undefined || types.length == 0)
+            return undefined
+
+        const id = this.getNodeId(config)
+        config.nodes.set(id, {
+            id: id,
+            type: WiringNode.name,
+            position: positionHint ?? { x: 0, y: 0 }
+        })
+        const sourceHandle: SourceHandle = {
+            nodeId: id,
+            handleType: SimType.SimDevice,
+            isSource: true,
+            noraType: sourceNoraType,
+            supplierId: `target_${id}`
+        }
+        const sourceId = JSON.stringify(sourceHandle)
+        this.AddSourceHandle(config, sourceId, { displayName: "In", enabled: true, id: sourceId, noraType: sourceHandle.noraType })
+
+        types.forEach((targetType, i) => {
+            const targetHandle: TargetHandle = {
+                nodeId: id,
+                handleType: SimType.SimDevice,
+                isSource: false,
+                noraType: targetType,
+                receiverId: `source_${i}_${id}`
+            }
+            const targetId = JSON.stringify(targetHandle)
+            this.AddTargetHandle(config, targetId, { displayName: `In ${i + 1}`, enabled: true, id: targetId, noraType: targetHandle.noraType })
+        })
+
+        return sourceId
     }
 
     // private static determineHandleType(config: SimConfigData, handle: DataHandle | JunctionHandle): HandleType | undefined {

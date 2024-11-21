@@ -1,7 +1,8 @@
 import { mirabuf } from "@/proto/mirabuf"
 import { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { NoraType, NoraTypes, Supplier } from "../Nora"
+import { NoraType, NoraTypes } from "../Nora"
+import { SimSupplier } from "../wpilib_brain/SimDataFlow"
 
 export enum StimulusType {
     Stim_ChassisAccel = "Stim_ChassisAccel",
@@ -32,7 +33,7 @@ export function makeStimulusID(constraint: MechanismConstraint): StimulusID {
     }
 }
 
-abstract class Stimulus implements Supplier {
+abstract class Stimulus implements SimSupplier {
     private _id: StimulusID
     private _info?: mirabuf.IInfo
 

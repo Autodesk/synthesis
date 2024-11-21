@@ -1,7 +1,8 @@
 import { mirabuf } from "@/proto/mirabuf"
 import { MechanismConstraint } from "@/systems/physics/Mechanism"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { NoraType, NoraTypes, Receiver } from "../Nora"
+import { NoraType, NoraTypes } from "../Nora"
+import { SimReceiver } from "../wpilib_brain/SimDataFlow"
 
 export enum DriverType {
     Driv_Hinge = "Driv_Hinge",
@@ -37,7 +38,7 @@ export function makeDriverID(constraint: MechanismConstraint): DriverID {
     }
 }
 
-abstract class Driver implements Receiver {
+abstract class Driver implements SimReceiver {
     private _id: DriverID
     private _info?: mirabuf.IInfo
 

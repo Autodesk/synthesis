@@ -9,6 +9,7 @@ import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
 class World {
     private static _isAlive: boolean = false
     private static _clock: THREE.Clock
+    private static _currentDeltaT: number = 0
 
     private static _sceneRenderer: SceneRenderer
     private static _physicsSystem: PhysicsSystem
@@ -91,18 +92,22 @@ class World {
     }
 
     public static UpdateWorld() {
-        const deltaT = World._clock.getDelta()
+        this._currentDeltaT = World._clock.getDelta()
 
         this._accumTimes.frames++
 
         this._accumTimes.totalTime += this.time(() => {
-            this._accumTimes.simulationTime += this.time(() => World._simulationSystem.Update(deltaT))
-            this._accumTimes.physicsTime += this.time(() => World._physicsSystem.Update(deltaT))
-            this._accumTimes.inputTime += this.time(() => World._inputSystem.Update(deltaT))
-            this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.Update(deltaT))
+            this._accumTimes.simulationTime += this.time(() => World._simulationSystem.Update(this._currentDeltaT))
+            this._accumTimes.physicsTime += this.time(() => World._physicsSystem.Update(this._currentDeltaT))
+            this._accumTimes.inputTime += this.time(() => World._inputSystem.Update(this._currentDeltaT))
+            this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.Update(this._currentDeltaT))
         })
 
-        World._analyticsSystem?.Update(deltaT)
+        World._analyticsSystem?.Update(this._currentDeltaT)
+    }
+
+    public static get currentDeltaT(): number {
+        return this._currentDeltaT
     }
 
     private static time(func: () => void): number {

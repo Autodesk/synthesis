@@ -10,6 +10,7 @@ import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
 import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
 import { Random } from "@/util/Random"
 import { NoraTypes } from "../Nora"
+import { SimFlow, validate } from "./SimDataFlow"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -57,7 +58,7 @@ export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.CANEncoder]: undefined,
     [SimType.Gyro]: undefined,
     [SimType.Accel]: undefined,
-    [SimType.DIO]: undefined, // ?
+    [SimType.DIO]: NoraTypes.Number, // ?
     [SimType.AI]: undefined,
     [SimType.AO]: NoraTypes.Number
 }
@@ -70,7 +71,7 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.CANEncoder]: NoraTypes.Number,
     [SimType.Gyro]: NoraTypes.Number3, // Wrong but its fine
     [SimType.Accel]: NoraTypes.Number3,
-    [SimType.DIO]: undefined, // ?
+    [SimType.DIO]: NoraTypes.Number, // ?
     [SimType.AI]: NoraTypes.Number,
     [SimType.AO]: undefined
 }
@@ -398,6 +399,7 @@ class WPILibBrain extends Brain {
 
     private _simOutputs: SimOutput[] = []
     private _simInputs: SimInput[] = []
+    private _simFlows: SimFlow[] = []
 
     constructor(mechanism: Mechanism) {
         super(mechanism)
@@ -423,6 +425,14 @@ class WPILibBrain extends Brain {
 
     public addSimInput(input: SimInput) {
         this._simInputs.push(input)
+    }
+
+    public addSimFlow(flow: SimFlow): boolean {
+        if (validate(flow.supplier, flow.receiver)) {
+            this._simFlows.push(flow)
+            return true
+        }
+        return false
     }
 
     public Update(deltaT: number): void {

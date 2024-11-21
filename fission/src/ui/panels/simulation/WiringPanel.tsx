@@ -2,7 +2,7 @@ import '@xyflow/react/dist/style.css'
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
-import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, addEdge, NodeProps, Connection } from "@xyflow/react"
+import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, NodeProps, Connection, FinalConnectionState } from "@xyflow/react"
 import { ConfigItemInfo, ConfigState, genId, genIdToSavedId, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, savedIdToGenId, SimConfig, SourceHandle, TargetHandle } from "./SimConfigShared"
 import Label, { LabelSize } from "@/ui/components/Label";
 import ScrollView from "@/ui/components/ScrollView";
@@ -16,6 +16,7 @@ import { SimConfigData } from "./SimConfigShared";
 import FlowControls from "./FlowControls";
 import WiringNode from "./WiringNode";
 import { SimType } from '@/systems/simulation/wpilib_brain/WPILibBrain'
+import { isNoraDeconstructable } from '@/systems/simulation/Nora'
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void,
@@ -83,23 +84,30 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
         if (!v.enabled)
             return
         const handle = JSON.parse(k) as SourceHandle
+        const sourceInfo = simConfig.sourceHandles.get(k)
         const node = nodes.get(handle.nodeId)
         if (!node) {
             console.warn('Orphaned handle found')
             return
         }
         (node.data.output as unknown[]).push([ k, v ])
-        const connections = simConfig.connections.get(k)!
-        connections.forEach(x => {
-            const targetHandle = JSON.parse(x) as TargetHandle
-            edges.push({
-                id: genId().toString(),
-                source: handle.nodeId,
-                target: targetHandle.nodeId,
-                sourceHandle: savedIdToGenId(k),
-                targetHandle: savedIdToGenId(x)
+
+        if (sourceInfo && sourceInfo.enabled) {
+            const connections = simConfig.connections.get(k)!
+            connections.forEach(x => {
+                const targetHandle = JSON.parse(x) as TargetHandle
+                const targetInfo = simConfig.targetHandles.get(x)
+                if (targetInfo && targetInfo.enabled) {
+                    edges.push({
+                        id: genId().toString(),
+                        source: handle.nodeId,
+                        target: targetHandle.nodeId,
+                        sourceHandle: savedIdToGenId(k),
+                        targetHandle: savedIdToGenId(x)
+                    })
+                }
             })
-        })
+        }
     })
 
     simConfig.targetHandles.forEach((v, k) => {
@@ -313,18 +321,60 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
         }
         nodeInfo.position = node.position
     }, [simConfig])
-    
-    // const onConnect = useCallback(
-    //     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    //     (params: any) => setEdges((eds) => addEdge(params, eds)),
-    //     [setEdges],
-    // );
 
     const onConnect = useCallback((connection: Connection) => {
         const sourceId = genIdToSavedId(connection.sourceHandle as string)
         const targetId = genIdToSavedId(connection.targetHandle as string)
         if (SimConfig.MakeConnection(simConfig, sourceId!, targetId!)) {
             refreshGraph()
+        }
+    }, [simConfig])
+
+    const onConnectEnd = useCallback((_mouse: MouseEvent | TouchEvent, state: FinalConnectionState) => {
+        if (state.isValid)
+            return
+
+        console.debug("fdsjfjskdgsd")
+
+        console.debug(state)
+
+        if (state.fromHandle == null)
+            return
+
+        if (state.fromHandle.type == "source") {
+            console.debug("Adding deconstructor")
+            const sourceId = genIdToSavedId(state.fromHandle.id!)
+            if (sourceId == undefined)
+                return
+            const sourceInfo = simConfig.sourceHandles.get(sourceId)
+            if (sourceInfo == undefined)
+                return
+            if (isNoraDeconstructable(sourceInfo.noraType)) {
+                const targetId = SimConfig.AddDeconstructorNode(simConfig, sourceInfo.noraType, state.to ?? undefined)
+                if (targetId == undefined)
+                    return
+                if (SimConfig.MakeConnection(simConfig, sourceId, targetId))
+                    refreshGraph()
+            } else {
+                console.debug("Not allowed for this type")
+            }
+        } else {
+            console.debug("Adding constructor")
+            const targetId = genIdToSavedId(state.fromHandle.id!)
+            if (targetId == undefined)
+                return
+            const targetInfo = simConfig.targetHandles.get(targetId)
+            if (targetInfo == undefined)
+                return
+            if (isNoraDeconstructable(targetInfo.noraType)) {
+                const sourceId = SimConfig.AddConstructorNode(simConfig, targetInfo.noraType, state.to ?? undefined)
+                if (sourceId == undefined)
+                    return
+                if (SimConfig.MakeConnection(simConfig, sourceId, targetId))
+                    refreshGraph()
+            } else {
+                console.debug("Not allowed for this type")
+            }
         }
     }, [simConfig])
 
@@ -341,8 +391,9 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
             onNodeDragStop={onNodeDragStop}
             onNodesChange={onNodesChange}
             onEdgesChange={onEdgesChange}
-            onConnect={onConnect}
             onEdgeDoubleClick={onEdgeDoubleClick}
+            onConnect={onConnect}
+            onConnectEnd={onConnectEnd}
             nodeTypes={nodeTypes}
             fitView
         >
