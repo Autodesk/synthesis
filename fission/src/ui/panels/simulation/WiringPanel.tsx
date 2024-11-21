@@ -3,7 +3,7 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, addEdge, NodeProps, Connection } from "@xyflow/react"
-import { ConfigItemInfo, ConfigState, genId, genIdToSavedId, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, SimConfig, SourceHandle, TargetHandle } from "./SimConfigShared"
+import { ConfigItemInfo, ConfigState, genId, genIdToSavedId, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, savedIdToGenId, SimConfig, SourceHandle, TargetHandle } from "./SimConfigShared"
 import Label, { LabelSize } from "@/ui/components/Label";
 import ScrollView from "@/ui/components/ScrollView";
 import Checkbox from "@/ui/components/Checkbox";
@@ -91,14 +91,13 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
         (node.data.output as unknown[]).push([ k, v ])
         const connections = simConfig.connections.get(k)!
         connections.forEach(x => {
-            console.debug("Constructing edge")
-            const targetHandle = JSON.parse(k) as TargetHandle
+            const targetHandle = JSON.parse(x) as TargetHandle
             edges.push({
                 id: genId().toString(),
                 source: handle.nodeId,
                 target: targetHandle.nodeId,
-                sourceHandle: k,
-                targetHandle: x
+                sourceHandle: savedIdToGenId(k),
+                targetHandle: savedIdToGenId(x)
             })
         })
     })
@@ -301,8 +300,10 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     }, [setConfigState, setEdges, setNodes, simConfig, refreshHook])
 
     const onEdgeDoubleClick = useCallback((_: React.MouseEvent, edge: FlowEdge) => {
-        setEdges(edges.filter(x => x.id != edge.id))
-    }, [edges, setEdges])
+        if (SimConfig.DeleteConnection(simConfig, genIdToSavedId(edge.sourceHandle!)!, genIdToSavedId(edge.targetHandle!)!)) {
+            refreshGraph()
+        }
+    }, [simConfig])
 
     const onNodeDragStop = useCallback((_event: React.MouseEvent, node: FlowNode, _nodes: FlowNode[]) => {
         const nodeInfo = simConfig.nodes.get(node.id)
@@ -322,11 +323,8 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const onConnect = useCallback((connection: Connection) => {
         const sourceId = genIdToSavedId(connection.sourceHandle as string)
         const targetId = genIdToSavedId(connection.targetHandle as string)
-        if (SimConfig.MakeEdge(simConfig, sourceId!, targetId!)) {
-            console.debug("Refreshing")
+        if (SimConfig.MakeConnection(simConfig, sourceId!, targetId!)) {
             refreshGraph()
-        } else {
-            console.debug("Not refreshing")
         }
     }, [simConfig])
 
@@ -342,7 +340,7 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
             edges={edges}
             onNodeDragStop={onNodeDragStop}
             onNodesChange={onNodesChange}
-            onEdgesChange={undefined}
+            onEdgesChange={onEdgesChange}
             onConnect={onConnect}
             onEdgeDoubleClick={onEdgeDoubleClick}
             nodeTypes={nodeTypes}

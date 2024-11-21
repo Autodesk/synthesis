@@ -255,11 +255,11 @@ export class SimConfig {
         [...config.connections.keys()].forEach(x => {
             config.connections.set(x, config.connections.get(x)!.filter(y => y != id))
         })
-        return true
+        return config.targetHandles.delete(id)
     }
 
     public static RemoveSourceHandle(config: SimConfigData, id: string): boolean {
-        return config.connections.delete(id)
+        return config.connections.delete(id) && config.sourceHandles.delete(id)
     }
 
     // private static AddNode(config: SimConfigData, info: NodeInfo, handleCreator: HandleCreator): boolean {
@@ -344,7 +344,7 @@ export class SimConfig {
         return sourceInfo.noraType == targetInfo.noraType
     }
 
-    public static MakeEdge(config: SimConfigData, sourceId: string, targetId: string): boolean {
+    public static MakeConnection(config: SimConfigData, sourceId: string, targetId: string): boolean {
         if (!this.ValidateConnection(config, sourceId, targetId)) {
             console.debug("Failed to make edge")
             return false
@@ -356,6 +356,16 @@ export class SimConfig {
         }
 
         config.connections.get(sourceId)!.push(targetId)
+        return true
+    }
+
+    public static DeleteConnection(config: SimConfigData, sourceId: string, targetId: string): boolean {
+        let arr = config.connections.get(sourceId)
+        if (!arr) {
+            return false
+        }
+        arr = arr.filter(x => x != targetId)
+        config.connections.set(sourceId, arr)
         return true
     }
 }
