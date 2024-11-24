@@ -14,7 +14,6 @@ function WiringNode({ data, isConnectable }: NodeProps) {
     const title = data["title"] as string
 
     const validateConnection = useCallback((edge: Edge | Connection) => {
-        // return true
         return SimConfig.ValidateConnection(simConfig, genIdToSavedId(edge.sourceHandle as string)!, genIdToSavedId(edge.targetHandle as string)!)
     }, [simConfig])
 

@@ -2,7 +2,7 @@ import '@xyflow/react/dist/style.css'
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
-import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, NodeProps, Connection, FinalConnectionState } from "@xyflow/react"
+import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, NodeProps, Connection, FinalConnectionState, useReactFlow, ReactFlowProvider } from "@xyflow/react"
 import { ConfigItemInfo, ConfigState, genId, genIdToSavedId, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, savedIdToGenId, SimConfig, SourceHandle, TargetHandle } from "./SimConfigShared"
 import Label, { LabelSize } from "@/ui/components/Label";
 import ScrollView from "@/ui/components/ScrollView";
@@ -296,11 +296,12 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 }
 
 function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+    const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[]);
     const [refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
 
-    // Essentially a callback, but it can use it's self.
+    // Essentially a callback, but it can use itself.
     useEffect(() => {
         const [nodes, edges] = generateGraph(simConfig, refreshGraph, setConfigState)
         setNodes(nodes)
@@ -330,19 +331,16 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
         }
     }, [simConfig])
 
-    const onConnectEnd = useCallback((_mouse: MouseEvent | TouchEvent, state: FinalConnectionState) => {
+    const onConnectEnd = useCallback((event: MouseEvent | TouchEvent, state: FinalConnectionState) => {
         if (state.isValid)
             return
-
-        console.debug("fdsjfjskdgsd")
-
-        console.debug(state)
 
         if (state.fromHandle == null)
             return
 
+        const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event
+
         if (state.fromHandle.type == "source") {
-            console.debug("Adding deconstructor")
             const sourceId = genIdToSavedId(state.fromHandle.id!)
             if (sourceId == undefined)
                 return
@@ -350,33 +348,28 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
             if (sourceInfo == undefined)
                 return
             if (isNoraDeconstructable(sourceInfo.noraType)) {
-                const targetId = SimConfig.AddDeconstructorNode(simConfig, sourceInfo.noraType, state.to ?? undefined)
+                const targetId = SimConfig.AddDeconstructorNode(simConfig, sourceInfo.noraType, screenToFlowPosition({ x: clientX, y: clientY }))
                 if (targetId == undefined)
                     return
                 if (SimConfig.MakeConnection(simConfig, sourceId, targetId))
                     refreshGraph()
-            } else {
-                console.debug("Not allowed for this type")
             }
         } else {
-            console.debug("Adding constructor")
             const targetId = genIdToSavedId(state.fromHandle.id!)
             if (targetId == undefined)
                 return
             const targetInfo = simConfig.targetHandles.get(targetId)
             if (targetInfo == undefined)
                 return
-            if (isNoraDeconstructable(targetInfo.noraType)) {
-                const sourceId = SimConfig.AddConstructorNode(simConfig, targetInfo.noraType, state.to ?? undefined)
+            if (isNoraDeconstructable(targetInfo.noraType) && (targetInfo.many || (simConfig.connectionCount.get(targetId) ?? 0) < 1)) {
+                const sourceId = SimConfig.AddConstructorNode(simConfig, targetInfo.noraType, screenToFlowPosition({ x: clientX, y: clientY }))
                 if (sourceId == undefined)
                     return
                 if (SimConfig.MakeConnection(simConfig, sourceId, targetId))
                     refreshGraph()
-            } else {
-                console.debug("Not allowed for this type")
             }
         }
-    }, [simConfig])
+    }, [screenToFlowPosition, simConfig])
 
     const onCreateJunction = useCallback(() => {
         SimConfig.AddJunctionNode(simConfig)
@@ -435,7 +428,11 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             full
         >{selectedAssembly && simConfig ? (
             <div className="flex grow">
-                {configState === "wiring" ? <WiringComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} /> : <></>}
+                {configState === "wiring" ? (
+                    <ReactFlowProvider>
+                        <WiringComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} />
+                    </ReactFlowProvider>
+                ) : (<></>) }
                 {configState === "robotIO" ? <RobotIOComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} /> : <></>}
                 {configState === "simIO" ? <SimIOComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} /> : <></>}
             </div>

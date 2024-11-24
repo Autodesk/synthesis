@@ -1,6 +1,6 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
-import { deconstructNoraType, NoraTypes } from "@/systems/simulation/Nora"
+import { deconstructNoraType, hasNoraAverageFunc, NoraTypes } from "@/systems/simulation/Nora"
 import Stimulus, { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import { receiverTypeMap, simMap, SimType, supplierTypeMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
@@ -11,6 +11,10 @@ import WiringNode from "./WiringNode"
 let id = 0
 export function genId(): number {
     return ++id
+}
+
+export function genRandomId(): number {
+    return Math.floor(Random() * 1000000)
 }
 
 const savedToGenMap = new Map<string, string>()
@@ -42,12 +46,18 @@ export const NODE_ID_SIM_IN = "sim-input-node"
 
 export type ConfigState = "wiring" | "simIO" | "robotIO"
 export type HandleType = SimType | StimulusType | DriverType
+export enum FuncType {
+    Junction = "junct",
+    Constructor = "construct",
+    Deconstructor = "deconstruct"
+}
 export type ConfigItemInfo = {
     id: string,
     displayName: string,
     enabled: boolean,
     noraType: NoraTypes,
     handleType?: HandleType
+    many: boolean
 }
 
 export type SourceHandle = {
@@ -126,8 +136,9 @@ function displayNameAccel(id: string) {
 }
 
 export type NodeInfo = {
-    id: string,
-    type: string,
+    id: string
+    type: string
+    funcType?: FuncType
     position: XYPosition
 }
 
@@ -135,7 +146,8 @@ export type SimConfigData = {
     sourceHandles: Map<string, ConfigItemInfo>
     targetHandles: Map<string, ConfigItemInfo>
 
-    connections: Map<string, string[]>
+    connections: Map<number, { sourceId: string, targetId: string }>
+    adjacency: Map<string, Set<number>>
 
     nodes: Map<string, NodeInfo>
 }
@@ -149,6 +161,7 @@ export class SimConfig {
             targetHandles: new Map(),
 
             connections: new Map(),
+            adjacency: new Map(),
 
             nodes: new Map(),
         }
@@ -165,7 +178,7 @@ export class SimConfig {
                     receiverId: x.idStr
                 }
                 const id = JSON.stringify(handle)
-                this.AddTargetHandle(config, id, { id: id, displayName: x.DisplayName(), enabled: true, noraType: handle.noraType, handleType: x.id.type })
+                this.AddTargetHandle(config, id, { id: id, displayName: x.DisplayName(), enabled: true, noraType: handle.noraType, handleType: x.id.type, many: hasNoraAverageFunc(handle.noraType) })
             }
         })
         getStimulusSignals(assembly).forEach(x => {
@@ -178,7 +191,7 @@ export class SimConfig {
                     supplierId: x.idStr
                 }
                 const id = JSON.stringify(handle)
-                this.AddSourceHandle(config, id, { id: id, displayName: x.DisplayName(), enabled: true, noraType: handle.noraType, handleType: x.id.type })
+                this.AddSourceHandle(config, id, { id: id, displayName: x.DisplayName(), enabled: true, noraType: handle.noraType, handleType: x.id.type, many: true })
             }
         })
         getCANMotors().forEach(([id, _]) => {
@@ -190,7 +203,7 @@ export class SimConfig {
                 supplierId: id
             }
             const handleId = JSON.stringify(handle)
-            this.AddSourceHandle(config, handleId, { id: handleId, displayName: displayNameCAN(id), enabled: true, noraType: handle.noraType, handleType: SimType.CANMotor })
+            this.AddSourceHandle(config, handleId, { id: handleId, displayName: displayNameCAN(id), enabled: true, noraType: handle.noraType, handleType: SimType.CANMotor, many: true })
         })
         getCANEncoder().forEach(([id, _]) => {
             const handle: TargetHandle = {
@@ -201,7 +214,7 @@ export class SimConfig {
                 receiverId: id
             }
             const handleId = JSON.stringify(handle)
-            this.AddTargetHandle(config, handleId, { id: handleId, displayName: displayNameCAN(id), enabled: true, noraType: handle.noraType, handleType: SimType.CANEncoder })
+            this.AddTargetHandle(config, handleId, { id: handleId, displayName: displayNameCAN(id), enabled: true, noraType: handle.noraType, handleType: SimType.CANEncoder, many: hasNoraAverageFunc(handle.noraType) })
         })
         getPWMDevices().forEach(([id, _]) => {
             const handle: SourceHandle = {
@@ -212,7 +225,7 @@ export class SimConfig {
                 supplierId: id
             }
             const handleId = JSON.stringify(handle)
-            this.AddSourceHandle(config, handleId, { id: handleId, displayName: displayNamePWM(id), enabled: true, noraType: handle.noraType, handleType: SimType.PWM })
+            this.AddSourceHandle(config, handleId, { id: handleId, displayName: displayNamePWM(id), enabled: true, noraType: handle.noraType, handleType: SimType.PWM, many: true })
         })
         getAccelDevices().forEach(([id, data]) => {
             const handle: TargetHandle = {
@@ -223,7 +236,7 @@ export class SimConfig {
                 receiverId: id
             }
             const handleId = JSON.stringify(handle)
-            this.AddTargetHandle(config, handleId, { id: id, displayName: displayNameAccel(id), enabled: data.get("<init") == true, noraType: handle.noraType, handleType: SimType.Accel })
+            this.AddTargetHandle(config, handleId, { id: id, displayName: displayNameAccel(id), enabled: data.get("<init") == true, noraType: handle.noraType, handleType: SimType.Accel, many: hasNoraAverageFunc(handle.noraType) })
         })
 
         return config
@@ -238,6 +251,7 @@ export class SimConfig {
         if (config.targetHandles.has(id))
             return false
         config.targetHandles.set(id, info)
+        config.adjacency.set(id, new Set())
         return true
     }
 
@@ -245,21 +259,32 @@ export class SimConfig {
         if (config.sourceHandles.has(id))
             return false
         config.sourceHandles.set(id, info)
-        config.connections.set(id, [])
+        config.adjacency.set(id, new Set())
         return true
     }
 
     public static RemoveTargetHandle(config: SimConfigData, id: string): boolean {
         if (!config.targetHandles.has(id))
             return false;
-        [...config.connections.keys()].forEach(x => {
-            config.connections.set(x, config.connections.get(x)!.filter(y => y != id))
-        })
-        return config.targetHandles.delete(id)
+        const edgeIds = config.adjacency.get(id)
+        if (edgeIds == undefined)
+            return false
+        edgeIds.forEach(x => this.DeleteEdge(config, x))
+        config.adjacency.delete(id)
+        config.targetHandles.delete(id)
+        return true
     }
 
     public static RemoveSourceHandle(config: SimConfigData, id: string): boolean {
-        return config.connections.delete(id) && config.sourceHandles.delete(id)
+        if (!config.sourceHandles.has(id))
+            return false;
+        const edgeIds = config.adjacency.get(id)
+        if (edgeIds == undefined)
+            return false
+        edgeIds.forEach(x => this.DeleteEdge(config, x))
+        config.adjacency.delete(id)
+        config.sourceHandles.delete(id)
+        return true
     }
 
     // private static AddNode(config: SimConfigData, info: NodeInfo, handleCreator: HandleCreator): boolean {
@@ -296,7 +321,8 @@ export class SimConfig {
         config.nodes.set(id, {
             id: id,
             type: WiringNode.name,
-            position: { x: 0, y: 0 }
+            position: { x: 0, y: 0 },
+            funcType: FuncType.Junction
         })
         const targetHandle: TargetHandle = {
             nodeId: id,
@@ -314,8 +340,8 @@ export class SimConfig {
             supplierId: `source_${id}`
         }
         const sourceId = JSON.stringify(sourceHandle)
-        this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: NoraTypes.Number })
-        this.AddSourceHandle(config, sourceId, { displayName: "Out", enabled: true, id: sourceId, noraType: NoraTypes.Number })
+        this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: NoraTypes.Number, many: hasNoraAverageFunc(targetHandle.noraType) })
+        this.AddSourceHandle(config, sourceId, { displayName: "Out", enabled: true, id: sourceId, noraType: NoraTypes.Number, many: true })
         return id
     }
 
@@ -328,7 +354,8 @@ export class SimConfig {
         config.nodes.set(id, {
             id: id,
             type: WiringNode.name,
-            position: positionHint ?? { x: 0, y: 0 }
+            position: positionHint ?? { x: 0, y: 0 },
+            funcType: FuncType.Deconstructor
         })
         const targetHandle: TargetHandle = {
             nodeId: id,
@@ -338,7 +365,7 @@ export class SimConfig {
             receiverId: `target_${id}`
         }
         const targetId = JSON.stringify(targetHandle)
-        this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: targetHandle.noraType })
+        this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: targetHandle.noraType, many: hasNoraAverageFunc(targetHandle.noraType) })
 
         types.forEach((sourceType, i) => {
             const sourceHandle: SourceHandle = {
@@ -349,7 +376,7 @@ export class SimConfig {
                 supplierId: `source_${i}_${id}`
             }
             const sourceId = JSON.stringify(sourceHandle)
-            this.AddSourceHandle(config, sourceId, { displayName: `Out ${i + 1}`, enabled: true, id: sourceId, noraType: sourceHandle.noraType })
+            this.AddSourceHandle(config, sourceId, { displayName: `Out ${i + 1}`, enabled: true, id: sourceId, noraType: sourceHandle.noraType, many: true })
         })
 
         return targetId
@@ -364,7 +391,8 @@ export class SimConfig {
         config.nodes.set(id, {
             id: id,
             type: WiringNode.name,
-            position: positionHint ?? { x: 0, y: 0 }
+            position: positionHint ?? { x: 0, y: 0 },
+            funcType: FuncType.Constructor
         })
         const sourceHandle: SourceHandle = {
             nodeId: id,
@@ -374,7 +402,7 @@ export class SimConfig {
             supplierId: `target_${id}`
         }
         const sourceId = JSON.stringify(sourceHandle)
-        this.AddSourceHandle(config, sourceId, { displayName: "In", enabled: true, id: sourceId, noraType: sourceHandle.noraType })
+        this.AddSourceHandle(config, sourceId, { displayName: "In", enabled: true, id: sourceId, noraType: sourceHandle.noraType, many: true })
 
         types.forEach((targetType, i) => {
             const targetHandle: TargetHandle = {
@@ -385,7 +413,7 @@ export class SimConfig {
                 receiverId: `source_${i}_${id}`
             }
             const targetId = JSON.stringify(targetHandle)
-            this.AddTargetHandle(config, targetId, { displayName: `In ${i + 1}`, enabled: true, id: targetId, noraType: targetHandle.noraType })
+            this.AddTargetHandle(config, targetId, { displayName: `In ${i + 1}`, enabled: true, id: targetId, noraType: targetHandle.noraType, many: hasNoraAverageFunc(targetType) })
         })
 
         return sourceId
@@ -407,10 +435,18 @@ export class SimConfig {
     //     }
     // }
 
+    public static GetEdge(config: SimConfigData, sourceId: string, targetId: string): number | undefined {
+        const targetEdges = config.adjacency.get(targetId)!
+        return [...config.adjacency.get(sourceId)!.keys()].filter(x => targetEdges.has(x))[0]
+    }
+
     public static ValidateConnection(config: SimConfigData, sourceId: string, targetId: string): boolean {
         const sourceInfo = config.sourceHandles.get(sourceId)
         const targetInfo = config.targetHandles.get(targetId)
         if (sourceInfo == undefined || targetInfo == undefined)
+            return false
+
+        if (!targetInfo.many && config.adjacency.get(targetId)!.size >= 1)
             return false
 
         return sourceInfo.noraType == targetInfo.noraType
@@ -422,22 +458,38 @@ export class SimConfig {
             return false
         }
 
-        if (config.connections.get(sourceId)!.some(x => x == targetId)) {
+        if (this.GetEdge(config, sourceId, targetId) != undefined) {
             console.debug("Connection already exists")
             return false
         }
-
-        config.connections.get(sourceId)!.push(targetId)
+        
+        let edgeId = genRandomId()
+        while (config.connections.has(edgeId)) {
+            edgeId = genRandomId()
+        }
+        config.connections.set(edgeId, { sourceId: sourceId, targetId: targetId })
+        config.adjacency.get(sourceId)?.add(edgeId)
+        config.adjacency.get(targetId)?.add(edgeId)
         return true
     }
 
     public static DeleteConnection(config: SimConfigData, sourceId: string, targetId: string): boolean {
-        let arr = config.connections.get(sourceId)
-        if (!arr) {
+        const edgeId = this.GetEdge(config, sourceId, targetId)
+        if (edgeId == undefined)
             return false
-        }
-        arr = arr.filter(x => x != targetId)
-        config.connections.set(sourceId, arr)
+        config.adjacency.get(sourceId)?.delete(edgeId)
+        config.adjacency.get(targetId)?.delete(edgeId)
+        config.connections.delete(edgeId)
+        return true
+    }
+
+    public static DeleteEdge(config: SimConfigData, edgeId: number): boolean {
+        const edge = config.connections.get(edgeId)
+        if (edge == undefined)
+            return false
+        config.adjacency.get(edge.sourceId)!.delete(edgeId)
+        config.adjacency.get(edge.targetId)!.delete(edgeId)
+        config.connections.delete(edgeId)
         return true
     }
 }
