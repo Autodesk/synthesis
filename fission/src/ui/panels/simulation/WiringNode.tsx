@@ -1,36 +1,38 @@
-import Button from "@/ui/components/Button"
 import { Connection, Edge, Handle, NodeProps, Position } from "@xyflow/react"
-import { ConfigItemInfo, configItemInfoCompare, genId, genIdToSavedId, savedIdToGenId, SimConfig, SimConfigData } from "./SimConfigShared"
+import { handleInfoDisplayCompare, SimConfig, SimConfigData, HandleInfo, NORA_TYPES_COLORS } from "./SimConfigShared"
 import { useCallback, useMemo } from "react"
-import { FaXmark } from "react-icons/fa6"
-import { DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import { CustomTooltip, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 function WiringNode({ data, isConnectable }: NodeProps) {
-    const robotInput = data["input"] as ([string, ConfigItemInfo][] | undefined)
-    const robotOutput = data["output"] as ([string, ConfigItemInfo][] | undefined)
+    const robotInput = data["input"] as (HandleInfo[] | undefined)
+    const robotOutput = data["output"] as (HandleInfo[] | undefined)
     const onEdit = data["onEdit"] as ((() => void) | undefined)
     const onDelete = data["onDelete"] as ((() => void) | undefined)
     const simConfig = data["simConfig"] as SimConfigData
     const title = data["title"] as string
+    const tooltip = data["tooltip"] as string | undefined
 
     const validateConnection = useCallback((edge: Edge | Connection) => {
-        return SimConfig.ValidateConnection(simConfig, genIdToSavedId(edge.sourceHandle as string)!, genIdToSavedId(edge.targetHandle as string)!)
+        return SimConfig.ValidateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
     }, [simConfig])
 
     const inputHandles = useMemo(() => robotInput ? (
         <div className="flex flex-col gap-4 justify-between">
-            {robotInput.sort(configItemInfoCompare).map((x, i) => {
+            {robotInput.sort(handleInfoDisplayCompare).map((x, i) => {
                 return (<div
                     key={i}
                     className="relative"
                 >
-                    <div className="px-3 text-lg">{x[1].displayName}</div>
+                    <div className="px-3 text-lg">{x.displayName}</div>
                     <Handle
+                        style={{
+                            backgroundColor: NORA_TYPES_COLORS[x.noraType]
+                        }}
                         className="absolute left-0 w-4 h-4"
                         key={i}
                         type="target"
                         position={Position.Left}
-                        id={savedIdToGenId(x[0])}
+                        id={x.id}
                         isConnectable={isConnectable}
                     />
                 </div>)
@@ -40,18 +42,21 @@ function WiringNode({ data, isConnectable }: NodeProps) {
 
     const outputHandles = useMemo(() => robotOutput ? (
         <div className="flex flex-col gap-4 justify-between">
-            {robotOutput.sort(configItemInfoCompare).map((x, i) => {
+            {robotOutput.sort(handleInfoDisplayCompare).map((x, i) => {
                 return (<div
                     key={i}
                     className="relative"
                 >
-                    <div className="px-3 text-lg text-right">{x[1].displayName}</div>
+                    <div className="px-3 text-lg text-right">{x.displayName}</div>
                     <Handle
-                        className="absolute right-0  w-4 h-4"
+                        style={{
+                            backgroundColor: NORA_TYPES_COLORS[x.noraType]
+                        }}
+                        className="absolute right-0 w-4 h-4"
                         key={i}
                         type="source"
                         position={Position.Right}
-                        id={savedIdToGenId(x[0])}
+                        id={x.id}
                         isConnectable={isConnectable}
                         isValidConnection={validateConnection}
                         
@@ -71,6 +76,7 @@ function WiringNode({ data, isConnectable }: NodeProps) {
                 }}
                 className="absolute top-0 text-nowrap left-1/2 text-2xl"
             >
+                {tooltip ? CustomTooltip(tooltip) : <></>}
                 {title}
             </div>
             <div

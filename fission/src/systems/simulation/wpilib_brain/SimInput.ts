@@ -6,6 +6,7 @@ import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { JoltQuat_ThreeQuaternion, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
+import { SimFlow } from "./SimDataFlow"
 
 export abstract class SimInput {
     constructor(protected _device: string) {}

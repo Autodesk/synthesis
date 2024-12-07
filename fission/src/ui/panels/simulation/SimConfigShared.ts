@@ -7,14 +7,22 @@ import World from "@/systems/World"
 import { Random } from "@/util/Random"
 import { XYPosition } from "@xyflow/react"
 import WiringNode from "./WiringNode"
+import { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
+
+export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
+    [NoraTypes.Number]: "#5f60ff",
+    [NoraTypes.Number2]: "#2bc275",
+    [NoraTypes.Number3]: "#ffc21a",
+    [NoraTypes.Unknown]: "#bebebe"
+}
 
 let id = 0
 export function genId(): number {
     return ++id
 }
 
-export function genRandomId(): number {
-    return Math.floor(Random() * 1000000)
+export function genRandomId(): string {
+    return Math.floor(Random() * Number.MAX_SAFE_INTEGER).toString()
 }
 
 const savedToGenMap = new Map<string, string>()
@@ -37,43 +45,33 @@ export function genIdToSavedId(genId: string): string | undefined {
     return genToSavedMap.get(genId)
 }
 
-export const configItemInfoCompare: (a: [string, ConfigItemInfo], b: [string, ConfigItemInfo]) => number
-    = ([_aK, aV], [_bK, bV]) => aV.displayName.localeCompare(bV.displayName)
+export const handleInfoDisplayCompare: (a: HandleInfo, b: HandleInfo) => number
+    = (a, b) => a.displayName.localeCompare(b.displayName)
 
 export const NODE_ID_ROBOT_IO = "robot-io-node"
 export const NODE_ID_SIM_OUT = "sim-output-node"
 export const NODE_ID_SIM_IN = "sim-input-node"
 
 export type ConfigState = "wiring" | "simIO" | "robotIO"
-export type HandleType = SimType | StimulusType | DriverType
+export type OriginType = SimType | StimulusType | DriverType
 export enum FuncType {
     Junction = "junct",
     Constructor = "construct",
     Deconstructor = "deconstruct"
 }
-export type ConfigItemInfo = {
+
+export type HandleInfo = {
     id: string,
+    nodeId: string,
+    noraType: NoraTypes,
+    originType?: OriginType,
+    originId: string,
+
     displayName: string,
     enabled: boolean,
-    noraType: NoraTypes,
-    handleType?: HandleType
-    many: boolean
-}
-
-export type SourceHandle = {
-    nodeId: string
-    isSource: true
-    noraType: NoraTypes
-    handleType?: HandleType
-    supplierId: string
-}
-
-export type TargetHandle = {
-    nodeId: string
-    isSource: false
-    noraType: NoraTypes
-    handleType?: HandleType
-    receiverId: string
+    
+    many: boolean,
+    isSource: boolean,
 }
 
 export type FlowControlsProps = {
@@ -140,16 +138,19 @@ export type NodeInfo = {
     type: string
     funcType?: FuncType
     position: XYPosition
+    tooltip?: string
 }
 
+type NodeId_Alias = string
+type HandleId_Alias = string
+type EdgeId_Alias = string
+type Edge_Alias = { sourceId: HandleId_Alias, targetId: HandleId_Alias }
+
 export type SimConfigData = {
-    sourceHandles: Map<string, ConfigItemInfo>
-    targetHandles: Map<string, ConfigItemInfo>
-
-    connections: Map<number, { sourceId: string, targetId: string }>
-    adjacency: Map<string, Set<number>>
-
-    nodes: Map<string, NodeInfo>
+    handles:   Map<HandleId_Alias,        HandleInfo>
+    edges:     Map<  EdgeId_Alias,        Edge_Alias>
+    adjacency: Map<HandleId_Alias, Set<EdgeId_Alias>>
+    nodes:     Map<  NodeId_Alias,          NodeInfo>
 }
 
 export class SimConfig {
@@ -157,292 +158,318 @@ export class SimConfig {
 
     public static Default(assembly: MirabufSceneObject) {
         const config: SimConfigData = {
-            sourceHandles: new Map(),
-            targetHandles: new Map(),
+            handles: new Map(),
 
-            connections: new Map(),
+            edges: new Map(),
             adjacency: new Map(),
 
             nodes: new Map(),
         }
-        config.nodes.set(NODE_ID_ROBOT_IO, { id: NODE_ID_ROBOT_IO, type: WiringNode.name, position: { x: 0, y: 0 } })
-        config.nodes.set(NODE_ID_SIM_IN, { id: NODE_ID_SIM_IN, type: WiringNode.name, position: { x: 800, y: 0 } })
-        config.nodes.set(NODE_ID_SIM_OUT, { id: NODE_ID_SIM_OUT, type: WiringNode.name, position: { x: -800, y: 0 } })
+        config.nodes.set(NODE_ID_ROBOT_IO, { 
+            id: NODE_ID_ROBOT_IO,
+            type: WiringNode.name,
+            position: { x: 0, y: 0 },
+            tooltip: "These handles represent the different devices we've discovered from your connected robot code. The left handles represent input devices such as sensors. The right handles represent output devices such as motor controllers. Use the edit button to hide/reveal handles.",
+        })
+        config.nodes.set(NODE_ID_SIM_IN, {
+            id: NODE_ID_SIM_IN,
+            type: WiringNode.name,
+            position: { x: 800, y: 0 },
+            tooltip: "These handles represent the input of the simulation. These are drivers for wheels, hinges, and sliders. Use the edit button to hide/reveal handles.",
+        })
+        config.nodes.set(NODE_ID_SIM_OUT, {
+            id: NODE_ID_SIM_OUT,
+            type: WiringNode.name,
+            position: { x: -800, y: 0 },
+            tooltip: "These handles represent the output of the simulation. These are stimuli for wheels, hinges, and sliders that represent encoder positions and speeds. Use the edit button to hide/reveal handles.",
+        })
         getDriverSignals(assembly).forEach(x => {
             if (x.info?.GUID) {
-                const handle: TargetHandle = {
+                const handle: HandleInfo = {
+                    id: "",
                     nodeId: NODE_ID_SIM_IN,
-                    isSource: false,
-                    handleType: x.id.type,
                     noraType: x.getReceiverType(),
-                    receiverId: x.idStr
+                    originType: x.id.type,
+                    originId: x.idStr,
+
+                    displayName: x.DisplayName(),
+                    enabled: true,
+                    
+                    many: hasNoraAverageFunc(x.getReceiverType()),
+                    isSource: false,
                 }
-                const id = JSON.stringify(handle)
-                this.AddTargetHandle(config, id, { id: id, displayName: x.DisplayName(), enabled: true, noraType: handle.noraType, handleType: x.id.type, many: hasNoraAverageFunc(handle.noraType) })
+                this.AddHandle(config, handle)
             }
         })
         getStimulusSignals(assembly).forEach(x => {
             if (x.info?.GUID) {
-                const handle: SourceHandle = {
+                const handle: HandleInfo = {
+                    id: "",
                     nodeId: NODE_ID_SIM_OUT,
-                    isSource: true,
-                    handleType: x.id.type,
                     noraType: x.getSupplierType(),
-                    supplierId: x.idStr
+                    originType: x.id.type,
+                    originId: x.idStr,
+
+                    displayName: x.DisplayName(),
+                    enabled: true,
+                    
+                    many: hasNoraAverageFunc(x.getSupplierType()),
+                    isSource: true,
                 }
-                const id = JSON.stringify(handle)
-                this.AddSourceHandle(config, id, { id: id, displayName: x.DisplayName(), enabled: true, noraType: handle.noraType, handleType: x.id.type, many: true })
+                this.AddHandle(config, handle)
             }
         })
         getCANMotors().forEach(([id, _]) => {
-            const handle: SourceHandle = {
+            const handle: HandleInfo = {
+                id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                isSource: true,
-                handleType: SimType.CANMotor,
                 noraType: supplierTypeMap[SimType.CANMotor]!,
-                supplierId: id
+                originType: SimType.CANMotor,
+                originId: id,
+
+                displayName: displayNameCAN(id),
+                enabled: true,
+                
+                many: true,
+                isSource: true,
             }
-            const handleId = JSON.stringify(handle)
-            this.AddSourceHandle(config, handleId, { id: handleId, displayName: displayNameCAN(id), enabled: true, noraType: handle.noraType, handleType: SimType.CANMotor, many: true })
+            this.AddHandle(config, handle)
         })
         getCANEncoder().forEach(([id, _]) => {
-            const handle: TargetHandle = {
+            const handle: HandleInfo = {
+                id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                isSource: false,
-                handleType: SimType.CANEncoder,
                 noraType: receiverTypeMap[SimType.CANEncoder]!,
-                receiverId: id
+                originType: SimType.CANEncoder,
+                originId: id,
+
+                displayName: displayNameCAN(id),
+                enabled: true,
+                
+                many: hasNoraAverageFunc(receiverTypeMap[SimType.CANEncoder]!),
+                isSource: false,
             }
-            const handleId = JSON.stringify(handle)
-            this.AddTargetHandle(config, handleId, { id: handleId, displayName: displayNameCAN(id), enabled: true, noraType: handle.noraType, handleType: SimType.CANEncoder, many: hasNoraAverageFunc(handle.noraType) })
+            this.AddHandle(config, handle)
         })
         getPWMDevices().forEach(([id, _]) => {
-            const handle: SourceHandle = {
+            const handle: HandleInfo = {
+                id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                isSource: true,
-                handleType: SimType.PWM,
                 noraType: supplierTypeMap[SimType.PWM]!,
-                supplierId: id
+                originType: SimType.PWM,
+                originId: id,
+
+                displayName: displayNamePWM(id),
+                enabled: true,
+                
+                many: true,
+                isSource: true,
             }
-            const handleId = JSON.stringify(handle)
-            this.AddSourceHandle(config, handleId, { id: handleId, displayName: displayNamePWM(id), enabled: true, noraType: handle.noraType, handleType: SimType.PWM, many: true })
+            this.AddHandle(config, handle)
         })
         getAccelDevices().forEach(([id, data]) => {
-            const handle: TargetHandle = {
+            const handle: HandleInfo = {
+                id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                isSource: false,
-                handleType: SimType.Accel,
                 noraType: receiverTypeMap[SimType.Accel]!,
-                receiverId: id
+                originType: SimType.Accel,
+                originId: id,
+
+                displayName: displayNameAccel(id),
+                enabled: data.get("<init") == true,
+                
+                many: hasNoraAverageFunc(receiverTypeMap[SimType.Accel]!),
+                isSource: false,
             }
-            const handleId = JSON.stringify(handle)
-            this.AddTargetHandle(config, handleId, { id: id, displayName: displayNameAccel(id), enabled: data.get("<init") == true, noraType: handle.noraType, handleType: SimType.Accel, many: hasNoraAverageFunc(handle.noraType) })
+            this.AddHandle(config, handle)
         })
 
         return config
     }
 
-    private static getNodeId(config: SimConfigData): string {
-        const id = (Random() * 1000000).toFixed()
-        return config.nodes.has(id) ? this.getNodeId(config) : id
+    public static AddHandle(config: SimConfigData, info: HandleInfo) {
+        let handleId = ""
+        do {
+            handleId = genRandomId()
+        } while (config.handles.has(handleId))
+        info.id = handleId
+        config.handles.set(handleId, info)
+        config.adjacency.set(handleId, new Set())
     }
 
-    public static AddTargetHandle(config: SimConfigData, id: string, info: ConfigItemInfo): boolean {
-        if (config.targetHandles.has(id))
-            return false
-        config.targetHandles.set(id, info)
-        config.adjacency.set(id, new Set())
-        return true
-    }
-
-    public static AddSourceHandle(config: SimConfigData, id: string, info: ConfigItemInfo): boolean {
-        if (config.sourceHandles.has(id))
-            return false
-        config.sourceHandles.set(id, info)
-        config.adjacency.set(id, new Set())
-        return true
-    }
-
-    public static RemoveTargetHandle(config: SimConfigData, id: string): boolean {
-        if (!config.targetHandles.has(id))
+    public static RemoveHandle(config: SimConfigData, id: HandleId_Alias): boolean {
+        if (!config.handles.has(id))
             return false;
         const edgeIds = config.adjacency.get(id)
         if (edgeIds == undefined)
             return false
         edgeIds.forEach(x => this.DeleteEdge(config, x))
         config.adjacency.delete(id)
-        config.targetHandles.delete(id)
+        config.handles.delete(id)
         return true
     }
 
-    public static RemoveSourceHandle(config: SimConfigData, id: string): boolean {
-        if (!config.sourceHandles.has(id))
-            return false;
-        const edgeIds = config.adjacency.get(id)
-        if (edgeIds == undefined)
-            return false
-        edgeIds.forEach(x => this.DeleteEdge(config, x))
-        config.adjacency.delete(id)
-        config.sourceHandles.delete(id)
-        return true
-    }
-
-    // private static AddNode(config: SimConfigData, info: NodeInfo, handleCreator: HandleCreator): boolean {
-    //     if (config.nodes.has(info.id))
-    //         return false
-    //     config.nodes.set(info.id, info)
-    //     handleCreator.createNodeHandles(config)
-    //     return true
-    // }
-
-    public static DeleteNode(config: SimConfigData, id: string): boolean {
+    public static RemoveNode(config: SimConfigData, id: NodeId_Alias): boolean {
         if (!config.nodes.has(id))
-            return false
-        const targetHandles: string[] = []
-        const sourceHandles: string[] = []
-        config.targetHandles.forEach((_, k) => {
-            const handle = JSON.parse(k) as TargetHandle
-            if (handle.nodeId == id) {
-                targetHandles.push(k)
-            }
-        })
-        config.sourceHandles.forEach((_, k) => {
-            const handle = JSON.parse(k) as SourceHandle
-            if (handle.nodeId == id)
-                sourceHandles.push(k)
-        })
-        targetHandles.forEach(x => this.RemoveTargetHandle(config, x))
-        sourceHandles.forEach(x => this.RemoveSourceHandle(config, x))
+            return false;
+        [...config.handles.values()].filter(x => x.nodeId == id).forEach(x => this.RemoveHandle(config, x.id))
         return config.nodes.delete(id)
     }
 
-    public static AddJunctionNode(config: SimConfigData): string {
-        const id = this.getNodeId(config)
-        config.nodes.set(id, {
-            id: id,
+    public static AddJunctionNode(config: SimConfigData): NodeId_Alias {
+        let nodeId = ""
+        do {
+            nodeId = genRandomId()
+        } while (config.handles.has(nodeId))
+        config.nodes.set(nodeId, {
+            id: nodeId,
             type: WiringNode.name,
-            position: { x: 0, y: 0 },
+            position: { x: 300 + (Random() * 100), y: -100 + (Random() * 50) },
             funcType: FuncType.Junction
         })
-        const targetHandle: TargetHandle = {
-            nodeId: id,
-            handleType: SimType.SimDevice,
+        
+        const targetHandle: HandleInfo = {
+            id: "",
+            nodeId: nodeId,
+            noraType: NoraTypes.Number,
+            originType: SimType.SimDevice,
+            originId: nodeId,
+
+            displayName: "In",
+            enabled: true,
+            
+            many: true,
             isSource: false,
-            noraType: NoraTypes.Number,
-            receiverId: `target_${id}`
         }
-        const targetId = JSON.stringify(targetHandle)
-        const sourceHandle: SourceHandle = {
-            nodeId: id,
-            handleType: SimType.SimDevice,
+        SimConfig.AddHandle(config, targetHandle)
+
+        const sourceHandle: HandleInfo = {
+            id: "",
+            nodeId: nodeId,
+            noraType: NoraTypes.Number,
+            originType: SimType.SimDevice,
+            originId: nodeId,
+
+            displayName: "Out",
+            enabled: true,
+            
+            many: true,
             isSource: true,
-            noraType: NoraTypes.Number,
-            supplierId: `source_${id}`
         }
-        const sourceId = JSON.stringify(sourceHandle)
-        this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: NoraTypes.Number, many: hasNoraAverageFunc(targetHandle.noraType) })
-        this.AddSourceHandle(config, sourceId, { displayName: "Out", enabled: true, id: sourceId, noraType: NoraTypes.Number, many: true })
-        return id
+        SimConfig.AddHandle(config, sourceHandle)
+        return nodeId
     }
 
-    public static AddDeconstructorNode(config: SimConfigData, targetNoraType: NoraTypes, positionHint?: XYPosition): string | undefined {
+    public static AddDeconstructorNode(config: SimConfigData, targetNoraType: NoraTypes, positionHint?: XYPosition): HandleId_Alias | undefined {
         const types = deconstructNoraType(targetNoraType)
         if (types == undefined || types.length == 0)
             return undefined
 
-        const id = this.getNodeId(config)
-        config.nodes.set(id, {
-            id: id,
+        let nodeId = ""
+        do {
+            nodeId = genRandomId()
+        } while (config.handles.has(nodeId))
+        config.nodes.set(nodeId, {
+            id: nodeId,
             type: WiringNode.name,
             position: positionHint ?? { x: 0, y: 0 },
             funcType: FuncType.Deconstructor
         })
-        const targetHandle: TargetHandle = {
-            nodeId: id,
-            handleType: SimType.SimDevice,
-            isSource: false,
+        
+        const targetHandle: HandleInfo = {
+            id: "",
+            nodeId: nodeId,
             noraType: targetNoraType,
-            receiverId: `target_${id}`
+            originType: SimType.SimDevice,
+            originId: `target_${nodeId}`,
+
+            displayName: "In",
+            enabled: true,
+            
+            many: hasNoraAverageFunc(targetNoraType),
+            isSource: false,
         }
-        const targetId = JSON.stringify(targetHandle)
-        this.AddTargetHandle(config, targetId, { displayName: "In", enabled: true, id: targetId, noraType: targetHandle.noraType, many: hasNoraAverageFunc(targetHandle.noraType) })
+        SimConfig.AddHandle(config, targetHandle)
 
         types.forEach((sourceType, i) => {
-            const sourceHandle: SourceHandle = {
-                nodeId: id,
-                handleType: SimType.SimDevice,
-                isSource: true,
+            const sourceHandle: HandleInfo = {
+                id: "",
+                nodeId: nodeId,
                 noraType: sourceType,
-                supplierId: `source_${i}_${id}`
+                originType: SimType.SimDevice,
+                originId: `source_${i}_${nodeId}`,
+    
+                displayName: `Out ${i + 1}`,
+                enabled: true,
+                
+                many: true,
+                isSource: true,
             }
-            const sourceId = JSON.stringify(sourceHandle)
-            this.AddSourceHandle(config, sourceId, { displayName: `Out ${i + 1}`, enabled: true, id: sourceId, noraType: sourceHandle.noraType, many: true })
+            SimConfig.AddHandle(config, sourceHandle)
         })
 
-        return targetId
+        return targetHandle.id
     }
 
-    public static AddConstructorNode(config: SimConfigData, sourceNoraType: NoraTypes, positionHint?: XYPosition): string | undefined {
+    public static AddConstructorNode(config: SimConfigData, sourceNoraType: NoraTypes, positionHint?: XYPosition): HandleId_Alias | undefined {
         const types = deconstructNoraType(sourceNoraType)
         if (types == undefined || types.length == 0)
             return undefined
 
-        const id = this.getNodeId(config)
-        config.nodes.set(id, {
-            id: id,
+        let nodeId = ""
+        do {
+            nodeId = genRandomId()
+        } while (config.handles.has(nodeId))
+        config.nodes.set(nodeId, {
+            id: nodeId,
             type: WiringNode.name,
             position: positionHint ?? { x: 0, y: 0 },
             funcType: FuncType.Constructor
         })
-        const sourceHandle: SourceHandle = {
-            nodeId: id,
-            handleType: SimType.SimDevice,
-            isSource: true,
+        
+        const sourceHandle: HandleInfo = {
+            id:"",
+            nodeId: nodeId,
             noraType: sourceNoraType,
-            supplierId: `target_${id}`
+            originType: SimType.SimDevice,
+            originId: `source_${nodeId}`,
+
+            displayName: "Out",
+            enabled: true,
+            
+            many: true,
+            isSource: true,
         }
-        const sourceId = JSON.stringify(sourceHandle)
-        this.AddSourceHandle(config, sourceId, { displayName: "In", enabled: true, id: sourceId, noraType: sourceHandle.noraType, many: true })
+        SimConfig.AddHandle(config, sourceHandle)
 
         types.forEach((targetType, i) => {
-            const targetHandle: TargetHandle = {
-                nodeId: id,
-                handleType: SimType.SimDevice,
-                isSource: false,
+            const targetHandle: HandleInfo = {
+                id: "",
+                nodeId: nodeId,
                 noraType: targetType,
-                receiverId: `source_${i}_${id}`
+                originType: SimType.SimDevice,
+                originId: `target_${i}_${nodeId}`,
+    
+                displayName: `In ${i + 1}`,
+                enabled: true,
+                
+                many: hasNoraAverageFunc(targetType),
+                isSource: false,
             }
-            const targetId = JSON.stringify(targetHandle)
-            this.AddTargetHandle(config, targetId, { displayName: `In ${i + 1}`, enabled: true, id: targetId, noraType: targetHandle.noraType, many: hasNoraAverageFunc(targetType) })
+            SimConfig.AddHandle(config, targetHandle)
         })
 
-        return sourceId
+        return sourceHandle.id
     }
 
-    // private static determineHandleType(config: SimConfigData, handle: DataHandle | JunctionHandle): HandleType | undefined {
-    //     if (!handle.isJunction)
-    //         return handle.type;
-
-    //     const junct = config.junctions.get(handle.id)!
-    //     return handle.dir == "source" ? junct?.sourceType : junct?.targetType
-    // }
-
-    // private static validateGraph(config: SimConfigData, source: string, target: string): boolean {
-    //     const validatedSources = new Set<string>()
-    //     const checkList: string[] = [...config.simOut.keys(), ...config.robotOut.keys()]
-    //     while (checkList.length > 0) {
-    //         const sourceId = checkList.pop()
-    //     }
-    // }
-
-    public static GetEdge(config: SimConfigData, sourceId: string, targetId: string): number | undefined {
+    public static GetEdge(config: SimConfigData, sourceId: HandleId_Alias, targetId: HandleId_Alias): EdgeId_Alias | undefined {
         const targetEdges = config.adjacency.get(targetId)!
         return [...config.adjacency.get(sourceId)!.keys()].filter(x => targetEdges.has(x))[0]
     }
 
-    public static ValidateConnection(config: SimConfigData, sourceId: string, targetId: string): boolean {
-        const sourceInfo = config.sourceHandles.get(sourceId)
-        const targetInfo = config.targetHandles.get(targetId)
+    public static ValidateConnection(config: SimConfigData, sourceId: HandleId_Alias, targetId: HandleId_Alias): boolean {
+        const sourceInfo = config.handles.get(sourceId)
+        const targetInfo = config.handles.get(targetId)
         if (sourceInfo == undefined || targetInfo == undefined)
             return false
 
@@ -452,44 +479,58 @@ export class SimConfig {
         return sourceInfo.noraType == targetInfo.noraType
     }
 
-    public static MakeConnection(config: SimConfigData, sourceId: string, targetId: string): boolean {
-        if (!this.ValidateConnection(config, sourceId, targetId)) {
+    public static MakeConnection(config: SimConfigData, sourceId: HandleId_Alias, targetId: HandleId_Alias): boolean {
+        if (!SimConfig.ValidateConnection(config, sourceId, targetId)) {
             console.debug("Failed to make edge")
             return false
         }
 
-        if (this.GetEdge(config, sourceId, targetId) != undefined) {
+        if (SimConfig.GetEdge(config, sourceId, targetId) != undefined) {
             console.debug("Connection already exists")
             return false
         }
         
         let edgeId = genRandomId()
-        while (config.connections.has(edgeId)) {
+        while (config.edges.has(edgeId)) {
             edgeId = genRandomId()
         }
-        config.connections.set(edgeId, { sourceId: sourceId, targetId: targetId })
+        config.edges.set(edgeId, { sourceId: sourceId, targetId: targetId })
         config.adjacency.get(sourceId)?.add(edgeId)
         config.adjacency.get(targetId)?.add(edgeId)
         return true
     }
 
-    public static DeleteConnection(config: SimConfigData, sourceId: string, targetId: string): boolean {
-        const edgeId = this.GetEdge(config, sourceId, targetId)
+    public static DeleteConnection(config: SimConfigData, sourceId: HandleId_Alias, targetId: HandleId_Alias): boolean {
+        const edgeId = SimConfig.GetEdge(config, sourceId, targetId)
         if (edgeId == undefined)
             return false
         config.adjacency.get(sourceId)?.delete(edgeId)
         config.adjacency.get(targetId)?.delete(edgeId)
-        config.connections.delete(edgeId)
+        config.edges.delete(edgeId)
         return true
     }
 
-    public static DeleteEdge(config: SimConfigData, edgeId: number): boolean {
-        const edge = config.connections.get(edgeId)
+    public static DeleteEdge(config: SimConfigData, edgeId: EdgeId_Alias): boolean {
+        const edge = config.edges.get(edgeId)
         if (edge == undefined)
             return false
         config.adjacency.get(edge.sourceId)!.delete(edgeId)
         config.adjacency.get(edge.targetId)!.delete(edgeId)
-        config.connections.delete(edgeId)
+        config.edges.delete(edgeId)
         return true
+    }
+
+    public static Compile(config: SimConfigData): SimFlow[] {
+        const flows: SimFlow[] = []
+        config.handles.forEach((info, id) => {
+            if (info.nodeId == NODE_ID_ROBOT_IO || info.nodeId == NODE_ID_SIM_IN) {
+                flows.push(SimConfig.CompileSourceHandle(config, id, new Set<HandleId_Alias>()))
+            }
+        })
+        return flows
+    }
+
+    public static CompileSourceHandle(config: SimConfigData, sourceHandle: HandleId_Alias, encountered: Set<HandleId_Alias>): SimFlow {
+
     }
 }

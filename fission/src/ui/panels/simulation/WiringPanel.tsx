@@ -3,7 +3,7 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, NodeProps, Connection, FinalConnectionState, useReactFlow, ReactFlowProvider } from "@xyflow/react"
-import { ConfigItemInfo, ConfigState, genId, genIdToSavedId, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, savedIdToGenId, SimConfig, SourceHandle, TargetHandle } from "./SimConfigShared"
+import { ConfigState, HandleInfo, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, SimConfig } from "./SimConfigShared"
 import Label, { LabelSize } from "@/ui/components/Label";
 import ScrollView from "@/ui/components/ScrollView";
 import Checkbox from "@/ui/components/Checkbox";
@@ -17,6 +17,8 @@ import FlowControls from "./FlowControls";
 import WiringNode from "./WiringNode";
 import { SimType } from '@/systems/simulation/wpilib_brain/WPILibBrain'
 import { isNoraDeconstructable } from '@/systems/simulation/Nora'
+import InputSystem from '@/systems/input/InputSystem'
+import FlowInfo from './FlowInfo'
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void,
@@ -59,7 +61,7 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
                 break
             default:
                 onDelete = () => {
-                    if (SimConfig.DeleteNode(simConfig, v.id))
+                    if (SimConfig.RemoveNode(simConfig, v.id))
                         refreshGraph()
                 }
                 break
@@ -75,51 +77,36 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
                 onDelete: onDelete,
                 simConfig: simConfig,
                 input: [],
-                output: []
+                output: [],
+                tooltip: v.tooltip,
             }
         })
     })
 
-    simConfig.sourceHandles.forEach((v, k) => {
+    simConfig.handles.forEach((v) => {
         if (!v.enabled)
             return
-        const handle = JSON.parse(k) as SourceHandle
-        const sourceInfo = simConfig.sourceHandles.get(k)
-        const node = nodes.get(handle.nodeId)
+        const node = nodes.get(v.nodeId)
         if (!node) {
             console.warn('Orphaned handle found')
             return
         }
-        (node.data.output as unknown[]).push([ k, v ])
-
-        if (sourceInfo && sourceInfo.enabled) {
-            const connections = simConfig.connections.get(k)!
-            connections.forEach(x => {
-                const targetHandle = JSON.parse(x) as TargetHandle
-                const targetInfo = simConfig.targetHandles.get(x)
-                if (targetInfo && targetInfo.enabled) {
-                    edges.push({
-                        id: genId().toString(),
-                        source: handle.nodeId,
-                        target: targetHandle.nodeId,
-                        sourceHandle: savedIdToGenId(k),
-                        targetHandle: savedIdToGenId(x)
-                    })
-                }
-            })
-        }
+        ((v.isSource ? node.data.output : node.data.input) as unknown[]).push(v)
     })
 
-    simConfig.targetHandles.forEach((v, k) => {
-        if (!v.enabled)
-            return
-        const handle = JSON.parse(k) as TargetHandle
-        const node = nodes.get(handle.nodeId)
-        if (!node) {
-            console.warn('Orphaned handle found')
-            return
+    simConfig.edges.forEach((v, k) => {
+        const sourceHandle = simConfig.handles.get(v.sourceId)
+        const targetHandle = simConfig.handles.get(v.targetId)
+        
+        if (sourceHandle?.enabled && targetHandle?.enabled) {
+            edges.push({
+                id: k,
+                source: sourceHandle.nodeId,
+                target: targetHandle.nodeId,
+                sourceHandle: sourceHandle.id,
+                targetHandle: targetHandle.id,
+            })
         }
-        (node.data.input as unknown[]).push([ k, v ])
     })
 
     return [[...nodes.values()], edges]
@@ -127,18 +114,11 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
 
 function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 
-    const simOut: [string, ConfigItemInfo][] = []
-    const simIn: [string, ConfigItemInfo][] = []
-    simConfig.sourceHandles.forEach((v, k) => {
-        const handle = JSON.parse(k) as SourceHandle
-        if (handle.nodeId == NODE_ID_SIM_OUT) {
-            simOut.push([ k, v ])
-        }
-    })
-    simConfig.targetHandles.forEach((v, k) => {
-        const handle = JSON.parse(k) as TargetHandle
-        if (handle.nodeId == NODE_ID_SIM_IN) {
-            simIn.push([ k, v ])
+    const simOut: HandleInfo[] = []
+    const simIn: HandleInfo[] = []
+    simConfig.handles.forEach(v => {
+        if (v.nodeId == NODE_ID_SIM_OUT) {
+            (v.isSource ? simOut : simIn).push(v)
         }
     })
 
@@ -155,13 +135,13 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                 <div className="flex flex-col justify-center grow">
                     <Label className="text-center">Output</Label>
                     <ScrollView className="h-full px-2">
-                        {simOut.map(([k, v]) => (
+                        {simOut.map(handle => (
                             <Checkbox
-                                key={k}
-                                label={`${v.displayName}`}
-                                defaultState={v.enabled}
+                                key={handle.id}
+                                label={`${handle.displayName}`}
+                                defaultState={handle.enabled}
                                 onClick={checked => {
-                                    v.enabled = checked
+                                    handle.enabled = checked
                                 }}
                             />
                         ))}
@@ -170,13 +150,13 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                 <div className="flex flex-col justify-center grow">
                     <Label className="text-center">Input</Label>
                     <ScrollView className="h-full px-2">
-                        {simIn.map(([k, v]) => (
+                        {simIn.map(handle => (
                             <Checkbox
-                                key={k}
-                                label={`${v.displayName}`}
-                                defaultState={v.enabled}
+                                key={handle.id}
+                                label={`${handle.displayName}`}
+                                defaultState={handle.enabled}
                                 onClick={checked => {
-                                    v.enabled = checked
+                                    handle.enabled = checked
                                 }}
                             />
                         ))}
@@ -196,14 +176,13 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
         const pwmDevices: JSX.Element[] = []
         const accelerometers: JSX.Element[] = []
 
-        simConfig.sourceHandles.forEach((v, k) => {
-            const handle = JSON.parse(k) as SourceHandle
-            if (handle.nodeId != NODE_ID_ROBOT_IO)
+        simConfig.handles.forEach(v => {
+            if (v.nodeId != NODE_ID_ROBOT_IO)
                 return
 
             const checkbox = (
                 <Checkbox
-                    key={k}
+                    key={v.id}
                     label={`${v.displayName}`}
                     defaultState={v.enabled}
                     onClick={checked => {
@@ -212,37 +191,19 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                 />
             )
 
-            switch (v.handleType) {
+            switch (v.originType) {
                 case SimType.CANMotor:
                     canMotors.push(checkbox)
                     break
                 case SimType.PWM:
                     pwmDevices.push(checkbox)
                     break
-            }
-        })
-        simConfig.targetHandles.forEach((v, k) => {
-            const handle = JSON.parse(k) as TargetHandle
-            if (handle.nodeId != NODE_ID_ROBOT_IO)
-                return
-
-            const checkbox = (
-                <Checkbox
-                    key={k}
-                    label={`${v.displayName}`}
-                    defaultState={v.enabled}
-                    onClick={checked => {
-                        v.enabled = checked
-                    }}
-                />
-            )
-
-            switch (v.handleType) {
                 case SimType.CANEncoder:
                     canEncoders.push(checkbox)
                     break
                 case SimType.Accel:
                     accelerometers.push(checkbox)
+                    break
             }
         })
 
@@ -309,7 +270,7 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     }, [setConfigState, setEdges, setNodes, simConfig, refreshHook])
 
     const onEdgeDoubleClick = useCallback((_: React.MouseEvent, edge: FlowEdge) => {
-        if (SimConfig.DeleteConnection(simConfig, genIdToSavedId(edge.sourceHandle!)!, genIdToSavedId(edge.targetHandle!)!)) {
+        if (SimConfig.DeleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
             refreshGraph()
         }
     }, [simConfig])
@@ -324,51 +285,37 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     }, [simConfig])
 
     const onConnect = useCallback((connection: Connection) => {
-        const sourceId = genIdToSavedId(connection.sourceHandle as string)
-        const targetId = genIdToSavedId(connection.targetHandle as string)
+        const sourceId = connection.sourceHandle
+        const targetId = connection.targetHandle
         if (SimConfig.MakeConnection(simConfig, sourceId!, targetId!)) {
             refreshGraph()
         }
     }, [simConfig])
 
     const onConnectEnd = useCallback((event: MouseEvent | TouchEvent, state: FinalConnectionState) => {
-        if (state.isValid)
+        if (state.isValid || state.fromHandle == null)
             return
 
-        if (state.fromHandle == null)
+        if (!(InputSystem.isKeyPressed("AltRight") || InputSystem.isKeyPressed("AltLeft")))
             return
 
         const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event
 
-        if (state.fromHandle.type == "source") {
-            const sourceId = genIdToSavedId(state.fromHandle.id!)
-            if (sourceId == undefined)
-                return
-            const sourceInfo = simConfig.sourceHandles.get(sourceId)
-            if (sourceInfo == undefined)
-                return
-            if (isNoraDeconstructable(sourceInfo.noraType)) {
-                const targetId = SimConfig.AddDeconstructorNode(simConfig, sourceInfo.noraType, screenToFlowPosition({ x: clientX, y: clientY }))
-                if (targetId == undefined)
-                    return
-                if (SimConfig.MakeConnection(simConfig, sourceId, targetId))
-                    refreshGraph()
-            }
-        } else {
-            const targetId = genIdToSavedId(state.fromHandle.id!)
-            if (targetId == undefined)
-                return
-            const targetInfo = simConfig.targetHandles.get(targetId)
-            if (targetInfo == undefined)
-                return
-            if (isNoraDeconstructable(targetInfo.noraType) && (targetInfo.many || (simConfig.connectionCount.get(targetId) ?? 0) < 1)) {
-                const sourceId = SimConfig.AddConstructorNode(simConfig, targetInfo.noraType, screenToFlowPosition({ x: clientX, y: clientY }))
-                if (sourceId == undefined)
-                    return
-                if (SimConfig.MakeConnection(simConfig, sourceId, targetId))
-                    refreshGraph()
-            }
+        const handleInfo = simConfig.handles.get(state.fromHandle.id!)
+        if (!handleInfo || !isNoraDeconstructable(handleInfo.noraType)) {
+            return
         }
+
+        const newHandleId = (handleInfo.isSource ? SimConfig.AddDeconstructorNode : SimConfig.AddConstructorNode)(
+            simConfig,
+            handleInfo.noraType,
+            screenToFlowPosition({ x: clientX, y: clientY })
+        )
+        if (!newHandleId)
+            return
+        
+        if (handleInfo.isSource ? SimConfig.MakeConnection(simConfig, handleInfo.id, newHandleId) : SimConfig.MakeConnection(simConfig, newHandleId, handleInfo.id))
+            refreshGraph()
     }, [screenToFlowPosition, simConfig])
 
     const onCreateJunction = useCallback(() => {
@@ -392,6 +339,7 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
+            <FlowInfo />
         </ReactFlow>
     )
 }

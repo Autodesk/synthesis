@@ -2,7 +2,7 @@ import Jolt from "@barclah/jolt-physics"
 import EncoderStimulus from "./EncoderStimulus"
 import { mirabuf } from "@/proto/mirabuf"
 import { StimulusID } from "./Stimulus"
-import { NoraTypes, NoraNumber } from "../Nora"
+import { NoraTypes, NoraNumber2 } from "../Nora"
 
 /**
  *
@@ -48,10 +48,10 @@ class WheelRotationStimulus extends EncoderStimulus {
     }
 
     public getSupplierType(): NoraTypes {
-        return NoraTypes.Number
+        return NoraTypes.Number2
     }
-    public getSupplierValue(): NoraNumber {
-        throw new Error("Method not implemented.")
+    public getSupplierValue(): NoraNumber2 {
+        return [ this.positionValue, this.velocityValue ]
     }
     public DisplayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`

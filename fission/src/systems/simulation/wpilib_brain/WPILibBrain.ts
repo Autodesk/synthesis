@@ -9,8 +9,8 @@ import World from "@/systems/World"
 import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
 import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
 import { Random } from "@/util/Random"
-import { NoraTypes } from "../Nora"
-import { SimFlow, validate } from "./SimDataFlow"
+import { NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
+import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -68,7 +68,7 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.SimDevice]: undefined,
     [SimType.CANMotor]: undefined,
     [SimType.Solenoid]: undefined,
-    [SimType.CANEncoder]: NoraTypes.Number,
+    [SimType.CANEncoder]: NoraTypes.Number2,
     [SimType.Gyro]: NoraTypes.Number3, // Wrong but its fine
     [SimType.Accel]: NoraTypes.Number3,
     [SimType.DIO]: NoraTypes.Number, // ?
@@ -170,6 +170,13 @@ export class SimPWM {
     public static GetPosition(device: string): number | undefined {
         return SimGeneric.Get(SimType.PWM, device, PWM_POSITION, 0.0)
     }
+
+    public static GenSupplier(device: string): SimSupplier {
+        return {
+            getSupplierType: () => supplierTypeMap[SimType.PWM]!,
+            getSupplierValue: () => SimPWM.GetSpeed(device) ?? 0
+        }
+    }
 }
 
 export class SimCAN {
@@ -217,6 +224,13 @@ export class SimCANMotor {
     public static SetBusVoltage(device: string, voltage: number): boolean {
         return SimGeneric.Set(SimType.CANMotor, device, CANMOTOR_BUS_VOLTAGE, voltage)
     }
+
+    public static GenSupplier(device: string): SimSupplier {
+        return {
+            getSupplierType: () => supplierTypeMap[SimType.CANMotor]!,
+            getSupplierValue: () => SimCANMotor.GetPercentOutput(device) ?? 0
+        }
+    }
 }
 export class SimCANEncoder {
     private constructor() {}
@@ -227,6 +241,16 @@ export class SimCANEncoder {
 
     public static SetPosition(device: string, position: number): boolean {
         return SimGeneric.Set(SimType.CANEncoder, device, CANENCODER_POSITION, position)
+    }
+
+    public static GenReceiver(device: string): SimReceiver {
+        return {
+            getReceiverType: () => receiverTypeMap[SimType.CANEncoder]!,
+            setReceiverValue: ([count, rate]: NoraNumber2) => {
+                SimCANEncoder.SetPosition(device, count)
+                SimCANEncoder.SetVelocity(device, rate)
+            },
+        }
     }
 }
 
@@ -271,6 +295,17 @@ export class SimAccel {
 
     public static SetZ(device: string, accel: number): boolean {
         return SimGeneric.Set(SimType.Accel, device, ">z", accel)
+    }
+
+    public static GenReceiver(device: string): SimReceiver {
+        return {
+            getReceiverType: () => receiverTypeMap[SimType.Accel]!,
+            setReceiverValue: ([x, y, z]: NoraNumber3) => {
+                SimAccel.SetX(device, x)
+                SimAccel.SetY(device, y)
+                SimAccel.SetZ(device, z)
+            },
+        }
     }
 }
 
@@ -438,6 +473,9 @@ class WPILibBrain extends Brain {
     public Update(deltaT: number): void {
         this._simOutputs.forEach(d => d.Update(deltaT))
         this._simInputs.forEach(i => i.Update(deltaT))
+        this._simFlows.forEach(({ supplier, receiver }) => {
+            receiver.setReceiverValue(supplier.getSupplierValue())
+        })
     }
 
     public Enable(): void {
