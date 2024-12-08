@@ -437,7 +437,7 @@ class WPILibBrain extends Brain {
     private _simFlows: SimFlow[] = []
 
     constructor(mechanism: Mechanism) {
-        super(mechanism)
+        super(mechanism, "wpilib")
 
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
 

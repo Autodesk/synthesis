@@ -59,7 +59,7 @@ class SynthesisBrain extends Brain {
      * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
      */
     public constructor(mechanism: Mechanism, assemblyName: string) {
-        super(mechanism)
+        super(mechanism, "synthesis")
 
         this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
         this._assemblyName = assemblyName
@@ -90,6 +90,7 @@ class SynthesisBrain extends Brain {
     }
 
     public Disable(): void {
+        this.clearControls()
         this._behaviors = []
     }
 

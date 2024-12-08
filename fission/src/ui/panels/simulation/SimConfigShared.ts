@@ -168,14 +168,8 @@ export class SimConfig {
 
             nodes: new Map(),
         }
-        const robotIONode: NodeInfo = {
-            id: NODE_ID_ROBOT_IO,
-            type: WiringNode.name,
-            position: { x: 0, y: 0 },
-            tooltip: "These handles represent the different devices we've discovered from your connected robot code. The left handles represent input devices such as sensors. The right handles represent output devices such as motor controllers. Use the edit button to hide/reveal handles.",
-            sources: [],
-            targets: [],
-        }
+        
+        SimConfig.AddRobotIONode(config)
         const simInNode: NodeInfo = {
             id: NODE_ID_SIM_IN,
             type: WiringNode.name,
@@ -192,7 +186,6 @@ export class SimConfig {
             sources: [],
             targets: [],
         }
-        config.nodes.set(NODE_ID_ROBOT_IO, robotIONode)
         config.nodes.set(NODE_ID_SIM_IN, simInNode)
         config.nodes.set(NODE_ID_SIM_OUT, simOutNode)
         getDriverSignals(assembly).forEach(x => {
@@ -233,6 +226,29 @@ export class SimConfig {
                 simOutNode.sources.push(handle.id)
             }
         })
+
+        return config
+    }
+
+    public static RefreshRobotIO(config: SimConfigData) {
+        SimConfig.AddRobotIONode(config)
+        // TODO: Try to restore connections that remain valid after refresh
+    }
+
+    private static AddRobotIONode(config: SimConfigData) {
+        if (config.nodes.has(NODE_ID_ROBOT_IO)) {
+            SimConfig.RemoveNode(config, NODE_ID_ROBOT_IO)
+        }
+
+        const robotIONode: NodeInfo = {
+            id: NODE_ID_ROBOT_IO,
+            type: WiringNode.name,
+            position: { x: 0, y: 0 },
+            tooltip: "These handles represent the different devices we've discovered from your connected robot code. The left handles represent input devices such as sensors. The right handles represent output devices such as motor controllers. Use the edit button to hide/reveal handles.",
+            sources: [],
+            targets: [],
+        }
+        config.nodes.set(NODE_ID_ROBOT_IO, robotIONode)
         getCANMotors().forEach(([id, _]) => {
             const handle: HandleInfo = {
                 id: "",
@@ -301,8 +317,6 @@ export class SimConfig {
             this.AddHandle(config, handle)
             robotIONode.targets.push(handle.id)
         })
-
-        return config
     }
 
     private static AddHandle(config: SimConfigData, info: HandleInfo) {

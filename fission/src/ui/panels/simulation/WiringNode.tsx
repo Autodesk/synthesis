@@ -1,12 +1,13 @@
 import { Connection, Edge, Handle, NodeProps, Position } from "@xyflow/react"
 import { handleInfoDisplayCompare, SimConfig, SimConfigData, HandleInfo, NORA_TYPES_COLORS } from "./SimConfigShared"
 import { useCallback, useMemo } from "react"
-import { CustomTooltip, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
 
 function WiringNode({ data, isConnectable }: NodeProps) {
     const robotInput = data["input"] as (HandleInfo[] | undefined)
     const robotOutput = data["output"] as (HandleInfo[] | undefined)
     const onEdit = data["onEdit"] as ((() => void) | undefined)
+    const onRefresh = data["onRefresh"] as ((() => void) | undefined)
     const onDelete = data["onDelete"] as ((() => void) | undefined)
     const simConfig = data["simConfig"] as SimConfigData
     const title = data["title"] as string
@@ -96,6 +97,7 @@ function WiringNode({ data, isConnectable }: NodeProps) {
             {onEdit || onDelete ? (
                 <div className="flex justify-center px-4">
                     {onEdit ? EditButton(onEdit) : <></>}
+                    {onRefresh ? RefreshButton(onRefresh) : <></>}
                     {onDelete ? DeleteButton(onDelete) : <></>}
                 </div>
             ) : (<></>)}

@@ -43,6 +43,7 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
 
     simConfig.nodes.forEach(v => {
         let onEdit: (() => void) | undefined = undefined
+        let onRefresh: (() => void) | undefined = undefined
         let onDelete: (() => void) | undefined = undefined
         let title: string = ""
 
@@ -50,6 +51,10 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
             case NODE_ID_ROBOT_IO:
                 title = "Robot IO"
                 onEdit = () => setConfigState("robotIO")
+                onRefresh = () => {
+                    SimConfig.RefreshRobotIO(simConfig)
+                    refreshGraph()
+                }
                 break
             case NODE_ID_SIM_IN:
                 title = "Simulation Input"
@@ -74,6 +79,7 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
             data: {
                 title: title,
                 onEdit: onEdit,
+                onRefresh: onRefresh,
                 onDelete: onDelete,
                 simConfig: simConfig,
                 input: [],
@@ -363,8 +369,8 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
         if (!selectedAssembly)
             return
         
-        // Generate Default Config
-        return SimConfig.Default(selectedAssembly)
+        const existingConfig = selectedAssembly.simConfigData
+        return existingConfig ?? SimConfig.Default(selectedAssembly)
     }, [selectedAssembly])
 
     const save = useCallback(() => {

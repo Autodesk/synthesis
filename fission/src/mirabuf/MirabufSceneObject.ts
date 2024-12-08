@@ -32,6 +32,7 @@ import {
     ConfigurationType,
     setSelectedConfigurationType,
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
+import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 
 const DEBUG_BODIES = false
 
@@ -68,6 +69,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _intakePreferences: IntakePreferences | undefined
     private _ejectorPreferences: EjectorPreferences | undefined
+    private _simConfigData: SimConfigData | undefined
 
     private _fieldPreferences: FieldPreferences | undefined
 
@@ -97,6 +99,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._ejectorPreferences
     }
 
+    get simConfigData() {
+        return this._simConfigData
+    }
+
     get fieldPreferences() {
         return this._fieldPreferences
     }
@@ -115,6 +121,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public get brain() {
         return this._brain
+    }
+
+    public set brain(brain: Brain | undefined) {
+        this._brain = brain
+        const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
+        simLayer.SetBrain(brain)
     }
 
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
@@ -456,10 +468,22 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     private getPreferences(): void {
-        this._intakePreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.intake
-        this._ejectorPreferences = PreferencesSystem.getRobotPreferences(this.assemblyName)?.ejector
+        const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
+        if (robotPrefs) {
+            this._intakePreferences = robotPrefs.intake
+            this._ejectorPreferences = robotPrefs.ejector
+            this._simConfigData = robotPrefs.simConfig
+        }
 
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
+    }
+
+    public UpdateSimConfig(config: SimConfigData) {
+        const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
+        if (robotPrefs) {
+            this._simConfigData = config
+            PreferencesSystem.setRobotPreferences(this.assemblyName, robotPrefs)
+        }
     }
 
     public EnablePhysics() {

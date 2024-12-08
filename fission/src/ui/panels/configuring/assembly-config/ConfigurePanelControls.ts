@@ -8,6 +8,7 @@ export enum ConfigMode {
     SEQUENTIAL,
     SCORING_ZONES,
     MOVE,
+    SIM,
 }
 
 export type ConfigurePanelSettings = {
