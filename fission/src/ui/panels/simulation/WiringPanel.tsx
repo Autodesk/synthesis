@@ -367,6 +367,18 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
         return SimConfig.Default(selectedAssembly)
     }, [selectedAssembly])
 
+    const save = useCallback(() => {
+        if (simConfig && selectedAssembly) {
+            const flows = SimConfig.Compile(simConfig, selectedAssembly)
+            if (!flows) {
+                console.error("Compilation Failed")
+                return
+            }
+            console.debug(`${flows.length} Flows Successfully Compiled!`)
+            console.debug(simConfig)
+        }
+    }, [selectedAssembly, simConfig])
+
     return (
         <Panel
             name="Wiring Panel"
@@ -374,6 +386,7 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             panelId={panelId}
             openLocation={"center"}
             full
+            onAccept={save}
         >{selectedAssembly && simConfig ? (
             <div className="flex grow">
                 {configState === "wiring" ? (

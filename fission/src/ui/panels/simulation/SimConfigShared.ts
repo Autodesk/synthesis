@@ -553,10 +553,10 @@ export class SimConfig {
         return true
     }
 
-    public static Compile(config: SimConfigData, assembly: MirabufSceneObject): SimFlow[] {
+    public static Compile(config: SimConfigData, assembly: MirabufSceneObject): SimFlow[] | undefined {
         const simLayer = World.SimulationSystem.GetSimulationLayer(assembly.mechanism)
         if (!simLayer)
-            return []
+            return undefined
         try {
             const flows: SimFlow[] = []
             config.handles.forEach((info, id) => {
@@ -564,11 +564,13 @@ export class SimConfig {
                     const flow = SimConfig.CompileTargetHandle(config, simLayer, id, new Set<HandleId_Alias>())
                     if (flow)
                         flows.push(flow)
+                    else
+                        throw new Error("Failed to compile flows")
                 }
             })
             return flows
         } catch (_error) {
-            return []
+            return undefined
         }
     }
 
@@ -579,9 +581,11 @@ export class SimConfig {
 
         // Generate receiver
         const targetHandle = config.handles.get(targetHandleId)
-        if (!targetHandle) {
+        if (!targetHandle)
             return undefined
-        }
+
+        console.debug("Target Handle Verified")
+
         const targetNoraType = targetHandle.noraType
         let receiver: SimReceiver | undefined = undefined
         if (targetHandle.nodeId == NODE_ID_ROBOT_IO) {
@@ -596,9 +600,16 @@ export class SimConfig {
             }
         } else if (targetHandle.nodeId == NODE_ID_SIM_IN) {
             receiver = simLayer.GetDriver(targetHandle.originId)
+        } else {
+            receiver = {
+                getReceiverType: () => targetHandle.noraType,
+                setReceiverValue: (_) => { },
+            }
         }
         if (!receiver)
             return undefined
+
+        console.debug("Successfully acquired receiver")
 
         if (!hasNoraAverageFunc(targetNoraType) && edges.size > 1)
             return
@@ -716,6 +727,8 @@ export class SimConfig {
                 if (node.sources.length != 1 || node.targets.length != 1) {
                     return undefined
                 }
+                console.debug("Compiling junction")
+                console.debug(node)
                 const input = SimConfig.CompileTargetHandle(config, simLayer, node.targets[0], encountered)
                 if (!input) {
                     console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
