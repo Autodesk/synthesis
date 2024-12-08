@@ -1,13 +1,14 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
-import { deconstructNoraType, hasNoraAverageFunc, NoraTypes } from "@/systems/simulation/Nora"
+import { deconstructNoraType, hasNoraAverageFunc, noraAverageFunc, NoraType, NoraTypes } from "@/systems/simulation/Nora"
 import Stimulus, { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
-import { receiverTypeMap, simMap, SimType, supplierTypeMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { receiverTypeMap, SimAccel, SimCANEncoder, SimCANMotor, simMap, SimPWM, SimType, supplierTypeMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import { Random } from "@/util/Random"
 import { XYPosition } from "@xyflow/react"
 import WiringNode from "./WiringNode"
 import { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
+import { SimulationLayer } from "@/systems/simulation/SimulationSystem"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
     [NoraTypes.Number]: "#5f60ff",
@@ -139,6 +140,8 @@ export type NodeInfo = {
     funcType?: FuncType
     position: XYPosition
     tooltip?: string
+    sources: HandleId_Alias[]
+    targets: HandleId_Alias[]
 }
 
 type NodeId_Alias = string
@@ -165,24 +168,33 @@ export class SimConfig {
 
             nodes: new Map(),
         }
-        config.nodes.set(NODE_ID_ROBOT_IO, { 
+        const robotIONode: NodeInfo = {
             id: NODE_ID_ROBOT_IO,
             type: WiringNode.name,
             position: { x: 0, y: 0 },
             tooltip: "These handles represent the different devices we've discovered from your connected robot code. The left handles represent input devices such as sensors. The right handles represent output devices such as motor controllers. Use the edit button to hide/reveal handles.",
-        })
-        config.nodes.set(NODE_ID_SIM_IN, {
+            sources: [],
+            targets: [],
+        }
+        const simInNode: NodeInfo = {
             id: NODE_ID_SIM_IN,
             type: WiringNode.name,
             position: { x: 800, y: 0 },
             tooltip: "These handles represent the input of the simulation. These are drivers for wheels, hinges, and sliders. Use the edit button to hide/reveal handles.",
-        })
-        config.nodes.set(NODE_ID_SIM_OUT, {
+            sources: [],
+            targets: [],
+        }
+        const simOutNode: NodeInfo = {
             id: NODE_ID_SIM_OUT,
             type: WiringNode.name,
             position: { x: -800, y: 0 },
             tooltip: "These handles represent the output of the simulation. These are stimuli for wheels, hinges, and sliders that represent encoder positions and speeds. Use the edit button to hide/reveal handles.",
-        })
+            sources: [],
+            targets: [],
+        }
+        config.nodes.set(NODE_ID_ROBOT_IO, robotIONode)
+        config.nodes.set(NODE_ID_SIM_IN, simInNode)
+        config.nodes.set(NODE_ID_SIM_OUT, simOutNode)
         getDriverSignals(assembly).forEach(x => {
             if (x.info?.GUID) {
                 const handle: HandleInfo = {
@@ -199,6 +211,7 @@ export class SimConfig {
                     isSource: false,
                 }
                 this.AddHandle(config, handle)
+                simInNode.targets.push(handle.id)
             }
         })
         getStimulusSignals(assembly).forEach(x => {
@@ -217,6 +230,7 @@ export class SimConfig {
                     isSource: true,
                 }
                 this.AddHandle(config, handle)
+                simOutNode.sources.push(handle.id)
             }
         })
         getCANMotors().forEach(([id, _]) => {
@@ -234,6 +248,7 @@ export class SimConfig {
                 isSource: true,
             }
             this.AddHandle(config, handle)
+            robotIONode.sources.push(handle.id)
         })
         getCANEncoder().forEach(([id, _]) => {
             const handle: HandleInfo = {
@@ -250,6 +265,7 @@ export class SimConfig {
                 isSource: false,
             }
             this.AddHandle(config, handle)
+            robotIONode.targets.push(handle.id)
         })
         getPWMDevices().forEach(([id, _]) => {
             const handle: HandleInfo = {
@@ -266,6 +282,7 @@ export class SimConfig {
                 isSource: true,
             }
             this.AddHandle(config, handle)
+            robotIONode.sources.push(handle.id)
         })
         getAccelDevices().forEach(([id, data]) => {
             const handle: HandleInfo = {
@@ -282,12 +299,13 @@ export class SimConfig {
                 isSource: false,
             }
             this.AddHandle(config, handle)
+            robotIONode.targets.push(handle.id)
         })
 
         return config
     }
 
-    public static AddHandle(config: SimConfigData, info: HandleInfo) {
+    private static AddHandle(config: SimConfigData, info: HandleInfo) {
         let handleId = ""
         do {
             handleId = genRandomId()
@@ -297,7 +315,7 @@ export class SimConfig {
         config.adjacency.set(handleId, new Set())
     }
 
-    public static RemoveHandle(config: SimConfigData, id: HandleId_Alias): boolean {
+    private static RemoveHandle(config: SimConfigData, id: HandleId_Alias): boolean {
         if (!config.handles.has(id))
             return false;
         const edgeIds = config.adjacency.get(id)
@@ -321,12 +339,15 @@ export class SimConfig {
         do {
             nodeId = genRandomId()
         } while (config.handles.has(nodeId))
-        config.nodes.set(nodeId, {
+        const node: NodeInfo = {
             id: nodeId,
             type: WiringNode.name,
             position: { x: 300 + (Random() * 100), y: -100 + (Random() * 50) },
-            funcType: FuncType.Junction
-        })
+            funcType: FuncType.Junction,
+            targets: [],
+            sources: [],
+        }
+        config.nodes.set(nodeId, node)
         
         const targetHandle: HandleInfo = {
             id: "",
@@ -342,6 +363,7 @@ export class SimConfig {
             isSource: false,
         }
         SimConfig.AddHandle(config, targetHandle)
+        node.targets.push(targetHandle.id)
 
         const sourceHandle: HandleInfo = {
             id: "",
@@ -357,6 +379,7 @@ export class SimConfig {
             isSource: true,
         }
         SimConfig.AddHandle(config, sourceHandle)
+        node.sources.push(sourceHandle.id)
         return nodeId
     }
 
@@ -369,12 +392,15 @@ export class SimConfig {
         do {
             nodeId = genRandomId()
         } while (config.handles.has(nodeId))
-        config.nodes.set(nodeId, {
+        const node: NodeInfo = {
             id: nodeId,
             type: WiringNode.name,
             position: positionHint ?? { x: 0, y: 0 },
-            funcType: FuncType.Deconstructor
-        })
+            funcType: FuncType.Deconstructor,
+            targets: [],
+            sources: [],
+        }
+        config.nodes.set(nodeId, node)
         
         const targetHandle: HandleInfo = {
             id: "",
@@ -390,6 +416,7 @@ export class SimConfig {
             isSource: false,
         }
         SimConfig.AddHandle(config, targetHandle)
+        node.targets.push(targetHandle.id)
 
         types.forEach((sourceType, i) => {
             const sourceHandle: HandleInfo = {
@@ -406,6 +433,7 @@ export class SimConfig {
                 isSource: true,
             }
             SimConfig.AddHandle(config, sourceHandle)
+            node.sources.push(sourceHandle.id)
         })
 
         return targetHandle.id
@@ -420,12 +448,15 @@ export class SimConfig {
         do {
             nodeId = genRandomId()
         } while (config.handles.has(nodeId))
-        config.nodes.set(nodeId, {
+        const node: NodeInfo = {
             id: nodeId,
             type: WiringNode.name,
             position: positionHint ?? { x: 0, y: 0 },
-            funcType: FuncType.Constructor
-        })
+            funcType: FuncType.Constructor,
+            targets: [],
+            sources: [],
+        }
+        config.nodes.set(nodeId, node)
         
         const sourceHandle: HandleInfo = {
             id:"",
@@ -441,6 +472,7 @@ export class SimConfig {
             isSource: true,
         }
         SimConfig.AddHandle(config, sourceHandle)
+        node.sources.push(sourceHandle.id)
 
         types.forEach((targetType, i) => {
             const targetHandle: HandleInfo = {
@@ -457,6 +489,7 @@ export class SimConfig {
                 isSource: false,
             }
             SimConfig.AddHandle(config, targetHandle)
+            node.targets.push(targetHandle.id)
         })
 
         return sourceHandle.id
@@ -520,17 +553,178 @@ export class SimConfig {
         return true
     }
 
-    public static Compile(config: SimConfigData): SimFlow[] {
-        const flows: SimFlow[] = []
-        config.handles.forEach((info, id) => {
-            if (info.nodeId == NODE_ID_ROBOT_IO || info.nodeId == NODE_ID_SIM_IN) {
-                flows.push(SimConfig.CompileSourceHandle(config, id, new Set<HandleId_Alias>()))
-            }
-        })
-        return flows
+    public static Compile(config: SimConfigData, assembly: MirabufSceneObject): SimFlow[] {
+        const simLayer = World.SimulationSystem.GetSimulationLayer(assembly.mechanism)
+        if (!simLayer)
+            return []
+        try {
+            const flows: SimFlow[] = []
+            config.handles.forEach((info, id) => {
+                if (!info.isSource && (info.nodeId == NODE_ID_ROBOT_IO || info.nodeId == NODE_ID_SIM_IN)) {
+                    const flow = SimConfig.CompileTargetHandle(config, simLayer, id, new Set<HandleId_Alias>())
+                    if (flow)
+                        flows.push(flow)
+                }
+            })
+            return flows
+        } catch (_error) {
+            return []
+        }
     }
 
-    public static CompileSourceHandle(config: SimConfigData, sourceHandle: HandleId_Alias, encountered: Set<HandleId_Alias>): SimFlow {
+    public static CompileTargetHandle(config: SimConfigData, simLayer: SimulationLayer, targetHandleId: HandleId_Alias, encountered: Set<HandleId_Alias>): SimFlow | undefined {
+        const edges = config.adjacency.get(targetHandleId)
+        if (!edges || edges.size < 1)
+            return undefined
 
+        // Generate receiver
+        const targetHandle = config.handles.get(targetHandleId)
+        if (!targetHandle) {
+            return undefined
+        }
+        const targetNoraType = targetHandle.noraType
+        let receiver: SimReceiver | undefined = undefined
+        if (targetHandle.nodeId == NODE_ID_ROBOT_IO) {
+            switch (targetHandle.originType) {
+                case SimType.CANEncoder: {
+                    receiver = SimCANEncoder.GenReceiver(targetHandle.originId)
+                    break
+                } case SimType.Accel: {
+                    receiver = SimAccel.GenReceiver(targetHandle.originId)
+                    break
+                }
+            }
+        } else if (targetHandle.nodeId == NODE_ID_SIM_IN) {
+            receiver = simLayer.GetDriver(targetHandle.originId)
+        }
+        if (!receiver)
+            return undefined
+
+        if (!hasNoraAverageFunc(targetNoraType) && edges.size > 1)
+            return
+
+        const suppliers: SimSupplier[] = []
+        edges.forEach(edgeId => {
+            const edge = config.edges.get(edgeId)
+            if (!edge)
+                return
+            const sourceHandle = config.handles.get(edge.sourceId)
+            if (!sourceHandle || sourceHandle.noraType != targetNoraType)
+                return
+            if (encountered.has(sourceHandle.id))
+                return
+            encountered.add(sourceHandle.id)
+            switch (sourceHandle.nodeId) {
+                case NODE_ID_ROBOT_IO: {
+                    // Get supplier from robot output
+                    switch (sourceHandle.originType) {
+                        case SimType.CANMotor: {
+                            suppliers.push(SimCANMotor.GenSupplier(sourceHandle.originId))
+                            break
+                        } case SimType.PWM: {
+                            suppliers.push(SimPWM.GenSupplier(sourceHandle.originId))
+                            break
+                        }
+                    }
+                    break
+                } case NODE_ID_SIM_OUT: {
+                    // Get supplier from simulation output
+                    const stim: SimSupplier | undefined = simLayer.GetStimuli(sourceHandle.originId)
+                    if (stim)
+                        suppliers.push(stim)
+                    break
+                } default: {
+                    // Figure out function type
+                    const node = config.nodes.get(sourceHandle.nodeId)
+                    if (!node?.funcType)
+                        break
+                    const index = node.sources.indexOf(sourceHandle.id)
+                    if (index == -1)
+                        break
+                    const funcSuppliers = SimConfig.CompileFunctionNode(config, simLayer, node, encountered)
+                    if (funcSuppliers?.length != node.sources.length)
+                        break
+                    suppliers.push(funcSuppliers[index])
+                }
+            }
+            encountered.delete(sourceHandle.id)
+        })
+        
+        if (suppliers.length == 0)
+            return undefined
+
+        if (suppliers.length == 1) {
+            return {
+                supplier: suppliers[0],
+                receiver: receiver,
+            }
+        } else {
+            const func = noraAverageFunc(targetNoraType)
+            if (!func)
+                return undefined
+            return {
+                supplier: {
+                    getSupplierType: () => targetNoraType,
+                    getSupplierValue: func,
+                },
+                receiver: receiver,
+            }
+        }
+    }
+
+    public static CompileFunctionNode(config: SimConfigData, simLayer: SimulationLayer, node: NodeInfo, encountered: Set<HandleId_Alias>): SimSupplier[] | undefined {
+        switch (node.funcType) {
+            case FuncType.Constructor: {
+                if (node.sources.length != 1 || node.targets.length < 1) {
+                    return undefined
+                }
+                const outputType = config.handles.get(node.sources[0])!.noraType
+                const inputs = node.targets.map(x => {
+                    const flow = SimConfig.CompileTargetHandle(config, simLayer, x, encountered)
+                    if (!flow) {
+                        console.error(`Failed to compile flow. TargetHandleId: ${x}`)
+                        throw new Error("Failed to compile SimConfig")
+                    }
+                    return flow.supplier
+                })
+                return [{
+                    getSupplierType: () => outputType,
+                    getSupplierValue: () => inputs.map(x => x.getSupplierValue()),
+                }]
+            } case FuncType.Deconstructor: {
+                if (node.sources.length < 1 || node.targets.length != 1) {
+                    return undefined
+                }
+                const inputType = config.handles.get(node.targets[0])!.noraType
+                const input = SimConfig.CompileTargetHandle(config, simLayer, node.targets[0], encountered)
+                if (!input) {
+                    console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
+                    throw new Error("Failed to compile SimConfig")
+                }
+                const deconstructedType = deconstructNoraType(inputType)
+                if (!deconstructedType)
+                    return undefined
+                const suppliers: SimSupplier[] = []
+                for (let i = 0; i < deconstructedType.length; ++i) {
+                    suppliers.push({
+                        getSupplierType: () => deconstructedType[i],
+                        getSupplierValue: () => (input.supplier.getSupplierValue() as NoraType[])[i]
+                    })
+                }
+                return suppliers
+            } case FuncType.Junction: {
+                if (node.sources.length != 1 || node.targets.length != 1) {
+                    return undefined
+                }
+                const input = SimConfig.CompileTargetHandle(config, simLayer, node.targets[0], encountered)
+                if (!input) {
+                    console.error(`Failed to compile flow. TargetHandleId: ${node.targets[0]}`)
+                    throw new Error("Failed to compile SimConfig")
+                }
+                return [ input.supplier ]
+                break
+            }
+        }
+        return undefined
     }
 }

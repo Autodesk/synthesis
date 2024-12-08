@@ -120,6 +120,14 @@ class SimulationLayer {
 
         if (this._brain) this._brain.Enable()
     }
+
+    public GetStimuli(id: string) {
+        return this._stimuli.get(id)
+    }
+
+    public GetDriver(id: string) {
+        return this._drivers.get(id)
+    }
 }
 
 export default SimulationSystem
