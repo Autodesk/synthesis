@@ -33,6 +33,9 @@ async function tryConnect(port?: number): Promise<void> {
                 console.log("WS Could not open")
                 self.postMessage({ status: "error" })
             })
+            socket.addEventListener("close", () => {
+                self.postMessage({ status: "close" })
+            })
 
             socket.addEventListener("message", onMessage)
         })

@@ -63,6 +63,7 @@ import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.t
 import ContextMenu from "./ui/components/ContextMenu.tsx"
 import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
+import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
@@ -166,6 +167,7 @@ function Synthesis() {
                             <SceneOverlay />
                             <ContextMenu />
                             <MainHUD key={"main-hud"} />
+                            <WPILibConnectionStatus />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
                                 <div className="absolute w-full h-full left-0 top-0" key={"modal-element"}>

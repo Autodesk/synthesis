@@ -1,5 +1,5 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SimGeneric, simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { getSimMap, SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import {
     Box,
     Stack,
@@ -51,9 +51,9 @@ function generateTableBody() {
 
     return (
         <TableBody>
-            {names.map(name =>
+            {/* {names.map(name =>
                 simMap.has(name) ? (
-                    [...simMap.get(name)!.entries()]
+                    [...getSimMap()?.get(name)!.entries()]
                         // most devices don't have <init field but we want to hide the ones that do
                         .filter(x => !Object.keys(x[1]).includes("<init") || !!(x[1].get("<init") ?? false) == true)
                         .map(x => (
@@ -72,7 +72,7 @@ function generateTableBody() {
                 ) : (
                     <></>
                 )
-            )}
+            )} */}
         </TableBody>
     )
 }
@@ -105,13 +105,13 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [value, setValue] = useState<string>("")
     const [selectedValueType, setSelectedValueType] = useState<ValueType>("string")
 
-    const deviceSelect = useMemo(() => {
-        if (!selectedType || !simMap.has(selectedType)) {
-            return <></>
-        }
+    // const deviceSelect = useMemo(() => {
+    //     if (!selectedType || !simMap.has(selectedType)) {
+    //         return <></>
+    //     }
 
-        return <Dropdown options={[...simMap.get(selectedType)!.keys()]} onSelect={v => setSelectedDevice(v)} />
-    }, [selectedType])
+    //     return <Dropdown options={[...simMap.get(selectedType)!.keys()]} onSelect={v => setSelectedDevice(v)} />
+    // }, [selectedType])
 
     useEffect(() => {
         setSelectedDevice(undefined)
@@ -164,7 +164,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     options={["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro"]}
                     onSelect={v => setSelectedType(v as unknown as SimType)}
                 />
-                {deviceSelect}
+                {/* {deviceSelect} */}
                 {selectedDevice ? (
                     <Box>
                         <Input placeholder="Field Name" onInput={v => setField(v)} />

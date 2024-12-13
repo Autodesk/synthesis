@@ -33,6 +33,7 @@ import {
     setSelectedConfigurationType,
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
+import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 
 const DEBUG_BODIES = false
 
@@ -149,7 +150,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         // creating nametag for robots
         if (this.miraType === MiraType.ROBOT) {
             this._nameTag = new SceneOverlayTag(() =>
-                this._brain instanceof SynthesisBrain ? this._brain.inputSchemeName : "Not Configured"
+                this._brain instanceof SynthesisBrain ? this._brain.inputSchemeName :
+                this._brain instanceof WPILibBrain ? "Magic" : "Not Configured"
             )
         }
     }
@@ -478,11 +480,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
     }
 
-    public UpdateSimConfig(config: SimConfigData) {
+    public UpdateSimConfig(config: SimConfigData | undefined) {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
-            this._simConfigData = config
+            this._simConfigData = robotPrefs.simConfig = config
             PreferencesSystem.setRobotPreferences(this.assemblyName, robotPrefs)
+            PreferencesSystem.savePreferences();
+            (this._brain as WPILibBrain)?.loadSimConfig?.()
         }
     }
 
@@ -526,18 +530,32 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             },
         })
 
-        if (this.miraType == MiraType.ROBOT) {
-            const brainIndex = (this.brain as SynthesisBrain)?.brainIndex
-            if (brainIndex != undefined) {
-                data.items.push({
-                    name: "Set Scheme",
-                    func: () => {
-                        setSpotlightAssembly(this)
-                        Global_OpenPanel?.("choose-scheme")
-                    },
+        data.items.push({
+            name: "Configure",
+            func: () => {
+                setSelectedConfigurationType(
+                    this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
+                )
+                setNextConfigurePanelSettings({
+                    configMode: undefined,
+                    selectedAssembly: this,
                 })
-            }
-        }
+                Global_OpenPanel?.("configure")
+            },
+        })
+
+        // if (this.miraType == MiraType.ROBOT) {
+        //     const brainIndex = (this.brain as SynthesisBrain)?.brainIndex
+        //     if (brainIndex != undefined) {
+        //         data.items.push({
+        //             name: "Set Scheme",
+        //             func: () => {
+        //                 setSpotlightAssembly(this)
+        //                 Global_OpenPanel?.("choose-scheme")
+        //             },
+        //         })
+        //     }
+        // }
 
         if (World.SceneRenderer.currentCameraControls.controlsType == "Orbit") {
             const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls

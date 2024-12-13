@@ -9,10 +9,11 @@ export enum ConfigMode {
     SCORING_ZONES,
     MOVE,
     SIM,
+    BRAIN,
 }
 
 export type ConfigurePanelSettings = {
-    configMode: ConfigMode
+    configMode?: ConfigMode
     selectedAssembly: MirabufSceneObject
 }
 

@@ -44,9 +44,11 @@ const CustomButton = styled(MUIButton)({
 
 /** Extend this to make a type that contains custom data */
 export class SelectMenuOption {
+    id: string
     name: string
     tooltipText?: string
-    constructor(name: string, tooltipText?: string) {
+    constructor(id: string, name: string, tooltipText?: string) {
+        this.id = id
         this.name = name
         this.tooltipText = tooltipText
     }
@@ -169,7 +171,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
 
     // If the selected option no longer exists as an option, deselect it
     useEffect(() => {
-        if (selectedOption && !options.some(o => o.name === selectedOption.name)) {
+        if (selectedOption && !options.some(o => o.id === selectedOption.id)) {
             setSelectedOption(undefined)
             onOptionSelected(undefined)
         }

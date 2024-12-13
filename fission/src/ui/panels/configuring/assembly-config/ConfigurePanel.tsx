@@ -22,15 +22,14 @@ import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
 import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
-import { BrainType } from "@/systems/simulation/Brain"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
     assemblyObject: MirabufSceneObject
 
     constructor(name: string, assemblyObject: MirabufSceneObject) {
-        super(name)
+        super(assemblyObject.id.toString(), name)
         this.assemblyObject = assemblyObject
     }
 }
@@ -81,19 +80,23 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u])
 
+    const options = useMemo(() => {
+        return (configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly =>
+            makeSelectionOption(configurationType, assembly)
+        )
+    }, [configurationType, fields, robots])
+
     /** Robot or field select menu */
     return (
         <SelectMenu
-            options={(configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly =>
-                makeSelectionOption(configurationType, assembly)
-            )}
+            options={options}
             onOptionSelected={val => {
                 onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)
             }}
             defaultHeaderText={`Select a ${configurationType == ConfigurationType.ROBOT ? "Robot" : "Field"}`}
             onDelete={val => {
                 World.SceneRenderer.RemoveSceneObject((val as AssemblySelectionOption).assemblyObject.id)
-                onAssemblySelected(undefined)
+                // onAssemblySelected(undefined)
                 update()
             }}
             onAddClicked={() => {
@@ -111,13 +114,18 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     configMode: ConfigMode
 
     constructor(name: string, configMode: ConfigMode, tooltip?: string) {
-        super(name, tooltip)
+        super(name, name, tooltip)
         this.configMode = configMode
     }
 }
 
 function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigModeSelectionOption> {
     const modes = new Map<ConfigMode, ConfigModeSelectionOption>([
+        [ConfigMode.BRAIN, new ConfigModeSelectionOption(
+            "Brain",
+            ConfigMode.BRAIN,
+            "Select and modify what is controlling of the robot."
+        )],
         [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
         [ConfigMode.INTAKE, new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE)],
         [ConfigMode.EJECTOR, new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR)],
@@ -249,6 +257,22 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                 />
             )
         }
+        case ConfigMode.SIM: {
+            return (
+                <Button
+                    value="Wiring Panel"
+                    onClick={() => {
+                        setSpotlightAssembly(assembly)
+                        openPanel("wiring")
+                    }}
+                />
+            )
+        }
+        case ConfigMode.BRAIN: {
+            return (
+                <BrainSelectionInterface selectedAssembly={assembly} />
+            )
+        }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -259,25 +283,18 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [configurationType, setConfigurationType] = useState<ConfigurationType>(getConfigurationType())
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
-    const [robotBrainType, setRobotBrainType] = useState<BrainType | undefined>(undefined)
 
     useEffect(() => {
         const settings = popConfigurePanelSettings()
         if (settings) {
-            setConfigMode(settings.configMode)
             setSelectedAssembly(settings.selectedAssembly)
+            if (settings.selectedAssembly)
+                setConfigMode(settings.configMode)
         }
 
         closePanel("choose-scheme")
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    useEffect(() => {
-        setRobotBrainType(selectedAssembly?.brain?.brainType)
-    }, [selectedAssembly])
-
-    console.debug(selectedAssembly?.assemblyName ?? "No assembly")
-    console.debug(robotBrainType ?? "No brain type")
 
     return (
         <Panel
@@ -328,52 +345,22 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     new ConfigurationSavedEvent()
                                 }
                                 setConfigMode(undefined)
+                                console.trace(`[Assembly Selection] Selecting Assembly -> '${a?.assemblyName ?? "undefined"}'`)
                                 setSelectedAssembly(a)
                             }}
                             selectedAssembly={selectedAssembly}
                         />
                         {/** Nested select menu to pick a configuration mode */}
                         {selectedAssembly != undefined && (
-                            <>
-                                <ToggleButtonGroup
-                                    value={robotBrainType}
-                                    exclusive
-                                    onChange={(_, v) => {
-                                        const brainType = v as BrainType
-                                        if (v == undefined) return
-
-                                        switch (brainType) {
-                                            case "synthesis":
-                                                selectedAssembly.brain = new SynthesisBrain(selectedAssembly.mechanism, selectedAssembly.assemblyName)
-                                                break
-                                            case "wpilib":
-                                                selectedAssembly.brain = new WPILibBrain(selectedAssembly.mechanism)
-                                                break
-                                            default:
-                                                return
-                                        }
-                                        setRobotBrainType(brainType)
-                                    }}
-                                    sx={{
-                                        alignSelf: "center",
-                                    }}
-                                >
-                                    <ToggleButton value={"synthesis"}>Synthesis Brain</ToggleButton>
-                                    <ToggleButton value={"wpilib"}>WPILib Brain</ToggleButton>
-                                    {/* { translateDisabled ? <></> : <ToggleButton value={"translate"}>Move</ToggleButton> }
-                                    { rotateDisabled ? <></> : <ToggleButton value={"rotate"}>Rotate</ToggleButton> }
-                                    { scaleDisabled ? <></> : <ToggleButton value={"scale"}>Scale</ToggleButton> } */}
-                                </ToggleButtonGroup>
-                                <ConfigModeSelection
-                                    configurationType={configurationType}
-                                    onModeSelected={mode => {
-                                        if (configMode != undefined) new ConfigurationSavedEvent()
-                                        setConfigMode(mode)
-                                    }}
-                                    selectedMode={configMode}
-                                    assembly={selectedAssembly}
-                                />
-                            </>
+                            <ConfigModeSelection
+                                configurationType={configurationType}
+                                onModeSelected={mode => {
+                                    if (configMode != undefined) new ConfigurationSavedEvent()
+                                    setConfigMode(mode)
+                                }}
+                                selectedMode={configMode}
+                                assembly={selectedAssembly}
+                            />
                         )}
                         {/** The interface for the selected configuration mode */}
                         {configMode != undefined && selectedAssembly != undefined && (

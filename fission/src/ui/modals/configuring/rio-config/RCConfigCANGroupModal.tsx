@@ -7,7 +7,7 @@ import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
-import WPILibBrain, { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { CANOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -32,7 +32,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         brain = simLayer?.brain as WPILibBrain
     }
 
-    const cans = simMap.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
+    const cans = getSimMap()?.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
     const devices: [string, Map<string, number | boolean | string>][] = [...cans.entries()]
         .filter(([_, data]) => data.get("<init"))
         .reverse()

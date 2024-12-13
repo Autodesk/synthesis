@@ -41,7 +41,7 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
     const nodes: Map<string, FlowNode> = new Map()
     const edges: FlowEdge[] = []
 
-    simConfig.nodes.forEach(v => {
+    Object.entries(simConfig.nodes).forEach(([_k, v]) => {
         let onEdit: (() => void) | undefined = undefined
         let onRefresh: (() => void) | undefined = undefined
         let onDelete: (() => void) | undefined = undefined
@@ -89,7 +89,7 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
         })
     })
 
-    simConfig.handles.forEach((v) => {
+    Object.entries(simConfig.handles).forEach(([_k, v]) => {
         if (!v.enabled)
             return
         const node = nodes.get(v.nodeId)
@@ -100,9 +100,9 @@ function generateGraph(simConfig: SimConfigData, refreshGraph: () => void, setCo
         ((v.isSource ? node.data.output : node.data.input) as unknown[]).push(v)
     })
 
-    simConfig.edges.forEach((v, k) => {
-        const sourceHandle = simConfig.handles.get(v.sourceId)
-        const targetHandle = simConfig.handles.get(v.targetId)
+    Object.entries(simConfig.edges).forEach(([k, v]) => {
+        const sourceHandle = simConfig.handles[v.sourceId]
+        const targetHandle = simConfig.handles[v.targetId]
         
         if (sourceHandle?.enabled && targetHandle?.enabled) {
             edges.push({
@@ -122,7 +122,7 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
-    simConfig.handles.forEach(v => {
+    Object.entries(simConfig.handles).forEach(([_k, v]) => {
         if (v.nodeId == NODE_ID_SIM_OUT) {
             (v.isSource ? simOut : simIn).push(v)
         }
@@ -182,7 +182,7 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
         const pwmDevices: JSX.Element[] = []
         const accelerometers: JSX.Element[] = []
 
-        simConfig.handles.forEach(v => {
+        Object.entries(simConfig.handles).forEach(([_k, v]) => {
             if (v.nodeId != NODE_ID_ROBOT_IO)
                 return
 
@@ -282,7 +282,7 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     }, [simConfig])
 
     const onNodeDragStop = useCallback((_event: React.MouseEvent, node: FlowNode, _nodes: FlowNode[]) => {
-        const nodeInfo = simConfig.nodes.get(node.id)
+        const nodeInfo = simConfig.nodes[node.id]
         if (!nodeInfo) {
             console.warn(`Unregistered Node detected: ${node.id}`)
             return
@@ -307,7 +307,7 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 
         const { clientX, clientY } = 'changedTouches' in event ? event.changedTouches[0] : event
 
-        const handleInfo = simConfig.handles.get(state.fromHandle.id!)
+        const handleInfo = simConfig.handles[state.fromHandle.id!]
         if (!handleInfo || !isNoraDeconstructable(handleInfo.noraType)) {
             return
         }
@@ -370,7 +370,11 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             return
         
         const existingConfig = selectedAssembly.simConfigData
-        return existingConfig ?? SimConfig.Default(selectedAssembly)
+        if (existingConfig) {
+            return JSON.parse(JSON.stringify(existingConfig)) // Create copy to not force a save
+        } else {
+            return SimConfig.Default(selectedAssembly)
+        }
     }, [selectedAssembly])
 
     const save = useCallback(() => {
@@ -381,7 +385,8 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
                 return
             }
             console.debug(`${flows.length} Flows Successfully Compiled!`)
-            console.debug(simConfig)
+            
+            selectedAssembly.UpdateSimConfig(simConfig)
         }
     }, [selectedAssembly, simConfig])
 
