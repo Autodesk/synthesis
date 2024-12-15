@@ -339,10 +339,6 @@ class APS {
                 email: json.email,
             }
 
-            if (json.sub) {
-                World.AnalyticsSystem?.SetUserId(json.sub as string)
-            }
-
             this.userInfo = info
         } catch (e) {
             console.error(e)

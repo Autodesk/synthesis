@@ -121,7 +121,8 @@ function generateGraph(
             console.warn("Orphaned handle found")
             return
         }
-        ((v.isSource ? node.data.output : node.data.input) as unknown[]).push(v)
+        const list = (v.isSource ? node.data.output : node.data.input) as unknown[]
+        list.push(v)
     })
 
     Object.entries(simConfig.edges).forEach(([k, v]) => {
@@ -147,7 +148,8 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const simIn: HandleInfo[] = []
     Object.entries(simConfig.handles).forEach(([_k, v]) => {
         if (v.nodeId == NODE_ID_SIM_OUT || v.nodeId == NODE_ID_SIM_IN) {
-            (v.isSource ? simOut : simIn).push(v)
+            const list = v.isSource ? simOut : simIn
+            list.push(v)
         }
     })
 

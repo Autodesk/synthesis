@@ -119,12 +119,10 @@ export function setSimBrain(brain: WPILibBrain | undefined) {
     if (simBrain) worker.getValue().postMessage({ command: "disable" })
     simBrain = brain
     if (simBrain)
-        worker
-            .getValue()
-            .postMessage({
-                command: "enable",
-                reconnect: PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect"),
-            })
+        worker.getValue().postMessage({
+            command: "enable",
+            reconnect: PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect"),
+        })
 }
 
 export function hasSimBrain() {
