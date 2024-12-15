@@ -11,9 +11,9 @@ export enum StimulusType {
 }
 
 export type StimulusID = {
-    type: StimulusType,
-    name?: string,
-    guid: string,
+    type: StimulusType
+    name?: string
+    guid: string
 }
 
 export function makeStimulusID(constraint: MechanismConstraint): StimulusID {
@@ -41,21 +41,21 @@ abstract class Stimulus implements SimSupplier {
         this._id = id
         this._info = info
     }
-    
+
     public abstract Update(deltaT: number): void
-    
+
     public get id() {
         return this._id
     }
-    
+
     public get idStr() {
         return JSON.stringify(this._id)
     }
-    
+
     public get info() {
         return this._info
     }
-    
+
     public abstract getSupplierType(): NoraTypes
     public abstract getSupplierValue(): NoraType
     public abstract DisplayName(): string

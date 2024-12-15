@@ -76,17 +76,20 @@ self.addEventListener("message", e => {
             }
             intervalHandle = setInterval(intervalFunc, RECONNECT_INTERVAL)
             break
-        } case "disable": {
+        }
+        case "disable": {
             clearInterval(intervalHandle)
             intervalHandle = undefined
             tryDisconnect()
             break
-        } case "update": {
+        }
+        case "update": {
             if (socketOpen()) {
                 socket!.send(JSON.stringify(e.data.data))
             }
             break
-        } default: {
+        }
+        default: {
             console.warn(`Unrecognized command '${e.data.command}'`)
             break
         }

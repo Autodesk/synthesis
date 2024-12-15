@@ -9,13 +9,9 @@ class GamepieceManipBehavior extends Behavior {
     private _ejector: EjectorDriver
     private _intake: IntakeDriver
 
-    constructor(
-        ejector: EjectorDriver,
-        intake: IntakeDriver,
-        brainIndex: number
-    ) {
+    constructor(ejector: EjectorDriver, intake: IntakeDriver, brainIndex: number) {
         super([ejector, intake], [])
-    
+
         this._brainIndex = brainIndex
         this._ejector = ejector
         this._intake = intake

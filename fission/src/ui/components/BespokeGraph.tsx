@@ -29,9 +29,17 @@ class Node {
     public direction: NodeDirection
     private _id: string
 
-    public get id() { return this._id }
+    public get id() {
+        return this._id
+    }
 
-    public constructor(id: string, direction: NodeDirection, label?: string, x?: DOMUnitExpression, y?: DOMUnitExpression) {
+    public constructor(
+        id: string,
+        direction: NodeDirection,
+        label?: string,
+        x?: DOMUnitExpression,
+        y?: DOMUnitExpression
+    ) {
         this.direction = direction
         this._id = id
         this.x = x ?? DOMUnitExpression.fromUnit(0)
@@ -51,16 +59,30 @@ class Junction {
     private _nodeIn: Node
     private _nodeOut: Node
 
-    public get x() { return this._x }
-    public get y() { return this._y }
+    public get x() {
+        return this._x
+    }
+    public get y() {
+        return this._y
+    }
 
-    public get id() { return this._id }
+    public get id() {
+        return this._id
+    }
 
-    public get nodeIn() { return this._nodeIn }
-    public get nodeOut() { return this._nodeOut }
+    public get nodeIn() {
+        return this._nodeIn
+    }
+    public get nodeOut() {
+        return this._nodeOut
+    }
 
-    public get nodeIdIn() { return this._nodeIn.id }
-    public get nodeIdOut() { return this._nodeOut.id }
+    public get nodeIdIn() {
+        return this._nodeIn.id
+    }
+    public get nodeIdOut() {
+        return this._nodeOut.id
+    }
 
     public set x(val: DOMUnitExpression) {
         this._x = val
@@ -91,8 +113,8 @@ class Junction {
     }
 }
 
-function EdgeComp({ from, to, graph, element }: { from: string, to: string, graph: Graph, element: Element }) {
-    const [nodeFrom, nodeTo] = useMemo(() => [ graph.nodes.get(from)!, graph.nodes.get(to)!], [from, graph, to])
+function EdgeComp({ from, to, graph, element }: { from: string; to: string; graph: Graph; element: Element }) {
+    const [nodeFrom, nodeTo] = useMemo(() => [graph.nodes.get(from)!, graph.nodes.get(to)!], [from, graph, to])
 
     const [fromX, fromY] = [nodeFrom.x.evaluate(element), nodeFrom.y.evaluate(element)]
     const [toX, toY] = [nodeTo.x.evaluate(element), nodeTo.y.evaluate(element)]
@@ -124,13 +146,7 @@ function EdgeComp({ from, to, graph, element }: { from: string, to: string, grap
 
     return (
         <svg key={`${from}-${to}`}>
-            <path
-                strokeWidth={"0.125rem"}
-                stroke="white"
-                strokeOpacity="0.7"
-                fill="none"
-                d={cmds}
-            />
+            <path strokeWidth={"0.125rem"} stroke="white" strokeOpacity="0.7" fill="none" d={cmds} />
             {DEBUG_EDGE_CONTROL_LINES ? (
                 <path
                     strokeWidth={"0.125rem"}
@@ -140,15 +156,18 @@ function EdgeComp({ from, to, graph, element }: { from: string, to: string, grap
                     fill="none"
                     d={debugCmds}
                 />
-            ) : <></> }
+            ) : (
+                <></>
+            )}
         </svg>
     )
 }
 
-function JunctionComp({ junct, element }: { junct: Junction, element: Element }) {
+function JunctionComp({ junct, element }: { junct: Junction; element: Element }) {
     return (
         <>
-            <path key={junct.id}
+            <path
+                key={junct.id}
                 strokeWidth={"0.125rem"}
                 stroke="white"
                 fill="none"
@@ -161,26 +180,31 @@ function JunctionComp({ junct, element }: { junct: Junction, element: Element })
     )
 }
 
-function NodeComp({ node, graph, element }: { node: Node, graph: Graph, element: Element }) {
-
-    const { label, direction } = node;
+function NodeComp({ node, graph, element }: { node: Node; graph: Graph; element: Element }) {
+    const { label, direction } = node
     const x = node.x.evaluate(element)
     const y = node.y.evaluate(element)
 
     const nodeSize = NODE_SIZE.evaluate(element)
     const nodeLabelOffset = NODE_LABEL_Y_OFFSET.evaluate(element)
 
-    const onClick = useCallback((_: React.MouseEvent<SVGCircleElement>) => {
-        console.debug(`Clicked node: ${node.label ? node.label : `${x.toFixed(1)}, ${y.toFixed(1)}`}`)
-    }, [node.label, x, y])
+    const onClick = useCallback(
+        (_: React.MouseEvent<SVGCircleElement>) => {
+            console.debug(`Clicked node: ${node.label ? node.label : `${x.toFixed(1)}, ${y.toFixed(1)}`}`)
+        },
+        [node.label, x, y]
+    )
 
-    const pathCmds = direction === "in" ? `
-        M ${x - (Math.SQRT2 * nodeSize)} ${y}
-        l ${(nodeSize / Math.SQRT2)} ${-(nodeSize / Math.SQRT2)}
+    const pathCmds =
+        direction === "in"
+            ? `
+        M ${x - Math.SQRT2 * nodeSize} ${y}
+        l ${nodeSize / Math.SQRT2} ${-(nodeSize / Math.SQRT2)}
         a ${nodeSize} ${nodeSize} 270 1 1 0 ${2 * (nodeSize / Math.SQRT2)}
         Z
-    ` : `
-        M ${x + (Math.SQRT2 * nodeSize)} ${y}
+    `
+            : `
+        M ${x + Math.SQRT2 * nodeSize} ${y}
         l ${-(nodeSize / Math.SQRT2)} ${-(nodeSize / Math.SQRT2)}
         a ${nodeSize} ${nodeSize} 270 1 0 0 ${2 * (nodeSize / Math.SQRT2)}
         Z
@@ -193,18 +217,25 @@ function NodeComp({ node, graph, element }: { node: Node, graph: Graph, element:
                 onClick={onClick}
                 fill={colorNameToVar("Background")}
                 strokeWidth={"0.125rem"}
-                stroke={(graph.adjacency.get(node.id)?.size ?? 0) > 0 ? colorNameToVar("InteractiveElementSolid") : "white"}
+                stroke={
+                    (graph.adjacency.get(node.id)?.size ?? 0) > 0 ? colorNameToVar("InteractiveElementSolid") : "white"
+                }
             />
-            {label ? (<text
-                style={{ userSelect: "none" }}
-                fontSize="0.75rem"
-                textAnchor={node.direction === "out" ? "end" : "start"}
-                fill="white"
-                dominantBaseline="central"
-                x={x + (node.direction === "out" ? -1 : 1) * nodeLabelOffset} y={y /*- nodeLabelOffset*/}>
+            {label ? (
+                <text
+                    style={{ userSelect: "none" }}
+                    fontSize="0.75rem"
+                    textAnchor={node.direction === "out" ? "end" : "start"}
+                    fill="white"
+                    dominantBaseline="central"
+                    x={x + (node.direction === "out" ? -1 : 1) * nodeLabelOffset}
+                    y={y /*- nodeLabelOffset*/}
+                >
                     {label}
                 </text>
-            ) : (<></>)}
+            ) : (
+                <></>
+            )}
         </svg>
     )
 }
@@ -220,12 +251,24 @@ class Module {
 
     public graph: Graph
 
-    public get inNodes() { return this._inNodes }
-    public get outNodes() { return this._outNodes }
+    public get inNodes() {
+        return this._inNodes
+    }
+    public get outNodes() {
+        return this._outNodes
+    }
 
-    public get id() { return this._id }
+    public get id() {
+        return this._id
+    }
 
-    public constructor(graph: Graph, inNodes: { id: string, label: string }[], outNodes: { id: string, label: string }[], x?: DOMUnitExpression, y?: DOMUnitExpression) {
+    public constructor(
+        graph: Graph,
+        inNodes: { id: string; label: string }[],
+        outNodes: { id: string; label: string }[],
+        x?: DOMUnitExpression,
+        y?: DOMUnitExpression
+    ) {
         this.graph = graph
         this._id = nextId++
         this.x = x ?? DOMUnitExpression.fromUnit(0.5, "w")
@@ -258,7 +301,7 @@ class Module {
     }
 }
 
-function ModuleComp({ module, element }: { module: Module, element: Element }) {
+function ModuleComp({ module, element }: { module: Module; element: Element }) {
     const x = module.x.evaluate(element)
     const y = module.y.evaluate(element)
 
@@ -266,7 +309,9 @@ function ModuleComp({ module, element }: { module: Module, element: Element }) {
     const widthHalf = MODULE_NODE_OFFSET.evaluate(element)
     const cornerRad = MODULE_CORNER_RADIUS.evaluate(element)
 
-    const cmds = module.inNodes.length != 0 && module.outNodes.length != 0 ? `
+    const cmds =
+        module.inNodes.length != 0 && module.outNodes.length != 0
+            ? `
         M ${x - widthHalf} ${y - heightHalf + cornerRad}
         A ${cornerRad} ${cornerRad} 90 0 1 ${x - widthHalf + cornerRad} ${y - heightHalf}
         L ${x + widthHalf - cornerRad} ${y - heightHalf}
@@ -276,25 +321,31 @@ function ModuleComp({ module, element }: { module: Module, element: Element }) {
         L ${x - widthHalf + cornerRad} ${y + heightHalf}
         A ${cornerRad} ${cornerRad} 90 0 1 ${x - widthHalf} ${y + heightHalf - cornerRad}
         Z
-    ` : module.inNodes.length == 0 && module.outNodes.length != 0 ? `
+    `
+            : module.inNodes.length == 0 && module.outNodes.length != 0
+              ? `
         M ${x} ${y - heightHalf}
         L ${x + widthHalf - cornerRad} ${y - heightHalf}
         A ${cornerRad} ${cornerRad} 90 0 1 ${x + widthHalf} ${y - heightHalf + cornerRad}
         L ${x + widthHalf} ${y + heightHalf - cornerRad}
         A ${cornerRad} ${cornerRad} 90 0 1 ${x + widthHalf - cornerRad} ${y + heightHalf}
         L ${x} ${y + heightHalf}
-    ` : module.outNodes.length == 0 && module.inNodes.length != 0 ? `
+    `
+              : module.outNodes.length == 0 && module.inNodes.length != 0
+                ? `
         M ${x} ${y - heightHalf}
         L ${x - widthHalf + cornerRad} ${y - heightHalf}
         A ${cornerRad} ${cornerRad} 90 0 0 ${x - widthHalf} ${y - heightHalf + cornerRad}
         L ${x - widthHalf} ${y + heightHalf - cornerRad}
         A ${cornerRad} ${cornerRad} 90 0 0 ${x - widthHalf + cornerRad} ${y + heightHalf}
         L ${x} ${y + heightHalf}
-    ` : ""
+    `
+                : ""
 
     return (
         <>
-            <path key={module.id}
+            <path
+                key={module.id}
                 strokeWidth={"0.125rem"}
                 stroke="white"
                 strokeOpacity={0.5}
@@ -309,25 +360,41 @@ function ModuleComp({ module, element }: { module: Module, element: Element }) {
 export class Graph {
     private _nodes: Map<string, Node>
     private _juncts: Map<number, Junction>
-    private _edges: Map<number, { from: string, to: string }>
+    private _edges: Map<number, { from: string; to: string }>
     private _adjacency: Map<string, Set<number>>
     private _modules: Module[]
 
-    public get nodes() { return this._nodes }
-    public get juncts() { return this._juncts }
-    public get edges() { return this._edges }
-    public get modules() { return this._modules }
-    public get adjacency() { return this._adjacency }
+    public get nodes() {
+        return this._nodes
+    }
+    public get juncts() {
+        return this._juncts
+    }
+    public get edges() {
+        return this._edges
+    }
+    public get modules() {
+        return this._modules
+    }
+    public get adjacency() {
+        return this._adjacency
+    }
 
     public constructor() {
         this._nodes = new Map<string, Node>()
         this._juncts = new Map<number, Junction>()
-        this._edges = new Map<number, { from: string, to: string }>
+        this._edges = new Map<number, { from: string; to: string }>()
         this._adjacency = new Map<string, Set<number>>()
         this._modules = []
     }
 
-    public createNode(id: string, direction: NodeDirection, label?: string, x?: DOMUnitExpression, y?: DOMUnitExpression): Node {
+    public createNode(
+        id: string,
+        direction: NodeDirection,
+        label?: string,
+        x?: DOMUnitExpression,
+        y?: DOMUnitExpression
+    ): Node {
         const node = new Node(id, direction, label, x, y)
         this._nodes.set(id, node)
         this._adjacency.set(id, new Set<number>())
@@ -359,7 +426,12 @@ export class Graph {
         this._adjacency.get(nodeB)!.add(edgeId)
     }
 
-    public createModule(inNodes: { id: string, label: string }[], outNodes: { id: string, label: string }[], x?: DOMUnitExpression, y?: DOMUnitExpression): Module {
+    public createModule(
+        inNodes: { id: string; label: string }[],
+        outNodes: { id: string; label: string }[],
+        x?: DOMUnitExpression,
+        y?: DOMUnitExpression
+    ): Module {
         const module = new Module(this, inNodes, outNodes, x, y)
         this._modules.push(module)
         return module
@@ -370,9 +442,11 @@ export class Graph {
         if (!edge) {
             return false
         }
-        return (this._adjacency.get(edge.from)?.delete(edgeId) ?? false)
-            && (this._adjacency.get(edge.to)?.delete(edgeId) ?? false)
-            && this._edges.delete(edgeId)
+        return (
+            (this._adjacency.get(edge.from)?.delete(edgeId) ?? false) &&
+            (this._adjacency.get(edge.to)?.delete(edgeId) ?? false) &&
+            this._edges.delete(edgeId)
+        )
     }
 
     public disconnectNode(nodeA: string): boolean {
@@ -392,7 +466,6 @@ export class Graph {
 }
 
 function GraphComp({ graph }: { graph: Graph }) {
-
     const svgRef = useRef<SVGSVGElement | null>(null)
 
     const [renderHook, forceRenderer] = useReducer(x => !x, false)
@@ -400,7 +473,7 @@ function GraphComp({ graph }: { graph: Graph }) {
     useEffect(() => {
         const anim = () => {
             forceRenderer()
-            
+
             cancelAnimationFrame(handle)
             handle = requestAnimationFrame(anim)
         }
@@ -415,13 +488,23 @@ function GraphComp({ graph }: { graph: Graph }) {
     const comps = useMemo(() => {
         return svgRef.current != null ? (
             <>
-                {graph.modules.map(x => <ModuleComp module={x} element={svgRef.current!} />)}
-                {[...graph.edges.values()].map(x => <EdgeComp from={x.from} to={x.to} graph={graph} element={svgRef.current!} />)}
-                {[...graph.juncts.values()].map(x => <JunctionComp junct={x} element={svgRef.current!} />)}
-                {[...graph.nodes.values()].map(x => <NodeComp node={x} graph={graph} element={svgRef.current!} />)}
+                {graph.modules.map(x => (
+                    <ModuleComp module={x} element={svgRef.current!} />
+                ))}
+                {[...graph.edges.values()].map(x => (
+                    <EdgeComp from={x.from} to={x.to} graph={graph} element={svgRef.current!} />
+                ))}
+                {[...graph.juncts.values()].map(x => (
+                    <JunctionComp junct={x} element={svgRef.current!} />
+                ))}
+                {[...graph.nodes.values()].map(x => (
+                    <NodeComp node={x} graph={graph} element={svgRef.current!} />
+                ))}
             </>
-        ) : (<></>)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        ) : (
+            <></>
+        )
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [renderHook, graph])
 
     return (

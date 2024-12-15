@@ -9,7 +9,6 @@ import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
-import InputSystem from "@/systems/input/InputSystem"
 import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
@@ -83,10 +82,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _intakeActive = false
     private _ejectorActive = false
 
-    public get intakeActive() { return this._intakeActive }
-    public get ejectorActive() { return this._ejectorActive }
-    public set intakeActive(a: boolean) { this._intakeActive = a }
-    public set ejectorActive(a: boolean) { this._ejectorActive = a }
+    public get intakeActive() {
+        return this._intakeActive
+    }
+    public get ejectorActive() {
+        return this._ejectorActive
+    }
+    public set intakeActive(a: boolean) {
+        this._intakeActive = a
+    }
+    public set ejectorActive(a: boolean) {
+        this._ejectorActive = a
+    }
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -158,8 +165,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         // creating nametag for robots
         if (this.miraType === MiraType.ROBOT) {
             this._nameTag = new SceneOverlayTag(() =>
-                this._brain instanceof SynthesisBrain ? this._brain.inputSchemeName :
-                this._brain instanceof WPILibBrain ? "Magic" : "Not Configured"
+                this._brain instanceof SynthesisBrain
+                    ? this._brain.inputSchemeName
+                    : this._brain instanceof WPILibBrain
+                      ? "Magic"
+                      : "Not Configured"
             )
         }
     }
@@ -491,8 +501,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (robotPrefs) {
             this._simConfigData = robotPrefs.simConfig = config
             PreferencesSystem.setRobotPreferences(this.assemblyName, robotPrefs)
-            PreferencesSystem.savePreferences();
-            (this._brain as WPILibBrain)?.loadSimConfig?.()
+            PreferencesSystem.savePreferences()
+            ;(this._brain as WPILibBrain)?.loadSimConfig?.()
         }
     }
 
@@ -522,31 +532,34 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public getSupplierData(): ContextData {
         const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
 
-        data.items.push({
-            name: "Move",
-            func: () => {
-                setSelectedConfigurationType(
-                    this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
-                )
-                setNextConfigurePanelSettings({
-                    configMode: ConfigMode.MOVE,
-                    selectedAssembly: this,
-                })
-                Global_OpenPanel?.("configure")
+        data.items.push(
+            {
+                name: "Move",
+                func: () => {
+                    setSelectedConfigurationType(
+                        this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
+                    )
+                    setNextConfigurePanelSettings({
+                        configMode: ConfigMode.MOVE,
+                        selectedAssembly: this,
+                    })
+                    Global_OpenPanel?.("configure")
+                },
             },
-        }, {
-            name: "Configure",
-            func: () => {
-                setSelectedConfigurationType(
-                    this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
-                )
-                setNextConfigurePanelSettings({
-                    configMode: undefined,
-                    selectedAssembly: this,
-                })
-                Global_OpenPanel?.("configure")
-            },
-        })
+            {
+                name: "Configure",
+                func: () => {
+                    setSelectedConfigurationType(
+                        this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
+                    )
+                    setNextConfigurePanelSettings({
+                        configMode: undefined,
+                        selectedAssembly: this,
+                    })
+                    Global_OpenPanel?.("configure")
+                },
+            }
+        )
 
         if (this.brain?.brainType == "wpilib") {
             data.items.push({

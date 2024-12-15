@@ -20,7 +20,6 @@ export function validate(s: SimSupplier, r: SimReceiver): boolean {
 }
 
 export class SimSupplierAverage implements SimSupplier {
-
     private _suppliers: SimSupplier[]
 
     public constructor(suppliers?: SimSupplier[]) {
@@ -41,12 +40,11 @@ export class SimSupplierAverage implements SimSupplier {
         return NoraTypes.Number
     }
     getSupplierValue(): NoraNumber {
-        return this._suppliers.reduce((prev, next) => prev += next.getSupplierValue() as NoraNumber, 0)
+        return this._suppliers.reduce((prev, next) => (prev += next.getSupplierValue() as NoraNumber), 0)
     }
 }
 
 export class SimReceiverDistribution implements SimReceiver {
-
     private _receivers: SimReceiver[]
 
     public constructor(receivers?: SimReceiver[]) {

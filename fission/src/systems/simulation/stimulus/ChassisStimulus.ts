@@ -5,7 +5,6 @@ import { mirabuf } from "@/proto/mirabuf"
 import { NoraNumber3, NoraTypes } from "../Nora"
 
 class ChassisStimulus extends Stimulus {
-    
     private _body: Jolt.Body
     private _mass: number
 

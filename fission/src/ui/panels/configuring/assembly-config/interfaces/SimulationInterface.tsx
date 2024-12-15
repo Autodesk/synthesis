@@ -11,14 +11,20 @@ type SimulationInterfaceProps = {
 
 export default function SimulationInterface({ selectedAssembly }: SimulationInterfaceProps) {
     const { openPanel } = usePanelControlContext()
-    const [autoReconnect, setAutoReconnect] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect"))
+    const [autoReconnect, setAutoReconnect] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect")
+    )
 
     return (
         <>
-            <Checkbox label="Auto Reconnect?" defaultState={autoReconnect} onClick={() => {
-                PreferencesSystem.setGlobalPreference("SimAutoReconnect", !autoReconnect)
-                setAutoReconnect(!autoReconnect)
-            }} />
+            <Checkbox
+                label="Auto Reconnect?"
+                defaultState={autoReconnect}
+                onClick={() => {
+                    PreferencesSystem.setGlobalPreference("SimAutoReconnect", !autoReconnect)
+                    setAutoReconnect(!autoReconnect)
+                }}
+            />
             <Button
                 value="Wiring Panel"
                 className="self-center"

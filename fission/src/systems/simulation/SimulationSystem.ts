@@ -83,7 +83,9 @@ class SimulationLayer {
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
 
-        const assembly = [...World.SceneRenderer.sceneObjects.values()].find(x => (x as MirabufSceneObject).mechanism == mechanism) as MirabufSceneObject
+        const assembly = [...World.SceneRenderer.sceneObjects.values()].find(
+            x => (x as MirabufSceneObject).mechanism == mechanism
+        ) as MirabufSceneObject
 
         // Generate standard drivers and stimuli
         this._drivers = new Map()
@@ -118,22 +120,19 @@ class SimulationLayer {
         this._stimuli.set(JSON.stringify(chassisStim.id), chassisStim)
 
         if (assembly) {
-            const intakeDriv = new IntakeDriver(
-                { type: DriverType.Driv_Intake, guid: "INTAKE_GUID" },
-                assembly,
-                { GUID: "INTAKE_GUID", name: "Intake" }
-            )
-            const ejectorDriv = new EjectorDriver(
-                { type: DriverType.Driv_Ejector, guid: "EJECTOR_GUID" },
-                assembly,
-                { GUID: "EJECTOR_GUID", name: "Ejector" }
-            )
+            const intakeDriv = new IntakeDriver({ type: DriverType.Driv_Intake, guid: "INTAKE_GUID" }, assembly, {
+                GUID: "INTAKE_GUID",
+                name: "Intake",
+            })
+            const ejectorDriv = new EjectorDriver({ type: DriverType.Driv_Ejector, guid: "EJECTOR_GUID" }, assembly, {
+                GUID: "EJECTOR_GUID",
+                name: "Ejector",
+            })
             this._drivers.set(JSON.stringify(ejectorDriv.id), ejectorDriv)
             this._drivers.set(JSON.stringify(intakeDriv.id), intakeDriv)
         } else {
             console.debug("No Assembly found with given mechanism, skipping intake and ejector...")
         }
-        
     }
 
     public Update(deltaT: number) {

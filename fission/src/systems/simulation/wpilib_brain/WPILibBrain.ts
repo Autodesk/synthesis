@@ -44,7 +44,7 @@ export enum SimType {
     DIO = "DIO",
     AI = "AI",
     AO = "AO",
-    DriverStation = "DriverStation"
+    DriverStation = "DriverStation",
 }
 
 enum FieldType {
@@ -60,13 +60,7 @@ export enum RobotSimMode {
     Auto = 2,
 }
 
-export type AllianceStation =
-    "red1" |
-    "red2" |
-    "red3" |
-    "blue1" |
-    "blue2" |
-    "blue3"
+export type AllianceStation = "red1" | "red2" | "red3" | "blue1" | "blue2" | "blue3"
 
 export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.PWM]: NoraTypes.Number,
@@ -79,7 +73,7 @@ export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.DIO]: NoraTypes.Number, // ?
     [SimType.AI]: undefined,
     [SimType.AO]: NoraTypes.Number,
-    [SimType.DriverStation]: undefined
+    [SimType.DriverStation]: undefined,
 }
 
 export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
@@ -93,7 +87,7 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.DIO]: NoraTypes.Number, // ?
     [SimType.AI]: NoraTypes.Number,
     [SimType.AO]: undefined,
-    [SimType.DriverStation]: undefined
+    [SimType.DriverStation]: undefined,
 }
 
 function GetFieldType(field: string): FieldType {
@@ -122,11 +116,15 @@ export function setSimBrain(brain: WPILibBrain | undefined) {
     if (brain && !simMaps.has(brain.assemblyName)) {
         simMaps.set(brain.assemblyName, new Map())
     }
-    if (simBrain)
-        worker.getValue().postMessage({ command: "disable" })
+    if (simBrain) worker.getValue().postMessage({ command: "disable" })
     simBrain = brain
     if (simBrain)
-        worker.getValue().postMessage({ command: "enable", reconnect: PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect") })
+        worker
+            .getValue()
+            .postMessage({
+                command: "enable",
+                reconnect: PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect"),
+            })
 }
 
 export function hasSimBrain() {
@@ -134,8 +132,7 @@ export function hasSimBrain() {
 }
 
 export function getSimMap(): SimMap | undefined {
-    if (!simBrain)
-        return undefined
+    if (!simBrain) return undefined
     return simMaps.get(simBrain.assemblyName)
 }
 
@@ -166,7 +163,12 @@ export class SimGeneric {
         return (data.get(field) as T | undefined) ?? defaultValue
     }
 
-    public static Set<T extends number | boolean | string>(simType: SimType, device: string, field: string, value: T): boolean {
+    public static Set<T extends number | boolean | string>(
+        simType: SimType,
+        device: string,
+        field: string,
+        value: T
+    ): boolean {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a write or both field type`)
@@ -238,7 +240,7 @@ export class SimPWM {
     public static GenSupplier(device: string): SimSupplier {
         return {
             getSupplierType: () => supplierTypeMap[SimType.PWM]!,
-            getSupplierValue: () => SimPWM.GetSpeed(device) ?? 0
+            getSupplierValue: () => SimPWM.GetSpeed(device) ?? 0,
         }
     }
 }
@@ -249,8 +251,7 @@ export class SimCAN {
     public static GetDeviceWithID(id: number, type: SimType): DeviceData | undefined {
         const id_exp = /SYN.*\[(\d+)\]/g
         const map = getSimMap()
-        if (!map)
-            return undefined
+        if (!map) return undefined
         const entries = [...map.entries()].filter(([simType, _data]) => simType == type)
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
@@ -295,7 +296,7 @@ export class SimCANMotor {
     public static GenSupplier(device: string): SimSupplier {
         return {
             getSupplierType: () => supplierTypeMap[SimType.CANMotor]!,
-            getSupplierValue: () => SimCANMotor.GetPercentOutput(device) ?? 0
+            getSupplierValue: () => SimCANMotor.GetPercentOutput(device) ?? 0,
         }
     }
 }
@@ -399,7 +400,7 @@ export class SimDIO {
     public static GenSupplier(device: string): SimSupplier {
         return {
             getSupplierType: () => receiverTypeMap[SimType.DIO]!,
-            getSupplierValue: () => SimDIO.GetValue(device) ? 1 : 0,
+            getSupplierValue: () => (SimDIO.GetValue(device) ? 1 : 0),
         }
     }
 }
@@ -511,8 +512,7 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
 
 function UpdateSimMap(type: SimType, device: string, updateData: DeviceData) {
     const simMap = getSimMap()
-    if (!simMap)
-        return
+    if (!simMap) return
     let typeMap = simMap.get(type)
     if (!typeMap) {
         typeMap = new Map<string, DeviceData>()
@@ -589,8 +589,7 @@ class WPILibBrain extends Brain {
     public loadSimConfig(): boolean {
         this._simFlows = []
         const configData = this._assembly.simConfigData
-        if (!configData)
-            return false
+        if (!configData) return false
 
         const flows = SimConfig.Compile(configData, this._assembly)
         if (!flows) {

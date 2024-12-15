@@ -1,4 +1,3 @@
-import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 import Behavior from "../behavior/Behavior"
 import World from "@/systems/World"
@@ -237,14 +236,9 @@ class SynthesisBrain extends Brain {
             }
         })
 
-        if (!intake || !ejector)
-            return
+        if (!intake || !ejector) return
 
-        this._behaviors.push(
-            new GamepieceManipBehavior(
-                ejector, intake, this._brainIndex
-            )
-        )
+        this._behaviors.push(new GamepieceManipBehavior(ejector, intake, this._brainIndex))
     }
 
     /** Gets field preferences and handles any field specific configuration. */

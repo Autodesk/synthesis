@@ -5,7 +5,11 @@ export class DOMUnitExpression {
     public exprB?: DOMUnitExpression | DOMUnit
     public op?: (a: number, b: number) => number
 
-    private constructor(exprA: DOMUnitExpression | DOMUnit, exprB?: DOMUnitExpression | DOMUnit, op?: (a: number, b: number) => number) {
+    private constructor(
+        exprA: DOMUnitExpression | DOMUnit,
+        exprB?: DOMUnitExpression | DOMUnit,
+        op?: (a: number, b: number) => number
+    ) {
         this.exprA = exprA
         this.exprB = exprB
         this.op = op
@@ -15,7 +19,7 @@ export class DOMUnitExpression {
         return new DOMUnitExpression(new DOMUnit(value, type ?? "px"))
     }
 
-    public evaluate(element: Element, verbose: boolean = false): number {
+    public evaluate(element: Element): number {
         if (this.op && this.exprB) {
             return this.op(this.exprA.evaluate(element), this.exprB.evaluate(element))
         } else {
@@ -52,8 +56,7 @@ export class DOMUnit {
     }
 
     public evaluate(element: Element, verbose: boolean = false): number {
-        if (verbose)
-            console.debug(`${this.value} ${this.type} END UNIT`)
+        if (verbose) console.debug(`${this.value} ${this.type} END UNIT`)
         switch (this.type) {
             case "px":
                 return this.value

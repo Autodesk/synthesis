@@ -122,11 +122,14 @@ class ConfigModeSelectionOption extends SelectMenuOption {
 
 function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigModeSelectionOption> {
     const modes = new Map<ConfigMode, ConfigModeSelectionOption>([
-        [ConfigMode.BRAIN, new ConfigModeSelectionOption(
-            "Brain",
+        [
             ConfigMode.BRAIN,
-            "Select and modify what is controlling of the robot."
-        )],
+            new ConfigModeSelectionOption(
+                "Brain",
+                ConfigMode.BRAIN,
+                "Select and modify what is controlling of the robot."
+            ),
+        ],
         [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
         [ConfigMode.INTAKE, new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE)],
         [ConfigMode.EJECTOR, new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR)],
@@ -150,7 +153,14 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
 
     switch (assembly.brain?.brainType) {
         case "wpilib":
-            modes.set(ConfigMode.SIM, new ConfigModeSelectionOption("Simulation", ConfigMode.SIM, "Configure the WPILib simulation settings for this robot."))
+            modes.set(
+                ConfigMode.SIM,
+                new ConfigModeSelectionOption(
+                    "Simulation",
+                    ConfigMode.SIM,
+                    "Configure the WPILib simulation settings for this robot."
+                )
+            )
             break
         case "synthesis":
             modes.set(ConfigMode.CONTROLS, new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS))
@@ -262,9 +272,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             return <SimulationInterface selectedAssembly={assembly} />
         }
         case ConfigMode.BRAIN: {
-            return (
-                <BrainSelectionInterface selectedAssembly={assembly} />
-            )
+            return <BrainSelectionInterface selectedAssembly={assembly} />
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
@@ -281,8 +289,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const settings = popConfigurePanelSettings()
         if (settings) {
             setSelectedAssembly(settings.selectedAssembly)
-            if (settings.selectedAssembly)
-                setConfigMode(settings.configMode)
+            if (settings.selectedAssembly) setConfigMode(settings.configMode)
         }
 
         closePanel("choose-scheme")
@@ -338,7 +345,9 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     new ConfigurationSavedEvent()
                                 }
                                 setConfigMode(undefined)
-                                console.trace(`[Assembly Selection] Selecting Assembly -> '${a?.assemblyName ?? "undefined"}'`)
+                                console.trace(
+                                    `[Assembly Selection] Selecting Assembly -> '${a?.assemblyName ?? "undefined"}'`
+                                )
                                 setSelectedAssembly(a)
                             }}
                             selectedAssembly={selectedAssembly}

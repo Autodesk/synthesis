@@ -5,8 +5,10 @@ export type BrainType = "synthesis" | "wpilib" | "unknown"
 abstract class Brain {
     protected _mechanism: Mechanism
 
-    private _brainType: BrainType;
-    public get brainType() { return this._brainType }
+    private _brainType: BrainType
+    public get brainType() {
+        return this._brainType
+    }
 
     constructor(mechanism: Mechanism, brainType: BrainType) {
         this._mechanism = mechanism

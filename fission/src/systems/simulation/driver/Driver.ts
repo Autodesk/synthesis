@@ -14,9 +14,9 @@ export enum DriverType {
 }
 
 export type DriverID = {
-    type: DriverType,
-    name?: string,
-    guid: string,
+    type: DriverType
+    name?: string
+    guid: string
 }
 
 export function makeDriverID(constraint: MechanismConstraint): DriverID {

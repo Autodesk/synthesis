@@ -38,9 +38,9 @@ type EndProps = {
 }
 
 type BodyCapture = {
-    id: Jolt.BodyID,
-    pos: Jolt.RVec3,
-    rot: Jolt.Quat,
+    id: Jolt.BodyID
+    pos: Jolt.RVec3
+    rot: Jolt.Quat
 }
 
 const AUTO_TEST_PAUSE_REF = "auto-testing"
@@ -132,9 +132,9 @@ function captureBodies(): BodyCapture[] {
             sceneObj.mechanism.nodeToBody.forEach(bodyId => {
                 const body = World.PhysicsSystem.GetBody(bodyId)
                 const transform = body.GetWorldTransform()
-                const translation = new THREE.Vector3(0,0,0)
-                const rotation = new THREE.Quaternion(0,0,0,1)
-                JoltMat44_ThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1,1,1))
+                const translation = new THREE.Vector3(0, 0, 0)
+                const rotation = new THREE.Quaternion(0, 0, 0, 1)
+                JoltMat44_ThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
                 captures.push({
                     id: bodyId,
                     pos: ThreeVector3_JoltVec3(translation),
@@ -147,7 +147,7 @@ function captureBodies(): BodyCapture[] {
 }
 
 function resetBodies(captures: BodyCapture[]) {
-    const zero = new JOLT.Vec3(0,0,0)
+    const zero = new JOLT.Vec3(0, 0, 0)
     captures.forEach(x => {
         World.PhysicsSystem.SetBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
     })
@@ -155,7 +155,6 @@ function resetBodies(captures: BodyCapture[]) {
 }
 
 function End({ assembly, setStaging, captures }: EndProps) {
-
     useEffect(() => {
         SimDriverStation.SetMode(RobotSimMode.Disabled)
     }, [])
@@ -188,12 +187,11 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
 
     useEffect(() => {
         let handle: number | undefined = undefined
-        const endTime = (Date.now() / 1000.0) + countdown
+        const endTime = Date.now() / 1000.0 + countdown
         const func = () => {
-            if (handle != undefined)
-                cancelAnimationFrame(handle)
+            if (handle != undefined) cancelAnimationFrame(handle)
 
-            setRemaining(endTime - (Date.now() / 1000.0))
+            setRemaining(endTime - Date.now() / 1000.0)
 
             handle = requestAnimationFrame(func)
         }
@@ -202,8 +200,7 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
         }
 
         return () => {
-            if (handle != undefined)
-                cancelAnimationFrame(handle)
+            if (handle != undefined) cancelAnimationFrame(handle)
         }
     }, [countdown])
 
@@ -227,14 +224,13 @@ function Staging({ assembly, setPlaying }: StagingProps) {
     const [gameData, setGameData] = useState<string>("")
 
     const next = useCallback(() => {
-
         SimDriverStation.SetGameData(gameData)
         SimDriverStation.SetStation(station)
 
         const captures = captureBodies()
         setPlaying?.({ assembly: assembly, captures: captures, countdown: countdown, state: "Playing" })
     }, [assembly, countdown, gameData, setPlaying, station])
-    
+
     return (
         <>
             <div className="flex flex-col gap-1">
@@ -252,7 +248,9 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                     <ToggleButton value={15}>15</ToggleButton>
                     <ToggleButton value={20}>20</ToggleButton>
                     <ToggleButton value={30}>30</ToggleButton>
-                    <ToggleButton value={-1}><FaInfinity /></ToggleButton>
+                    <ToggleButton value={-1}>
+                        <FaInfinity />
+                    </ToggleButton>
                 </ToggleButtonGroup>
             </div>
             <div className="flex flex-col gap-1">
@@ -289,7 +287,13 @@ const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
     const { closePanel } = usePanelControlContext()
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
 
-    const assembly = useMemo(() => [...World.SceneRenderer.sceneObjects.values()].find(x => (x as MirabufSceneObject).brain?.brainType == "wpilib") as MirabufSceneObject, [])
+    const assembly = useMemo(
+        () =>
+            [...World.SceneRenderer.sceneObjects.values()].find(
+                x => (x as MirabufSceneObject).brain?.brainType == "wpilib"
+            ) as MirabufSceneObject,
+        []
+    )
 
     useEffect(() => {
         SimDriverStation.SetMode(RobotSimMode.Disabled)
@@ -304,7 +308,7 @@ const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
         setActiveProps({
             state: "Staging",
             assembly: assembly,
-            setPlaying: setActiveProps
+            setPlaying: setActiveProps,
         })
 
         return () => {
@@ -314,7 +318,7 @@ const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
 
     useEffect(() => {
         closePanel("configure")
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (
@@ -328,14 +332,30 @@ const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
             acceptName="Done"
         >
             <div className="flex flex-col bg-background-secondary rounded-md p-2 gap-4">
-                {
-                    activeProps != undefined ? (
-                        activeProps.state == "Staging" ? (<Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />)
-                        : activeProps.state == "Playing" ? (<Playing assembly={activeProps.assembly} captures={activeProps.captures} countdown={activeProps.countdown} setEnd={setActiveProps} state="Playing" />)
-                        : activeProps.state == "End" ? (<End assembly={activeProps.assembly} setStaging={setActiveProps} captures={activeProps.captures} state="End" />)
-                        : (<></>)
-                    ) : (<></>)
-                }
+                {activeProps != undefined ? (
+                    activeProps.state == "Staging" ? (
+                        <Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
+                    ) : activeProps.state == "Playing" ? (
+                        <Playing
+                            assembly={activeProps.assembly}
+                            captures={activeProps.captures}
+                            countdown={activeProps.countdown}
+                            setEnd={setActiveProps}
+                            state="Playing"
+                        />
+                    ) : activeProps.state == "End" ? (
+                        <End
+                            assembly={activeProps.assembly}
+                            setStaging={setActiveProps}
+                            captures={activeProps.captures}
+                            state="End"
+                        />
+                    ) : (
+                        <></>
+                    )
+                ) : (
+                    <></>
+                )}
             </div>
         </Panel>
     )

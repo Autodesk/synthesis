@@ -51,7 +51,7 @@ class WheelRotationStimulus extends EncoderStimulus {
         return NoraTypes.Number2
     }
     public getSupplierValue(): NoraNumber2 {
-        return [ this.positionValue, this.velocityValue ]
+        return [this.positionValue, this.velocityValue]
     }
     public DisplayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`

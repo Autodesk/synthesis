@@ -1,5 +1,5 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { getSimMap, SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import {
     Box,
     Stack,
@@ -12,7 +12,7 @@ import {
     TableRow,
     Typography,
 } from "@mui/material"
-import { useEffect, useMemo, useReducer, useState } from "react"
+import { useEffect, useReducer, useState } from "react"
 import Dropdown from "../components/Dropdown"
 import Input from "../components/Input"
 import Button from "../components/Button"
@@ -28,26 +28,26 @@ const TypoStyled = styled(Typography)({
     color: "white",
 })
 
-function formatMap(map: Map<string, number | boolean | string>): string {
-    let entries: string = ""
-    map.forEach((value, key) => {
-        entries += `${key} : ${value}`
-    })
-    return entries
-}
+// function formatMap(map: Map<string, number | boolean | string>): string {
+//     let entries: string = ""
+//     map.forEach((value, key) => {
+//         entries += `${key} : ${value}`
+//     })
+//     return entries
+// }
 
 function generateTableBody() {
-    const names: SimType[] = [
-        SimType.PWM,
-        SimType.SimDevice,
-        SimType.CANMotor,
-        SimType.CANEncoder,
-        SimType.Gyro,
-        SimType.Accel,
-        SimType.DIO,
-        SimType.AI,
-        SimType.AO,
-    ]
+    // const names: SimType[] = [
+    //     SimType.PWM,
+    //     SimType.SimDevice,
+    //     SimType.CANMotor,
+    //     SimType.CANEncoder,
+    //     SimType.Gyro,
+    //     SimType.Accel,
+    //     SimType.DIO,
+    //     SimType.AI,
+    //     SimType.AO,
+    // ]
 
     return (
         <TableBody>

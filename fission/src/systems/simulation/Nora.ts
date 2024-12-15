@@ -6,8 +6,8 @@ export enum NoraTypes {
 }
 
 export type NoraNumber = number
-export type NoraNumber2 = [ NoraNumber, NoraNumber ]
-export type NoraNumber3 = [ NoraNumber, NoraNumber, NoraNumber ]
+export type NoraNumber2 = [NoraNumber, NoraNumber]
+export type NoraNumber3 = [NoraNumber, NoraNumber, NoraNumber]
 export type NoraUnknown = unknown
 
 export type NoraType = NoraNumber | NoraNumber2 | NoraNumber3 | NoraUnknown
@@ -18,8 +18,7 @@ export type NoraType = NoraNumber | NoraNumber2 | NoraNumber3 | NoraUnknown
 // }
 
 export function deconstructNoraType(type: NoraTypes): NoraTypes[] | undefined {
-    if (type.charAt(0) != "(" || type.charAt(type.length - 1) != ")")
-        return undefined
+    if (type.charAt(0) != "(" || type.charAt(type.length - 1) != ")") return undefined
     return type.substring(1, type.length - 1).split(",") as NoraTypes[]
 }
 
@@ -29,11 +28,11 @@ export function isNoraDeconstructable(type: NoraTypes): boolean {
 
 const averageFuncMap: { [k in NoraTypes]: ((...many: NoraType[]) => NoraType) | undefined } = {
     [NoraTypes.Number]: function (...many: NoraType[]): NoraType {
-        return many.reduce<NoraNumber>((prev, next) => prev += next as NoraNumber, 0)
+        return many.reduce<NoraNumber>((prev, next) => (prev += next as NoraNumber), 0)
     },
     [NoraTypes.Number2]: undefined,
     [NoraTypes.Number3]: undefined,
-    [NoraTypes.Unknown]: undefined
+    [NoraTypes.Unknown]: undefined,
 }
 
 export function noraAverageFunc(type: NoraTypes): ((...many: NoraType[]) => NoraType) | undefined {

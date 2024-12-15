@@ -5,7 +5,6 @@ import { StimulusID } from "./Stimulus"
 import { NoraTypes, NoraNumber2 } from "../Nora"
 
 class HingeStimulus extends EncoderStimulus {
-    
     private _accum: boolean = false
     private _hingeAngleAccum: number = 0.0
     private _hinge: Jolt.HingeConstraint
@@ -49,7 +48,7 @@ class HingeStimulus extends EncoderStimulus {
         return NoraTypes.Number2
     }
     public getSupplierValue(): NoraNumber2 {
-        return [ this.positionValue, this.velocityValue ]
+        return [this.positionValue, this.velocityValue]
     }
     public DisplayName(): string {
         return `${this.info?.name ?? "-"} [Encoder]`
