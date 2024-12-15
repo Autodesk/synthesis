@@ -1098,6 +1098,29 @@ class PhysicsSystem extends WorldSystem {
         )
     }
 
+    public SetBodyPositionRotationAndVelocity(
+        id: Jolt.BodyID,
+        position: Jolt.RVec3,
+        rotation: Jolt.Quat,
+        linear: Jolt.Vec3,
+        angular: Jolt.Vec3,
+        activate: boolean = true
+    ): void {
+        if (!this.IsBodyAdded(id)) {
+            return
+        }
+
+        this._joltBodyInterface.SetPositionAndRotation(
+            id,
+            position,
+            rotation,
+            activate ? JOLT.EActivation_Activate : JOLT.EActivation_DontActivate
+        )
+
+        this._joltBodyInterface.SetLinearVelocity(id, linear)
+        this._joltBodyInterface.SetAngularVelocity(id, angular)
+    }
+
     /**
      * Exposes SetShape method on the _joltBodyInterface
      * Sets the shape of the body

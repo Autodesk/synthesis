@@ -38,7 +38,7 @@ class ChassisStimulus extends Stimulus {
         throw new Error("Method not implemented.")
     }
     public DisplayName(): string {
-        return "Chassis"
+        return "Chassis [Accel|Gyro]"
     }
 }
 

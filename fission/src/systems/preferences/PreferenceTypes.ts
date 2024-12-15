@@ -15,6 +15,7 @@ export type GlobalPreference =
     | "RenderSceneTags"
     | "RenderScoreboard"
     | "SubsystemGravity"
+    | "SimAutoReconnect"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -35,6 +36,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderSceneTags: true,
     RenderScoreboard: true,
     SubsystemGravity: false,
+    SimAutoReconnect: false,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"

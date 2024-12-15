@@ -8,6 +8,8 @@ export enum DriverType {
     Driv_Hinge = "Driv_Hinge",
     Driv_Wheel = "Driv_Wheel",
     Driv_Slider = "Driv_Slider",
+    Driv_Intake = "Driv_Intake",
+    Driv_Ejector = "Driv_Ejector",
     Driv_Unknown = "Driv_Unknown",
 }
 

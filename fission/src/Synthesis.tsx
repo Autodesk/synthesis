@@ -64,6 +64,7 @@ import ContextMenu from "./ui/components/ContextMenu.tsx"
 import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
+import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
@@ -167,7 +168,6 @@ function Synthesis() {
                             <SceneOverlay />
                             <ContextMenu />
                             <MainHUD key={"main-hud"} />
-                            <WPILibConnectionStatus />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
                                 <div className="absolute w-full h-full left-0 top-0" key={"modal-element"}>
@@ -176,6 +176,7 @@ function Synthesis() {
                             )}
                             <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
+                            <WPILibConnectionStatus />
 
                             {!consentPopupDisable ? (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
@@ -234,6 +235,7 @@ const initialPanels: ReactElement[] = [
     <WiringPanel key="wiring" panelId="wiring" />,
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
+    <AutoTestPanel key="auto-test" panelId="auto-test" />,
 ]
 
 export default Synthesis

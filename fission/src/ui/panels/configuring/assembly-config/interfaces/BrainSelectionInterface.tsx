@@ -23,7 +23,7 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
 
                     switch (brainType) {
                         case "synthesis":
-                            selectedAssembly.brain = new SynthesisBrain(selectedAssembly.mechanism, selectedAssembly.assemblyName)
+                            selectedAssembly.brain = new SynthesisBrain(selectedAssembly, selectedAssembly.assemblyName)
                             break
                         case "wpilib":
                             selectedAssembly.brain = new WPILibBrain(selectedAssembly)

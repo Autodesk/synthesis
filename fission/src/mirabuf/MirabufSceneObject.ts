@@ -80,6 +80,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _nameTag: SceneOverlayTag | undefined
 
+    private _intakeActive = false
+    private _ejectorActive = false
+
+    public get intakeActive() { return this._intakeActive }
+    public get ejectorActive() { return this._ejectorActive }
+    public set intakeActive(a: boolean) { this._intakeActive = a }
+    public set ejectorActive(a: boolean) { this._ejectorActive = a }
+
     get mirabufInstance() {
         return this._mirabufInstance
     }
@@ -191,7 +199,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType == MiraType.ROBOT) {
             World.SimulationSystem.RegisterMechanism(this._mechanism)
             const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-            this._brain = new SynthesisBrain(this._mechanism, this._assemblyName)
+            this._brain = new SynthesisBrain(this, this._assemblyName)
             simLayer.SetBrain(this._brain)
         }
 
@@ -226,13 +234,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public Update(): void {
-        const brainIndex = this._brain instanceof SynthesisBrain ? this._brain.brainIndex ?? -1 : -1
-        if (InputSystem.getInput("eject", brainIndex)) {
+        if (this.ejectorActive) {
             this.Eject()
         }
 
         this.UpdateMeshTransforms()
-
         this.UpdateBatches()
         this.UpdateNameTag()
     }
@@ -528,9 +534,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 })
                 Global_OpenPanel?.("configure")
             },
-        })
-
-        data.items.push({
+        }, {
             name: "Configure",
             func: () => {
                 setSelectedConfigurationType(
@@ -543,6 +547,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 Global_OpenPanel?.("configure")
             },
         })
+
+        if (this.brain?.brainType == "wpilib") {
+            data.items.push({
+                name: "Auto Testing",
+                func: () => {
+                    Global_OpenPanel?.("auto-test")
+                },
+            })
+        }
 
         // if (this.miraType == MiraType.ROBOT) {
         //     const brainIndex = (this.brain as SynthesisBrain)?.brainIndex

@@ -110,6 +110,10 @@ export function getAccelDevices(): [string, Map<string, string | boolean | numbe
     return [...(getSimMap()?.get(SimType.Accel)?.entries() ?? [])]
 }
 
+export function getDIODevices(): [string, Map<string, string | boolean | number>][] {
+    return [...(getSimMap()?.get(SimType.DIO)?.entries() ?? [])]
+}
+
 function displayNameCAN(id: string) {
     const a = id.indexOf('[')
     const b = id.indexOf(']')
@@ -132,6 +136,14 @@ function displayNameAccel(id: string) {
             return id
         return `Accel [${id.substring(0, a)} - ${id.substring(a + 1, b)}]`
     }
+}
+
+function displayNameDI(id: string) {
+    return `DI [${id}]`
+}
+
+function displayNameDO(id: string) {
+    return `DO [${id}]`
 }
 
 export type NodeInfo = {
@@ -222,6 +234,8 @@ export class SimConfig {
                 }
                 this.AddHandle(config, handle)
                 simOutNode.sources.push(handle.id)
+            } else {
+                console.debug("Skipping stimulus", x)
             }
         })
 
@@ -315,6 +329,39 @@ export class SimConfig {
             this.AddHandle(config, handle)
             robotIONode.targets.push(handle.id)
         })
+        // TODO
+        // getDIODevices().forEach(([id, data]) => {
+        //     const handleIn: HandleInfo = {
+        //         id: "",
+        //         nodeId: NODE_ID_ROBOT_IO,
+        //         noraType: receiverTypeMap[SimType.DIO]!,
+        //         originType: SimType.DIO,
+        //         originId: id,
+
+        //         displayName: displayNameDI(id),
+        //         enabled: data.get("<init") == true,
+                
+        //         many: true,
+        //         isSource: false,
+        //     }
+        //     this.AddHandle(config, handleIn)
+        //     robotIONode.targets.push(handleIn.id)
+        //     const handleOut: HandleInfo = {
+        //         id: "",
+        //         nodeId: NODE_ID_ROBOT_IO,
+        //         noraType: supplierTypeMap[SimType.DIO]!,
+        //         originType: SimType.DIO,
+        //         originId: id,
+
+        //         displayName: displayNameDO(id),
+        //         enabled: data.get("<init") == true,
+                
+        //         many: hasNoraAverageFunc(supplierTypeMap[SimType.DIO]!),
+        //         isSource: true,
+        //     }
+        //     this.AddHandle(config, handleOut)
+        //     robotIONode.targets.push(handleOut.id)
+        // })
     }
 
     private static AddHandle(config: SimConfigData, info: HandleInfo) {

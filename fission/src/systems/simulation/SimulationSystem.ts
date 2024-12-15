@@ -2,7 +2,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import Mechanism from "../physics/Mechanism"
 import WorldSystem from "../WorldSystem"
 import Brain from "./Brain"
-import Driver, { makeDriverID } from "./driver/Driver"
+import Driver, { DriverType, makeDriverID } from "./driver/Driver"
 import Stimulus, { makeStimulusID, StimulusType } from "./stimulus/Stimulus"
 import HingeDriver from "./driver/HingeDriver"
 import WheelDriver from "./driver/WheelDriver"
@@ -11,6 +11,10 @@ import HingeStimulus from "./stimulus/HingeStimulus"
 import WheelRotationStimulus from "./stimulus/WheelStimulus"
 import SliderStimulus from "./stimulus/SliderStimulus"
 import ChassisStimulus from "./stimulus/ChassisStimulus"
+import IntakeDriver from "./driver/IntakeDriver"
+import World from "../World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EjectorDriver from "./driver/EjectorDriver"
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
@@ -79,6 +83,8 @@ class SimulationLayer {
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
 
+        const assembly = [...World.SceneRenderer.sceneObjects.values()].find(x => (x as MirabufSceneObject).mechanism == mechanism) as MirabufSceneObject
+
         // Generate standard drivers and stimuli
         this._drivers = new Map()
         this._stimuli = new Map()
@@ -103,8 +109,31 @@ class SimulationLayer {
                 this._stimuli.set(JSON.stringify(stim.id), stim)
             }
         })
-        const chassisStim = new ChassisStimulus({ type: StimulusType.Stim_ChassisAccel, guid: "unknown" }, mechanism.nodeToBody.get(mechanism.rootBody)!)
-        this._stimuli.set(JSON.stringify(chassisStim), chassisStim)
+
+        const chassisStim = new ChassisStimulus(
+            { type: StimulusType.Stim_ChassisAccel, guid: "CHASSIS_GUID" },
+            mechanism.nodeToBody.get(mechanism.rootBody)!,
+            { GUID: "CHASSIS_GUID", name: "Chassis" }
+        )
+        this._stimuli.set(JSON.stringify(chassisStim.id), chassisStim)
+
+        if (assembly) {
+            const intakeDriv = new IntakeDriver(
+                { type: DriverType.Driv_Intake, guid: "INTAKE_GUID" },
+                assembly,
+                { GUID: "INTAKE_GUID", name: "Intake" }
+            )
+            const ejectorDriv = new EjectorDriver(
+                { type: DriverType.Driv_Ejector, guid: "EJECTOR_GUID" },
+                assembly,
+                { GUID: "EJECTOR_GUID", name: "Ejector" }
+            )
+            this._drivers.set(JSON.stringify(ejectorDriv.id), ejectorDriv)
+            this._drivers.set(JSON.stringify(intakeDriv.id), intakeDriv)
+        } else {
+            console.debug("No Assembly found with given mechanism, skipping intake and ejector...")
+        }
+        
     }
 
     public Update(deltaT: number) {

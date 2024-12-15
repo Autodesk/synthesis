@@ -23,6 +23,7 @@ import { ConfigurationType, getConfigurationType, setSelectedConfigurationType }
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
+import SimulationInterface from "./interfaces/SimulationInterface"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -258,15 +259,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             )
         }
         case ConfigMode.SIM: {
-            return (
-                <Button
-                    value="Wiring Panel"
-                    onClick={() => {
-                        setSpotlightAssembly(assembly)
-                        openPanel("wiring")
-                    }}
-                />
-            )
+            return <SimulationInterface selectedAssembly={assembly} />
         }
         case ConfigMode.BRAIN: {
             return (

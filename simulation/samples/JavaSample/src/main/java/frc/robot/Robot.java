@@ -100,27 +100,30 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
 
-    m_Spark1.set(0.5);
-    m_Spark2.set(-0.5);
-    m_Talon.set(-1.0);
+    m_SparkMax1.set(0.2);
+    m_SparkMax2.set(-0.2);
 
-    double position = m_SparkMax1.getAbsoluteEncoderSim().getPosition();
+    // m_Spark1.set(0.5);
+    // m_Spark2.set(-0.5);
+    // m_Talon.set(-1.0);
 
-    if (position >= 20) {
-        m_SparkMax1.set(0.0);
-        m_SparkMax2.set(0.0);
-        m_SparkMax3.set(0.0);
-        m_SparkMax4.set(0.0);
-        m_SparkMax5.set(0.0);
-        m_SparkMax6.set(0.0);
-    } else {
-        m_SparkMax1.set(1.0);
-        m_SparkMax2.set(1.0);
-        m_SparkMax3.set(1.0);
-        m_SparkMax4.set(1.0);
-        m_SparkMax5.set(1.0);
-        m_SparkMax6.set(1.0);
-    }
+    // double position = m_SparkMax1.getAbsoluteEncoderSim().getPosition();
+
+    // if (position >= 20) {
+    //     m_SparkMax1.set(0.0);
+    //     m_SparkMax2.set(0.0);
+    //     m_SparkMax3.set(0.0);
+    //     m_SparkMax4.set(0.0);
+    //     m_SparkMax5.set(0.0);
+    //     m_SparkMax6.set(0.0);
+    // } else {
+    //     m_SparkMax1.set(1.0);
+    //     m_SparkMax2.set(1.0);
+    //     m_SparkMax3.set(1.0);
+    //     m_SparkMax4.set(1.0);
+    //     m_SparkMax5.set(1.0);
+    //     m_SparkMax6.set(1.0);
+    // }
 
     switch (m_autoSelected) {
       case kCustomAuto:
@@ -140,11 +143,25 @@ public class Robot extends TimedRobot {
     m_AO.setVoltage(6.0);
   }
 
+  private double clamp(double a, double min, double max) {
+    return Math.min(Math.max(a, min), max);
+  }
+
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    m_SparkMax1.set(m_Controller.getLeftY());
-    m_SparkMax2.set(-m_Controller.getRightY());
+    double forward = -m_Controller.getLeftY();
+    double turn = m_Controller.getRightX();
+    if (Math.abs(forward) < 0.2) {
+      forward = 0.0;
+    }
+    if (Math.abs(turn) < 0.2) {
+      turn = 0.0;
+    }
+
+    m_SparkMax1.set(clamp(forward + turn, -1, 1));
+    m_SparkMax2.set(clamp(forward - turn, -1, 1));
+
     m_Talon.set(m_Controller.getLeftX());
     System.out.println("LeftX: " + m_Controller.getLeftX());
     // System.out.println("OUT: " + m_DO.get());

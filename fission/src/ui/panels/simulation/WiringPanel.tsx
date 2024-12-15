@@ -3,7 +3,7 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import { ReactFlow, Node as FlowNode, Edge as FlowEdge, useNodesState, useEdgesState, NodeProps, Connection, FinalConnectionState, useReactFlow, ReactFlowProvider } from "@xyflow/react"
-import { ConfigState, HandleInfo, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, SimConfig } from "./SimConfigShared"
+import { ConfigState, HandleInfo, handleInfoDisplayCompare, NODE_ID_ROBOT_IO, NODE_ID_SIM_IN, NODE_ID_SIM_OUT, SimConfig } from "./SimConfigShared"
 import Label, { LabelSize } from "@/ui/components/Label";
 import ScrollView from "@/ui/components/ScrollView";
 import Checkbox from "@/ui/components/Checkbox";
@@ -24,6 +24,7 @@ type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void,
     selectedAssembly: MirabufSceneObject,
     simConfig: SimConfigData,
+    reset?: () => void,
 }
 
 type NodeType = ComponentType<NodeProps & {
@@ -123,7 +124,7 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
     Object.entries(simConfig.handles).forEach(([_k, v]) => {
-        if (v.nodeId == NODE_ID_SIM_OUT) {
+        if (v.nodeId == NODE_ID_SIM_OUT || v.nodeId == NODE_ID_SIM_IN) {
             (v.isSource ? simOut : simIn).push(v)
         }
     })
@@ -141,7 +142,7 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                 <div className="flex flex-col justify-center grow">
                     <Label className="text-center">Output</Label>
                     <ScrollView className="h-full px-2">
-                        {simOut.map(handle => (
+                        {simOut.sort(handleInfoDisplayCompare).map(handle => (
                             <Checkbox
                                 key={handle.id}
                                 label={`${handle.displayName}`}
@@ -156,7 +157,7 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                 <div className="flex flex-col justify-center grow">
                     <Label className="text-center">Input</Label>
                     <ScrollView className="h-full px-2">
-                        {simIn.map(handle => (
+                        {simIn.sort(handleInfoDisplayCompare).map(handle => (
                             <Checkbox
                                 key={handle.id}
                                 label={`${handle.displayName}`}
@@ -262,7 +263,7 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[]);
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[]);
@@ -345,7 +346,7 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo />
+            <FlowInfo reset={reset ?? (() => {})} />
         </ReactFlow>
     )
 }
@@ -353,6 +354,7 @@ function WiringComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 function WiringPanel({ panelId }: PanelPropsImpl) {
     const [configState, setConfigState] = useState<ConfigState>("wiring")
     const { closePanel } = usePanelControlContext();
+    const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
         const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
@@ -365,15 +367,15 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
         }
     }, [closePanel, panelId])
 
-    const simConfig = useMemo(() => {
+    useEffect(() => {
         if (!selectedAssembly)
             return
         
         const existingConfig = selectedAssembly.simConfigData
         if (existingConfig) {
-            return JSON.parse(JSON.stringify(existingConfig)) // Create copy to not force a save
+            setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
         } else {
-            return SimConfig.Default(selectedAssembly)
+            setSimConfig(SimConfig.Default(selectedAssembly))
         }
     }, [selectedAssembly])
 
@@ -390,6 +392,12 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
         }
     }, [selectedAssembly, simConfig])
 
+    const reset = useCallback(() => {
+        if (selectedAssembly) {
+            setSimConfig(SimConfig.Default(selectedAssembly))
+        }
+    }, [selectedAssembly])
+
     return (
         <Panel
             name="Wiring Panel"
@@ -402,7 +410,7 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
             <div className="flex grow">
                 {configState === "wiring" ? (
                     <ReactFlowProvider>
-                        <WiringComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} />
+                        <WiringComponent reset={reset} simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} />
                     </ReactFlowProvider>
                 ) : (<></>) }
                 {configState === "robotIO" ? <RobotIOComponent simConfig={simConfig} selectedAssembly={selectedAssembly} setConfigState={setConfigState} /> : <></>}

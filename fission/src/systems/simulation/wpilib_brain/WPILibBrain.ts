@@ -8,11 +8,12 @@ import World from "@/systems/World"
 import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
 import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
 import { Random } from "@/util/Random"
-import { NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
+import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
 import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
 import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -30,8 +31,6 @@ const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 const CANENCODER_POSITION = ">position"
 const CANENCODER_VELOCITY = ">velocity"
 
-const RECONNECT = false
-
 export let isConnected: boolean = false
 
 export enum SimType {
@@ -45,6 +44,7 @@ export enum SimType {
     DIO = "DIO",
     AI = "AI",
     AO = "AO",
+    DriverStation = "DriverStation"
 }
 
 enum FieldType {
@@ -53,6 +53,20 @@ enum FieldType {
     Both = 2,
     Unknown = -1,
 }
+
+export enum RobotSimMode {
+    Disabled = 0,
+    Teleop = 1,
+    Auto = 2,
+}
+
+export type AllianceStation =
+    "red1" |
+    "red2" |
+    "red3" |
+    "blue1" |
+    "blue2" |
+    "blue3"
 
 export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.PWM]: NoraTypes.Number,
@@ -64,7 +78,8 @@ export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.Accel]: undefined,
     [SimType.DIO]: NoraTypes.Number, // ?
     [SimType.AI]: undefined,
-    [SimType.AO]: NoraTypes.Number
+    [SimType.AO]: NoraTypes.Number,
+    [SimType.DriverStation]: undefined
 }
 
 export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
@@ -77,7 +92,8 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.Accel]: NoraTypes.Number3,
     [SimType.DIO]: NoraTypes.Number, // ?
     [SimType.AI]: NoraTypes.Number,
-    [SimType.AO]: undefined
+    [SimType.AO]: undefined,
+    [SimType.DriverStation]: undefined
 }
 
 function GetFieldType(field: string): FieldType {
@@ -110,7 +126,7 @@ export function setSimBrain(brain: WPILibBrain | undefined) {
         worker.getValue().postMessage({ command: "disable" })
     simBrain = brain
     if (simBrain)
-        worker.getValue().postMessage({ command: "enable", reconnect: RECONNECT })
+        worker.getValue().postMessage({ command: "enable", reconnect: PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect") })
 }
 
 export function hasSimBrain() {
@@ -150,7 +166,7 @@ export class SimGeneric {
         return (data.get(field) as T | undefined) ?? defaultValue
     }
 
-    public static Set<T extends number | boolean>(simType: SimType, device: string, field: string, value: T): boolean {
+    public static Set<T extends number | boolean | string>(simType: SimType, device: string, field: string, value: T): boolean {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a write or both field type`)
@@ -169,7 +185,7 @@ export class SimGeneric {
             return false
         }
 
-        const selectedData: { [key: string]: number | boolean } = {}
+        const selectedData: { [key: string]: number | boolean | string } = {}
         selectedData[field] = value
         data.set(field, value)
 
@@ -184,6 +200,27 @@ export class SimGeneric {
 
         window.dispatchEvent(new SimMapUpdateEvent(true))
         return true
+    }
+}
+
+export class SimDriverStation {
+    private constructor() {}
+
+    public static SetMatchTime(time: number) {
+        SimGeneric.Set<number>(SimType.DriverStation, "", ">match_time", time)
+    }
+
+    public static SetGameData(gameData: string) {
+        SimGeneric.Set<string>(SimType.DriverStation, "", ">match_time", gameData)
+    }
+
+    public static SetMode(mode: RobotSimMode) {
+        SimGeneric.Set<boolean>(SimType.DriverStation, "", ">enabled", mode != RobotSimMode.Disabled)
+        SimGeneric.Set<boolean>(SimType.DriverStation, "", ">autonomous", mode == RobotSimMode.Auto)
+    }
+
+    public static SetStation(station: AllianceStation) {
+        SimGeneric.Set<string>(SimType.DriverStation, "", ">station", station)
     }
 }
 
@@ -349,6 +386,22 @@ export class SimDIO {
     public static GetValue(device: string): boolean {
         return SimGeneric.Get(SimType.DIO, device, "<>value", false)
     }
+
+    public static GenReceiver(device: string): SimReceiver {
+        return {
+            getReceiverType: () => receiverTypeMap[SimType.DIO]!,
+            setReceiverValue: (a: NoraNumber) => {
+                SimDIO.SetValue(device, a > 0.5)
+            },
+        }
+    }
+
+    public static GenSupplier(device: string): SimSupplier {
+        return {
+            getSupplierType: () => receiverTypeMap[SimType.DIO]!,
+            getSupplierValue: () => SimDIO.GetValue(device) ? 1 : 0,
+        }
+    }
 }
 
 export class SimAI {
@@ -512,7 +565,7 @@ class WPILibBrain extends Brain {
 
         World.SceneRenderer.sceneObjects.forEach(v => {
             if (v instanceof MirabufSceneObject && v.brain?.brainType == "wpilib") {
-                v.brain = new SynthesisBrain(v.mechanism, v.assemblyName)
+                v.brain = new SynthesisBrain(v, v.assemblyName)
             }
         })
     }
