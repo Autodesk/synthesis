@@ -345,9 +345,6 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     new ConfigurationSavedEvent()
                                 }
                                 setConfigMode(undefined)
-                                console.trace(
-                                    `[Assembly Selection] Selecting Assembly -> '${a?.assemblyName ?? "undefined"}'`
-                                )
                                 setSelectedAssembly(a)
                             }}
                             selectedAssembly={selectedAssembly}
