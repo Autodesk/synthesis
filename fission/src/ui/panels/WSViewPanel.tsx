@@ -1,3 +1,8 @@
+/**
+ * TODO: I don't have the time but this whole thing needs to be remade to
+ * make debugging signal data easier.
+ */
+
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import {

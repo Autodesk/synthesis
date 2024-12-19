@@ -1,3 +1,11 @@
+/**
+ * This was originally written before using ReactFlow for the node editor.
+ * It's mostly working (missing some interaction aspects) and does some
+ * interesting work with SVGs that I think would be really useful for a
+ * more advance 2D overlay for directing the users attention to key points
+ * in the 3D scene.
+ */
+
 import { DOMUnitExpression } from "@/util/Units"
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react"
 import { colorNameToVar } from "../ThemeContext"

@@ -570,19 +570,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             })
         }
 
-        // if (this.miraType == MiraType.ROBOT) {
-        //     const brainIndex = (this.brain as SynthesisBrain)?.brainIndex
-        //     if (brainIndex != undefined) {
-        //         data.items.push({
-        //             name: "Set Scheme",
-        //             func: () => {
-        //                 setSpotlightAssembly(this)
-        //                 Global_OpenPanel?.("choose-scheme")
-        //             },
-        //         })
-        //     }
-        // }
-
         if (World.SceneRenderer.currentCameraControls.controlsType == "Orbit") {
             const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
             if (cameraControls.focusProvider == this) {

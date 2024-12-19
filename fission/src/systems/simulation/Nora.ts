@@ -1,3 +1,13 @@
+/**
+ * To build input validation into the node editor, I had to
+ * make this poor man's type system. Please make it better.
+ *
+ * We should be able to assign identifiers to the types and
+ * probably have more in-tune mechanisms for handling the
+ * junction situations. Right now its kinda patched together
+ * with the averaging function setup I have below.
+ */
+
 export enum NoraTypes {
     Number = "num",
     Number2 = "(num,num)",
