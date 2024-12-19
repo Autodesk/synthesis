@@ -2,8 +2,8 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import Mechanism from "../physics/Mechanism"
 import WorldSystem from "../WorldSystem"
 import Brain from "./Brain"
-import Driver from "./driver/Driver"
-import Stimulus from "./stimulus/Stimulus"
+import Driver, { DriverType, makeDriverID } from "./driver/Driver"
+import Stimulus, { makeStimulusID, StimulusType } from "./stimulus/Stimulus"
 import HingeDriver from "./driver/HingeDriver"
 import WheelDriver from "./driver/WheelDriver"
 import SliderDriver from "./driver/SliderDriver"
@@ -11,6 +11,10 @@ import HingeStimulus from "./stimulus/HingeStimulus"
 import WheelRotationStimulus from "./stimulus/WheelStimulus"
 import SliderStimulus from "./stimulus/SliderStimulus"
 import ChassisStimulus from "./stimulus/ChassisStimulus"
+import IntakeDriver from "./driver/IntakeDriver"
+import World from "../World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import EjectorDriver from "./driver/EjectorDriver"
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
@@ -63,47 +67,72 @@ class SimulationLayer {
     private _mechanism: Mechanism
     private _brain?: Brain
 
-    private _drivers: Driver[]
-    private _stimuli: Stimulus[]
+    private _drivers: Map<string, Driver>
+    private _stimuli: Map<string, Stimulus>
 
     public get brain() {
         return this._brain
     }
     public get drivers() {
-        return this._drivers
+        return [...this._drivers.values()]
     }
     public get stimuli() {
-        return this._stimuli
+        return [...this._stimuli.values()]
     }
 
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
 
+        const assembly = [...World.SceneRenderer.sceneObjects.values()].find(
+            x => (x as MirabufSceneObject).mechanism == mechanism
+        ) as MirabufSceneObject
+
         // Generate standard drivers and stimuli
-        this._drivers = []
-        this._stimuli = []
+        this._drivers = new Map()
+        this._stimuli = new Map()
         this._mechanism.constraints.forEach(x => {
             if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Hinge) {
                 const hinge = JOLT.castObject(x.constraint, JOLT.HingeConstraint)
-                const driver = new HingeDriver(hinge, x.maxVelocity, x.info)
-                this._drivers.push(driver)
-                const stim = new HingeStimulus(hinge, x.info)
-                this._stimuli.push(stim)
+                const driver = new HingeDriver(makeDriverID(x), hinge, x.maxVelocity, x.info)
+                this._drivers.set(JSON.stringify(driver.id), driver)
+                const stim = new HingeStimulus(makeStimulusID(x), hinge, x.info)
+                this._stimuli.set(JSON.stringify(stim.id), stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Vehicle) {
                 const vehicle = JOLT.castObject(x.constraint, JOLT.VehicleConstraint)
-                const driver = new WheelDriver(vehicle, x.maxVelocity, x.info)
-                this._drivers.push(driver)
-                const stim = new WheelRotationStimulus(vehicle.GetWheel(0), x.info)
-                this._stimuli.push(stim)
+                const driver = new WheelDriver(makeDriverID(x), vehicle, x.maxVelocity, x.info)
+                this._drivers.set(JSON.stringify(driver.id), driver)
+                const stim = new WheelRotationStimulus(makeStimulusID(x), vehicle.GetWheel(0), x.info)
+                this._stimuli.set(JSON.stringify(stim.id), stim)
             } else if (x.constraint.GetSubType() == JOLT.EConstraintSubType_Slider) {
                 const slider = JOLT.castObject(x.constraint, JOLT.SliderConstraint)
-                const driver = new SliderDriver(slider, x.maxVelocity, x.info)
-                this._drivers.push(driver)
-                const stim = new SliderStimulus(slider, x.info)
-                this._stimuli.push(stim)
+                const driver = new SliderDriver(makeDriverID(x), slider, x.maxVelocity, x.info)
+                this._drivers.set(JSON.stringify(driver.id), driver)
+                const stim = new SliderStimulus(makeStimulusID(x), slider, x.info)
+                this._stimuli.set(JSON.stringify(stim.id), stim)
             }
         })
-        this._stimuli.push(new ChassisStimulus(mechanism.nodeToBody.get(mechanism.rootBody)!))
+
+        const chassisStim = new ChassisStimulus(
+            { type: StimulusType.Stim_ChassisAccel, guid: "CHASSIS_GUID" },
+            mechanism.nodeToBody.get(mechanism.rootBody)!,
+            { GUID: "CHASSIS_GUID", name: "Chassis" }
+        )
+        this._stimuli.set(JSON.stringify(chassisStim.id), chassisStim)
+
+        if (assembly) {
+            const intakeDriv = new IntakeDriver({ type: DriverType.Driv_Intake, guid: "INTAKE_GUID" }, assembly, {
+                GUID: "INTAKE_GUID",
+                name: "Intake",
+            })
+            const ejectorDriv = new EjectorDriver({ type: DriverType.Driv_Ejector, guid: "EJECTOR_GUID" }, assembly, {
+                GUID: "EJECTOR_GUID",
+                name: "Ejector",
+            })
+            this._drivers.set(JSON.stringify(ejectorDriv.id), ejectorDriv)
+            this._drivers.set(JSON.stringify(intakeDriv.id), intakeDriv)
+        } else {
+            console.debug("No Assembly found with given mechanism, skipping intake and ejector...")
+        }
     }
 
     public Update(deltaT: number) {
@@ -118,6 +147,14 @@ class SimulationLayer {
         this._brain = brain
 
         if (this._brain) this._brain.Enable()
+    }
+
+    public GetStimuli(id: string) {
+        return this._stimuli.get(id)
+    }
+
+    public GetDriver(id: string) {
+        return this._drivers.get(id)
     }
 }
 

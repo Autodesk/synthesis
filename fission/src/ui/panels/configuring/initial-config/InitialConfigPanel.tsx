@@ -78,7 +78,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             onAccept={() => closeFinish()}
             icon={SynthesisIcons.Gamepad}
             cancelEnabled={true}
-            cancelName="Delete"
+            cancelName="Remove"
             onCancel={() => closeDelete()}
         >
             {/** A scroll view with buttons to select default and custom input schemes */}

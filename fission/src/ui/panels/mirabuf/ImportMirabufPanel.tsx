@@ -256,46 +256,50 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Generate Item cards for cached robots.
     const cachedRobotElements = useMemo(
         () =>
-            cachedRobots.map(info =>
-                ItemCard({
-                    name: info.name || info.cacheKey || "Unnamed Robot",
-                    id: info.id,
-                    primaryButtonNode: SynthesisIcons.AddLarge,
-                    primaryOnClick: () => {
-                        console.log(`Selecting cached robot: ${info.cacheKey}`)
-                        selectCache(info, MiraType.ROBOT)
-                    },
-                    secondaryOnClick: () => {
-                        console.log(`Deleting cache of: ${info.cacheKey}`)
-                        MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.ROBOT)
+            cachedRobots
+                .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
+                .map(info =>
+                    ItemCard({
+                        name: info.name || info.cacheKey || "Unnamed Robot",
+                        id: info.id,
+                        primaryButtonNode: SynthesisIcons.AddLarge,
+                        primaryOnClick: () => {
+                            console.log(`Selecting cached robot: ${info.cacheKey}`)
+                            selectCache(info, MiraType.ROBOT)
+                        },
+                        secondaryOnClick: () => {
+                            console.log(`Deleting cache of: ${info.cacheKey}`)
+                            MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.ROBOT)
 
-                        setCachedRobots(GetCacheInfo(MiraType.ROBOT))
-                    },
-                })
-            ),
+                            setCachedRobots(GetCacheInfo(MiraType.ROBOT))
+                        },
+                    })
+                ),
         [cachedRobots, selectCache, setCachedRobots]
     )
 
     // Generate Item cards for cached fields.
     const cachedFieldElements = useMemo(
         () =>
-            cachedFields.map(info =>
-                ItemCard({
-                    name: info.name || info.cacheKey || "Unnamed Field",
-                    id: info.id,
-                    primaryButtonNode: SynthesisIcons.AddLarge,
-                    primaryOnClick: () => {
-                        console.log(`Selecting cached field: ${info.cacheKey}`)
-                        selectCache(info, MiraType.FIELD)
-                    },
-                    secondaryOnClick: () => {
-                        console.log(`Deleting cache of: ${info.cacheKey}`)
-                        MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.FIELD)
+            cachedFields
+                .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
+                .map(info =>
+                    ItemCard({
+                        name: info.name || info.cacheKey || "Unnamed Field",
+                        id: info.id,
+                        primaryButtonNode: SynthesisIcons.AddLarge,
+                        primaryOnClick: () => {
+                            console.log(`Selecting cached field: ${info.cacheKey}`)
+                            selectCache(info, MiraType.FIELD)
+                        },
+                        secondaryOnClick: () => {
+                            console.log(`Deleting cache of: ${info.cacheKey}`)
+                            MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.FIELD)
 
-                        setCachedFields(GetCacheInfo(MiraType.FIELD))
-                    },
-                })
-            ),
+                            setCachedFields(GetCacheInfo(MiraType.FIELD))
+                        },
+                    })
+                ),
         [cachedFields, selectCache, setCachedFields]
     )
 
@@ -304,17 +308,19 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const remoteRobots = manifest?.robots.filter(
             path => !cachedRobots.some(info => info.cacheKey.includes(path.src))
         )
-        return remoteRobots?.map(path =>
-            ItemCard({
-                name: path.displayName,
-                id: path.src,
-                primaryButtonNode: SynthesisIcons.DownloadLarge,
-                primaryOnClick: () => {
-                    console.log(`Selecting remote: ${path}`)
-                    selectRemote(path, MiraType.ROBOT)
-                },
-            })
-        )
+        return remoteRobots
+            ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
+            .map(path =>
+                ItemCard({
+                    name: path.displayName,
+                    id: path.src,
+                    primaryButtonNode: SynthesisIcons.DownloadLarge,
+                    primaryOnClick: () => {
+                        console.log(`Selecting remote: ${path}`)
+                        selectRemote(path, MiraType.ROBOT)
+                    },
+                })
+            )
     }, [manifest?.robots, cachedRobots, selectRemote])
 
     // Generate Item cards for remote fields.
@@ -322,33 +328,37 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const remoteFields = manifest?.fields.filter(
             path => !cachedFields.some(info => info.cacheKey.includes(path.src))
         )
-        return remoteFields?.map(path =>
-            ItemCard({
-                name: path.displayName,
-                id: path.src,
-                primaryButtonNode: SynthesisIcons.DownloadLarge,
-                primaryOnClick: () => {
-                    console.log(`Selecting remote: ${path}`)
-                    selectRemote(path, MiraType.FIELD)
-                },
-            })
-        )
+        return remoteFields
+            ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
+            .map(path =>
+                ItemCard({
+                    name: path.displayName,
+                    id: path.src,
+                    primaryButtonNode: SynthesisIcons.DownloadLarge,
+                    primaryOnClick: () => {
+                        console.log(`Selecting remote: ${path}`)
+                        selectRemote(path, MiraType.FIELD)
+                    },
+                })
+            )
     }, [manifest?.fields, cachedFields, selectRemote])
 
     // Generate Item cards for APS robots and fields.
     const hubElements = useMemo(
         () =>
-            files?.map(file =>
-                ItemCard({
-                    name: file.attributes.displayName!,
-                    id: file.id,
-                    primaryButtonNode: SynthesisIcons.DownloadLarge,
-                    primaryOnClick: () => {
-                        console.debug(file.raw)
-                        selectAPS(file, viewType)
-                    },
-                })
-            ),
+            files
+                ?.sort((a, b) => a.attributes.displayName!.localeCompare(b.attributes.displayName!))
+                .map(file =>
+                    ItemCard({
+                        name: `${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber != undefined ? ` (v${file.attributes.versionNumber})` : ""}`,
+                        id: file.id,
+                        primaryButtonNode: SynthesisIcons.DownloadLarge,
+                        primaryOnClick: () => {
+                            console.debug(file.raw)
+                            selectAPS(file, viewType)
+                        },
+                    })
+                ),
         [files, selectAPS, viewType]
     )
 

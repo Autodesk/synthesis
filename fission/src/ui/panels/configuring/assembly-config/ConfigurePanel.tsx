@@ -22,13 +22,15 @@ import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
 import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
+import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
+import SimulationInterface from "./interfaces/SimulationInterface"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
     assemblyObject: MirabufSceneObject
 
     constructor(name: string, assemblyObject: MirabufSceneObject) {
-        super(name)
+        super(assemblyObject.id.toString(), name)
         this.assemblyObject = assemblyObject
     }
 }
@@ -79,19 +81,23 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u])
 
+    const options = useMemo(() => {
+        return (configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly =>
+            makeSelectionOption(configurationType, assembly)
+        )
+    }, [configurationType, fields, robots])
+
     /** Robot or field select menu */
     return (
         <SelectMenu
-            options={(configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly =>
-                makeSelectionOption(configurationType, assembly)
-            )}
+            options={options}
             onOptionSelected={val => {
                 onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)
             }}
             defaultHeaderText={`Select a ${configurationType == ConfigurationType.ROBOT ? "Robot" : "Field"}`}
             onDelete={val => {
                 World.SceneRenderer.RemoveSceneObject((val as AssemblySelectionOption).assemblyObject.id)
-                onAssemblySelected(undefined)
+                // onAssemblySelected(undefined)
                 update()
             }}
             onAddClicked={() => {
@@ -109,33 +115,63 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     configMode: ConfigMode
 
     constructor(name: string, configMode: ConfigMode, tooltip?: string) {
-        super(name, tooltip)
+        super(name, name, tooltip)
         this.configMode = configMode
     }
 }
 
-const robotModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
-    [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
-    [ConfigMode.INTAKE, new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE)],
-    [ConfigMode.EJECTOR, new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR)],
-    [
-        ConfigMode.SUBSYSTEMS,
-        new ConfigModeSelectionOption(
-            "Configure Joints",
+function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigModeSelectionOption> {
+    const modes = new Map<ConfigMode, ConfigModeSelectionOption>([
+        [
+            ConfigMode.BRAIN,
+            new ConfigModeSelectionOption(
+                "Brain",
+                ConfigMode.BRAIN,
+                "Select and modify what is controlling of the robot."
+            ),
+        ],
+        [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
+        [ConfigMode.INTAKE, new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE)],
+        [ConfigMode.EJECTOR, new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR)],
+        [
             ConfigMode.SUBSYSTEMS,
-            "Set the velocities, torques, and accelerations of your robot's motors."
-        ),
-    ],
-    [
-        ConfigMode.SEQUENTIAL,
-        new ConfigModeSelectionOption(
-            "Sequence Joints",
+            new ConfigModeSelectionOption(
+                "Configure Joints",
+                ConfigMode.SUBSYSTEMS,
+                "Set the velocities, torques, and accelerations of your robot's motors."
+            ),
+        ],
+        [
             ConfigMode.SEQUENTIAL,
-            "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
-        ),
-    ],
-    [ConfigMode.CONTROLS, new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS)],
-])
+            new ConfigModeSelectionOption(
+                "Sequence Joints",
+                ConfigMode.SEQUENTIAL,
+                "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
+            ),
+        ],
+    ])
+
+    switch (assembly.brain?.brainType) {
+        case "wpilib":
+            modes.set(
+                ConfigMode.SIM,
+                new ConfigModeSelectionOption(
+                    "Simulation",
+                    ConfigMode.SIM,
+                    "Configure the WPILib simulation settings for this robot."
+                )
+            )
+            break
+        case "synthesis":
+            modes.set(ConfigMode.CONTROLS, new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS))
+            break
+        default:
+            break
+    }
+
+    return modes
+}
+
 const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
     [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
     [ConfigMode.SCORING_ZONES, new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)],
@@ -145,13 +181,18 @@ interface ConfigModeSelectionProps {
     configurationType: ConfigurationType
     onModeSelected: (mode: ConfigMode | undefined) => void
     selectedMode?: ConfigMode
+    assembly: MirabufSceneObject
 }
 
 const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({
     configurationType,
     onModeSelected,
     selectedMode,
+    assembly,
 }) => {
+    // Not sure about leaving this outside of a hook
+    const robotModes = getRobotModes(assembly)
+
     return (
         <SelectMenu
             options={configurationType == ConfigurationType.ROBOT ? [...robotModes.values()] : [...fieldModes.values()]}
@@ -227,6 +268,12 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                 />
             )
         }
+        case ConfigMode.SIM: {
+            return <SimulationInterface selectedAssembly={assembly} />
+        }
+        case ConfigMode.BRAIN: {
+            return <BrainSelectionInterface selectedAssembly={assembly} />
+        }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -241,8 +288,8 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     useEffect(() => {
         const settings = popConfigurePanelSettings()
         if (settings) {
-            setConfigMode(settings.configMode)
             setSelectedAssembly(settings.selectedAssembly)
+            if (settings.selectedAssembly) setConfigMode(settings.configMode)
         }
 
         closePanel("choose-scheme")
@@ -311,6 +358,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     setConfigMode(mode)
                                 }}
                                 selectedMode={configMode}
+                                assembly={selectedAssembly}
                             />
                         )}
                         {/** The interface for the selected configuration mode */}

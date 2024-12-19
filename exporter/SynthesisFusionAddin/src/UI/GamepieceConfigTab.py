@@ -199,8 +199,7 @@ class GamepieceConfigTab:
     def getGamepieces(self) -> list[Gamepiece]:
         gamepieces: list[Gamepiece] = []
         for row in range(1, self.gamepieceTable.rowCount):  # Row is 1 indexed
-            occ = self.selectedGamepieceList[row - 1]
-            gamepieceEntityToken = guid_occurrence(occ)
+            gamepieceEntityToken = guid_occurrence(self.selectedGamepieceList[row - 1])
             gamepieceWeight = convertMassUnitsTo(self.gamepieceTable.getInputAtPosition(row, 1).value)
             gamepieceFrictionCoefficient = self.gamepieceTable.getInputAtPosition(row, 2).valueOne
             gamepieces.append(Gamepiece(gamepieceEntityToken, gamepieceWeight, gamepieceFrictionCoefficient))

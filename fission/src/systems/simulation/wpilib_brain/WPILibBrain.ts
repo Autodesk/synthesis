@@ -1,4 +1,3 @@
-import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 
 import Lazy from "@/util/Lazy.ts"
@@ -9,6 +8,12 @@ import World from "@/systems/World"
 import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
 import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
 import { Random } from "@/util/Random"
+import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
+import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
+import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -26,6 +31,8 @@ const CANMOTOR_BUS_VOLTAGE = ">busVoltage"
 const CANENCODER_POSITION = ">position"
 const CANENCODER_VELOCITY = ">velocity"
 
+export let isConnected: boolean = false
+
 export enum SimType {
     PWM = "PWM",
     SimDevice = "SimDevice",
@@ -37,6 +44,7 @@ export enum SimType {
     DIO = "DIO",
     AI = "AI",
     AO = "AO",
+    DriverStation = "DriverStation",
 }
 
 enum FieldType {
@@ -44,6 +52,42 @@ enum FieldType {
     Write = 1,
     Both = 2,
     Unknown = -1,
+}
+
+export enum RobotSimMode {
+    Disabled = 0,
+    Teleop = 1,
+    Auto = 2,
+}
+
+export type AllianceStation = "red1" | "red2" | "red3" | "blue1" | "blue2" | "blue3"
+
+export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
+    [SimType.PWM]: NoraTypes.Number,
+    [SimType.SimDevice]: undefined,
+    [SimType.CANMotor]: NoraTypes.Number,
+    [SimType.Solenoid]: NoraTypes.Number,
+    [SimType.CANEncoder]: undefined,
+    [SimType.Gyro]: undefined,
+    [SimType.Accel]: undefined,
+    [SimType.DIO]: NoraTypes.Number, // ?
+    [SimType.AI]: undefined,
+    [SimType.AO]: NoraTypes.Number,
+    [SimType.DriverStation]: undefined,
+}
+
+export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
+    [SimType.PWM]: undefined,
+    [SimType.SimDevice]: undefined,
+    [SimType.CANMotor]: undefined,
+    [SimType.Solenoid]: undefined,
+    [SimType.CANEncoder]: NoraTypes.Number2,
+    [SimType.Gyro]: NoraTypes.Number3, // Wrong but its fine
+    [SimType.Accel]: NoraTypes.Number3,
+    [SimType.DIO]: NoraTypes.Number, // ?
+    [SimType.AI]: NoraTypes.Number,
+    [SimType.AO]: undefined,
+    [SimType.DriverStation]: undefined,
 }
 
 function GetFieldType(field: string): FieldType {
@@ -64,7 +108,31 @@ function GetFieldType(field: string): FieldType {
 type DeviceName = string
 type DeviceData = Map<string, number | boolean | string>
 
-export const simMap = new Map<SimType, Map<DeviceName, DeviceData>>()
+type SimMap = Map<SimType, Map<DeviceName, DeviceData>>
+export const simMaps = new Map<string, SimMap>()
+
+let simBrain: WPILibBrain | undefined
+export function setSimBrain(brain: WPILibBrain | undefined) {
+    if (brain && !simMaps.has(brain.assemblyName)) {
+        simMaps.set(brain.assemblyName, new Map())
+    }
+    if (simBrain) worker.getValue().postMessage({ command: "disable" })
+    simBrain = brain
+    if (simBrain)
+        worker.getValue().postMessage({
+            command: "enable",
+            reconnect: PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect"),
+        })
+}
+
+export function hasSimBrain() {
+    return simBrain != undefined
+}
+
+export function getSimMap(): SimMap | undefined {
+    if (!simBrain) return undefined
+    return simMaps.get(simBrain.assemblyName)
+}
 
 export class SimGeneric {
     private constructor() {}
@@ -78,41 +146,46 @@ export class SimGeneric {
             return undefined
         }
 
-        const map = simMap.get(simType)
+        const map = getSimMap()?.get(simType)
         if (!map) {
-            console.warn(`No '${simType}' devices found`)
+            // console.warn(`No '${simType}' devices found`)
             return undefined
         }
 
         const data = map.get(device)
         if (!data) {
-            console.warn(`No '${simType}' device '${device}' found`)
+            // console.warn(`No '${simType}' device '${device}' found`)
             return undefined
         }
 
         return (data.get(field) as T | undefined) ?? defaultValue
     }
 
-    public static Set<T extends number | boolean>(simType: SimType, device: string, field: string, value: T): boolean {
+    public static Set<T extends number | boolean | string>(
+        simType: SimType,
+        device: string,
+        field: string,
+        value: T
+    ): boolean {
         const fieldType = GetFieldType(field)
         if (fieldType != FieldType.Write && fieldType != FieldType.Both) {
             console.warn(`Field '${field}' is not a write or both field type`)
             return false
         }
 
-        const map = simMap.get(simType)
+        const map = getSimMap()?.get(simType)
         if (!map) {
-            console.warn(`No '${simType}' devices found`)
+            // console.warn(`No '${simType}' devices found`)
             return false
         }
 
         const data = map.get(device)
         if (!data) {
-            console.warn(`No '${simType}' device '${device}' found`)
+            // console.warn(`No '${simType}' device '${device}' found`)
             return false
         }
 
-        const selectedData: { [key: string]: number | boolean } = {}
+        const selectedData: { [key: string]: number | boolean | string } = {}
         selectedData[field] = value
         data.set(field, value)
 
@@ -130,6 +203,27 @@ export class SimGeneric {
     }
 }
 
+export class SimDriverStation {
+    private constructor() {}
+
+    public static SetMatchTime(time: number) {
+        SimGeneric.Set<number>(SimType.DriverStation, "", ">match_time", time)
+    }
+
+    public static SetGameData(gameData: string) {
+        SimGeneric.Set<string>(SimType.DriverStation, "", ">match_time", gameData)
+    }
+
+    public static SetMode(mode: RobotSimMode) {
+        SimGeneric.Set<boolean>(SimType.DriverStation, "", ">enabled", mode != RobotSimMode.Disabled)
+        SimGeneric.Set<boolean>(SimType.DriverStation, "", ">autonomous", mode == RobotSimMode.Auto)
+    }
+
+    public static SetStation(station: AllianceStation) {
+        SimGeneric.Set<string>(SimType.DriverStation, "", ">station", station)
+    }
+}
+
 export class SimPWM {
     private constructor() {}
 
@@ -140,6 +234,13 @@ export class SimPWM {
     public static GetPosition(device: string): number | undefined {
         return SimGeneric.Get(SimType.PWM, device, PWM_POSITION, 0.0)
     }
+
+    public static GenSupplier(device: string): SimSupplier {
+        return {
+            getSupplierType: () => supplierTypeMap[SimType.PWM]!,
+            getSupplierValue: () => SimPWM.GetSpeed(device) ?? 0,
+        }
+    }
 }
 
 export class SimCAN {
@@ -147,7 +248,9 @@ export class SimCAN {
 
     public static GetDeviceWithID(id: number, type: SimType): DeviceData | undefined {
         const id_exp = /SYN.*\[(\d+)\]/g
-        const entries = [...simMap.entries()].filter(([simType, _data]) => simType == type)
+        const map = getSimMap()
+        if (!map) return undefined
+        const entries = [...map.entries()].filter(([simType, _data]) => simType == type)
         for (const [_simType, data] of entries) {
             for (const key of data.keys()) {
                 const result = [...key.matchAll(id_exp)]
@@ -187,6 +290,13 @@ export class SimCANMotor {
     public static SetBusVoltage(device: string, voltage: number): boolean {
         return SimGeneric.Set(SimType.CANMotor, device, CANMOTOR_BUS_VOLTAGE, voltage)
     }
+
+    public static GenSupplier(device: string): SimSupplier {
+        return {
+            getSupplierType: () => supplierTypeMap[SimType.CANMotor]!,
+            getSupplierValue: () => SimCANMotor.GetPercentOutput(device) ?? 0,
+        }
+    }
 }
 export class SimCANEncoder {
     private constructor() {}
@@ -197,6 +307,16 @@ export class SimCANEncoder {
 
     public static SetPosition(device: string, position: number): boolean {
         return SimGeneric.Set(SimType.CANEncoder, device, CANENCODER_POSITION, position)
+    }
+
+    public static GenReceiver(device: string): SimReceiver {
+        return {
+            getReceiverType: () => receiverTypeMap[SimType.CANEncoder]!,
+            setReceiverValue: ([count, rate]: NoraNumber2) => {
+                SimCANEncoder.SetPosition(device, count)
+                SimCANEncoder.SetVelocity(device, rate)
+            },
+        }
     }
 }
 
@@ -242,6 +362,17 @@ export class SimAccel {
     public static SetZ(device: string, accel: number): boolean {
         return SimGeneric.Set(SimType.Accel, device, ">z", accel)
     }
+
+    public static GenReceiver(device: string): SimReceiver {
+        return {
+            getReceiverType: () => receiverTypeMap[SimType.Accel]!,
+            setReceiverValue: ([x, y, z]: NoraNumber3) => {
+                SimAccel.SetX(device, x)
+                SimAccel.SetY(device, y)
+                SimAccel.SetZ(device, z)
+            },
+        }
+    }
 }
 
 export class SimDIO {
@@ -253,6 +384,22 @@ export class SimDIO {
 
     public static GetValue(device: string): boolean {
         return SimGeneric.Get(SimType.DIO, device, "<>value", false)
+    }
+
+    public static GenReceiver(device: string): SimReceiver {
+        return {
+            getReceiverType: () => receiverTypeMap[SimType.DIO]!,
+            setReceiverValue: (a: NoraNumber) => {
+                SimDIO.SetValue(device, a > 0.5)
+            },
+        }
+    }
+
+    public static GenSupplier(device: string): SimSupplier {
+        return {
+            getSupplierType: () => receiverTypeMap[SimType.DIO]!,
+            getSupplierValue: () => (SimDIO.GetValue(device) ? 1 : 0),
+        }
     }
 }
 
@@ -330,6 +477,21 @@ type WSMessage = {
 worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     let data: WSMessage | undefined
 
+    if (eventData.data.status) {
+        switch (eventData.data.status) {
+            case "open":
+                isConnected = true
+                break
+            case "close":
+            case "error":
+                isConnected = false
+                break
+            default:
+                return
+        }
+        return
+    }
+
     if (typeof eventData.data == "object") {
         data = eventData.data
     } else {
@@ -347,6 +509,8 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
 })
 
 function UpdateSimMap(type: SimType, device: string, updateData: DeviceData) {
+    const simMap = getSimMap()
+    if (!simMap) return
     let typeMap = simMap.get(type)
     if (!typeMap) {
         typeMap = new Map<string, DeviceData>()
@@ -366,26 +530,42 @@ function UpdateSimMap(type: SimType, device: string, updateData: DeviceData) {
 
 class WPILibBrain extends Brain {
     private _simLayer: SimulationLayer
+    private _assembly: MirabufSceneObject
 
     private _simOutputs: SimOutput[] = []
     private _simInputs: SimInput[] = []
+    private _simFlows: SimFlow[] = []
 
-    constructor(mechanism: Mechanism) {
-        super(mechanism)
+    public get assemblyName() {
+        return this._assembly.assemblyName
+    }
 
-        this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
+    constructor(assembly: MirabufSceneObject) {
+        super(assembly.mechanism, "wpilib")
+
+        this._assembly = assembly
+
+        this._simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
 
         if (!this._simLayer) {
             console.warn("SimulationLayer is undefined")
             return
         }
 
-        this.addSimInput(new SimGyroInput("Test Gyro[1]", mechanism))
-        this.addSimInput(new SimAccelInput("ADXL362[4]", mechanism))
+        this.addSimInput(new SimGyroInput("Test Gyro[1]", this._mechanism))
+        this.addSimInput(new SimAccelInput("ADXL362[4]", this._mechanism))
         this.addSimInput(new SimDigitalInput("SYN DI[0]", () => Random() > 0.5))
         this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
         this.addSimInput(new SimAnalogInput("SYN AI[0]", () => Random() * 12))
         this.addSimOutput(new SimAnalogOutput("SYN AO[1]"))
+
+        this.loadSimConfig()
+
+        World.SceneRenderer.sceneObjects.forEach(v => {
+            if (v instanceof MirabufSceneObject && v.brain?.brainType == "wpilib") {
+                v.brain = new SynthesisBrain(v, v.assemblyName)
+            }
+        })
     }
 
     public addSimOutput(device: SimOutput) {
@@ -396,17 +576,55 @@ class WPILibBrain extends Brain {
         this._simInputs.push(input)
     }
 
+    public addSimFlow(flow: SimFlow): boolean {
+        if (validate(flow.supplier, flow.receiver)) {
+            this._simFlows.push(flow)
+            return true
+        }
+        return false
+    }
+
+    public loadSimConfig(): boolean {
+        this._simFlows = []
+        const configData = this._assembly.simConfigData
+        if (!configData) return false
+
+        const flows = SimConfig.Compile(configData, this._assembly)
+        if (!flows) {
+            console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
+            return false
+        }
+
+        let counter = 0
+        flows.forEach(x => {
+            if (!this.addSimFlow(x)) {
+                console.debug("Failed to validate flow, skipping...")
+            } else {
+                counter++
+            }
+        })
+        console.debug(`${counter} Flows added!`)
+        return true
+    }
+
     public Update(deltaT: number): void {
         this._simOutputs.forEach(d => d.Update(deltaT))
         this._simInputs.forEach(i => i.Update(deltaT))
+        this._simFlows.forEach(({ supplier, receiver }) => {
+            receiver.setReceiverValue(supplier.getSupplierValue())
+        })
     }
 
     public Enable(): void {
-        worker.getValue().postMessage({ command: "connect" })
+        setSimBrain(this)
+        // worker.getValue().postMessage({ command: "enable", reconnect: RECONNECT })
     }
 
     public Disable(): void {
-        worker.getValue().postMessage({ command: "disconnect" })
+        if (simBrain == this) {
+            setSimBrain(undefined)
+        }
+        // worker.getValue().postMessage({ command: "disable" })
     }
 }
 

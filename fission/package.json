@@ -30,6 +30,7 @@
     "@react-three/fiber": "^8.15.15",
     "@vitest/browser": "^1.6.0",
     "@vitest/coverage-v8": "^1.6.0",
+    "@xyflow/react": "^12.3.2",
     "async-mutex": "^0.5.0",
     "colord": "^2.9.3",
     "framer-motion": "^10.13.1",

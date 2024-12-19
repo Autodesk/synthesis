@@ -1,6 +1,8 @@
 import Jolt from "@barclah/jolt-physics"
 import EncoderStimulus from "./EncoderStimulus"
 import { mirabuf } from "@/proto/mirabuf"
+import { StimulusID } from "./Stimulus"
+import { NoraTypes, NoraNumber2 } from "../Nora"
 
 class HingeStimulus extends EncoderStimulus {
     private _accum: boolean = false
@@ -26,8 +28,8 @@ class HingeStimulus extends EncoderStimulus {
         this._accum = shouldAccum
     }
 
-    public constructor(hinge: Jolt.HingeConstraint, info?: mirabuf.IInfo) {
-        super(info)
+    public constructor(id: StimulusID, hinge: Jolt.HingeConstraint, info?: mirabuf.IInfo) {
+        super(id, info)
 
         this._hinge = hinge
     }
@@ -40,6 +42,16 @@ class HingeStimulus extends EncoderStimulus {
 
     public resetAccum() {
         this._hingeAngleAccum = 0.0
+    }
+
+    public getSupplierType(): NoraTypes {
+        return NoraTypes.Number2
+    }
+    public getSupplierValue(): NoraNumber2 {
+        return [this.positionValue, this.velocityValue]
+    }
+    public DisplayName(): string {
+        return `${this.info?.name ?? "-"} [Encoder]`
     }
 }
 

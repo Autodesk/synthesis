@@ -1,4 +1,3 @@
-import Mechanism from "@/systems/physics/Mechanism"
 import Brain from "../Brain"
 import Behavior from "../behavior/Behavior"
 import World from "@/systems/World"
@@ -18,6 +17,9 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DefaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import InputSystem from "@/systems/input/InputSystem"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import IntakeDriver from "../driver/IntakeDriver"
+import EjectorDriver from "../driver/EjectorDriver"
+import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -26,6 +28,7 @@ class SynthesisBrain extends Brain {
     private _simLayer: SimulationLayer
     private _assemblyName: string
     private _brainIndex: number
+    private _assembly: MirabufSceneObject
 
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
@@ -58,10 +61,11 @@ class SynthesisBrain extends Brain {
      * @param mechanism The mechanism this brain will control.
      * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
      */
-    public constructor(mechanism: Mechanism, assemblyName: string) {
-        super(mechanism)
+    public constructor(assembly: MirabufSceneObject, assemblyName: string) {
+        super(assembly.mechanism, "synthesis")
 
-        this._simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)!
+        this._assembly = assembly
+        this._simLayer = World.SimulationSystem.GetSimulationLayer(assembly.mechanism)!
         this._assemblyName = assemblyName
 
         // I'm not fixing this right now, but this is going to become an issue...
@@ -74,10 +78,11 @@ class SynthesisBrain extends Brain {
         }
 
         // Only adds controls to mechanisms that are controllable (ignores fields)
-        if (mechanism.controllable) {
+        if (assembly.mechanism.controllable) {
             this.configureArcadeDriveBehavior()
             this.configureArmBehaviors()
             this.configureElevatorBehaviors()
+            this.configureGamepieceManipBehavior()
         } else {
             this.configureField()
         }
@@ -87,9 +92,13 @@ class SynthesisBrain extends Brain {
 
     public Update(deltaT: number): void {
         this._behaviors.forEach(b => b.Update(deltaT))
+
+        this._assembly.ejectorActive = InputSystem.getInput("eject", this._brainIndex) > 0.5
+        this._assembly.intakeActive = InputSystem.getInput("intake", this._brainIndex) > 0.5
     }
 
     public Disable(): void {
+        this.clearControls()
         this._behaviors = []
     }
 
@@ -214,6 +223,22 @@ class SynthesisBrain extends Brain {
             )
             this._currentJointIndex++
         }
+    }
+
+    private configureGamepieceManipBehavior() {
+        let intake: IntakeDriver | undefined = undefined
+        let ejector: EjectorDriver | undefined = undefined
+        this._simLayer.drivers.forEach(x => {
+            if (x instanceof IntakeDriver) {
+                intake = x
+            } else if (x instanceof EjectorDriver) {
+                ejector = x
+            }
+        })
+
+        if (!intake || !ejector) return
+
+        this._behaviors.push(new GamepieceManipBehavior(ejector, intake, this._brainIndex))
     }
 
     /** Gets field preferences and handles any field specific configuration. */
