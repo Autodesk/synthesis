@@ -3,9 +3,7 @@ import adsk.fusion
 
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
-from src.Parser.SynthesisParser.Utilities import (
-    guid_occurrence
-)
+from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.Types import Gamepiece, UnitSystem
 from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
