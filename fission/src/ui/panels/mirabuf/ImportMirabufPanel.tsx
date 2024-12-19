@@ -256,7 +256,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Generate Item cards for cached robots.
     const cachedRobotElements = useMemo(
         () =>
-            cachedRobots.map(info =>
+            cachedRobots.sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1).map(info =>
                 ItemCard({
                     name: info.name || info.cacheKey || "Unnamed Robot",
                     id: info.id,
@@ -279,7 +279,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Generate Item cards for cached fields.
     const cachedFieldElements = useMemo(
         () =>
-            cachedFields.map(info =>
+            cachedFields.sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1).map(info =>
                 ItemCard({
                     name: info.name || info.cacheKey || "Unnamed Field",
                     id: info.id,
@@ -304,7 +304,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const remoteRobots = manifest?.robots.filter(
             path => !cachedRobots.some(info => info.cacheKey.includes(path.src))
         )
-        return remoteRobots?.map(path =>
+        return remoteRobots?.sort((a, b) => a.displayName.localeCompare(b.displayName)).map(path =>
             ItemCard({
                 name: path.displayName,
                 id: path.src,
@@ -322,7 +322,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const remoteFields = manifest?.fields.filter(
             path => !cachedFields.some(info => info.cacheKey.includes(path.src))
         )
-        return remoteFields?.map(path =>
+        return remoteFields?.sort((a, b) => a.displayName.localeCompare(b.displayName)).map(path =>
             ItemCard({
                 name: path.displayName,
                 id: path.src,
@@ -338,9 +338,9 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Generate Item cards for APS robots and fields.
     const hubElements = useMemo(
         () =>
-            files?.map(file =>
+            files?.sort((a, b) => a.attributes.displayName!.localeCompare(b.attributes.displayName!)).map(file =>
                 ItemCard({
-                    name: file.attributes.displayName!,
+                    name: `${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber != undefined ? ` (v${file.attributes.versionNumber})` : ''}`,
                     id: file.id,
                     primaryButtonNode: SynthesisIcons.DownloadLarge,
                     primaryOnClick: () => {
