@@ -58,6 +58,9 @@ const TIMESTEP_ADJUSTMENT = 0.0001
 
 const SIGNIFICANT_FRICTION_THRESHOLD = 0.05
 
+const MAX_ROBOT_MASS = 250.0
+const MAX_GP_MASS = 10.0
+
 let lastDeltaT = STANDARD_SIMULATION_PERIOD
 export function GetLastDeltaT(): number {
     return lastDeltaT
@@ -311,6 +314,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
+        console.debug(parser.assembly)
         const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
         const bodyMap = this.CreateBodiesFromParser(parser, layer)
         const rootBody = parser.rootNode
@@ -385,8 +389,8 @@ class PhysicsSystem extends WorldSystem {
                 case mirabuf.joint.JointMotion.REVOLUTE:
                     if (this.IsWheel(jDef)) {
                         const preferences = PreferencesSystem.getRobotPreferences(parser.assembly.info?.name ?? "")
-                        maxVel = preferences.driveVelocity ?? maxVel
-                        maxForce = preferences.driveAcceleration ?? maxForce
+                        if (preferences.driveVelocity > 0) maxVel = preferences.driveVelocity
+                        if (preferences.driveAcceleration > 0) maxForce = preferences.driveAcceleration
 
                         const [bodyOne, bodyTwo] = parser.directedGraph.GetAdjacencyList(rnA.id).length
                             ? [bodyA, bodyB]
@@ -640,6 +644,15 @@ class PhysicsSystem extends WorldSystem {
         const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint)
         this._joltPhysSystem.AddStepListener(listener)
 
+        // const callbacks = new JOLT.VehicleConstraintCallbacksJS()
+        // callbacks.GetCombinedFriction = (_wheelIndex, _tireFrictionDirection, tireFriction, _body2Ptr, _subShapeID2) => {
+        //     return tireFriction
+        // }
+        // callbacks.OnPreStepCallback = (_vehicle, _stepContext) => { };
+        // callbacks.OnPostCollideCallback = (_vehicle, _stepContext) => { };
+        // callbacks.OnPostStepCallback = (_vehicle, _stepContext) => { };
+        // callbacks.SetVehicleConstraint(vehicleConstraint)
+
         this._joltPhysSystem.AddConstraint(vehicleConstraint)
         this._joltPhysSystem.AddConstraint(fixedConstraint)
 
@@ -668,7 +681,18 @@ class PhysicsSystem extends WorldSystem {
 
         const reservedLayer: number | undefined = layerReserve?.layer
 
-        filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly).forEach(rn => {
+        const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
+        
+        const massMod = (() => {
+            let assemblyMass = 0
+            nonPhysicsNodes.forEach(x => assemblyMass += x.mass)
+            
+            return (parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS) ? MAX_ROBOT_MASS / assemblyMass : 1
+        })()
+
+        console.debug(`Mod: ${massMod}`)
+
+        nonPhysicsNodes.forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
             let shapesAdded = 0
 
@@ -725,27 +749,36 @@ class PhysicsSystem extends WorldSystem {
                         partInstance.physicalMaterial ?? DEFAULT_PHYSICAL_MATERIAL_KEY
                     ]
 
-                let frictionOverride: number | undefined =
-                    partDefinition?.frictionOverride == null ? undefined : partDefinition?.frictionOverride
-                if ((partDefinition?.frictionOverride ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD) {
-                    frictionOverride = undefined
-                }
+                if (physicalMaterial) {
+                    let frictionOverride: number | undefined =
+                        partDefinition?.frictionOverride == null ? undefined : partDefinition?.frictionOverride
+                    if ((partDefinition?.frictionOverride ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD) {
+                        frictionOverride = undefined
+                    }
 
-                if (
-                    (physicalMaterial.dynamicFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD ||
-                    (physicalMaterial.staticFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD
-                ) {
-                    physicalMaterial.dynamicFriction = DEFAULT_FRICTION
-                    physicalMaterial.staticFriction = DEFAULT_FRICTION
-                }
+                    if (
+                        (physicalMaterial.dynamicFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD ||
+                        (physicalMaterial.staticFriction ?? 0.0) < SIGNIFICANT_FRICTION_THRESHOLD
+                    ) {
+                        physicalMaterial.dynamicFriction = DEFAULT_FRICTION
+                        physicalMaterial.staticFriction = DEFAULT_FRICTION
+                    }
 
-                // TODO: Consider using roughness as dynamic friction.
-                const frictionPairing: FrictionPairing = {
-                    dynamic: frictionOverride ?? physicalMaterial.dynamicFriction!,
-                    static: frictionOverride ?? physicalMaterial.staticFriction!,
-                    weight: partDefinition.physicalData?.area ?? 1.0,
+                    // TODO: Consider using roughness as dynamic friction.
+                    const frictionPairing: FrictionPairing = {
+                        dynamic: frictionOverride ?? physicalMaterial.dynamicFriction!,
+                        static: frictionOverride ?? physicalMaterial.staticFriction!,
+                        weight: partDefinition.physicalData?.area ?? 1.0,
+                    }
+                    frictionAccum.push(frictionPairing)
+                } else {
+                    const frictionPairing: FrictionPairing = {
+                        dynamic: DEFAULT_FRICTION,
+                        static: DEFAULT_FRICTION,
+                        weight: partDefinition.physicalData?.area ?? 1.0,
+                    }
+                    frictionAccum.push(frictionPairing)
                 }
-                frictionAccum.push(frictionPairing)
 
                 if (!partDefinition.physicalData?.com || !partDefinition.physicalData.mass) return
 
@@ -769,7 +802,15 @@ class PhysicsSystem extends WorldSystem {
 
                 const shape = shapeResult.Get()
 
-                if (rn.isDynamic) shape.GetMassProperties().mMass = !totalMass ? 1 : totalMass
+                if (rn.isDynamic) {
+                    if (rn.isGamePiece) {
+                        const mass = totalMass == 0.0 ? 1 : Math.min(totalMass, MAX_GP_MASS)
+                        console.debug(`What ${mass}`)
+                        shape.GetMassProperties().mMass = mass
+                    } else {
+                        shape.GetMassProperties().mMass = totalMass == 0.0 ? 1 : totalMass * massMod
+                    }
+                }
 
                 const bodySettings = new JOLT.BodyCreationSettings(
                     shape,

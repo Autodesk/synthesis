@@ -121,6 +121,18 @@ class MirabufParser {
         const rootNodeId = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)?.id ?? this._rigidNodes[0].id
         this._rootNode = rootNodeId
 
+        // 8. Retrieve Masses
+        this._rigidNodes.forEach(rn => {
+            rn.mass = 0
+            rn.parts.forEach(part => {
+                const inst = assembly.data?.parts?.partInstances?.[part]
+                if (!inst?.partDefinitionReference)
+                    return
+                const def = assembly.data?.parts?.partDefinitions?.[inst.partDefinitionReference!]
+                rn.mass += def?.massOverride ? def.massOverride : (def?.physicalData?.mass ?? 0)
+            })
+        })
+
         this._directedGraph = this.GenerateRigidNodeGraph(assembly, rootNodeId)
 
         if (!this.assembly.data?.parts?.partDefinitions) {
@@ -398,11 +410,13 @@ class RigidNode {
     public parts: Set<string> = new Set()
     public isDynamic: boolean
     public isGamePiece: boolean
+    public mass: number
 
-    public constructor(id: RigidNodeId, isDynamic?: boolean, isGamePiece?: boolean) {
+    public constructor(id: RigidNodeId, isDynamic?: boolean, isGamePiece?: boolean, mass?: number) {
         this.id = id
         this.isDynamic = isDynamic ?? true
         this.isGamePiece = isGamePiece ?? false
+        this.mass = mass ?? 0
     }
 }
 
@@ -423,6 +437,10 @@ export class RigidNodeReadOnly {
 
     public get isGamePiece(): boolean {
         return this._original.isGamePiece
+    }
+
+    public get mass(): number {
+        return this._original.mass
     }
 
     public constructor(original: RigidNode) {
