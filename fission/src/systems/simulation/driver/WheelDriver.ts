@@ -5,8 +5,8 @@ import { SimType } from "../wpilib_brain/WPILibBrain"
 import { mirabuf } from "@/proto/mirabuf"
 import { NoraNumber, NoraTypes } from "../Nora"
 
-const LATERIAL_FRICTION = 0.6
-const LONGITUDINAL_FRICTION = 0.8
+const LATERIAL_FRICTION = 1.0
+const LONGITUDINAL_FRICTION = 1.0
 
 class WheelDriver extends Driver {
     private _constraint: Jolt.VehicleConstraint
