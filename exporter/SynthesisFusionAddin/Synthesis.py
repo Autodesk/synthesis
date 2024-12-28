@@ -121,7 +121,7 @@ def register_ui() -> None:
         work_panel,
         lambda *_: True,  # TODO: Should be redone with various refactors.
         ShowAPSAuthCommand.ShowAPSAuthCommandCreatedHandler,
-        description=f"APS",
+        description=f"Login to your Autodesk account",
         command=True,
     )
 
@@ -132,7 +132,7 @@ def register_ui() -> None:
         work_panel,
         lambda *_: True,
         ShowWebsiteCommand.ShowWebsiteCommandCreatedHandler,
-        description=f"Website Test",
+        description=f"Open our tutorials page",
         command=True,
     )
     gm.elements.append(websiteButton)

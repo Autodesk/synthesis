@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { MainHUD_AddToast } from "@/ui/components/MainHUD"
+import { Global_AddToast } from "@/ui/components/GlobalUIControls"
 import APS from "./APS"
 import TaskStatus from "@/util/TaskStatus"
 import { Mutex } from "async-mutex"
@@ -140,9 +140,9 @@ export async function getHubs(): Promise<Hub[] | undefined> {
         console.log(auth)
         console.log(APS.userInfo)
         if (e instanceof APSDataError) {
-            MainHUD_AddToast("error", e.title, e.detail)
+            Global_AddToast?.("error", e.title, e.detail)
         } else if (e instanceof Error) {
-            MainHUD_AddToast("error", "Failed to get hubs.", e.message)
+            Global_AddToast?.("error", "Failed to get hubs.", e.message)
         }
         return undefined
     }
@@ -179,7 +179,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
     } catch (e) {
         console.error("Failed to get hubs")
         if (e instanceof Error) {
-            MainHUD_AddToast("error", "Failed to get hubs.", e.message)
+            Global_AddToast?.("error", "Failed to get hubs.", e.message)
         }
         return undefined
     }
@@ -224,7 +224,7 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
     } catch (e) {
         console.error("Failed to get folder data")
         if (e instanceof Error) {
-            MainHUD_AddToast("error", "Failed to get folder data.", e.message)
+            Global_AddToast?.("error", "Failed to get folder data.", e.message)
         }
         return undefined
     }
@@ -250,7 +250,7 @@ export async function searchFolder(project: Project, folder: Folder, filters?: F
         },
     })
     if (!res.ok) {
-        MainHUD_AddToast("error", "Error getting cloud files.", "Please sign in again.")
+        Global_AddToast?.("error", "Error getting cloud files.", "Please sign in again.")
         return []
     }
     const json = await res.json()

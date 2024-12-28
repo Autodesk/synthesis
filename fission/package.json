@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "init": "(bun run assetpack && bun run playwright:install) || (npm run assetpack && npm run playwright:install)",
+    "host": "vite --open --host",
     "dev": "vite --open",
     "build": "tsc && vite build",
     "build:prod": "tsc && vite build --base=/fission/ --outDir dist/prod",
@@ -15,7 +16,7 @@
     "lint:fix": "eslint . --ext ts,tsx --report-unused-disable-directives --fix",
     "prettier": "bun x prettier src --check || npx prettier src --check",
     "prettier:fix": "bun x prettier src --write || npx prettier src --write",
-    "format": "(bun run prettier:fix && bun run lint:fix) || (npm run prettier:fix && npm run lint:fix)",
+    "format": "bun run prettier:fix && bun run lint:fix || npm run prettier:fix && npm run lint:fix",
     "assetpack": "curl -o public/assetpack.zip https://synthesis.autodesk.com/Downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/",
     "playwright:install": "bun x playwright install || npx playwright install"
   },
@@ -29,6 +30,7 @@
     "@react-three/fiber": "^8.15.15",
     "@vitest/browser": "^1.6.0",
     "@vitest/coverage-v8": "^1.6.0",
+    "@xyflow/react": "^12.3.2",
     "async-mutex": "^0.5.0",
     "colord": "^2.9.3",
     "framer-motion": "^10.13.1",
@@ -56,6 +58,7 @@
     "@types/three": "^0.160.0",
     "@typescript-eslint/eslint-plugin": "^7.0.2",
     "@typescript-eslint/parser": "^7.0.2",
+    "@vitejs/plugin-basic-ssl": "^1.1.0",
     "@vitejs/plugin-react": "^4.0.3",
     "@vitejs/plugin-react-swc": "^3.5.0",
     "autoprefixer": "^10.4.14",

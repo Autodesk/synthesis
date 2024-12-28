@@ -28,8 +28,8 @@ class ArcadeDriveBehavior extends Behavior {
 
     // Sets the drivetrains target linear and rotational velocity
     private DriveSpeeds(driveInput: number, turnInput: number) {
-        const leftDirection = driveInput + turnInput
-        const rightDirection = driveInput - turnInput
+        const leftDirection = Math.min(1, Math.max(-1, driveInput + turnInput))
+        const rightDirection = Math.min(1, Math.max(-1, driveInput - turnInput))
 
         this.leftWheels.forEach(wheel => (wheel.accelerationDirection = leftDirection))
         this.rightWheels.forEach(wheel => (wheel.accelerationDirection = rightDirection))

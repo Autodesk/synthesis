@@ -19,7 +19,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     sequential?: SequentialBehaviorPreferences
 
     constructor(name: string, driver: Driver, sequential?: SequentialBehaviorPreferences) {
-        super(name)
+        super(name, name)
         this.driver = driver
         this.sequential = sequential
     }

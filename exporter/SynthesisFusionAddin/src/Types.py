@@ -109,7 +109,7 @@ def makeObjectFromJson(objType: type, data: Any) -> Any:
     assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
     for field in fields(obj):
         if field.name in data:
-            setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
+            setattr(obj, field.name, makeObjectFromJson(type(field.type), data[field.name]))
         else:
             setattr(obj, field.name, field.default_factory if field.default_factory is not MISSING else field.default)
 

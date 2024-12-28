@@ -301,7 +301,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
         if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
-            savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
+            savepath = FileDialogConfig.saveFileDialog(defaultPath="~/Documents/")
 
             if not savepath:
                 # save was canceled
