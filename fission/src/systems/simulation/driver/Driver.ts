@@ -21,7 +21,7 @@ export type DriverID = {
 
 export function makeDriverID(constraint: MechanismConstraint): DriverID {
     let driverType: DriverType = DriverType.Driv_Unknown
-    switch (constraint.constraint.GetSubType()) {
+    switch (constraint.primaryConstraint.GetSubType()) {
         case JOLT.EConstraintSubType_Hinge:
             driverType = DriverType.Driv_Hinge
             break

@@ -18,7 +18,7 @@ export type StimulusID = {
 
 export function makeStimulusID(constraint: MechanismConstraint): StimulusID {
     let stimulusType: StimulusType = StimulusType.Stim_Unknown
-    switch (constraint.constraint.GetSubType()) {
+    switch (constraint.primaryConstraint.GetSubType()) {
         case JOLT.EConstraintSubType_Hinge:
         case JOLT.EConstraintSubType_Slider:
         case JOLT.EConstraintSubType_Vehicle:

@@ -49,9 +49,7 @@ class Mechanism {
         return this.nodeToBody.get(nodeId)
     }
 
-    public DisablePhysics() {
-        
-    }
+    public DisablePhysics() {}
 }
 
 export default Mechanism

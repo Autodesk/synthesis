@@ -285,8 +285,6 @@ export function HasMirabufFiles(): boolean {
 }
 
 export async function RequestMirabufFiles() {
-    console.log("Request")
-
     if (mirabufFilesMutex.isLocked()) {
         return
     }
