@@ -119,6 +119,9 @@ class PhysicsSystem extends WorldSystem {
         this.SetUpContactListener(this._joltPhysSystem)
 
         this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0))
+        this._joltPhysSystem.GetPhysicsSettings().mDeterministicSimulation = false
+        this._joltPhysSystem.GetPhysicsSettings().mSpeculativeContactDistance = 0.06
+        this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
 
         const ground = this.CreateBox(
             new THREE.Vector3(5.0, 0.5, 5.0),
@@ -726,6 +729,7 @@ class PhysicsSystem extends WorldSystem {
                 const partShapeResult = rn.isDynamic
                     ? this.CreateConvexShapeSettingsFromPart(partDefinition)
                     : this.CreateConcaveShapeSettingsFromPart(partDefinition)
+                // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
                 if (!partShapeResult) return
 
@@ -899,7 +903,7 @@ class PhysicsSystem extends WorldSystem {
     ): [Jolt.ShapeSettings, Jolt.Vec3, Jolt.Vec3] | undefined {
         const settings = new JOLT.MeshShapeSettings()
 
-        settings.mMaxTrianglesPerLeaf = 8
+        settings.mMaxTrianglesPerLeaf = 4
 
         settings.mTriangleVertices = new JOLT.VertexList()
         settings.mIndexedTriangles = new JOLT.IndexedTriangleList()

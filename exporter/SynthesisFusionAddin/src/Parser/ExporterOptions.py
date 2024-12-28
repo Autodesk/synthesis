@@ -56,7 +56,7 @@ class ExporterOptions:
     openSynthesisUponExport: bool = field(default=False)
 
     hierarchy: ModelHierarchy = field(default=ModelHierarchy.FusionAssembly)
-    visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.NormalQualityTriangleMesh)
+    visualQuality: TriangleMeshQualityOptions = field(default=TriangleMeshQualityOptions.LowQualityTriangleMesh)
     physicalDepth: PhysicalDepth = field(default=PhysicalDepth.AllOccurrence)
     physicalCalculationLevel: CalculationAccuracy = field(default=CalculationAccuracy.LowCalculationAccuracy)
 
@@ -70,6 +70,7 @@ class ExporterOptions:
                 attrJsonData = makeObjectFromJson(type(field.type), json.loads(attribute.value))
                 setattr(self, field.name, attrJsonData)
 
+        self.visualQuality = TriangleMeshQualityOptions.LowQualityTriangleMesh
         return self
 
     @logFailure

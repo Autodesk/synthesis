@@ -34,7 +34,7 @@ import {
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 
-const DEBUG_BODIES = false
+const DEBUG_BODIES = true
 
 interface RnDebugMeshes {
     colliderMesh: THREE.Mesh
