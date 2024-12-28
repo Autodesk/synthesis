@@ -685,12 +685,12 @@ class PhysicsSystem extends WorldSystem {
         const reservedLayer: number | undefined = layerReserve?.layer
 
         const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
-        
+
         const massMod = (() => {
             let assemblyMass = 0
-            nonPhysicsNodes.forEach(x => assemblyMass += x.mass)
-            
-            return (parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS) ? MAX_ROBOT_MASS / assemblyMass : 1
+            nonPhysicsNodes.forEach(x => (assemblyMass += x.mass))
+
+            return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
         })()
 
         console.debug(`Mod: ${massMod}`)

@@ -126,10 +126,9 @@ class MirabufParser {
             rn.mass = 0
             rn.parts.forEach(part => {
                 const inst = assembly.data?.parts?.partInstances?.[part]
-                if (!inst?.partDefinitionReference)
-                    return
+                if (!inst?.partDefinitionReference) return
                 const def = assembly.data?.parts?.partDefinitions?.[inst.partDefinitionReference!]
-                rn.mass += def?.massOverride ? def.massOverride : (def?.physicalData?.mass ?? 0)
+                rn.mass += def?.massOverride ? def.massOverride : def?.physicalData?.mass ?? 0
             })
         })
 
