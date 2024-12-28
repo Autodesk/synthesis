@@ -340,7 +340,7 @@ def fillSliderJointMotion(sliderMotion: adsk.fusion.SliderJointMotion, proto_joi
     dof.value = sliderMotion.slideValue
 
 
-def fillBallJointMotion(ballMotion: adsk.fusion.BallJointMotion, proto_joint: joint_pb2.Joint):
+def fillBallJointMotion(ballMotion: adsk.fusion.BallJointMotion, proto_joint: joint_pb2.Joint) -> None:
     """#### Fill Protobuf ball joint motion data
 
     Args:
