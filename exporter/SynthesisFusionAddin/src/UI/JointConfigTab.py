@@ -12,6 +12,7 @@ from src.UI.CreateCommandInputsHelper import (
 
 from ..Parser.SynthesisParser.Joints import AcceptedJointTypes
 
+
 class JointConfigTab:
     selectedJointList: list[adsk.fusion.Joint] = []
     previousWheelCheckboxState: list[bool] = []

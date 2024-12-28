@@ -154,8 +154,6 @@ def populateJoints(
                 continue
 
 
-
-
 def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint) -> None:
     fill_info(joint_definition, joint)
 
@@ -341,6 +339,7 @@ def fillSliderJointMotion(sliderMotion: adsk.fusion.SliderJointMotion, proto_joi
 
     dof.value = sliderMotion.slideValue
 
+
 def fillBallJointMotion(ballMotion: adsk.fusion.BallJointMotion, proto_joint: joint_pb2.Joint):
     """#### Fill Protobuf ball joint motion data
 
@@ -407,7 +406,7 @@ def fillBallJointMotion(ballMotion: adsk.fusion.BallJointMotion, proto_joint: jo
 
     # rotationAxisVector = revoluteMotion.rotationAxisVector
     # if rotationAxisVector:
-    #     
+    #
     # else:
     #     rotationAxis = revoluteMotion.rotationAxis
     #     # don't handle 4 for now
@@ -416,6 +415,7 @@ def fillBallJointMotion(ballMotion: adsk.fusion.BallJointMotion, proto_joint: jo
     #     dof.axis.x = int(rotationAxis == 0)
     #     dof.axis.y = int(rotationAxis == 2)
     #     dof.axis.z = int(rotationAxis == 1)
+
 
 def notImplementedPlaceholder(*argv: Any) -> None: ...
 
