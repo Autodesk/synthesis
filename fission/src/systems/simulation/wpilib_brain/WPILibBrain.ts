@@ -290,7 +290,9 @@ export class SimCANMotor {
     private constructor() {}
 
     public static GetPercentOutput(device: string): number | undefined {
-        return SimDriverStation.IsEnabled() ? SimGeneric.Get(SimType.CANMotor, device, CANMOTOR_PERCENT_OUTPUT, 0.0) : 0.0
+        return SimDriverStation.IsEnabled()
+            ? SimGeneric.Get(SimType.CANMotor, device, CANMOTOR_PERCENT_OUTPUT, 0.0)
+            : 0.0
     }
 
     public static GetBrakeMode(device: string): number | undefined {
