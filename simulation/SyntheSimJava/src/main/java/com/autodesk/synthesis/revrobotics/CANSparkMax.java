@@ -30,7 +30,7 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
 
         this.m_motor = new CANMotor("SYN CANSparkMax", deviceId, 0.0, false, 0.3);
         this.m_encoder = new CANEncoder("SYN CANSparkMax", deviceId);
-        this.followers = new ArrayList();
+        this.followers = new ArrayList<CANSparkMax>();
     }
 
     /**
@@ -83,6 +83,10 @@ public class CANSparkMax extends com.revrobotics.CANSparkMax {
      */
     public com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder getAbsoluteEncoderSim() {
         return new SparkAbsoluteEncoder(super.getAbsoluteEncoder(), this.m_encoder);
+    }
+
+    public com.autodesk.synthesis.revrobotics.RelativeEncoder getEncoderSim() {
+        return new RelativeEncoder(super.getEncoder(), this.m_encoder);
     }
 
     /**

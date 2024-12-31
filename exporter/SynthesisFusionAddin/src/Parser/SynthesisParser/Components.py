@@ -188,7 +188,12 @@ def _ParseBRep(
 ) -> None:
     meshManager = body.meshManager
     calc = meshManager.createMeshCalculator()
-    calc.setQuality(options.visualQuality)
+    # Disabling for now. We need the user to be able to adjust this, otherwise it gets locked
+    # into whatever the default was at the time it first creates the export options.
+    # calc.setQuality(options.visualQuality)
+    calc.setQuality(adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh)
+    # calc.maxNormalDeviation = 3.14159 * (1.0 / 6.0)
+    # calc.surfaceTolerance = 0.5
     mesh = calc.calculate()
 
     fill_info(trimesh, body)

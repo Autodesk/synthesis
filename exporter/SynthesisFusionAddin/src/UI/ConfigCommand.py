@@ -141,7 +141,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 *gm.app.activeDocument.design.rootComponent.allAsBuiltJoints,
             ]:
                 if (
-                    joint.jointMotion.jointType in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value)
+                    joint.jointMotion.jointType
+                    in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value, JointMotions.BALL.value)
                     and not joint.isSuppressed
                 ):
                     jointConfigTab.addJoint(joint)
@@ -301,7 +302,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
         if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
-            savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
+            savepath = FileDialogConfig.saveFileDialog(defaultPath="~/Documents/")
 
             if not savepath:
                 # save was canceled

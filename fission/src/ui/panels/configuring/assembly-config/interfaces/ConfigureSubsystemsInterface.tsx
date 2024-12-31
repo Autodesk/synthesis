@@ -1,7 +1,7 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import React, { useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import World from "@/systems/World"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import HingeDriver from "@/systems/simulation/driver/HingeDriver"
@@ -19,7 +19,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     sequential?: SequentialBehaviorPreferences
 
     constructor(name: string, driver: Driver, sequential?: SequentialBehaviorPreferences) {
-        super(name)
+        super(name, name)
         this.driver = driver
         this.sequential = sequential
     }
@@ -55,7 +55,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
                 .map(b => DefaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
-        []
+        [selectedRobot.assemblyName, selectedRobot.brain]
     )
 
     const drivers = useMemo(() => {
