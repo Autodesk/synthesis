@@ -64,21 +64,20 @@ All of these instructions can be found in the [SyntheSim README](https://github.
 
 SyntheSim is very much a work in progress. If there is a particular device that isn't compatible, feel free to head to our [GitHub](https://github.com/Autodesk/synthesis) to see about contributing.
 
-### 4. HALSim GUI (Optional)
+### 4. HALSim GUI
 
-To add controller/joystick support for your robot code, you'll need to use the HALSim GUI extension. Enable by adding the following to `build.gradle`:
+This should be added by default, but in case it isn't, add this to your `build.gradle` to enable the SimGUI extension by default.
 
 ```java
 wpi.sim.addGui().defaultEnabled = true
 ```
 
-It's very likely that this is already enabled.
+This will allow you to change the state of the robot, as well as hook up any joysticks you'd like to use during teleop. You must use this GUI in order
+to bring your robot out of disconnected mode, otherwise we won't be able to change the state of your robot from within the app.
 
-## Setup (Synthesis Web-app Side)
+### 5. Start your code
 
-**WARNING**: Our web-app's UI for configuring the robot is very much a work in progress and only available in the debug tools.
-
-First, you'll want to start the simulation of your robot code. This can be done with the following command:
+To start your robot code, you can use the following simulate commands with gradle:
 
 ```bash
 $ ./gradlew simulateJava
@@ -90,33 +89,53 @@ or for C++:
 $ ./gradlew simulateNative
 ```
 
-### Enabling WebSockets
+WPILib also has a command from within VSCode you can use the start your robot code:
 
-![debug tools panel](img/code-sim/debug-tools.png)
+![image_caption](img/code-sim/wpilib-ext-simulate.png)
 
-Inside the debug tools panel, configure the robot in the scene to use web socket control by pressing the "WS Test" button.
+## Setup (Synthesis Web-app Side)
 
-You can use the "WS Viewer" to view the raw signals we are receiving from your robot code.
+Once started, make sure in the SimGUI that your robot state is set to "Disabled", **not** "Disconnected".
 
-### Configuring your IO Map
+### Spawning in a Robot
 
-Next, press the "RoboRIO" button. This will open the RoboRIO Configuration panel, where you'll be able to map the signals from your robot code to Synthesis drivers and stimuli.
+Open up [Fission](https://synthesis.autodesk.com/fission/) and spawn in a robot. Once spawned in, place it down and open the config panel. This can be
+done by using the left-hand menu and navigating to your robot in the config panel, or by right-clicking on your robot and selecting the "Configure" option.
 
-#### Motorcontrollers
+Next, switch the brain currently controlling the robot. In order to give the simulation control over the robot, the brain must be switched from "Synthesis"
+to "WPILib". At the moment, only one robot can be controlled by the simulation at a time.
 
-Motorcontrollers can be configured with either PWM or CAN (if using SyntheSim). On the left it will populate with ports currently active from your robot code, and on the right it will populate with drivers that be controlled, along with a name at the top.
+In the top-right, there should be a connection status indicator. If your robot program was running prior to switching to the "WPILib" brain, it should connect
+quickly.
 
-![can configuration](img/code-sim/can-config.png)
+### Simulation Configuration
 
-#### Encoders
+Under your robot in the config panel, there should be a Simulation option now. Here you can find all the settings for the code simulation.
 
-You can select a given input device created by your robot code, and map it to a corresponding stimuli inside of Synthesis (ie. one of your wheels).
+![image_caption](img/code-sim/config-panel-simulation.png)
 
-![encoder configuration](img/code-sim/encoder-config.png)
+#### Auto Reconnect
 
-#### Digital IO, Analog IO, and Gyros
+You can enabled auto reconnect incase you are having issues with this. In order for it to take affect, you have to enable the setting, then switch back to the "Synthesis"
+brain and then back again to the "WPILib" brain. This setting will be saved.
 
-These are currently being developed. See [this pull-request](https://github.com/Autodesk/synthesis/pull/1103) for status updates regarding their support.
+#### Wiring Panel
+
+This panel can be used to "wire up" your robot. It will show you all the inputs and outputs available from both the simulation and robot. The handles (little circles with
+labels) are colored to indicate the type of data they represent. Hover over the information icons for more information.
+
+![image_caption](img/code-sim/wiring-panel.png)
+
+The bottom-left controls can be used to zoom in/out, fit your view to the nodes, and add junction nodes for connection many connections to many connections.
+
+#### Auto Testing
+
+The Auto Testing panel allows for iterative testing of an autonomous routine. I'd recommend making sure that the auto reconnect option is enabled.
+
+![image_caption](img/code-sim/auto-testing.png)
+
+You can specify a max time, alliance station, and game data. Once you've decided on those and have place the robot where you want, you can start your auto routine.
+After the specified amount of time, or when the stop button is pressed, the simulation will freeze and you can either reset to where you started, or close the panel.
 
 ## Need More Help?
 
