@@ -239,6 +239,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         this.UpdateMeshTransforms()
+
+        const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
+        cameraControls.focusProvider = this
     }
 
     public Update(): void {
