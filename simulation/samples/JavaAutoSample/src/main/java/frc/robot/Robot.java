@@ -18,7 +18,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.XboxController;
 
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
+import com.autodesk.synthesis.revrobotics.RelativeEncoder;
+import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
 import com.kauailabs.navx.frc.AHRS;
+import com.autodesk.synthesis.CANEncoder;
 import com.autodesk.synthesis.ctre.TalonFX;
 
 /**
@@ -42,6 +45,7 @@ public class Robot extends TimedRobot {
     private CANSparkMax m_sparkLeft = new CANSparkMax(1, MotorType.kBrushless);
     private CANSparkMax m_sparkRight = new CANSparkMax(2, MotorType.kBrushless);
     private CANSparkMax m_sparkArm = new CANSparkMax(3, MotorType.kBrushless);
+    private RelativeEncoder m_encoder;
 
     /**
      * This function is run when the robot is first started up and should be used
@@ -53,6 +57,11 @@ public class Robot extends TimedRobot {
         m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
         m_chooser.addOption("My Auto", kCustomAuto);
         SmartDashboard.putData("Auto choices", m_chooser);
+
+        m_encoder = m_sparkLeft.getEncoderSim();
+        // 4 inch diameter wheels, default is 1 unit = 1 radian.
+        // Following conversion factor is 1 unit = 1 inch travelled.
+        m_encoder.setPositionConversionFactor(2.0);
     }
 
     /**
@@ -91,32 +100,34 @@ public class Robot extends TimedRobot {
         m_autoSelected = m_chooser.getSelected();
         // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
         System.out.println("Auto selected: " + m_autoSelected);
-        m_sparkLeft.getAbsoluteEncoderSim()
+        m_encoder.setPosition(0.0);
+        m_autoState = AutoState.Stage1;
     }
 
     enum AutoState {
         Stage1, Stage2
     }
-
     private AutoState m_autoState = AutoState.Stage1;
 
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
         switch (m_autoState) {
-            case Stage1: {
+            case Stage1:
                 m_sparkLeft.set(0.5);
                 m_sparkRight.set(0.5);
-                if (m_sparkLeft.getEncoder())
+                if (m_encoder.getPosition() > 36.0) {
+                    m_autoState = AutoState.Stage2;
+                    System.out.println("--- Transitioning to Stage 2 ---");
+                }
                 break;
-            } case Stage2: {
+            case Stage2:
+                m_sparkLeft.set(0.5);
+                m_sparkRight.set(-0.5);
                 break;
-            } default: {
+            default:
                 break;
-            }
         }
-        m_SparkMax1.set(0.2);
-        m_SparkMax2.set(-0.2);
     }
 
     /** This function is called once when teleop is enabled. */

@@ -23,7 +23,7 @@ public class RelativeEncoder implements com.revrobotics.RelativeEncoder {
 
     @Override
     public double getPosition() {
-        return (m_encoder.getPosition() - m_zero) * m_positionConversionFactor * m_invertedFactor;
+        return m_encoder.getPosition() * m_positionConversionFactor * m_invertedFactor - m_zero;
     }
 
     @Override
@@ -33,22 +33,19 @@ public class RelativeEncoder implements com.revrobotics.RelativeEncoder {
 
     @Override
     public REVLibError setPosition(double position) {
-        m_zero = position;
-        m_original.setPosition(position);
+        m_zero = m_encoder.getPosition() * m_positionConversionFactor * m_invertedFactor - position;
         return REVLibError.kOk;
     }
 
     @Override
     public REVLibError setPositionConversionFactor(double factor) {
         m_positionConversionFactor = factor;
-        m_original.setPositionConversionFactor(factor);
         return REVLibError.kOk;
     }
 
     @Override
     public REVLibError setVelocityConversionFactor(double factor) {
         m_velocityConversionFactor = factor;
-        m_original.setVelocityConversionFactor(factor);
         return REVLibError.kOk;
     }
 
@@ -90,7 +87,6 @@ public class RelativeEncoder implements com.revrobotics.RelativeEncoder {
     @Override
     public REVLibError setInverted(boolean inverted) {
         m_invertedFactor = inverted ? -1.0 : 1.0;
-        m_original.setInverted(inverted);
         return REVLibError.kOk;
     }
 

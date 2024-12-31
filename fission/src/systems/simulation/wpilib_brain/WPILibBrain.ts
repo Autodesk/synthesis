@@ -137,6 +137,24 @@ export function getSimMap(): SimMap | undefined {
 export class SimGeneric {
     private constructor() {}
 
+    public static GetUnsafe<T>(simType: SimType, device: string, field: string): T | undefined
+    public static GetUnsafe<T>(simType: SimType, device: string, field: string, defaultValue: T): T
+    public static GetUnsafe<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
+        const map = getSimMap()?.get(simType)
+        if (!map) {
+            // console.warn(`No '${simType}' devices found`)
+            return undefined
+        }
+
+        const data = map.get(device)
+        if (!data) {
+            // console.warn(`No '${simType}' device '${device}' found`)
+            return undefined
+        }
+
+        return (data.get(field) as T | undefined) ?? defaultValue
+    }
+
     public static Get<T>(simType: SimType, device: string, field: string): T | undefined
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue: T): T
     public static Get<T>(simType: SimType, device: string, field: string, defaultValue?: T): T | undefined {
@@ -214,6 +232,10 @@ export class SimDriverStation {
         SimGeneric.Set<string>(SimType.DriverStation, "", ">match_time", gameData)
     }
 
+    public static IsEnabled(): boolean {
+        return SimGeneric.GetUnsafe<boolean>(SimType.DriverStation, "", ">enabled", false)
+    }
+
     public static SetMode(mode: RobotSimMode) {
         SimGeneric.Set<boolean>(SimType.DriverStation, "", ">enabled", mode != RobotSimMode.Disabled)
         SimGeneric.Set<boolean>(SimType.DriverStation, "", ">autonomous", mode == RobotSimMode.Auto)
@@ -228,7 +250,7 @@ export class SimPWM {
     private constructor() {}
 
     public static GetSpeed(device: string): number | undefined {
-        return SimGeneric.Get(SimType.PWM, device, PWM_SPEED, 0.0)
+        return SimDriverStation.IsEnabled() ? SimGeneric.Get(SimType.PWM, device, PWM_SPEED, 0.0) : 0.0
     }
 
     public static GetPosition(device: string): number | undefined {
@@ -268,7 +290,7 @@ export class SimCANMotor {
     private constructor() {}
 
     public static GetPercentOutput(device: string): number | undefined {
-        return SimGeneric.Get(SimType.CANMotor, device, CANMOTOR_PERCENT_OUTPUT, 0.0)
+        return SimDriverStation.IsEnabled() ? SimGeneric.Get(SimType.CANMotor, device, CANMOTOR_PERCENT_OUTPUT, 0.0) : 0.0
     }
 
     public static GetBrakeMode(device: string): number | undefined {
