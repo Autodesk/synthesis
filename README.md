@@ -48,7 +48,9 @@ This project welcomes community suggestions and contributions. Synthesis is near
 
 Before you contribute to this repository, please first discuss the change you wish to make via a GitHub issue, email us ([frc@autodesk.com](mailto:frc@autodesk.com)), or reach out through our [community discord](https://www.discord.gg/hHcF9AVgZA). This way we can ensure that there is no overlap between outside contributors and internal development work.
 
-When ready to contribute, fork the synthesis repository, make your changes, and submit a pull request. Be sure to fill out the template accordingly to make reviewing your work as smooth as possible. Feel free to check out our [contributing guidelines](/CONTRIBUTING.md) to learn more.
+When ready to contribute, fork the synthesis repository, make your changes, and submit a pull request.
+
+When contributing to Synthesis, please branch from our `dev` branch and submit pull requests to that branch. The `prod` branch is intended to be a copy of either exactly what is in production, or what is ready for production. We like to keep changes to the dev branch so they have time to simmer and be distributed via beta releases. Be sure to fill out the pull request template accordingly to make reviewing your work as smooth as possible. Feel free to check out our [contributing guidelines](/CONTRIBUTING.md) to learn more.
 
 ## Code Formatting And Style
 
