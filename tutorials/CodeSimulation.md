@@ -27,7 +27,6 @@ def includeDesktopSupport = true
 In order to communicate with your browser, you'll need to enable the websocket server extension with the following:
 
 ```java
-wpi.sim.envVar("HALSIMWS_HOST", "127.0.0.1")
 wpi.sim.addWebsocketsServer().defaultEnabled = true
 ```
 

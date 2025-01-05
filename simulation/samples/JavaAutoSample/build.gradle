@@ -91,7 +91,6 @@ test {
 wpi.sim.addGui().defaultEnabled = true
 wpi.sim.addDriverstation()
 
-wpi.sim.envVar("HALSIMWS_HOST", "127.0.0.1")
 wpi.sim.addWebsocketsServer().defaultEnabled = true
 
 // Setting up my Jar File. In this case, adding all libraries into the main jar ('fat jar')
