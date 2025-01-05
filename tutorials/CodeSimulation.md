@@ -14,7 +14,9 @@ feedback link: https://github.com/Autodesk/synthesis/issues
 The Synthesis simulator comes with code simulation already integrated. However, a development environment for what ever code your are trying to simulate will be required.
 Synthesis' code simulation relies on the WPILib HALSim extensions, specifically the websocket-client extension. You'll need to make the following changes to your `build.gradle` in order to properly simulate your code in Synthesis.
 
-### 1. Desktop Support
+### C++/Java
+
+#### 1. Desktop Support
 
 You'll need to enable desktop support for your project in order to run the HALSim:
 
@@ -22,7 +24,7 @@ You'll need to enable desktop support for your project in order to run the HALSi
 def includeDesktopSupport = true
 ```
 
-### 2. Websocket Server Extension
+#### 2. Websocket Server Extension
 
 In order to communicate with your browser, you'll need to enable the websocket server extension with the following:
 
@@ -30,7 +32,7 @@ In order to communicate with your browser, you'll need to enable the websocket s
 wpi.sim.addWebsocketsServer().defaultEnabled = true
 ```
 
-### 3. SyntheSim (Optional)
+#### 3. SyntheSim (Optional)
 
 For CAN-based device support (TalonFX, CANSparkMax, most Gyros), you'll need our own library--SyntheSim. Currently only available for Java, SyntheSim adds additional support for third party devices that don't follow WPILib's web socket specification. It's still in early development, so you'll need to clone and install the library locally in order to use it:
 
@@ -63,7 +65,7 @@ All of these instructions can be found in the [SyntheSim README](https://github.
 
 SyntheSim is very much a work in progress. If there is a particular device that isn't compatible, feel free to head to our [GitHub](https://github.com/Autodesk/synthesis) to see about contributing.
 
-### 4. HALSim GUI
+#### 4. HALSim GUI
 
 This should be added by default, but in case it isn't, add this to your `build.gradle` to enable the SimGUI extension by default.
 
@@ -74,7 +76,7 @@ wpi.sim.addGui().defaultEnabled = true
 This will allow you to change the state of the robot, as well as hook up any joysticks you'd like to use during teleop. You must use this GUI in order
 to bring your robot out of disconnected mode, otherwise we won't be able to change the state of your robot from within the app.
 
-### 5. Start your code
+#### 5. Start your code
 
 To start your robot code, you can use the following simulate commands with gradle:
 
@@ -91,6 +93,33 @@ $ ./gradlew simulateNative
 WPILib also has a command from within VSCode you can use the start your robot code:
 
 ![image_caption](img/code-sim/wpilib-ext-simulate.png)
+
+### Python
+
+#### 1. Install dependencies
+
+Add the 'sim' component to `robotpy_extras` in your `pyproject.toml`:
+
+```toml
+[tool.robotpy]
+
+robotpy_version = ...
+
+robotpy_extras = [
+  # other components here
+  "sim",
+]
+```
+
+Run `python -m robotpy sync` to install the needed packages.
+
+#### 2. Start your code
+
+To start your code, you can run the following:
+
+```
+python -m robotpy sim --ws-server
+```
 
 ## Setup (Synthesis Web-app Side)
 
