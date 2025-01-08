@@ -32,11 +32,6 @@ mouseIcons = {
     "remove": resources + os.path.join("MousePreselectIcons", "mouse-remove-icon.png"),
 }
 
-massIcons = {
-    "KG": resources + os.path.join("kg_icon"),  # resource folder
-    "LBS": resources + os.path.join("lbs_icon"),  # resource folder
-}
-
 signalIcons = {
     "PWM": resources + os.path.join("PWM_icon"),  # resource folder
     "CAN": resources + os.path.join("CAN_icon"),  # resource folder

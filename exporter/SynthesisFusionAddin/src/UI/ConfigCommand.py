@@ -4,13 +4,14 @@
 
 import os
 import pathlib
+import webbrowser
 from enum import Enum
 from typing import Any
 
 import adsk.core
 import adsk.fusion
 
-from src import gm
+from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
@@ -140,7 +141,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 *gm.app.activeDocument.design.rootComponent.allAsBuiltJoints,
             ]:
                 if (
-                    joint.jointMotion.jointType in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value)
+                    joint.jointMotion.jointType
+                    in (JointMotions.REVOLUTE.value, JointMotions.SLIDER.value, JointMotions.BALL.value)
                     and not joint.isSuppressed
                 ):
                     jointConfigTab.addJoint(joint)
@@ -300,7 +302,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
         if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
-            savepath = FileDialogConfig.saveFileDialog(defaultPath=exporterOptions.fileLocation)
+            savepath = FileDialogConfig.saveFileDialog(defaultPath="~/Documents/")
 
             if not savepath:
                 # save was canceled
@@ -331,12 +333,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
         selectedGamepieces = gamepieceConfigTab.getGamepieces()
 
-        if generalConfigTab.exportMode == ExportMode.ROBOT:
-            units = generalConfigTab.selectedUnits
-        else:
-            assert generalConfigTab.exportMode == ExportMode.FIELD
-            units = gamepieceConfigTab.selectedUnits
-
         exporterOptions = ExporterOptions(
             str(savepath),
             name,
@@ -345,7 +341,6 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             joints=selectedJoints,
             wheels=selectedWheels,
             gamepieces=selectedGamepieces,
-            preferredUnits=units,
             robotWeight=generalConfigTab.robotWeight,
             autoCalcRobotWeight=generalConfigTab.autoCalculateWeight,
             autoCalcGamepieceWeight=gamepieceConfigTab.autoCalculateWeight,
@@ -355,6 +350,7 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
             exportAsPart=generalConfigTab.exportAsPart,
             frictionOverride=generalConfigTab.overrideFriction,
             frictionOverrideCoeff=generalConfigTab.frictionOverrideCoeff,
+            openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
 
         Parser(exporterOptions).export()
@@ -365,6 +361,11 @@ class ConfigureCommandExecuteHandler(adsk.core.CommandEventHandler):
         # still in tact. Even if they did not save.
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
+
+        if generalConfigTab.openSynthesisUponExport:
+            res = webbrowser.open(APP_WEBSITE_URL)
+            if not res:
+                gm.ui.messageBox("Failed to open Synthesis in your default browser.")
 
 
 class CommandExecutePreviewHandler(adsk.core.CommandEventHandler):

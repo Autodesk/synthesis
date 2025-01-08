@@ -14,7 +14,7 @@ class ConfigModeSelectionOption extends SelectMenuOption {
     configMode: ConfigMode
 
     constructor(name: string, configMode: ConfigMode) {
-        super(name)
+        super(name, name)
         this.configMode = configMode
     }
 }

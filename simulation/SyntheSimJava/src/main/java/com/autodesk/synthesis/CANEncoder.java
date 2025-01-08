@@ -31,12 +31,14 @@ public class CANEncoder {
         m_init = m_device.createBoolean("init", Direction.kOutput, true);
         m_position = m_device.createDouble("position", Direction.kInput, 0.0);
         m_velocity = m_device.createDouble("velocity", Direction.kInput, 0.0);
+
+        m_init.set(true);
     }
 
     /**
      * Gets the current position of the encoder, simulated.
      * 
-     * @return Current Position.
+     * @return Current position in revolutions.
      */
     public double getPosition() {
         return m_position.get();
@@ -45,7 +47,7 @@ public class CANEncoder {
     /**
      * Gets the current velocity of the encoder, simulated.
      * 
-     * @return Current Velocity.
+     * @return Current velocity in revolutions per second.
      */
     public double getVelocity() {
         return m_velocity.get();

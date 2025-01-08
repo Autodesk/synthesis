@@ -1,5 +1,5 @@
-import { useCallback, useEffect, useState } from "react"
-import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import { useCallback, useEffect, useState, useMemo } from "react"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import InputSystem from "@/systems/input/InputSystem"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
@@ -32,10 +32,8 @@ class SchemeSelectionOption extends SelectMenuOption {
 
     constructor(scheme: InputScheme) {
         const robotName = findSchemeRobotName(scheme)
-        super(
-            `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`,
-            robotName ? `Bound to: ${robotName}` : undefined
-        )
+        const schemeName = `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`
+        super(schemeName, schemeName, robotName ? `Bound to: ${robotName}` : undefined)
         this.scheme = scheme
     }
 }
@@ -59,11 +57,17 @@ const ConfigureInputsInterface = () => {
         }
     }, [saveEvent])
 
+    const schemeOptionMap = useMemo(() => {
+        const map = new Map<InputScheme, SchemeSelectionOption>()
+        schemes.forEach(x => map.set(x, new SchemeSelectionOption(x)))
+        return map
+    }, [schemes])
+
     return (
         <>
             {/** Select menu with input schemes */}
             <SelectMenu
-                options={schemes.map(s => new SchemeSelectionOption(s))}
+                options={[...schemeOptionMap.values()]}
                 onOptionSelected={val => {
                     setSelectedScheme((val as SchemeSelectionOption)?.scheme)
                     if (val == undefined) {
@@ -77,10 +81,19 @@ const ConfigureInputsInterface = () => {
                     // Fetch current custom schemes
                     InputSchemeManager.saveSchemes()
                     InputSchemeManager.resetDefaultSchemes()
-                    const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
 
-                    // Find and remove this input scheme
+                    // Find the scheme to remove in preferences
+                    const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
                     const index = schemes.indexOf(val.scheme)
+
+                    // If currently bound to a robot, remove the binding
+                    for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
+                        if (value == schemes[index]) {
+                            InputSystem.brainIndexSchemeMap.delete(key)
+                        }
+                    }
+
+                    // Find and remove this input scheme from preferences
                     schemes.splice(index, 1)
 
                     // Save to preferences
@@ -98,11 +111,7 @@ const ConfigureInputsInterface = () => {
                 onAddClicked={() => {
                     openModal("new-scheme")
                 }}
-                defaultSelectedOption={options => {
-                    if (options.length < 0 || !(options[0] instanceof SchemeSelectionOption)) return undefined
-
-                    return options.find(o => (o as SchemeSelectionOption).scheme == getSelectedScheme())
-                }}
+                defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
             />
             {selectedScheme && <ConfigureSchemeInterface selectedScheme={selectedScheme} />}
         </>

@@ -55,6 +55,7 @@ public class CANMotor {
         m_motorCurrent = m_device.createDouble("motorCurrent", Direction.kInput, 120.0);
         m_busVoltage = m_device.createDouble("busVoltage", Direction.kInput, 12.0);
         m_busVoltage.set(0.0); // disable CANMotor inputs
+        m_init.set(true);
     }
 
     /**
@@ -96,7 +97,7 @@ public class CANMotor {
     /**
      * Get the supply current, simulated.
      * 
-     * @return Supply Current.
+     * @return Supply current in amps.
      */
     public double getSupplyCurrent() {
         return m_supplyCurrent.get();
@@ -105,7 +106,7 @@ public class CANMotor {
     /**
      * Get the motor current, simulated.
      * 
-     * @return Motor Current.
+     * @return Motor current in amps.
      */
     public double getMotorCurrent() {
         return m_motorCurrent.get();
@@ -114,7 +115,7 @@ public class CANMotor {
     /**
      * Get the Bus Voltage, simulated.
      * 
-     * @return Bus Voltage
+     * @return Bus voltage
      */
     public double getBusVoltage() {
         return m_busVoltage.get();

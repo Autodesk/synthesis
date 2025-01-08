@@ -7,7 +7,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { Box } from "@mui/material"
 import { ButtonIcon, SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { LabelSize } from "@/ui/components/Label"
-import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
