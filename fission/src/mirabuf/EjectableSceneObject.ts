@@ -7,6 +7,7 @@ import {
     JoltMat44_ThreeMatrix4,
     JoltQuat_ThreeQuaternion,
     ThreeQuaternion_JoltQuat,
+    ThreeVector3_JoltRVec3,
     ThreeVector3_JoltVec3,
 } from "@/util/TypeConversions"
 import * as THREE from "three"
@@ -88,7 +89,7 @@ class EjectableSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-            World.PhysicsSystem.SetBodyPosition(this._gamePieceBodyId, ThreeVector3_JoltVec3(position), false)
+            World.PhysicsSystem.SetBodyPosition(this._gamePieceBodyId, ThreeVector3_JoltRVec3(position), false)
             World.PhysicsSystem.SetBodyRotation(this._gamePieceBodyId, ThreeQuaternion_JoltQuat(rotation), false)
         }
     }
