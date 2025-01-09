@@ -217,7 +217,7 @@ describe("Mirabuf to Three Conversions", () => {
 })
 
 describe("Jolt to Three Conversions", () => {
-    function compareMat(jM: Jolt.Mat44, tM: THREE.Matrix4) {
+    function compareMat(jM: Jolt.RMat44, tM: THREE.Matrix4) {
         const threeArr = tM.toArray()
 
         for (let c = 0; c < 4; c++) {
@@ -253,7 +253,7 @@ describe("Jolt to Three Conversions", () => {
     }
 
     test("Jolt.Mat44 [Identity] -> THREE.Matrix4", () => {
-        const tmp = new JOLT.Mat44()
+        const tmp = new JOLT.RMat44()
         const joltMat = tmp.sIdentity()
         const threeMat = JoltMat44_ThreeMatrix4(joltMat)
 
@@ -263,7 +263,7 @@ describe("Jolt to Three Conversions", () => {
     })
 
     test("Jolt.Mat44 [+X Axis Rotation] -> THREE.Matrix4", () => {
-        const joltMat = new JOLT.Mat44()
+        const joltMat = new JOLT.RMat44()
         const c0 = new JOLT.Vec4(1, 0, 0, 0)
         const c1 = new JOLT.Vec4(0, 0, -1, 0)
         const c2 = new JOLT.Vec4(0, 1, 0, 0)
@@ -285,7 +285,7 @@ describe("Jolt to Three Conversions", () => {
     })
 
     test("Jolt.Mat44 [-X Axis Rotation] -> THREE.Matrix4", () => {
-        const joltMat = new JOLT.Mat44()
+        const joltMat = new JOLT.RMat44()
         const c0 = new JOLT.Vec4(1, 0, 0, 0)
         const c1 = new JOLT.Vec4(0, 0, 1, 0)
         const c2 = new JOLT.Vec4(0, -1, 0, 0)
@@ -307,7 +307,7 @@ describe("Jolt to Three Conversions", () => {
     })
 
     test("Jolt.Mat44 [X,Y Translation] -> THREE.Matrix4", () => {
-        const joltMat = new JOLT.Mat44()
+        const joltMat = new JOLT.RMat44()
         const c0 = new JOLT.Vec4(1, 0, 0, 0)
         const c1 = new JOLT.Vec4(0, 1, 0, 0)
         const c2 = new JOLT.Vec4(0, 0, 1, 0)

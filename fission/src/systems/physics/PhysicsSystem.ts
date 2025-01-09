@@ -1,9 +1,13 @@
 import {
+    JoltRVec3_JoltVec3,
+    JoltVec3_JoltRVec3,
     JoltVec3_ThreeVector3,
     MirabufFloatArr_JoltFloat3,
     MirabufFloatArr_JoltVec3,
+    MirabufVector3_JoltRVec3,
     MirabufVector3_JoltVec3,
     ThreeMatrix4_JoltMat44,
+    ThreeVector3_JoltRVec3,
     ThreeVector3_JoltVec3,
     _JoltQuat,
 } from "../../util/TypeConversions"
@@ -234,7 +238,7 @@ class PhysicsSystem extends WorldSystem {
         const shape = new JOLT.BoxShape(size, 0.1)
         JOLT.destroy(size)
 
-        const pos = position ? ThreeVector3_JoltVec3(position) : new JOLT.Vec3(0.0, 0.0, 0.0)
+        const pos = position ? ThreeVector3_JoltRVec3(position) : new JOLT.RVec3(0.0, 0.0, 0.0)
         const rot = _JoltQuat(rotation)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
@@ -269,7 +273,7 @@ class PhysicsSystem extends WorldSystem {
         position: THREE.Vector3 | undefined,
         rotation: THREE.Euler | THREE.Quaternion | undefined
     ) {
-        const pos = position ? ThreeVector3_JoltVec3(position) : new JOLT.Vec3(0.0, 0.0, 0.0)
+        const pos = position ? ThreeVector3_JoltRVec3(position) : new JOLT.RVec3(0.0, 0.0, 0.0)
         const rot = _JoltQuat(rotation)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
@@ -464,14 +468,14 @@ class PhysicsSystem extends WorldSystem {
         const hingeConstraintSettings = new JOLT.HingeConstraintSettings()
 
         const jointOrigin = jointDefinition.origin
-            ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0)
+            ? MirabufVector3_JoltRVec3(jointDefinition.origin as mirabuf.Vector3)
+            : new JOLT.RVec3(0, 0, 0)
         // TODO: Offset transformation for robot builder.
         const jointOriginOffset = jointInstance.offset
-            ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0)
+            ? MirabufVector3_JoltRVec3(jointInstance.offset as mirabuf.Vector3)
+            : new JOLT.RVec3(0, 0, 0)
 
-        const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
         hingeConstraintSettings.mPoint1 = hingeConstraintSettings.mPoint2 = anchorPoint
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
@@ -532,14 +536,14 @@ class PhysicsSystem extends WorldSystem {
         const sliderConstraintSettings = new JOLT.SliderConstraintSettings()
 
         const jointOrigin = jointDefinition.origin
-            ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0)
+            ? MirabufVector3_JoltRVec3(jointDefinition.origin as mirabuf.Vector3)
+            : new JOLT.RVec3(0, 0, 0)
         // TODO: Offset transformation for robot builder.
         const jointOriginOffset = jointInstance.offset
-            ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0)
+            ? MirabufVector3_JoltRVec3(jointInstance.offset as mirabuf.Vector3)
+            : new JOLT.RVec3(0, 0, 0)
 
-        const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
         sliderConstraintSettings.mPoint1 = sliderConstraintSettings.mPoint2 = anchorPoint
 
         const prismaticFreedom = jointDefinition.prismatic!.prismaticFreedom!
@@ -594,13 +598,13 @@ class PhysicsSystem extends WorldSystem {
         const fixedSettings = new JOLT.FixedConstraintSettings()
 
         const jointOrigin = jointDefinition.origin
-            ? MirabufVector3_JoltVec3(jointDefinition.origin as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0)
+            ? MirabufVector3_JoltRVec3(jointDefinition.origin as mirabuf.Vector3)
+            : new JOLT.RVec3(0, 0, 0)
         const jointOriginOffset = jointInstance.offset
-            ? MirabufVector3_JoltVec3(jointInstance.offset as mirabuf.Vector3)
-            : new JOLT.Vec3(0, 0, 0)
+            ? MirabufVector3_JoltRVec3(jointInstance.offset as mirabuf.Vector3)
+            : new JOLT.RVec3(0, 0, 0)
 
-        const anchorPoint = jointOrigin.Add(jointOriginOffset)
+        const anchorPoint = jointOrigin.AddRVec3(jointOriginOffset)
         fixedSettings.mPoint1 = fixedSettings.mPoint2 = anchorPoint
 
         const rotationalFreedom = jointDefinition.rotational!.rotationalFreedom!
@@ -608,13 +612,13 @@ class PhysicsSystem extends WorldSystem {
         // No scaling, these are unit vectors
         const miraAxis = rotationalFreedom.axis! as mirabuf.Vector3
         const miraAxisX: number = (versionNum < 5 ? -miraAxis.x : miraAxis.x) ?? 0
-        const axis: Jolt.Vec3 = new JOLT.Vec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
+        const axis: Jolt.RVec3 = new JOLT.RVec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
 
         const bounds = bodyWheel.GetShape().GetLocalBounds()
         const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 
         const wheelSettings = new JOLT.WheelSettingsWV()
-        wheelSettings.mPosition = anchorPoint.Add(axis.Mul(0.1))
+        wheelSettings.mPosition = JoltRVec3_JoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
         wheelSettings.mRadius = radius * 1.05
@@ -733,7 +737,7 @@ class PhysicsSystem extends WorldSystem {
             const c = constraints[i]
             const hingeSettings = new JOLT.HingeConstraintSettings()
             hingeSettings.mMaxFrictionTorque = c.friction
-            hingeSettings.mPoint1 = hingeSettings.mPoint2 = anchorPoint
+            hingeSettings.mPoint1 = hingeSettings.mPoint2 = JoltVec3_JoltRVec3(anchorPoint)
             hingeSettings.mHingeAxis1 = hingeSettings.mHingeAxis2 = c.axis.Normalized()
             hingeSettings.mNormalAxis1 = hingeSettings.mNormalAxis2 = getPerpendicular(hingeSettings.mHingeAxis1)
             if (c.upper && c.lower) {
@@ -1029,7 +1033,7 @@ class PhysicsSystem extends WorldSystem {
 
                 const bodySettings = new JOLT.BodyCreationSettings(
                     shape,
-                    new JOLT.Vec3(0.0, 0.0, 0.0),
+                    new JOLT.RVec3(0.0, 0.0, 0.0),
                     new JOLT.Quat(0, 0, 0, 1),
                     rn.isDynamic ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
                     rnLayer
@@ -1162,7 +1166,7 @@ class PhysicsSystem extends WorldSystem {
      * @returns Either the hit results of the closest object in the ray's path, or undefined if nothing was hit.
      */
     public RayCast(from: Jolt.Vec3, dir: Jolt.Vec3, ...ignoreBodies: Jolt.BodyID[]): RayCastHit | undefined {
-        const ray = new JOLT.RayCast(from, dir)
+        const ray = new JOLT.RRayCast(JoltVec3_JoltRVec3(from), dir)
 
         const raySettings = new JOLT.RayCastSettings()
         raySettings.mTreatConvexAsSolid = false
@@ -1181,7 +1185,7 @@ class PhysicsSystem extends WorldSystem {
         if (!collector.HadHit()) return undefined
 
         const hitPoint = ray.GetPointOnRay(collector.mHit.mFraction)
-        return { data: collector.mHit, point: hitPoint, ray: ray }
+        return { data: collector.mHit, point: JoltRVec3_JoltVec3(hitPoint), ray: ray }
     }
 
     /**
@@ -1287,7 +1291,7 @@ class PhysicsSystem extends WorldSystem {
         const rot = new JOLT.Quat(0, 0, 0, 1)
         const creationSettings = new JOLT.BodyCreationSettings(
             shape,
-            position,
+            JoltVec3_JoltRVec3(position),
             rot,
             JOLT.EMotionType_Dynamic,
             LAYER_GHOST
@@ -1326,8 +1330,7 @@ class PhysicsSystem extends WorldSystem {
         this._bodies.push(ghostBodyId)
 
         const constraintSettings = new JOLT.PointConstraintSettings()
-        constraintSettings.set_mPoint1(anchorPoint)
-        constraintSettings.set_mPoint2(anchorPoint)
+        constraintSettings.mPoint1 = constraintSettings.mPoint2 = JoltVec3_JoltRVec3(anchorPoint)
         const constraint = constraintSettings.Create(ghostBody, body)
         this._joltPhysSystem.AddConstraint(constraint)
         this._constraints.push(constraint)
@@ -1610,7 +1613,7 @@ function tryGetPerpendicular(vec: Jolt.Vec3, toCheck: Jolt.Vec3): Jolt.Vec3 | un
 export type RayCastHit = {
     data: Jolt.RayCastResult
     point: Jolt.Vec3
-    ray: Jolt.RayCast
+    ray: Jolt.RRayCast
 }
 
 /**

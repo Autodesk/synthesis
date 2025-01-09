@@ -2,8 +2,8 @@ import { test, expect, describe, assert } from "vitest"
 import PhysicsSystem, { LayerReserve } from "../systems/physics/PhysicsSystem"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import * as THREE from "three"
-import Jolt from "@barclah/jolt-physics"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import { JoltRVec3_JoltVec3 } from "@/util/TypeConversions"
 
 describe("Physics Sansity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
@@ -54,7 +54,7 @@ describe("GodMode", () => {
     test("Basic", () => {
         const system = new PhysicsSystem()
         const box = system.CreateBox(new THREE.Vector3(1, 1, 1), 1, new THREE.Vector3(0, 0, 0), undefined)
-        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(box.GetID(), box.GetPosition() as Jolt.Vec3)
+        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(box.GetID(), JoltRVec3_JoltVec3(box.GetPosition()))
 
         assert(system.GetBody(ghostObject.GetID()) != undefined)
         assert(system.GetBody(box.GetID()) != undefined)

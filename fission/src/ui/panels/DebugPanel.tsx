@@ -14,11 +14,11 @@ import { usePanelControlContext } from "../PanelContext"
 import APS from "@/aps/APS"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import Jolt from "@barclah/jolt-physics"
 import Label from "../components/Label"
 import { colorNameToVar } from "../ThemeContext"
 import { SynthesisIcons } from "../components/StyledComponents"
 import { Global_AddToast } from "../components/GlobalUIControls"
+import { JoltRVec3_JoltVec3 } from "@/util/TypeConversions"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -39,16 +39,16 @@ async function TestGodMode() {
         return
     }
     const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
-    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId, robotPosition as Jolt.Vec3)
+    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId, JoltRVec3_JoltVec3(robotPosition))
 
     // Move ghostBody to demonstrate godMode movement
     await new Promise(f => setTimeout(f, 1000))
     World.PhysicsSystem.SetBodyPosition(
         ghostBody.GetID(),
-        new JOLT.Vec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
+        new JOLT.RVec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
     )
     await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.Vec3(2, 2, 2))
+    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.RVec3(2, 2, 2))
 }
 
 const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
