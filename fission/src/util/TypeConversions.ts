@@ -80,7 +80,7 @@ export function JoltVec3_JoltRVec3(m: Jolt.Vec3): Jolt.RVec3 {
 }
 
 export function JoltRVec3_JoltVec3(m: Jolt.RVec3): Jolt.Vec3 {
-    return new JOLT.Vec3(m.GetX(), m.GetY(), m.GetZ());
+    return new JOLT.Vec3(m.GetX(), m.GetY(), m.GetZ())
 }
 
 export function MirabufTransform_ThreeMatrix4(m: mirabuf.ITransform): THREE.Matrix4 {

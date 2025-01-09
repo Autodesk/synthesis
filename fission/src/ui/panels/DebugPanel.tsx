@@ -39,7 +39,10 @@ async function TestGodMode() {
         return
     }
     const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
-    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(rootNodeId, JoltRVec3_JoltVec3(robotPosition))
+    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(
+        rootNodeId,
+        JoltRVec3_JoltVec3(robotPosition)
+    )
 
     // Move ghostBody to demonstrate godMode movement
     await new Promise(f => setTimeout(f, 1000))

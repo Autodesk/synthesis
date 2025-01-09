@@ -54,7 +54,10 @@ describe("GodMode", () => {
     test("Basic", () => {
         const system = new PhysicsSystem()
         const box = system.CreateBox(new THREE.Vector3(1, 1, 1), 1, new THREE.Vector3(0, 0, 0), undefined)
-        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(box.GetID(), JoltRVec3_JoltVec3(box.GetPosition()))
+        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(
+            box.GetID(),
+            JoltRVec3_JoltVec3(box.GetPosition())
+        )
 
         assert(system.GetBody(ghostObject.GetID()) != undefined)
         assert(system.GetBody(box.GetID()) != undefined)
