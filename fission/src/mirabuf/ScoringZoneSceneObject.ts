@@ -2,7 +2,7 @@ import {
     Array_ThreeMatrix4,
     JoltMat44_ThreeMatrix4,
     ThreeQuaternion_JoltQuat,
-    ThreeVector3_JoltVec3,
+    ThreeVector3_JoltRVec3,
 } from "@/util/TypeConversions"
 import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -84,7 +84,7 @@ class ScoringZoneSceneObject extends SceneObject {
                 )
                 const props = DeltaFieldTransforms_PhysicalProp(this._deltaTransformation, fieldTransformation)
 
-                World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(props.translation))
+                World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltRVec3(props.translation))
                 World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(props.rotation))
                 const shapeSettings = new JOLT.BoxShapeSettings(
                     new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
@@ -148,7 +148,7 @@ class ScoringZoneSceneObject extends SceneObject {
             )
             const props = DeltaFieldTransforms_PhysicalProp(this._deltaTransformation, fieldTransformation)
 
-            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(props.translation))
+            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltRVec3(props.translation))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(props.rotation))
             const shapeSettings = new JOLT.BoxShapeSettings(
                 new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import World from "@/systems/World"
-import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import { JoltVec3_JoltRVec3, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
 import { SynthesisIcons } from "../components/StyledComponents"
@@ -50,7 +50,7 @@ function affect(
         if (punch) {
             World.PhysicsSystem.GetBody(res.data.mBodyID).AddImpulse(
                 ThreeVector3_JoltVec3(dir.normalize().multiplyScalar(punchForce)),
-                res.point
+                JoltVec3_JoltRVec3(res.point)
             )
         }
     }

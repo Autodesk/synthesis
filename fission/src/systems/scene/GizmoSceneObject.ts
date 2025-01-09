@@ -5,7 +5,7 @@ import InputSystem from "../input/InputSystem"
 import World from "../World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Object3D, PerspectiveCamera } from "three"
-import { ThreeQuaternion_JoltQuat, JoltMat44_ThreeMatrix4, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import { ThreeQuaternion_JoltQuat, JoltMat44_ThreeMatrix4, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
@@ -210,7 +210,7 @@ class GizmoSceneObject extends SceneObject {
 
         World.PhysicsSystem.SetBodyPositionAndRotation(
             jBodyId,
-            ThreeVector3_JoltVec3(position),
+            ThreeVector3_JoltRVec3(position),
             ThreeQuaternion_JoltQuat(rotation)
         )
     }

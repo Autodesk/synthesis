@@ -10,7 +10,7 @@ import Label from "@/ui/components/Label"
 import Button from "@/ui/components/Button"
 import Jolt from "@barclah/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { JoltMat44_ThreeMatrix4, ThreeQuaternion_JoltQuat, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, ThreeQuaternion_JoltQuat, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import { AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { styled } from "@mui/system"
@@ -137,7 +137,7 @@ function captureBodies(): BodyCapture[] {
                 JoltMat44_ThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
                 captures.push({
                     id: bodyId,
-                    pos: ThreeVector3_JoltVec3(translation),
+                    pos: ThreeVector3_JoltRVec3(translation),
                     rot: ThreeQuaternion_JoltQuat(rotation),
                 })
             })
