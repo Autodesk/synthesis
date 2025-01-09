@@ -21,6 +21,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import IntakeDriver from "../driver/IntakeDriver"
 import EjectorDriver from "../driver/EjectorDriver"
 import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
+import { JoltVec3_JoltRVec3 } from "@/util/TypeConversions"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -134,14 +135,14 @@ class SynthesisBrain extends Brain {
 
         // Determines which wheels and stimuli belong to which side of the robot
         for (let i = 0; i < wheelDrivers.length; i++) {
-            const wheelPos = fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation()
+            const wheelPos = JoltVec3_JoltRVec3(fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation())
 
             const robotCOM = World.PhysicsSystem.GetBody(
                 this._mechanism.constraints[0].childBody
-            ).GetCenterOfMassPosition() as Jolt.Vec3
-            const rightVector = new JOLT.Vec3(1, 0, 0)
+            ).GetCenterOfMassPosition()
+            const rightVector = new JOLT.RVec3(1, 0, 0)
 
-            const dotProduct = rightVector.Dot(wheelPos.Sub(robotCOM))
+            const dotProduct = rightVector.Dot(wheelPos.SubRVec3(robotCOM))
 
             if (dotProduct < 0) {
                 rightWheels.push(wheelDrivers[i])

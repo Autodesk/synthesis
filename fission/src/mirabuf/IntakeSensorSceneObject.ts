@@ -8,7 +8,7 @@ import {
     Array_ThreeMatrix4,
     JoltMat44_ThreeMatrix4,
     ThreeQuaternion_JoltQuat,
-    ThreeVector3_JoltVec3,
+    ThreeVector3_JoltRVec3,
 } from "@/util/TypeConversions"
 import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
 
@@ -70,7 +70,7 @@ class IntakeSensorSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(position))
+            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltRVec3(position))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
         }
     }
