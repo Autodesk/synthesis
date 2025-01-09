@@ -6,10 +6,11 @@ import HingeDriver from "../../driver/HingeDriver"
 import Driver, { DriverControlMode } from "../../driver/Driver"
 import HingeStimulus from "../../stimulus/HingeStimulus"
 import Stimulus from "../../stimulus/Stimulus"
-import { Matrix4, Quaternion, Vector3 } from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
-import { JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, JoltQuat_ThreeQuaternion, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
+import { threeVector3ToString } from "@/util/debug/DebugPrint"
+import * as THREE from 'three'
 
 class SwerveDriveBehavior extends Behavior {
     private _wheels: WheelDriver[]
@@ -21,7 +22,7 @@ class SwerveDriveBehavior extends Behavior {
     private _strafeSpeed = 30
     private _turnSpeed = 30
 
-    private _fieldForward: Vector3 = new Vector3(1, 0, 0)
+    private _fieldForward: THREE.Vector3 = new THREE.Vector3(1, 0, 0)
 
     constructor(
         wheels: WheelDriver[],
@@ -60,13 +61,13 @@ class SwerveDriveBehavior extends Behavior {
      * of half the angle, and then constructs a quaternion from these values. The provided
      * axis is normalized to ensure the quaternion represents a valid rotation.
      */
-    private static angleAxis(angle: number, axis: Vector3): Quaternion {
+    private static angleAxis(angle: number, axis: THREE.Vector3): THREE.Quaternion {
         const rad = (angle * Math.PI) / 180 // Convert angle to radians
         const halfAngle = rad / 2
         const s = Math.sin(halfAngle)
         const normalizedAxis = axis.normalize()
 
-        return new Quaternion(Math.cos(halfAngle), normalizedAxis.x * s, normalizedAxis.y * s, normalizedAxis.z * s)
+        return new THREE.Quaternion(Math.cos(halfAngle), normalizedAxis.x * s, normalizedAxis.y * s, normalizedAxis.z * s)
     }
 
     /**
@@ -76,7 +77,7 @@ class SwerveDriveBehavior extends Behavior {
      * @param vec - The vector to be rotated.
      * @returns The rotated vector as a new Vector3.
      */
-    private static multiplyQuaternionByVector3(quat: Quaternion, vec: Vector3): Vector3 {
+    private static multiplyQuaternionByVector3(quat: THREE.Quaternion, vec: THREE.Vector3): THREE.Vector3 {
         const qx = quat.x
         const qy = quat.y
         const qz = quat.z
@@ -92,7 +93,7 @@ class SwerveDriveBehavior extends Behavior {
         const iw = -qx * vx - qy * vy - qz * vz
 
         // Compute the result vector
-        return new Vector3(
+        return new THREE.Vector3(
             ix * qw + iw * -qx + iy * -qz - iz * -qy,
             iy * qw + iw * -qy + iz * -qx - ix * -qz,
             iz * qw + iw * -qz + ix * -qy - iy * -qx
@@ -112,22 +113,22 @@ class SwerveDriveBehavior extends Behavior {
 
         if (rootNodeId == undefined) throw new Error("Robot root node should not be undefined")
 
-        const robotTransform = JoltVec3_ThreeVector3(World.PhysicsSystem.GetBody(rootNodeId).GetPosition())
+        const robotTransform = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(rootNodeId).GetWorldTransform())
 
-        const robotLocalToWorldMatrix = new Matrix4()
+        const robotLocalToWorldMatrix = new THREE.Matrix4()
 
-        const robotForward: Vector3 = robotTransform.normalize()
-        const robotRight: Vector3 = robotTransform.cross(new Vector3(0, 1, 0)).normalize()
-        const robotUp: Vector3 = robotRight.cross(robotForward).normalize()
+        const robotForward: THREE.Vector3 = new THREE.Vector3(0, 0, 1).applyMatrix4(robotTransform);
+        const robotRight: THREE.Vector3 = new THREE.Vector3(1, 0, 0).applyMatrix4(robotTransform);
+        const robotUp: THREE.Vector3 = new THREE.Vector3(0, 1, 0).applyMatrix4(robotTransform);
 
         if (InputSystem.getInput("resetFieldForward", this._brainIndex)) this._fieldForward = robotForward
 
-        const headingVector: Vector3 = robotForward.min(
-            new Vector3(0, 1, 0).multiplyScalar(new Vector3(0, 1, 0).dot(robotForward))
+        const headingVector: THREE.Vector3 = robotForward.min(
+            new THREE.Vector3(0, 1, 0).multiplyScalar(new THREE.Vector3(0, 1, 0).dot(robotForward))
         )
 
         const headingVectorY: number = this._fieldForward.dot(headingVector)
-        const headingVectorX: number = this._fieldForward.cross(new Vector3(0, 1, 0)).dot(headingVector)
+        const headingVectorX: number = this._fieldForward.cross(new THREE.Vector3(0, 1, 0)).dot(headingVector)
         const chassisAngle: number = Math.atan2(headingVectorX, headingVectorY) * (180.0 / Math.PI)
 
         forward = SwerveDriveBehavior.withinTolerance(forward, 0.0, 0.1) ? 0.0 : forward
@@ -138,13 +139,22 @@ class SwerveDriveBehavior extends Behavior {
         if (forward == 0.0 && turn == 0.0 && strafe == 0.0) {
             this._wheels.forEach(w => (w.accelerationDirection = 0.0))
             return
+        } else {
+            console.debug(`Input: ${forward.toFixed(1)}, ${strafe.toFixed(1)}, ${turn.toFixed(1)}`)
         }
+
+        console.debug(`Robot Forward: ${threeVector3ToString(robotForward)}`)
+        console.debug(`Robot Right: ${threeVector3ToString(robotRight)}`)
+        console.debug(`Robot Up: ${threeVector3ToString(robotUp)}`)
 
         // Adjusts how much turning verse translation is favored
         turn *= 1.5
 
-        let chassisVelocity: Vector3 = robotForward.multiplyScalar(forward).add(robotRight).multiplyScalar(strafe)
-        const chassisAngularVelocity: Vector3 = robotUp.multiplyScalar(turn)
+        let chassisVelocity: THREE.Vector3 = robotForward.clone().multiplyScalar(forward).add(robotRight.clone().multiplyScalar(strafe))
+        const chassisAngularVelocity: THREE.Vector3 = robotUp.clone().multiplyScalar(turn)
+
+        console.debug(`Lin Vel: ${threeVector3ToString(chassisVelocity)}`)
+        console.debug(`Ang Vel: ${threeVector3ToString(chassisAngularVelocity)}`)
 
         // Normalize velocity so its between 1 and 0. Should only max out at like 1 sqrt(2), but still
         if (chassisVelocity.length() > 1) chassisVelocity = chassisVelocity.normalize()
@@ -155,29 +165,26 @@ class SwerveDriveBehavior extends Behavior {
             chassisVelocity
         )
 
-        SwerveDriveBehavior.angleAxis(chassisAngle, robotUp).setFromAxisAngle
+        // SwerveDriveBehavior.angleAxis(chassisAngle, robotUp).setFromAxisAngle
 
-        var maxVelocity = new Vector3()
+        let maxVelocity = new THREE.Vector3()
+        const com = JoltVec3_ThreeVector3(World.PhysicsSystem.GetBody(rootNodeId).GetCenterOfMassPosition())
 
-        const velocities: Vector3[] = []
+        const velocities: THREE.Vector3[] = []
         for (let i = 0; i < this._hinges.length; i++) {
             // TODO: We should do this only once for all azimuth drivers, but whatever for now
             const driver = this._hinges[i]
 
-            // TODO: center of mass of rigidbody calculation
-            const com = robotTransform /* .GetComponent<Rigidbody>().centerOfMass) */
-                .applyMatrix4(robotLocalToWorldMatrix)
-
             // TODO: driver anchor
-            const driverAnchor = new Vector3()
+            const driverAnchor = new THREE.Vector3()
 
-            let radius = driverAnchor.min(com)
+            let radius = driverAnchor.sub(com)
 
             // TODO: get axis from driver
-            const driverAxis = new Vector3()
+            const driverAxis = new THREE.Vector3()
 
             // Remove axis component of radius
-            radius = radius.min(driverAxis.multiplyScalar(driverAxis.dot(radius)))
+            radius = radius.sub(driverAxis.multiplyScalar(driverAxis.dot(radius)))
 
             velocities[i] = chassisAngularVelocity.cross(radius).add(chassisVelocity)
             if (velocities[i].length() > maxVelocity.length()) maxVelocity = velocities[i]
@@ -190,19 +197,24 @@ class SwerveDriveBehavior extends Behavior {
             }
         }
 
-        console.log(maxVelocity.length)
+        // console.log(maxVelocity.length)
 
-        console.log("set speeds to " + this._hinges.length + " wheels")
+        // console.log("set speeds to " + this._hinges.length + " wheels")
 
         for (let i = 0; i < this._wheels.length; i++) {
+            // console.debug(`Velocity [${i}]: ${threeVector3ToString(velocities[i])}`)
+
             const speed: number = velocities[i].length()
             const yComponent: number = robotForward.dot(velocities[i])
             const xComponent: number = robotRight.dot(velocities[i])
             const angle: number = Math.atan2(xComponent, yComponent) * (180.0 / Math.PI)
 
+            // console.debug(`Speed [${i}]: ${xComponent.toFixed(3)}, ${yComponent.toFixed(3)}`)
+            // console.debug(`Angle [${i}]: ${angle.toFixed(3)}`);
+
             //console.log(angle)
             this._hinges[i].targetAngle = angle
-            this._wheels[i].accelerationDirection = speed
+            // this._wheels[i].accelerationDirection = speed
         }
     }
 
