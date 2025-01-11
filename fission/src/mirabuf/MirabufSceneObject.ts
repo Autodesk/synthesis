@@ -185,7 +185,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 const comMesh = World.SceneRenderer.CreateSphere(0.05)
                 World.SceneRenderer.scene.add(colliderMesh)
                 World.SceneRenderer.scene.add(comMesh)
-                ;(comMesh.material as THREE.Material).depthTest = false
+                const material = (comMesh.material as THREE.Material)
+                material.depthTest = false
                 this._debugBodies!.set(rnName, {
                     colliderMesh: colliderMesh,
                     comMesh: comMesh,

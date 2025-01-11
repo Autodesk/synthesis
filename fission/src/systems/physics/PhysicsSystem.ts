@@ -28,12 +28,16 @@ import {
     PhysicsEvent,
 } from "./ContactEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
+import { joltVec3ToString } from "@/util/debug/DebugPrint"
 
 export type JoltBodyIndexAndSequence = number
 
 export const PAUSE_REF_ASSEMBLY_SPAWNING = "assembly-spawning"
 export const PAUSE_REF_ASSEMBLY_CONFIG = "assembly-config"
 export const PAUSE_REF_ASSEMBLY_MOVE = "assembly-move"
+
+const ADAPTIVE_TIMESTEP = false
+const FIXED_TIMESTEP = 1.0 / 120.0
 
 /**
  * Layers used for determining enabled/disabled collisions.
@@ -123,6 +127,7 @@ class PhysicsSystem extends WorldSystem {
         this.SetUpContactListener(this._joltPhysSystem)
 
         this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, -9.8, 0))
+        // this._joltPhysSystem.SetGravity(new JOLT.Vec3(0, 0, 0))
         this._joltPhysSystem.GetPhysicsSettings().mDeterministicSimulation = false
         this._joltPhysSystem.GetPhysicsSettings().mSpeculativeContactDistance = 0.06
         this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
@@ -621,11 +626,16 @@ class PhysicsSystem extends WorldSystem {
         wheelSettings.mPosition = JoltRVec3_JoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
-        wheelSettings.mRadius = radius * 1.05
+        wheelSettings.mRadius = radius * 1.00
+        // wheelSettings.mRadius = radius * 0.3
         wheelSettings.mWidth = 0.1
         wheelSettings.mSuspensionMinLength = radius * SUSPENSION_MIN_FACTOR
         wheelSettings.mSuspensionMaxLength = radius * SUSPENSION_MAX_FACTOR
+        // wheelSettings.mSuspensionMaxLength = 0.0003;
+        // wheelSettings.mSuspensionMinLength = 0.0001;
         wheelSettings.mInertia = 1
+
+        console.debug(`Wheel Position: ${joltVec3ToString(wheelSettings.mPosition)}\nRadius: ${wheelSettings.mRadius}\nMin: ${wheelSettings.mSuspensionMinLength.toFixed(5)}\nMax: ${wheelSettings.mSuspensionMaxLength.toFixed(5)}`)
 
         const vehicleSettings = new JOLT.VehicleConstraintSettings()
 
@@ -649,7 +659,10 @@ class PhysicsSystem extends WorldSystem {
         const fixedConstraint = JOLT.castObject(fixedSettings.Create(bodyMain, bodyWheel), JOLT.TwoBodyConstraint)
 
         // Wheel Collision Tester
+        // const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05)
         const tester = new JOLT.VehicleCollisionTesterCastCylinder(bodyWheel.GetObjectLayer(), 0.05)
+        // const tester = new JOLT.VehicleCollisionTesterRay(bodyWheel.GetObjectLayer(), new JOLT.Vec3(0, 1, 0))
+        // const tester = new JOLT.VehicleCollisionTesterCastSphere(bodyWheel.GetObjectLayer(), wheelSettings.mRadius)
         vehicleConstraint.SetVehicleCollisionTester(tester)
         const listener = new JOLT.VehicleConstraintStepListener(vehicleConstraint)
         this._joltPhysSystem.AddStepListener(listener)
@@ -1241,6 +1254,16 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
+    public AddConstraint(constraint: Jolt.Constraint) {
+        this._joltPhysSystem.AddConstraint(constraint)
+        this._constraints.push(constraint)
+    }
+
+    public RemoveConstraint(constraint: Jolt.Constraint) {
+        this._joltPhysSystem.RemoveConstraint(constraint)
+        this._constraints = this._constraints.filter(x => x != constraint)
+    }
+
     public GetBody(bodyId: Jolt.BodyID) {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
@@ -1252,8 +1275,12 @@ class PhysicsSystem extends WorldSystem {
 
         const diffDeltaT = deltaT - lastDeltaT
 
-        lastDeltaT = lastDeltaT + Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
-        lastDeltaT = Math.min(MAX_SIMULATION_PERIOD, Math.max(MIN_SIMULATION_PERIOD, lastDeltaT))
+        if (ADAPTIVE_TIMESTEP) {
+            lastDeltaT = lastDeltaT + Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
+            lastDeltaT = Math.min(MAX_SIMULATION_PERIOD, Math.max(MIN_SIMULATION_PERIOD, lastDeltaT))
+        } else {
+            lastDeltaT = FIXED_TIMESTEP
+        }
 
         let substeps = Math.max(1, Math.floor((lastDeltaT / STANDARD_SIMULATION_PERIOD) * STANDARD_SUB_STEPS))
         substeps = Math.min(MAX_SUBSTEPS, Math.max(MIN_SUBSTEPS, substeps))

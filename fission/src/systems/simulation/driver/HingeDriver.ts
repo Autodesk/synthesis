@@ -1,12 +1,15 @@
 import Jolt from "@barclah/jolt-physics"
 import Driver, { DriverControlMode, DriverID } from "./Driver"
-import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
+import PhysicsSystem, { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import { NoraNumber, NoraTypes } from "../Nora"
+import { JoltVec3_JoltRVec3 } from "@/util/TypeConversions"
+import World from "@/systems/World"
 
-const MAX_TORQUE_WITHOUT_GRAV = 100
+// const MAX_TORQUE_WITHOUT_GRAV = 100
+const MAX_TORQUE_WITHOUT_GRAV = 0
 
 class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
@@ -26,6 +29,7 @@ class HingeDriver extends Driver {
     }
     public set targetAngle(rads: number) {
         this._targetAngle = Math.max(this._constraint.GetLimitsMin(), Math.min(this._constraint.GetLimitsMax(), rads))
+        console.debug(`New target angle: ${this._targetAngle.toFixed(2)}`)
     }
 
     public get maxForce() {
@@ -59,6 +63,14 @@ class HingeDriver extends Driver {
                 // idk
                 break
         }
+    }
+
+    public get worldAnchor(): Jolt.RVec3 {
+        return this._constraint.GetBody1().GetCenterOfMassTransform().MulVec3(this._constraint.GetLocalSpacePoint1())
+    }
+
+    public get worldAxis(): Jolt.RVec3 {
+        return this._constraint.GetBody1().GetCenterOfMassTransform().MulVec3(this._constraint.GetLocalSpaceHingeAxis1())
     }
 
     public constructor(id: DriverID, constraint: Jolt.HingeConstraint, maxVelocity: number, info?: mirabuf.IInfo) {
@@ -97,19 +109,23 @@ class HingeDriver extends Driver {
             }
         }
 
-        PreferencesSystem.addEventListener(this._gravityChange)
+        // PreferencesSystem.addEventListener(this._gravityChange)
     }
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
+            // this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
             let ang = this._targetAngle
 
             if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this.maxVelocity
             if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this.maxVelocity
-            this._constraint.SetTargetAngle(ang)
+            // this._constraint.SetTargetAngle(ang)
         }
+    }
+
+    public Lock() {
+        this._constraint.SetLimits(0, 0)
     }
 
     public getReceiverType(): NoraTypes {
