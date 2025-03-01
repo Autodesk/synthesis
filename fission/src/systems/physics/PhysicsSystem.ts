@@ -36,7 +36,7 @@ export const PAUSE_REF_ASSEMBLY_SPAWNING = "assembly-spawning"
 export const PAUSE_REF_ASSEMBLY_CONFIG = "assembly-config"
 export const PAUSE_REF_ASSEMBLY_MOVE = "assembly-move"
 
-const ADAPTIVE_TIMESTEP = false
+const ADAPTIVE_TIMESTEP = true
 const FIXED_TIMESTEP = 1.0 / 120.0
 
 /**
@@ -620,19 +620,21 @@ class PhysicsSystem extends WorldSystem {
         const axis: Jolt.RVec3 = new JOLT.RVec3(miraAxisX, miraAxis.y ?? 0, miraAxis.z ?? 0)
 
         const bounds = bodyWheel.GetShape().GetLocalBounds()
+        console.debug(`Bounds: ${joltVec3ToString(bounds.mMin)} - ${joltVec3ToString(bounds.mMax)}`)
         const radius = (bounds.mMax.GetY() - bounds.mMin.GetY()) / 2.0
 
         const wheelSettings = new JOLT.WheelSettingsWV()
         wheelSettings.mPosition = JoltRVec3_JoltVec3(anchorPoint.AddRVec3(axis.Mul(0.1)))
         wheelSettings.mMaxSteerAngle = 0.0
         wheelSettings.mMaxHandBrakeTorque = 0.0
-        wheelSettings.mRadius = radius * 1.00
+        wheelSettings.mRadius = radius * 1.05
         // wheelSettings.mRadius = radius * 0.3
         wheelSettings.mWidth = 0.1
-        wheelSettings.mSuspensionMinLength = radius * SUSPENSION_MIN_FACTOR
-        wheelSettings.mSuspensionMaxLength = radius * SUSPENSION_MAX_FACTOR
-        // wheelSettings.mSuspensionMaxLength = 0.0003;
-        // wheelSettings.mSuspensionMinLength = 0.0001;
+        // wheelSettings.mSuspensionMinLength = radius * SUSPENSION_MIN_FACTOR
+        // wheelSettings.mSuspensionMaxLength = radius * SUSPENSION_MAX_FACTOR
+        wheelSettings.mSuspensionSpring.mStiffness = 0.0;
+        wheelSettings.mSuspensionMaxLength = 0.0001;
+        wheelSettings.mSuspensionMinLength = 0.0001;
         wheelSettings.mInertia = 1
 
         console.debug(`Wheel Position: ${joltVec3ToString(wheelSettings.mPosition)}\nRadius: ${wheelSettings.mRadius}\nMin: ${wheelSettings.mSuspensionMinLength.toFixed(5)}\nMax: ${wheelSettings.mSuspensionMaxLength.toFixed(5)}`)

@@ -60,8 +60,8 @@ class WheelDriver extends Driver {
         this.deviceType = deviceType
         this.device = device
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
-        this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION)
-        this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
+        // this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION)
+        // this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
     }
 
     public Update(_: number): void {

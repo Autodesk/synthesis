@@ -8,8 +8,8 @@ import { NoraNumber, NoraTypes } from "../Nora"
 import { JoltVec3_JoltRVec3 } from "@/util/TypeConversions"
 import World from "@/systems/World"
 
-// const MAX_TORQUE_WITHOUT_GRAV = 100
-const MAX_TORQUE_WITHOUT_GRAV = 0
+const MAX_TORQUE_WITHOUT_GRAV = 100
+// const MAX_TORQUE_WITHOUT_GRAV = 0
 
 class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
@@ -109,18 +109,18 @@ class HingeDriver extends Driver {
             }
         }
 
-        // PreferencesSystem.addEventListener(this._gravityChange)
+        PreferencesSystem.addEventListener(this._gravityChange)
     }
 
     public Update(_: number): void {
         if (this._controlMode == DriverControlMode.Velocity) {
-            // this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
+            this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
         } else if (this._controlMode == DriverControlMode.Position) {
             let ang = this._targetAngle
 
             if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this.maxVelocity
             if (ang - this._prevAng > this.maxVelocity) ang = this._prevAng + this.maxVelocity
-            // this._constraint.SetTargetAngle(ang)
+            this._constraint.SetTargetAngle(ang)
         }
     }
 
