@@ -172,7 +172,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     const robots: MirabufRemoteInfo[] = []
                     for (const src of x["robots"]) {
                         if (typeof src == "string") {
-                            const str = `/api/mira/Robots/${src}`
+                            const str = `/api/mira/robots/${src}`
                             if (!map[str]) robots.push({ displayName: src, src: str })
                         } else {
                             if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
@@ -181,7 +181,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     const fields: MirabufRemoteInfo[] = []
                     for (const src of x["fields"]) {
                         if (typeof src == "string") {
-                            const str = `/api/mira/Fields/${src}`
+                            const str = `/api/mira/fields/${src}`
                             if (!map[str]) fields.push({ displayName: src, src: str })
                         } else {
                             if (!map[src["src"]]) fields.push({ displayName: src["displayName"], src: src["src"] })
