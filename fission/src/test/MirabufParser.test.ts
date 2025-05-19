@@ -6,7 +6,7 @@ import MirabufCachingService, { MiraType } from "../mirabuf/MirabufLoader"
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
         const spikeMira = await MirabufCachingService.CacheRemote(
-            "/api/mira/Robots/Dozer_v9.mira",
+            "/api/mira/robots/Dozer_v9.mira",
             MiraType.ROBOT
         ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
 
@@ -28,7 +28,7 @@ describe("Mirabuf Parser Tests", () => {
 
     test("Generate Rigid Nodes (Team 2471 (2018)_v7.mira)", async () => {
         const mm = await MirabufCachingService.CacheRemote(
-            "/api/mira/Robots/Team 2471 (2018)_v7.mira",
+            "/api/mira/robots/Team 2471 (2018)_v7.mira",
             MiraType.ROBOT
         ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
         const t = new MirabufParser(mm!)
