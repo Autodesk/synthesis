@@ -4,7 +4,7 @@ import { useModalControlContext } from "@/ui/ModalContext"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
-import WPILibBrain, { simMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
@@ -28,7 +28,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         brain = simLayer?.brain as WPILibBrain
     }
 
-    const devices: [string, unknown][] = [...(simMap.get(SimType.CANEncoder)?.entries() ?? [])] // ugly
+    const devices: [string, unknown][] = [...(getSimMap()?.get(SimType.CANEncoder)?.entries() ?? [])] // ugly
 
     const stimMap = new Map<string, EncoderStimulus>()
 
@@ -56,7 +56,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         >
             <Label size={LabelSize.Small}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Dropdown label="Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
+            <Dropdown label="CAN Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
             <Dropdown
                 label="Stimuli"
                 options={[...stimMap.keys()]}

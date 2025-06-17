@@ -17,6 +17,8 @@ from src.UI.CreateCommandInputsHelper import (
     createTextBoxInput,
 )
 
+from ..Parser.SynthesisParser.Joints import AcceptedJointTypes
+
 
 class JointConfigTab:
     selectedJointList: list[adsk.fusion.Joint] = []
@@ -237,6 +239,16 @@ class JointConfigTab:
                 adsk.core.ValueInput.createByReal(jointSpeedValue),
             )
             jointSpeed.tooltip = "Meters per second"
+            self.jointConfigTable.addCommandInput(jointSpeed, row, 4)
+
+        else:
+            jointSpeed = commandInputs.addValueInput(
+                "jointSpeed",
+                "Speed",
+                "m",
+                adsk.core.ValueInput.createByReal(0),
+            )
+            jointSpeed.tooltip = "Unavailable"
             self.jointConfigTable.addCommandInput(jointSpeed, row, 4)
 
         if synJoint:

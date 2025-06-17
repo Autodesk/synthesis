@@ -6,9 +6,11 @@ import { mirabuf } from "@/proto/mirabuf"
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID
     childBody: Jolt.BodyID
-    constraint: Jolt.Constraint
+    primaryConstraint: Jolt.Constraint
     maxVelocity: number
     info?: mirabuf.IInfo
+    extraConstraints: Jolt.Constraint[]
+    extraBodies: Jolt.BodyID[]
 }
 
 class Mechanism {
@@ -18,6 +20,7 @@ class Mechanism {
     public stepListeners: Array<Jolt.PhysicsStepListener>
     public layerReserve: LayerReserve | undefined
     public controllable: boolean
+    public ghostBodies: Array<Jolt.BodyID>
 
     public constructor(
         rootBody: string,
@@ -30,6 +33,7 @@ class Mechanism {
         this.constraints = []
         this.stepListeners = []
         this.controllable = controllable
+        this.ghostBodies = []
         this.layerReserve = layerReserve
     }
 
@@ -44,6 +48,8 @@ class Mechanism {
     public GetBodyByNodeId(nodeId: string) {
         return this.nodeToBody.get(nodeId)
     }
+
+    public DisablePhysics() {}
 }
 
 export default Mechanism

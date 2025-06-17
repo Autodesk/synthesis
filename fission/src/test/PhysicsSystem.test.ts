@@ -2,8 +2,8 @@ import { test, expect, describe, assert } from "vitest"
 import PhysicsSystem, { LayerReserve } from "../systems/physics/PhysicsSystem"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import * as THREE from "three"
-import Jolt from "@barclah/jolt-physics"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import { JoltRVec3_JoltVec3 } from "@/util/TypeConversions"
 
 describe("Physics Sansity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
@@ -54,7 +54,10 @@ describe("GodMode", () => {
     test("Basic", () => {
         const system = new PhysicsSystem()
         const box = system.CreateBox(new THREE.Vector3(1, 1, 1), 1, new THREE.Vector3(0, 0, 0), undefined)
-        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(box.GetID(), box.GetPosition() as Jolt.Vec3)
+        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(
+            box.GetID(),
+            JoltRVec3_JoltVec3(box.GetPosition())
+        )
 
         assert(system.GetBody(ghostObject.GetID()) != undefined)
         assert(system.GetBody(box.GetID()) != undefined)
@@ -77,7 +80,7 @@ describe("GodMode", () => {
 
 describe("Mirabuf Physics Loading", () => {
     test("Body Loading (Dozer)", async () => {
-        const assembly = await MirabufCachingService.CacheRemote("/api/mira/Robots/Dozer_v9.mira", MiraType.ROBOT).then(
+        const assembly = await MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
             x => MirabufCachingService.Get(x!.id, MiraType.ROBOT)
         )
         const parser = new MirabufParser(assembly!)
@@ -89,7 +92,7 @@ describe("Mirabuf Physics Loading", () => {
 
     test("Body Loading (Team_2471_(2018)_v7.mira)", async () => {
         const assembly = await MirabufCachingService.CacheRemote(
-            "/api/mira/Robots/Team 2471 (2018)_v7.mira",
+            "/api/mira/robots/Team 2471 (2018)_v7.mira",
             MiraType.ROBOT
         ).then(x => {
             return MirabufCachingService.Get(x!.id, MiraType.ROBOT)

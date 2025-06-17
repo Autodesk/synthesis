@@ -8,11 +8,9 @@ import {
     Array_ThreeMatrix4,
     JoltMat44_ThreeMatrix4,
     ThreeQuaternion_JoltQuat,
-    ThreeVector3_JoltVec3,
+    ThreeVector3_JoltRVec3,
 } from "@/util/TypeConversions"
 import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
-import InputSystem from "@/systems/input/InputSystem"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject
@@ -44,9 +42,7 @@ class IntakeSensorSceneObject extends SceneObject {
             }
 
             this._collision = (event: OnContactPersistedEvent) => {
-                const brain = this._parentAssembly.brain
-                const brainIndex = brain instanceof SynthesisBrain ? brain.brainIndex ?? -1 : -1
-                if (InputSystem.getInput("intake", brainIndex)) {
+                if (this._parentAssembly.intakeActive) {
                     if (this._joltBodyId && !World.PhysicsSystem.isPaused) {
                         const body1 = event.message.body1
                         const body2 = event.message.body2
@@ -74,7 +70,7 @@ class IntakeSensorSceneObject extends SceneObject {
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
-            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(position))
+            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltRVec3(position))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
         }
     }

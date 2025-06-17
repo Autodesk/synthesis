@@ -87,7 +87,11 @@ LBS: TypeAlias = float
 PRIMITIVES = (bool, str, int, float, type(None))
 
 # All currently supported Fusion joints
-SELECTABLE_JOINT_TYPES = (adsk.fusion.JointTypes.RevoluteJointType, adsk.fusion.JointTypes.SliderJointType)
+SELECTABLE_JOINT_TYPES = (
+    adsk.fusion.JointTypes.RevoluteJointType,
+    adsk.fusion.JointTypes.SliderJointType,
+    adsk.fusion.JointTypes.BallJointType,
+)
 
 
 def encodeNestedObjects(obj: Any) -> Any:
@@ -112,7 +116,7 @@ def makeObjectFromJson(objType: type, data: Any) -> Any:
     assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
     for field in fields(obj):
         if field.name in data:
-            setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
+            setattr(obj, field.name, makeObjectFromJson(type(field.type), data[field.name]))
         else:
             setattr(obj, field.name, field.default_factory if field.default_factory is not MISSING else field.default)
 

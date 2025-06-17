@@ -4,7 +4,19 @@ let socket: WebSocket | undefined = undefined
 
 const connectMutex = new Mutex()
 
-async function tryConnect(port: number | undefined): Promise<void> {
+let intervalHandle: NodeJS.Timeout | undefined = undefined
+let reconnect = false
+const RECONNECT_INTERVAL = 1000
+
+function socketOpen(): boolean {
+    return (socket && socket.readyState == WebSocket.OPEN) ?? false
+}
+
+function socketConnecting(): boolean {
+    return (socket && socket.readyState == WebSocket.CONNECTING) ?? false
+}
+
+async function tryConnect(port?: number): Promise<void> {
     await connectMutex
         .runExclusive(() => {
             if ((socket?.readyState ?? WebSocket.CLOSED) == WebSocket.OPEN) {
@@ -20,6 +32,9 @@ async function tryConnect(port: number | undefined): Promise<void> {
             socket.addEventListener("error", () => {
                 console.log("WS Could not open")
                 self.postMessage({ status: "error" })
+            })
+            socket.addEventListener("close", () => {
+                self.postMessage({ status: "close" })
             })
 
             socket.addEventListener("message", onMessage)
@@ -44,17 +59,39 @@ function onMessage(event: MessageEvent) {
 // Sends outgoing messages
 self.addEventListener("message", e => {
     switch (e.data.command) {
-        case "connect":
-            tryConnect(e.data.port)
+        case "enable": {
+            reconnect = e.data.reconnect ?? false
+            const intervalFunc = () => {
+                if (intervalHandle != undefined && !socketOpen() && !socketConnecting()) {
+                    tryConnect()
+                }
+
+                if (!reconnect) {
+                    clearInterval(intervalHandle)
+                    intervalHandle = undefined
+                }
+            }
+            if (intervalHandle != undefined) {
+                clearInterval(intervalHandle)
+            }
+            intervalHandle = setInterval(intervalFunc, RECONNECT_INTERVAL)
             break
-        case "disconnect":
+        }
+        case "disable": {
+            clearInterval(intervalHandle)
+            intervalHandle = undefined
             tryDisconnect()
             break
-        case "update":
-            if (socket) socket.send(JSON.stringify(e.data.data))
+        }
+        case "update": {
+            if (socketOpen()) {
+                socket!.send(JSON.stringify(e.data.data))
+            }
             break
-        default:
+        }
+        default: {
             console.warn(`Unrecognized command '${e.data.command}'`)
             break
+        }
     }
 })
