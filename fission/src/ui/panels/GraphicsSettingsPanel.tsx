@@ -13,7 +13,7 @@ const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
 
 const MIN_MAX_FAR = 10
-const MAX_MAX_FAR = 100
+const MAX_MAX_FAR = 40
 
 const MIN_CASCADES = 3
 const MAX_CASCADES = 8
