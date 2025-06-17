@@ -28,7 +28,7 @@ const STANDARD_ASPECT = 16.0 / 9.0
 const STANDARD_CAMERA_FOV_X = 110.0
 const STANDARD_CAMERA_FOV_Y = STANDARD_CAMERA_FOV_X / STANDARD_ASPECT
 
-const textureLoader = new THREE.TextureLoader();
+const textureLoader = new THREE.TextureLoader()
 
 let nextSceneObjectId = 1
 
@@ -128,7 +128,7 @@ class SceneRenderer extends WorldSystem {
         const materials = [
             solidMaterial,
             solidMaterial,
-            logoMaterial,  // Logo on top face only
+            logoMaterial, // Logo on top face only
             solidMaterial,
             solidMaterial,
             solidMaterial,
