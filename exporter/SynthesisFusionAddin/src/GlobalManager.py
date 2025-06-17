@@ -1,4 +1,4 @@
-""" Initializes the global variables that are set in the run method to reduce hanging commands. """
+"""Initializes the global variables that are set in the run method to reduce hanging commands."""
 
 from typing import Any
 
