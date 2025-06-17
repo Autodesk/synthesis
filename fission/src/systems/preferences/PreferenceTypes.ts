@@ -15,7 +15,6 @@ export type GlobalPreference =
     | "RenderScoreboard"
     | "SubsystemGravity"
     | "SimAutoReconnect"
-    | "QualitySettings"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"

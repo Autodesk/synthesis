@@ -1,14 +1,15 @@
 # Fission
 
 Fission is Synthesis' web-based robotics simulator. This app is hosted [on our website](https://synthesis.github.com/fission/), in addition to a closed, in-development version [here](https://synthesis.autodesk.com/beta/).
+
 ## Setup & Building
 
 ### Requirements
 
 1. NPM (v10.2.4 recommended)
-   - Yarn, Bun, or any other package managers work just as well.
+    - Yarn, Bun, or any other package managers work just as well.
 2. NodeJS (v20.10.0 recommended)
-   - Needed for running the development server.
+    - Needed for running the development server.
 
 ### Setup
 
@@ -45,7 +46,9 @@ We use [Playwright](https://playwright.dev/) for testing consistency. The packag
 ```bash
 npx playwright install
 ```
+
 or
+
 ```bash
 npm run playwright:install
 ```
@@ -79,11 +82,13 @@ npm run test
 We have two packaging commands: one for compiling dev for attachment to the in-development endpoint, and another for the release endpoint.
 
 Release:
+
 ```bash
 npm run build:prod
 ```
 
 In-development:
+
 ```bash
 npm run build:dev
 ```
@@ -143,18 +148,18 @@ For basic user control of the mechanisms, we'll have a Synthesis Brain. We hope 
 
 ## NPM Scripts
 
-| Script               | Description                                                                                                             |
-| -------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| `init`               | Runs the initialization commands to install all dependencies, assets, and unit testing browsers.                        |
-| `dev`                | Starts the development server used for testing. Supports hot-reloading (though finicky with WASM module loading).       |
-| `test`               | Runs the unit tests via Vitest.                                                                                         |
-| `build`              | Builds the project into its packaged form. Uses the root base path.                                                     |
-| `build:prod`         | Builds the project into its packaged form. Uses the `/fission/` base path.                                              |
-| `preview`            | Runs the built project for preview locally before deploying.                                                            |
-| `lint`               | Runs ESLint on the project.                                                                                             |
-| `lint:fix`           | Attempts to fix issues found with ESLint.                                                                               |
-| `prettier`           | Runs Prettier on the project as a check.                                                                                |
-| `prettier:fix`       | Runs Prettier on the project to fix any issues with formatting.                                                         |
-| `format`             | Runs `prettier:fix` and `lint:fix`.                                                                                     |
-| `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                                 |
-| `playwright:install` | Downloads the Playwright browsers.                                                                                      |
+| Script               | Description                                                                                                       |
+| -------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `init`               | Runs the initialization commands to install all dependencies, assets, and unit testing browsers.                  |
+| `dev`                | Starts the development server used for testing. Supports hot-reloading (though finicky with WASM module loading). |
+| `test`               | Runs the unit tests via Vitest.                                                                                   |
+| `build`              | Builds the project into its packaged form. Uses the root base path.                                               |
+| `build:prod`         | Builds the project into its packaged form. Uses the `/fission/` base path.                                        |
+| `preview`            | Runs the built project for preview locally before deploying.                                                      |
+| `lint`               | Runs ESLint on the project.                                                                                       |
+| `lint:fix`           | Attempts to fix issues found with ESLint.                                                                         |
+| `prettier`           | Runs Prettier on the project as a check.                                                                          |
+| `prettier:fix`       | Runs Prettier on the project to fix any issues with formatting.                                                   |
+| `format`             | Runs `prettier:fix` and `lint:fix`.                                                                               |
+| `assetpack`          | Downloads the assetpack and unzips/installs it in the correct location.                                           |
+| `playwright:install` | Downloads the Playwright browsers.                                                                                |
