@@ -47,12 +47,12 @@ a:hover {
 
 html {
     overflow: hidden;
-    position:relative;
-    height:100%;
+    position: relative;
+    height: 100%;
 }
 body {
-    overflow:hidden;
-    position:relative;
+    overflow: hidden;
+    position: relative;
     margin: 0;
     display: flex;
     place-items: center;
