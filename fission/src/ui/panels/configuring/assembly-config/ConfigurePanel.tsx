@@ -131,28 +131,24 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
             ),
         ],
         [
-            ConfigMode.MOVE, 
-            new ConfigModeSelectionOption(
-                "Move", 
-                ConfigMode.MOVE,
-                "Adjust position of robot relative to field."
-            )
+            ConfigMode.MOVE,
+            new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of robot relative to field."),
         ],
         [
-            ConfigMode.INTAKE, 
+            ConfigMode.INTAKE,
             new ConfigModeSelectionOption(
-                "Intake", 
+                "Intake",
                 ConfigMode.INTAKE,
                 "Configure intake mechanism position, parent node, and zone size for accurate simulation and behavior."
-            )
+            ),
         ],
         [
-            ConfigMode.EJECTOR, 
+            ConfigMode.EJECTOR,
             new ConfigModeSelectionOption(
-                "Ejector", 
+                "Ejector",
                 ConfigMode.EJECTOR,
                 "Configure the robot’s ejector mechanism, which controls the release or expulsion of game pieces."
-            )
+            ),
         ],
         [
             ConfigMode.SUBSYSTEMS,
@@ -184,12 +180,9 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
             )
             break
         case "synthesis":
-            modes.set(ConfigMode.CONTROLS, 
-                new ConfigModeSelectionOption(
-                    "Controls", 
-                    ConfigMode.CONTROLS,
-                    "Set your controller scheme."
-                )
+            modes.set(
+                ConfigMode.CONTROLS,
+                new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS, "Set your controller scheme.")
             )
             break
         default:
@@ -200,16 +193,18 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
 }
 
 const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
-    [ConfigMode.MOVE, new ConfigModeSelectionOption(
-        "Move", 
+    [
         ConfigMode.MOVE,
-        "Adjust position of field relative to robot."
-    )],
-    [ConfigMode.SCORING_ZONES, new ConfigModeSelectionOption(
-        "Scoring Zones", 
+        new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of field relative to robot."),
+    ],
+    [
         ConfigMode.SCORING_ZONES,
-        "Define and manage zones on the field where robots can earn points during simulation."
-    )],
+        new ConfigModeSelectionOption(
+            "Scoring Zones",
+            ConfigMode.SCORING_ZONES,
+            "Define and manage zones on the field where robots can earn points during simulation."
+        ),
+    ],
 ])
 
 interface ConfigModeSelectionProps {
