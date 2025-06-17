@@ -19,13 +19,16 @@ import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import autodeskLogo from "@/assets/autodesk_symbol.png"
 
 const CLEAR_COLOR = 0x121212
-const GROUND_COLOR = 0x4066c7
+const GROUND_COLOR = 0xfffef0
 
 const STANDARD_ASPECT = 16.0 / 9.0
 const STANDARD_CAMERA_FOV_X = 110.0
 const STANDARD_CAMERA_FOV_Y = STANDARD_CAMERA_FOV_X / STANDARD_ASPECT
+
+const textureLoader = new THREE.TextureLoader();
 
 let nextSceneObjectId = 1
 
@@ -104,7 +107,37 @@ class SceneRenderer extends WorldSystem {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
 
-        const ground = new THREE.Mesh(new THREE.BoxGeometry(10, 1, 10), this.CreateToonMaterial(GROUND_COLOR))
+        const groundGeometry = new THREE.BoxGeometry(15, 0.2, 15)
+
+        const logoTexture = textureLoader.load(autodeskLogo)
+        logoTexture.wrapS = THREE.ClampToEdgeWrapping
+        logoTexture.wrapT = THREE.ClampToEdgeWrapping
+        logoTexture.center.set(0.5, 0.5)
+        logoTexture.repeat.set(2, 2)
+
+        const logoMaterial = new THREE.MeshToonMaterial({
+            map: logoTexture,
+            color: GROUND_COLOR,
+            shadowSide: THREE.DoubleSide,
+        })
+
+        const solidMaterial = this.CreateToonMaterial(GROUND_COLOR)
+
+        const materials = [
+            solidMaterial, // Right face (+X)
+            solidMaterial, // Left face (-X)
+            logoMaterial,  // Top face (+Y) - this is where we want the logo
+            solidMaterial, // Bottom face (-Y)
+            solidMaterial, // Front face (+Z)
+            solidMaterial, // Back face (-Z)
+        ]
+
+        // Set up materials for CSM if needed
+        materials.forEach(material => {
+            if (this._light instanceof CSM) this._light.setupMaterial(material)
+        })
+
+        const ground = new THREE.Mesh(groundGeometry, materials)
         ground.position.set(0.0, -0.5, 0.0)
         ground.receiveShadow = true
         ground.castShadow = true
