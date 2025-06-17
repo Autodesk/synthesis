@@ -43,6 +43,10 @@ export function ThreeVector3_JoltVec3(vec: THREE.Vector3) {
     return new JOLT.Vec3(vec.x, vec.y, vec.z)
 }
 
+export function ThreeVector3_JoltRVec3(vec: THREE.Vector3) {
+    return new JOLT.RVec3(vec.x, vec.y, vec.z)
+}
+
 export function ThreeMatrix4_JoltMat44(m: THREE.Matrix4) {
     const jMat = new JOLT.Mat44()
     const threeArr = m.toArray()
@@ -71,6 +75,14 @@ export function JoltMat44_ThreeMatrix4(m: Jolt.RMat44): THREE.Matrix4 {
     )
 }
 
+export function JoltVec3_JoltRVec3(m: Jolt.Vec3): Jolt.RVec3 {
+    return new JOLT.RVec3(m.GetX(), m.GetY(), m.GetZ())
+}
+
+export function JoltRVec3_JoltVec3(m: Jolt.RVec3): Jolt.Vec3 {
+    return new JOLT.Vec3(m.GetX(), m.GetY(), m.GetZ())
+}
+
 export function MirabufTransform_ThreeMatrix4(m: mirabuf.ITransform): THREE.Matrix4 {
     const arr = m.spatialMatrix!
     const pos = new THREE.Vector3(arr[3] * 0.01, arr[7] * 0.01, arr[11] * 0.01)
@@ -86,6 +98,10 @@ export function MirabufVector3_ThreeVector3(v: mirabuf.Vector3): THREE.Vector3 {
 
 export function MirabufVector3_JoltVec3(v: mirabuf.Vector3): Jolt.Vec3 {
     return new JOLT.Vec3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
+}
+
+export function MirabufVector3_JoltRVec3(v: mirabuf.Vector3): Jolt.RVec3 {
+    return new JOLT.RVec3(v.x / 100.0, v.y / 100.0, v.z / 100.0)
 }
 
 export function MirabufVector3_JoltFloat3(v: mirabuf.Vector3): Jolt.Float3 {

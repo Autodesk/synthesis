@@ -35,8 +35,8 @@ import {
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import Button from "@/ui/components/Button"
-import { setSelectedBrainIndexGlobal } from "../configuring/ChooseInputSchemePanel"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 
 interface ItemCardProps {
     id: string
@@ -89,6 +89,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
         progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
     }
 
+    World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_SPAWNING)
     MirabufCachingService.Get(info.id, type)
         .then(assembly => {
             if (assembly) {
@@ -96,6 +97,8 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                     if (x) {
                         World.SceneRenderer.RegisterSceneObject(x)
                         progressHandle.Done()
+
+                        Global_OpenPanel?.("initial-config")
                     } else {
                         progressHandle.Fail()
                     }
@@ -108,11 +111,14 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
             }
         })
         .catch(() => progressHandle.Fail())
+        .finally(() => {
+            setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+        })
 }
 
 const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { showTooltip } = useTooltipControlContext()
-    const { closePanel, openPanel } = usePanelControlContext()
+    const { closePanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
 
     const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
@@ -166,7 +172,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     const robots: MirabufRemoteInfo[] = []
                     for (const src of x["robots"]) {
                         if (typeof src == "string") {
-                            const str = `/api/mira/Robots/${src}`
+                            const str = `/api/mira/robots/${src}`
                             if (!map[str]) robots.push({ displayName: src, src: str })
                         } else {
                             if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
@@ -175,7 +181,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     const fields: MirabufRemoteInfo[] = []
                     for (const src of x["fields"]) {
                         if (typeof src == "string") {
-                            const str = `/api/mira/Fields/${src}`
+                            const str = `/api/mira/fields/${src}`
                             if (!map[str]) fields.push({ displayName: src, src: str })
                         } else {
                             if (!map[src["src"]]) fields.push({ displayName: src["displayName"], src: src["src"] })
@@ -202,13 +208,8 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             ])
 
             closePanel(panelId)
-
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
         },
-        [showTooltip, closePanel, panelId, openPanel]
+        [showTooltip, closePanel, panelId]
     )
 
     // Cache a selected remote mirabuf assembly, load from cache.
@@ -228,13 +229,8 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .catch(() => status.Fail())
 
             closePanel(panelId)
-
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
         },
-        [closePanel, panelId, openPanel]
+        [closePanel, panelId]
     )
 
     const selectAPS = useCallback(
@@ -253,58 +249,57 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .catch(() => status.Fail())
 
             closePanel(panelId)
-
-            if (type == MiraType.ROBOT) {
-                setSelectedBrainIndexGlobal(SynthesisBrain.brainIndexMap.size)
-                openPanel("choose-scheme")
-            }
         },
-        [closePanel, panelId, openPanel]
+        [closePanel, panelId]
     )
 
     // Generate Item cards for cached robots.
     const cachedRobotElements = useMemo(
         () =>
-            cachedRobots.map(info =>
-                ItemCard({
-                    name: info.name || info.cacheKey || "Unnamed Robot",
-                    id: info.id,
-                    primaryButtonNode: SynthesisIcons.AddLarge,
-                    primaryOnClick: () => {
-                        console.log(`Selecting cached robot: ${info.cacheKey}`)
-                        selectCache(info, MiraType.ROBOT)
-                    },
-                    secondaryOnClick: () => {
-                        console.log(`Deleting cache of: ${info.cacheKey}`)
-                        MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.ROBOT)
+            cachedRobots
+                .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
+                .map(info =>
+                    ItemCard({
+                        name: info.name || info.cacheKey || "Unnamed Robot",
+                        id: info.id,
+                        primaryButtonNode: SynthesisIcons.AddLarge,
+                        primaryOnClick: () => {
+                            console.log(`Selecting cached robot: ${info.cacheKey}`)
+                            selectCache(info, MiraType.ROBOT)
+                        },
+                        secondaryOnClick: () => {
+                            console.log(`Deleting cache of: ${info.cacheKey}`)
+                            MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.ROBOT)
 
-                        setCachedRobots(GetCacheInfo(MiraType.ROBOT))
-                    },
-                })
-            ),
+                            setCachedRobots(GetCacheInfo(MiraType.ROBOT))
+                        },
+                    })
+                ),
         [cachedRobots, selectCache, setCachedRobots]
     )
 
     // Generate Item cards for cached fields.
     const cachedFieldElements = useMemo(
         () =>
-            cachedFields.map(info =>
-                ItemCard({
-                    name: info.name || info.cacheKey || "Unnamed Field",
-                    id: info.id,
-                    primaryButtonNode: SynthesisIcons.AddLarge,
-                    primaryOnClick: () => {
-                        console.log(`Selecting cached field: ${info.cacheKey}`)
-                        selectCache(info, MiraType.FIELD)
-                    },
-                    secondaryOnClick: () => {
-                        console.log(`Deleting cache of: ${info.cacheKey}`)
-                        MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.FIELD)
+            cachedFields
+                .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
+                .map(info =>
+                    ItemCard({
+                        name: info.name || info.cacheKey || "Unnamed Field",
+                        id: info.id,
+                        primaryButtonNode: SynthesisIcons.AddLarge,
+                        primaryOnClick: () => {
+                            console.log(`Selecting cached field: ${info.cacheKey}`)
+                            selectCache(info, MiraType.FIELD)
+                        },
+                        secondaryOnClick: () => {
+                            console.log(`Deleting cache of: ${info.cacheKey}`)
+                            MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.FIELD)
 
-                        setCachedFields(GetCacheInfo(MiraType.FIELD))
-                    },
-                })
-            ),
+                            setCachedFields(GetCacheInfo(MiraType.FIELD))
+                        },
+                    })
+                ),
         [cachedFields, selectCache, setCachedFields]
     )
 
@@ -313,17 +308,19 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const remoteRobots = manifest?.robots.filter(
             path => !cachedRobots.some(info => info.cacheKey.includes(path.src))
         )
-        return remoteRobots?.map(path =>
-            ItemCard({
-                name: path.displayName,
-                id: path.src,
-                primaryButtonNode: SynthesisIcons.DownloadLarge,
-                primaryOnClick: () => {
-                    console.log(`Selecting remote: ${path}`)
-                    selectRemote(path, MiraType.ROBOT)
-                },
-            })
-        )
+        return remoteRobots
+            ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
+            .map(path =>
+                ItemCard({
+                    name: path.displayName,
+                    id: path.src,
+                    primaryButtonNode: SynthesisIcons.DownloadLarge,
+                    primaryOnClick: () => {
+                        console.log(`Selecting remote: ${path}`)
+                        selectRemote(path, MiraType.ROBOT)
+                    },
+                })
+            )
     }, [manifest?.robots, cachedRobots, selectRemote])
 
     // Generate Item cards for remote fields.
@@ -331,33 +328,37 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const remoteFields = manifest?.fields.filter(
             path => !cachedFields.some(info => info.cacheKey.includes(path.src))
         )
-        return remoteFields?.map(path =>
-            ItemCard({
-                name: path.displayName,
-                id: path.src,
-                primaryButtonNode: SynthesisIcons.DownloadLarge,
-                primaryOnClick: () => {
-                    console.log(`Selecting remote: ${path}`)
-                    selectRemote(path, MiraType.FIELD)
-                },
-            })
-        )
+        return remoteFields
+            ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
+            .map(path =>
+                ItemCard({
+                    name: path.displayName,
+                    id: path.src,
+                    primaryButtonNode: SynthesisIcons.DownloadLarge,
+                    primaryOnClick: () => {
+                        console.log(`Selecting remote: ${path}`)
+                        selectRemote(path, MiraType.FIELD)
+                    },
+                })
+            )
     }, [manifest?.fields, cachedFields, selectRemote])
 
     // Generate Item cards for APS robots and fields.
     const hubElements = useMemo(
         () =>
-            files?.map(file =>
-                ItemCard({
-                    name: file.attributes.displayName!,
-                    id: file.id,
-                    primaryButtonNode: SynthesisIcons.DownloadLarge,
-                    primaryOnClick: () => {
-                        console.debug(file.raw)
-                        selectAPS(file, viewType)
-                    },
-                })
-            ),
+            files
+                ?.sort((a, b) => a.attributes.displayName!.localeCompare(b.attributes.displayName!))
+                .map(file =>
+                    ItemCard({
+                        name: `${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber != undefined ? ` (v${file.attributes.versionNumber})` : ""}`,
+                        id: file.id,
+                        primaryButtonNode: SynthesisIcons.DownloadLarge,
+                        primaryOnClick: () => {
+                            console.debug(file.raw)
+                            selectAPS(file, viewType)
+                        },
+                    })
+                ),
         [files, selectAPS, viewType]
     )
 

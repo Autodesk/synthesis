@@ -17,8 +17,6 @@ function Scene({ useStats }: SceneProps) {
         World.InitWorld()
 
         if (refContainer.current) {
-            console.debug("Adding ThreeJs to DOM")
-
             const sr = World.SceneRenderer
             sr.renderer.domElement.style.width = "100%"
             sr.renderer.domElement.style.height = "100%"
@@ -30,7 +28,6 @@ function Scene({ useStats }: SceneProps) {
             })
 
             if (useStats && !stats) {
-                console.log("Adding stat")
                 stats = new Stats()
                 stats.dom.style.position = "absolute"
                 stats.dom.style.top = "0px"

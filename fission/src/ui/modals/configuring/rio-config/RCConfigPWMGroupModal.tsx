@@ -7,7 +7,7 @@ import Checkbox from "@/components/Checkbox"
 import Container from "@/components/Container"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
-import WPILibBrain, { simMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import WPILibBrain, { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { PWMOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -34,7 +34,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     }
 
     let devices: [string, unknown][] = []
-    const pwms = simMap.get(SimType.PWM)
+    const pwms = getSimMap()?.get(SimType.PWM)
     if (pwms) {
         devices = [...pwms.entries()].filter(([_, data]) => data.get("<init"))
     }
@@ -47,7 +47,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptName="Done"
             onAccept={() => {
                 // no eslint complain
-                brain.addSimOutputGroup(new PWMOutputGroup(name, checkedPorts, checkedDrivers))
+                brain.addSimOutput(new PWMOutputGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
             }}
             onCancel={() => {

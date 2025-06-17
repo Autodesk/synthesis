@@ -6,6 +6,7 @@ simgui.json
 .gradle/
 .vscode/
 .wpilib/
+.settings/
 build/
 ctre_sim/
 bin/

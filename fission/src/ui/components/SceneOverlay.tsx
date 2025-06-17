@@ -33,7 +33,9 @@ function SceneOverlay() {
                     transform: "translate(-50%, -100%)",
                 }}
             >
-                <Label size={LabelSize.Large}>{x.text()}</Label>
+                <Label className="select-none" size={LabelSize.Large}>
+                    {x.text()}
+                </Label>
             </div>
         ))
     }, [])

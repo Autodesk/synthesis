@@ -30,11 +30,17 @@ repositories {
     maven {
         url "https://maven.revrobotics.com/"
     }
+
+    // KAUAI
+    maven {
+        url "https://dev.studica.com/maven/release/2024/"
+    }
 }
 
 def WPI_Version = '2024.3.2'
 def REV_Version = '2024.2.4'
 def CTRE_Version = '24.3.0'
+def KAUAI_Version = '2024.1.0'
 
 dependencies {
     // This dependency is exported to consumers, that is to say found on their compile classpath.
@@ -53,6 +59,9 @@ dependencies {
 
     // CTRE
     implementation "com.ctre.phoenix6:wpiapi-java:$CTRE_Version"
+
+    // KAUAI
+    implementation "com.kauailabs.navx.frc:navx-frc-java:$KAUAI_Version"
 }
 
 java {

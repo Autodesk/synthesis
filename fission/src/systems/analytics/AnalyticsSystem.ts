@@ -78,8 +78,6 @@ class AnalyticsSystem extends WorldSystem {
             betaCode = betaCode.substring(betaCode.indexOf("=") + 1, betaCode.indexOf(";"))
 
             this.SetUserProperty("Beta Code", betaCode)
-        } else {
-            console.debug("No code match")
         }
 
         if (MOBILE_USER_AGENT_REGEX.test(navigator.userAgent)) {

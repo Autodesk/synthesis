@@ -59,7 +59,8 @@ export class SynthesisIcons {
     /** Large icons: used for icon buttons */
     public static DeleteLarge = (<IoTrashBin size={"1.25rem"} />)
     public static DownloadLarge = (<HiDownload size={"1.25rem"} />)
-    public static AddLarge = (<AiOutlinePlus size={"1.25rem"} />)
+    public static AddLarge = (<FaPlus size={"1.25rem"} />)
+    public static GearLarge = (<FaGear size={"1.25rem"} />)
     public static RefreshLarge = (<BiRefresh size={"1.25rem"} />)
     public static SelectLarge = (<IoCheckmark size={"1.25rem"} />)
     public static EditLarge = (<IoPencil size={"1.25rem"} />)

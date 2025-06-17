@@ -2,7 +2,7 @@ import {
     Array_ThreeMatrix4,
     JoltMat44_ThreeMatrix4,
     ThreeQuaternion_JoltQuat,
-    ThreeVector3_JoltVec3,
+    ThreeVector3_JoltRVec3,
 } from "@/util/TypeConversions"
 import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -58,8 +58,6 @@ class ScoringZoneSceneObject extends SceneObject {
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
         super()
 
-        console.debug("Trying to create scoring zone...")
-
         this._parentAssembly = parentAssembly
         this._prefs = this._parentAssembly.fieldPreferences?.scoringZones[index]
         this._toRender = render ?? PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
@@ -86,7 +84,7 @@ class ScoringZoneSceneObject extends SceneObject {
                 )
                 const props = DeltaFieldTransforms_PhysicalProp(this._deltaTransformation, fieldTransformation)
 
-                World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(props.translation))
+                World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltRVec3(props.translation))
                 World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(props.rotation))
                 const shapeSettings = new JOLT.BoxShapeSettings(
                     new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
@@ -138,8 +136,6 @@ class ScoringZoneSceneObject extends SceneObject {
                     }
                     OnContactRemovedEvent.AddListener(this._collisionRemoved)
                 }
-
-                console.debug("Scoring zone created successfully")
             }
         }
     }
@@ -152,7 +148,7 @@ class ScoringZoneSceneObject extends SceneObject {
             )
             const props = DeltaFieldTransforms_PhysicalProp(this._deltaTransformation, fieldTransformation)
 
-            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltVec3(props.translation))
+            World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltRVec3(props.translation))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(props.rotation))
             const shapeSettings = new JOLT.BoxShapeSettings(
                 new JOLT.Vec3(props.scale.x / 2, props.scale.y / 2, props.scale.z / 2)
@@ -195,8 +191,6 @@ class ScoringZoneSceneObject extends SceneObject {
     }
 
     public Dispose(): void {
-        console.debug("Destroying scoring zone")
-
         if (this._joltBodyId) {
             World.PhysicsSystem.DestroyBodyIds(this._joltBodyId)
             if (this._mesh) {

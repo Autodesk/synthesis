@@ -7,6 +7,7 @@ from src.Util import makeDirectories
 
 APP_NAME = "Synthesis"
 APP_TITLE = "Synthesis Robot Exporter"
+APP_WEBSITE_URL = "https://synthesis.autodesk.com/fission/"
 DESCRIPTION = "Exports files from Fusion into the Synthesis Format"
 INTERNAL_ID = "Synthesis"
 ADDIN_PATH = os.path.dirname(os.path.realpath(__file__))
