@@ -132,15 +132,15 @@ class SceneRenderer extends WorldSystem {
             solidMaterial,
             solidMaterial,
             solidMaterial,
-        ]
-
+        ]        
+        
         // Set up materials for CSM
         materials.forEach(material => {
             if (this._light instanceof CSM) this._light.setupMaterial(material)
         })
 
         const ground = new THREE.Mesh(groundGeometry, materials)
-        ground.position.set(0.0, -0.5, 0.0)
+        ground.position.set(0.0, -0.065, 0.0)
         ground.receiveShadow = true
         ground.castShadow = true
         this._scene.add(ground)
@@ -485,6 +485,7 @@ class SceneRenderer extends WorldSystem {
 
         ContextSupplierEvent.Dispatch(miraSupplierData, e.position)
     }
+
 }
 
 export default SceneRenderer
