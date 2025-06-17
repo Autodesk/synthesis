@@ -1,11 +1,13 @@
 import Panel, { PanelPropsImpl } from "../components/Panel"
-import { SectionDivider, SectionLabel, SynthesisIcons } from "../components/StyledComponents"
+import { SectionDivider, SectionLabel, Spacer, SynthesisIcons } from "../components/StyledComponents"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { LabelSize } from "../components/Label"
 import World from "@/systems/World"
 import Slider from "@/ui/components/Slider"
 import { useState } from "react"
+import Button from "../components/Button"
+import { Box } from "@mui/material"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -73,6 +75,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                         setFancyShadows(checked)
                         World.SceneRenderer.ChangeLighting(checked)
                     }}
+                    tooltipText="Cascading shadows implementation"
                 />
                 {fancyShadows ? (
                     <>
@@ -132,6 +135,27 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             }}
                             step={1024}
                         />
+                        {Spacer(10)}
+                        <Box alignSelf={"center"}>
+                            <Button
+                                value="Reset Default"
+                                onClick={() => {
+                                    setShadowMapSize(4096)
+                                    setMaxFar(30)
+                                    setLightIntensity(5)
+                                    setCascades(4)
+
+                                    World.SceneRenderer.changeCSMSettings({
+                                        shadowMapSize: 4096,
+                                        maxFar: 30,
+                                        lightIntensity: 5,
+                                        fancyShadows: fancyShadows,
+                                        cascades: 4,
+                                        antiAliasing: antiAliasing,
+                                    })
+                                }}
+                            />
+                        </Box>
                     </>
                 ) : (
                     <></>
@@ -150,6 +174,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                         setAntiAliasing(checked)
                         setReload(true)
                     }}
+                    tooltipText="Requires a browser refresh"
                 />
             </div>
         </Panel>

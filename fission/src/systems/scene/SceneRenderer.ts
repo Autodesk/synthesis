@@ -282,13 +282,14 @@ class SceneRenderer extends WorldSystem {
         if (this._light instanceof THREE.DirectionalLight) {
             this._light.intensity = intensity
         } else if (this._light instanceof CSM) {
-            this._light.lightIntensity = intensity
+            this._light.dispose()
+            this._light.remove()
 
-            this._light.createLights()
-            this._light.injectInclude()
-            this._light.updateFrustums()
-            this._light.update()
-            console.log(this._light.lightIntensity)
+            this.CreateCSM({
+                ...PreferencesSystem.getGraphicsPreferences(),
+                lightIntensity: intensity,
+            })
+            this.SetupCSMMaterials()
         }
     }
 
@@ -296,14 +297,23 @@ class SceneRenderer extends WorldSystem {
     public changeCSMSettings(settings: GraphicsPreferences) {
         if (!(this._light instanceof CSM)) return
 
-        this._light.maxFar = settings.maxFar
-        this._light.shadowMapSize = Math.min(settings.shadowMapSize, this._renderer.capabilities.maxTextureSize)
-        this._light.cascades = settings.cascades
+        this._light.dispose()
+        this._light.remove()
 
-        this._light.createLights()
-        this._light.injectInclude()
-        this._light.updateFrustums()
-        this._light.update()
+        this.CreateCSM(settings)
+        this.SetupCSMMaterials()
+
+        // this._scene.traverse(object => {
+        //     if (object.material) {
+        //         if (Array.isArray(object.material)) {
+        //             object.material.forEach(mat => {
+        //                 mat.needsUpdate = true
+        //             })
+        //         } else {
+        //             object.material.needsUpdate = true
+        //         }
+        //     }
+        // })
     }
 
     public RegisterSceneObject<T extends SceneObject>(obj: T): number {
