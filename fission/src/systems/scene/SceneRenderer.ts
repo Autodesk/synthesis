@@ -19,6 +19,7 @@ import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0x4066c7
@@ -299,6 +300,16 @@ class SceneRenderer extends WorldSystem {
 
         if (this._sceneObjects.delete(id)) {
             obj!.Dispose()
+        }
+    }
+
+    public RemoveAllFields() {
+        for (const [key, value] of this._sceneObjects) {
+            if (value instanceof MirabufSceneObject) {
+                if (value.miraType == MiraType.FIELD) {
+                    this.RemoveSceneObject(key)
+                }
+            }
         }
     }
 
