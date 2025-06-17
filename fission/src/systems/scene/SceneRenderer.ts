@@ -107,13 +107,12 @@ class SceneRenderer extends WorldSystem {
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
 
-        // Setup ground
         const groundGeometry = new THREE.BoxGeometry(15, 0.2, 15)
 
         const logoTexture = textureLoader.load(autodeskLogo)
         logoTexture.wrapS = THREE.ClampToEdgeWrapping
         logoTexture.wrapT = THREE.ClampToEdgeWrapping
-        logoTexture.center.set(0.5, 0.5)
+        logoTexture.center.set(0.5, 0.5) // Size Adjustment
         logoTexture.repeat.set(2, 2)
 
         const logoMaterial = new THREE.MeshToonMaterial({
@@ -140,7 +139,7 @@ class SceneRenderer extends WorldSystem {
         })
 
         const ground = new THREE.Mesh(groundGeometry, materials)
-        ground.position.set(0.0, -0.065, 0.0)
+        ground.position.set(0.0, -0.09, 0.0)
         ground.receiveShadow = true
         ground.castShadow = true
         this._scene.add(ground)
