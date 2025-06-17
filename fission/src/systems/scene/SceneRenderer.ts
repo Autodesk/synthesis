@@ -304,10 +304,10 @@ class SceneRenderer extends WorldSystem {
     }
 
     public RemoveAllFields() {
-        for (const [key, value] of this._sceneObjects) {
-            if (value instanceof MirabufSceneObject) {
-                if (value.miraType == MiraType.FIELD) {
-                    this.RemoveSceneObject(key)
+        for (const [id, obj] of this._sceneObjects) {
+            if (obj instanceof MirabufSceneObject) {
+                if (obj.miraType == MiraType.FIELD) {
+                    this.RemoveSceneObject(id)
                 }
             }
         }
