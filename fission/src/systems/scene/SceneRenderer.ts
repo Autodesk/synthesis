@@ -101,12 +101,13 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        // Adding the lighting uisng quality preferences
+        // Adding the lighting using quality preferences
         this.ChangeLighting(PreferencesSystem.getGlobalPreference<string>("QualitySettings"))
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
 
+        // Setup ground
         const groundGeometry = new THREE.BoxGeometry(15, 0.2, 15)
 
         const logoTexture = textureLoader.load(autodeskLogo)
@@ -123,16 +124,17 @@ class SceneRenderer extends WorldSystem {
 
         const solidMaterial = this.CreateToonMaterial(GROUND_COLOR)
 
+        // Define each face individually
         const materials = [
-            solidMaterial, // Right face (+X)
-            solidMaterial, // Left face (-X)
-            logoMaterial,  // Top face (+Y) - this is where we want the logo
-            solidMaterial, // Bottom face (-Y)
-            solidMaterial, // Front face (+Z)
-            solidMaterial, // Back face (-Z)
+            solidMaterial,
+            solidMaterial,
+            logoMaterial,  // Logo on top face only
+            solidMaterial,
+            solidMaterial,
+            solidMaterial,
         ]
 
-        // Set up materials for CSM if needed
+        // Set up materials for CSM
         materials.forEach(material => {
             if (this._light instanceof CSM) this._light.setupMaterial(material)
         })
