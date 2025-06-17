@@ -139,7 +139,7 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
             new ConfigModeSelectionOption(
                 "Intake",
                 ConfigMode.INTAKE,
-                "Configure intake mechanism position, parent node, and zone size for accurate simulation and behavior."
+                "Configure the robot’s intake position and parent node for picking up game pieces."
             ),
         ],
         [
