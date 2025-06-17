@@ -3,6 +3,7 @@ import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "../components/StyledComponents"
 import Button from "@/components/Button.tsx"
 import { useModalControlContext } from "@/ui/ModalContext"
+import { Global_AddToast } from "@/components/GlobalUIControls.ts"
 
 const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () => void }> = ({
     modalId,
@@ -18,6 +19,7 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
             middleEnabled={false}
             cancelEnabled={false}
             acceptEnabled={false}
+            allowClickAway={false}
         >
             <div className="flex flex-col">
                 <Button
@@ -32,7 +34,7 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
                     value={"Multiplayer"}
                     onClick={() => {
                         // todo
-                        alert("Multiplayer is not yet supported")
+                        Global_AddToast?.("error", "Multiplayer Not Yet Supported", "Come back soon!")
                         // closeModal()
                     }}
                     className="w-full mt-1 mb-3"
