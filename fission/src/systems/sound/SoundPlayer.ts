@@ -51,4 +51,4 @@ export function checkboxPressedSFX(){
     checkboxPressedSFX.Play()
 }
 
-// TODO add different SFX
+// TODO add more SFX

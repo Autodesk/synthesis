@@ -37,6 +37,7 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import Button from "@/ui/components/Button"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 
 interface ItemCardProps {
     id: string
@@ -375,7 +376,12 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 <ToggleButtonGroup
                     value={viewType}
                     exclusive
-                    onChange={(_, v) => v != null && setViewType(v)}
+                    onChange={(_, v) => { 
+                        buttonPressSFX()
+                        if (v != null) {
+                            setViewType(v)
+                        }
+                    }}
                     sx={{
                         alignSelf: "center",
                     }}

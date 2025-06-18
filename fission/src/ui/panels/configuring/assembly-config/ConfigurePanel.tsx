@@ -24,6 +24,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
+import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -347,6 +348,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     value={configurationType}
                     exclusive
                     onChange={(_: MouseEvent<HTMLElement>, v: ConfigurationType) => {
+                        buttonPressSFX()
                         if (v != null) {
                             setConfigurationType(v)
                             setSelectedConfigurationType(v)

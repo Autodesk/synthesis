@@ -1,4 +1,5 @@
 import { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
@@ -52,6 +53,7 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 value={cameraControlType}
                 exclusive
                 onChange={(_, v) => {
+                    buttonPressSFX()
                     if (v != null) {
                         return
                     }
