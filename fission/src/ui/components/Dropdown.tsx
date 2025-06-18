@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { alpha, styled } from "@mui/system"
 import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
 import { colorNameToVar } from "../ThemeContext"
+import { dropdownMenuSFX } from "@/systems/sound/SoundPlayer"
 
 /** The clickable button for a dropdown that shows the selected item and opens the menu. Custom styling over the MUI material button.*/
 const CustomButton = styled(Button)({
@@ -99,11 +100,13 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, la
     /** Handles clicking the button to open the dropdown  menu. */
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget)
+        dropdownMenuSFX()
     }
 
     /** Handles closing the dropdown menu. */
     const handleClose = () => {
         setAnchorEl(null)
+        dropdownMenuSFX()
     }
 
     /** Handles the selection of a dropdown option. */

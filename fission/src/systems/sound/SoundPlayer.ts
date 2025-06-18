@@ -3,6 +3,7 @@ import { clamp } from "@/util/MathematicalFunctions"
 
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import checkboxPressSound from "@/assets/sound-files/CheckboxPress.wav"
+import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
 
 enum SoundType {
     SFX = 0,
@@ -46,9 +47,12 @@ export function buttonPressSFX() {
     buttonPressedSFX.Play()
 }
 
-export function checkboxPressedSFX(){
+export function checkboxPressedSFX() {
     const checkboxPressedSFX = new SoundPlayer(checkboxPressSound, SoundType.SFX)
     checkboxPressedSFX.Play()
 }
 
-// TODO add more SFX
+export function dropdownMenuSFX() {
+    const dropdownMenuSFX = new SoundPlayer(dropdownMenuSound, SoundType.SFX)
+    dropdownMenuSFX.Play()
+}

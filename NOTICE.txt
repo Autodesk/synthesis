@@ -7,3 +7,7 @@ This product bundles the following third-party asset:
 * fission/src/asset/sound-files/CheckboxPress.wav
   Licensed under CC0 1.0
   https://creativecommons.org/publicdomain/zero/1.0/
+
+* fission/src/asset/sound-files/DullClick.wav
+  Licensed under CC0 1.0
+  https://creativecommons.org/publicdomain/zero/1.0/
