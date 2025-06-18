@@ -1,6 +1,8 @@
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { clamp } from "@/util/MathematicalFunctions"
+
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import checkboxPressSound from "@/assets/sound-files/CheckboxPress.wav"
 
 enum SoundType {
     SFX = 0,
@@ -42,6 +44,11 @@ class SoundPlayer {
 export function buttonPressSFX() {
     const buttonPressedSFX = new SoundPlayer(buttonPressSound, SoundType.SFX)
     buttonPressedSFX.Play()
+}
+
+export function checkboxPressedSFX(){
+    const checkboxPressedSFX = new SoundPlayer(checkboxPressSound, SoundType.SFX)
+    checkboxPressedSFX.Play()
 }
 
 // TODO add different SFX

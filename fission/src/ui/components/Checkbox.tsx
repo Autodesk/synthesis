@@ -3,6 +3,7 @@ import Label, { LabelSize } from "./Label"
 import { Switch } from "@mui/base/Switch"
 import { Box } from "@mui/material"
 import { LabelWithTooltip } from "./StyledComponents"
+import { checkboxPressedSFX } from "@/systems/sound/SoundPlayer"  
 
 type CheckboxProps = {
     label: string
@@ -54,7 +55,13 @@ const Checkbox: React.FC<CheckboxProps> = ({
                 </Label>
             )}
             <Switch
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                    if (typeof onClick == "function") {
+                        onClick
+                        onClick(e.target.checked)
+                    }
+                    checkboxPressedSFX()
+                }}
                 slotProps={{
                     root: {
                         className: `group relative inline-block w-[24px] h-[24px] m-2.5 cursor-pointer transform transition-transform hover:scale-[1.03] active:scale-[1.06]`,
