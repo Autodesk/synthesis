@@ -8,6 +8,7 @@ import {
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
 import Label, { LabelSize } from "./Label"
+import ViewCube from "./ViewCube"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -102,6 +103,7 @@ function SceneOverlay() {
             }}
         >
             {components ?? <></>}
+            <ViewCube size={120} position={{ top: 20, right: 20 }} />
         </Box>
     )
 }
