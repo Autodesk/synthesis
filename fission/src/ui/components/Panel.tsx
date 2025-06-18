@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react"
 import { usePanelControlContext } from "@/ui/PanelContext"
+import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 
 export type OpenLocation =
     | "top-left"
@@ -171,6 +172,7 @@ const Panel: React.FC<PanelProps> = ({
                                 onClick={() => {
                                     closePanel(panelId)
                                     if (!cancelBlocked && onCancel) onCancel()
+                                    buttonPressSFX()
                                 }}
                                 className={`${
                                     cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
@@ -185,6 +187,7 @@ const Panel: React.FC<PanelProps> = ({
                                 value={middleName || ""}
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
+                                    buttonPressSFX()
                                 }}
                                 className={`${
                                     middleBlocked ? "bg-interactive-background" : "bg-accept-button"
@@ -200,6 +203,7 @@ const Panel: React.FC<PanelProps> = ({
                                 onClick={() => {
                                     closePanel(panelId)
                                     if (!acceptBlocked && onAccept) onAccept()
+                                        buttonPressSFX()
                                 }}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"

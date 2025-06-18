@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react"
 import { ClickAwayListener } from "@mui/base/ClickAwayListener"
 import { useModalControlContext } from "@/ui/ModalContext"
+import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 
 export type ModalPropsImpl = {
     modalId: string
@@ -94,6 +95,7 @@ const Modal: React.FC<ModalProps> = ({
                                 onClick={() => {
                                     closeModal()
                                     if (!cancelBlocked && onCancel) onCancel()
+                                    buttonPressSFX()
                                 }}
                                 className={`${
                                     cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
@@ -108,6 +110,7 @@ const Modal: React.FC<ModalProps> = ({
                                 value={middleName || ""}
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
+                                    buttonPressSFX()
                                 }}
                                 className={`${
                                     middleBlocked ? "bg-interactive-background" : "bg-accept-button"
@@ -123,6 +126,7 @@ const Modal: React.FC<ModalProps> = ({
                                 onClick={() => {
                                     closeModal()
                                     if (!acceptBlocked && onAccept) onAccept()
+                                    buttonPressSFX()
                                 }}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"

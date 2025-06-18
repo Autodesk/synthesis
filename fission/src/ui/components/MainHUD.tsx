@@ -11,6 +11,7 @@ import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
 import { setAddToast } from "./GlobalUIControls"
+import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 
 type ButtonProps = {
     value: string
@@ -23,7 +24,12 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     if (larger == null) larger = false
     return (
         <Button
-            onClick={onClick}
+            onClick={() => {
+                if (typeof onClick == "function"){
+                    onClick()
+                }
+                buttonPressSFX()
+                }}
             className={`relative flex flex-row
                 cursor-pointer
                 bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
