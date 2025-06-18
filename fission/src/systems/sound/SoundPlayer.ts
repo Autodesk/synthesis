@@ -13,9 +13,11 @@ class SoundPlayer {
     constructor(filePath: string, soundType: SoundType) {
         this.audio = new Audio(filePath)
         
-        if (soundType == SoundType.SFX) {
-            let sfxVolume = PreferencesSystem.getGlobalPreference<number>("SFXVolume")
-            sfxVolume /= 100 // Changes value from percent (0 - 100) to decimal (0 - 1)
+        if (PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")) {
+            this.audio.volume = 0;
+        }
+        else if (soundType == SoundType.SFX) {
+            let sfxVolume = PreferencesSystem.getGlobalPreference<number>("SFXVolume") / 100 // Changes value from percent (0 - 100) to decimal (0 - 1)
             sfxVolume = clamp(sfxVolume, 0, 1)
             this.audio.volume = sfxVolume;
         }

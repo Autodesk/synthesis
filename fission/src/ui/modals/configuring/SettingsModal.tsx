@@ -46,6 +46,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
     )
+    const [muteAllSound, setMuteAllSound] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
+    )
 
     const [sfxVolume, setSFXVolume] = useState<number>(
         PreferencesSystem.getGlobalPreference<number>("SFXVolume")
@@ -59,6 +62,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
+        PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
 
         PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
 
@@ -174,6 +178,13 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")}
                         onClick={checked => {
                             setRenderScoreboard(checked)
+                        }}
+                    />
+                    <Checkbox
+                        label="Mute All Sound"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")}
+                        onClick={checked => {
+                            setMuteAllSound(checked)
                         }}
                     />
                     <Slider

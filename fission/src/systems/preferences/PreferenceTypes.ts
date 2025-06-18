@@ -16,6 +16,7 @@ export type GlobalPreference =
     | "RenderScoreboard"
     | "SubsystemGravity"
     | "SimAutoReconnect"
+    | "MuteAllSound"
     | "SFXVolume"
 
 export const RobotPreferencesKey: string = "Robots"
@@ -38,6 +39,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderScoreboard: true,
     SubsystemGravity: false,
     SimAutoReconnect: false,
+    MuteAllSound: false,
     SFXVolume: 25
 }
 
