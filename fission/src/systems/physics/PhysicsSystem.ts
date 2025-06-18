@@ -128,9 +128,9 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
 
         const ground = this.CreateBox(
-            new THREE.Vector3(5.0, 0.5, 5.0),
+            new THREE.Vector3(7.5, 0.1, 7.5),
             undefined,
-            new THREE.Vector3(0.0, -0.5, 0.0),
+            new THREE.Vector3(0.0, -0.1, 0.0),
             undefined
         )
         ground.SetFriction(FLOOR_FRICTION)
