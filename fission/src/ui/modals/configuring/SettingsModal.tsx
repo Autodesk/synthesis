@@ -9,6 +9,7 @@ import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import World from "@/systems/World"
+import Slider from "@/ui/components/Slider"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [qualitySettings, setQualitySettings] = useState<string>(
@@ -46,6 +47,10 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
     )
 
+    const [sfxVolume, setSFXVolume] = useState<number>(
+        PreferencesSystem.getGlobalPreference<number>("SFXVolume")
+    )
+
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
 
@@ -54,6 +59,8 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
+
+        PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
 
         // Disabled until these settings are implemented
         /* PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
@@ -169,6 +176,16 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             setRenderScoreboard(checked)
                         }}
                     />
+                    <Slider
+                        min={0}
+                        max={100}
+                        value={sfxVolume}
+                        label={"SFX Volume"}
+                        format={{ maximumFractionDigits: 2 }}
+                        onChange={(_, value : number | number[]) => setSFXVolume(value as number)}
+                        tooltipText="Volume of sound effects (%)."
+                    />
+                    {Spacer(8)}
                 </Box>
             </div>
         </Modal>
