@@ -131,12 +131,7 @@ class SceneRenderer extends WorldSystem {
             solidMaterial,
             solidMaterial,
             solidMaterial,
-        ]        
-        
-        // Set up materials for CSM
-        materials.forEach(material => {
-            if (this._light instanceof CSM) this._light.setupMaterial(material)
-        })
+        ]
 
         const ground = new THREE.Mesh(groundGeometry, materials)
         ground.position.set(0.0, -0.09, 0.0)
