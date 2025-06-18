@@ -3,4 +3,4 @@
 	url = https://github.com/HiceS/mirabuf.git
 [submodule "jolt"]
 	path = jolt
-	url = https://github.com/HunterBarclay/JoltPhysics.js.git
+	url = git@github.com:azaleacolburn/JoltPhysics.js
