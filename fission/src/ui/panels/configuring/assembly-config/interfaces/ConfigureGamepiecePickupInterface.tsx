@@ -130,10 +130,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         const material = World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
         material.transparent = true
         material.opacity = 0.6
-        return new THREE.Mesh(
-            new THREE.SphereGeometry(0.5),
-            material
-        )
+        return new THREE.Mesh(new THREE.SphereGeometry(0.5), material)
     }, [theme])
 
     const gizmoComponent = useMemo(() => {
@@ -193,7 +190,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
     useEffect(() => {
         World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
-        
+
         // Hide the visual indicator when entering configuration mode
         if (selectedRobot) {
             selectedRobot.HideIntakeVisualIndicator()
@@ -201,7 +198,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
         return () => {
             World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
-            
+
             // Show the visual indicator when exiting configuration mode
             if (selectedRobot) {
                 selectedRobot.ShowIntakeVisualIndicator()
@@ -270,7 +267,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                         input: {
                             className: `cursor-inherit absolute w-full h-full top-0 left-0 opacity-0 z-10 border-none`,
                         },
-                        track: (ownerState) => {
+                        track: ownerState => {
                             return {
                                 className: `absolute block w-full h-full transition rounded-full border border-solid outline-none border-interactive-element-right dark:border-interactive-element-right group-[.base--focusVisible]:shadow-outline-switch ${ownerState.checked ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right" : "bg-background-secondary"} transform transition-transform group-hover:scale-[1.03] group-active:scale-[1.06]`,
                             }
