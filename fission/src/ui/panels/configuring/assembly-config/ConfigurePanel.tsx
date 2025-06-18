@@ -5,7 +5,7 @@ import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useEffect, useMemo, useReducer, useState, MouseEvent } from "react"
+import { MouseEvent, useEffect, useMemo, useReducer, useState } from "react"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
@@ -24,6 +24,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -101,6 +102,8 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
                 update()
             }}
             onAddClicked={() => {
+                mirabufPanelState.currentMode =
+                    configurationType == ConfigurationType.FIELD ? MiraType.FIELD : MiraType.ROBOT
                 openPanel("import-mirabuf")
             }}
             noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : "fields"} spawned!`}
