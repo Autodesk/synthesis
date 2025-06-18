@@ -16,7 +16,7 @@ const tagMap = new Map<number, SceneOverlayTag>()
 function SceneOverlay() {
     /* State to determine if the overlay is disabled */
     const [isDisabled, setIsDisabled] = useState<boolean>(false)
-    
+
     /* State to determine if the ViewCube should be shown */
     const [showViewCube, setShowViewCube] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")

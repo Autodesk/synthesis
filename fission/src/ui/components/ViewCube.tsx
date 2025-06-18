@@ -22,17 +22,17 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             const controls = World.SceneRenderer.currentCameraControls
             if (controls instanceof CustomOrbitControls) {
                 const currentCoords = controls.getCurrentCoordinates()
-                
+
                 const quarterTurn = Math.PI / 2
                 const roundedTheta = Math.round(currentCoords.theta / quarterTurn) * quarterTurn
-                
+
                 return {
                     theta: roundedTheta,
                     phi: isTop ? -Math.PI / 2 : Math.PI / 2
                 }
             }
         }
-        
+
         return {
             theta: 0,
             phi: isTop ? -Math.PI / 2 : Math.PI / 2
@@ -114,14 +114,14 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             transparent: true,
             opacity: 0,
             depthTest: false,
-            depthWrite: false 
+            depthWrite: false
         })
-        
+
         const cornerPositions = [
             [1, 1, 1], [1, 1, -1], [1, -1, 1], [1, -1, -1],
             [-1, 1, 1], [-1, 1, -1], [-1, -1, 1], [-1, -1, -1]
         ]
-        
+
         cornerPositions.forEach((pos, i) => {
             const cornerSphere = new THREE.Mesh(cornerGeometry, cornerMaterial.clone())
             cornerSphere.position.set(pos[0], pos[1], pos[2])
@@ -140,22 +140,22 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
         const edgeConfigs = [
             // X-axis edges
-            { pos: [0, 1, 1], rot: [0, 0, Math.PI/2] },
-            { pos: [0, 1, -1], rot: [0, 0, Math.PI/2] },
-            { pos: [0, -1, 1], rot: [0, 0, Math.PI/2] },
-            { pos: [0, -1, -1], rot: [0, 0, Math.PI/2] },
-            
+            { pos: [0, 1, 1], rot: [0, 0, Math.PI / 2] },
+            { pos: [0, 1, -1], rot: [0, 0, Math.PI / 2] },
+            { pos: [0, -1, 1], rot: [0, 0, Math.PI / 2] },
+            { pos: [0, -1, -1], rot: [0, 0, Math.PI / 2] },
+
             // Y-axis edges
             { pos: [1, 0, 1], rot: [0, 0, 0] },
             { pos: [1, 0, -1], rot: [0, 0, 0] },
             { pos: [-1, 0, 1], rot: [0, 0, 0] },
             { pos: [-1, 0, -1], rot: [0, 0, 0] },
-            
+
             // Z-axis edges
-            { pos: [1, 1, 0], rot: [Math.PI/2, 0, 0] },
-            { pos: [1, -1, 0], rot: [Math.PI/2, 0, 0] },
-            { pos: [-1, 1, 0], rot: [Math.PI/2, 0, 0] },
-            { pos: [-1, -1, 0], rot: [Math.PI/2, 0, 0] }
+            { pos: [1, 1, 0], rot: [Math.PI / 2, 0, 0] },
+            { pos: [1, -1, 0], rot: [Math.PI / 2, 0, 0] },
+            { pos: [-1, 1, 0], rot: [Math.PI / 2, 0, 0] },
+            { pos: [-1, -1, 0], rot: [Math.PI / 2, 0, 0] }
         ]
 
         edgeConfigs.forEach((config, i) => {
@@ -195,7 +195,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                 if (mainCamera && cubeRef.current && controls instanceof CustomOrbitControls) {
                     const coords = controls.getCurrentCoordinates();
 
-                    const camEuler = new THREE.Euler(coords.phi + Math.asin(1/Math.sqrt(3)), coords.theta, 0, 'YXZ');
+                    const camEuler = new THREE.Euler(coords.phi + Math.asin(1 / Math.sqrt(3)), coords.theta, 0, 'YXZ');
                     const camQuat = new THREE.Quaternion().setFromEuler(camEuler).invert();
 
                     const offsetQuat = new THREE.Quaternion().setFromEuler(
@@ -275,7 +275,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         const raycaster = new THREE.Raycaster()
         raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current)
 
-        const cornerSpheres = cubeRef.current.children.filter(child => 
+        const cornerSpheres = cubeRef.current.children.filter(child =>
             child.userData.type === 'corner-sphere'
         )
         const cornerIntersects = raycaster.intersectObjects(cornerSpheres, false)
@@ -284,7 +284,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             return { type: 'corner', index: cornerIndex }
         }
 
-        const edgeHitAreas = cubeRef.current.children.filter(child => 
+        const edgeHitAreas = cubeRef.current.children.filter(child =>
             child.userData.type === 'edge-hit'
         )
         const edgeIntersects = raycaster.intersectObjects(edgeHitAreas, false)
@@ -353,7 +353,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                 }
             }
         } else if (element.type === 'corner') {
-            const cornerSpheres = cubeRef.current.children.filter(child => 
+            const cornerSpheres = cubeRef.current.children.filter(child =>
                 child.userData.type === 'corner-sphere'
             )
             const targetCorner = cornerSpheres[element.index]
@@ -364,7 +364,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                 targetCorner.material.needsUpdate = true
             }
         } else if (element.type === 'edge') {
-            const edgeHighlights = cubeRef.current.children.filter(child => 
+            const edgeHighlights = cubeRef.current.children.filter(child =>
                 child.userData.type === 'edge-highlight'
             )
             const targetEdge = edgeHighlights[element.index]
@@ -383,10 +383,10 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
             const currentCoords = controls.getCurrentCoordinates()
             let targetTheta = orientation.theta
-            
+
             const currentTheta = currentCoords.theta
             const diff = targetTheta - currentTheta
-            
+
             if (diff > Math.PI) {
                 targetTheta -= 2 * Math.PI
             } else if (diff < -Math.PI) {
@@ -421,7 +421,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         if (element.type === 'face') {
             const faceOrientations = ["right", "left", "top", "bottom", "front", "back"]
             const orientationKey = faceOrientations[element.index]
-            
+
             let targetOrientation
             if (orientationKey === 'top') {
                 targetOrientation = getTopBottomOrientation(true)
@@ -430,7 +430,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             } else if (orientationKey && orientations[orientationKey as keyof typeof orientations]) {
                 targetOrientation = orientations[orientationKey as keyof typeof orientations]
             }
-            
+
             if (targetOrientation) {
                 snapToOrientation(targetOrientation)
             }
@@ -446,7 +446,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                 "isometricBackLeftBottom"
             ]
             const orientationKey = cornerOrientations[element.index]
-            
+
             if (orientationKey && orientations[orientationKey as keyof typeof orientations]) {
                 snapToOrientation(orientations[orientationKey as keyof typeof orientations])
             }
@@ -455,7 +455,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                 // X-axis edges
                 { theta: 0, phi: -Math.PI / 4 },
                 { theta: Math.PI, phi: -Math.PI / 4 },
-                { theta: 0, phi: Math.PI / 4 }, 
+                { theta: 0, phi: Math.PI / 4 },
                 { theta: Math.PI, phi: Math.PI / 4 },
                 // Y-axis edges
                 { theta: Math.PI / 4, phi: 0 },
@@ -468,7 +468,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                 { theta: -Math.PI / 2, phi: -Math.PI / 4 },
                 { theta: -Math.PI / 2, phi: Math.PI / 4 }
             ]
-            
+
             if (element.index < edgeOrientations.length) {
                 snapToOrientation(edgeOrientations[element.index])
             }
@@ -477,10 +477,10 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
     const getCursor = () => {
         if (!hoveredElement) return "default"
-        
+
         switch (hoveredElement.type) {
             case 'face': return "pointer"
-            case 'edge': return "pointer"  
+            case 'edge': return "pointer"
             case 'corner': return "pointer"
             default: return "default"
         }
