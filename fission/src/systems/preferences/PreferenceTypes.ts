@@ -1,3 +1,4 @@
+import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
@@ -15,6 +16,7 @@ export type GlobalPreference =
     | "RenderScoreboard"
     | "SubsystemGravity"
     | "TouchControls"
+    | "SimAutoReconnect"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -36,6 +38,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderScoreboard: true,
     SubsystemGravity: false,
     TouchControls: false,
+    SimAutoReconnect: false,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"
@@ -81,6 +84,7 @@ export type RobotPreferences = {
     driveVelocity: number
     driveAcceleration: number
     sequentialConfig?: SequentialBehaviorPreferences[]
+    simConfig?: SimConfigData
 }
 
 export type MotorPreferences = {

@@ -47,9 +47,7 @@ import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePan
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
-import WPILibWSWorker from "@/systems/simulation/wpilib_brain/WPILibWSWorker.ts?worker"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
-import Lazy from "./util/Lazy.ts"
 
 import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
 import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
@@ -60,9 +58,14 @@ import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
 import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
+import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
+import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
+import ContextMenu from "./ui/components/ContextMenu.tsx"
+import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
+import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
+import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
+import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
-
-const worker = new Lazy<Worker>(() => new WPILibWSWorker())
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
@@ -93,8 +96,6 @@ function Synthesis() {
         if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
             setConsentPopupDisable(false)
         }
-
-        worker.getValue()
 
         let mainLoopHandle = 0
         const mainLoop = () => {
@@ -163,9 +164,11 @@ function Synthesis() {
                         closeAllPanels={closeAllPanels}
                     >
                         <ToastProvider key="toast-provider">
+                            <GlobalUIComponent />
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
                             <TouchControls />
+                            <ContextMenu />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
@@ -175,6 +178,7 @@ function Synthesis() {
                             )}
                             <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
+                            <WPILibConnectionStatus />
 
                             {!consentPopupDisable ? (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
@@ -230,6 +234,10 @@ const initialPanels: ReactElement[] = [
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
+    <WiringPanel key="wiring" panelId="wiring" />,
+    <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
+    <InitialConfigPanel key="initial-config" panelId="initial-config" />,
+    <AutoTestPanel key="auto-test" panelId="auto-test" />,
 ]
 
 export default Synthesis

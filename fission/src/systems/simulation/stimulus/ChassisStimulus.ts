@@ -1,7 +1,8 @@
 import Jolt from "@barclah/jolt-physics"
-import Stimulus from "./Stimulus"
+import Stimulus, { StimulusID } from "./Stimulus"
 import World from "@/systems/World"
 import { mirabuf } from "@/proto/mirabuf"
+import { NoraNumber3, NoraTypes } from "../Nora"
 
 class ChassisStimulus extends Stimulus {
     private _body: Jolt.Body
@@ -20,14 +21,24 @@ class ChassisStimulus extends Stimulus {
         return this._body.GetRotation().GetEulerAngles()
     }
 
-    public constructor(bodyId: Jolt.BodyID, info?: mirabuf.IInfo) {
-        super(info)
+    public constructor(id: StimulusID, bodyId: Jolt.BodyID, info?: mirabuf.IInfo) {
+        super(id, info)
 
         this._body = World.PhysicsSystem.GetBody(bodyId)
         this._mass = this._body.GetShape().GetMassProperties().mMass
     }
 
     public Update(_: number): void {}
+
+    public getSupplierType(): NoraTypes {
+        return NoraTypes.Number3
+    }
+    public getSupplierValue(): NoraNumber3 {
+        throw new Error("Method not implemented.")
+    }
+    public DisplayName(): string {
+        return "Chassis [Accel|Gyro]"
+    }
 }
 
 export default ChassisStimulus

@@ -93,6 +93,7 @@ type PanelProps = {
     children?: ReactNode
     className?: string
     contentClassName?: string
+    full?: boolean
 }
 
 const Panel: React.FC<PanelProps> = ({
@@ -116,16 +117,21 @@ const Panel: React.FC<PanelProps> = ({
     acceptBlocked = false,
     className,
     contentClassName,
+    full = false,
 }) => {
     const { closePanel } = usePanelControlContext()
     const iconEl: ReactNode = typeof icon === "string" ? <img src={icon} className="w-6" alt="Icon" /> : icon
     openLocation ||= "center"
     sidePadding ||= 16
     const locationClasses = getLocationClasses(openLocation, sidePadding)
+
+    const mainSizing = full ? "left-5 right-5 top-5 bottom-5" : "max-h-[95vh] max-w-[50vw]"
+    const contentSizing = full ? "grow" : "max-h-[75vh]"
+
     return (
         <div>
             <div
-                className={`absolute ${locationClasses.className} ${className || ""} max-h-[95vh] max-w-[50vw] bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
+                className={`flex flex-col absolute ${!full ? locationClasses.className : ""} ${className || ""} ${mainSizing} bg-background text-main-text m-auto border-5 rounded-2xl shadow-sm shadow-slate-800`}
                 style={locationClasses.styles}
                 key={"panel-" + panelId}
             >
@@ -149,7 +155,7 @@ const Panel: React.FC<PanelProps> = ({
                     id="content"
                     className={`${contentClassName || ""} ${
                         !contentClassName?.includes("mx") ? "mx-[2rem]" : ""
-                    } flex flex-col gap-4 max-h-[75vh]`}
+                    } relative flex flex-col gap-4 ${contentSizing}`}
                 >
                     {children}
                 </div>

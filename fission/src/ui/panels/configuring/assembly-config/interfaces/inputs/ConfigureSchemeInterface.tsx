@@ -2,7 +2,7 @@ import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeMana
 import Checkbox from "@/ui/components/Checkbox"
 import EditInputInterface from "./EditInputInterface"
 import { useCallback, useEffect, useRef, useState } from "react"
-import { ConfigurationSavedEvent } from "../../ConfigurePanel"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import { SectionDivider } from "@/ui/components/StyledComponents"
 
 interface ConfigSchemeProps {

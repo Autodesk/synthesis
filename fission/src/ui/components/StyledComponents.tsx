@@ -3,7 +3,6 @@ import Label, { LabelSize } from "./Label"
 import Button, { ButtonProps, ButtonSize } from "./Button"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
-import { AiOutlinePlus } from "react-icons/ai"
 import { BiRefresh } from "react-icons/bi"
 import { AiFillWarning } from "react-icons/ai"
 import { BsCodeSquare } from "react-icons/bs"
@@ -58,7 +57,8 @@ export class SynthesisIcons {
     /** Large icons: used for icon buttons */
     public static DeleteLarge = (<IoTrashBin size={"1.25rem"} />)
     public static DownloadLarge = (<HiDownload size={"1.25rem"} />)
-    public static AddLarge = (<AiOutlinePlus size={"1.25rem"} />)
+    public static AddLarge = (<FaPlus size={"1.25rem"} />)
+    public static GearLarge = (<FaGear size={"1.25rem"} />)
     public static RefreshLarge = (<BiRefresh size={"1.25rem"} />)
     public static SelectLarge = (<IoCheckmark size={"1.25rem"} />)
     public static EditLarge = (<IoPencil size={"1.25rem"} />)

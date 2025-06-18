@@ -1,4 +1,7 @@
 .gradle/
 .vscode/
 .wpilib/
+.settings/
 build/
+.settings/
+
