@@ -522,10 +522,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public LoadFocusTransform(mat: THREE.Matrix4) {
-        const com = World.PhysicsSystem.GetBody(
-            this._mechanism.nodeToBody.get(this.rootNodeId)!
-        ).GetCenterOfMassTransform()
-        mat.copy(JoltMat44_ThreeMatrix4(com))
+        const bounds = this.ComputeBoundingBox()
+        const center = bounds.getCenter(new THREE.Vector3())
+        mat.makeTranslation(center.x, center.y, center.z)
     }
 
     public getSupplierData(): ContextData {
