@@ -89,7 +89,6 @@ class SceneRenderer extends WorldSystem {
             antialias: false,
             stencil: false,
             depth: !PreferencesSystem.getGraphicsPreferences().antiAliasing,
-            // logarithmicDepthBuffer: true,
         })
         this._renderer.setClearColor(CLEAR_COLOR)
         this._renderer.setPixelRatio(window.devicePixelRatio)
@@ -302,18 +301,6 @@ class SceneRenderer extends WorldSystem {
 
         this.CreateCSM(settings)
         this.SetupCSMMaterials()
-
-        // this._scene.traverse(object => {
-        //     if (object.material) {
-        //         if (Array.isArray(object.material)) {
-        //             object.material.forEach(mat => {
-        //                 mat.needsUpdate = true
-        //             })
-        //         } else {
-        //             object.material.needsUpdate = true
-        //         }
-        //     }
-        // })
     }
 
     public RegisterSceneObject<T extends SceneObject>(obj: T): number {

@@ -162,7 +162,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                 )}
                 <div className="flex items-center justify-center mt-1 mb-0.5 mx-[5%]">
                     <SectionLabel size={LabelSize.Medium} className="text-center">
-                        Hot-reload Settings
+                        Requires Browser Refresh
                     </SectionLabel>
                 </div>
                 <SectionDivider />
@@ -174,7 +174,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                         setAntiAliasing(checked)
                         setReload(true)
                     }}
-                    tooltipText="Requires a browser refresh"
+                    tooltipText="Will automatically refresh the tab when changed, causing all assets to disappear."
                 />
             </div>
         </Panel>

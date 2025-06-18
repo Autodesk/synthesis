@@ -237,7 +237,7 @@ const initialPanels: ReactElement[] = [
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
     <AutoTestPanel key="auto-test" panelId="auto-test" />,
-    <GraphicsSettings key="graphics-settings" panelId="graphics-settings" openLocation="right" sidePadding={8} />,
+    <GraphicsSettings key="graphics-settings" panelId="graphics-settings" sidePadding={8} />,
 ]
 
 export default Synthesis
