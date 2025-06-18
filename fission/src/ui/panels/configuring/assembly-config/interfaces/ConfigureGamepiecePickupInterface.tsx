@@ -20,7 +20,9 @@ import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import Checkbox from "@/ui/components/Checkbox"
+import { Box } from "@mui/material"
+import { Switch } from "@mui/base/Switch"
+import Label, { LabelSize } from "@/ui/components/Label"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -246,15 +248,39 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 step={0.01}
             />
             {/* Checkbox for showing intake zone indicator at all times */}
-            <Checkbox
-                key={selectedRobot?.assemblyName ?? "no-robot"}
-                label="Show intake zone indicator always"
-                defaultState={showZoneAlways}
-                onClick={(checked) => {
-                    setShowZoneAlways(checked)
-                }}
-                tooltipText="When enabled, the intake zone indicator will be visible during regular use, not just during configuration."
-            />
+            <Box
+                display="flex"
+                flexDirection={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                textAlign={"center"}
+            >
+                <Label size={LabelSize.Small} className="mr-12 whitespace-nowrap">
+                    Show intake zone indicator always
+                </Label>
+                <Switch
+                    checked={showZoneAlways}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setShowZoneAlways(e.target.checked)
+                    }}
+                    slotProps={{
+                        root: {
+                            className: `group relative inline-block w-[24px] h-[24px] m-2.5 cursor-pointer transform transition-transform hover:scale-[1.03] active:scale-[1.06]`,
+                        },
+                        input: {
+                            className: `cursor-inherit absolute w-full h-full top-0 left-0 opacity-0 z-10 border-none`,
+                        },
+                        track: (ownerState) => {
+                            return {
+                                className: `absolute block w-full h-full transition rounded-full border border-solid outline-none border-interactive-element-right dark:border-interactive-element-right group-[.base--focusVisible]:shadow-outline-switch ${ownerState.checked ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right" : "bg-background-secondary"} transform transition-transform group-hover:scale-[1.03] group-active:scale-[1.06]`,
+                            }
+                        },
+                        thumb: {
+                            className: `display-none`,
+                        },
+                    }}
+                />
+            </Box>
             {gizmoComponent}
             {Spacer(10)}
             <Button
