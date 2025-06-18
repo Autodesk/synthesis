@@ -120,6 +120,7 @@ class SceneRenderer extends WorldSystem {
             color: GROUND_COLOR,
             shadowSide: THREE.DoubleSide,
         })
+        if (this._light instanceof CSM) this._light.setupMaterial(logoMaterial)
 
         const solidMaterial = this.CreateToonMaterial(GROUND_COLOR)
 
