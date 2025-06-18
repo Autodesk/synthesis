@@ -409,6 +409,24 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    public UpdateIntakeVisualIndicator() {
+        if (this._intakeSensor) {
+            this._intakeSensor.UpdateVisualIndicator()
+        }
+    }
+
+    public HideIntakeVisualIndicator() {
+        if (this._intakeSensor) {
+            this._intakeSensor.HideVisualIndicator()
+        }
+    }
+
+    public ShowIntakeVisualIndicator() {
+        if (this._intakeSensor) {
+            this._intakeSensor.ShowVisualIndicator()
+        }
+    }
+
     public SetEjectable(bodyId?: Jolt.BodyID, removeExisting: boolean = false): boolean {
         if (this._ejectable) {
             if (!removeExisting) return false
@@ -486,6 +504,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
             this._intakePreferences = robotPrefs.intake
+            // Ensure backwards compatibility for showZoneAlways field
+            if (this._intakePreferences && this._intakePreferences.showZoneAlways === undefined) {
+                this._intakePreferences.showZoneAlways = false
+            }
             this._ejectorPreferences = robotPrefs.ejector
             this._simConfigData = robotPrefs.simConfig
         }

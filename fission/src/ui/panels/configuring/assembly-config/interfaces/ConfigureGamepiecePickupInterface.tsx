@@ -20,6 +20,7 @@ import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import Checkbox from "@/ui/components/Checkbox"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -52,7 +53,8 @@ function save(
     zoneSize: number,
     gizmo: GizmoSceneObject,
     selectedRobot: MirabufSceneObject,
-    selectedNode?: RigidNodeId
+    selectedNode?: RigidNodeId,
+    showZoneAlways?: boolean
 ) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
@@ -76,6 +78,9 @@ function save(
     selectedRobot.intakePreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
     selectedRobot.intakePreferences.parentNode = selectedNode
     selectedRobot.intakePreferences.zoneDiameter = zoneSize
+    if (showZoneAlways !== undefined) {
+        selectedRobot.intakePreferences.showZoneAlways = showZoneAlways
+    }
 
     PreferencesSystem.savePreferences()
 }
@@ -92,15 +97,16 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
+    const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode)
+            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways)
             selectedRobot.UpdateIntakeSensor()
         }
-    }, [selectedRobot, selectedNode, zoneSize])
+    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -119,9 +125,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [zoneSize])
 
     const placeholderMesh = useMemo(() => {
+        const material = World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
+        material.transparent = true
+        material.opacity = 0.6
         return new THREE.Mesh(
             new THREE.SphereGeometry(0.5),
-            World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
+            material
         )
     }, [theme])
 
@@ -173,18 +182,30 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         if (selectedRobot?.intakePreferences) {
             setZoneSize(selectedRobot.intakePreferences.zoneDiameter)
             setSelectedNode(selectedRobot.intakePreferences.parentNode)
+            setShowZoneAlways(selectedRobot.intakePreferences.showZoneAlways ?? false)
         } else {
             setSelectedNode(undefined)
+            setShowZoneAlways(false)
         }
     }, [selectedRobot])
 
     useEffect(() => {
         World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        
+        // Hide the visual indicator when entering configuration mode
+        if (selectedRobot) {
+            selectedRobot.HideIntakeVisualIndicator()
+        }
 
         return () => {
             World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            
+            // Show the visual indicator when exiting configuration mode
+            if (selectedRobot) {
+                selectedRobot.ShowIntakeVisualIndicator()
+            }
         }
-    }, [])
+    }, [selectedRobot])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
@@ -223,6 +244,16 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     setZoneSize(vel as number)
                 }}
                 step={0.01}
+            />
+            {/* Checkbox for showing intake zone indicator at all times */}
+            <Checkbox
+                key={selectedRobot?.assemblyName ?? "no-robot"}
+                label="Show intake zone indicator always"
+                defaultState={showZoneAlways}
+                onClick={(checked) => {
+                    setShowZoneAlways(checked)
+                }}
+                tooltipText="When enabled, the intake zone indicator will be visible during regular use, not just during configuration."
             />
             {gizmoComponent}
             {Spacer(10)}
