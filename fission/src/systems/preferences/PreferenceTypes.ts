@@ -16,6 +16,7 @@ export type GlobalPreference =
     | "RenderScoreboard"
     | "SubsystemGravity"
     | "SimAutoReconnect"
+    | "ShowViewCube"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -37,6 +38,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderScoreboard: true,
     SubsystemGravity: false,
     SimAutoReconnect: false,
+    ShowViewCube: true,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"

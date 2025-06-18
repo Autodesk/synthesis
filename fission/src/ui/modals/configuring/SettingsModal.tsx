@@ -45,6 +45,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
     )
+    const [showViewCube, setShowViewCube] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
+    )
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
@@ -54,6 +57,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
+        PreferencesSystem.setGlobalPreference<boolean>("ShowViewCube", showViewCube)
 
         // Disabled until these settings are implemented
         /* PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
@@ -168,6 +172,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         onClick={checked => {
                             setRenderScoreboard(checked)
                         }}
+                    />
+                    <Checkbox
+                        label="Show View Cube"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")}
+                        onClick={checked => {
+                            setShowViewCube(checked)
+                        }}
+                        tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
                     />
                 </Box>
             </div>

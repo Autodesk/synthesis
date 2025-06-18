@@ -18,16 +18,18 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
     const [hoveredElement, setHoveredElement] = useState<{ type: string, index: number } | null>(null)
 
     const getTopBottomOrientation = (isTop: boolean) => {
-        const controls = World.SceneRenderer.currentCameraControls
-        if (controls instanceof CustomOrbitControls) {
-            const currentCoords = controls.getCurrentCoordinates()
-            
-            const quarterTurn = Math.PI / 2
-            const roundedTheta = Math.round(currentCoords.theta / quarterTurn) * quarterTurn
-            
-            return {
-                theta: roundedTheta,
-                phi: isTop ? -Math.PI / 2 : Math.PI / 2
+        if (World && World.SceneRenderer && World.SceneRenderer.currentCameraControls) {
+            const controls = World.SceneRenderer.currentCameraControls
+            if (controls instanceof CustomOrbitControls) {
+                const currentCoords = controls.getCurrentCoordinates()
+                
+                const quarterTurn = Math.PI / 2
+                const roundedTheta = Math.round(currentCoords.theta / quarterTurn) * quarterTurn
+                
+                return {
+                    theta: roundedTheta,
+                    phi: isTop ? -Math.PI / 2 : Math.PI / 2
+                }
             }
         }
         
@@ -42,8 +44,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         back: { theta: Math.PI, phi: 0 },
         right: { theta: Math.PI / 2, phi: 0 },
         left: { theta: -Math.PI / 2, phi: 0 },
-        top: getTopBottomOrientation(true),
-        bottom: getTopBottomOrientation(false),
+        top: { theta: 0, phi: -Math.PI / 2 },
+        bottom: { theta: 0, phi: Math.PI / 2 },
 
         isometricFrontRightTop: { theta: Math.PI / 4, phi: -Math.PI / 6 },
         isometricFrontLeftTop: { theta: -Math.PI / 4, phi: -Math.PI / 6 },

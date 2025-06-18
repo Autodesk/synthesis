@@ -9,12 +9,18 @@ import {
 } from "./SceneOverlayEvents"
 import Label, { LabelSize } from "./Label"
 import ViewCube from "./ViewCube"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
 function SceneOverlay() {
     /* State to determine if the overlay is disabled */
     const [isDisabled, setIsDisabled] = useState<boolean>(false)
+    
+    /* State to determine if the ViewCube should be shown */
+    const [showViewCube, setShowViewCube] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
+    )
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
@@ -87,6 +93,18 @@ function SceneOverlay() {
         }
     }, [])
 
+    /* Update ViewCube visibility when preferences change */
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const currentSetting = PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
+            if (currentSetting !== showViewCube) {
+                setShowViewCube(currentSetting)
+            }
+        }, 250)
+
+        return () => clearInterval(interval)
+    }, [showViewCube])
+
     /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (
         <Box
@@ -103,7 +121,7 @@ function SceneOverlay() {
             }}
         >
             {components ?? <></>}
-            <ViewCube size={120} position={{ top: 20, right: 20 }} />
+            {showViewCube && <ViewCube size={120} position={{ top: 20, right: 20 }} />}
         </Box>
     )
 }
