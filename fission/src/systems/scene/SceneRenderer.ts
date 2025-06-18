@@ -479,7 +479,6 @@ class SceneRenderer extends WorldSystem {
 
         ContextSupplierEvent.Dispatch(miraSupplierData, e.position)
     }
-
 }
 
 export default SceneRenderer
