@@ -1,1 +1,2 @@
-pyinstaller
+pyinstaller==6.14.1
+setuptools==80.9.0
