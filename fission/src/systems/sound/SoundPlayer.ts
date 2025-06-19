@@ -1,5 +1,5 @@
 import PreferencesSystem from "../preferences/PreferencesSystem"
-import { clamp } from "@/util/MathematicalFunctions"
+import { clamp } from "@/util/Utility"
 
 export class SoundPlayer {
     constructor() {}
