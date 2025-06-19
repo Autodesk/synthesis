@@ -120,8 +120,8 @@ class MirabufCachingService {
     public static async CacheRemote(fetchLocation: string, miraType?: MiraType): Promise<MirabufCacheInfo | undefined> {
         if (miraType !== undefined) {
             const map = MirabufCachingService.GetCacheMap(miraType)
-            const hit = map[fetchLocation]
-            if (hit) return hit
+            const target = map[fetchLocation]
+            if (target) return target
         }
         try {
             // grab file remote
