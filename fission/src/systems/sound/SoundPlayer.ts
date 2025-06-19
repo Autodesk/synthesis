@@ -6,43 +6,31 @@ import checkboxPressSound from "@/assets/sound-files/CheckboxPress.wav"
 import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
 
 class SoundPlayer {
-    private audio: HTMLAudioElement
+    constructor() {}
 
-    constructor(filePath: string) {
-        this.audio = new Audio(filePath)
+    public async play(filePath: string): Promise<void> {
+        const audio = new Audio(filePath)
 
-        this.audio.volume = PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
+        audio.volume = PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
             ? 0
             : clamp(PreferencesSystem.getGlobalPreference<number>("SFXVolume") / 100, 0, 1)
-    }
 
-    async play(): Promise<void> {
-        return this.audio.play().catch(error => {
+        return audio.play().catch(error => {
             console.error("Error playing the audio file:", error)
         })
     }
-
-    pause(): void {
-        this.audio.pause()
-    }
-
-    stop(): void {
-        this.audio.pause()
-        this.audio.currentTime = 0
-    }
 }
 
+const soundPlayer = new SoundPlayer()
+
 export function buttonPressSFX() {
-    const buttonPressedSFX = new SoundPlayer(buttonPressSound)
-    buttonPressedSFX.play()
+    soundPlayer.play(buttonPressSound)
 }
 
 export function checkboxPressedSFX() {
-    const checkboxPressedSFX = new SoundPlayer(checkboxPressSound)
-    checkboxPressedSFX.play()
+    soundPlayer.play(checkboxPressSound)
 }
 
 export function dropdownMenuSFX() {
-    const dropdownMenuSFX = new SoundPlayer(dropdownMenuSound)
-    dropdownMenuSFX.play()
+    soundPlayer.play(dropdownMenuSound)
 }
