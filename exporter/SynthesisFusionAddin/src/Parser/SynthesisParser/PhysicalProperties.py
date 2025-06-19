@@ -1,18 +1,18 @@
-""" Gets the Physical Data associated with a given item
+"""Gets the Physical Data associated with a given item
 
-    Takes:
-     - BRepBody
-     - Occurrence
-     - Component
+Takes:
+ - BRepBody
+ - Occurrence
+ - Component
 
-    Adds:
-     - Density
-     - Mass
-     - Volume
-     - COM
-        - X
-        - Y
-        - Z
+Adds:
+ - Density
+ - Mass
+ - Volume
+ - COM
+    - X
+    - Y
+    - Z
 
 """
 
