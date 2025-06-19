@@ -19,6 +19,7 @@ class IntakeSensorSceneObject extends SceneObject {
 
     private _joltBodyId?: Jolt.BodyID
     private _collision?: (e: OnContactPersistedEvent) => void
+    private _visualIndicator?: THREE.Mesh
 
     public constructor(parentAssembly: MirabufSceneObject) {
         super()
@@ -58,6 +59,36 @@ class IntakeSensorSceneObject extends SceneObject {
 
             OnContactPersistedEvent.AddListener(this._collision)
         }
+
+        // Create visual indicator if showZoneAlways is enabled
+        this.UpdateVisualIndicator()
+    }
+
+    public UpdateVisualIndicator(): void {
+        // Remove existing visual indicator
+        if (this._visualIndicator) {
+            World.SceneRenderer.scene.remove(this._visualIndicator)
+            this._visualIndicator = undefined
+        }
+
+        // Create new visual indicator if showZoneAlways is enabled
+        if (this._parentAssembly.intakePreferences?.showZoneAlways) {
+            const geometry = new THREE.SphereGeometry(this._parentAssembly.intakePreferences.zoneDiameter / 2.0)
+            const material = new THREE.MeshBasicMaterial({
+                color: 0x00ff00, // Green color for intake zone
+                transparent: true,
+                opacity: 0.3,
+                wireframe: true,
+            })
+            this._visualIndicator = new THREE.Mesh(geometry, material)
+            World.SceneRenderer.scene.add(this._visualIndicator)
+        }
+    }
+
+    public SetVisualIndicatorVisible(visible: boolean): void {
+        if (this._visualIndicator) {
+            this._visualIndicator.visible = visible && (this._parentAssembly.intakePreferences?.showZoneAlways ?? false)
+        }
     }
 
     public Update(): void {
@@ -72,6 +103,12 @@ class IntakeSensorSceneObject extends SceneObject {
 
             World.PhysicsSystem.SetBodyPosition(this._joltBodyId, ThreeVector3_JoltRVec3(position))
             World.PhysicsSystem.SetBodyRotation(this._joltBodyId, ThreeQuaternion_JoltQuat(rotation))
+
+            // Update visual indicator position if it exists
+            if (this._visualIndicator) {
+                this._visualIndicator.position.copy(position)
+                this._visualIndicator.quaternion.copy(rotation)
+            }
         }
     }
 
@@ -81,6 +118,12 @@ class IntakeSensorSceneObject extends SceneObject {
         }
 
         if (this._collision) OnContactPersistedEvent.RemoveListener(this._collision)
+
+        // Clean up visual indicator
+        if (this._visualIndicator) {
+            World.SceneRenderer.scene.remove(this._visualIndicator)
+            this._visualIndicator = undefined
+        }
     }
 
     private IntakeCollision(gpID: Jolt.BodyID) {
