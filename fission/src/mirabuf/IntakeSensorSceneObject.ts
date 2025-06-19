@@ -85,15 +85,9 @@ class IntakeSensorSceneObject extends SceneObject {
         }
     }
 
-    public HideVisualIndicator(): void {
+    public SetVisualIndicatorVisible(visible: boolean): void {
         if (this._visualIndicator) {
-            this._visualIndicator.visible = false
-        }
-    }
-
-    public ShowVisualIndicator(): void {
-        if (this._visualIndicator && this._parentAssembly.intakePreferences?.showZoneAlways) {
-            this._visualIndicator.visible = true
+            this._visualIndicator.visible = visible && (this._parentAssembly.intakePreferences?.showZoneAlways ?? false)
         }
     }
 

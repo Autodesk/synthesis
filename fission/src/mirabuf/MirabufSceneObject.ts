@@ -415,15 +415,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
-    public HideIntakeVisualIndicator() {
+    public SetIntakeVisualIndicatorVisible(visible: boolean) {
         if (this._intakeSensor) {
-            this._intakeSensor.HideVisualIndicator()
-        }
-    }
-
-    public ShowIntakeVisualIndicator() {
-        if (this._intakeSensor) {
-            this._intakeSensor.ShowVisualIndicator()
+            this._intakeSensor.SetVisualIndicatorVisible(visible)
         }
     }
 

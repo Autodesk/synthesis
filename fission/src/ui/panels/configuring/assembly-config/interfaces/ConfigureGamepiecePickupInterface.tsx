@@ -193,7 +193,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
         // Hide the visual indicator when entering configuration mode
         if (selectedRobot) {
-            selectedRobot.HideIntakeVisualIndicator()
+            selectedRobot.SetIntakeVisualIndicatorVisible(false)
         }
 
         return () => {
@@ -201,7 +201,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
             // Show the visual indicator when exiting configuration mode
             if (selectedRobot) {
-                selectedRobot.ShowIntakeVisualIndicator()
+                selectedRobot.SetIntakeVisualIndicatorVisible(true)
             }
         }
     }, [selectedRobot])
