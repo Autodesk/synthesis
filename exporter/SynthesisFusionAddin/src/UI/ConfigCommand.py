@@ -122,7 +122,7 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
     @logFailure(messageBox=True)
     def notify(self, _: adsk.core.CommandEventArgs) -> None:
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
-        exporterOptions = ExporterOptions().readFromDesign()
+        exporterOptions = ExporterOptions().readFromDesign() or ExporterOptions()
 
         fullName = design.rootComponent.name
         versionMatch = re.search(r"v\d+", fullName)
