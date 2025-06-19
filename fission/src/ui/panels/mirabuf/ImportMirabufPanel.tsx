@@ -165,7 +165,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     useLayoutEffect(() => {
         if (mirabufPanelState.hasUnconfirmedImport) {
             closePanel("import-mirabuf")
-            Global_AddToast?.("warning", "You're already importing a model", "Confirm that one first")
+            Global_AddToast?.("warning", "You're already importing a model!", "Confirm that one before importing another.")
             return
         }
         closePanel("configure")
