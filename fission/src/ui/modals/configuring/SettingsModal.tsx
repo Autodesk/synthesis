@@ -61,7 +61,6 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
         PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
-
         PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
 
         // Disabled until these settings are implemented
