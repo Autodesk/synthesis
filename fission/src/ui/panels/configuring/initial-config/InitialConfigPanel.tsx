@@ -14,6 +14,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 
 const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
@@ -33,6 +34,11 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         closePanel("import-mirabuf")
+        mirabufPanelState.hasUnconfirmedImport = true
+
+        return () => {
+            mirabufPanelState.hasUnconfirmedImport = false
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

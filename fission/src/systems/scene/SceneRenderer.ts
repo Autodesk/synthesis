@@ -100,7 +100,6 @@ class SceneRenderer extends WorldSystem {
         this._renderer.shadowMap.type = THREE.PCFSoftShadowMap
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
-        // Adding the lighting uisng quality preferences
         this.ChangeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)

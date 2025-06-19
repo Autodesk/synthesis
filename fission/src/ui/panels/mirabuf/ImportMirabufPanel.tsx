@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react"
+import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { LabelSize } from "@/components/Label"
 import {
     Data,
@@ -35,9 +35,9 @@ import {
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import Button from "@/ui/components/Button"
-import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { Global_AddToast, Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
-import { mirabufPanelSettings } from "@/panels/mirabuf/MirabufState.tsx"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 
 interface ItemCardProps {
     id: string
@@ -162,7 +162,16 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }, [])
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        if (mirabufPanelState.hasUnconfirmedImport) {
+            closePanel("import-mirabuf")
+            Global_AddToast?.(
+                "warning",
+                "You're already importing a model!",
+                "Confirm that one before importing another."
+            )
+            return
+        }
         closePanel("configure")
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -368,8 +377,8 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         [files, selectAPS, viewType]
     )
     useEffect(() => {
-        setViewType(mirabufPanelSettings.current)
-        mirabufPanelSettings.current = mirabufPanelSettings.default
+        setViewType(mirabufPanelState.currentMode)
+        mirabufPanelState.currentMode = mirabufPanelState.defaultMode
     }, [])
     return (
         <Panel

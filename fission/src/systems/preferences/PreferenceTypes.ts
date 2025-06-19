@@ -62,6 +62,7 @@ export type IntakePreferences = {
     deltaTransformation: number[]
     zoneDiameter: number
     parentNode: string | undefined
+    showZoneAlways: boolean
 }
 
 export type EjectorPreferences = {
@@ -135,6 +136,7 @@ export function DefaultRobotPreferences(): RobotPreferences {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             zoneDiameter: 0.5,
             parentNode: undefined,
+            showZoneAlways: false,
         },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
