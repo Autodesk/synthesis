@@ -78,7 +78,7 @@ class IntakeSensorSceneObject extends SceneObject {
                 color: 0x00ff00, // Green color for intake zone
                 transparent: true,
                 opacity: 0.3,
-                wireframe: true
+                wireframe: true,
             })
             this._visualIndicator = new THREE.Mesh(geometry, material)
             World.SceneRenderer.scene.add(this._visualIndicator)
