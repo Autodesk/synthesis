@@ -1,8 +1,10 @@
 import Scene from "@/components/Scene.tsx"
 import { AnimatePresence } from "framer-motion"
 import { ReactElement, useCallback, useEffect, useState } from "react"
-import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
-import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
+import { ModalControlProvider } from "@/ui/ModalContext"
+import { useModalManager } from "@/ui/helpers/useModalManager"
+import { PanelControlProvider } from "@/ui/PanelContext"
+import { usePanelManager } from "@/ui/helpers/usePanelManager"
 import { useTheme } from "@/ui/ThemeContext"
 import { ToastContainer, ToastProvider } from "@/ui/ToastContext"
 import {
