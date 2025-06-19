@@ -23,6 +23,7 @@ type ModalProps = {
     cancelBlocked?: boolean
     middleBlocked?: boolean
     acceptBlocked?: boolean
+    allowClickAway?: boolean
     children?: ReactNode
     className?: string
     contentClassName?: string
@@ -45,6 +46,7 @@ const Modal: React.FC<ModalProps> = ({
     cancelBlocked = false,
     middleBlocked = false,
     acceptBlocked = false,
+    allowClickAway = true,
     className,
     contentClassName,
 }) => {
@@ -53,7 +55,12 @@ const Modal: React.FC<ModalProps> = ({
     const iconEl: ReactNode = typeof icon === "string" ? <img src={icon} className="w-6" alt="Icon" /> : icon
 
     return (
-        <ClickAwayListener onClickAway={_ => closeModal()} key={modalId}>
+        <ClickAwayListener
+            onClickAway={_ => {
+                if (allowClickAway) closeModal()
+            }}
+            key={modalId}
+        >
             <div
                 id={modalId}
                 key={modalId}
