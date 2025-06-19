@@ -1,6 +1,6 @@
 import Scene from "@/components/Scene.tsx"
 import { AnimatePresence } from "framer-motion"
-import { ReactElement, useCallback, useEffect, useState } from "react"
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react"
 import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
 import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
 import { useTheme } from "@/ui/ThemeContext"
@@ -65,9 +65,10 @@ import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
+import MainMenuModal from "@/modals/MainMenuModal"
 
 function Synthesis() {
-    const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
+    const { openModal, closeModal, getActiveModalElement, registerModal } = useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
@@ -82,6 +83,32 @@ function Synthesis() {
     const panelElements = getActivePanelElements()
     const modalElement = getActiveModalElement()
 
+    const mainLoopHandle = useRef(0)
+    registerModal("main-menu", {
+        id: "main-menu",
+        component: (
+            <MainMenuModal
+                key="main-menu"
+                modalId="main-menu"
+                startSingleplayerCallback={() => {
+                    World.InitWorld()
+
+                    if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
+                        setConsentPopupDisable(false)
+                    }
+
+                    const mainLoop = () => {
+                        mainLoopHandle.current = requestAnimationFrame(mainLoop)
+                        World.UpdateWorld()
+                    }
+                    mainLoop()
+
+                    World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
+                }}
+            />
+        ),
+    })
+
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
         if (urlParams.has("code")) {
@@ -89,27 +116,11 @@ function Synthesis() {
             window.close()
             return
         }
-
-        World.InitWorld()
-
-        if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
-            setConsentPopupDisable(false)
-        }
-
-        let mainLoopHandle = 0
-        const mainLoop = () => {
-            mainLoopHandle = requestAnimationFrame(mainLoop)
-
-            World.UpdateWorld()
-        }
-        mainLoop()
-
-        World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
-
+        openModal("main-menu")
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
-            cancelAnimationFrame(mainLoopHandle)
+            cancelAnimationFrame(mainLoopHandle.current)
             World.DestroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
