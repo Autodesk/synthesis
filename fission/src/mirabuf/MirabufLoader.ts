@@ -118,6 +118,11 @@ class MirabufCachingService {
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
     public static async CacheRemote(fetchLocation: string, miraType?: MiraType): Promise<MirabufCacheInfo | undefined> {
+        if (miraType !== undefined) {
+            const map = MirabufCachingService.GetCacheMap(miraType)
+            const hit = map[fetchLocation]
+            if (hit) return hit
+        }
         try {
             // grab file remote
             const miraBuff = await fetch(
