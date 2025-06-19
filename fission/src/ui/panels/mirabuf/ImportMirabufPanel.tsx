@@ -25,11 +25,11 @@ import { usePanelControlContext } from "@/ui/PanelContext"
 import { useModalControlContext } from "@/ui/ModalContext"
 import TaskStatus from "@/util/TaskStatus"
 import {
+    DeleteButton,
     PositiveButton,
+    RefreshButton,
     SectionDivider,
     SectionLabel,
-    DeleteButton,
-    RefreshButton,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
@@ -38,6 +38,7 @@ import Button from "@/ui/components/Button"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
+import { mirabufPanelSettings } from "@/panels/mirabuf/MirabufState.tsx"
 
 interface ItemCardProps {
     id: string
@@ -86,6 +87,11 @@ function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
 }
 
 function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+    // If spawning a field, then remove all other fields
+    if (type == MiraType.FIELD) {
+        World.SceneRenderer.RemoveAllFields()
+    }
+
     if (!progressHandle) {
         progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
     }
@@ -362,7 +368,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ),
         [files, selectAPS, viewType]
     )
-
+    useEffect(() => {
+        setViewType(mirabufPanelSettings.current)
+        mirabufPanelSettings.current = mirabufPanelSettings.default
+    }, [])
     return (
         <Panel
             name={"Spawn Asset"}
