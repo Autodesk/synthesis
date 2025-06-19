@@ -1,16 +1,13 @@
 # This file is used to auto request reviews for a pull request
 # https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
 
-* @autodesk/synthesis-devs hunter.barclay@autodesk.com
+* @autodesk/synthesis-devs @autodesk/synthesis-admin
 
-/exporter/ @autodesk/fusion hunter.barclay@autodesk.com
+/exporter/ @autodesk/fusion @autodesk/synthesis-admin
 
-/fission/src/aps/ @autodesk/fusion hunter.barclay@autodesk.com
-/fission/src/mirabuf/ @autodesk/fusion hunter.barclay@autodesk.com
-/fission/src/proto/ @autodesk/fusion hunter.barclay@autodesk.com
+/fission/src/aps/ @autodesk/fusion @autodesk/synthesis-admin
+/fission/src/mirabuf/ @autodesk/fusion @autodesk/synthesis-admin
+/fission/src/proto/ @autodesk/fusion @autodesk/synthesis-admin
 
-/fission/src/ui/components/ julian.wright@autodesk.com luca.haverty@autodesk.com hunter.barclay@autodesk.com
-/fission/**/*.css julian.wright@autodesk.com luca.haverty@autodesk.com hunter.barclay@autodesk.com
-
-/fission/ @autodesk/fission hunter.barclay@autodesk.com
-/installer/ @autodesk/fusion hunter.barclay@autodesk.com
+/fission/ @autodesk/fission @autodesk/synthesis-admin
+/installer/ @autodesk/fusion @autodesk/synthesis-admin
