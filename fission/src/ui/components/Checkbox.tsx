@@ -57,7 +57,6 @@ const Checkbox: React.FC<CheckboxProps> = ({
             <Switch
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     if (typeof onClick == "function") {
-                        onClick
                         onClick(e.target.checked)
                     }
                     checkboxPressedSFX()
