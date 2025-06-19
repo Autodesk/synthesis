@@ -11,7 +11,8 @@ import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGro
 import { usePanelControlContext } from "@/ui/PanelContext"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
-import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
@@ -75,7 +76,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     value={miraType}
                     exclusive
                     onChange={(_, v) => {
-                        buttonPressSFX()
+                        SoundPlayer.play(buttonPressSound)
                         if (v == null) return
                         setSelectedType(v)
                     }}

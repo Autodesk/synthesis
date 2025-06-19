@@ -11,7 +11,8 @@ import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
 import { setAddToast } from "./GlobalUIControls"
-import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 type ButtonProps = {
     value: string
@@ -28,7 +29,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
                 if (typeof onClick == "function") {
                     onClick()
                 }
-                buttonPressSFX()
+                SoundPlayer.play(buttonPressSound)
             }}
             className={`relative flex flex-row
                 cursor-pointer

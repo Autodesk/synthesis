@@ -37,8 +37,9 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import Button from "@/ui/components/Button"
 import { Global_AddToast, Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
-import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 interface ItemCardProps {
     id: string
@@ -395,7 +396,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     value={viewType}
                     exclusive
                     onChange={(_, v) => {
-                        buttonPressSFX()
+                        SoundPlayer.play(buttonPressSound)
                         if (v != null) {
                             setViewType(v)
                         }

@@ -15,7 +15,8 @@ import * as THREE from "three"
 import { AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { styled } from "@mui/system"
 import Input from "@/ui/components/Input"
-import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 type StagingProps = {
     state: "Staging"
@@ -240,7 +241,7 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                     value={countdown}
                     exclusive
                     onChange={(_, v) => {
-                        buttonPressSFX()
+                        SoundPlayer.play(buttonPressSound)
                         setCountdown(v)
                     }}
                     className="self-center"
@@ -261,7 +262,7 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                     value={station}
                     exclusive
                     onChange={(_, v) => {
-                        buttonPressSFX()
+                        SoundPlayer.play(buttonPressSound)
                         setStation(v)
                     }}
                     className="self-center"

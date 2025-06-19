@@ -2,9 +2,10 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { BrainType } from "@/systems/simulation/Brain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useState } from "react"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 type BrainSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
@@ -19,7 +20,7 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
                 value={robotBrainType}
                 exclusive
                 onChange={(_, v) => {
-                    buttonPressSFX()
+                    SoundPlayer.play(buttonPressSound)
                     const brainType = v as BrainType
                     if (v == undefined) return
 

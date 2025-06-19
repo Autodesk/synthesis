@@ -1,11 +1,12 @@
 import { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useCallback, useEffect, useState } from "react"
 import { AiOutlineCamera } from "react-icons/ai"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
@@ -53,7 +54,7 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 value={cameraControlType}
                 exclusive
                 onChange={(_, v) => {
-                    buttonPressSFX()
+                    SoundPlayer.play(buttonPressSound)
                     if (v != null) {
                         return
                     }

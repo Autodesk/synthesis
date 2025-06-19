@@ -6,7 +6,8 @@ import World from "@/systems/World"
 import Button, { ButtonSize } from "./Button"
 import InputSystem from "@/systems/input/InputSystem"
 import * as THREE from "three"
-import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 /**
  * Creates GizmoSceneObject and gives you a toggle button group to control the modes of the gizmo.
@@ -105,7 +106,7 @@ function TransformGizmoControl({
                 value={mode}
                 exclusive
                 onChange={(_, v) => {
-                    buttonPressSFX()
+                    SoundPlayer.play(buttonPressSound)
                     if (v == undefined) return
 
                     setMode(v)

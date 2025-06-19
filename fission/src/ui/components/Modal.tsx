@@ -1,7 +1,8 @@
 import React, { ReactNode } from "react"
 import { ClickAwayListener } from "@mui/base/ClickAwayListener"
 import { useModalControlContext } from "@/ui/ModalContext"
-import { buttonPressSFX } from "@/systems/sound/SoundPlayer"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 export type ModalPropsImpl = {
     modalId: string
@@ -102,7 +103,7 @@ const Modal: React.FC<ModalProps> = ({
                                 onClick={() => {
                                     closeModal()
                                     if (!cancelBlocked && onCancel) onCancel()
-                                    buttonPressSFX()
+                                    SoundPlayer.play(buttonPressSound)
                                 }}
                                 className={`${
                                     cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
@@ -117,7 +118,7 @@ const Modal: React.FC<ModalProps> = ({
                                 value={middleName || ""}
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
-                                    buttonPressSFX()
+                                    SoundPlayer.play(buttonPressSound)
                                 }}
                                 className={`${
                                     middleBlocked ? "bg-interactive-background" : "bg-accept-button"
@@ -133,7 +134,7 @@ const Modal: React.FC<ModalProps> = ({
                                 onClick={() => {
                                     closeModal()
                                     if (!acceptBlocked && onAccept) onAccept()
-                                    buttonPressSFX()
+                                    SoundPlayer.play(buttonPressSound)
                                 }}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"

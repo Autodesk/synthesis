@@ -3,7 +3,8 @@ import Label, { LabelSize } from "./Label"
 import { Switch } from "@mui/base/Switch"
 import { Box } from "@mui/material"
 import { LabelWithTooltip } from "./StyledComponents"
-import { checkboxPressedSFX } from "@/systems/sound/SoundPlayer"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import checkboxPressSound from "@/assets/sound-files/CheckboxPress.wav"
 
 type CheckboxProps = {
     label: string
@@ -59,7 +60,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
                     if (typeof onClick == "function") {
                         onClick(e.target.checked)
                     }
-                    checkboxPressedSFX()
+                    SoundPlayer.play(checkboxPressSound)
                 }}
                 slotProps={{
                     root: {
