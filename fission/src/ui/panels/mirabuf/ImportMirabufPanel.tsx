@@ -376,7 +376,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 <ToggleButtonGroup
                     value={viewType}
                     exclusive
-                    onChange={(_, v) => { 
+                    onChange={(_, v) => {
                         buttonPressSFX()
                         if (v != null) {
                             setViewType(v)

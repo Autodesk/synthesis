@@ -25,11 +25,11 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={() => {
-                if (typeof onClick == "function"){
+                if (typeof onClick == "function") {
                     onClick()
                 }
                 buttonPressSFX()
-                }}
+            }}
             className={`relative flex flex-row
                 cursor-pointer
                 bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}

@@ -3,7 +3,7 @@ import Label, { LabelSize } from "./Label"
 import { Switch } from "@mui/base/Switch"
 import { Box } from "@mui/material"
 import { LabelWithTooltip } from "./StyledComponents"
-import { checkboxPressedSFX } from "@/systems/sound/SoundPlayer"  
+import { checkboxPressedSFX } from "@/systems/sound/SoundPlayer"
 
 type CheckboxProps = {
     label: string

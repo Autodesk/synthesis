@@ -203,7 +203,7 @@ const Panel: React.FC<PanelProps> = ({
                                 onClick={() => {
                                     closePanel(panelId)
                                     if (!acceptBlocked && onAccept) onAccept()
-                                        buttonPressSFX()
+                                    buttonPressSFX()
                                 }}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"

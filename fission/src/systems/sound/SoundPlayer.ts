@@ -10,14 +10,14 @@ class SoundPlayer {
 
     constructor(filePath: string) {
         this.audio = new Audio(filePath)
-        
+
         this.audio.volume = PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
             ? 0
             : clamp(PreferencesSystem.getGlobalPreference<number>("SFXVolume") / 100, 0, 1)
     }
 
     async play(): Promise<void> {
-        return this.audio.play().catch((error) => {
+        return this.audio.play().catch(error => {
             console.error("Error playing the audio file:", error)
         })
     }

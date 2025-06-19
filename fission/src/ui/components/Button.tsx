@@ -54,11 +54,11 @@ const Button: React.FC<ButtonProps> = ({
     return (
         <BaseButton
             onClick={() => {
-                if (typeof onClick == "function"){
+                if (typeof onClick == "function") {
                     onClick()
                 }
                 buttonPressSFX()
-                }}
+            }}
             className={`
                 ${colorOverrideClass || "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"}  
                 ${sizeClassNames} 

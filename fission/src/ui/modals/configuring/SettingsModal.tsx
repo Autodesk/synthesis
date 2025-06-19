@@ -50,9 +50,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
     )
 
-    const [sfxVolume, setSFXVolume] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("SFXVolume")
-    )
+    const [sfxVolume, setSFXVolume] = useState<number>(PreferencesSystem.getGlobalPreference<number>("SFXVolume"))
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
@@ -193,7 +191,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         value={sfxVolume}
                         label={"SFX Volume"}
                         format={{ maximumFractionDigits: 2 }}
-                        onChange={(_, value : number | number[]) => setSFXVolume(value as number)}
+                        onChange={(_, value: number | number[]) => setSFXVolume(value as number)}
                         tooltipText="Volume of sound effects (%)."
                     />
                     {Spacer(8)}

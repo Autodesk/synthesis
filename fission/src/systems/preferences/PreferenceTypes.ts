@@ -40,7 +40,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     SubsystemGravity: false,
     SimAutoReconnect: false,
     MuteAllSound: false,
-    SFXVolume: 25
+    SFXVolume: 25,
 }
 
 export type QualitySetting = "Low" | "Medium" | "High"
