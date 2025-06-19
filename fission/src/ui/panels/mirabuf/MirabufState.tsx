@@ -1,6 +1,7 @@
 import { MiraType } from "@/mirabuf/MirabufLoader.ts"
 
-export const mirabufPanelSettings = {
-    current: MiraType.ROBOT,
-    default: MiraType.ROBOT,
+export const mirabufPanelState = {
+    currentMode: MiraType.ROBOT,
+    defaultMode: MiraType.ROBOT,
+    hasUnconfirmedImport: false,
 }

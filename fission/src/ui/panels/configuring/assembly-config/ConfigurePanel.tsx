@@ -24,7 +24,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
-import { mirabufPanelSettings } from "@/panels/mirabuf/MirabufState.tsx"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -102,7 +102,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
                 update()
             }}
             onAddClicked={() => {
-                mirabufPanelSettings.current =
+                mirabufPanelState.currentMode =
                     configurationType == ConfigurationType.FIELD ? MiraType.FIELD : MiraType.ROBOT
                 openPanel("import-mirabuf")
             }}
