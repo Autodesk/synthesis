@@ -132,7 +132,17 @@ class MirabufCachingService {
                 fileSize: miraBuff.byteLength,
             })
 
-            return await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
+            const cached = await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
+
+            if (cached) return cached
+
+            // fallback: return raw buffer wrapped in MirabufCacheInfo
+            return {
+                id: Date.now().toString(),
+                miraType: miraType ?? (this.AssemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
+                cacheKey: fetchLocation,
+                buffer: miraBuff,
+            }
         } catch (e) {
             console.warn("Caching failed", e)
             return undefined
