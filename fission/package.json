@@ -21,7 +21,7 @@
     "playwright:install": "bun x playwright install || npx playwright install"
   },
   "dependencies": {
-    "@barclah/jolt-physics": "^0.31.0",
+    "@azaleacolburn/jolt-physics": "^0.31.0",
     "@haensl/google-analytics": "^1.2.2",
     "@mui/base": "^5.0.0-dev.20240529-082515-213b5e33ab",
     "@mui/icons-material": "^5.17.1",

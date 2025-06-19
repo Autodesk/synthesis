@@ -13,7 +13,7 @@ import {
 } from "../../util/TypeConversions"
 import { mirabuf } from "../../proto/mirabuf"
 import JOLT from "../../util/loading/JoltSyncLoader"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 
 describe("Three to Jolt Conversions", async () => {
     function compareMat(tM: THREE.Matrix4, jM: Jolt.Mat44) {

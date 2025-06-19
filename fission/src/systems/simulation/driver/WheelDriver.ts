@@ -1,4 +1,4 @@
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import Driver, { DriverID } from "./Driver"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { SimType } from "../wpilib_brain/WPILibBrain"
