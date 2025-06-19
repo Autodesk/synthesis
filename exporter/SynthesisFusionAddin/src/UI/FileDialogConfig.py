@@ -9,7 +9,9 @@ from src import gm
 from src.Types import OString
 
 
-def saveFileDialog(defaultPath: str | None = None, defaultName: str | None = None) -> str | os.PathLike[str] | None:
+def saveFileDialog(
+    defaultPath: str | os.PathLike[str] | None = None, defaultName: str | None = None
+) -> str | os.PathLike[str] | None:
     """Function to generate the Save File Dialog for the Hellion Data files
 
     Args:
