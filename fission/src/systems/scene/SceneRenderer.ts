@@ -20,6 +20,7 @@ import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import autodeskLogo from "@/assets/autodesk_symbol.png"
 
 const CLEAR_COLOR = 0x121212
@@ -261,7 +262,8 @@ class SceneRenderer extends WorldSystem {
             const shadowCamSize = 15
 
             this._light = new THREE.DirectionalLight(0xffffff, 5.0)
-            this._light.position.set(-1.0, 3.0, 2.0)
+            const lightDirection = new THREE.Vector3(1.0, -3.0, -2.0).normalize()
+            this._light.position.copy(lightDirection.clone().multiplyScalar(-20))
             this._light.castShadow = true
             this._light.shadow.camera.top = shadowCamSize
             this._light.shadow.camera.bottom = -shadowCamSize
@@ -341,6 +343,14 @@ class SceneRenderer extends WorldSystem {
 
         if (this._sceneObjects.delete(id)) {
             obj!.Dispose()
+        }
+    }
+
+    public RemoveAllFields() {
+        for (const [id, obj] of this._sceneObjects) {
+            if (obj instanceof MirabufSceneObject && obj.miraType == MiraType.FIELD) {
+                this.RemoveSceneObject(id)
+            }
         }
     }
 
