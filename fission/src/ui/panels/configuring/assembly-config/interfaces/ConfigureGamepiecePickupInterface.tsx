@@ -262,18 +262,41 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     }}
                     slotProps={{
                         root: {
-                            className: `group relative inline-block w-[24px] h-[24px] m-2.5 cursor-pointer transform transition-transform hover:scale-[1.03] active:scale-[1.06]`,
+                            className: `
+                                group relative inline-block 
+                                w-[24px] h-[24px] m-2.5 
+                                cursor-pointer transform transition-transform 
+                                hover:scale-[1.03] active:scale-[1.06]
+                            `,
                         },
                         input: {
-                            className: `cursor-inherit absolute w-full h-full top-0 left-0 opacity-0 z-10 border-none`,
+                            className: `
+                                cursor-inherit absolute 
+                                w-full h-full top-0 left-0 
+                                opacity-0 z-10 border-none
+                            `,
                         },
                         track: ownerState => {
+                            const baseClasses = `
+                                absolute block w-full h-full 
+                                transition rounded-full 
+                                border border-solid outline-none 
+                                border-interactive-element-right 
+                                dark:border-interactive-element-right 
+                                group-[.base--focusVisible]:shadow-outline-switch 
+                                transform transition-transform 
+                                group-hover:scale-[1.03] group-active:scale-[1.06]
+                            `
+                            const backgroundClasses = ownerState.checked
+                                ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right"
+                                : "bg-background-secondary"
+
                             return {
-                                className: `absolute block w-full h-full transition rounded-full border border-solid outline-none border-interactive-element-right dark:border-interactive-element-right group-[.base--focusVisible]:shadow-outline-switch ${ownerState.checked ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right" : "bg-background-secondary"} transform transition-transform group-hover:scale-[1.03] group-active:scale-[1.06]`,
+                                className: `${baseClasses} ${backgroundClasses}`,
                             }
                         },
                         thumb: {
-                            className: `display-none`,
+                            className: "display-none",
                         },
                     }}
                 />
