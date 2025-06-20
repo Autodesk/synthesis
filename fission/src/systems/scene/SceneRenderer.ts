@@ -5,8 +5,8 @@ import GizmoSceneObject from "./GizmoSceneObject"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
-import { Theme } from "@/ui/helpers/UseThemeHelpers"
-import Jolt from "@barclah/jolt-physics"
+import { Theme } from "@/ui/ThemeContext"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
 
@@ -250,7 +250,8 @@ class SceneRenderer extends WorldSystem {
             const shadowCamSize = 15
 
             this._light = new THREE.DirectionalLight(0xffffff, 5.0)
-            this._light.position.set(-1.0, 3.0, 2.0)
+            const lightDirection = new THREE.Vector3(1.0, -3.0, -2.0).normalize()
+            this._light.position.copy(lightDirection.clone().multiplyScalar(-20))
             this._light.castShadow = true
             this._light.shadow.camera.top = shadowCamSize
             this._light.shadow.camera.bottom = -shadowCamSize

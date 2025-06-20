@@ -3,13 +3,18 @@ import SceneObject from "../systems/scene/SceneObject"
 import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
-import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
+import {
+    EjectorPreferences,
+    FieldPreferences,
+    IntakePreferences,
+    ScoringZonePreferences,
+} from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
@@ -241,7 +246,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.UpdateMeshTransforms()
 
         const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
-        cameraControls.focusProvider = this
+
+        if (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
+            cameraControls.focusProvider = this
+        }
     }
 
     public Update(): void {
@@ -409,6 +417,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    public UpdateIntakeVisualIndicator() {
+        if (this._intakeSensor) {
+            this._intakeSensor.UpdateVisualIndicator()
+        }
+    }
+
+    public SetIntakeVisualIndicatorVisible(visible: boolean) {
+        if (this._intakeSensor) {
+            this._intakeSensor.SetVisualIndicatorVisible(visible)
+        }
+    }
+
     public SetEjectable(bodyId?: Jolt.BodyID, removeExisting: boolean = false): boolean {
         if (this._ejectable) {
             if (!removeExisting) return false
@@ -428,7 +448,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public UpdateScoringZones(render?: boolean) {
-        this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._scoringZones.filter(zone => zone.id != -1).forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
         this._scoringZones = []
 
         if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
@@ -442,6 +462,17 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 World.SceneRenderer.RegisterSceneObject(newZone)
             }
         }
+    }
+
+    public RemoveScoringZoneObject(zone: ScoringZonePreferences) {
+        const index = this._fieldPreferences?.scoringZones?.indexOf(zone) ?? -1
+        if (index == -1) return
+
+        const zoneObject = this._scoringZones[index]
+        if (zoneObject == null) return
+
+        World.SceneRenderer.RemoveSceneObject(zoneObject.id)
+        zoneObject.id = -1
     }
 
     /**
@@ -486,6 +517,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
             this._intakePreferences = robotPrefs.intake
+            // Ensure backwards compatibility for showZoneAlways field
+            if (this._intakePreferences && this._intakePreferences.showZoneAlways === undefined) {
+                this._intakePreferences.showZoneAlways = false
+            }
             this._ejectorPreferences = robotPrefs.ejector
             this._simConfigData = robotPrefs.simConfig
         }
@@ -522,10 +557,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public LoadFocusTransform(mat: THREE.Matrix4) {
-        const com = World.PhysicsSystem.GetBody(
-            this._mechanism.nodeToBody.get(this.rootNodeId)!
-        ).GetCenterOfMassTransform()
-        mat.copy(JoltMat44_ThreeMatrix4(com))
+        const bounds = this.ComputeBoundingBox()
+        const center = bounds.getCenter(new THREE.Vector3())
+        mat.makeTranslation(center.x, center.y, center.z)
     }
 
     public getSupplierData(): ContextData {
