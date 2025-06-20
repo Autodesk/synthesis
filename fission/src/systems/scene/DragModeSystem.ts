@@ -214,8 +214,6 @@ class DragModeSystem extends WorldSystem {
         const isRobot = association?.sceneObject?.miraType === MiraType.ROBOT
         const isGamePiece = association?.isGamePiece
 
-        const shouldDisablePhysics = isRobot || isGamePiece
-
         this._dragTarget = {
             bodyId: bodyId,
             initialPosition: bodyPosition.clone(),
@@ -223,13 +221,13 @@ class DragModeSystem extends WorldSystem {
             mass: mass,
             dragPlane: dragPlane,
             dragDepth: dragDepth,
-            physicsDisabled: shouldDisablePhysics,
+            physicsDisabled: isRobot,
         }
 
         this._isDragging = true
         this._lastMousePosition = mousePos
 
-        if (shouldDisablePhysics) {
+        if (isRobot) {
             World.PhysicsSystem.DisablePhysicsForBody(bodyId)
         }
 
@@ -266,15 +264,24 @@ class DragModeSystem extends WorldSystem {
         }
 
         let targetSceneObject: MirabufSceneObject | undefined
+        let shouldTransition = true
+
         if (this._dragTarget) {
             const association = World.PhysicsSystem.GetBodyAssociation(this._dragTarget.bodyId) as RigidNodeAssociate
             targetSceneObject = association?.sceneObject
+            if (association?.isGamePiece) {
+                shouldTransition = false
+            }
         }
 
         this._isDragging = false
         this._dragTarget = undefined
 
-        this.startCameraTransition(targetSceneObject)
+        if (shouldTransition) {
+            this.startCameraTransition(targetSceneObject)
+        } else {
+            World.SceneRenderer.currentCameraControls.enabled = true
+        }
     }
 
     private startCameraTransition(targetSceneObject: MirabufSceneObject | undefined): void {
@@ -401,6 +408,7 @@ class DragModeSystem extends WorldSystem {
 
             const joltForce = ThreeVector3_JoltVec3(forceNeeded)
             body.AddForce(joltForce)
+            console.log(forceNeeded)
 
             const angularVel = body.GetAngularVelocity()
             const angularDampingStrength = Math.min(mass * 3.0, 100.0)
