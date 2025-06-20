@@ -20,6 +20,9 @@ import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import { Box } from "@mui/material"
+import { Switch } from "@mui/base/Switch"
+import Label, { LabelSize } from "@/ui/components/Label"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -52,7 +55,8 @@ function save(
     zoneSize: number,
     gizmo: GizmoSceneObject,
     selectedRobot: MirabufSceneObject,
-    selectedNode?: RigidNodeId
+    selectedNode?: RigidNodeId,
+    showZoneAlways?: boolean
 ) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
@@ -76,6 +80,9 @@ function save(
     selectedRobot.intakePreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
     selectedRobot.intakePreferences.parentNode = selectedNode
     selectedRobot.intakePreferences.zoneDiameter = zoneSize
+    if (showZoneAlways !== undefined) {
+        selectedRobot.intakePreferences.showZoneAlways = showZoneAlways
+    }
 
     PreferencesSystem.savePreferences()
 }
@@ -92,15 +99,16 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
+    const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode)
+            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways)
             selectedRobot.UpdateIntakeSensor()
         }
-    }, [selectedRobot, selectedNode, zoneSize])
+    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -119,10 +127,10 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [zoneSize])
 
     const placeholderMesh = useMemo(() => {
-        return new THREE.Mesh(
-            new THREE.SphereGeometry(0.5),
-            World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
-        )
+        const material = World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
+        material.transparent = true
+        material.opacity = 0.6
+        return new THREE.Mesh(new THREE.SphereGeometry(0.5), material)
     }, [theme])
 
     const gizmoComponent = useMemo(() => {
@@ -173,18 +181,30 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         if (selectedRobot?.intakePreferences) {
             setZoneSize(selectedRobot.intakePreferences.zoneDiameter)
             setSelectedNode(selectedRobot.intakePreferences.parentNode)
+            setShowZoneAlways(selectedRobot.intakePreferences.showZoneAlways ?? false)
         } else {
             setSelectedNode(undefined)
+            setShowZoneAlways(false)
         }
     }, [selectedRobot])
 
     useEffect(() => {
         World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
+        // Hide the visual indicator when entering configuration mode
+        if (selectedRobot) {
+            selectedRobot.SetIntakeVisualIndicatorVisible(false)
+        }
+
         return () => {
             World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+
+            // Show the visual indicator when exiting configuration mode
+            if (selectedRobot) {
+                selectedRobot.SetIntakeVisualIndicatorVisible(true)
+            }
         }
-    }, [])
+    }, [selectedRobot])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
@@ -224,6 +244,63 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }}
                 step={0.01}
             />
+            {/* Checkbox for showing intake zone indicator at all times */}
+            <Box
+                display="flex"
+                flexDirection={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                textAlign={"center"}
+            >
+                <Label size={LabelSize.Small} className="mr-12 whitespace-nowrap">
+                    Show intake zone indicator always
+                </Label>
+                <Switch
+                    checked={showZoneAlways}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setShowZoneAlways(e.target.checked)
+                    }}
+                    slotProps={{
+                        root: {
+                            className: `
+                                group relative inline-block 
+                                w-[24px] h-[24px] m-2.5 
+                                cursor-pointer transform transition-transform 
+                                hover:scale-[1.03] active:scale-[1.06]
+                            `,
+                        },
+                        input: {
+                            className: `
+                                cursor-inherit absolute 
+                                w-full h-full top-0 left-0 
+                                opacity-0 z-10 border-none
+                            `,
+                        },
+                        track: ownerState => {
+                            const baseClasses = `
+                                absolute block w-full h-full 
+                                transition rounded-full 
+                                border border-solid outline-none 
+                                border-interactive-element-right 
+                                dark:border-interactive-element-right 
+                                group-[.base--focusVisible]:shadow-outline-switch 
+                                transform transition-transform 
+                                group-hover:scale-[1.03] group-active:scale-[1.06]
+                            `
+                            const backgroundClasses = ownerState.checked
+                                ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right"
+                                : "bg-background-secondary"
+
+                            return {
+                                className: `${baseClasses} ${backgroundClasses}`,
+                            }
+                        },
+                        thumb: {
+                            className: "display-none",
+                        },
+                    }}
+                />
+            </Box>
             {gizmoComponent}
             {Spacer(10)}
             <Button

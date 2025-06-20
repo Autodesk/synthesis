@@ -241,7 +241,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this.UpdateMeshTransforms()
 
         const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
-        cameraControls.focusProvider = this
+
+        if (this.miraType === MiraType.ROBOT || !cameraControls.focusProvider) {
+            cameraControls.focusProvider = this
+        }
     }
 
     public Update(): void {
@@ -409,6 +412,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    public UpdateIntakeVisualIndicator() {
+        if (this._intakeSensor) {
+            this._intakeSensor.UpdateVisualIndicator()
+        }
+    }
+
+    public SetIntakeVisualIndicatorVisible(visible: boolean) {
+        if (this._intakeSensor) {
+            this._intakeSensor.SetVisualIndicatorVisible(visible)
+        }
+    }
+
     public SetEjectable(bodyId?: Jolt.BodyID, removeExisting: boolean = false): boolean {
         if (this._ejectable) {
             if (!removeExisting) return false
@@ -486,6 +501,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
             this._intakePreferences = robotPrefs.intake
+            // Ensure backwards compatibility for showZoneAlways field
+            if (this._intakePreferences && this._intakePreferences.showZoneAlways === undefined) {
+                this._intakePreferences.showZoneAlways = false
+            }
             this._ejectorPreferences = robotPrefs.ejector
             this._simConfigData = robotPrefs.simConfig
         }
@@ -522,10 +541,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public LoadFocusTransform(mat: THREE.Matrix4) {
-        const com = World.PhysicsSystem.GetBody(
-            this._mechanism.nodeToBody.get(this.rootNodeId)!
-        ).GetCenterOfMassTransform()
-        mat.copy(JoltMat44_ThreeMatrix4(com))
+        const bounds = this.ComputeBoundingBox()
+        const center = bounds.getCenter(new THREE.Vector3())
+        mat.makeTranslation(center.x, center.y, center.z)
     }
 
     public getSupplierData(): ContextData {
