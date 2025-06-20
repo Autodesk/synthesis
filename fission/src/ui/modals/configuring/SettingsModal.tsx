@@ -10,6 +10,7 @@ import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import World from "@/systems/World"
 import Slider from "@/ui/components/Slider"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [qualitySettings, setQualitySettings] = useState<string>(
@@ -62,6 +63,8 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
         PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
         PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
+
+        SoundPlayer.changeVolume() // Apply the new sound volume
 
         // Disabled until these settings are implemented
         /* PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
