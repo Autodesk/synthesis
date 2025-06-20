@@ -1,19 +1,18 @@
 import React, { useState } from "react"
+import { useModalControlContext } from "@/ui/ModalContext"
+import { usePanelControlContext } from "@/ui/PanelContext"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label, { LabelSize } from "@/components/Label"
-import Dropdown from "@/components/Dropdown"
+import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import World from "@/systems/World"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const [qualitySettings, setQualitySettings] = useState<string>(
-        PreferencesSystem.getGlobalPreference<string>("QualitySettings")
-    )
+    const { closeModal } = useModalControlContext()
+    const { openPanel } = usePanelControlContext()
 
     // Disabled until camera settings are implemented
     /* const [zoomSensitivity, setZoomSensitivity] = useState<number>(
@@ -47,8 +46,6 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     )
 
     const saveSettings = () => {
-        PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
-
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
@@ -74,16 +71,15 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
-                <Label size={LabelSize.Medium}>Screen Settings</Label>
-                <Dropdown
-                    label="Quality Settings"
-                    options={["Low", "Medium", "High"] as QualitySetting[]}
-                    defaultValue={PreferencesSystem.getGlobalPreference<QualitySetting>("QualitySettings")}
-                    onSelect={selected => {
-                        setQualitySettings(selected)
-                        World.SceneRenderer.ChangeLighting(selected)
-                    }}
-                />
+                <Box alignSelf={"center"}>
+                    <Button
+                        value="Graphics Settings"
+                        onClick={() => {
+                            openPanel("graphics-settings")
+                            closeModal()
+                        }}
+                    />
+                </Box>
 
                 {/* Disabled until these settings are implemented */}
                 {/*   {Spacer(5)}
@@ -116,7 +112,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     onChange={(_, value) => setYawSensitivity(value as number)}
                     tooltipText="Moving the camera left and right."
                 />*/}
-                {Spacer(20)}
+                {Spacer(10)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
                     <Checkbox
