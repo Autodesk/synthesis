@@ -11,7 +11,7 @@ import {
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
 import { CustomOrbitControls, SphericalCoords } from "./CameraControls"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 
 interface DragTarget {
