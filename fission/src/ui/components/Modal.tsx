@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react"
 import { ClickAwayListener } from "@mui/base/ClickAwayListener"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 export type ModalPropsImpl = {
     modalId: string

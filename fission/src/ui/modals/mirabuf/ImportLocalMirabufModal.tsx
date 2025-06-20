@@ -8,7 +8,7 @@ import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 

@@ -1,5 +1,5 @@
 import React, { ReactNode } from "react"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 
 export type OpenLocation =
     | "top-left"

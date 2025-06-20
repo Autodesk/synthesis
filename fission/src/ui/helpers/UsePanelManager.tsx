@@ -1,11 +1,20 @@
-import { useState, useEffect, useCallback, ReactElement } from "react"
+import { useState, useEffect, useCallback, useContext, createContext, ReactElement, ReactNode } from "react"
 
-type PanelInstance = {
+export type PanelInstance = {
     id: string
     component: ReactElement
     onOpen?: () => void
     onClose?: () => void
 }
+
+export type PanelControlContextType = {
+    openPanel: (panelId: string) => void
+    closePanel: (panelId: string) => void
+    closeAllPanels: () => void
+    children?: ReactNode
+}
+
+export const PanelControlContext = createContext<PanelControlContextType | null>(null)
 
 export const usePanelManager = (panels: ReactElement[]) => {
     const [panelDictionary, setPanelDictionary] = useState<{
@@ -114,4 +123,10 @@ export const usePanelManager = (panels: ReactElement[]) => {
         unregisterPanel,
         getActivePanelElements,
     }
+}
+
+export const usePanelControlContext = () => {
+    const context = useContext(PanelControlContext)
+    if (!context) throw new Error("usePanelControlContext must be used within a PanelControlProvider")
+    return context
 }

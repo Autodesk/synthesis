@@ -5,7 +5,7 @@ import { ModalControlProvider } from "@/ui/ModalContext"
 import { useModalManager } from "@/ui/helpers/UseModalManager.tsx"
 import { PanelControlProvider } from "@/ui/PanelContext"
 import { usePanelManager } from "@/ui/helpers/UsePanelManager.tsx"
-import { useTheme } from "@/ui/ThemeContext"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers.tsx"
 import { ToastContainer, ToastProvider } from "@/ui/ToastContext"
 import {
     TOOLTIP_DURATION,

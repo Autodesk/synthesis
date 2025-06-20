@@ -1,11 +1,19 @@
-import { useState, useEffect, useCallback, ReactElement } from "react"
+import { useState, useEffect, useCallback, useContext, createContext, ReactElement, ReactNode } from "react"
 
-type ModalInstance = {
+export type ModalInstance = {
     id: string
     component: ReactElement
     onOpen?: () => void
     onClose?: () => void
 }
+
+export type ModalControlContextType = {
+    openModal: (modalId: string, onOpen?: () => void, onClose?: () => void) => void
+    closeModal: () => void
+    children?: ReactNode
+}
+
+export const ModalControlContext = createContext<ModalControlContextType | null>(null)
 
 export const useModalManager = (modals: ReactElement[]) => {
     const [modalDictionary, setModalDictionary] = useState<{
@@ -81,4 +89,10 @@ export const useModalManager = (modals: ReactElement[]) => {
         unregisterModal,
         getActiveModalElement,
     }
+}
+
+export const useModalControlContext = () => {
+    const context = useContext(ModalControlContext)
+    if (!context) throw new Error("useModalControlContext must be used within a ModalControlProvider")
+    return context
 }
