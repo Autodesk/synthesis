@@ -6,7 +6,7 @@ import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect }
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
 import { Theme } from "@/ui/ThemeContext"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
 

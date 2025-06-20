@@ -1,4 +1,4 @@
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import Driver, { DriverControlMode, DriverID } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"

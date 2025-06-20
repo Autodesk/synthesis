@@ -1,4 +1,4 @@
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { LayerReserve } from "./PhysicsSystem"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { mirabuf } from "@/proto/mirabuf"

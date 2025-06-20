@@ -1,6 +1,6 @@
 import * as THREE from "three"
 import JOLT from "./loading/JoltSyncLoader"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { mirabuf } from "../proto/mirabuf"
 import { RgbaColor } from "react-colorful"
 
