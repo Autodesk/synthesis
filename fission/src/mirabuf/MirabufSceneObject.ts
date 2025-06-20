@@ -465,12 +465,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public RemoveScoringZoneObject(zone: ScoringZonePreferences) {
-        const index = this._fieldPreferences?.scoringZones?.indexOf(zone)
-        if (index != null) {
-            const zone = this._scoringZones[index]
-            if (zone != null) {
-                World.SceneRenderer.RemoveSceneObject(zone.id)
-                zone.id = -1
+        const index = this._fieldPreferences?.scoringZones?.indexOf(zone) ?? -1
+        if (index != -1) {
+            const zoneObject = this._scoringZones[index]
+
+            if (zoneObject != null) {
+                World.SceneRenderer.RemoveSceneObject(zoneObject.id)
+                zoneObject.id = -1
             }
         }
     }
