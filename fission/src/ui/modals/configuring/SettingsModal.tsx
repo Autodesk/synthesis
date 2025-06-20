@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label, { LabelSize } from "@/components/Label"
 import Dropdown from "@/components/Dropdown"
@@ -11,66 +11,13 @@ import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import World from "@/systems/World"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const [qualitySettings, setQualitySettings] = useState<string>(
-        PreferencesSystem.getGlobalPreference<string>("QualitySettings")
-    )
-
-    // Disabled until camera settings are implemented
-    /* const [zoomSensitivity, setZoomSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")
-    )
-    const [pitchSensitivity, setPitchSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("PitchSensitivity")
-    )
-    const [yawSensitivity, setYawSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("YawSensitivity")
-    ) */
-
-    const [reportAnalytics, setReportAnalytics] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")
-    )
-
-    // Disabled until use metric is implemented
-    // const [useMetric, setUseMetric] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("UseMetric"))
-
-    const [renderScoringZones, setRenderScoringZones] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
-    )
-    const [renderSceneTags, setRenderSceneTags] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")
-    )
-    const [renderScoreboard, setRenderScoreboard] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")
-    )
-    const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
-    )
-
-    const saveSettings = () => {
-        PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
-
-        PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
-        PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
-        PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
-        PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
-        PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
-
-        // Disabled until these settings are implemented
-        /* PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
-        PreferencesSystem.setGlobalPreference<number>("PitchSensitivity", pitchSensitivity)
-        PreferencesSystem.setGlobalPreference<number>("YawSensitivity", yawSensitivity)
-        PreferencesSystem.setGlobalPreference<boolean>("UseMetric", useMetric) */
-
-        PreferencesSystem.savePreferences()
-    }
-
     return (
         <Modal
             name="Settings"
             icon={SynthesisIcons.GearLarge}
             modalId={modalId}
             onAccept={() => {
-                saveSettings()
+                PreferencesSystem.savePreferences()
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
@@ -78,9 +25,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Dropdown
                     label="Quality Settings"
                     options={["Low", "Medium", "High"] as QualitySetting[]}
-                    defaultValue={PreferencesSystem.getGlobalPreference<QualitySetting>("QualitySettings")}
+                    defaultValue={PreferencesSystem.getGlobalPreference("QualitySettings")}
                     onSelect={selected => {
-                        setQualitySettings(selected)
+                        PreferencesSystem.setGlobalPreference("QualitySettings", selected)
                         World.SceneRenderer.ChangeLighting(selected)
                     }}
                 />
@@ -121,16 +68,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Box display="flex" flexDirection={"column"}>
                     <Checkbox
                         label="Report Analytics"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")}
-                        onClick={checked => {
-                            setReportAnalytics(checked)
-                        }}
+                        defaultState={PreferencesSystem.getGlobalPreference("ReportAnalytics")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("ReportAnalytics", checked)}
                         tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                     />
                     {/* Disabled until this settings is implemented */}
                     {/*  <Checkbox
                         label="Use Metric"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("UseMetric")}
+                        defaultState={PreferencesSystem.getGlobalPreference("UseMetric")}
                         onClick={checked => {
                             setUseMetric(checked)
                         }}
@@ -138,25 +83,21 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     /> */}
                     <Checkbox
                         label="Realistic Subsystem Gravity"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
-                        onClick={checked => {
-                            setSubsystemGravity(checked)
-                        }}
+                        defaultState={PreferencesSystem.getGlobalPreference("SubsystemGravity")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("SubsystemGravity", checked)}
                         tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
                     />
                     <Checkbox
                         label="Show Score Zones"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")}
-                        onClick={checked => {
-                            setRenderScoringZones(checked)
-                        }}
+                        defaultState={PreferencesSystem.getGlobalPreference("RenderScoringZones")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("RenderScoringZones", checked)}
                         tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
                     />
                     <Checkbox
                         label="Show Scene Tags"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")}
+                        defaultState={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
                         onClick={checked => {
-                            setRenderSceneTags(checked)
+                            PreferencesSystem.setGlobalPreference("RenderSceneTags", checked)
                             if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE)
                             else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
                         }}
@@ -164,10 +105,8 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     />
                     <Checkbox
                         label="Show Scoreboard"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")}
-                        onClick={checked => {
-                            setRenderScoreboard(checked)
-                        }}
+                        defaultState={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("RenderScoreboard", checked)}
                     />
                 </Box>
             </div>

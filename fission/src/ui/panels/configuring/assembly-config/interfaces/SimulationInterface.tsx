@@ -12,7 +12,7 @@ type SimulationInterfaceProps = {
 export default function SimulationInterface({ selectedAssembly }: SimulationInterfaceProps) {
     const { openPanel } = usePanelControlContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect")
+        PreferencesSystem.getGlobalPreference("SimAutoReconnect")
     )
 
     return (

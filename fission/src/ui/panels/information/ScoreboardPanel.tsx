@@ -13,7 +13,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     const [initialTime] = useState<number>(-1)
     const [startTime] = useState<number>(Date.now())
     const [time, setTime] = useState<number>(-1)
-    const { closePanel } = usePanelControlContext()
+    const { closePanel, openPanel } = usePanelControlContext()
 
     // probably useless code because the time left should be sent by Synthesis and not calculated here
     // const startTimer = useCallback(
@@ -34,12 +34,14 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     )
 
     const onRenderChange = useCallback(
-        (e: PreferenceEvent) => {
-            if (e.prefName == "RenderScoreboard" && e.prefValue == false) {
+        (e: PreferenceEvent<"RenderScoreboard">) => {
+            if (e.prefValue) {
+                openPanel("scoreboard")
+            } else {
                 closePanel("scoreboard")
             }
         },
-        [closePanel]
+        [closePanel, openPanel]
     )
 
     useEffect(() => {
@@ -56,7 +58,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
 
     useEffect(() => {
         OnScoreChangedEvent.AddListener(onScoreChange)
-        PreferencesSystem.addEventListener(onRenderChange)
+        PreferencesSystem.addPreferenceEventListener("RenderScoreboard", onRenderChange)
     })
 
     // useEffect(() => {

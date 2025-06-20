@@ -15,9 +15,8 @@ import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
 import World from "../World"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
-import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import autodeskLogo from "@/assets/autodesk_symbol.png"
@@ -103,7 +102,7 @@ class SceneRenderer extends WorldSystem {
         this._renderer.setSize(window.innerWidth, window.innerHeight)
 
         // Adding the lighting using quality preferences
-        this.ChangeLighting(PreferencesSystem.getGlobalPreference<string>("QualitySettings"))
+        this.ChangeLighting(PreferencesSystem.getGlobalPreference("QualitySettings"))
 
         const ambientLight = new THREE.AmbientLight(0xffffff, 0.3)
         this._scene.add(ambientLight)
@@ -213,8 +212,7 @@ class SceneRenderer extends WorldSystem {
         this._skybox.position.copy(this._mainCamera.position)
 
         // Update the tags each frame if they are enabled in preferences
-        if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
-            new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
+        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
 
         this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)

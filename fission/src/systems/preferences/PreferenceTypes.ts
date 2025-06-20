@@ -3,28 +3,37 @@ import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
 /** Names of all global preferences. */
-export type GlobalPreference =
-    | "QualitySettings"
-    | "ZoomSensitivity"
-    | "PitchSensitivity"
-    | "YawSensitivity"
-    | "ReportAnalytics"
-    | "UseMetric"
-    | "RenderScoringZones"
-    | "InputSchemes"
-    | "RenderSceneTags"
-    | "RenderScoreboard"
-    | "SubsystemGravity"
-    | "SimAutoReconnect"
 
-export const RobotPreferencesKey: string = "Robots"
-export const FieldPreferencesKey: string = "Fields"
+export type GlobalPreferences = {
+    QualitySettings: QualitySetting
+    ZoomSensitivity: number
+    PitchSensitivity: number
+    YawSensitivity: number
+    ReportAnalytics: boolean
+    UseMetric: boolean
+    RenderScoringZones: boolean
+    InputSchemes: InputScheme[]
+    RenderSceneTags: boolean
+    RenderScoreboard: boolean
+    SubsystemGravity: boolean
+    SimAutoReconnect: boolean
+}
+
+export type GlobalPreference = keyof GlobalPreferences
+
+export type Preferences = GlobalPreferences & {
+    [RobotPreferencesKey]: Record<string, RobotPreferences>
+    [FieldPreferencesKey]: Record<string, FieldPreferences>
+}
+
+export const RobotPreferencesKey = "Robots" as const
+export const FieldPreferencesKey = "Fields" as const
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const DefaultGlobalPreferences: { [key: string]: unknown } = {
+export const DefaultGlobalPreferences: GlobalPreferences = {
     QualitySettings: "High" as QualitySetting,
     ZoomSensitivity: 15,
     PitchSensitivity: 10,

@@ -23,7 +23,7 @@ class SliderDriver extends Driver {
 
     private _prevPos: number = 0.0
 
-    private _gravityChange?: (event: PreferenceEvent) => void
+    private _gravityChange?: (event: PreferenceEvent<"SubsystemGravity">) => void
 
     public get targetPosition(): number {
         return this._targetPosition
@@ -84,7 +84,7 @@ class SliderDriver extends Driver {
         this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
         this.controlMode = DriverControlMode.Velocity
 
-        this._gravityChange = (event: PreferenceEvent) => {
+        this._gravityChange = (event: PreferenceEvent<"SubsystemGravity">) => {
             if (event.prefName == "SubsystemGravity") {
                 const motorSettings = this._constraint.GetMotorSettings()
                 if (event.prefValue) {
@@ -97,7 +97,7 @@ class SliderDriver extends Driver {
             }
         }
 
-        PreferencesSystem.addEventListener(this._gravityChange)
+        PreferencesSystem.addPreferenceEventListener("SubsystemGravity", this._gravityChange)
     }
 
     public Update(_: number): void {

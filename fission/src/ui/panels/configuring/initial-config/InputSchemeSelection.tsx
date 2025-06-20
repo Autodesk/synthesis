@@ -1,15 +1,15 @@
 import DefaultInputs from "@/systems/input/DefaultInputs"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { LabelSize } from "@/ui/components/Label"
 import {
-    EditButton,
-    DeleteButton,
-    SelectButton,
     AddButtonInteractiveColor,
-    SectionLabel,
+    DeleteButton,
+    EditButton,
     SectionDivider,
+    SectionLabel,
+    SelectButton,
 } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
 import { useReducer } from "react"
@@ -73,8 +73,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                                         // Fetch current custom schemes
                                         InputSchemeManager.saveSchemes()
                                         InputSchemeManager.resetDefaultSchemes()
-                                        const schemes =
-                                            PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+                                        const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
                                         // Find and remove this input scheme
                                         const index = schemes.indexOf(scheme)
