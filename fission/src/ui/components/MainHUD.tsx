@@ -11,6 +11,8 @@ import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
 import { setAddToast } from "./GlobalUIControls"
+import MatchMode from "@/systems/MatchMode"
+import { Global_AddToast } from "@/components/GlobalUIControls.ts"
 
 type ButtonProps = {
     value: string
@@ -177,6 +179,21 @@ const MainHUD: React.FC = () => {
                         onClick={() => APS.requestAuthCode()}
                     />
                 )}
+                <MainHUDButton
+                    value={"Start Match Mode"}
+                    icon={SynthesisIcons.Gamepad}
+                    larger={true}
+                    onClick={() => {
+                        MatchMode.getInstance().isMatchEnabled()
+                            ? Global_AddToast?.(
+                                  "error",
+                                  "Match Mode Already Running",
+                                  "You can't start match mode if its already running"
+                              )
+                            : MatchMode.getInstance().start(openModal)
+                        setIsOpen(false)
+                    }}
+                />
             </motion.div>
         </>
     )
