@@ -6,7 +6,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import { NoraNumber, NoraTypes } from "../Nora"
 import World from "@/systems/World"
 import { JoltRVec3_ThreeVector3, JoltVec3_JoltRVec3, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
-import THREE from "three"
+import * as THREE from "three"
 
 const LATERIAL_FRICTION = 1.0
 const LONGITUDINAL_FRICTION = 1.0
