@@ -15,7 +15,15 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
     const rendererRef = useRef<THREE.WebGLRenderer>()
     const cameraRef = useRef<THREE.OrthographicCamera>()
     const cubeRef = useRef<THREE.Group>()
+    const axisRef = useRef<THREE.Group>()
     const [hoveredElement, setHoveredElement] = useState<{ type: string; index: number } | null>(null)
+    const [isDragging, setIsDragging] = useState(false)
+    const [lastMousePos, setLastMousePos] = useState<{ x: number; y: number } | null>(null)
+    const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null)
+    const [dragStartElement, setDragStartElement] = useState<{ type: string; index: number } | null>(null)
+    const [justFinishedDrag, setJustFinishedDrag] = useState(false)
+
+    const containerSize = size * 1.4
 
     const getTopBottomOrientation = (isTop: boolean) => {
         if (World && World.SceneRenderer && World.SceneRenderer.currentCameraControls) {
@@ -63,13 +71,15 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         const scene = new THREE.Scene()
         sceneRef.current = scene
 
-        const camera = new THREE.OrthographicCamera(-2, 2, 2, -2, 0.1, 100)
+        const scaleFactor = containerSize / size
+        const bound = 2 * scaleFactor
+        const camera = new THREE.OrthographicCamera(-bound, bound, bound, -bound, 0.1, 100)
         camera.position.set(5, 5, 5)
         camera.lookAt(0, 0, 0)
         cameraRef.current = camera
 
         const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true })
-        renderer.setSize(size, size)
+        renderer.setSize(containerSize, containerSize)
         renderer.setClearColor(0x000000, 0)
         renderer.domElement.style.pointerEvents = "none"
         renderer.domElement.style.position = "absolute"
@@ -85,32 +95,201 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
         const geometry = new THREE.BoxGeometry(2, 2, 2)
         const materials = [
-            createFaceMaterial("R", 0xa6a6a6),
-            createFaceMaterial("L", 0xa6a6a6),
-            createFaceMaterial("T", 0xa6a6a6),
-            createFaceMaterial("B", 0xa6a6a6),
-            createFaceMaterial("F", 0xa6a6a6),
-            createFaceMaterial("K", 0xa6a6a6),
+            createFaceMaterial("RIGHT", 0xe8e8e8),
+            createFaceMaterial("LEFT", 0xe8e8e8),
+            createFaceMaterial("TOP", 0xe8e8e8),
+            createFaceMaterial("BOTTOM", 0xe8e8e8),
+            createFaceMaterial("FRONT", 0xe8e8e8),
+            createFaceMaterial("BACK", 0xe8e8e8),
         ]
 
         const cube = new THREE.Mesh(geometry, materials)
-        cube.userData = { type: "face" }
+        cube.userData = { type: "visual-face" }
         cubeGroup.add(cube)
+
+        const faceClickGeometry = new THREE.PlaneGeometry(1.2, 1.2)
+        const invisibleMaterial = new THREE.MeshBasicMaterial({
+            transparent: true,
+            opacity: 0,
+            visible: false,
+        })
+
+        const faceConfigs = [
+            { pos: [1.01, 0, 0], rot: [0, Math.PI / 2, 0], index: 0 },
+            { pos: [-1.01, 0, 0], rot: [0, -Math.PI / 2, 0], index: 1 },
+            { pos: [0, 1.01, 0], rot: [-Math.PI / 2, 0, 0], index: 2 },
+            { pos: [0, -1.01, 0], rot: [Math.PI / 2, 0, 0], index: 3 },
+            { pos: [0, 0, 1.01], rot: [0, 0, 0], index: 4 },
+            { pos: [0, 0, -1.01], rot: [0, Math.PI, 0], index: 5 },
+        ]
+
+        faceConfigs.forEach(config => {
+            const faceClickArea = new THREE.Mesh(faceClickGeometry, invisibleMaterial.clone())
+            faceClickArea.position.set(config.pos[0], config.pos[1], config.pos[2])
+            faceClickArea.rotation.set(config.rot[0], config.rot[1], config.rot[2])
+            faceClickArea.userData = { type: "face-click", index: config.index }
+            cubeGroup.add(faceClickArea)
+        })
+
+        const createEdgeHighlightStrips = () => {
+            const edgeStripConfigs = [
+                // Top-front edge
+                { pos: [0, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 0 }, // top face
+                { pos: [0, 0.8, 1.005], rot: [0, 0, 0], size: [1.2, 0.4], edgeIndex: 0 }, // front face
+                // Top-back edge
+                { pos: [0, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 1 }, // top face
+                { pos: [0, 0.8, -1.005], rot: [0, Math.PI, 0], size: [1.2, 0.4], edgeIndex: 1 }, // back face
+                // Bottom-front edge
+                { pos: [0, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 2 }, // bottom face
+                { pos: [0, -0.8, 1.005], rot: [0, 0, 0], size: [1.2, 0.4], edgeIndex: 2 }, // front face
+                // Bottom-back edge
+                { pos: [0, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 3 }, // bottom face
+                { pos: [0, -0.8, -1.005], rot: [0, Math.PI, 0], size: [1.2, 0.4], edgeIndex: 3 }, // back face
+
+                // Front-right edge
+                { pos: [0.8, 0, 1.005], rot: [0, 0, 0], size: [0.4, 1.2], edgeIndex: 4 }, // front face
+                { pos: [1.005, 0, 0.8], rot: [0, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 4 }, // right face
+                // Back-right edge
+                { pos: [0.8, 0, -1.005], rot: [0, Math.PI, 0], size: [0.4, 1.2], edgeIndex: 5 }, // back face
+                { pos: [1.005, 0, -0.8], rot: [0, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 5 }, // right face
+                // Front-left edge
+                { pos: [-0.8, 0, 1.005], rot: [0, 0, 0], size: [0.4, 1.2], edgeIndex: 6 }, // front face
+                { pos: [-1.005, 0, 0.8], rot: [0, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 6 }, // left face
+                // Back-left edge
+                { pos: [-0.8, 0, -1.005], rot: [0, Math.PI, 0], size: [0.4, 1.2], edgeIndex: 7 }, // back face
+                { pos: [-1.005, 0, -0.8], rot: [0, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 7 }, // left face
+
+                // Right-top edge
+                { pos: [1.005, 0.8, 0], rot: [Math.PI / 2, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 8 }, // right face
+                { pos: [0.8, 1.005, 0], rot: [-Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 8 }, // top face
+                // Right-bottom edge
+                { pos: [1.005, -0.8, 0], rot: [Math.PI / 2, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 9 }, // right face
+                { pos: [0.8, -1.005, 0], rot: [Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 9 }, // bottom face
+                // Left-top edge
+                { pos: [-1.005, 0.8, 0], rot: [Math.PI / 2, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 10 }, // left face
+                { pos: [-0.8, 1.005, 0], rot: [-Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 10 }, // top face
+                // Left-bottom edge
+                { pos: [-1.005, -0.8, 0], rot: [Math.PI / 2, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 11 }, // left face
+                { pos: [-0.8, -1.005, 0], rot: [Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 11 }, // bottom face
+            ]
+
+            edgeStripConfigs.forEach(config => {
+                const stripGeometry = new THREE.PlaneGeometry(config.size[0], config.size[1])
+                const stripMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xdaaf03,
+                    transparent: true,
+                    opacity: 0,
+                    depthTest: true,
+                    depthWrite: false,
+                })
+                const edgeStrip = new THREE.Mesh(stripGeometry, stripMaterial)
+                edgeStrip.position.set(config.pos[0], config.pos[1], config.pos[2])
+                edgeStrip.rotation.set(config.rot[0], config.rot[1], config.rot[2])
+                edgeStrip.userData = { type: "edge-visual-highlight", index: config.edgeIndex }
+                cubeGroup.add(edgeStrip)
+            })
+        }
+
+        const createCornerHighlightSquares = () => {
+            const cornerSquareConfigs = [
+                // Corner 0: front-right-top [1, 1, 1]
+                { pos: [1.005, 0.8, 0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 0 }, // right face
+                { pos: [0.8, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 0 }, // top face
+                { pos: [0.8, 0.8, 1.005], rot: [0, 0, 0], cornerIndex: 0 }, // front face
+
+                // Corner 1: back-right-top [1, 1, -1]
+                { pos: [1.005, 0.8, -0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 1 }, // right face
+                { pos: [0.8, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 1 }, // top face
+                { pos: [0.8, 0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 1 }, // back face
+
+                // Corner 2: front-right-bottom [1, -1, 1]
+                { pos: [1.005, -0.8, 0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 2 }, // right face
+                { pos: [0.8, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 2 }, // bottom face
+                { pos: [0.8, -0.8, 1.005], rot: [0, 0, 0], cornerIndex: 2 }, // front face
+
+                // Corner 3: back-right-bottom [1, -1, -1]
+                { pos: [1.005, -0.8, -0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 3 }, // right face
+                { pos: [0.8, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 3 }, // bottom face
+                { pos: [0.8, -0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 3 }, // back face
+
+                // Corner 4: front-left-top [-1, 1, 1]
+                { pos: [-1.005, 0.8, 0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 4 }, // left face
+                { pos: [-0.8, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 4 }, // top face
+                { pos: [-0.8, 0.8, 1.005], rot: [0, 0, 0], cornerIndex: 4 }, // front face
+
+                // Corner 5: back-left-top [-1, 1, -1]
+                { pos: [-1.005, 0.8, -0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 5 }, // left face
+                { pos: [-0.8, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 5 }, // top face
+                { pos: [-0.8, 0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 5 }, // back face
+
+                // Corner 6: front-left-bottom [-1, -1, 1]
+                { pos: [-1.005, -0.8, 0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 6 }, // left face
+                { pos: [-0.8, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 6 }, // bottom face
+                { pos: [-0.8, -0.8, 1.005], rot: [0, 0, 0], cornerIndex: 6 }, // front face
+
+                // Corner 7: back-left-bottom [-1, -1, -1]
+                { pos: [-1.005, -0.8, -0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 7 }, // left face
+                { pos: [-0.8, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 7 }, // bottom face
+                { pos: [-0.8, -0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 7 }, // back face
+            ]
+
+            cornerSquareConfigs.forEach(config => {
+                const squareGeometry = new THREE.PlaneGeometry(0.4, 0.4)
+                const squareMaterial = new THREE.MeshBasicMaterial({
+                    color: 0xdaaf03,
+                    transparent: true,
+                    opacity: 0,
+                    depthTest: false,
+                    depthWrite: false,
+                })
+                const cornerSquare = new THREE.Mesh(squareGeometry, squareMaterial)
+                const adjustedPos = config.pos.map(coord => {
+                    if (Math.abs(coord) > 1) {
+                        return coord > 0 ? 1.02 : -1.02
+                    }
+                    return coord
+                })
+                cornerSquare.position.set(adjustedPos[0], adjustedPos[1], adjustedPos[2])
+                cornerSquare.rotation.set(config.rot[0], config.rot[1], config.rot[2])
+                cornerSquare.userData = { type: "corner-visual-highlight", index: config.cornerIndex }
+                cornerSquare.renderOrder = 999
+                cubeGroup.add(cornerSquare)
+            })
+        }
+
+        createEdgeHighlightStrips()
+        createCornerHighlightSquares()
+
+        faceConfigs.forEach(config => {
+            const faceHighlightGeometry = new THREE.PlaneGeometry(1.2, 1.2)
+            const faceHighlightMaterial = new THREE.MeshBasicMaterial({
+                color: 0xdaaf03,
+                transparent: true,
+                opacity: 0,
+                depthTest: true,
+                depthWrite: false,
+            })
+            const faceHighlight = new THREE.Mesh(faceHighlightGeometry, faceHighlightMaterial)
+            faceHighlight.position.set(config.pos[0] * 1.002, config.pos[1] * 1.002, config.pos[2] * 1.002)
+            faceHighlight.rotation.set(config.rot[0], config.rot[1], config.rot[2])
+            faceHighlight.userData = { type: "face-highlight", index: config.index }
+            cubeGroup.add(faceHighlight)
+        })
 
         const edges = new THREE.EdgesGeometry(geometry)
         const edgeLineMaterial = new THREE.LineBasicMaterial({
-            color: 0x666666,
-            linewidth: 2,
+            color: 0x777777,
+            linewidth: 1,
             transparent: true,
-            opacity: 0.8,
+            opacity: 1.0,
         })
         const wireframe = new THREE.LineSegments(edges, edgeLineMaterial)
         wireframe.userData = { type: "wireframe" }
         cubeGroup.add(wireframe)
 
-        const cornerGeometry = new THREE.SphereGeometry(0.15)
+        const cornerGeometry = new THREE.SphereGeometry(0.25)
         const cornerMaterial = new THREE.MeshBasicMaterial({
-            color: 0x888888,
+            color: 0xbbbbbb,
             transparent: true,
             opacity: 0,
             depthTest: false,
@@ -171,7 +350,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             edgeCylinder.userData = { type: "edge-highlight", index: i }
             cubeGroup.add(edgeCylinder)
 
-            const edgeHitGeometry = new THREE.CylinderGeometry(0.25, 0.25, 2.2)
+            const edgeHitGeometry = new THREE.CylinderGeometry(0.2, 0.2, 1.4)
             const edgeHitMaterial = new THREE.MeshBasicMaterial({
                 transparent: true,
                 opacity: 0,
@@ -186,12 +365,90 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
         scene.add(cubeGroup)
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.6)
+        const createAxisIndicators = () => {
+            const axisGroup = new THREE.Group()
+
+            const createAxisLine = (
+                color: number,
+                direction: THREE.Vector3,
+                position: THREE.Vector3,
+                label: string
+            ) => {
+                const group = new THREE.Group()
+
+                const lineLength = 0.6
+                const lineRadius = 0.025
+
+                const lineGeometry = new THREE.CylinderGeometry(lineRadius, lineRadius, lineLength)
+                const lineMaterial = new THREE.MeshBasicMaterial({ color })
+                const line = new THREE.Mesh(lineGeometry, lineMaterial)
+
+                if (Math.abs(direction.y) > 0.99) {
+                    if (direction.y < 0) {
+                        line.rotateX(Math.PI)
+                    }
+                } else {
+                    const up = new THREE.Vector3(0, 1, 0)
+                    const quaternion = new THREE.Quaternion()
+                    quaternion.setFromUnitVectors(up, direction)
+                    line.setRotationFromQuaternion(quaternion)
+                }
+
+                const canvas = document.createElement("canvas")
+                const context = canvas.getContext("2d")!
+                canvas.width = 256
+                canvas.height = 256
+
+                context.fillStyle = `#${color.toString(16).padStart(6, "0")}`
+                context.font = "bold 192px Arial"
+                context.textAlign = "center"
+                context.textBaseline = "middle"
+                context.fillText(label, 128, 128)
+
+                const texture = new THREE.CanvasTexture(canvas)
+                const labelMaterial = new THREE.SpriteMaterial({ map: texture })
+                const labelSprite = new THREE.Sprite(labelMaterial)
+                labelSprite.scale.set(0.8, 0.8, 1)
+                labelSprite.position.copy(direction.clone().multiplyScalar(lineLength / 2 + 0.4))
+
+                group.add(line)
+                group.add(labelSprite)
+                group.position.copy(position)
+
+                return group
+            }
+
+            const xAxis = createAxisLine(
+                0xff0000,
+                new THREE.Vector3(-1, 0, 0),
+                new THREE.Vector3(-1.3, -0.98, -0.98),
+                "X"
+            )
+            axisGroup.add(xAxis)
+
+            const yAxis = createAxisLine(0x00ff00, new THREE.Vector3(0, 1, 0), new THREE.Vector3(0.98, 1.3, -0.98), "Y")
+            axisGroup.add(yAxis)
+
+            const zAxis = createAxisLine(0x0000ff, new THREE.Vector3(0, 0, 1), new THREE.Vector3(0.98, -0.98, 1.3), "Z")
+            axisGroup.add(zAxis)
+
+            return axisGroup
+        }
+
+        const axisIndicators = createAxisIndicators()
+        scene.add(axisIndicators)
+        axisRef.current = axisIndicators
+
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
         scene.add(ambientLight)
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.4)
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3)
         directionalLight.position.set(5, 5, 5)
         scene.add(directionalLight)
+
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.2)
+        directionalLight2.position.set(-2, -2, -2)
+        scene.add(directionalLight2)
 
         const animate = () => {
             if (rendererRef.current && sceneRef.current && cameraRef.current) {
@@ -207,6 +464,10 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                     const offsetQuat = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, Math.PI / 4, 0))
 
                     cubeRef.current.quaternion.copy(offsetQuat).multiply(camQuat)
+
+                    if (axisRef.current) {
+                        axisRef.current.quaternion.copy(cubeRef.current.quaternion)
+                    }
                 }
 
                 rendererRef.current.render(sceneRef.current, cameraRef.current)
@@ -222,52 +483,37 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             }
             renderer.dispose()
         }
-    }, [size])
+    }, [size, containerSize])
 
     const createFaceMaterial = (text: string, color: number) => {
         const canvas = document.createElement("canvas")
         const context = canvas.getContext("2d")!
-        canvas.width = 128
-        canvas.height = 128
+        canvas.width = 256
+        canvas.height = 256
 
-        const gradient = context.createLinearGradient(0, 0, 128, 128)
         const baseColor = `#${color.toString(16).padStart(6, "0")}`
+        context.fillStyle = baseColor
+        context.fillRect(0, 0, 256, 256)
 
-        const r = (color >> 16) & 255
-        const g = (color >> 8) & 255
-        const b = color & 255
-        const darkColor = `#${Math.floor(r * 0.7)
-            .toString(16)
-            .padStart(2, "0")}${Math.floor(g * 0.7)
-            .toString(16)
-            .padStart(2, "0")}${Math.floor(b * 0.7)
-            .toString(16)
-            .padStart(2, "0")}`
-
-        gradient.addColorStop(0, baseColor)
-        gradient.addColorStop(1, darkColor)
-
-        context.fillStyle = gradient
-        context.fillRect(0, 0, 128, 128)
-
-        context.strokeStyle = "rgba(255, 255, 255, 0.3)"
+        context.strokeStyle = "rgba(0, 0, 0, 0.15)"
         context.lineWidth = 2
-        context.strokeRect(1, 1, 126, 126)
+        context.strokeRect(1, 1, 254, 254)
 
-        context.strokeStyle = "rgba(0, 0, 0, 0.3)"
+        context.strokeStyle = "rgba(255, 255, 255, 0.4)"
         context.lineWidth = 1
-        context.strokeRect(4, 4, 120, 120)
+        context.strokeRect(2, 2, 252, 252)
 
-        context.shadowColor = "rgba(0, 0, 0, 0.5)"
-        context.shadowBlur = 2
-        context.shadowOffsetX = 1
-        context.shadowOffsetY = 1
-
-        context.fillStyle = "white"
-        context.font = "bold 42px Arial, sans-serif"
+        context.fillStyle = "#333333"
+        context.font = "bold 58px 'Segoe UI', Arial, sans-serif"
         context.textAlign = "center"
         context.textBaseline = "middle"
-        context.fillText(text, 64, 64)
+
+        context.shadowColor = "rgba(255, 255, 255, 0.3)"
+        context.shadowBlur = 1
+        context.shadowOffsetX = 0
+        context.shadowOffsetY = 1
+
+        context.fillText(text, 128, 128)
 
         const texture = new THREE.CanvasTexture(canvas)
         texture.minFilter = THREE.LinearFilter
@@ -279,33 +525,43 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         if (!rendererRef.current || !cameraRef.current || !sceneRef.current || !cubeRef.current) return null
 
         const rect = event.currentTarget.getBoundingClientRect()
-        const x = ((event.clientX - rect.left) / rect.width) * 2 - 1
-        const y = -((event.clientY - rect.top) / rect.height) * 2 + 1
+
+        const overlayX = (event.clientX - rect.left) / rect.width
+        const overlayY = (event.clientY - rect.top) / rect.height
+
+        const offsetRatio = (containerSize - size) / (2 * containerSize)
+        const scaleRatio = size / containerSize
+
+        const rendererX = offsetRatio + overlayX * scaleRatio
+        const rendererY = offsetRatio + overlayY * scaleRatio
+
+        const x = rendererX * 2 - 1
+        const y = -(rendererY * 2 - 1)
 
         const raycaster = new THREE.Raycaster()
         raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current)
 
-        const cornerSpheres = cubeRef.current.children.filter(child => child.userData.type === "corner-sphere")
-        const cornerIntersects = raycaster.intersectObjects(cornerSpheres, false)
+        const cornerHighlights = cubeRef.current.children.filter(
+            child => child.userData.type === "corner-visual-highlight"
+        )
+        const cornerIntersects = raycaster.intersectObjects(cornerHighlights, false)
         if (cornerIntersects.length > 0) {
             const cornerIndex = cornerIntersects[0].object.userData.index
             return { type: "corner", index: cornerIndex }
         }
 
-        const edgeHitAreas = cubeRef.current.children.filter(child => child.userData.type === "edge-hit")
-        const edgeIntersects = raycaster.intersectObjects(edgeHitAreas, false)
+        const edgeHighlights = cubeRef.current.children.filter(child => child.userData.type === "edge-visual-highlight")
+        const edgeIntersects = raycaster.intersectObjects(edgeHighlights, false)
         if (edgeIntersects.length > 0) {
             const edgeIndex = edgeIntersects[0].object.userData.index
             return { type: "edge", index: edgeIndex }
         }
 
-        const mainCube = cubeRef.current.children.find(child => child.userData.type === "face")
-        if (mainCube) {
-            const faceIntersects = raycaster.intersectObject(mainCube, false)
-            if (faceIntersects.length > 0) {
-                const faceIndex = faceIntersects[0].face?.materialIndex || 0
-                return { type: "face", index: faceIndex }
-            }
+        const faceHighlights = cubeRef.current.children.filter(child => child.userData.type === "face-highlight")
+        const faceIntersects = raycaster.intersectObjects(faceHighlights, false)
+        if (faceIntersects.length > 0) {
+            const faceIndex = faceIntersects[0].object.userData.index
+            return { type: "face", index: faceIndex }
         }
 
         return null
@@ -316,7 +572,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
         cubeRef.current.children.forEach(child => {
             if (child instanceof THREE.Mesh) {
-                if (child.userData.type === "face") {
+                if (child.userData.type === "visual-face") {
                     if (Array.isArray(child.material)) {
                         child.material.forEach(mat => {
                             if (mat instanceof THREE.MeshLambertMaterial) {
@@ -339,8 +595,23 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                     }
                 } else if (child.userData.type === "wireframe") {
                     if (child instanceof THREE.LineSegments && child.material instanceof THREE.LineBasicMaterial) {
-                        child.material.color.setHex(0x666666)
-                        child.material.opacity = 0.8
+                        child.material.color.setHex(0x999999)
+                        child.material.opacity = 1.0
+                        child.material.needsUpdate = true
+                    }
+                } else if (child.userData.type === "face-highlight") {
+                    if (child.material instanceof THREE.MeshBasicMaterial) {
+                        child.material.opacity = 0
+                        child.material.needsUpdate = true
+                    }
+                } else if (child.userData.type === "edge-visual-highlight") {
+                    if (child.material instanceof THREE.MeshBasicMaterial) {
+                        child.material.opacity = 0
+                        child.material.needsUpdate = true
+                    }
+                } else if (child.userData.type === "corner-visual-highlight") {
+                    if (child.material instanceof THREE.MeshBasicMaterial) {
+                        child.material.opacity = 0
                         child.material.needsUpdate = true
                     }
                 }
@@ -350,40 +621,36 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         if (!element) return
 
         if (element.type === "face") {
-            const mainCube = cubeRef.current.children.find(child => child.userData.type === "face")
-            if (mainCube instanceof THREE.Mesh && Array.isArray(mainCube.material)) {
-                const material = mainCube.material[element.index]
-                if (material instanceof THREE.MeshLambertMaterial) {
-                    material.emissive.setHex(0x0066ff) // Blue
-                    material.needsUpdate = true
-                }
+            const faceHighlights = cubeRef.current.children.filter(child => child.userData.type === "face-highlight")
+            const targetFace = faceHighlights[element.index]
+            if (
+                targetFace &&
+                targetFace instanceof THREE.Mesh &&
+                targetFace.material instanceof THREE.MeshBasicMaterial
+            ) {
+                targetFace.material.opacity = 0.4
+                targetFace.material.needsUpdate = true
             }
         } else if (element.type === "corner") {
-            const cornerSpheres = cubeRef.current.children.filter(child => child.userData.type === "corner-sphere")
-            const targetCorner = cornerSpheres[element.index]
-            if (
-                targetCorner &&
-                targetCorner instanceof THREE.Mesh &&
-                targetCorner.material instanceof THREE.MeshBasicMaterial
-            ) {
-                targetCorner.material.color.setHex(0x00ff00) // Green
-                targetCorner.material.transparent = true
-                targetCorner.material.opacity = 0.6
-                targetCorner.material.needsUpdate = true
-            }
+            const cornerHighlights = cubeRef.current.children.filter(
+                child => child.userData.type === "corner-visual-highlight" && child.userData.index === element.index
+            )
+            cornerHighlights.forEach(highlight => {
+                if (highlight instanceof THREE.Mesh && highlight.material instanceof THREE.MeshBasicMaterial) {
+                    highlight.material.opacity = 0.6
+                    highlight.material.needsUpdate = true
+                }
+            })
         } else if (element.type === "edge") {
-            const edgeHighlights = cubeRef.current.children.filter(child => child.userData.type === "edge-highlight")
-            const targetEdge = edgeHighlights[element.index]
-            if (
-                targetEdge &&
-                targetEdge instanceof THREE.Mesh &&
-                targetEdge.material instanceof THREE.MeshBasicMaterial
-            ) {
-                targetEdge.material.color.setHex(0xff8800) // Orange
-                targetEdge.material.transparent = true
-                targetEdge.material.opacity = 0.6
-                targetEdge.material.needsUpdate = true
-            }
+            const edgeHighlights = cubeRef.current.children.filter(
+                child => child.userData.type === "edge-visual-highlight" && child.userData.index === element.index
+            )
+            edgeHighlights.forEach(highlight => {
+                if (highlight instanceof THREE.Mesh && highlight.material instanceof THREE.MeshBasicMaterial) {
+                    highlight.material.opacity = 0.6
+                    highlight.material.needsUpdate = true
+                }
+            })
         }
     }
 
@@ -407,9 +674,70 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
     }
 
     const handleMouseMove = (event: React.MouseEvent) => {
-        const element = getClickedElement(event)
-        setHoveredElement(element)
-        updateHighlights(element)
+        if (isDragging && lastMousePos) {
+            const deltaX = event.clientX - lastMousePos.x
+            const deltaY = event.clientY - lastMousePos.y
+
+            const sensitivity = 0.065
+
+            const controls = World.SceneRenderer.currentCameraControls
+            if (controls instanceof CustomOrbitControls) {
+                const currentCoords = controls.getCurrentCoordinates()
+
+                const newTheta = currentCoords.theta - deltaX * sensitivity
+                const newPhi = currentCoords.phi - deltaY * sensitivity
+
+                controls.setImmediateCoordinates({ theta: newTheta, phi: newPhi })
+            }
+
+            setLastMousePos({ x: event.clientX, y: event.clientY })
+        } else {
+            const element = getClickedElement(event)
+            setHoveredElement(element)
+            updateHighlights(element)
+        }
+    }
+
+    const handleMouseDown = (event: React.MouseEvent) => {
+        if (isMouseOverCube(event)) {
+            setIsDragging(true)
+            const mousePos = { x: event.clientX, y: event.clientY }
+            setLastMousePos(mousePos)
+            setDragStartPos(mousePos)
+            setDragStartElement(getClickedElement(event))
+            event.preventDefault()
+        }
+    }
+
+    const handleMouseUp = (event: React.MouseEvent) => {
+        if (isDragging) {
+            setIsDragging(false)
+            setLastMousePos(null)
+
+            const startElement = dragStartElement
+            const startPos = dragStartPos
+            let wasDrag = false
+
+            if (startElement && startPos) {
+                const dragDistance = Math.sqrt(
+                    Math.pow(event.clientX - startPos.x, 2) + Math.pow(event.clientY - startPos.y, 2)
+                )
+
+                if (dragDistance < 3) {
+                    handleElementClick(startElement)
+                } else {
+                    wasDrag = true
+                }
+            }
+
+            if (wasDrag) {
+                setJustFinishedDrag(true)
+                setTimeout(() => setJustFinishedDrag(false), 50)
+            }
+
+            setDragStartPos(null)
+            setDragStartElement(null)
+        }
     }
 
     const handleMouseEnter = (event: React.MouseEvent) => {
@@ -424,9 +752,15 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
     }
 
     const handleClick = (event: React.MouseEvent) => {
-        const element = getClickedElement(event)
-        if (!element) return
+        if (!isDragging && !justFinishedDrag) {
+            const element = getClickedElement(event)
+            if (element) {
+                handleElementClick(element)
+            }
+        }
+    }
 
+    const handleElementClick = (element: { type: string; index: number }) => {
         if (element.type === "face") {
             const faceOrientations = ["right", "left", "top", "bottom", "front", "back"]
             const orientationKey = faceOrientations[element.index]
@@ -485,6 +819,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
     }
 
     const getCursor = () => {
+        if (isDragging) return "grabbing"
+
         if (!hoveredElement) return "default"
 
         switch (hoveredElement.type) {
@@ -495,8 +831,43 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             case "corner":
                 return "pointer"
             default:
-                return "default"
+                return "grab"
         }
+    }
+
+    const isMouseOverCube = (event: React.MouseEvent) => {
+        if (!rendererRef.current || !cameraRef.current || !sceneRef.current || !cubeRef.current) return false
+
+        const rect = event.currentTarget.getBoundingClientRect()
+
+        const overlayX = (event.clientX - rect.left) / rect.width
+        const overlayY = (event.clientY - rect.top) / rect.height
+
+        const offsetRatio = (containerSize - size) / (2 * containerSize)
+        const scaleRatio = size / containerSize
+
+        const rendererX = offsetRatio + overlayX * scaleRatio
+        const rendererY = offsetRatio + overlayY * scaleRatio
+
+        const x = rendererX * 2 - 1
+        const y = -(rendererY * 2 - 1)
+
+        const raycaster = new THREE.Raycaster()
+        raycaster.setFromCamera(new THREE.Vector2(x, y), cameraRef.current)
+
+        const allCubeElements = cubeRef.current.children.filter(child => {
+            const type = child.userData.type
+            return (
+                type === "visual-face" ||
+                type === "face-click" ||
+                type === "edge-visual-highlight" ||
+                type === "corner-visual-highlight" ||
+                type === "face-highlight"
+            )
+        })
+
+        const intersects = raycaster.intersectObjects(allCubeElements, false)
+        return intersects.length > 0
     }
 
     return (
@@ -504,18 +875,31 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             ref={containerRef}
             sx={{
                 position: "absolute",
-                width: size,
-                height: size,
-                cursor: getCursor(),
-                userSelect: "none",
-                pointerEvents: "auto",
+                width: containerSize,
+                height: containerSize,
+                pointerEvents: "none",
                 ...position,
             }}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            onMouseEnter={handleMouseEnter}
-            onClick={handleClick}
-        />
+        >
+            <Box
+                sx={{
+                    position: "absolute",
+                    width: size,
+                    height: size,
+                    top: (containerSize - size) / 2,
+                    left: (containerSize - size) / 2,
+                    pointerEvents: "auto",
+                    cursor: getCursor(),
+                    userSelect: "none",
+                }}
+                onMouseMove={handleMouseMove}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseLeave}
+                onMouseEnter={handleMouseEnter}
+                onClick={handleClick}
+            />
+        </Box>
     )
 }
 

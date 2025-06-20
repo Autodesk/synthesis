@@ -198,6 +198,21 @@ export class CustomOrbitControls extends CameraControls {
         if (coords.r !== undefined) this._nextCoords.r = coords.r
     }
 
+    public setImmediateCoordinates(coords: Partial<SphericalCoords>) {
+        if (coords.theta !== undefined) {
+            this._coords.theta = coords.theta
+            this._nextCoords.theta = coords.theta
+        }
+        if (coords.phi !== undefined) {
+            this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, coords.phi))
+            this._nextCoords.phi = this._coords.phi
+        }
+        if (coords.r !== undefined) {
+            this._coords.r = Math.min(CO_MAX_ZOOM, Math.max(CO_MIN_ZOOM, coords.r))
+            this._nextCoords.r = this._coords.r
+        }
+    }
+
     public animateToOrientation(theta: number, phi: number, duration: number = 500) {
         const startCoords = { ...this._coords }
         const targetCoords = { theta, phi, r: this._coords.r }
