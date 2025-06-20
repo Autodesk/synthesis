@@ -31,7 +31,6 @@ export type ColorName =
     | "ToastWarning"
     | "ToastError"
 
-
 export const colorNameToTailwind = (colorName: ColorName) => {
     return (
         "bg" +

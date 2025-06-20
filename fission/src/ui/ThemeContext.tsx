@@ -1,13 +1,7 @@
 import React, { ReactNode, createContext, useContext, useState } from "react"
 import { addGlobalFunc } from "@/util/dom"
 import { RgbaColor } from "react-colorful"
-import {
-  ColorName,
-  Themes,
-  Theme,
-  defaultThemeName,
-  colorNameToProp,
-} from "./helpers/UseThemeHelpers";
+import { ColorName, Themes, Theme, defaultThemeName, colorNameToProp } from "./helpers/UseThemeHelpers"
 
 type ThemeContextType = {
     themes: Themes
