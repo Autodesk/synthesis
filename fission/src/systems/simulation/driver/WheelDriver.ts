@@ -20,11 +20,13 @@ class WheelDriver extends Driver {
     public maxVelocity = 30.0
     private _maxAcceleration = 1.5
 
-    public _targetVelocity = () => {
+    public _targetVelocity = (deltaT: number) => {
         let vel = this.accelerationDirection * (this._reversed ? -1 : 1) * this.maxVelocity
 
-        if (vel - this._prevVel < -this._maxAcceleration) vel = this._prevVel - this._maxAcceleration
-        if (vel - this._prevVel > this._maxAcceleration) vel = this._prevVel + this._maxAcceleration
+        let realAccel = (vel - this._prevVel) / deltaT
+
+        if (realAccel < -this._maxAcceleration) vel = this._prevVel - this._maxAcceleration
+        if (realAccel > this._maxAcceleration) vel = this._prevVel + this._maxAcceleration
 
         return vel
     }
@@ -60,12 +62,13 @@ class WheelDriver extends Driver {
         this.deviceType = deviceType
         this.device = device
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
-        this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION)
-        this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
+        this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION * 10)
+        this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION * 10)
     }
 
-    public Update(_: number): void {
-        const vel = this._targetVelocity()
+    public Update(deltaT: number): void {
+        const vel = this._targetVelocity(deltaT)
+        if (vel != 0) console.log(`deltaT: ${deltaT} vel: ${vel} name: ${this.info?.name}`)
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
     }

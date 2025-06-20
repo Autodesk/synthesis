@@ -87,13 +87,11 @@ class HingeDriver extends Driver {
         this._gravityChange = (event: PreferenceEvent) => {
             if (event.prefName == "SubsystemGravity") {
                 const motorSettings = this._constraint.GetMotorSettings()
-                if (event.prefValue) {
-                    motorSettings.set_mMaxTorqueLimit(this._maxTorqueWithGrav)
-                    motorSettings.set_mMinTorqueLimit(-this._maxTorqueWithGrav)
-                } else {
-                    motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
-                    motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
-                }
+                const [maxTorque, minTorque] = event.prefValue
+                    ? [this._maxTorqueWithGrav, -this._maxTorqueWithGrav]
+                    : [MAX_TORQUE_WITHOUT_GRAV, -MAX_TORQUE_WITHOUT_GRAV]
+                motorSettings.set_mMaxTorqueLimit(maxTorque)
+                motorSettings.set_mMinTorqueLimit(minTorque)
             }
         }
 
