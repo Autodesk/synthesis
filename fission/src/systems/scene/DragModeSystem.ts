@@ -212,7 +212,6 @@ class DragModeSystem extends WorldSystem {
 
         const association = World.PhysicsSystem.GetBodyAssociation(bodyId) as RigidNodeAssociate
         const isRobot = association?.sceneObject?.miraType === MiraType.ROBOT
-        const isGamePiece = association?.isGamePiece
 
         this._dragTarget = {
             bodyId: bodyId,
