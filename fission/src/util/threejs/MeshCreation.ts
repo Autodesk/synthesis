@@ -1,5 +1,5 @@
 import JOLT from "../loading/JoltSyncLoader.ts"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { JoltVec3_ThreeVector3, JoltQuat_ThreeQuaternion } from "../TypeConversions.ts"
 

@@ -1,4 +1,4 @@
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import Stimulus, { StimulusID } from "./Stimulus"
 import World from "@/systems/World"
 import { mirabuf } from "@/proto/mirabuf"
