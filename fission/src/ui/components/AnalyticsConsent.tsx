@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import Label, { LabelSize } from "./Label"
 import Button from "./Button"
-import { colorNameToVar } from "../helpers/useThemeHelpers"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import { AiOutlineClose } from "react-icons/ai"
 
 interface AnalyticsConsentProps {

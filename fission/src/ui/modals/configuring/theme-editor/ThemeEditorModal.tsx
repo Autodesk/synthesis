@@ -1,6 +1,6 @@
 import { useModalControlContext } from "@/ui/ModalContext"
 import { useTheme } from "@/ui/ThemeContext"
-import { ColorName, Theme } from "@/ui/helpers/useThemeHelpers"
+import { ColorName, Theme } from "@/ui/helpers/UseThemeHelpers"
 import Button from "@/components/Button"
 import Dropdown from "@/components/Dropdown"
 import Modal, { ModalPropsImpl } from "@/components/Modal"

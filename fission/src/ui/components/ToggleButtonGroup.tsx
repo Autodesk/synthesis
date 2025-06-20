@@ -1,6 +1,6 @@
 import { ToggleButton as ToggleButtonMUI, ToggleButtonGroup as ToggleButtonGroupMUI } from "@mui/material"
 import { styled } from "@mui/system"
-import { colorNameToVar } from "../helpers/useThemeHelpers"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 
 export const ToggleButton = styled(ToggleButtonMUI)({
     "borderColor": "transparent",

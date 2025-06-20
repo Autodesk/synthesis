@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react"
 import { alpha, styled } from "@mui/system"
 import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
-import { colorNameToVar } from "../helpers/useThemeHelpers"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 
 /** The clickable button for a dropdown that shows the selected item and opens the menu. Custom styling over the MUI material button.*/
 const CustomButton = styled(Button)({

@@ -7,7 +7,7 @@ import {
   Theme,
   defaultThemeName,
   colorNameToProp,
-} from "./helpers/useThemeHelpers";
+} from "./helpers/UseThemeHelpers";
 
 type ThemeContextType = {
     themes: Themes
