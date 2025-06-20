@@ -1,7 +1,7 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/ModalContext"
-import { useTheme } from "@/ui/ThemeContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const DeleteThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

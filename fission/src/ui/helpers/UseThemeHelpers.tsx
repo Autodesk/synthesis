@@ -1,3 +1,4 @@
+import { createContext, useContext } from "react"
 import { RgbaColor } from "react-colorful"
 
 export const defaultThemeName = "Default"
@@ -31,6 +32,21 @@ export type ColorName =
     | "ToastWarning"
     | "ToastError"
 
+export type ThemeContextType = {
+    themes: Themes
+    initialThemeName: string
+    defaultTheme: Theme
+    currentTheme: string
+    setTheme: (themeName: string) => void
+    updateColor: (themeName: string, colorName: ColorName, rgbaColor: RgbaColor) => void
+    createTheme: (themeName: string) => void
+    deleteTheme: (themeName: string) => void
+    deleteAllThemes: () => void
+    applyTheme: (themeName: string) => void
+}
+
+export const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
+
 export const colorNameToTailwind = (colorName: ColorName) => {
     return (
         "bg" +
@@ -58,3 +74,11 @@ export type Theme = {
     [name in ColorName]: { color: RgbaColor; above: (ColorName | string)[] }
 }
 export type Themes = { [name: string]: Theme }
+
+export const useTheme = () => {
+    const context = useContext(ThemeContext)
+    if (!context) {
+        throw new Error("useTheme must be used within a ThemeProvider!")
+    }
+    return context
+}

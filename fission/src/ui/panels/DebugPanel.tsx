@@ -10,7 +10,7 @@ import MirabufCachingService, {
     MiraType,
 } from "@/mirabuf/MirabufLoader"
 import { Box, styled } from "@mui/material"
-import { usePanelControlContext } from "../PanelContext"
+import { usePanelControlContext } from "../helpers/UsePanelManager"
 import APS from "@/aps/APS"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
