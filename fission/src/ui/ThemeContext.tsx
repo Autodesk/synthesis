@@ -1,20 +1,7 @@
-import React, { ReactNode, createContext, useContext, useState } from "react"
+import React, { ReactNode, useState } from "react"
 import { addGlobalFunc } from "@/util/dom"
 import { RgbaColor } from "react-colorful"
-import { ColorName, Themes, Theme, defaultThemeName, colorNameToProp } from "./helpers/UseThemeHelpers"
-
-type ThemeContextType = {
-    themes: Themes
-    initialThemeName: string
-    defaultTheme: Theme
-    currentTheme: string
-    setTheme: (themeName: string) => void
-    updateColor: (themeName: string, colorName: ColorName, rgbaColor: RgbaColor) => void
-    createTheme: (themeName: string) => void
-    deleteTheme: (themeName: string) => void
-    deleteAllThemes: () => void
-    applyTheme: (themeName: string) => void
-}
+import { ColorName, Themes, Theme, ThemeContext, defaultThemeName, colorNameToProp } from "./helpers/UseThemeHelpers"
 
 type ThemeProviderProps = {
     themes: Themes
@@ -22,8 +9,6 @@ type ThemeProviderProps = {
     initialThemeName: string
     children: ReactNode
 }
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialThemeName, themes, defaultTheme, children }) => {
     const [currentTheme, setCurrentTheme] = useState<string>(initialThemeName)
@@ -127,12 +112,4 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialThemeName, 
             {children}
         </ThemeContext.Provider>
     )
-}
-
-export const useTheme = () => {
-    const context = useContext(ThemeContext)
-    if (!context) {
-        throw new Error("useTheme must be used within a ThemeProvider!")
-    }
-    return context
 }
