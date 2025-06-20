@@ -23,6 +23,7 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import { Box } from "@mui/material"
 import { Switch } from "@mui/base/Switch"
 import Label, { LabelSize } from "@/ui/components/Label"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -56,7 +57,9 @@ function save(
     gizmo: GizmoSceneObject,
     selectedRobot: MirabufSceneObject,
     selectedNode?: RigidNodeId,
-    showZoneAlways?: boolean
+    showZoneAlways?: boolean,
+    maxPieces?: number,
+    ejectOrder?: 'FIFO' | 'LIFO'
 ) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
@@ -84,6 +87,9 @@ function save(
         selectedRobot.intakePreferences.showZoneAlways = showZoneAlways
     }
 
+    selectedRobot.intakePreferences.maxPieces = maxPieces!
+    selectedRobot.intakePreferences.ejectOrder = ejectOrder!
+
     PreferencesSystem.savePreferences()
 }
 
@@ -100,6 +106,8 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
+    const [maxPieces, setMaxPieces] = useState<number>(selectedRobot.intakePreferences?.maxPieces || 1)
+    const [ejectOrder, setEjectOrder] = useState<'FIFO'|'LIFO'>(selectedRobot.intakePreferences?.ejectOrder || 'FIFO')
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
@@ -181,6 +189,8 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         if (selectedRobot?.intakePreferences) {
             setZoneSize(selectedRobot.intakePreferences.zoneDiameter)
             setSelectedNode(selectedRobot.intakePreferences.parentNode)
+            setMaxPieces(selectedRobot.intakePreferences.maxPieces)
+            setEjectOrder(selectedRobot.intakePreferences.ejectOrder)
             setShowZoneAlways(selectedRobot.intakePreferences.showZoneAlways ?? false)
         } else {
             setSelectedNode(undefined)
@@ -244,6 +254,30 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }}
                 step={0.01}
             />
+
+            {/* Slider for adjusting max pieces the robot can intake */}
+            <Slider
+                min={1}
+                max={10}
+                step={1}
+                value={maxPieces}
+                label="Max Pieces"
+                onChange={(_, v) => setMaxPieces(v as number)}
+            />
+
+            {/* Toggle for adjusting eject order */}
+            <div className="mt-4 flex items-center space-x-2">
+                <span>Eject Order</span>
+                <ToggleButtonGroup
+                value={ejectOrder}
+                exclusive
+                onChange={(_, v) => v && setEjectOrder(v as "FIFO" | "LIFO")}
+                >
+                <ToggleButton value="FIFO">FIFO</ToggleButton>
+                <ToggleButton value="LIFO">LIFO</ToggleButton>
+                </ToggleButtonGroup>
+            </div>
+
             {/* Checkbox for showing intake zone indicator at all times */}
             <Box
                 display="flex"
@@ -315,6 +349,8 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     }
                     setZoneSize(0.5)
                     setSelectedNode(selectedRobot?.rootNodeId)
+                    setMaxPieces(selectedRobot.intakePreferences?.maxPieces ?? 1)
+                    setEjectOrder(selectedRobot.intakePreferences?.ejectOrder ?? 'FIFO')
                 }}
             />
         </>
