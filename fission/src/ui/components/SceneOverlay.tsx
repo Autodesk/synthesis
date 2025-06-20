@@ -9,7 +9,7 @@ import {
 } from "./SceneOverlayEvents"
 import Label, { LabelSize } from "./Label"
 import ViewCube from "./ViewCube"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -95,15 +95,18 @@ function SceneOverlay() {
 
     /* Update ViewCube visibility when preferences change */
     useEffect(() => {
-        const interval = setInterval(() => {
-            const currentSetting = PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
-            if (currentSetting !== showViewCube) {
-                setShowViewCube(currentSetting)
+        const handlePreferenceChange = (e: PreferenceEvent) => {
+            if (e.prefName === "ShowViewCube") {
+                setShowViewCube(e.prefValue as boolean)
             }
-        }, 250)
+        }
 
-        return () => clearInterval(interval)
-    }, [showViewCube])
+        PreferencesSystem.addEventListener(handlePreferenceChange)
+
+        return () => {
+            window.removeEventListener("preferenceChanged", handlePreferenceChange as EventListener)
+        }
+    }, [])
 
     /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (
