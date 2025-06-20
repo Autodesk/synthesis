@@ -1,4 +1,4 @@
-import React, { ReactNode, useCallback, useEffect, useMemo, useState } from "react"
+import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import { LabelSize } from "@/components/Label"
 import {
     Data,
@@ -25,18 +25,19 @@ import { usePanelControlContext } from "@/ui/PanelContext"
 import { useModalControlContext } from "@/ui/ModalContext"
 import TaskStatus from "@/util/TaskStatus"
 import {
+    DeleteButton,
     PositiveButton,
+    RefreshButton,
     SectionDivider,
     SectionLabel,
-    DeleteButton,
-    RefreshButton,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import Button from "@/ui/components/Button"
-import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { Global_AddToast, Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 
 interface ItemCardProps {
     id: string
@@ -85,6 +86,11 @@ function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
 }
 
 function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+    // If spawning a field, then remove all other fields
+    if (type == MiraType.FIELD) {
+        World.SceneRenderer.RemoveAllFields()
+    }
+
     if (!progressHandle) {
         progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
     }
@@ -156,7 +162,16 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }, [])
 
-    useEffect(() => {
+    useLayoutEffect(() => {
+        if (mirabufPanelState.hasUnconfirmedImport) {
+            closePanel("import-mirabuf")
+            Global_AddToast?.(
+                "warning",
+                "You're already importing a model!",
+                "Confirm that one before importing another."
+            )
+            return
+        }
         closePanel("configure")
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -361,7 +376,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ),
         [files, selectAPS, viewType]
     )
-
+    useEffect(() => {
+        setViewType(mirabufPanelState.currentMode)
+        mirabufPanelState.currentMode = mirabufPanelState.defaultMode
+    }, [])
     return (
         <Panel
             name={"Spawn Asset"}

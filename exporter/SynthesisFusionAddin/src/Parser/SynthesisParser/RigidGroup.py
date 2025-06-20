@@ -1,15 +1,15 @@
-""" Module to define static methods to extract rigidGroup information from a given occurrence or component
+"""Module to define static methods to extract rigidGroup information from a given occurrence or component
 
-    NOT CURRENTLY IN USE BECAUSE OF BUG
+   NOT CURRENTLY IN USE BECAUSE OF BUG
 
- - Will directly add it to the given Assembly Message
+- Will directly add it to the given Assembly Message
 
- Takes:
-    - Occurrence
-    - Component
+Takes:
+   - Occurrence
+   - Component
 
- Returns:
-    - Success
+Returns:
+   - Success
 """
 
 from typing import Union
