@@ -7,11 +7,29 @@ import Button from "@/components/Button"
 import { useModalControlContext } from "@/ui/ModalContext"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import MatchMode from "@/systems/MatchMode"
+import { styled } from "@mui/material"
 
 type Entry = {
     name: string
     value: number
 }
+
+const getMatchWinner = (): string => {
+    if (SimulationSystem.redScore > SimulationSystem.blueScore) {
+        return "Red Team Wins!"
+    } else if (SimulationSystem.blueScore > SimulationSystem.redScore) {
+        return "Blue Team Wins!"
+    } else {
+        return "It's a Tie!"
+    }
+}
+
+const LabelStyled = styled(Label)({
+    fontWeight: 700,
+    fontSize: "1.5rem",
+    margin: "0pt",
+    marginTop: "0.5rem",
+})
 
 const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const entries: Entry[] = [
@@ -30,6 +48,7 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptEnabled={false}
             allowClickAway={false}
         >
+            <LabelStyled>{getMatchWinner()}</LabelStyled>
             <div className="flex flex-col">
                 {entries.map(e => (
                     <Stack key={e.name} direction={StackDirection.Horizontal}>

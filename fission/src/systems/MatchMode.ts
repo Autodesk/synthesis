@@ -1,3 +1,5 @@
+import SimulationSystem from "./simulation/SimulationSystem"
+
 export enum MatchModeType {
     Sandbox = 0,
     Autonomous = 1,
@@ -58,6 +60,7 @@ class MatchMode {
     start(openModal: (modalName: string) => void) {
         this.matchEnabled = true
         this.autonomousModeStart(openModal)
+        SimulationSystem.ResetScores()
     }
 
     stop(openModal: (modalName: string) => void) {
