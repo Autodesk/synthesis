@@ -38,6 +38,7 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { MirabufObjectCreatedEvent } from "@/components/ObjectCreatedEvents.ts"
 
 const DEBUG_BODIES = false
 
@@ -83,6 +84,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _scoringZones: ScoringZoneSceneObject[] = []
 
     private _nameTag: SceneOverlayTag | undefined
+    private _centerOfMassIndicator: THREE.Mesh | undefined
 
     private _intakeActive = false
     private _ejectorActive = false
@@ -174,7 +176,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                       ? "Magic"
                       : "Not Configured"
             )
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xff00ff, // purple
+                transparent: true,
+                opacity: 0.1,
+                wireframe: true,
+            })
+            material.depthTest = false
+            this._centerOfMassIndicator = new THREE.Mesh(new THREE.SphereGeometry(0.02), material)
+            this._centerOfMassIndicator.visible = false
+
+            World.SceneRenderer.scene.add(this._centerOfMassIndicator)
         }
+        new MirabufObjectCreatedEvent(this.miraType)
     }
 
     public Setup(): void {
@@ -293,7 +307,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
-
+        this._centerOfMassIndicator?.geometry?.dispose()
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
         }
@@ -344,6 +358,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * Matches mesh transforms to their Jolt counterparts.
      */
     public UpdateMeshTransforms() {
+        let weightedCOM = new JOLT.RVec3(0, 0, 0)
+        let totalMass = 0
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
@@ -368,7 +384,20 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 comMesh.position.setFromMatrixPosition(comTransform)
                 comMesh.rotation.setFromRotationMatrix(comTransform)
             }
+            if (this._centerOfMassIndicator) {
+                const inverseMass = body.GetMotionProperties().GetInverseMass()
+
+                if (inverseMass > 0) {
+                    const mass = 1 / inverseMass
+                    weightedCOM = weightedCOM.AddRVec3(body.GetCenterOfMassPosition().Mul(mass))
+                    totalMass += mass
+                }
+            }
         })
+        if (this._centerOfMassIndicator) {
+            const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
+            this._centerOfMassIndicator.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
+        }
     }
 
     public UpdateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
@@ -426,6 +455,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public SetIntakeVisualIndicatorVisible(visible: boolean) {
         if (this._intakeSensor) {
             this._intakeSensor.SetVisualIndicatorVisible(visible)
+        }
+    }
+
+    public SetCenterOfMassIndicatorVisible(visible: boolean) {
+        if (this._centerOfMassIndicator) {
+            this._centerOfMassIndicator.visible = visible
         }
     }
 

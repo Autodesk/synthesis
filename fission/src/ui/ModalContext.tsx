@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useCallback, useContext, ReactNode, ReactElement } from "react"
+import React, { createContext, ReactElement, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
 type ModalControlContextType = {
     openModal: (modalId: string, onOpen?: () => void, onClose?: () => void) => void
@@ -39,6 +39,8 @@ export const useModalManager = (modals: ReactElement[]) => {
                     onOpen()
                 }
                 if (onClose) modalDictionary[modalId].onClose = onClose
+            } else {
+                console.warn(`Could not find modal ${modalId}`)
             }
             setActiveModalId(modalId)
         },

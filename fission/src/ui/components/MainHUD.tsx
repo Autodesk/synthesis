@@ -156,6 +156,11 @@ const MainHUD: React.FC = () => {
                             openPanel("debug")
                         }}
                     />
+                    <MainHUDButton
+                        value={`Analysis Tools`}
+                        icon={SynthesisIcons.MagnifyingGlass}
+                        onClick={() => openPanel("analysis-tools")}
+                    />
                 </Box>
                 {userInfo ? (
                     <MainHUDButton

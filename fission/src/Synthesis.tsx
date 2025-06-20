@@ -66,6 +66,7 @@ import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialCo
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
+import AnalysisToolPanel from "@/panels/AnalysisPanel.tsx"
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement, registerModal } = useModalManager(initialModals)
@@ -247,6 +248,7 @@ const initialPanels: ReactElement[] = [
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
     <AutoTestPanel key="auto-test" panelId="auto-test" />,
+    <AnalysisToolPanel key="analysis-tools" panelId="analysis-tools" />,
 ]
 
 export default Synthesis

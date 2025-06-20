@@ -42,6 +42,8 @@ export const usePanelManager = (panels: ReactElement[]) => {
                         onOpen()
                     }
                     if (onClose) panelDictionary[panelId].onClose = onClose
+                } else {
+                    console.warn(`Could not find panel ${panelId}`)
                 }
                 return [...activePanelIds, panelId]
             })
