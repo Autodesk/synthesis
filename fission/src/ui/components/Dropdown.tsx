@@ -101,7 +101,6 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, la
     /** Handles clicking the button to open the dropdown  menu. */
     const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
         setAnchorEl(event.currentTarget)
-        SoundPlayer.play(dropdownMenuSound)
     }
 
     /** Handles closing the dropdown menu. */
@@ -135,6 +134,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, la
                 <div>
                     <CustomButton
                         onClick={handleClick}
+                        onMouseDown={() => SoundPlayer.play(dropdownMenuSound)}
                         ref={buttonRef}
                         className={`transform transition-transform hover:scale-[1.012] active:scale-[1.024]`}
                     >

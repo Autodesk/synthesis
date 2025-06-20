@@ -75,11 +75,8 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <ToggleButtonGroup
                     value={miraType}
                     exclusive
-                    onChange={(_, v) => {
-                        SoundPlayer.play(buttonPressSound)
-                        if (v == null) return
-                        setSelectedType(v)
-                    }}
+                    onChange={(_, v) => v != null && setSelectedType(v)}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     sx={{
                         alignSelf: "center",
                     }}

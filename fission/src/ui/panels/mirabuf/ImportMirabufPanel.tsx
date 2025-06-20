@@ -396,11 +396,11 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     value={viewType}
                     exclusive
                     onChange={(_, v) => {
-                        SoundPlayer.play(buttonPressSound)
                         if (v != null) {
                             setViewType(v)
                         }
                     }}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     sx={{
                         alignSelf: "center",
                     }}

@@ -106,12 +106,12 @@ function TransformGizmoControl({
                 value={mode}
                 exclusive
                 onChange={(_, v) => {
-                    SoundPlayer.play(buttonPressSound)
                     if (v == undefined) return
 
                     setMode(v)
                     gizmo?.SetMode(v)
                 }}
+                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                 sx={{
                     ...(sx ?? {}),
                     alignSelf: "center",

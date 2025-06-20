@@ -25,12 +25,8 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     if (larger == null) larger = false
     return (
         <Button
-            onClick={() => {
-                if (typeof onClick == "function") {
-                    onClick()
-                }
-                SoundPlayer.play(buttonPressSound)
-            }}
+            onClick={onClick}
+            onMouseDown={() => SoundPlayer.play(buttonPressSound)}
             className={`relative flex flex-row
                 cursor-pointer
                 bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}

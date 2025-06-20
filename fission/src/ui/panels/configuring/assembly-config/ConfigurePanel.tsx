@@ -352,7 +352,6 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     value={configurationType}
                     exclusive
                     onChange={(_: MouseEvent<HTMLElement>, v: ConfigurationType) => {
-                        SoundPlayer.play(buttonPressSound)
                         if (v != null) {
                             setConfigurationType(v)
                             setSelectedConfigurationType(v)
@@ -361,6 +360,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         new ConfigurationSavedEvent()
                         setConfigMode(undefined)
                     }}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     sx={{
                         alignSelf: "center",
                     }}

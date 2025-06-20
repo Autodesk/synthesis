@@ -20,7 +20,6 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
                 value={robotBrainType}
                 exclusive
                 onChange={(_, v) => {
-                    SoundPlayer.play(buttonPressSound)
                     const brainType = v as BrainType
                     if (v == undefined) return
 
@@ -36,6 +35,7 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
                     }
                     setRobotBrainType(brainType)
                 }}
+                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                 sx={{
                     alignSelf: "center",
                 }}

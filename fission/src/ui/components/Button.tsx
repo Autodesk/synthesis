@@ -54,12 +54,8 @@ const Button: React.FC<ButtonProps> = ({
 
     return (
         <BaseButton
-            onClick={() => {
-                if (typeof onClick == "function") {
-                    onClick()
-                }
-                SoundPlayer.play(buttonPressSound)
-            }}
+            onClick={onClick}
+            onMouseDown={() => SoundPlayer.play(buttonPressSound)}
             className={`
                 ${colorOverrideClass || "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"}  
                 ${sizeClassNames} 

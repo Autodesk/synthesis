@@ -54,13 +54,13 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 value={cameraControlType}
                 exclusive
                 onChange={(_, v) => {
-                    SoundPlayer.play(buttonPressSound)
                     if (v != null) {
                         return
                     }
 
                     setCameraControls(v)
                 }}
+                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
             >
                 <ToggleButton value={"Orbit"}>Orbit</ToggleButton>
             </ToggleButtonGroup>

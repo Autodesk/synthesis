@@ -240,10 +240,8 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                 <ToggleButtonGroup
                     value={countdown}
                     exclusive
-                    onChange={(_, v) => {
-                        SoundPlayer.play(buttonPressSound)
-                        setCountdown(v)
-                    }}
+                    onChange={(_, v) => setCountdown(v)}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     className="self-center"
                 >
                     <ToggleButton value={5}>5</ToggleButton>
@@ -261,10 +259,8 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                 <ToggleButtonGroup
                     value={station}
                     exclusive
-                    onChange={(_, v) => {
-                        SoundPlayer.play(buttonPressSound)
-                        setStation(v)
-                    }}
+                    onChange={(_, v) => setStation(v)}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     className="self-center"
                 >
                     <RedAllianceToggleButton value={"red1"}>1</RedAllianceToggleButton>

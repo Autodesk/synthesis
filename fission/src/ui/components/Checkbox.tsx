@@ -56,12 +56,8 @@ const Checkbox: React.FC<CheckboxProps> = ({
                 </Label>
             )}
             <Switch
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    if (typeof onClick == "function") {
-                        onClick(e.target.checked)
-                    }
-                    SoundPlayer.play(checkboxPressSound)
-                }}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
+                onMouseDown={() => SoundPlayer.play(checkboxPressSound)}
                 slotProps={{
                     root: {
                         className: `group relative inline-block w-[24px] h-[24px] m-2.5 cursor-pointer transform transition-transform hover:scale-[1.03] active:scale-[1.06]`,

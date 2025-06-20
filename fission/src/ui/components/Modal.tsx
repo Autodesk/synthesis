@@ -103,8 +103,8 @@ const Modal: React.FC<ModalProps> = ({
                                 onClick={() => {
                                     closeModal()
                                     if (!cancelBlocked && onCancel) onCancel()
-                                    SoundPlayer.play(buttonPressSound)
                                 }}
+                                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                                 className={`${
                                     cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
@@ -118,8 +118,8 @@ const Modal: React.FC<ModalProps> = ({
                                 value={middleName || ""}
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
-                                    SoundPlayer.play(buttonPressSound)
                                 }}
+                                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                                 className={`${
                                     middleBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90 
@@ -134,8 +134,8 @@ const Modal: React.FC<ModalProps> = ({
                                 onClick={() => {
                                     closeModal()
                                     if (!acceptBlocked && onAccept) onAccept()
-                                    SoundPlayer.play(buttonPressSound)
                                 }}
+                                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
