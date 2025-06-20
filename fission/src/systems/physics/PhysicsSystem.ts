@@ -1012,6 +1012,7 @@ class PhysicsSystem extends WorldSystem {
                 comAccum.y += (partDefinition.physicalData.com.y! * mass) / 100.0
                 comAccum.z += (partDefinition.physicalData.com.z! * mass) / 100.0
             })
+            console.log(`totalMass: ${totalMass}`)
 
             if (shapesAdded > 0) {
                 const shapeResult = compoundShapeSettings.Create()
@@ -1048,15 +1049,16 @@ class PhysicsSystem extends WorldSystem {
                 let dynamicFriction = 0.0
                 let weightSum = 0.0
                 frictionAccum.forEach(pairing => {
-                    staticFriction += pairing.static * pairing.weight
-                    dynamicFriction += pairing.dynamic * pairing.weight
+                    staticFriction += pairing.static // * pairing.weight
+                    dynamicFriction += pairing.dynamic // * pairing.weight
                     weightSum += pairing.weight
                 })
                 staticFriction /= weightSum == 0.0 ? 1.0 : weightSum
                 dynamicFriction /= weightSum == 0.0 ? 1.0 : weightSum
 
                 // I guess this is an okay substitute.
-                const friction = (staticFriction + dynamicFriction) / 2.0
+                const friction = ((staticFriction + dynamicFriction) / 2.0) * 100000
+                console.log(`friction: ${friction}`)
                 body.SetFriction(friction)
 
                 // Little testing components
