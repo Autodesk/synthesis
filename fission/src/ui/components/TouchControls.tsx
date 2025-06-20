@@ -34,31 +34,37 @@ function TouchControls() {
     return (
         <div className="select-none">
             <input ref={inputRef} className="hidden" />
+            {/* Left Joystick */}
             <div
                 id="joystick-base-left"
-                className={`fixed bottom-[5vh] left-[5vw] w-60 h-60 touch-none ${isJoystickVisible ? "" : "hidden"}`}
+                className={`fixed bottom-[5vh] left-[5vw] w-[35vmin] h-[35vmin] max-w-[15rem] max-h-[15rem] touch-none ${
+                    isJoystickVisible ? "" : "hidden"
+                }`}
             >
                 <div
                     id="joystick-left-circle"
-                    className="relative w-36 h-36 bg-gray-100 bg-blend-difference bg-opacity-30 rounded-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    className="relative w-[60%] h-[60%] bg-gray-100 bg-blend-difference bg-opacity-30 rounded-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 >
                     <div
                         id="joystick-stick-left"
-                        className="absolute w-14 h-14 bg-black bg-opacity-70 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                        className="absolute w-[40%] h-[40%] bg-black bg-opacity-70 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                     ></div>
                 </div>
             </div>
+            {/* Right Joystick */}
             <div
                 id="joystick-base-right"
-                className={`fixed bottom-[5vh] right-[5vw] w-60 h-60 touch-none ${isJoystickVisible ? "" : "hidden"}`}
+                className={`fixed bottom-[5vh] right-[5vw] w-[35vmin] h-[35vmin] max-w-[15rem] max-h-[15rem] touch-none ${
+                    isJoystickVisible ? "" : "hidden"
+                }`}
             >
                 <div
                     id="joystick-right-circle"
-                    className="relative w-36 h-36 bg-gray-100 bg-blend-difference bg-opacity-30 rounded-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                    className="relative w-[60%] h-[60%] bg-gray-100 bg-blend-difference bg-opacity-30 rounded-full left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2"
                 >
                     <div
                         id="joystick-stick-right"
-                        className="absolute w-14 h-14 bg-black bg-opacity-70 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+                        className="absolute w-[40%] h-[40%] bg-black bg-opacity-70 rounded-full top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
                     ></div>
                 </div>
             </div>
