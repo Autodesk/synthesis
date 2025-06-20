@@ -46,6 +46,8 @@ export type IntakePreferences = {
     zoneDiameter: number
     parentNode: string | undefined
     showZoneAlways: boolean
+    maxPieces: number
+    ejectOrder: 'FIFO' | 'LIFO'
 }
 
 export type EjectorPreferences = {
@@ -120,6 +122,8 @@ export function DefaultRobotPreferences(): RobotPreferences {
             zoneDiameter: 0.5,
             parentNode: undefined,
             showZoneAlways: false,
+            maxPieces: 1,
+            ejectOrder: 'FIFO'
         },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
