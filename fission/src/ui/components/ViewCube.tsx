@@ -485,7 +485,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         }
     }, [size, containerSize])
 
-    const createFaceMaterial = (text: string, color: number) => {
+    const createFaceMaterial = (text: string, color: number): THREE.MeshLambertMaterial => {
         const canvas = document.createElement("canvas")
         const context = canvas.getContext("2d")!
         canvas.width = 256
@@ -570,16 +570,17 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
     const updateHighlights = (element: { type: string; index: number } | null) => {
         if (!cubeRef.current) return
 
-        cubeRef.current.children.forEach(child => {
-            if (child instanceof THREE.Mesh) {
+        cubeRef.current.children
+            .filter(child => child instanceof THREE.Mesh)
+            .forEach(child => {
                 if (child.userData.type === "visual-face") {
                     if (Array.isArray(child.material)) {
-                        child.material.forEach(mat => {
-                            if (mat instanceof THREE.MeshLambertMaterial) {
+                        child.material
+                            .filter(mat => mat instanceof THREE.MeshLambertMaterial)
+                            .forEach(mat => {
                                 mat.emissive.setHex(0x000000)
                                 mat.needsUpdate = true
-                            }
-                        })
+                            })
                     }
                 } else if (child.userData.type === "corner-sphere") {
                     if (child.material instanceof THREE.MeshBasicMaterial) {
@@ -615,8 +616,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                         child.material.needsUpdate = true
                     }
                 }
-            }
-        })
+            })
 
         if (!element) return
 
@@ -820,19 +820,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
     const getCursor = () => {
         if (isDragging) return "grabbing"
-
         if (!hoveredElement) return "default"
-
-        switch (hoveredElement.type) {
-            case "face":
-                return "pointer"
-            case "edge":
-                return "pointer"
-            case "corner":
-                return "pointer"
-            default:
-                return "grab"
-        }
+        return "pointer"
     }
 
     const isMouseOverCube = (event: React.MouseEvent) => {
