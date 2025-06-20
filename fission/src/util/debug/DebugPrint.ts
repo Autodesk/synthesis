@@ -1,6 +1,6 @@
 import { RigidNodeReadOnly } from "@/mirabuf/MirabufParser"
 import { mirabuf } from "@/proto/mirabuf"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 
 export function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
     nodes.forEach(x => {

@@ -1,6 +1,6 @@
 import SceneObject from "@/systems/scene/SceneObject"
 import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
