@@ -53,7 +53,7 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 label={"Type"}
                 options={["PWM", "CAN", "Encoder"] as DeviceType[]}
                 onSelect={selected => {
-                    setType(selected as DeviceType)
+                    setType(selected)
                 }}
             />
         </Modal>
