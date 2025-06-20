@@ -72,8 +72,8 @@ export function GetLastDeltaT(): number {
 // Friction constants
 const FLOOR_FRICTION = 0.7
 const DEFAULT_FRICTION = 0.7
-const SUSPENSION_MIN_FACTOR = 0.1
-const SUSPENSION_MAX_FACTOR = 0.3
+const SUSPENSION_MIN_FACTOR = 0.0001
+const SUSPENSION_MAX_FACTOR = 0.0001
 
 const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 
