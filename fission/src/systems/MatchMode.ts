@@ -19,9 +19,7 @@ class MatchMode {
     private constructor() {}
 
     static getInstance(): MatchMode {
-        if (!MatchMode.instance) {
-            MatchMode.instance = new MatchMode()
-        }
+        MatchMode.instance ??= new MatchMode()
         return MatchMode.instance
     }
 
@@ -35,7 +33,7 @@ class MatchMode {
         this.intervalId = window.setInterval(() => {
             this.timeLeft--
 
-            if (this.timeLeft >= 0) {
+            if (this.timeLeft > 0) {
                 new UpdateTimeLeft(this.timeLeft).Dispatch()
             }
 
