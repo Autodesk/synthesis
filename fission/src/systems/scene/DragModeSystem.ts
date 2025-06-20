@@ -323,9 +323,9 @@ class DragModeSystem extends WorldSystem {
 
         const cameraControls = World.SceneRenderer.currentCameraControls as CustomOrbitControls
 
-        let currentFocus = new THREE.Matrix4()
+        const currentFocus = new THREE.Matrix4()
         if (this._cameraTransition.targetSceneObject) {
-            let targetFocus = new THREE.Matrix4()
+            const targetFocus = new THREE.Matrix4()
             this._cameraTransition.targetSceneObject.LoadFocusTransform(targetFocus)
 
             const startPos = new THREE.Vector3().setFromMatrixPosition(this._cameraTransition.startFocus)
