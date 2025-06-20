@@ -95,12 +95,12 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
         const geometry = new THREE.BoxGeometry(2, 2, 2)
         const materials = [
-            createFaceMaterial("RIGHT", 0xe8e8e8),
-            createFaceMaterial("LEFT", 0xe8e8e8),
-            createFaceMaterial("TOP", 0xe8e8e8),
-            createFaceMaterial("BOTTOM", 0xe8e8e8),
-            createFaceMaterial("FRONT", 0xe8e8e8),
-            createFaceMaterial("BACK", 0xe8e8e8),
+            createFaceMaterial("RIGHT", 0xffffff),
+            createFaceMaterial("LEFT", 0xffffff),
+            createFaceMaterial("TOP", 0xffffff),
+            createFaceMaterial("BOTTOM", 0xffffff),
+            createFaceMaterial("FRONT", 0xffffff),
+            createFaceMaterial("BACK", 0xffffff),
         ]
 
         const cube = new THREE.Mesh(geometry, materials)
@@ -450,6 +450,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         directionalLight2.position.set(-2, -2, -2)
         scene.add(directionalLight2)
 
+        let animationFrameId: number
+
         const animate = () => {
             if (rendererRef.current && sceneRef.current && cameraRef.current) {
                 const mainCamera = World.SceneRenderer.mainCamera
@@ -472,12 +474,15 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
                 rendererRef.current.render(sceneRef.current, cameraRef.current)
             }
-            requestAnimationFrame(animate)
+            animationFrameId = requestAnimationFrame(animate)
         }
 
         animate()
 
         return () => {
+            if (animationFrameId) {
+                cancelAnimationFrame(animationFrameId)
+            }
             if (containerRef.current && renderer.domElement) {
                 containerRef.current.removeChild(renderer.domElement)
             }
