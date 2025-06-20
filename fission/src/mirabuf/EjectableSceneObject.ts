@@ -1,6 +1,6 @@
 import SceneObject from "@/systems/scene/SceneObject"
 import MirabufSceneObject from "./MirabufSceneObject"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import World from "@/systems/World"
 import {
     Array_ThreeMatrix4,

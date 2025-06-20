@@ -3,13 +3,18 @@ import SceneObject from "../systems/scene/SceneObject"
 import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
-import { EjectorPreferences, FieldPreferences, IntakePreferences } from "@/systems/preferences/PreferenceTypes"
+import {
+    EjectorPreferences,
+    FieldPreferences,
+    IntakePreferences,
+    ScoringZonePreferences,
+} from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
@@ -444,7 +449,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public UpdateScoringZones(render?: boolean) {
-        this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._scoringZones.filter(zone => zone.id != -1).forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
         this._scoringZones = []
 
         if (this._fieldPreferences && this._fieldPreferences.scoringZones) {
@@ -458,6 +463,17 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 World.SceneRenderer.RegisterSceneObject(newZone)
             }
         }
+    }
+
+    public RemoveScoringZoneObject(zone: ScoringZonePreferences) {
+        const index = this._fieldPreferences?.scoringZones?.indexOf(zone) ?? -1
+        if (index == -1) return
+
+        const zoneObject = this._scoringZones[index]
+        if (zoneObject == null) return
+
+        World.SceneRenderer.RemoveSceneObject(zoneObject.id)
+        zoneObject.id = -1
     }
 
     /**
