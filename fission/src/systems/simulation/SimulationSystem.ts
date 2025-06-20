@@ -15,6 +15,7 @@ import IntakeDriver from "./driver/IntakeDriver"
 import World from "../World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EjectorDriver from "./driver/EjectorDriver"
+import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
@@ -60,6 +61,7 @@ class SimulationSystem extends WorldSystem {
     public static ResetScores(): void {
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
+        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).Dispatch()
     }
 }
 

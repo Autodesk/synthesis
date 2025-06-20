@@ -8,7 +8,7 @@ import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGro
 import { usePanelControlContext } from "@/ui/PanelContext"
 import Label from "@/ui/components/Label"
 import Button from "@/ui/components/Button"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { JoltMat44_ThreeMatrix4, ThreeQuaternion_JoltQuat, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
 import * as THREE from "three"
