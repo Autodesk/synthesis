@@ -71,6 +71,9 @@ function save(
     const rotation = new THREE.Quaternion(0, 0, 0, 1)
     const scale = new THREE.Vector3(1, 1, 1)
     gizmo.obj.matrixWorld.decompose(translation, rotation, scale)
+    scale.x = Math.abs(scale.x)
+    scale.y = Math.abs(scale.y)
+    scale.z = Math.abs(scale.z)
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
     const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
@@ -201,6 +204,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
                 gizmo.obj.rotation.setFromQuaternion(props.rotation)
                 gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
+                selectedField.RemoveScoringZoneObject(selectedZone) // avoid rendering twice
             }
 
             return (
