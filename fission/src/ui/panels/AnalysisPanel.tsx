@@ -10,7 +10,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import { MirabufObjectCreatedEvent } from "@/components/ObjectCreatedEvents.ts"
 
 const AnalysisToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const [cogDisplayActive, setCogDisplayActive] = useState<boolean>(false)
+    const [displayCOMs, setDisplayCOMs] = useState<boolean>(false)
     const updateIndicatorVisibility = useCallback((active: boolean) => {
         World.SceneRenderer.sceneObjects.forEach(obj => {
             if (obj instanceof MirabufSceneObject && obj.miraType == MiraType.ROBOT) {
@@ -19,13 +19,13 @@ const AnalysisToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         })
     }, [])
     useEffect(() => {
-        updateIndicatorVisibility(cogDisplayActive)
+        updateIndicatorVisibility(displayCOMs)
         return () => {
             updateIndicatorVisibility(false)
         }
-    }, [cogDisplayActive, updateIndicatorVisibility])
+    }, [displayCOMs, updateIndicatorVisibility])
     MirabufObjectCreatedEvent.Listen(() => {
-        updateIndicatorVisibility(cogDisplayActive)
+        updateIndicatorVisibility(displayCOMs)
     })
 
     return (
@@ -39,12 +39,12 @@ const AnalysisToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         >
             <Box display="flex" flexDirection={"column"}>
                 <Checkbox
-                    label="Display Centers of Gravity"
-                    defaultState={cogDisplayActive}
+                    label="Display Centers of Mass"
+                    defaultState={displayCOMs}
                     onClick={checked => {
-                        setCogDisplayActive(checked)
+                        setDisplayCOMs(checked)
                     }}
-                    tooltipText="Displays the center of gravity of all robots"
+                    tooltipText="Indicates the center of mass of all robots"
                 />
             </Box>
         </Panel>
