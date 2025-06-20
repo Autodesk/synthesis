@@ -17,8 +17,15 @@ export default function DragModeIndicator() {
         }
     }, [])
 
+    const handleClick = () => {
+        window.dispatchEvent(new CustomEvent("disableDragMode"))
+    }
+
     return enabled ? (
-        <div className="select-none absolute left-1 top-1 py-2 px-4 rounded-lg bg-gradient-to-r from-interactive-element-left to-interactive-element-right flex flex-row gap-2">
+        <div
+            className="select-none absolute left-1 bottom-1 py-2 px-4 rounded-lg bg-gradient-to-r from-interactive-element-left to-interactive-element-right flex flex-row gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={handleClick}
+        >
             <FaHandPaper className="text-main-text self-center" />
             <Label size={LabelSize.Small}>Drag Mode</Label>
         </div>

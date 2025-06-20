@@ -29,7 +29,7 @@ export abstract class CameraControls {
     public abstract dispose(): void
 }
 
-interface SphericalCoords {
+export interface SphericalCoords {
     theta: number
     phi: number
     r: number
@@ -110,6 +110,18 @@ export class CustomOrbitControls extends CameraControls {
     }
     public get focusProvider() {
         return this._focusProvider
+    }
+
+    public get coords(): SphericalCoords {
+        return this._coords
+    }
+
+    public get focus(): THREE.Matrix4 {
+        return this._focus
+    }
+
+    public set focus(matrix: THREE.Matrix4) {
+        this._focus.copy(matrix)
     }
 
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
