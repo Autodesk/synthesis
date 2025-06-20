@@ -23,7 +23,7 @@ class MatchMode {
         return MatchMode.instance
     }
 
-    startTimer(duration: number) {
+    startTimer(duration: number, openModal: (modalName: string) => void) {
         this.initialTime = duration
         this.timeLeft = duration
 
@@ -38,38 +38,48 @@ class MatchMode {
             }
 
             if (this.timeLeft <= 0) {
-                this.stop()
+                this.stop(openModal)
             }
         }, 1000)
     }
 
-    autonomousModeStart() {
+    autonomousModeStart(openModal: (modalName: string) => void) {
         // TODO play the autonomous start sound
         this.matchModeType = MatchModeType.Autonomous
-        this.startTimer(15)
+        this.startTimer(15, openModal)
     }
 
-    teleopModeStart() {
+    teleopModeStart(openModal: (modalName: string) => void) {
         // TODO play the teleop start sound
         this.matchModeType = MatchModeType.Teleop
-        this.startTimer(135) // 2 minutes and 15 seconds
+        this.startTimer(135, openModal) // 2 minutes and 15 seconds
     }
 
-    start() {
+    start(openModal: (modalName: string) => void) {
         this.matchEnabled = true
-        this.autonomousModeStart()
+        this.autonomousModeStart(openModal)
     }
 
-    stop() {
+    stop(openModal: (modalName: string) => void) {
         clearInterval(this.intervalId as number)
         if (this.matchModeType === MatchModeType.Autonomous) {
             // Autonomous Mode Ended, Start Teleop Mode
-            this.teleopModeStart()
+            this.teleopModeStart(openModal)
         } else {
             // Teleop Mode Ended, Match Ended
             this.matchEnabled = false
             this.matchModeType = MatchModeType.MatchEnded
+            if (openModal) openModal("match-results")
         }
+    }
+
+    sandboxModeStart() {
+        this.matchEnabled = false
+        this.matchModeType = MatchModeType.Sandbox
+        clearInterval(this.intervalId as number)
+        this.initialTime = 0
+        this.timeLeft = 0
+        new UpdateTimeLeft(this.timeLeft).Dispatch()
     }
 
     isMatchEnabled(): boolean {

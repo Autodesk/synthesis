@@ -185,7 +185,7 @@ const MainHUD: React.FC = () => {
                                   "Match Mode Already Running",
                                   "You can't start match mode if its already running"
                               )
-                            : MatchMode.getInstance().start()
+                            : MatchMode.getInstance().start(openModal)
                         setIsOpen(false)
                     }}
                 />
