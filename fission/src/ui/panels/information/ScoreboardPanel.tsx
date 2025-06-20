@@ -6,7 +6,12 @@ import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import { UpdateTimeLeft } from "@/systems/MatchMode"
+import MatchMode, { UpdateTimeLeft, MatchModeType } from "@/systems/MatchMode"
+import { Spacer } from "@/components/StyledComponents"
+
+function showTime(): boolean {
+    return MatchMode.getInstance().getMatchModeType() !== MatchModeType.Sandbox
+}
 
 const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [redScore, setRedScore] = useState<number>(SimulationSystem.redScore)
@@ -53,9 +58,13 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             acceptEnabled={false}
             contentClassName="mx-0 w-min"
         >
-            <div className="flex flex-row justify-center pt-4">
-                <Label size={LabelSize.XL}>{time}</Label>
-            </div>
+            {showTime() ? (
+                <div className="flex flex-row justify-center pt-4">
+                    <Label size={LabelSize.XL}>{time}</Label>
+                </div>
+            ) : (
+                Spacer(0)
+            )}
             <Stack direction={StackDirection.Horizontal} className="px-4 pb-4 pt-1" spacing={16}>
                 <div className="flex flex-col items-center text-center justify-center w-20 h-20 rounded-lg bg-match-red-alliance">
                     <Label size={LabelSize.Small}>RED</Label>
