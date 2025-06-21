@@ -1,5 +1,6 @@
 import { Data, downloadData } from "@/aps/APSDataManagement"
 import { mirabuf } from "@/proto/mirabuf"
+import { Global_AddToast } from "@/components/GlobalUIControls"
 import World from "@/systems/World"
 import Pako from "pako"
 
@@ -125,12 +126,13 @@ class MirabufCachingService {
         }
         try {
             // grab file remote
-            const miraBuff = await fetch(
+            const resp = await fetch(
                 encodeURI(fetchLocation),
                 import.meta.env.DEV ? { cache: "no-store" } : undefined
             )
-                .then(x => x.blob())
-                .then(x => x.arrayBuffer())
+            if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`)
+
+            const miraBuff = await resp.arrayBuffer()
 
             World.AnalyticsSystem?.Event("Remote Download", {
                 type: miraType === MiraType.ROBOT ? "robot" : "field",
@@ -140,6 +142,12 @@ class MirabufCachingService {
             const cached = await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
 
             if (cached) return cached
+
+            Global_AddToast?.(
+                "error",
+                "Cache Fallback",
+                `Unable to cache “${fetchLocation}”. Using raw buffer instead.`
+            )
 
             // fallback: return raw buffer wrapped in MirabufCacheInfo
             return {
