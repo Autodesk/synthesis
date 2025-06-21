@@ -126,10 +126,7 @@ class MirabufCachingService {
         }
         try {
             // grab file remote
-            const resp = await fetch(
-                encodeURI(fetchLocation),
-                import.meta.env.DEV ? { cache: "no-store" } : undefined
-            )
+            const resp = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
             if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`)
 
             const miraBuff = await resp.arrayBuffer()
