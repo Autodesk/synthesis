@@ -36,7 +36,7 @@ const Slider: React.FC<SliderProps> = ({
 }) => {
     locale ||= "en-us"
     format ||= {
-        maximumFractionDigits: (1.0 / (step == 0 ? 1 : (step ?? 1))).toString().length - 1,
+        maximumFractionDigits: (1.0 / (step == 0 ? 1 : step ?? 1)).toString().length - 1,
         prefix: "",
         suffix: "",
     }
