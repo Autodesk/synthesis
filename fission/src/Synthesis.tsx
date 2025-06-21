@@ -65,6 +65,7 @@ import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
+import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
 
 function Synthesis() {
@@ -247,6 +248,7 @@ const initialPanels: ReactElement[] = [
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
     <AutoTestPanel key="auto-test" panelId="auto-test" />,
+    <GraphicsSettings key="graphics-settings" panelId="graphics-settings" sidePadding={8} />,
 ]
 
 export default Synthesis

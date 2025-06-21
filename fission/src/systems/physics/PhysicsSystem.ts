@@ -12,7 +12,7 @@ import {
     _JoltQuat,
 } from "../../util/TypeConversions"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { mirabuf } from "../../proto/mirabuf"
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"

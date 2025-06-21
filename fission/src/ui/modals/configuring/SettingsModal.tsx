@@ -1,36 +1,40 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label, { LabelSize } from "@/components/Label"
-import Dropdown from "@/components/Dropdown"
+import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import World from "@/systems/World"
+import Slider from "@/ui/components/Slider"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { useModalControlContext } from "@/ui/ModalContext.tsx"
+import { usePanelControlContext } from "@/ui/PanelContext.tsx"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+    const { closeModal } = useModalControlContext()
+    const { openPanel } = usePanelControlContext()
     return (
         <Modal
             name="Settings"
             icon={SynthesisIcons.GearLarge}
             modalId={modalId}
             onAccept={() => {
+                SoundPlayer.changeVolume()
                 PreferencesSystem.savePreferences()
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
-                <Label size={LabelSize.Medium}>Screen Settings</Label>
-                <Dropdown
-                    label="Quality Settings"
-                    options={["Low", "Medium", "High"] as QualitySetting[]}
-                    defaultValue={PreferencesSystem.getGlobalPreference("QualitySettings")}
-                    onSelect={selected => {
-                        PreferencesSystem.setGlobalPreference("QualitySettings", selected)
-                        World.SceneRenderer.ChangeLighting(selected)
-                    }}
-                />
+                <Box alignSelf={"center"}>
+                    <Button
+                        value="Graphics Settings"
+                        onClick={() => {
+                            openPanel("graphics-settings")
+                            closeModal()
+                        }}
+                    />
+                </Box>
 
                 {/* Disabled until these settings are implemented */}
                 {/*   {Spacer(5)}
@@ -63,7 +67,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     onChange={(_, value) => setYawSensitivity(value as number)}
                     tooltipText="Moving the camera left and right."
                 />*/}
-                {Spacer(20)}
+                {Spacer(10)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
                     <Checkbox
@@ -108,6 +112,21 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         defaultState={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
                         onClick={checked => PreferencesSystem.setGlobalPreference("RenderScoreboard", checked)}
                     />
+                    <Checkbox
+                        label="Mute All Sound"
+                        defaultState={PreferencesSystem.getGlobalPreference("MuteAllSound")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("MuteAllSound", checked)}
+                    />
+                    <Slider
+                        min={0}
+                        max={100}
+                        value={PreferencesSystem.getGlobalPreference("SFXVolume")}
+                        label={"SFX Volume"}
+                        format={{ maximumFractionDigits: 2 }}
+                        onChange={(_, value: number | number[]) => PreferencesSystem.setGlobalPreference("SFXVolume", value as number)}
+                        tooltipText="Volume of sound effects (%)."
+                    />
+                    {Spacer(8)}
                 </Box>
             </div>
         </Modal>

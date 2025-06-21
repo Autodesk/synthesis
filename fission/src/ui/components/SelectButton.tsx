@@ -3,7 +3,7 @@ import Button, { ButtonSize } from "./Button"
 import Stack, { StackDirection } from "./Stack"
 import World from "@/systems/World"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { LabelWithTooltip } from "./StyledComponents"
 
 // raycasting constants

@@ -7,7 +7,7 @@ import {
 import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import World from "@/systems/World"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { OnContactAddedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
 import SceneObject from "@/systems/scene/SceneObject"

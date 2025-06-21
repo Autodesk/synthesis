@@ -1,11 +1,11 @@
 import * as THREE from "three"
+import { Object3D, PerspectiveCamera } from "three"
 import SceneObject from "./SceneObject"
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
 import InputSystem from "../input/InputSystem"
 import World from "../World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { Object3D, PerspectiveCamera } from "three"
-import { ThreeQuaternion_JoltQuat, JoltMat44_ThreeMatrix4, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, ThreeQuaternion_JoltQuat, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
@@ -137,7 +137,10 @@ class GizmoSceneObject extends SceneObject {
                     event.target.setScaleSnap(isAlt ? 0.1 : null)
 
                     // scale uniformly if shift is pressed
-                    event.target.axis = isShift ? "XYZE" : null
+                    if (isShift) {
+                        event.target.axis = "XYZE"
+                    }
+
                     break
                 }
                 default: {

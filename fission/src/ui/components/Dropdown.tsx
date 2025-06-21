@@ -2,6 +2,8 @@ import { ReactElement, useEffect, useRef, useState } from "react"
 import { alpha, styled } from "@mui/system"
 import { Button, Menu, MenuItem, Tooltip } from "@mui/material"
 import { colorNameToVar } from "../ThemeContext"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
 
 /** The clickable button for a dropdown that shows the selected item and opens the menu. Custom styling over the MUI material button.*/
 const CustomButton = styled(Button)({
@@ -104,6 +106,7 @@ function Dropdown<T extends string>({ options, onSelect, defaultValue, label }: 
     /** Handles closing the dropdown menu. */
     const handleClose = () => {
         setAnchorEl(null)
+        SoundPlayer.play(dropdownMenuSound)
     }
 
     /** Handles the selection of a dropdown option. */
@@ -131,6 +134,7 @@ function Dropdown<T extends string>({ options, onSelect, defaultValue, label }: 
                 <div>
                     <CustomButton
                         onClick={handleClick}
+                        onMouseDown={() => SoundPlayer.play(dropdownMenuSound)}
                         ref={buttonRef}
                         className={`transform transition-transform hover:scale-[1.012] active:scale-[1.024]`}
                     >

@@ -6,6 +6,8 @@ import World from "@/systems/World"
 import Button, { ButtonSize } from "./Button"
 import InputSystem from "@/systems/input/InputSystem"
 import * as THREE from "three"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 /**
  * Creates GizmoSceneObject and gives you a toggle button group to control the modes of the gizmo.
@@ -109,6 +111,7 @@ function TransformGizmoControl({
                     setMode(v)
                     gizmo?.SetMode(v)
                 }}
+                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                 sx={{
                     ...(sx ?? {}),
                     alignSelf: "center",
