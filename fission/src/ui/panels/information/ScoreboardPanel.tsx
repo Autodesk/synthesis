@@ -6,7 +6,7 @@ import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import MatchMode, { UpdateTimeLeft, MatchModeType } from "@/systems/MatchMode"
+import MatchMode, { MatchModeType, UpdateTimeLeft } from "@/systems/MatchMode"
 import { Spacer } from "@/components/StyledComponents"
 
 function showTime(): boolean {
@@ -17,7 +17,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     const [redScore, setRedScore] = useState<number>(SimulationSystem.redScore)
     const [blueScore, setBlueScore] = useState<number>(SimulationSystem.blueScore)
     const [time, setTime] = useState<string>("0")
-    const { closePanel, openPanel } = usePanelControlContext()
+    const { closePanel } = usePanelControlContext()
 
     const onScoreChange = useCallback(
         (e: OnScoreChangedEvent) => {
@@ -36,13 +36,11 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
 
     const onRenderChange = useCallback(
         (e: PreferenceEvent<"RenderScoreboard">) => {
-            if (e.prefValue) {
-                openPanel("scoreboard")
-            } else {
+            if (!e.prefValue) {
                 closePanel("scoreboard")
             }
         },
-        [closePanel, openPanel]
+        [closePanel]
     )
 
     useEffect(() => {

@@ -1,17 +1,17 @@
 import {
     DefaultFieldPreferences,
     DefaultGlobalPreferences,
-    DefaultRobotPreferences,
     DefaultGraphicsPreferences,
+    DefaultRobotPreferences,
     FieldPreferences,
     FieldPreferencesKey,
     GlobalPreference,
     GlobalPreferences,
+    GraphicsPreferenceKey,
+    GraphicsPreferences,
     Preferences,
     RobotPreferences,
     RobotPreferencesKey,
-    GraphicsPreferences,
-    GraphicsPreferenceKey,
 } from "./PreferenceTypes"
 
 /** An event that's triggered when a preference is changed. */
@@ -147,7 +147,7 @@ class PreferencesSystem {
 
     /** Gets simulation quality preferences */
     public static getGraphicsPreferences(): GraphicsPreferences {
-        let graphicsPrefs = this.getPreference<GraphicsPreferences>(GraphicsPreferenceKey)
+        let graphicsPrefs = this.getPreference(GraphicsPreferenceKey)
 
         if (graphicsPrefs == undefined) {
             graphicsPrefs = DefaultGraphicsPreferences()

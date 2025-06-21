@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label, { LabelSize } from "@/components/Label"
 import Button from "@/components/Button"
@@ -15,6 +15,7 @@ import { usePanelControlContext } from "@/ui/PanelContext.tsx"
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
+    const [volume, setVolume] = useState(PreferencesSystem.getGlobalPreference("SFXVolume"))
     return (
         <Modal
             name="Settings"
@@ -76,7 +77,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         onClick={checked => PreferencesSystem.setGlobalPreference("ReportAnalytics", checked)}
                         tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                     />
-                    {/* Disabled until this settings is implemented */}
+                    {/* Disabled until this setting is implemented */}
                     {/*  <Checkbox
                         label="Use Metric"
                         defaultState={PreferencesSystem.getGlobalPreference("UseMetric")}
@@ -110,7 +111,12 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     <Checkbox
                         label="Show Scoreboard"
                         defaultState={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("RenderScoreboard", checked)}
+                        onClick={checked => {
+                            PreferencesSystem.setGlobalPreference("RenderScoreboard", checked)
+                            if (checked) {
+                                openPanel("scoreboard")
+                            }
+                        }}
                     />
                     <Checkbox
                         label="Mute All Sound"
@@ -120,10 +126,13 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     <Slider
                         min={0}
                         max={100}
-                        value={PreferencesSystem.getGlobalPreference("SFXVolume")}
+                        value={volume}
                         label={"SFX Volume"}
                         format={{ maximumFractionDigits: 2 }}
-                        onChange={(_, value: number | number[]) => PreferencesSystem.setGlobalPreference("SFXVolume", value as number)}
+                        onChange={(_, value: number | number[]) => {
+                            setVolume(value as number)
+                            PreferencesSystem.setGlobalPreference("SFXVolume", value as number)
+                        }}
                         tooltipText="Volume of sound effects (%)."
                     />
                     {Spacer(8)}

@@ -16,8 +16,8 @@ export type GlobalPreferences = {
     RenderScoreboard: boolean
     SubsystemGravity: boolean
     SimAutoReconnect: boolean
-    MuteAllSound:boolean
-    SFXVolume:number
+    MuteAllSound: boolean
+    SFXVolume: number
 }
 
 export type GlobalPreference = keyof GlobalPreferences
@@ -25,12 +25,12 @@ export type GlobalPreference = keyof GlobalPreferences
 export type Preferences = GlobalPreferences & {
     [RobotPreferencesKey]: Record<string, RobotPreferences>
     [FieldPreferencesKey]: Record<string, FieldPreferences>
-    [QualityPreferencesKey]: GraphicsPreferences
+    [GraphicsPreferenceKey]: GraphicsPreferences
 }
 
 export const RobotPreferencesKey = "Robots" as const
 export const FieldPreferencesKey = "Fields" as const
-export const QualityPreferencesKey = "Quality" as const
+export const GraphicsPreferenceKey = "Quality" as const
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
