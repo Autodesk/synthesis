@@ -38,6 +38,8 @@ import Button from "@/ui/components/Button"
 import { Global_AddToast, Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 interface ItemCardProps {
     id: string
@@ -393,7 +395,12 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 <ToggleButtonGroup
                     value={viewType}
                     exclusive
-                    onChange={(_, v) => v != null && setViewType(v)}
+                    onChange={(_, v) => {
+                        if (v != null) {
+                            setViewType(v)
+                        }
+                    }}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     sx={{
                         alignSelf: "center",
                     }}
