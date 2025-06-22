@@ -344,7 +344,8 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
                 new ConfigurationSavedEvent()
             }}
-            acceptName="Close"
+            acceptName="Save"
+            cancelName="Cancel"
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh]">
                 {/** Toggle button group for the robot, field, and input buttons */}
