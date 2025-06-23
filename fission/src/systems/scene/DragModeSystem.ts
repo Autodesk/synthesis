@@ -19,7 +19,6 @@ interface DragTarget {
     initialPosition: THREE.Vector3
     offset: THREE.Vector3
     mass: number
-    dragPlane: THREE.Plane
     dragDepth: number
     physicsDisabled: boolean
 }
@@ -168,8 +167,13 @@ class DragModeSystem extends WorldSystem {
 
     private onInteractionMove(interaction: InteractionMove): void {
         if (this._isDragging && interaction.movement) {
+            // Use absolute position instead of accumulating movement to prevent drift
             this._lastMousePosition[0] += interaction.movement[0]
             this._lastMousePosition[1] += interaction.movement[1]
+
+            // Clamp to screen bounds to prevent issues with cursor going off-screen
+            this._lastMousePosition[0] = Math.max(0, Math.min(window.innerWidth, this._lastMousePosition[0]))
+            this._lastMousePosition[1] = Math.max(0, Math.min(window.innerHeight, this._lastMousePosition[1]))
         } else {
             this._originalInteractionMove?.(interaction)
         }
@@ -203,11 +207,8 @@ class DragModeSystem extends WorldSystem {
         const mass = 1.0 / motionProperties.GetInverseMass()
 
         const camera = World.SceneRenderer.mainCamera
-        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
-        const dragPlane = new THREE.Plane()
-        dragPlane.setFromNormalAndCoplanarPoint(cameraDirection, hitPoint)
-
         const cameraToHit = hitPoint.clone().sub(camera.position)
+        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
         const dragDepth = cameraToHit.dot(cameraDirection)
 
         const association = World.PhysicsSystem.GetBodyAssociation(bodyId) as RigidNodeAssociate
@@ -218,7 +219,6 @@ class DragModeSystem extends WorldSystem {
             initialPosition: bodyPosition.clone(),
             offset: hitPoint.clone().sub(bodyPosition),
             mass: mass,
-            dragPlane: dragPlane,
             dragDepth: dragDepth,
             physicsDisabled: isRobot,
         }
@@ -363,6 +363,8 @@ class DragModeSystem extends WorldSystem {
         const currentPosition = new THREE.Vector3(currentPos.GetX(), currentPos.GetY(), currentPos.GetZ())
 
         const camera = World.SceneRenderer.mainCamera
+
+        // Create a ray from the camera through the current mouse position
         const mouseNDC = new THREE.Vector2(
             (this._lastMousePosition[0] / window.innerWidth) * 2 - 1,
             -(this._lastMousePosition[1] / window.innerHeight) * 2 + 1
@@ -371,10 +373,23 @@ class DragModeSystem extends WorldSystem {
         const raycaster = new THREE.Raycaster()
         raycaster.setFromCamera(mouseNDC, camera)
 
-        const intersectionPoint = new THREE.Vector3()
-        const intersected = raycaster.ray.intersectPlane(this._dragTarget.dragPlane, intersectionPoint)
+        // Create a dynamic drag plane perpendicular to the camera at the original drag depth
+        const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
+        const dragPlanePosition = camera.position
+            .clone()
+            .add(cameraDirection.clone().multiplyScalar(this._dragTarget.dragDepth))
+        const dragPlane = new THREE.Plane()
+        dragPlane.setFromNormalAndCoplanarPoint(cameraDirection, dragPlanePosition)
 
-        if (!intersected) return
+        const intersectionPoint = new THREE.Vector3()
+        const intersected = raycaster.ray.intersectPlane(dragPlane, intersectionPoint)
+
+        if (!intersected) {
+            // Fallback: project mouse position onto a sphere around the object
+            const fallbackDistance = Math.max(this._dragTarget.dragDepth * 0.5, 1.0)
+            const direction = raycaster.ray.direction.clone().normalize()
+            intersectionPoint.copy(camera.position).add(direction.multiplyScalar(fallbackDistance))
+        }
 
         const targetWorldPos = intersectionPoint.sub(this._dragTarget.offset)
 
@@ -407,7 +422,6 @@ class DragModeSystem extends WorldSystem {
 
             const joltForce = ThreeVector3_JoltVec3(forceNeeded)
             body.AddForce(joltForce)
-            console.log(forceNeeded)
 
             const angularVel = body.GetAngularVelocity()
             const angularDampingStrength = Math.min(mass * 3.0, 100.0)
