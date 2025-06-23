@@ -135,6 +135,8 @@ class SimulationLayer {
         } else {
             console.debug("No Assembly found with given mechanism, skipping intake and ejector...")
         }
+        console.log(`drivers:`)
+        this._drivers.forEach(driver => console.log(`\tdriver: ${driver.DisplayName()}`))
     }
 
     public Update(deltaT: number) {
