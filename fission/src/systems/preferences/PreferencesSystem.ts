@@ -96,6 +96,11 @@ class PreferencesSystem {
         allRoboPrefs[miraName] = value
     }
 
+    public static setFieldPreferences(miraName: string, value: FieldPreferences) {
+        const allFieldPrefs = this.getAllFieldPreferences()
+        allFieldPrefs[miraName] = value
+    }
+
     /** @returns Preferences for every robot that was found in local storage. */
     public static getAllRobotPreferences(): { [key: string]: RobotPreferences } {
         let allRoboPrefs = this.getPreference<{ [key: string]: RobotPreferences }>(RobotPreferencesKey)
