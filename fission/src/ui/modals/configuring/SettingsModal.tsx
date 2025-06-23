@@ -187,6 +187,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         }}
                         tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
                     />
+                    <Checkbox
                         label="Mute All Sound"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")}
                         onClick={checked => {
