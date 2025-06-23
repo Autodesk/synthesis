@@ -18,6 +18,7 @@ import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import Dropdown from "@/components/Dropdown"
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
@@ -49,6 +50,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
             targetAssembly.alliance = alliance
+            SimulationSystem.AddPerRobotScore(targetAssembly, 0) // Initialize score for the robot
 
             setSelectedConfigurationType(ConfigurationType.ROBOT)
             const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)

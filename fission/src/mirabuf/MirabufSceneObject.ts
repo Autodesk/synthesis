@@ -130,6 +130,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._fieldPreferences
     }
 
+    get nameTag() {
+        return this._nameTag
+    }
+
     public get activeEjectable(): Jolt.BodyID | undefined {
         return this._ejectable?.gamePieceBodyId
     }

@@ -24,9 +24,22 @@ const getMatchWinner = (): { message: string; color: string } => {
     }
 }
 
-const LabelStyled = styled(Label)<{ winnerColor: string }>(({ winnerColor }) => ({
+const getPerRobotScores = (): { redRobotScores: Entry[]; blueRobotScores: Entry[] } => {
+    const redRobotScores: Entry[] = []
+    const blueRobotScores: Entry[] = []
+    SimulationSystem.perRobotScore.forEach((score, robot) => {
+        if (robot.alliance === "red") {
+            redRobotScores.push({ name: `${robot.nameTag?.text()} (${robot.assemblyName})`, value: score })
+        } else {
+            blueRobotScores.push({ name: `${robot.nameTag?.text()} (${robot.assemblyName})`, value: score })
+        }
+    })
+    return { redRobotScores, blueRobotScores }
+}
+
+const LabelStyled = styled(Label)<{ winnerColor: string; fontSize: string }>(({ winnerColor, fontSize }) => ({
     fontWeight: 700,
-    fontSize: "1.5rem",
+    fontSize: fontSize,
     margin: "0pt",
     marginTop: "0.5rem",
     color: winnerColor,
@@ -40,6 +53,8 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         { name: "Blue Score", value: SimulationSystem.blueScore },
     ]
 
+    const { redRobotScores: redRobotScores, blueRobotScores: blueRobotScores } = getPerRobotScores()
+
     const { closeModal } = useModalControlContext()
 
     return (
@@ -51,9 +66,36 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptEnabled={false}
             allowClickAway={false}
         >
-            <LabelStyled winnerColor={color}>{message}</LabelStyled>
+            <LabelStyled winnerColor={color} fontSize="1.5rem">
+                {message}
+            </LabelStyled>
             <div className="flex flex-col">
                 {entries.map(e => (
+                    <Stack key={e.name} direction={StackDirection.Horizontal}>
+                        <Label>{e.name}</Label>
+                        <Label>{e.value}</Label>
+                    </Stack>
+                ))}
+            </div>
+            <LabelStyled winnerColor={"#ffffff"} fontSize="1.25rem">
+                Robot Score Contributions
+            </LabelStyled>
+            <LabelStyled winnerColor={"#ff0000"} fontSize="1rem">
+                Red Alliance
+            </LabelStyled>
+            <div className="flex flex-col">
+                {redRobotScores.map(e => (
+                    <Stack key={e.name} direction={StackDirection.Horizontal}>
+                        <Label>{e.name}</Label>
+                        <Label>{e.value}</Label>
+                    </Stack>
+                ))}
+            </div>
+            <LabelStyled winnerColor={"#1818ff"} fontSize="1rem">
+                Blue Alliance
+            </LabelStyled>
+            <div className="flex flex-col">
+                {blueRobotScores.map(e => (
                     <Stack key={e.name} direction={StackDirection.Horizontal}>
                         <Label>{e.name}</Label>
                         <Label>{e.value}</Label>
