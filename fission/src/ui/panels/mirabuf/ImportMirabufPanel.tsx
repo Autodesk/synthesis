@@ -21,8 +21,8 @@ import { useTooltipControlContext } from "@/ui/TooltipContext"
 import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { usePanelControlContext } from "@/ui/PanelContext"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import TaskStatus from "@/util/TaskStatus"
 import {
     DeleteButton,

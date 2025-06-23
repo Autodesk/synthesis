@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react"
 import { ClickAwayListener } from "@mui/base/ClickAwayListener"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
