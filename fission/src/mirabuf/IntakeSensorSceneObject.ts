@@ -129,6 +129,7 @@ class IntakeSensorSceneObject extends SceneObject {
     private IntakeCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
+            associate.robotLastInContactWith = this._parentAssembly
             this._parentAssembly.SetEjectable(gpID, false)
         }
     }

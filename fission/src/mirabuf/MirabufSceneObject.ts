@@ -667,6 +667,7 @@ export async function CreateMirabuf(
  */
 export class RigidNodeAssociate extends BodyAssociate {
     public readonly sceneObject: MirabufSceneObject
+    public robotLastInContactWith: MirabufSceneObject | null = null
 
     public readonly rigidNode: RigidNodeReadOnly
     public get rigidNodeId(): RigidNodeId {

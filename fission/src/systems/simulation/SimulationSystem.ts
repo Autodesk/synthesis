@@ -19,6 +19,7 @@ import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
+    public static perRobotScore: Map<MirabufSceneObject, number> = new Map()
 
     public static redScore = 0
     public static blueScore = 0
@@ -62,6 +63,12 @@ class SimulationSystem extends WorldSystem {
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
         new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).Dispatch()
+    }
+
+    public static AddPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
+        const currentRobotScore = this.perRobotScore.get(robot) ?? 0
+        this.perRobotScore.set(robot, currentRobotScore + scoreToAdd)
+        console.log(`Robot ${robot.assemblyName} scored ${scoreToAdd}. Total: ${this.perRobotScore.get(robot)}`)
     }
 }
 

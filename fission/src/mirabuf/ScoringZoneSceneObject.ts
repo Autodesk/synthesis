@@ -15,6 +15,7 @@ import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DeltaFieldTransforms_PhysicalProp } from "@/util/threejs/MeshCreation"
+import { findListDifference } from "@/util/Utility"
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
@@ -174,15 +175,29 @@ class ScoringZoneSceneObject extends SceneObject {
             // If persistent points, update points based on how many gamepieces in zone
             if (this._prefs.persistentPoints)
                 if (this._gpContacted.length != this._prevGP.length) {
+                    const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
+                    const points = this._prefs.points
+
                     if (this._prefs.alliance == "red") {
-                        SimulationSystem.redScore +=
-                            (this._gpContacted.length - this._prevGP.length) * this._prefs.points
+                        SimulationSystem.redScore += (gpAdded.length - gpRemoved.length) * points
                     } else {
-                        SimulationSystem.blueScore +=
-                            (this._gpContacted.length - this._prevGP.length) * this._prefs.points
+                        SimulationSystem.blueScore += (gpAdded.length - gpRemoved.length) * points
                     }
                     const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
                     event.Dispatch()
+
+                    // Per robot score calculations
+                    gpAdded.forEach(gpID => {
+                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+                        associate.robotLastInContactWith &&
+                            SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, points)
+                    })
+                    gpRemoved.forEach(gpID => {
+                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+                        associate.robotLastInContactWith &&
+                            SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, -points)
+                    })
+
                     this._prevGP = Object.assign([], this._gpContacted)
                 }
         } else {
@@ -218,6 +233,9 @@ class ScoringZoneSceneObject extends SceneObject {
                 }
                 const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
                 event.Dispatch()
+
+                associate.robotLastInContactWith &&
+                    SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, this._prefs.points)
             }
         }
     }
