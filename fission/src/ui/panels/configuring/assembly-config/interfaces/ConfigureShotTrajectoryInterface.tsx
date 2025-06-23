@@ -20,6 +20,7 @@ import { Spacer } from "@/ui/components/StyledComponents"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import { ToggleButtonGroup, ToggleButton } from "@mui/material"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -52,7 +53,8 @@ function save(
     ejectorVelocity: number,
     gizmo: GizmoSceneObject,
     selectedRobot: MirabufSceneObject,
-    selectedNode?: RigidNodeId
+    selectedNode?: RigidNodeId,
+    ejectOrder?: 'FIFO' | 'LIFO'
 ) {
     if (!selectedRobot?.ejectorPreferences || !gizmo) {
         return
@@ -73,6 +75,8 @@ function save(
     selectedRobot.ejectorPreferences.parentNode = selectedNode
     selectedRobot.ejectorPreferences.ejectorVelocity = ejectorVelocity
 
+    selectedRobot.ejectorPreferences.ejectOrder = ejectOrder!
+
     PreferencesSystem.savePreferences()
 }
 
@@ -88,6 +92,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
 
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
+    const [ejectOrder, setEjectOrder] = useState<'FIFO'|'LIFO'>(selectedRobot.ejectorPreferences?.ejectOrder || 'FIFO')
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
@@ -163,6 +168,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
         if (selectedRobot?.ejectorPreferences) {
             setEjectorVelocity(selectedRobot.ejectorPreferences.ejectorVelocity)
             setSelectedNode(selectedRobot.ejectorPreferences.parentNode)
+            setEjectOrder(selectedRobot.ejectorPreferences.ejectOrder)
         } else {
             setSelectedNode(undefined)
         }
@@ -214,6 +220,20 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 }}
                 step={0.01}
             />
+
+            {/* Toggle for adjusting eject order */}
+                <div className="mt-4 flex items-center space-x-2">
+                <span>Eject Order</span>
+                <ToggleButtonGroup
+                    value={ejectOrder}
+                    exclusive
+                    onChange={(_, v) => v && setEjectOrder(v as "FIFO" | "LIFO")}
+                >
+                <ToggleButton value="FIFO">FIFO</ToggleButton>
+                <ToggleButton value="LIFO">LIFO</ToggleButton>
+                </ToggleButtonGroup>
+            </div>
+            
             {gizmoComponent}
             {Spacer(10)}
             <Button
@@ -228,6 +248,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                     }
                     setEjectorVelocity(1)
                     setSelectedNode(selectedRobot?.rootNodeId)
+                    setEjectOrder(selectedRobot.ejectorPreferences?.ejectOrder ?? 'FIFO')
                 }}
             />
         </>

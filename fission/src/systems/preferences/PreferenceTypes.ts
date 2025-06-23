@@ -47,13 +47,13 @@ export type IntakePreferences = {
     parentNode: string | undefined
     showZoneAlways: boolean
     maxPieces: number
-    ejectOrder: 'FIFO' | 'LIFO'
 }
 
 export type EjectorPreferences = {
     deltaTransformation: number[]
     ejectorVelocity: number
     parentNode: string | undefined
+    ejectOrder: 'FIFO' | 'LIFO'
 }
 
 /** The behavior types that can be sequenced. */
@@ -122,13 +122,13 @@ export function DefaultRobotPreferences(): RobotPreferences {
             zoneDiameter: 0.5,
             parentNode: undefined,
             showZoneAlways: false,
-            maxPieces: 1,
-            ejectOrder: 'FIFO'
+            maxPieces: 1
         },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             ejectorVelocity: 1,
             parentNode: undefined,
+            ejectOrder: 'FIFO'
         },
         driveVelocity: 0,
         driveAcceleration: 0,
