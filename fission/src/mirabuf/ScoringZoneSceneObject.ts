@@ -189,13 +189,17 @@ class ScoringZoneSceneObject extends SceneObject {
                     // Per robot score calculations
                     gpAdded.forEach(gpID => {
                         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+                        const robotAlliancePoints =
+                            associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
-                            SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, points)
+                            SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
                     })
                     gpRemoved.forEach(gpID => {
                         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+                        const robotAlliancePoints =
+                            associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
                         associate.robotLastInContactWith &&
-                            SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, -points)
+                            SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
                     })
 
                     this._prevGP = Object.assign([], this._gpContacted)
@@ -234,8 +238,12 @@ class ScoringZoneSceneObject extends SceneObject {
                 const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
                 event.Dispatch()
 
+                const robotAlliancePoints =
+                    associate.robotLastInContactWith?.alliance !== this._prefs?.alliance
+                        ? -this._prefs.points
+                        : this._prefs.points
                 associate.robotLastInContactWith &&
-                    SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, this._prefs.points)
+                    SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
             }
         }
     }
