@@ -327,6 +327,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
         closePanel("choose-scheme")
         closePanel("import-mirabuf")
+        closePanel("initial-config")
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
