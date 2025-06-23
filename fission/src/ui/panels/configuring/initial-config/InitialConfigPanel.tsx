@@ -48,6 +48,8 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
+            targetAssembly.alliance = alliance
+
             setSelectedConfigurationType(ConfigurationType.ROBOT)
             const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
 
@@ -58,8 +60,6 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
             setSelectedScheme(scheme)
-
-            targetAssembly.alliance = alliance
         } else {
             setSelectedConfigurationType(ConfigurationType.FIELD)
         }

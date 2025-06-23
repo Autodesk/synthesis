@@ -14,24 +14,27 @@ type Entry = {
     value: number
 }
 
-const getMatchWinner = (): string => {
+const getMatchWinner = (): { message: string; color: string } => {
     if (SimulationSystem.redScore > SimulationSystem.blueScore) {
-        return "Red Team Wins!"
+        return { message: "Red Team Wins!", color: "#ff0000" }
     } else if (SimulationSystem.blueScore > SimulationSystem.redScore) {
-        return "Blue Team Wins!"
+        return { message: "Blue Team Wins!", color: "#1818ff" }
     } else {
-        return "It's a Tie!"
+        return { message: "It's a Tie!", color: "#ffffff" }
     }
 }
 
-const LabelStyled = styled(Label)({
+const LabelStyled = styled(Label)<{ winnerColor: string }>(({ winnerColor }) => ({
     fontWeight: 700,
     fontSize: "1.5rem",
     margin: "0pt",
     marginTop: "0.5rem",
-})
+    color: winnerColor,
+}))
 
 const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
+    const { message, color } = getMatchWinner()
+
     const entries: Entry[] = [
         { name: "Red Score", value: SimulationSystem.redScore },
         { name: "Blue Score", value: SimulationSystem.blueScore },
@@ -48,7 +51,7 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             acceptEnabled={false}
             allowClickAway={false}
         >
-            <LabelStyled>{getMatchWinner()}</LabelStyled>
+            <LabelStyled winnerColor={color}>{message}</LabelStyled>
             <div className="flex flex-col">
                 {entries.map(e => (
                     <Stack key={e.name} direction={StackDirection.Horizontal}>
