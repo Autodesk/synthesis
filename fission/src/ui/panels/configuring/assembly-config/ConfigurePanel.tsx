@@ -5,7 +5,7 @@ import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { MouseEvent, useEffect, useMemo, useReducer, useState } from "react"
+import { MouseEvent, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
@@ -24,9 +24,10 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
-import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import { FieldPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem";
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -302,18 +303,44 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
     }
 }
 
+
 const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+    type DraftPrefs = Partial<RobotPreferences & FieldPreferences>
+    const originalRobotPrefs = useRef<RobotPreferences | null>(null);
+    const originalFieldPrefs = useRef<FieldPreferences | null>(null);
+
     const { openPanel, closePanel } = usePanelControlContext()
     const [configurationType, setConfigurationType] = useState<ConfigurationType>(getConfigurationType())
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
+    const [draftPrefs, setDraftPrefs] = useState<DraftPrefs>({})
+
     useEffect(() => {
         const settings = popConfigurePanelSettings()
         if (settings) {
             setSelectedAssembly(settings.selectedAssembly)
-            if (settings.selectedAssembly) setConfigMode(settings.configMode)
+            if (settings.selectedAssembly) {
+                setConfigMode(settings.configMode)
+
+                const name = settings.selectedAssembly.assemblyName;
+
+                const robotPrefs = PreferencesSystem.getRobotPreferences(name);
+                const fieldPrefs = PreferencesSystem.getFieldPreferences(name);
+
+                if (robotPrefs) {
+                    originalRobotPrefs.current = structuredClone(robotPrefs);
+                }
+                if (fieldPrefs) {
+                    originalFieldPrefs.current = structuredClone(fieldPrefs);
+                }
+
+                setDraftPrefs({
+                ...(robotPrefs ? structuredClone(robotPrefs) : {}),
+                ...(fieldPrefs ? structuredClone(fieldPrefs) : {}),
+                });
+            }
         }
 
         closePanel("choose-scheme")
@@ -332,9 +359,30 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 pendingDeletes.forEach(id => World.SceneRenderer.RemoveSceneObject(id))
                 setPendingDeletes([])
 
+                originalRobotPrefs.current = null;
+                originalFieldPrefs.current = null;
+
                 // Save the current panel state
                 setSelectedConfigurationType(configurationType)
                 new ConfigurationSavedEvent()
+            }}
+            onCancel={() => {
+                setPendingDeletes([])
+                
+                if (selectedAssembly) {
+                    const name = selectedAssembly.assemblyName
+                    if (originalRobotPrefs.current) {
+                        PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
+                    }
+                    if (originalFieldPrefs.current) {
+                        PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
+                    }
+
+                    selectedAssembly.getPreferences()
+                }
+                originalRobotPrefs.current = null
+                originalFieldPrefs.current = null
+                setDraftPrefs({})
             }}
             acceptName="Save"
             cancelName="Cancel"
