@@ -10,6 +10,7 @@ import {
 import Label, { LabelSize } from "./Label"
 import ViewCube from "./ViewCube"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+import { useModalControlContext } from "@/ui/ModalContext"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -21,6 +22,12 @@ function SceneOverlay() {
     const [showViewCube, setShowViewCube] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
     )
+
+    /* Get the active modal context to check if main menu is open */
+    const { activeModalId } = useModalControlContext()
+
+    /* Check if the main menu modal is active */
+    const isMainMenuOpen = activeModalId === "main-menu"
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
@@ -124,7 +131,7 @@ function SceneOverlay() {
             }}
         >
             {components ?? <></>}
-            {showViewCube && <ViewCube size={120} position={{ top: 20, right: 20 }} />}
+            {showViewCube && !isMainMenuOpen && <ViewCube position={{ top: 20, right: 20 }} />}
         </Box>
     )
 }

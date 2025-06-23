@@ -7,9 +7,14 @@ import { CustomOrbitControls } from "@/systems/scene/CameraControls"
 interface ViewCubeProps {
     size?: number
     position?: { top?: number; left?: number; right?: number; bottom?: number }
+    scaleWithWindow?: boolean
 }
 
-const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, right: 20 } }) => {
+const ViewCube: React.FC<ViewCubeProps> = ({
+    size = 100,
+    position = { top: 20, right: 20 },
+    scaleWithWindow = true,
+}) => {
     const containerRef = useRef<HTMLDivElement>(null)
     const sceneRef = useRef<THREE.Scene>()
     const rendererRef = useRef<THREE.WebGLRenderer>()
@@ -19,11 +24,86 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
     const [hoveredElement, setHoveredElement] = useState<{ type: string; index: number } | null>(null)
     const [isDragging, setIsDragging] = useState(false)
     const [lastMousePos, setLastMousePos] = useState<{ x: number; y: number } | null>(null)
+    const [currentMousePos, setCurrentMousePos] = useState<{ x: number; y: number } | null>(null)
     const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null)
     const [dragStartElement, setDragStartElement] = useState<{ type: string; index: number } | null>(null)
-    const [justFinishedDrag, setJustFinishedDrag] = useState(false)
+    const [windowSize, setWindowSize] = useState({ width: window.innerWidth, height: window.innerHeight })
 
-    const containerSize = size * 1.4
+    const calculateResponsiveSize = () => {
+        if (!scaleWithWindow) return size
+
+        const minSize = 40
+        const maxSize = 140
+        const baseWidth = 1920
+        const scale = Math.min(windowSize.width / baseWidth, 1)
+
+        return Math.max(minSize, Math.min(maxSize, minSize + (maxSize - minSize) * scale))
+    }
+
+    const responsiveSize = calculateResponsiveSize()
+    const containerSize = responsiveSize * 1.4
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({ width: window.innerWidth, height: window.innerHeight })
+        }
+
+        window.addEventListener("resize", handleResize)
+        return () => window.removeEventListener("resize", handleResize)
+    }, [])
+
+    useEffect(() => {
+        const handleGlobalMouseUp = () => {
+            if (isDragging) {
+                setIsDragging(false)
+                setLastMousePos(null)
+                setDragStartPos(null)
+                setDragStartElement(null)
+            }
+        }
+
+        const handleGlobalMouseMove = (event: MouseEvent) => {
+            if (isDragging && lastMousePos) {
+                const deltaX = event.clientX - lastMousePos.x
+                const deltaY = event.clientY - lastMousePos.y
+
+                const sensitivity = 0.065
+
+                const controls = World.SceneRenderer.currentCameraControls
+                if (controls instanceof CustomOrbitControls) {
+                    const currentCoords = controls.getCurrentCoordinates()
+
+                    const newTheta = currentCoords.theta - deltaX * sensitivity
+                    const newPhi = currentCoords.phi - deltaY * sensitivity
+
+                    controls.setImmediateCoordinates({ theta: newTheta, phi: newPhi })
+                }
+
+                setLastMousePos({ x: event.clientX, y: event.clientY })
+            }
+        }
+
+        const handleVisibilityChange = () => {
+            if (document.hidden && isDragging) {
+                setIsDragging(false)
+                setLastMousePos(null)
+                setDragStartPos(null)
+                setDragStartElement(null)
+            }
+        }
+
+        if (isDragging) {
+            document.addEventListener("mouseup", handleGlobalMouseUp)
+            document.addEventListener("mousemove", handleGlobalMouseMove)
+            document.addEventListener("visibilitychange", handleVisibilityChange)
+        }
+
+        return () => {
+            document.removeEventListener("mouseup", handleGlobalMouseUp)
+            document.removeEventListener("mousemove", handleGlobalMouseMove)
+            document.removeEventListener("visibilitychange", handleVisibilityChange)
+        }
+    }, [isDragging, lastMousePos])
 
     const getTopBottomOrientation = (isTop: boolean) => {
         if (World && World.SceneRenderer && World.SceneRenderer.currentCameraControls) {
@@ -71,7 +151,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         const scene = new THREE.Scene()
         sceneRef.current = scene
 
-        const scaleFactor = containerSize / size
+        const scaleFactor = containerSize / responsiveSize
         const bound = 2 * scaleFactor
         const camera = new THREE.OrthographicCamera(-bound, bound, bound, -bound, 0.1, 100)
         camera.position.set(5, 5, 5)
@@ -133,44 +213,41 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
         const createEdgeHighlightStrips = () => {
             const edgeStripConfigs = [
-                // Top-front edge
-                { pos: [0, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 0 }, // top face
-                { pos: [0, 0.8, 1.005], rot: [0, 0, 0], size: [1.2, 0.4], edgeIndex: 0 }, // front face
-                // Top-back edge
-                { pos: [0, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 1 }, // top face
-                { pos: [0, 0.8, -1.005], rot: [0, Math.PI, 0], size: [1.2, 0.4], edgeIndex: 1 }, // back face
-                // Bottom-front edge
-                { pos: [0, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 2 }, // bottom face
-                { pos: [0, -0.8, 1.005], rot: [0, 0, 0], size: [1.2, 0.4], edgeIndex: 2 }, // front face
-                // Bottom-back edge
-                { pos: [0, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 3 }, // bottom face
-                { pos: [0, -0.8, -1.005], rot: [0, Math.PI, 0], size: [1.2, 0.4], edgeIndex: 3 }, // back face
+                { pos: [0, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 0 },
+                { pos: [0, 0.8, 1.005], rot: [0, 0, 0], size: [1.2, 0.4], edgeIndex: 0 },
 
-                // Front-right edge
-                { pos: [0.8, 0, 1.005], rot: [0, 0, 0], size: [0.4, 1.2], edgeIndex: 4 }, // front face
-                { pos: [1.005, 0, 0.8], rot: [0, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 4 }, // right face
-                // Back-right edge
-                { pos: [0.8, 0, -1.005], rot: [0, Math.PI, 0], size: [0.4, 1.2], edgeIndex: 5 }, // back face
-                { pos: [1.005, 0, -0.8], rot: [0, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 5 }, // right face
-                // Front-left edge
-                { pos: [-0.8, 0, 1.005], rot: [0, 0, 0], size: [0.4, 1.2], edgeIndex: 6 }, // front face
-                { pos: [-1.005, 0, 0.8], rot: [0, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 6 }, // left face
-                // Back-left edge
-                { pos: [-0.8, 0, -1.005], rot: [0, Math.PI, 0], size: [0.4, 1.2], edgeIndex: 7 }, // back face
-                { pos: [-1.005, 0, -0.8], rot: [0, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 7 }, // left face
+                { pos: [0, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 1 },
+                { pos: [0, 0.8, -1.005], rot: [0, Math.PI, 0], size: [1.2, 0.4], edgeIndex: 1 },
 
-                // Right-top edge
-                { pos: [1.005, 0.8, 0], rot: [Math.PI / 2, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 8 }, // right face
-                { pos: [0.8, 1.005, 0], rot: [-Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 8 }, // top face
-                // Right-bottom edge
-                { pos: [1.005, -0.8, 0], rot: [Math.PI / 2, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 9 }, // right face
-                { pos: [0.8, -1.005, 0], rot: [Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 9 }, // bottom face
-                // Left-top edge
-                { pos: [-1.005, 0.8, 0], rot: [Math.PI / 2, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 10 }, // left face
-                { pos: [-0.8, 1.005, 0], rot: [-Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 10 }, // top face
-                // Left-bottom edge
-                { pos: [-1.005, -0.8, 0], rot: [Math.PI / 2, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 11 }, // left face
-                { pos: [-0.8, -1.005, 0], rot: [Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 11 }, // bottom face
+                { pos: [0, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 2 },
+                { pos: [0, -0.8, 1.005], rot: [0, 0, 0], size: [1.2, 0.4], edgeIndex: 2 },
+
+                { pos: [0, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], size: [1.2, 0.4], edgeIndex: 3 },
+                { pos: [0, -0.8, -1.005], rot: [0, Math.PI, 0], size: [1.2, 0.4], edgeIndex: 3 },
+
+                { pos: [0.8, 0, 1.005], rot: [0, 0, 0], size: [0.4, 1.2], edgeIndex: 4 },
+                { pos: [1.005, 0, 0.8], rot: [0, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 4 },
+
+                { pos: [0.8, 0, -1.005], rot: [0, Math.PI, 0], size: [0.4, 1.2], edgeIndex: 5 },
+                { pos: [1.005, 0, -0.8], rot: [0, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 5 },
+
+                { pos: [-0.8, 0, 1.005], rot: [0, 0, 0], size: [0.4, 1.2], edgeIndex: 6 },
+                { pos: [-1.005, 0, 0.8], rot: [0, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 6 },
+
+                { pos: [-0.8, 0, -1.005], rot: [0, Math.PI, 0], size: [0.4, 1.2], edgeIndex: 7 },
+                { pos: [-1.005, 0, -0.8], rot: [0, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 7 },
+
+                { pos: [1.005, 0.8, 0], rot: [Math.PI / 2, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 8 },
+                { pos: [0.8, 1.005, 0], rot: [-Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 8 },
+
+                { pos: [1.005, -0.8, 0], rot: [Math.PI / 2, Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 9 },
+                { pos: [0.8, -1.005, 0], rot: [Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 9 },
+
+                { pos: [-1.005, 0.8, 0], rot: [Math.PI / 2, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 10 },
+                { pos: [-0.8, 1.005, 0], rot: [-Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 10 },
+
+                { pos: [-1.005, -0.8, 0], rot: [Math.PI / 2, -Math.PI / 2, 0], size: [0.4, 1.2], edgeIndex: 11 },
+                { pos: [-0.8, -1.005, 0], rot: [Math.PI / 2, 0, 0], size: [0.4, 1.2], edgeIndex: 11 },
             ]
 
             edgeStripConfigs.forEach(config => {
@@ -192,45 +269,37 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
         const createCornerHighlightSquares = () => {
             const cornerSquareConfigs = [
-                // Corner 0: front-right-top [1, 1, 1]
-                { pos: [1.005, 0.8, 0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 0 }, // right face
-                { pos: [0.8, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 0 }, // top face
-                { pos: [0.8, 0.8, 1.005], rot: [0, 0, 0], cornerIndex: 0 }, // front face
+                { pos: [1.005, 0.8, 0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 0 },
+                { pos: [0.8, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 0 },
+                { pos: [0.8, 0.8, 1.005], rot: [0, 0, 0], cornerIndex: 0 },
 
-                // Corner 1: back-right-top [1, 1, -1]
-                { pos: [1.005, 0.8, -0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 1 }, // right face
-                { pos: [0.8, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 1 }, // top face
-                { pos: [0.8, 0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 1 }, // back face
+                { pos: [1.005, 0.8, -0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 1 },
+                { pos: [0.8, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 1 },
+                { pos: [0.8, 0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 1 },
 
-                // Corner 2: front-right-bottom [1, -1, 1]
-                { pos: [1.005, -0.8, 0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 2 }, // right face
-                { pos: [0.8, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 2 }, // bottom face
-                { pos: [0.8, -0.8, 1.005], rot: [0, 0, 0], cornerIndex: 2 }, // front face
+                { pos: [1.005, -0.8, 0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 2 },
+                { pos: [0.8, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 2 },
+                { pos: [0.8, -0.8, 1.005], rot: [0, 0, 0], cornerIndex: 2 },
 
-                // Corner 3: back-right-bottom [1, -1, -1]
-                { pos: [1.005, -0.8, -0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 3 }, // right face
-                { pos: [0.8, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 3 }, // bottom face
-                { pos: [0.8, -0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 3 }, // back face
+                { pos: [1.005, -0.8, -0.8], rot: [0, Math.PI / 2, 0], cornerIndex: 3 },
+                { pos: [0.8, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 3 },
+                { pos: [0.8, -0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 3 },
 
-                // Corner 4: front-left-top [-1, 1, 1]
-                { pos: [-1.005, 0.8, 0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 4 }, // left face
-                { pos: [-0.8, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 4 }, // top face
-                { pos: [-0.8, 0.8, 1.005], rot: [0, 0, 0], cornerIndex: 4 }, // front face
+                { pos: [-1.005, 0.8, 0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 4 },
+                { pos: [-0.8, 1.005, 0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 4 },
+                { pos: [-0.8, 0.8, 1.005], rot: [0, 0, 0], cornerIndex: 4 },
 
-                // Corner 5: back-left-top [-1, 1, -1]
-                { pos: [-1.005, 0.8, -0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 5 }, // left face
-                { pos: [-0.8, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 5 }, // top face
-                { pos: [-0.8, 0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 5 }, // back face
+                { pos: [-1.005, 0.8, -0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 5 },
+                { pos: [-0.8, 1.005, -0.8], rot: [-Math.PI / 2, 0, 0], cornerIndex: 5 },
+                { pos: [-0.8, 0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 5 },
 
-                // Corner 6: front-left-bottom [-1, -1, 1]
-                { pos: [-1.005, -0.8, 0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 6 }, // left face
-                { pos: [-0.8, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 6 }, // bottom face
-                { pos: [-0.8, -0.8, 1.005], rot: [0, 0, 0], cornerIndex: 6 }, // front face
+                { pos: [-1.005, -0.8, 0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 6 },
+                { pos: [-0.8, -1.005, 0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 6 },
+                { pos: [-0.8, -0.8, 1.005], rot: [0, 0, 0], cornerIndex: 6 },
 
-                // Corner 7: back-left-bottom [-1, -1, -1]
-                { pos: [-1.005, -0.8, -0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 7 }, // left face
-                { pos: [-0.8, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 7 }, // bottom face
-                { pos: [-0.8, -0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 7 }, // back face
+                { pos: [-1.005, -0.8, -0.8], rot: [0, -Math.PI / 2, 0], cornerIndex: 7 },
+                { pos: [-0.8, -1.005, -0.8], rot: [Math.PI / 2, 0, 0], cornerIndex: 7 },
+                { pos: [-0.8, -0.8, -1.005], rot: [0, Math.PI, 0], cornerIndex: 7 },
             ]
 
             cornerSquareConfigs.forEach(config => {
@@ -329,13 +398,11 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             { pos: [0, 1, -1], rot: [0, 0, Math.PI / 2] },
             { pos: [0, -1, 1], rot: [0, 0, Math.PI / 2] },
             { pos: [0, -1, -1], rot: [0, 0, Math.PI / 2] },
-
             // Y-axis edges
             { pos: [1, 0, 1], rot: [0, 0, 0] },
             { pos: [1, 0, -1], rot: [0, 0, 0] },
             { pos: [-1, 0, 1], rot: [0, 0, 0] },
             { pos: [-1, 0, -1], rot: [0, 0, 0] },
-
             // Z-axis edges
             { pos: [1, 1, 0], rot: [Math.PI / 2, 0, 0] },
             { pos: [1, -1, 0], rot: [Math.PI / 2, 0, 0] },
@@ -488,7 +555,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             }
             renderer.dispose()
         }
-    }, [size, containerSize])
+    }, [responsiveSize, containerSize])
 
     const createFaceMaterial = (text: string, color: number): THREE.MeshLambertMaterial => {
         const canvas = document.createElement("canvas")
@@ -509,7 +576,9 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         context.strokeRect(2, 2, 252, 252)
 
         context.fillStyle = "#333333"
-        context.font = "bold 58px 'Segoe UI', Arial, sans-serif"
+
+        const fontSize = text === "BOTTOM" ? 52 : 58
+        context.font = `bold ${fontSize}px 'Segoe UI', Arial, sans-serif`
         context.textAlign = "center"
         context.textBaseline = "middle"
 
@@ -534,8 +603,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         const overlayX = (event.clientX - rect.left) / rect.width
         const overlayY = (event.clientY - rect.top) / rect.height
 
-        const offsetRatio = (containerSize - size) / (2 * containerSize)
-        const scaleRatio = size / containerSize
+        const offsetRatio = (containerSize - responsiveSize) / (2 * containerSize)
+        const scaleRatio = responsiveSize / containerSize
 
         const rendererX = offsetRatio + overlayX * scaleRatio
         const rendererY = offsetRatio + overlayY * scaleRatio
@@ -659,31 +728,63 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         }
     }
 
+    const updateHighlightsAtCurrentPosition = () => {
+        if (currentMousePos && containerRef.current) {
+            const mockEvent = {
+                currentTarget: containerRef.current.children[0],
+                clientX: currentMousePos.x,
+                clientY: currentMousePos.y,
+                preventDefault: () => {},
+            } as React.MouseEvent
+
+            const element = getClickedElement(mockEvent)
+            setHoveredElement(element)
+            updateHighlights(element)
+        } else {
+            setHoveredElement(null)
+            updateHighlights(null)
+        }
+    }
+
+    const normalizeTheta = (theta: number): number => {
+        while (theta > Math.PI) theta -= 2 * Math.PI
+        while (theta < -Math.PI) theta += 2 * Math.PI
+        return theta
+    }
+
     const snapToOrientation = (orientation: { theta: number; phi: number }) => {
         const controls = World.SceneRenderer.currentCameraControls
         if (controls instanceof CustomOrbitControls) {
             const currentCoords = controls.getCurrentCoordinates()
-            let targetTheta = orientation.theta
 
-            const currentTheta = currentCoords.theta
-            const diff = targetTheta - currentTheta
+            const normalizedCurrentTheta = normalizeTheta(currentCoords.theta)
+            const normalizedTargetTheta = normalizeTheta(orientation.theta)
 
+            let diff = normalizedTargetTheta - normalizedCurrentTheta
             if (diff > Math.PI) {
-                targetTheta -= 2 * Math.PI
+                diff -= 2 * Math.PI
             } else if (diff < -Math.PI) {
-                targetTheta += 2 * Math.PI
+                diff += 2 * Math.PI
             }
 
-            controls.animateToOrientation(targetTheta, orientation.phi, 500)
+            const finalTargetTheta = currentCoords.theta + diff
+
+            controls.animateToOrientation(finalTargetTheta, orientation.phi, 280)
+
+            setTimeout(() => {
+                updateHighlightsAtCurrentPosition()
+            }, 250)
         }
     }
 
     const handleMouseMove = (event: React.MouseEvent) => {
+        setCurrentMousePos({ x: event.clientX, y: event.clientY })
+
         if (isDragging && lastMousePos) {
             const deltaX = event.clientX - lastMousePos.x
             const deltaY = event.clientY - lastMousePos.y
 
-            const sensitivity = 0.065
+            const sensitivity = 0.004
 
             const controls = World.SceneRenderer.currentCameraControls
             if (controls instanceof CustomOrbitControls) {
@@ -721,7 +822,6 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
             const startElement = dragStartElement
             const startPos = dragStartPos
-            let wasDrag = false
 
             if (startElement && startPos) {
                 const dragDistance = Math.sqrt(
@@ -730,14 +830,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
 
                 if (dragDistance < 3) {
                     handleElementClick(startElement)
-                } else {
-                    wasDrag = true
                 }
-            }
-
-            if (wasDrag) {
-                setJustFinishedDrag(true)
-                setTimeout(() => setJustFinishedDrag(false), 50)
             }
 
             setDragStartPos(null)
@@ -746,23 +839,16 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
     }
 
     const handleMouseEnter = (event: React.MouseEvent) => {
+        setCurrentMousePos({ x: event.clientX, y: event.clientY })
         const element = getClickedElement(event)
         setHoveredElement(element)
         updateHighlights(element)
     }
 
     const handleMouseLeave = () => {
+        setCurrentMousePos(null)
         setHoveredElement(null)
         updateHighlights(null)
-    }
-
-    const handleClick = (event: React.MouseEvent) => {
-        if (!isDragging && !justFinishedDrag) {
-            const element = getClickedElement(event)
-            if (element) {
-                handleElementClick(element)
-            }
-        }
     }
 
     const handleElementClick = (element: { type: string; index: number }) => {
@@ -837,8 +923,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
         const overlayX = (event.clientX - rect.left) / rect.width
         const overlayY = (event.clientY - rect.top) / rect.height
 
-        const offsetRatio = (containerSize - size) / (2 * containerSize)
-        const scaleRatio = size / containerSize
+        const offsetRatio = (containerSize - responsiveSize) / (2 * containerSize)
+        const scaleRatio = responsiveSize / containerSize
 
         const rendererX = offsetRatio + overlayX * scaleRatio
         const rendererY = offsetRatio + overlayY * scaleRatio
@@ -878,10 +964,10 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
             <Box
                 sx={{
                     position: "absolute",
-                    width: size,
-                    height: size,
-                    top: (containerSize - size) / 2,
-                    left: (containerSize - size) / 2,
+                    width: responsiveSize,
+                    height: responsiveSize,
+                    top: (containerSize - responsiveSize) / 2,
+                    left: (containerSize - responsiveSize) / 2,
                     pointerEvents: "auto",
                     cursor: getCursor(),
                     userSelect: "none",
@@ -891,7 +977,6 @@ const ViewCube: React.FC<ViewCubeProps> = ({ size = 100, position = { top: 20, r
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseLeave}
                 onMouseEnter={handleMouseEnter}
-                onClick={handleClick}
             />
         </Box>
     )

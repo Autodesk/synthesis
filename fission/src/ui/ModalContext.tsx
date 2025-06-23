@@ -3,6 +3,7 @@ import React, { createContext, useState, useEffect, useCallback, useContext, Rea
 type ModalControlContextType = {
     openModal: (modalId: string, onOpen?: () => void, onClose?: () => void) => void
     closeModal: () => void
+    activeModalId?: string | null
     children?: ReactNode
 }
 

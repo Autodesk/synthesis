@@ -69,7 +69,8 @@ import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
 
 function Synthesis() {
-    const { openModal, closeModal, getActiveModalElement, registerModal } = useModalManager(initialModals)
+    const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
+        useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
@@ -165,6 +166,7 @@ function Synthesis() {
                         openModal(modalId)
                     }}
                     closeModal={closeModal}
+                    activeModalId={activeModalId}
                 >
                     <PanelControlProvider
                         key={"panel-control-provider"}
