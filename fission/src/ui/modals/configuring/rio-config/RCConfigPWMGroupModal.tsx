@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
 import Checkbox from "@/components/Checkbox"

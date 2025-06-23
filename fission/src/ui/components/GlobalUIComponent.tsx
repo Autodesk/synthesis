@@ -1,5 +1,5 @@
-import { useModalControlContext } from "@/ui/ModalContext"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { useToastContext } from "@/ui/ToastContext"
 import { useEffect } from "react"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"

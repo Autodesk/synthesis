@@ -1,7 +1,7 @@
 import { ReactElement, useEffect, useRef, useState } from "react"
 import { alpha, styled } from "@mui/system"
-import { Button, Menu, MenuItem, Tooltip } from "@mui/material"
-import { colorNameToVar } from "../ThemeContext"
+import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
 

@@ -1,4 +1,6 @@
 import React, { useState } from "react"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label, { LabelSize } from "@/components/Label"
 import Button from "@/components/Button"
@@ -9,8 +11,6 @@ import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import Slider from "@/ui/components/Slider"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import { useModalControlContext } from "@/ui/ModalContext.tsx"
-import { usePanelControlContext } from "@/ui/PanelContext.tsx"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()

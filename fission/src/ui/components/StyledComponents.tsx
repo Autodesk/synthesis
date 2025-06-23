@@ -30,7 +30,7 @@ import {
     FaBug,
     FaAngleRight,
 } from "react-icons/fa6"
-import { colorNameToVar } from "../ThemeContext"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
