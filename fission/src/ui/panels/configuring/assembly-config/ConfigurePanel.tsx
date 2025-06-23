@@ -25,8 +25,10 @@ import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import Dropdown from "@/components/Dropdown"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -171,6 +173,14 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
                 "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
             ),
         ],
+        [
+            ConfigMode.ALLIANCE,
+            new ConfigModeSelectionOption(
+                "Alliance",
+                ConfigMode.ALLIANCE,
+                "Set the robot's alliance color for matches. (red or blue)"
+            ),
+        ],
     ])
 
     switch (assembly.brain?.brainType) {
@@ -308,6 +318,9 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
         }
         case ConfigMode.BRAIN: {
             return <BrainSelectionInterface selectedAssembly={assembly} />
+        }
+        case ConfigMode.ALLIANCE: {
+            return <AllianceSelectionInterface selectedAssembly={assembly} />
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)

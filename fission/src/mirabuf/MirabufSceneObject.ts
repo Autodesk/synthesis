@@ -38,6 +38,7 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { Alliance } from "@/systems/preferences/PreferenceTypes"
 
 const DEBUG_BODIES = false
 
@@ -68,6 +69,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _mirabufInstance: MirabufInstance
     private _mechanism: Mechanism
     private _brain: Brain | undefined
+    private _alliance: Alliance | undefined
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
@@ -144,10 +146,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._brain
     }
 
+    public get alliance() {
+        return this._alliance
+    }
+
     public set brain(brain: Brain | undefined) {
         this._brain = brain
         const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
         simLayer.SetBrain(brain)
+    }
+
+    public set alliance(alliance: Alliance | undefined) {
+        this._alliance = alliance
     }
 
     public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {

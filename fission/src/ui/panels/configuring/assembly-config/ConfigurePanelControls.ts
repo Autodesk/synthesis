@@ -10,6 +10,7 @@ export enum ConfigMode {
     MOVE,
     SIM,
     BRAIN,
+    ALLIANCE,
 }
 
 export type ConfigurePanelSettings = {
