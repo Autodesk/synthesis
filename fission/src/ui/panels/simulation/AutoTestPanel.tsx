@@ -15,6 +15,8 @@ import * as THREE from "three"
 import { AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { styled } from "@mui/system"
 import Input from "@/ui/components/Input"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 type StagingProps = {
     state: "Staging"
@@ -238,9 +240,8 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                 <ToggleButtonGroup
                     value={countdown}
                     exclusive
-                    onChange={(_, v) => {
-                        setCountdown(v)
-                    }}
+                    onChange={(_, v) => setCountdown(v)}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     className="self-center"
                 >
                     <ToggleButton value={5}>5</ToggleButton>
@@ -258,9 +259,8 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                 <ToggleButtonGroup
                     value={station}
                     exclusive
-                    onChange={(_, v) => {
-                        setStation(v)
-                    }}
+                    onChange={(_, v) => setStation(v)}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     className="self-center"
                 >
                     <RedAllianceToggleButton value={"red1"}>1</RedAllianceToggleButton>
