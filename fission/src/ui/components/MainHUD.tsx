@@ -12,6 +12,10 @@ import { Button } from "@mui/base"
 import { Box } from "@mui/material"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import { setAddToast } from "./GlobalUIControls"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import MatchMode from "@/systems/MatchMode"
+import { Global_AddToast } from "@/components/GlobalUIControls.ts"
 
 type ButtonProps = {
     value: string
@@ -25,6 +29,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={onClick}
+            onMouseDown={() => SoundPlayer.play(buttonPressSound)}
             className={`relative flex flex-row
                 cursor-pointer
                 bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
@@ -184,6 +189,21 @@ const MainHUD: React.FC = () => {
                         onClick={() => APS.requestAuthCode()}
                     />
                 )}
+                <MainHUDButton
+                    value={"Start Match Mode"}
+                    icon={SynthesisIcons.Gamepad}
+                    larger={true}
+                    onClick={() => {
+                        MatchMode.getInstance().isMatchEnabled()
+                            ? Global_AddToast?.(
+                                  "error",
+                                  "Match Mode Already Running",
+                                  "You can't start match mode if its already running"
+                              )
+                            : MatchMode.getInstance().start(openModal)
+                        setIsOpen(false)
+                    }}
+                />
             </motion.div>
         </>
     )

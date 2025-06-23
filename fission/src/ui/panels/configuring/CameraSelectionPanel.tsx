@@ -5,6 +5,8 @@ import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useCallback, useEffect, useState } from "react"
 import { AiOutlineCamera } from "react-icons/ai"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
@@ -58,6 +60,7 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
                     setCameraControls(v)
                 }}
+                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
             >
                 <ToggleButton value={"Orbit"}>Orbit</ToggleButton>
             </ToggleButtonGroup>

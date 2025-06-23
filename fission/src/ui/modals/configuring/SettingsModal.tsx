@@ -9,6 +9,8 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import Slider from "@/ui/components/Slider"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
@@ -44,6 +46,11 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
     )
+    const [muteAllSound, setMuteAllSound] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
+    )
+
+    const [sfxVolume, setSFXVolume] = useState<number>(PreferencesSystem.getGlobalPreference<number>("SFXVolume"))
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
@@ -51,6 +58,10 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
+        PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
+        PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
+
+        SoundPlayer.changeVolume() // Apply the new sound volume
 
         // Disabled until these settings are implemented
         /* PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
@@ -165,6 +176,23 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             setRenderScoreboard(checked)
                         }}
                     />
+                    <Checkbox
+                        label="Mute All Sound"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")}
+                        onClick={checked => {
+                            setMuteAllSound(checked)
+                        }}
+                    />
+                    <Slider
+                        min={0}
+                        max={100}
+                        value={sfxVolume}
+                        label={"SFX Volume"}
+                        format={{ maximumFractionDigits: 2 }}
+                        onChange={(_, value: number | number[]) => setSFXVolume(value as number)}
+                        tooltipText="Volume of sound effects (%)."
+                    />
+                    {Spacer(8)}
                 </Box>
             </div>
         </Modal>

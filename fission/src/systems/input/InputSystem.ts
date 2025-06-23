@@ -2,6 +2,7 @@ import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
+import MatchMode, { MatchModeType } from "@/systems/MatchMode"
 
 export type ModifierState = {
     alt: boolean
@@ -51,6 +52,11 @@ class ButtonInput extends Input {
      * @returns 1 if pressed, 0 if not pressed or not found.
      */
     getValue(useGamepad: boolean): number {
+        const matchModeType = MatchMode.getInstance().getMatchModeType()
+        if (matchModeType === MatchModeType.MatchEnded || matchModeType === MatchModeType.Autonomous) {
+            return 0
+        }
+
         // Gamepad button input
         if (useGamepad) {
             return InputSystem.isGamepadButtonPressed(this.gamepadButton) ? 1 : 0
@@ -124,6 +130,11 @@ class AxisInput extends Input {
      * @returns {number} GAMEPAD: a number between -1 and 1 with a deadband in the middle.
      */
     getValue(useGamepad: boolean, useTouchControls: boolean): number {
+        const matchModeType = MatchMode.getInstance().getMatchModeType()
+        if (matchModeType === MatchModeType.MatchEnded || matchModeType === MatchModeType.Autonomous) {
+            return 0
+        }
+
         if (useGamepad) {
             // Gamepad joystick axis
             if (!this.useGamepadButtons)

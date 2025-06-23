@@ -6,24 +6,18 @@ import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import { usePanelControlContext } from "@/ui/PanelContext"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import MatchMode, { UpdateTimeLeft, MatchModeType } from "@/systems/MatchMode"
+import { Spacer } from "@/components/StyledComponents"
+
+function showTime(): boolean {
+    return MatchMode.getInstance().getMatchModeType() !== MatchModeType.Sandbox
+}
 
 const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [redScore, setRedScore] = useState<number>(SimulationSystem.redScore)
     const [blueScore, setBlueScore] = useState<number>(SimulationSystem.blueScore)
-    const [initialTime] = useState<number>(-1)
-    const [startTime] = useState<number>(Date.now())
-    const [time, setTime] = useState<number>(-1)
+    const [time, setTime] = useState<string>("0")
     const { closePanel } = usePanelControlContext()
-
-    // probably useless code because the time left should be sent by Synthesis and not calculated here
-    // const startTimer = useCallback(
-    //     async (t: number) => {
-    //         setInitialTime(t)
-    //         setTime(t)
-    //         setStartTime(Date.now())
-    //     },
-    //     [setInitialTime, setTime, setStartTime]
-    // )
 
     const onScoreChange = useCallback(
         (e: OnScoreChangedEvent) => {
@@ -31,6 +25,13 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             setBlueScore(e.blue)
         },
         [setRedScore, setBlueScore]
+    )
+
+    const onTimeLeftChange = useCallback(
+        (e: UpdateTimeLeft) => {
+            setTime(e.autonomousTime)
+        },
+        [setTime]
     )
 
     const onRenderChange = useCallback(
@@ -43,25 +44,10 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     )
 
     useEffect(() => {
-        const interval: NodeJS.Timeout = setInterval(() => {
-            const elapsed = Math.round((Date.now() - startTime) / 1_000)
-            if (initialTime > 0) {
-                if (elapsed <= initialTime) setTime(initialTime - elapsed)
-                else {
-                    clearInterval(interval)
-                }
-            }
-        })
-    }, [initialTime, time, startTime])
-
-    useEffect(() => {
         OnScoreChangedEvent.AddListener(onScoreChange)
+        UpdateTimeLeft.AddListener(onTimeLeftChange)
         PreferencesSystem.addEventListener(onRenderChange)
     })
-
-    // useEffect(() => {
-    //     if (initialTime == -1) startTimer(15)
-    // }, [initialTime, startTimer])
 
     return (
         <Panel
@@ -72,12 +58,14 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             acceptEnabled={false}
             contentClassName="mx-0 w-min"
         >
-            {/* {time >= 0 && (
+            {showTime() ? (
                 <div className="flex flex-row justify-center pt-4">
-                    <Label size={LabelSize.XL}>{time.toFixed(0)}</Label>
+                    <Label size={LabelSize.XL}>{time}</Label>
                 </div>
-            )} */}
-            <Stack direction={StackDirection.Horizontal} className="px-4 pb-4 pt-4" spacing={16}>
+            ) : (
+                Spacer(0)
+            )}
+            <Stack direction={StackDirection.Horizontal} className="px-4 pb-4 pt-1" spacing={16}>
                 <div className="flex flex-col items-center text-center justify-center w-20 h-20 rounded-lg bg-match-red-alliance">
                     <Label size={LabelSize.Small}>RED</Label>
                     <Label size={LabelSize.XL}>{redScore}</Label>

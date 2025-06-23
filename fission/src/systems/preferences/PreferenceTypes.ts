@@ -16,6 +16,8 @@ export type GlobalPreference =
     | "SubsystemGravity"
     | "TouchControls"
     | "SimAutoReconnect"
+    | "MuteAllSound"
+    | "SFXVolume"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -38,6 +40,8 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     SubsystemGravity: false,
     TouchControls: false,
     SimAutoReconnect: false,
+    MuteAllSound: false,
+    SFXVolume: 25,
 }
 
 export type GraphicsPreferences = {
