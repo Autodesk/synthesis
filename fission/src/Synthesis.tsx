@@ -184,7 +184,7 @@ function Synthesis() {
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
-                                <div className="fixed w-full h-full left-0 top-0" key={"modal-element"}>
+                                <div className="absolute w-full h-full left-0 top-0" key={"modal-element"}>
                                     {modalElement}
                                 </div>
                             )}
