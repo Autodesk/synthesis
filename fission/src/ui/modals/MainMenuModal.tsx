@@ -2,7 +2,7 @@ import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "../components/StyledComponents"
 import Button from "@/components/Button.tsx"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "../helpers/UseModalManager"
 import { Global_AddToast } from "@/components/GlobalUIControls.ts"
 
 const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () => void }> = ({

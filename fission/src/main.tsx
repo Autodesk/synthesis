@@ -1,5 +1,6 @@
 import ReactDOM from "react-dom/client"
-import { Theme, ThemeProvider } from "@/ui/ThemeContext"
+import { ThemeProvider } from "@/ui/ThemeContext"
+import { Theme } from "@/ui/helpers/UseThemeHelpers"
 import Synthesis from "./Synthesis"
 import "./index.css"
 import APS from "./aps/APS"
