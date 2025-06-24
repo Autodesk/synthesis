@@ -46,10 +46,12 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
     )
+    const [showViewCube, setShowViewCube] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
+    )
     const [muteAllSound, setMuteAllSound] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
     )
-
     const [sfxVolume, setSFXVolume] = useState<number>(PreferencesSystem.getGlobalPreference<number>("SFXVolume"))
 
     const saveSettings = () => {
@@ -58,6 +60,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
+        PreferencesSystem.setGlobalPreference<boolean>("ShowViewCube", showViewCube)
         PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
         PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
 
@@ -175,6 +178,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         onClick={checked => {
                             setRenderScoreboard(checked)
                         }}
+                    />
+                    <Checkbox
+                        label="Show View Cube"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")}
+                        onClick={checked => {
+                            setShowViewCube(checked)
+                        }}
+                        tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
                     />
                     <Checkbox
                         label="Mute All Sound"
