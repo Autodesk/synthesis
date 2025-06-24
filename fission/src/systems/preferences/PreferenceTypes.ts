@@ -10,6 +10,7 @@ export type GlobalPreference =
     | "ReportAnalytics"
     | "UseMetric"
     | "RenderScoringZones"
+    | "RenderProtectedZones"
     | "InputSchemes"
     | "RenderSceneTags"
     | "RenderScoreboard"
@@ -33,6 +34,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
+    RenderProtectedZones: true,
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
@@ -126,10 +128,21 @@ export type ScoringZonePreferences = {
     deltaTransformation: number[]
 }
 
+export type ProtectedZonePreferences = {
+    name: string
+    alliance: Alliance
+    penaltyPoints: number
+    parentNode: string | undefined
+    requireRobotContact: boolean
+
+    deltaTransformation: number[]
+}
+
 export type FieldPreferences = {
     // TODO: implement this
     defaultSpawnLocation: Vector3Tuple
     scoringZones: ScoringZonePreferences[]
+    protectedZones: ProtectedZonePreferences[]
 }
 
 export function DefaultRobotPreferences(): RobotPreferences {
@@ -153,5 +166,5 @@ export function DefaultRobotPreferences(): RobotPreferences {
 }
 
 export function DefaultFieldPreferences(): FieldPreferences {
-    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [] }
+    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [], protectedZones: [] }
 }

@@ -37,6 +37,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [renderScoringZones, setRenderScoringZones] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
     )
+    const [renderProtectedZones, setRenderProtectedZones] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("RenderProtectedZones")
+    )
     const [renderSceneTags, setRenderSceneTags] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")
     )
@@ -55,6 +58,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
+        PreferencesSystem.setGlobalPreference<boolean>("RenderProtectedZones", renderProtectedZones)
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
@@ -158,6 +162,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             setRenderScoringZones(checked)
                         }}
                         tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
+                    />
+                    <Checkbox
+                        label="Show Protected Zones"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderProtectedZones")}
+                        onClick={checked => {
+                            setRenderProtectedZones(checked)
+                        }}
+                        tooltipText="If disabled, protected zones will not be visible but will continue to function the same."
                     />
                     <Checkbox
                         label="Show Scene Tags"

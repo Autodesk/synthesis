@@ -14,6 +14,7 @@ import {
     FieldPreferences,
     IntakePreferences,
     ScoringZonePreferences,
+    ProtectedZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
@@ -21,6 +22,7 @@ import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import Brain from "@/systems/simulation/Brain"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -84,6 +86,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _intakeSensor?: IntakeSensorSceneObject
     private _ejectable?: EjectableSceneObject
     private _scoringZones: ScoringZoneSceneObject[] = []
+    private _protectedZones: ProtectedZoneSceneObject[] = []
 
     private _nameTag: SceneOverlayTag | undefined
 
@@ -249,6 +252,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         // Intake
         this.UpdateIntakeSensor()
         this.UpdateScoringZones()
+        this.UpdateProtectedZones()
 
         setSpotlightAssembly(this)
 
@@ -305,6 +309,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
         this._scoringZones = []
+
+        this._protectedZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._protectedZones = []
 
         this._mechanism.nodeToBody.forEach(bodyId => {
             World.PhysicsSystem.RemoveBodyAssociation(bodyId)
@@ -494,11 +501,41 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
+    public UpdateProtectedZones(render?: boolean) {
+        this._protectedZones
+            .filter(zone => zone.id != -1)
+            .forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
+        this._protectedZones = []
+
+        if (this.fieldPreferences && this.fieldPreferences.protectedZones) {
+            for (let i = 0; i < this.fieldPreferences.protectedZones.length; i++) {
+                const newZone = new ProtectedZoneSceneObject(
+                    this,
+                    i,
+                    render ?? PreferencesSystem.getGlobalPreference("RenderProtectedZones")
+                )
+                this._protectedZones.push(newZone)
+                World.SceneRenderer.RegisterSceneObject(newZone)
+            }
+        }
+    }
+
     public RemoveScoringZoneObject(zone: ScoringZonePreferences) {
         const index = this._fieldPreferences?.scoringZones?.indexOf(zone) ?? -1
         if (index == -1) return
 
         const zoneObject = this._scoringZones[index]
+        if (zoneObject == null) return
+
+        World.SceneRenderer.RemoveSceneObject(zoneObject.id)
+        zoneObject.id = -1
+    }
+
+    public RemoveProtectedZoneObject(zone: ProtectedZonePreferences) {
+        const index = this._fieldPreferences?.protectedZones?.indexOf(zone) ?? -1
+        if (index == -1) return
+
+        const zoneObject = this._protectedZones[index]
         if (zoneObject == null) return
 
         World.SceneRenderer.RemoveSceneObject(zoneObject.id)

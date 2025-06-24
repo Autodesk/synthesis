@@ -7,6 +7,7 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { MouseEvent, useEffect, useMemo, useReducer, useState } from "react"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -25,7 +26,6 @@ import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
-import Dropdown from "@/components/Dropdown"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
@@ -220,6 +220,14 @@ const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMod
             "Define and manage zones on the field where robots can earn points during simulation."
         ),
     ],
+    [
+        ConfigMode.PROTECTED_ZONES,
+        new ConfigModeSelectionOption(
+            "Protected Zones",
+            ConfigMode.PROTECTED_ZONES,
+            "Define and manage protected zones on the field where robots can not enter."
+        ),
+    ],
 ])
 
 interface ConfigModeSelectionProps {
@@ -299,6 +307,14 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
                 return <Label>ERROR: Field does not contain scoring zone configuration!</Label>
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
+        }
+        case ConfigMode.PROTECTED_ZONES: {
+            const zones = assembly.fieldPreferences?.protectedZones ?? []
+            if (zones == undefined) {
+                console.error("Field does not contain protected zone preferences!")
+                return <Label>ERROR: Field does not contain protected zone configuration!</Label>
+            }
+            return <ConfigureProtectedZonesInterface selectedField={assembly} initialZones={zones} />
         }
         case ConfigMode.MOVE: {
             return (

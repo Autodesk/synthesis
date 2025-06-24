@@ -7,6 +7,7 @@ export enum ConfigMode {
     CONTROLS,
     SEQUENTIAL,
     SCORING_ZONES,
+    PROTECTED_ZONES,
     MOVE,
     SIM,
     BRAIN,
