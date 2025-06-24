@@ -26,7 +26,7 @@ import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
-import { FieldPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
+import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem";
 
 /** Option for selecting a robot of field */
@@ -305,17 +305,15 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
 
 
 const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    type DraftPrefs = Partial<RobotPreferences & FieldPreferences>
     const originalRobotPrefs = useRef<RobotPreferences | null>(null);
     const originalFieldPrefs = useRef<FieldPreferences | null>(null);
+    const originalMotorPrefs = useRef<MotorPreferences | null>(null);
 
     const { openPanel, closePanel } = usePanelControlContext()
     const [configurationType, setConfigurationType] = useState<ConfigurationType>(getConfigurationType())
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
-
-    const [draftPrefs, setDraftPrefs] = useState<DraftPrefs>({})
 
     useEffect(() => {
         const settings = popConfigurePanelSettings()
@@ -328,6 +326,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
                 const robotPrefs = PreferencesSystem.getRobotPreferences(name);
                 const fieldPrefs = PreferencesSystem.getFieldPreferences(name);
+                const motorPrefs = PreferencesSystem.getMotorPreferences(name);
 
                 if (robotPrefs) {
                     originalRobotPrefs.current = structuredClone(robotPrefs);
@@ -335,11 +334,9 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 if (fieldPrefs) {
                     originalFieldPrefs.current = structuredClone(fieldPrefs);
                 }
-
-                setDraftPrefs({
-                ...(robotPrefs ? structuredClone(robotPrefs) : {}),
-                ...(fieldPrefs ? structuredClone(fieldPrefs) : {}),
-                });
+                if (motorPrefs) {
+                    originalMotorPrefs.current = structuredClone(motorPrefs);
+                }
             }
         }
 
@@ -361,6 +358,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
                 originalRobotPrefs.current = null;
                 originalFieldPrefs.current = null;
+                originalMotorPrefs.current = null;
 
                 // Save the current panel state
                 setSelectedConfigurationType(configurationType)
@@ -377,12 +375,15 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     if (originalFieldPrefs.current) {
                         PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
                     }
+                    if (originalMotorPrefs.current) {
+                        PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
+                    }
 
                     selectedAssembly.getPreferences()
                 }
                 originalRobotPrefs.current = null
                 originalFieldPrefs.current = null
-                setDraftPrefs({})
+                originalMotorPrefs.current = null
             }}
             acceptName="Save"
             cancelName="Cancel"
