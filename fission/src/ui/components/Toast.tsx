@@ -6,7 +6,7 @@ import { BiSolidErrorCircle } from "react-icons/bi"
 
 const TOAST_TIMEOUT: number = 5_000
 
-const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
+const Toast: React.FC<ToastData> = ({ id, toastType, title, description }) => {
     const { removeToast } = useToastContext()
 
     useEffect(() => {
@@ -22,7 +22,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
     let icon: ReactElement
     let className: string
 
-    switch (type) {
+    switch (toastType) {
         case "info":
             icon = <AiOutlineInfoCircle size={48} className="h-full w-full text-main-text" />
             className = "bg-toast-info"
@@ -39,7 +39,7 @@ const Toast: React.FC<ToastData> = ({ id, type, title, description }) => {
 
     return (
         <div
-            className={`toast toast-${type.toLowerCase()} aspect-toast relative flex flex-row ${className} px-4 py-2 content-center justify-between items-center rounded-lg shadow-md shadow-[rgba(0,0,0,0.5)]`}
+            className={`toast toast-${toastType.toLowerCase()} aspect-toast relative flex flex-row ${className} px-4 py-2 content-center justify-between items-center rounded-lg shadow-md shadow-[rgba(0,0,0,0.5)]`}
         >
             <div className="w-10 h-10 mr-1">{icon}</div>
             <div className="toast-content w-auto ml-2 text-main-text">
