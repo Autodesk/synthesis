@@ -77,7 +77,6 @@ class SimulationSystem extends WorldSystem {
     public static AddPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
         const currentRobotScore = this.perRobotScore.get(robot) ?? 0
         this.perRobotScore.set(robot, currentRobotScore + scoreToAdd)
-        console.log(`Robot ${robot.assemblyName} scored ${scoreToAdd}. Total: ${this.perRobotScore.get(robot)}`)
     }
 
     public static RobotPenalty(robot: MirabufSceneObject, penaltyPoints: number, penaltyInfo: string): void {

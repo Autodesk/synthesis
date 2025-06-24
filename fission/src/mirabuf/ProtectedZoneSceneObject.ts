@@ -112,6 +112,36 @@ class ProtectedZoneSceneObject extends SceneObject {
                     } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
                         this.ZoneCollision(body1)
                     }
+
+                    // If the preference is set to require robot contact, we want to penalize robots here
+                    if (!this._prefs?.requireRobotContact) return
+                    const [collisionObjectBody1, collisionObjectBody2] = [body1, body2].map(body => {
+                        const associate = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate | undefined
+                        return associate?.sceneObject as MirabufSceneObject | undefined
+                    })
+                    if (!collisionObjectBody1 || !collisionObjectBody2) return
+                    // Makes sure that both robots are from opposing alliances
+                    if (collisionObjectBody1.alliance === collisionObjectBody2.alliance) return
+                    // Ensure that both bodies are robots are inside the zone
+                    if (
+                        (this._robotsInside.get(collisionObjectBody1) ?? 0 - Date.now() > 500) &&
+                        (this._robotsInside.get(collisionObjectBody2) ?? 0 - Date.now() > 500)
+                    ) {
+                        // Penalize the robot that entered the opposing alliance protected zone
+                        if (collisionObjectBody1.alliance === this._prefs?.alliance) {
+                            SimulationSystem.RobotPenalty(
+                                collisionObjectBody2,
+                                this._prefs?.penaltyPoints ?? 0,
+                                `Entered protected zone`
+                            )
+                        } else {
+                            SimulationSystem.RobotPenalty(
+                                collisionObjectBody1,
+                                this._prefs?.penaltyPoints ?? 0,
+                                `Entered protected zone`
+                            )
+                        }
+                    }
                 }
                 OnContactAddedEvent.AddListener(this._collision)
 
@@ -196,7 +226,7 @@ class ProtectedZoneSceneObject extends SceneObject {
         const collisionObject = associate.sceneObject as MirabufSceneObject
         if (collisionObject.miraType === MiraType.ROBOT && collisionObject.alliance !== this._prefs?.alliance) {
             const timeInside = this._robotsInside.get(collisionObject) ?? 0
-            if (Date.now() - timeInside > 500) {
+            if (!this._prefs?.requireRobotContact && Date.now() - timeInside > 500) {
                 SimulationSystem.RobotPenalty(
                     collisionObject,
                     this._prefs?.penaltyPoints ?? 0,
