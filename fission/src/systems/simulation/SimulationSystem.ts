@@ -18,14 +18,6 @@ import EjectorDriver from "./driver/EjectorDriver"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import { Global_AddToast } from "@/ui/components/GlobalUIControls"
 
-export enum PenaltyType {
-    MinorFoul = "MinorFoul",
-    MajorFoul = "MajorFoul",
-    TechnicalFoul = "TechnicalFoul",
-    YellowCard = "YellowCard",
-    RedCard = "RedCard",
-}
-
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
     public static perRobotScore: Map<MirabufSceneObject, number> = new Map()
