@@ -17,7 +17,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 interface DragTarget {
     bodyId: Jolt.BodyID
     initialPosition: THREE.Vector3
-    offset: THREE.Vector3
+    localOffset: THREE.Vector3 // Offset in body's local coordinate system
     mass: number
     dragDepth: number
     physicsDisabled: boolean
@@ -34,10 +34,43 @@ interface CameraTransition {
 }
 
 class DragModeSystem extends WorldSystem {
+    // Drag force constants - tune these to reduce wobble and improve stability
+    private static readonly DRAG_FORCE_CONSTANTS = {
+        // Linear motion control
+        MAX_DRAG_SPEED: 15.0, // Maximum speed when dragging (lower = more stable, higher = more responsive)
+        DAMPING_ZONE: 2, // Distance where speed starts to ramp down (larger = smoother approach)
+        FORCE_MULTIPLIER_BASE: 15.0, // Base force multiplier per unit mass (lower = less aggressive)
+        FORCE_MULTIPLIER_MAX: 500.0, // Maximum force regardless of mass (lower = more stable)
+
+        // Angular damping control
+        ANGULAR_DAMPING_BASE: 3.0, // Base angular damping per unit mass (higher = less rotation wobble)
+        ANGULAR_DAMPING_MAX: 500.0, // Maximum angular damping (higher = more rotation stability)
+
+        // Braking when stationary
+        LINEAR_BRAKING_BASE: 5.0, // Linear braking force per unit mass (higher = stops faster)
+        LINEAR_BRAKING_MAX: 200.0, // Maximum linear braking force
+        ANGULAR_BRAKING_BASE: 2.0, // Angular braking force per unit mass (higher = stops rotation faster)
+        ANGULAR_BRAKING_MAX: 5.0, // Maximum angular braking force
+
+        // Gravity compensation
+        GRAVITY_MAGNITUDE: 11, // Gravity acceleration (m/s/s)
+        GRAVITY_COMPENSATION: true, // Whether to compensate for gravity during drag
+
+        // Precision and sensitivity
+        MINIMUM_DISTANCE_THRESHOLD: 0.02, // Minimum distance to apply forces (smaller = more precision)
+        WHEEL_SCROLL_SENSITIVITY: -0.01, // Mouse wheel scroll sensitivity for Z-axis
+    } as const
+
     private _enabled: boolean = false
     private _dragTarget: DragTarget | undefined
     private _isDragging: boolean = false
     private _lastMousePosition: [number, number] = [0, 0]
+
+    // Debug visualization
+    private _debugSphere: THREE.Mesh | undefined
+
+    // Wheel event handling for Z-axis dragging
+    private _wheelEventHandler: ((event: WheelEvent) => void) | undefined
 
     private _originalInteractionStart: ((i: InteractionStart) => void) | undefined
     private _originalInteractionMove: ((i: InteractionMove) => void) | undefined
@@ -60,6 +93,14 @@ class DragModeSystem extends WorldSystem {
 
         this._handleDisableDragMode = () => {
             this.enabled = false
+        }
+
+        // Create wheel event handler for Z-axis dragging
+        this._wheelEventHandler = (event: WheelEvent) => {
+            if (this._isDragging && this._dragTarget) {
+                event.preventDefault()
+                this.handleWheelDuringDrag(event)
+            }
         }
 
         window.addEventListener("disableDragMode", this._handleDisableDragMode)
@@ -109,7 +150,45 @@ class DragModeSystem extends WorldSystem {
             World.SceneRenderer.currentCameraControls.enabled = true
         }
 
+        // Clean up debug sphere
+        this.removeDebugSphere()
+
         window.removeEventListener("disableDragMode", this._handleDisableDragMode)
+    }
+
+    private createDebugSphere(position: THREE.Vector3): void {
+        // Remove existing debug sphere if any
+        this.removeDebugSphere()
+
+        // Create a small red sphere to visualize the raycast hit point
+        const geometry = new THREE.SphereGeometry(0.05, 16, 16)
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xff0000,
+            transparent: true,
+            opacity: 0.8,
+        })
+        this._debugSphere = new THREE.Mesh(geometry, material)
+        this._debugSphere.position.copy(position)
+
+        // Add to the scene
+        World.SceneRenderer.scene.add(this._debugSphere)
+    }
+
+    private updateDebugSphere(position: THREE.Vector3): void {
+        if (this._debugSphere) {
+            this._debugSphere.position.copy(position)
+        }
+    }
+
+    private removeDebugSphere(): void {
+        if (this._debugSphere) {
+            World.SceneRenderer.scene.remove(this._debugSphere)
+            this._debugSphere.geometry.dispose()
+            if (this._debugSphere.material instanceof THREE.Material) {
+                this._debugSphere.material.dispose()
+            }
+            this._debugSphere = undefined
+        }
     }
 
     private hookInteractionHandlers(): void {
@@ -124,15 +203,26 @@ class DragModeSystem extends WorldSystem {
         screenHandler.interactionStart = (interaction: InteractionStart) => this.onInteractionStart(interaction)
         screenHandler.interactionMove = (interaction: InteractionMove) => this.onInteractionMove(interaction)
         screenHandler.interactionEnd = (interaction: InteractionEnd) => this.onInteractionEnd(interaction)
+
+        // Add wheel event listener for Z-axis dragging
+        if (this._wheelEventHandler) {
+            handler.addEventListener("wheel", this._wheelEventHandler, { passive: false })
+        }
     }
 
     private unhookInteractionHandlers(): void {
+        const handler = World.SceneRenderer.renderer.domElement.parentElement?.querySelector("canvas")
         const screenHandler = World.SceneRenderer.screenInteractionHandler
         if (!screenHandler) return
 
         if (this._originalInteractionStart) screenHandler.interactionStart = this._originalInteractionStart
         if (this._originalInteractionMove) screenHandler.interactionMove = this._originalInteractionMove
         if (this._originalInteractionEnd) screenHandler.interactionEnd = this._originalInteractionEnd
+
+        // Remove wheel event listener
+        if (handler && this._wheelEventHandler) {
+            handler.removeEventListener("wheel", this._wheelEventHandler)
+        }
     }
 
     private onInteractionStart(interaction: InteractionStart): void {
@@ -202,6 +292,13 @@ class DragModeSystem extends WorldSystem {
 
         const bodyPos = body.GetPosition()
         const bodyPosition = new THREE.Vector3(bodyPos.GetX(), bodyPos.GetY(), bodyPos.GetZ())
+        const bodyRotation = body.GetRotation()
+        const bodyQuaternion = new THREE.Quaternion(
+            bodyRotation.GetX(),
+            bodyRotation.GetY(),
+            bodyRotation.GetZ(),
+            bodyRotation.GetW()
+        )
 
         const motionProperties = body.GetMotionProperties()
         const mass = 1.0 / motionProperties.GetInverseMass()
@@ -211,13 +308,17 @@ class DragModeSystem extends WorldSystem {
         const cameraDirection = new THREE.Vector3(0, 0, -1).applyQuaternion(camera.quaternion)
         const dragDepth = cameraToHit.dot(cameraDirection)
 
+        // Convert the hit point offset to the body's local coordinate system
+        const worldOffset = hitPoint.clone().sub(bodyPosition)
+        const localOffset = worldOffset.clone().applyQuaternion(bodyQuaternion.clone().invert())
+
         const association = World.PhysicsSystem.GetBodyAssociation(bodyId) as RigidNodeAssociate
         const isRobot = association?.sceneObject?.miraType === MiraType.ROBOT
 
         this._dragTarget = {
             bodyId: bodyId,
             initialPosition: bodyPosition.clone(),
-            offset: hitPoint.clone().sub(bodyPosition),
+            localOffset: localOffset,
             mass: mass,
             dragDepth: dragDepth,
             physicsDisabled: isRobot,
@@ -225,6 +326,9 @@ class DragModeSystem extends WorldSystem {
 
         this._isDragging = true
         this._lastMousePosition = mousePos
+
+        // Create debug sphere at the exact hit point
+        this.createDebugSphere(hitPoint)
 
         if (isRobot) {
             World.PhysicsSystem.DisablePhysicsForBody(bodyId)
@@ -275,6 +379,9 @@ class DragModeSystem extends WorldSystem {
 
         this._isDragging = false
         this._dragTarget = undefined
+
+        // Remove debug sphere when dragging stops
+        this.removeDebugSphere()
 
         if (shouldTransition) {
             this.startCameraTransition(targetSceneObject)
@@ -361,6 +468,17 @@ class DragModeSystem extends WorldSystem {
 
         const currentPos = body.GetPosition()
         const currentPosition = new THREE.Vector3(currentPos.GetX(), currentPos.GetY(), currentPos.GetZ())
+        const currentRotation = body.GetRotation()
+        const currentQuaternion = new THREE.Quaternion(
+            currentRotation.GetX(),
+            currentRotation.GetY(),
+            currentRotation.GetZ(),
+            currentRotation.GetW()
+        )
+
+        // Convert the local offset back to world coordinates based on current body rotation
+        const currentWorldOffset = this._dragTarget.localOffset.clone().applyQuaternion(currentQuaternion)
+        const currentDragPointWorld = currentPosition.clone().add(currentWorldOffset)
 
         const camera = World.SceneRenderer.mainCamera
 
@@ -391,14 +509,19 @@ class DragModeSystem extends WorldSystem {
             intersectionPoint.copy(camera.position).add(direction.multiplyScalar(fallbackDistance))
         }
 
-        const targetWorldPos = intersectionPoint.sub(this._dragTarget.offset)
+        // The target is where we want the drag point (on the robot) to be
+        const targetDragPointWorld = intersectionPoint
 
-        const displacement = targetWorldPos.sub(currentPosition)
+        // Update debug sphere to show where the drag point currently is on the robot
+        this.updateDebugSphere(currentDragPointWorld)
+
+        // Calculate the displacement needed to move the current drag point to the target
+        const displacement = targetDragPointWorld.clone().sub(currentDragPointWorld)
         const distance = displacement.length()
 
-        if (distance > 0.001) {
-            const maxSpeed = 15.0
-            const dampingZone = 0.5
+        if (distance > DragModeSystem.DRAG_FORCE_CONSTANTS.MINIMUM_DISTANCE_THRESHOLD) {
+            const maxSpeed = DragModeSystem.DRAG_FORCE_CONSTANTS.MAX_DRAG_SPEED
+            const dampingZone = DragModeSystem.DRAG_FORCE_CONSTANTS.DAMPING_ZONE
 
             let targetSpeed: number
             if (distance > dampingZone) {
@@ -417,14 +540,40 @@ class DragModeSystem extends WorldSystem {
 
             const mass = this._dragTarget.mass
 
-            const forceMultiplier = Math.min(mass * 30.0, 500.0)
+            const forceMultiplier = Math.min(
+                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.FORCE_MULTIPLIER_BASE,
+                DragModeSystem.DRAG_FORCE_CONSTANTS.FORCE_MULTIPLIER_MAX
+            )
             const forceNeeded = velocityError.multiplyScalar(forceMultiplier)
 
+            // Add gravity compensation to counteract downward pull
+            if (DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_COMPENSATION) {
+                const gravityCompensation = new THREE.Vector3(
+                    0,
+                    mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE,
+                    0
+                )
+                forceNeeded.add(gravityCompensation)
+            }
+
+            // Apply force at the center of mass and calculate the torque manually
+            // to simulate applying force at the drag point
             const joltForce = ThreeVector3_JoltVec3(forceNeeded)
             body.AddForce(joltForce)
 
+            // Calculate torque to simulate force applied at the drag point
+            // Use the current world offset (which rotates with the body)
+            const leverArm = currentWorldOffset // vector from COM to drag point in world coordinates
+            const torque = leverArm.cross(forceNeeded) // Cross product gives us the torque
+            const joltTorque = ThreeVector3_JoltVec3(torque)
+            body.AddTorque(joltTorque)
+
+            // Reduce angular damping since we want the natural rotation from the applied force
             const angularVel = body.GetAngularVelocity()
-            const angularDampingStrength = Math.min(mass * 3.0, 100.0)
+            const angularDampingStrength = Math.min(
+                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_DAMPING_BASE,
+                DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_DAMPING_MAX
+            )
             const angularDampingTorque = new JOLT.Vec3(
                 -angularVel.GetX() * angularDampingStrength,
                 -angularVel.GetY() * angularDampingStrength,
@@ -432,19 +581,32 @@ class DragModeSystem extends WorldSystem {
             )
             body.AddTorque(angularDampingTorque)
         } else {
+            // When close to target, apply braking forces and gravity compensation
             const currentVel = body.GetLinearVelocity()
             const mass = this._dragTarget.mass
-            const brakingStrength = Math.min(mass * 5.0, 200.0)
+            const brakingStrength = Math.min(
+                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.LINEAR_BRAKING_BASE,
+                DragModeSystem.DRAG_FORCE_CONSTANTS.LINEAR_BRAKING_MAX
+            )
             const brakingForce = new JOLT.Vec3(
                 -currentVel.GetX() * brakingStrength,
                 -currentVel.GetY() * brakingStrength,
                 -currentVel.GetZ() * brakingStrength
             )
 
+            // Add gravity compensation to prevent falling when stationary
+            if (DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_COMPENSATION) {
+                const gravityCompensationY = mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE
+                brakingForce.SetY(brakingForce.GetY() + gravityCompensationY)
+            }
+
             body.AddForce(brakingForce)
 
             const angularVel = body.GetAngularVelocity()
-            const angularBrakingStrength = Math.min(mass * 5.0, 150.0)
+            const angularBrakingStrength = Math.min(
+                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_BRAKING_BASE,
+                DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_BRAKING_MAX
+            )
             const angularBrakingTorque = new JOLT.Vec3(
                 -angularVel.GetX() * angularBrakingStrength,
                 -angularVel.GetY() * angularBrakingStrength,
@@ -452,6 +614,19 @@ class DragModeSystem extends WorldSystem {
             )
             body.AddTorque(angularBrakingTorque)
         }
+    }
+
+    private handleWheelDuringDrag(event: WheelEvent): void {
+        if (!this._dragTarget || !this._isDragging) return
+
+        // Adjust drag depth based on wheel delta
+        // Positive deltaY = wheel scroll down = move away from camera (increase depth)
+        // Negative deltaY = wheel scroll up = move toward camera (decrease depth)
+        const depthChange = event.deltaY * DragModeSystem.DRAG_FORCE_CONSTANTS.WHEEL_SCROLL_SENSITIVITY
+        this._dragTarget.dragDepth += depthChange
+
+        // Clamp drag depth to reasonable bounds
+        this._dragTarget.dragDepth = Math.max(0.5, Math.min(100.0, this._dragTarget.dragDepth))
     }
 }
 
