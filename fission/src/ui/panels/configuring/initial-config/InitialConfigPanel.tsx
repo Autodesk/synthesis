@@ -15,7 +15,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
-import Dropdown from "@/components/Dropdown"
+import Button from "@/components/Button"
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
@@ -100,12 +100,13 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 {targetAssembly?.miraType === MiraType.ROBOT ? (
                     <div>
                         <Label>Alliance: </Label>
-                        <Dropdown
-                            options={["red", "blue"]}
-                            defaultValue="red"
-                            onSelect={alliance => {
-                                setAlliance(alliance as "red" | "blue")
+                        {/** Set the alliance color */}
+                        <Button
+                            value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
+                            onClick={() => {
+                                setAlliance(alliance == "blue" ? "red" : "blue")
                             }}
+                            colorOverrideClass={`bg-match-${alliance}-alliance`}
                         />
                     </div>
                 ) : (
