@@ -47,6 +47,10 @@ export function ThreeVector3_JoltRVec3(vec: THREE.Vector3) {
     return new JOLT.RVec3(vec.x, vec.y, vec.z)
 }
 
+export function JoltRVec3_ThreeVector3(vec: Jolt.RVec3): THREE.Vector3 {
+    return new THREE.Vector3(vec.GetX(), vec.GetY(), vec.GetZ())
+}
+
 export function ThreeMatrix4_JoltMat44(m: THREE.Matrix4) {
     const jMat = new JOLT.Mat44()
     const threeArr = m.toArray()

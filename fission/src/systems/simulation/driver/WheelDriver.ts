@@ -4,6 +4,9 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import { SimType } from "../wpilib_brain/WPILibBrain"
 import { mirabuf } from "@/proto/mirabuf"
 import { NoraNumber, NoraTypes } from "../Nora"
+import World from "@/systems/World"
+import { JoltRVec3_ThreeVector3, JoltVec3_JoltRVec3, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
+import THREE from "three"
 
 const LATERIAL_FRICTION = 1.0
 const LONGITUDINAL_FRICTION = 1.0
@@ -64,6 +67,9 @@ class WheelDriver extends Driver {
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
         this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION * 10)
         this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION * 10)
+
+        // const wheelUp = this._wheel.GetSettings().get_mWheelForward()
+        // console.log(`x: ${wheelUp.GetX()} y: ${wheelUp.GetY()} z: ${wheelUp.GetZ()}`)
     }
 
     public Update(deltaT: number): void {
@@ -71,6 +77,22 @@ class WheelDriver extends Driver {
         if (vel != 0) console.log(`deltaT: ${deltaT} vel: ${vel} name: ${this.info?.name}`)
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
+    }
+
+    private visualizeVector(): void {
+        // I have no idea how to get the unit vector for angular velocity since there
+        const unit = this._wheel
+            .GetSettings()
+            .get_mWheelForward()
+            .Cross(this._wheel.GetSettings().get_mWheelUp())
+            .Mul(this._wheel.GetAngularVelocity())
+
+        const start = JoltRVec3_ThreeVector3(this._wheel.GetContactPosition())
+        const end = JoltVec3_ThreeVector3(unit.Cross(this._wheel.GetSettings().get_mWheelUp()))
+
+        const geometry = new THREE.BufferGeometry().setFromPoints([start, end])
+        const vector = new THREE.Line()
+        World.SceneRenderer.AddObject()
     }
 
     public set reversed(val: boolean) {
