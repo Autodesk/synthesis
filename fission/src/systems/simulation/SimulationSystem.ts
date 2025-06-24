@@ -71,6 +71,7 @@ class SimulationSystem extends WorldSystem {
     public static ResetScores(): void {
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
+        this.perRobotScore = new Map()
         new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).Dispatch()
     }
 
