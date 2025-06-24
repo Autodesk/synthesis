@@ -1,19 +1,20 @@
 import React, { useState } from "react"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label, { LabelSize } from "@/components/Label"
-import Dropdown from "@/components/Dropdown"
+import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import { QualitySetting } from "@/systems/preferences/PreferenceTypes"
 import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import World from "@/systems/World"
+import Slider from "@/ui/components/Slider"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const [qualitySettings, setQualitySettings] = useState<string>(
-        PreferencesSystem.getGlobalPreference<string>("QualitySettings")
-    )
+    const { closeModal } = useModalControlContext()
+    const { openPanel } = usePanelControlContext()
 
     // Disabled until camera settings are implemented
     /* const [zoomSensitivity, setZoomSensitivity] = useState<number>(
@@ -45,15 +46,25 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
     )
+    const [showViewCube, setShowViewCube] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
+    )
+    const [muteAllSound, setMuteAllSound] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
+    )
+    const [sfxVolume, setSFXVolume] = useState<number>(PreferencesSystem.getGlobalPreference<number>("SFXVolume"))
 
     const saveSettings = () => {
-        PreferencesSystem.setGlobalPreference<string>("QualitySettings", qualitySettings)
-
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
+        PreferencesSystem.setGlobalPreference<boolean>("ShowViewCube", showViewCube)
+        PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
+        PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
+
+        SoundPlayer.changeVolume() // Apply the new sound volume
 
         // Disabled until these settings are implemented
         /* PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
@@ -74,16 +85,15 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
-                <Label size={LabelSize.Medium}>Screen Settings</Label>
-                <Dropdown
-                    label="Quality Settings"
-                    options={["Low", "Medium", "High"] as QualitySetting[]}
-                    defaultValue={PreferencesSystem.getGlobalPreference<QualitySetting>("QualitySettings")}
-                    onSelect={selected => {
-                        setQualitySettings(selected)
-                        World.SceneRenderer.ChangeLighting(selected)
-                    }}
-                />
+                <Box alignSelf={"center"}>
+                    <Button
+                        value="Graphics Settings"
+                        onClick={() => {
+                            openPanel("graphics-settings")
+                            closeModal()
+                        }}
+                    />
+                </Box>
 
                 {/* Disabled until these settings are implemented */}
                 {/*   {Spacer(5)}
@@ -116,7 +126,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     onChange={(_, value) => setYawSensitivity(value as number)}
                     tooltipText="Moving the camera left and right."
                 />*/}
-                {Spacer(20)}
+                {Spacer(10)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
                     <Checkbox
@@ -169,6 +179,31 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             setRenderScoreboard(checked)
                         }}
                     />
+                    <Checkbox
+                        label="Show View Cube"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")}
+                        onClick={checked => {
+                            setShowViewCube(checked)
+                        }}
+                        tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
+                    />
+                    <Checkbox
+                        label="Mute All Sound"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")}
+                        onClick={checked => {
+                            setMuteAllSound(checked)
+                        }}
+                    />
+                    <Slider
+                        min={0}
+                        max={100}
+                        value={sfxVolume}
+                        label={"SFX Volume"}
+                        format={{ maximumFractionDigits: 2 }}
+                        onChange={(_, value: number | number[]) => setSFXVolume(value as number)}
+                        tooltipText="Volume of sound effects (%)."
+                    />
+                    {Spacer(8)}
                 </Box>
             </div>
         </Modal>

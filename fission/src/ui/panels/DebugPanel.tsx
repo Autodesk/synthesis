@@ -9,11 +9,11 @@ import MirabufCachingService, {
     MiraType,
 } from "@/mirabuf/MirabufLoader"
 import { Box, styled } from "@mui/material"
-import { usePanelControlContext } from "../PanelContext"
+import { usePanelControlContext } from "../helpers/UsePanelManager"
 import APS from "@/aps/APS"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Label from "../components/Label"
-import { colorNameToVar } from "../ThemeContext"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import { SynthesisIcons } from "../components/StyledComponents"
 import { Global_AddToast } from "../components/GlobalUIControls"
 

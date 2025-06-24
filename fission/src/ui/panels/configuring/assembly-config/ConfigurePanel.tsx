@@ -10,7 +10,7 @@ import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScorin
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Button from "@/ui/components/Button"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -25,6 +25,8 @@ import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -358,6 +360,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         new ConfigurationSavedEvent()
                         setConfigMode(undefined)
                     }}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     sx={{
                         alignSelf: "center",
                     }}

@@ -200,6 +200,56 @@ export class CustomOrbitControls extends CameraControls {
         }
     }
 
+    public getCurrentCoordinates(): SphericalCoords {
+        return { ...this._coords }
+    }
+
+    public setTargetCoordinates(coords: Partial<SphericalCoords>) {
+        if (coords.theta !== undefined) this._nextCoords.theta = coords.theta
+        if (coords.phi !== undefined) this._nextCoords.phi = coords.phi
+        if (coords.r !== undefined) this._nextCoords.r = coords.r
+    }
+
+    public setImmediateCoordinates(coords: Partial<SphericalCoords>) {
+        if (coords.theta !== undefined) {
+            this._coords.theta = coords.theta
+            this._nextCoords.theta = coords.theta
+        }
+        if (coords.phi !== undefined) {
+            this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, coords.phi))
+            this._nextCoords.phi = this._coords.phi
+        }
+        if (coords.r !== undefined) {
+            this._coords.r = Math.min(CO_MAX_ZOOM, Math.max(CO_MIN_ZOOM, coords.r))
+            this._nextCoords.r = this._coords.r
+        }
+    }
+
+    public animateToOrientation(theta: number, phi: number, duration: number = 500) {
+        const startCoords = { ...this._coords }
+        const targetCoords = { theta, phi, r: this._coords.r }
+
+        let startTime: number | null = null
+
+        const animate = (timestamp: number) => {
+            if (!startTime) startTime = timestamp
+
+            const elapsed = timestamp - startTime
+            const progress = Math.min(elapsed / duration, 1)
+
+            const easeOut = 1 - Math.pow(1 - progress, 3)
+
+            this._coords.theta = startCoords.theta + (targetCoords.theta - startCoords.theta) * easeOut
+            this._coords.phi = startCoords.phi + (targetCoords.phi - startCoords.phi) * easeOut
+
+            if (progress < 1) {
+                requestAnimationFrame(animate)
+            }
+        }
+
+        requestAnimationFrame(animate)
+    }
+
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 

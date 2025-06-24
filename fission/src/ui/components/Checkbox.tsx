@@ -3,6 +3,8 @@ import Label, { LabelSize } from "./Label"
 import { Switch } from "@mui/base/Switch"
 import { Box } from "@mui/material"
 import { LabelWithTooltip } from "./StyledComponents"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import checkboxPressSound from "@/assets/sound-files/CheckboxPress.wav"
 
 type CheckboxProps = {
     label: string
@@ -36,7 +38,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
     hideLabel,
     onClick,
     tooltipText,
-}) => {
+}: CheckboxProps): JSX.Element => {
     const [state] = useState(defaultState)
     return (
         <Box
@@ -55,6 +57,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
             )}
             <Switch
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
+                onMouseDown={() => SoundPlayer.play(checkboxPressSound)}
                 slotProps={{
                     root: {
                         className: `group relative inline-block w-[24px] h-[24px] m-2.5 cursor-pointer transform transition-transform hover:scale-[1.03] active:scale-[1.06]`,
@@ -72,6 +75,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
                     },
                 }}
                 defaultChecked={stateOverride != null ? undefined : state}
+                // checked={state}
                 id="checkbox-switch"
             />
         </Box>
