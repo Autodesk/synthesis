@@ -39,6 +39,7 @@ import {
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 
 const DEBUG_BODIES = false
 
@@ -88,6 +89,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _intakeActive = false
     private _ejectorActive = false
+
+    private _collision?: (event: OnContactAddedEvent) => void
 
     public get intakeActive() {
         return this._intakeActive
@@ -179,8 +182,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.getPreferences()
 
-        // creating nametag for robots
         if (this.miraType === MiraType.ROBOT) {
+            // creating nametag for robots
             this._nameTag = new SceneOverlayTag(() =>
                 this._brain instanceof SynthesisBrain
                     ? this._brain.inputSchemeName
@@ -188,6 +191,19 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                       ? "Magic"
                       : "Not Configured"
             )
+
+            // Detects when something collides with the robot
+            this._collision = (event: OnContactAddedEvent) => {
+                const body1 = event.message.body1
+                const body2 = event.message.body2
+
+                if (body1.GetIndexAndSequenceNumber() === this.GetRootNodeId()?.GetIndexAndSequenceNumber()) {
+                    this.RobotCollision(body2)
+                } else if (body2.GetIndexAndSequenceNumber() === this.GetRootNodeId()?.GetIndexAndSequenceNumber()) {
+                    this.RobotCollision(body1)
+                }
+            }
+            OnContactAddedEvent.AddListener(this._collision)
         }
     }
 
@@ -660,6 +676,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         return data
+    }
+
+    private RobotCollision(collision: Jolt.BodyID) {
+        const objectCollidedWith = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(collision)
+        if (objectCollidedWith && objectCollidedWith.isGamePiece) {
+            objectCollidedWith.robotLastInContactWith = this
+        }
     }
 }
 
