@@ -17,6 +17,7 @@ export type GlobalPreference =
     | "SimAutoReconnect"
     | "MuteAllSound"
     | "SFXVolume"
+    | "GraphicsOptimizationApplied"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -40,6 +41,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     SimAutoReconnect: false,
     MuteAllSound: false,
     SFXVolume: 25,
+    GraphicsOptimizationApplied: false,
 }
 
 export type GraphicsPreferences = {

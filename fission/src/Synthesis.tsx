@@ -69,6 +69,7 @@ import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
+import { applyInitialGraphicsSettings } from "./ui/panels/GraphicsSettingsPanel"
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement, registerModal } = useModalManager(initialModals)
@@ -95,6 +96,8 @@ function Synthesis() {
                 modalId="main-menu"
                 startSingleplayerCallback={() => {
                     World.InitWorld()
+
+                    applyInitialGraphicsSettings()
 
                     if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
                         setConsentPopupDisable(false)
