@@ -38,7 +38,6 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { Global_AddToast } from "@/ui/components/GlobalUIControls"
 
 const DEBUG_BODIES = false
 
@@ -654,14 +653,6 @@ export async function CreateMirabuf(
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle
 ): Promise<MirabufSceneObject | null | undefined> {
-    // Cancel is there is another assembly being placed
-    console.log(World.SceneRenderer.isPlacingAssembly)
-    if (World.SceneRenderer.isPlacingAssembly) {
-        Global_AddToast?.("error", "Error Placing Assembly.", "Place assembly before spawning another.")
-        return
-    } else {
-        World.SceneRenderer.isPlacingAssembly = true
-    }
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
