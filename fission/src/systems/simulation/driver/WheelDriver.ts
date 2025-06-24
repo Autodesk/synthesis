@@ -77,6 +77,7 @@ class WheelDriver extends Driver {
         if (vel != 0) console.log(`deltaT: ${deltaT} vel: ${vel} name: ${this.info?.name}`)
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
+        this.visualizeVector()
     }
 
     private visualizeVector(): void {
@@ -91,8 +92,8 @@ class WheelDriver extends Driver {
         const end = JoltVec3_ThreeVector3(unit.Cross(this._wheel.GetSettings().get_mWheelUp()))
 
         const geometry = new THREE.BufferGeometry().setFromPoints([start, end])
-        const vector = new THREE.Line()
-        World.SceneRenderer.AddObject()
+        const line = new THREE.Line(geometry)
+        World.SceneRenderer.AddObject(line)
     }
 
     public set reversed(val: boolean) {
