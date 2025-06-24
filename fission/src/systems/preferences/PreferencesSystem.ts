@@ -106,7 +106,7 @@ class PreferencesSystem {
     }
 
     /** Sets the MotorPreferences object for the motor of a specific mira name */
-     public static setMotorPreferences(miraName: string, value: MotorPreferences) {
+    public static setMotorPreferences(miraName: string, value: MotorPreferences) {
         const allMotorPrefs = this.getAllMotorPreferences()
         allMotorPrefs[miraName] = value
     }

@@ -27,7 +27,8 @@ import SimulationInterface from "./interfaces/SimulationInterface"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem";
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -42,8 +43,8 @@ class AssemblySelectionOption extends SelectMenuOption {
 interface ConfigurationSelectionProps {
     configurationType: ConfigurationType
     onAssemblySelected: (assembly: MirabufSceneObject | undefined) => void
-    selectedAssembly?: MirabufSceneObject,
-    onStageDelete: (opt: SelectMenuOption) => void,
+    selectedAssembly?: MirabufSceneObject
+    onStageDelete: (opt: SelectMenuOption) => void
     pendingDeletes: number[]
 }
 
@@ -303,11 +304,11 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
     }
 }
 
-
 const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
-    const originalRobotPrefs = useRef<RobotPreferences | null>(null);
-    const originalFieldPrefs = useRef<FieldPreferences | null>(null);
-    const originalMotorPrefs = useRef<MotorPreferences | null>(null);
+    const originalRobotPrefs = useRef<RobotPreferences | null>(null)
+    const originalFieldPrefs = useRef<FieldPreferences | null>(null)
+    const originalMotorPrefs = useRef<MotorPreferences | null>(null)
+    const originalInputSchemes = useRef<InputScheme[] | null>(null)
 
     const { openPanel, closePanel } = usePanelControlContext()
     const [configurationType, setConfigurationType] = useState<ConfigurationType>(getConfigurationType())
@@ -316,26 +317,29 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
     useEffect(() => {
+        const allSchemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes") || []
+        originalInputSchemes.current = structuredClone(allSchemes)
+
         const settings = popConfigurePanelSettings()
         if (settings) {
             setSelectedAssembly(settings.selectedAssembly)
             if (settings.selectedAssembly) {
                 setConfigMode(settings.configMode)
 
-                const name = settings.selectedAssembly.assemblyName;
+                const name = settings.selectedAssembly.assemblyName
 
-                const robotPrefs = PreferencesSystem.getRobotPreferences(name);
-                const fieldPrefs = PreferencesSystem.getFieldPreferences(name);
-                const motorPrefs = PreferencesSystem.getMotorPreferences(name);
+                const robotPrefs = PreferencesSystem.getRobotPreferences(name)
+                const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
+                const motorPrefs = PreferencesSystem.getMotorPreferences(name)
 
                 if (robotPrefs) {
-                    originalRobotPrefs.current = structuredClone(robotPrefs);
+                    originalRobotPrefs.current = structuredClone(robotPrefs)
                 }
                 if (fieldPrefs) {
-                    originalFieldPrefs.current = structuredClone(fieldPrefs);
+                    originalFieldPrefs.current = structuredClone(fieldPrefs)
                 }
                 if (motorPrefs) {
-                    originalMotorPrefs.current = structuredClone(motorPrefs);
+                    originalMotorPrefs.current = structuredClone(motorPrefs)
                 }
             }
         }
@@ -356,9 +360,12 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 pendingDeletes.forEach(id => World.SceneRenderer.RemoveSceneObject(id))
                 setPendingDeletes([])
 
-                originalRobotPrefs.current = null;
-                originalFieldPrefs.current = null;
-                originalMotorPrefs.current = null;
+                InputSchemeManager.saveSchemes()
+
+                originalRobotPrefs.current = null
+                originalFieldPrefs.current = null
+                originalMotorPrefs.current = null
+                originalInputSchemes.current = null
 
                 // Save the current panel state
                 setSelectedConfigurationType(configurationType)
@@ -366,7 +373,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }}
             onCancel={() => {
                 setPendingDeletes([])
-                
+
                 if (selectedAssembly) {
                     const name = selectedAssembly.assemblyName
                     if (originalRobotPrefs.current) {
@@ -378,12 +385,19 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     if (originalMotorPrefs.current) {
                         PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
                     }
-
                     selectedAssembly.getPreferences()
                 }
+
+                if (originalInputSchemes.current) {
+                    PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
+                    PreferencesSystem.savePreferences()
+                    InputSchemeManager.resetDefaultSchemes()
+                }
+
                 originalRobotPrefs.current = null
                 originalFieldPrefs.current = null
                 originalMotorPrefs.current = null
+                originalInputSchemes.current = null
             }}
             acceptName="Save"
             cancelName="Cancel"

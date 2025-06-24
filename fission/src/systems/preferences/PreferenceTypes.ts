@@ -158,9 +158,9 @@ export function DefaultFieldPreferences(): FieldPreferences {
 }
 
 export function DefaultMotorPreferences(name: string): MotorPreferences {
-  return {
-    name: name,
-    maxVelocity: 1,    
-    maxForce: 1,
-  }
+    return {
+        name: name,
+        maxVelocity: 1,
+        maxForce: 1,
+    }
 }
