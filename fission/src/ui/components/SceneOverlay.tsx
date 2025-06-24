@@ -10,7 +10,7 @@ import {
 import Label, { LabelSize } from "./Label"
 import ViewCube from "./ViewCube"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
