@@ -132,13 +132,13 @@ class ProtectedZoneSceneObject extends SceneObject {
                             SimulationSystem.RobotPenalty(
                                 collisionObjectBody2,
                                 this._prefs?.penaltyPoints ?? 0,
-                                `Entered protected zone`
+                                `Touched robot in protected zone`
                             )
                         } else {
                             SimulationSystem.RobotPenalty(
                                 collisionObjectBody1,
                                 this._prefs?.penaltyPoints ?? 0,
-                                `Entered protected zone`
+                                `Touched robot in protected zone`
                             )
                         }
                     }
