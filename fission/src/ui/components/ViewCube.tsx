@@ -67,7 +67,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 const deltaX = event.clientX - lastMousePos.x
                 const deltaY = event.clientY - lastMousePos.y
 
-                const sensitivity = 0.065
+                const sensitivity = 0.025
 
                 const controls = World.SceneRenderer.currentCameraControls
                 if (controls instanceof CustomOrbitControls) {
@@ -443,8 +443,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             ) => {
                 const group = new THREE.Group()
 
-                const lineLength = 0.6
-                const lineRadius = 0.025
+                const lineLength = 2.5
+                const lineRadius = 0.015
 
                 const lineGeometry = new THREE.CylinderGeometry(lineRadius, lineRadius, lineLength)
                 const lineMaterial = new THREE.MeshBasicMaterial({ color })
@@ -485,18 +485,31 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 return group
             }
 
+            const lineShift = 0.25
+            const lineInset = 1.01
+
             const xAxis = createAxisLine(
                 0xff0000,
                 new THREE.Vector3(-1, 0, 0),
-                new THREE.Vector3(-1.3, -0.98, -0.98),
+                new THREE.Vector3(-lineShift, -lineInset, -lineInset),
                 "X"
             )
             axisGroup.add(xAxis)
 
-            const yAxis = createAxisLine(0x00ff00, new THREE.Vector3(0, 1, 0), new THREE.Vector3(0.98, 1.3, -0.98), "Y")
+            const yAxis = createAxisLine(
+                0x00ff00,
+                new THREE.Vector3(0, 1, 0),
+                new THREE.Vector3(lineInset, lineShift, -lineInset),
+                "Y"
+            )
             axisGroup.add(yAxis)
 
-            const zAxis = createAxisLine(0x0000ff, new THREE.Vector3(0, 0, 1), new THREE.Vector3(0.98, -0.98, 1.3), "Z")
+            const zAxis = createAxisLine(
+                0x0000ff,
+                new THREE.Vector3(0, 0, 1),
+                new THREE.Vector3(lineInset, -lineInset, lineShift),
+                "Z"
+            )
             axisGroup.add(zAxis)
 
             return axisGroup
@@ -506,14 +519,14 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         scene.add(axisIndicators)
         axisRef.current = axisIndicators
 
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.8)
         scene.add(ambientLight)
 
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.3)
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.9)
         directionalLight.position.set(5, 5, 5)
         scene.add(directionalLight)
 
-        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.2)
+        const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.9)
         directionalLight2.position.set(-2, -2, -2)
         scene.add(directionalLight2)
 
@@ -592,7 +605,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         const texture = new THREE.CanvasTexture(canvas)
         texture.minFilter = THREE.LinearFilter
         texture.magFilter = THREE.LinearFilter
-        return new THREE.MeshLambertMaterial({ map: texture, transparent: true })
+        return new THREE.MeshLambertMaterial({ map: texture, transparent: true, opacity: 0.7 })
     }
 
     const getClickedElement = (event: React.MouseEvent) => {
