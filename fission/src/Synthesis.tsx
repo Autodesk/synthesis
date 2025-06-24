@@ -67,6 +67,7 @@ import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
+import TouchControls from "./ui/components/TouchControls.tsx"
 import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
 
@@ -180,6 +181,7 @@ function Synthesis() {
                             <GlobalUIComponent />
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
+                            <TouchControls />
                             <ContextMenu />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
