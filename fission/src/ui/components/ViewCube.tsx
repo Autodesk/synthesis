@@ -105,6 +105,30 @@ const ViewCube: React.FC<ViewCubeProps> = ({
         }
     }, [isDragging, lastMousePos])
 
+    useEffect(() => {
+        const handleGlobalMouseMoveForHighlights = (event: MouseEvent) => {
+            if (!containerRef.current || isDragging) return
+
+            const rect = containerRef.current.getBoundingClientRect()
+            const isMouseOutside =
+                event.clientX < rect.left ||
+                event.clientX > rect.right ||
+                event.clientY < rect.top ||
+                event.clientY > rect.bottom
+
+            if (isMouseOutside && hoveredElement) {
+                setHoveredElement(null)
+                updateHighlights(null)
+            }
+        }
+
+        document.addEventListener("mousemove", handleGlobalMouseMoveForHighlights)
+
+        return () => {
+            document.removeEventListener("mousemove", handleGlobalMouseMoveForHighlights)
+        }
+    }, [hoveredElement, isDragging])
+
     const getTopBottomOrientation = (isTop: boolean) => {
         if (World && World.SceneRenderer && World.SceneRenderer.currentCameraControls) {
             const controls = World.SceneRenderer.currentCameraControls
