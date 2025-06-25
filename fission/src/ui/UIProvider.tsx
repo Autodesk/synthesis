@@ -1,14 +1,20 @@
 import { useState, createContext } from "react";
-import { v4 as uuidv4 } from "uuid"
-import type React from "react"
-import type { ReactElement, ReactNode } from "react"
+import { v4 as uuidv4 } from "uuid";
+import type React from "react";
+import type { ReactElement, ReactNode } from "react";
 
 export type UIProviderProps = {
 	children?: ReactNode;
 };
 
+export enum CloseType {
+	Accept = 0,
+	Cancel = 1,
+	Overwrite = 2,
+}
+
 export type UIScreenProps = Partial<{
-	onClose: () => void;
+	onClose: (closeType: CloseType) => void;
 	onCancel: () => void;
 	onAccept: () => void;
 	htmlProps: string;
@@ -36,14 +42,15 @@ export type OpenPanelFn = (
 	contents: ReactElement,
 	props?: UIScreenProps,
 ) => string;
-export type ClosePanelFn = (id: string) => void;
+export type CloseModalFn = (closeType: CloseType) => void;
+export type ClosePanelFn = (id: string, closeType: CloseType) => void;
 
 export type UIContextProps = {
 	modal?: Modal;
 	panels: Panel[];
 	openModal: OpenModalFn;
 	openPanel: OpenPanelFn;
-	closeModal: () => void;
+	closeModal: CloseModalFn;
 	closePanel: ClosePanelFn;
 };
 
@@ -70,7 +77,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 			content,
 			props,
 		} as Modal;
-		modal?.props.onClose?.();
+		modal?.props.onClose?.(CloseType.Overwrite);
 		setModal(modal);
 		return id;
 	};
@@ -89,14 +96,14 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 		return id;
 	};
 
-	const closeModal = () => {
-		modal?.props.onClose?.();
+	const closeModal = (closeType: CloseType) => {
+		modal?.props.onClose?.(closeType);
 		setModal(undefined);
 	};
 
-	const closePanel = (id: string) => {
+	const closePanel = (id: string, closeType: CloseType) => {
 		const panel = panels.find((p: Panel) => p.id === id);
-		panel?.props.onClose?.();
+		panel?.props.onClose?.(closeType);
 		setPanels(panels.filter((p: Panel) => p.id !== id));
 	};
 
