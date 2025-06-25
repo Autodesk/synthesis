@@ -99,7 +99,7 @@ class TaggingConfigTab:
             ui.messageBox("No tags to remove.")
             return
         
-        self.taggingListTable.deleteRow(self.taggingListTable.selectedRow - 1)
+        self.taggingListTable.deleteRow(self.taggingListTable.selectedRow)
 
     @logFailure
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs) -> None:
