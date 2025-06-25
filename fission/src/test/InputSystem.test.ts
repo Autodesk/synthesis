@@ -1,7 +1,8 @@
 import { test, describe, assert, expect } from "vitest"
 import InputSystem, { AxisInput, ButtonInput, EmptyModifierState, ModifierState } from "@/systems/input/InputSystem"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 describe("Input Scheme Manager Checks", () => {
     test("Available Schemes", () => {
@@ -31,6 +32,14 @@ describe("Input Scheme Manager Checks", () => {
                 expect(input.posGamepadButton).toBe(0)
             }
         })
+    })
+
+    test("Saving Schemes", () => {
+        const startingLength = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes").length
+        InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme)
+        InputSchemeManager.saveSchemes()
+        const newLength = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes").length
+        expect(newLength).toBe(startingLength + 1)
     })
 
     test("Get Random Names", () => {
