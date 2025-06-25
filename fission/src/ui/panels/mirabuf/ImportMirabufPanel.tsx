@@ -376,17 +376,23 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             )
     }, [manifest?.fields, cachedFields, selectRemote])
 
-    const downloadAllRemotesRobots = useCallback(() => {
-        manifest?.robots
-            .filter(path => !cachedRobots.some(info => info.cacheKey.includes(path.src)))
-            .forEach(path => cacheRemoteOnly(path, MiraType.ROBOT))
-    }, [manifest, cachedRobots, cacheRemoteOnly])
+    function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
+        return useCallback(() => {
+            const miraType: MiraType | undefined = cached[0]?.miraType
+            const property = miraType === MiraType.ROBOT ? "robots" : "fields"
+            const remotes = manifest ? manifest[property] : []
 
-    const downloadAllRemotesFields = useCallback(() => {
-        manifest?.fields
-            .filter(path => !cachedFields.some(info => info.cacheKey.includes(path.src)))
-            .forEach(path => cacheRemoteOnly(path, MiraType.FIELD))
-    }, [manifest, cachedFields, cacheRemoteOnly])
+            remotes
+                .filter(path => !cached.some(info => info.cacheKey.includes(path.src)))
+                .forEach(path => cacheRemoteOnly(path, miraType))
+
+            closePanel(panelId)
+        }, [manifest, cached, cacheRemoteOnly, closePanel, panelId])
+    }
+
+    const downloadAllRemoteRobots = downloadAllRemote(cachedRobots)
+    const downloadAllRemoteFields = downloadAllRemote(cachedFields)
 
     // Generate Item cards for APS robots and fields.
     const hubElements = useMemo(
@@ -484,7 +490,9 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         </SectionLabel>
                         <SectionDivider />
                         {remoteRobotElements}
-                        <PositiveButton value="Download All" onClick={downloadAllRemotesRobots} />
+                        <Box display="flex" justifyContent="center" mt={1}>
+                            <PositiveButton value="Download All" onClick={downloadAllRemoteRobots} />
+                        </Box>
                     </>
                 ) : (
                     <>
@@ -495,7 +503,9 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         </SectionLabel>
                         <SectionDivider />
                         {remoteFieldElements}
-                        <PositiveButton value="Download All" onClick={downloadAllRemotesFields} />
+                        <Box display="flex" justifyContent="center" mt={1}>
+                            <PositiveButton value="Download All" onClick={downloadAllRemoteFields} />
+                        </Box>
                     </>
                 )}
                 <Box alignSelf={"center"}>
