@@ -1,11 +1,8 @@
 import adsk.core
 import adsk.fusion
 
-from src.Logging import logFailure, getLogger
-from src.UI.CreateCommandInputsHelper import (
-    createTableInput, 
-    createTextBoxInput
-)
+from src.Logging import getLogger, logFailure
+from src.UI.CreateCommandInputsHelper import createTableInput, createTextBoxInput
 
 logger = getLogger()
 
@@ -69,8 +66,6 @@ class TaggingConfigTab:
         self.taggingListTable.addToolbarCommandInput(addTagInputButton)
         self.taggingListTable.addToolbarCommandInput(removeTagInputButton)
 
-        commandInputs = self.taggingListTable.commandInputs
-
     @property
     def isVisible(self) -> bool:
         return self.taggingConfigTab.isVisible or False
@@ -86,32 +81,44 @@ class TaggingConfigTab:
     @logFailure
     def addTag(self) -> bool:
         # checks if something is selected
-        if (not self.bodySelect.isValid()):
+        if (self.bodySelect.selectionCount == 0 or self.tagTypeDropdown.selectedItem is None):
             logger.info("Not valid")
             return False
         logger.info("valid")
-        logger.info(self.bodySelect.name)
-        logger.info(self.tagTypeDropdown.name())
+
+        commandInputs = self.taggingConfigTab.commandInputs
+        bodyName = commandInputs.addTextBoxCommandInput("bodyName", "Body Name", self.bodySelect.selection(0).entity.name, 1, True)
+        tagType = commandInputs.addTextBoxCommandInput("tagType", "Tag Type", self.tagTypeDropdown.selectedItem.name, 1, True)
+
+        row = self.taggingListTable.rowCount
+        self.taggingListTable.addCommandInput(bodyName, row, 0)
+        self.taggingListTable.addCommandInput(tagType, row, 1)
         return True
+
+    @logFailure
+    def removeTag(self) -> None:
+        # checks if something is selected
+        logger.info(self.taggingListTable.selectedRow)
+        if self.taggingListTable.selectedRow:
+            app = adsk.core.Application.get()
+            ui = app.userInterface
+            ui.messageBox("No tags to remove.")
+            return
+        
+        # Remove the last row from the table
+        self.taggingListTable.removeRow(self.taggingListTable.rowCount - 1)
 
     @logFailure
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs) -> None:
         commandInput = args.input
-        tagAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("addTagButton")
-        tagRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("removeTagButton")
+        # tagAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("addTagButton")
+        # tagRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("removeTagButton")
 
         if commandInput.id == "addTagButton":
-            if self.addTag():
-                return
-                # tagAddButton.isEnabled = False
-                # tagRemoveButton.isEnabled = True
-                # # Add the selected body and tag type to the table
-                # body_name = self.bodySelect.selection(0).entity.name
-                # tag_type = self.tagTypeDropdown.selectedItem.name
-                # self.taggingListTable.addRow([body_name, tag_type])
-                # logger.info(f"Added tag: {tag_type} to body: {body_name}")
-            else:
-                logger.error("Failed to add tag. Ensure a body is selected and a tag type is chosen.")
+            self.addTag()
+
+        elif commandInput.id == "removeTagButton":
+            self.removeTag()
 
         elif commandInput.id == "bodySelect":
             selection_input = adsk.core.SelectionCommandInput.cast(commandInput)
