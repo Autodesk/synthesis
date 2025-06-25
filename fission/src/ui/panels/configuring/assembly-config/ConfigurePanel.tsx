@@ -70,12 +70,14 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         return [...World.SceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
             .filter(x => !pendingDeletes.includes(x.id))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
         return [...World.SceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
             .filter(x => !pendingDeletes.includes(x.id))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u, pendingDeletes])
 
     const options = useMemo(() => {
@@ -332,12 +334,9 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
                 const motorPrefs = PreferencesSystem.getMotorPreferences(name)
 
-                if (robotPrefs)
-                    originalRobotPrefs.current = structuredClone(robotPrefs)
-                if (fieldPrefs)
-                    originalFieldPrefs.current = structuredClone(fieldPrefs)
-                if (motorPrefs)
-                    originalMotorPrefs.current = structuredClone(motorPrefs)
+                if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
+                if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
+                if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
             }
         }
 
@@ -377,7 +376,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
                     if (originalFieldPrefs.current)
                         PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
-                    if (originalMotorPrefs.current) 
+                    if (originalMotorPrefs.current)
                         PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
                     selectedAssembly.getPreferences()
                 }
