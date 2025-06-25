@@ -46,7 +46,7 @@ class TaggingConfigTab:
         self.bodySelect.setSelectionLimits(1,1)
 
         # Table that shows all the bodies with their respective tags
-        self.taggingListTable = createTableInput("tagListTable", "Tag List", taggingConfigTabInputs, 2, "1:1")
+        self.taggingListTable = createTableInput("tagListTable", "Tag List", taggingConfigTabInputs, 6, "1:1")
         self.taggingListTable.addCommandInput(
             createTextBoxInput("bodyName", "Body", taggingConfigTabInputs, "Body Name", background="#d9d9d9"),
             0,
@@ -79,12 +79,12 @@ class TaggingConfigTab:
         return self.taggingConfigTab.isActive or False
 
     @logFailure
-    def addTag(self) -> bool:
-        # checks if something is selected
+    def addTag(self) -> None:
         if (self.bodySelect.selectionCount == 0 or self.tagTypeDropdown.selectedItem is None):
-            logger.info("Not valid")
-            return False
-        logger.info("valid")
+            app = adsk.core.Application.get()
+            ui = app.userInterface
+            ui.messageBox("Select a body and a tag type before adding a tag.")
+            return
 
         commandInputs = self.taggingConfigTab.commandInputs
         bodyName = commandInputs.addTextBoxCommandInput("bodyName", "Body Name", self.bodySelect.selection(0).entity.name, 1, True)
@@ -93,20 +93,19 @@ class TaggingConfigTab:
         row = self.taggingListTable.rowCount
         self.taggingListTable.addCommandInput(bodyName, row, 0)
         self.taggingListTable.addCommandInput(tagType, row, 1)
-        return True
+
+        self.bodySelect.clearSelection()
 
     @logFailure
     def removeTag(self) -> None:
-        # checks if something is selected
         logger.info(self.taggingListTable.selectedRow)
-        if self.taggingListTable.selectedRow:
+        if self.taggingListTable.selectedRow == -1:
             app = adsk.core.Application.get()
             ui = app.userInterface
             ui.messageBox("No tags to remove.")
             return
         
-        # Remove the last row from the table
-        self.taggingListTable.removeRow(self.taggingListTable.rowCount - 1)
+        self.taggingListTable.deleteRow(self.taggingListTable.selectedRow - 1)
 
     @logFailure
     def handleInputChanged(self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs) -> None:
@@ -120,12 +119,12 @@ class TaggingConfigTab:
         elif commandInput.id == "removeTagButton":
             self.removeTag()
 
-        elif commandInput.id == "bodySelect":
-            selection_input = adsk.core.SelectionCommandInput.cast(commandInput)
-            if selection_input.selectionCount > 0:
-                selected_entity = selection_input.selection(0).entity
-                if selected_entity > 0:
-                    # Do something with the selected body
-                    logger.info(f"Selected body: {selected_entity.name}")
+        # elif commandInput.id == "bodySelect":
+        #     selection_input = adsk.core.SelectionCommandInput.cast(commandInput)
+        #     if selection_input.selectionCount > 0:
+        #         selected_entity = selection_input.selection(0).entity
+        #         if selected_entity:
+        #             # Do something with the selected body
+        #             logger.info(f"Selected body: {selected_entity.name}")
         return
 
