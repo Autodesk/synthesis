@@ -1,16 +1,15 @@
 import React, { useEffect, useState } from "react"
 import { FaXmark } from "react-icons/fa6"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+// import { useModalControlContext } from "@/ui/ModalContext"
+// import { usePanelControlContext } from "@/ui/PanelContext"
 import { motion } from "framer-motion"
 import logo from "@/assets/autodesk_logo.png"
-import { useToastContext } from "@/ui/ToastContext"
+// import { useToastContext } from "@/ui/ToastContext"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import UserIcon from "./UserIcon"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
-import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import { setAddToast } from "./GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import MatchMode from "@/systems/MatchMode"
@@ -56,14 +55,12 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-    const { openModal } = useModalControlContext()
-    const { openPanel } = usePanelControlContext()
-    const { addToast } = useToastContext()
+    // const { openModal } = useModalControlContext()
+    // const { openPanel } = usePanelControlContext()
+    // const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
 
-    const touchCompatibility = matchMedia("(hover: none)").matches
-
-    setAddToast(addToast)
+    // setAddToast(addToast)
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
 
@@ -133,7 +130,7 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={SynthesisIcons.ADD}
                     larger={true}
-                    onClick={() => openPanel("import-mirabuf")}
+                    // onClick={() => openPanel("import-mirabuf")}
                 />
                 <Box
                     display="flex"
@@ -142,13 +139,13 @@ const MainHUD: React.FC = () => {
                 >
                     <MainHUDButton
                         value={"Configure Assets"}
-                        icon={SynthesisIcons.WRENCH}
-                        onClick={() => openPanel("configure")}
+                        icon={SynthesisIcons.Wrench}
+                        // onClick={() => openPanel("configure")}
                     />
                     <MainHUDButton
                         value={"General Settings"}
-                        icon={SynthesisIcons.GEAR}
-                        onClick={() => openModal("settings")}
+                        icon={SynthesisIcons.Gear}
+                        // onClick={() => openModal("settings")}
                     />
                     <MainHUDButton
                         value={"Developer Tool"}
@@ -165,7 +162,7 @@ const MainHUD: React.FC = () => {
                         value={"Debug Tools"}
                         icon={SynthesisIcons.BUG}
                         onClick={() => {
-                            openPanel("debug")
+                            // openPanel("debug")
                         }}
                     />
                     {touchCompatibility ? (
@@ -183,7 +180,7 @@ const MainHUD: React.FC = () => {
                         value={`Hi, ${userInfo.givenName}`}
                         icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
-                        onClick={() => openModal("aps-management")}
+                        // onClick={() => openModal("aps-management")}
                     />
                 ) : (
                     <MainHUDButton
@@ -198,13 +195,13 @@ const MainHUD: React.FC = () => {
                     icon={SynthesisIcons.GAMEPAD}
                     larger={true}
                     onClick={() => {
-                        MatchMode.getInstance().isMatchEnabled()
-                            ? globalAddToast(
-                                  "error",
-                                  "Match Mode Already Running",
-                                  "You can't start match mode if its already running"
-                              )
-                            : openPanel("match-mode-config")
+                        // MatchMode.getInstance().isMatchEnabled()
+                        //     ? Global_AddToast?.(
+                        //           "error",
+                        //           "Match Mode Already Running",
+                        //           "You can't start match mode if its already running"
+                        //       )
+                        //     : MatchMode.getInstance().start(openModal)
                         setIsOpen(false)
                     }}
                 />

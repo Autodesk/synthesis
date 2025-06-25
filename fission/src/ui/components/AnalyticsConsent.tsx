@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import Label, { LabelSize } from "./Label"
 import Button from "./Button"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
+// import { colorNameToVar } from "../ThemeContext"
 import { AiOutlineClose } from "react-icons/ai"
 
 interface AnalyticsConsentProps {
@@ -20,7 +20,7 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                 position: "fixed",
                 right: "0.5rem",
                 bottom: "0.5rem",
-                backgroundColor: colorNameToVar("Background"),
+                // backgroundColor: colorNameToVar("Background"),
                 padding: "1rem",
                 borderRadius: "0.5rem",
                 gap: "0.5rem",

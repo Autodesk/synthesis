@@ -30,7 +30,7 @@ import {
     FaBug,
     FaAngleRight,
 } from "react-icons/fa6"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
+// import { colorNameToVar } from "../ThemeContext"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
@@ -79,7 +79,7 @@ export class SynthesisIcons {
                 maxHeight: "50px",
                 maxWidth: "50px",
             }}
-            color={colorNameToVar("BackgroundSecondary")}
+            // color={colorNameToVar("BackgroundSecondary")}
         />
     )
 }

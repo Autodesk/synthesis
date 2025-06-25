@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import { useEffect, useState } from "react"
 import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
+// import { colorNameToVar } from "../ThemeContext"
 import Button, { ButtonSize } from "./Button"
 import Label, { LabelSize } from "./Label"
 import { SectionDivider } from "./StyledComponents"
@@ -54,8 +54,8 @@ const ContextMenu: React.FC = () => {
                     top: state.location[1],
                     padding: "1rem",
                     borderRadius: "0.5rem",
-                    backgroundColor: colorNameToVar("Background"),
-                    color: colorNameToVar("InteractiveElementText"),
+                    // backgroundColor: colorNameToVar("Background"),
+                    // color: colorNameToVar("InteractiveElementText"),
                 }}
                 // Why, why, why do I need to do this. This is absurd
                 onPointerDown={e => e.stopPropagation()}

@@ -11,7 +11,7 @@ import { random } from "@/util/Random"
 import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
 import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
+// import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
 import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
@@ -613,21 +613,21 @@ class WPILibBrain extends Brain {
         const configData = this._assembly.simConfigData
         if (!configData) return false
 
-        const flows = SimConfig.compile(configData, this._assembly)
-        if (!flows) {
-            console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
-            return false
-        }
+        // const flows = SimConfig.Compile(configData, this._assembly)
+        // if (!flows) {
+        //     console.error(`Failed to compile saved simulation configuration data for '${this.assemblyName}'`)
+        //     return false
+        // }
 
-        let counter = 0
-        flows.forEach(x => {
-            if (!this.addSimFlow(x)) {
-                console.debug("Failed to validate flow, skipping...")
-            } else {
-                counter++
-            }
-        })
-        console.debug(`${counter} Flows added!`)
+        // let counter = 0
+        // flows.forEach(x => {
+        //     if (!this.addSimFlow(x)) {
+        //         console.debug("Failed to validate flow, skipping...")
+        //     } else {
+        //         counter++
+        //     }
+        // })
+        // console.debug(`${counter} Flows added!`)
         return true
     }
 
