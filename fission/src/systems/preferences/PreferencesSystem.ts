@@ -169,14 +169,8 @@ class PreferencesSystem {
 
     /** @returns Preferences for every motor that was found in local storage. */
     public static getAllMotorPreferences(): { [key: string]: MotorPreferences } {
-        let allMotorPrefs = this.getPreference<{ [key: string]: MotorPreferences }>(MotorPreferencesKey)
-
-        if (allMotorPrefs == undefined) {
-            allMotorPrefs = {}
-            this._preferences[MotorPreferencesKey] = allMotorPrefs
-        }
-
-        return allMotorPrefs
+        return (this._preferences[MotorPreferencesKey] =
+            this.getPreference<{ [key: string]: MotorPreferences }>(MotorPreferencesKey) ?? {})
     }
 
     /** Gets simulation quality preferences */
