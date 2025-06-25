@@ -7,18 +7,32 @@ describe("Input Scheme Manager Checks", () => {
     test("Available Schemes", () => {
         assert(InputSchemeManager.availableInputSchemes[0].schemeName == DefaultInputs.ernie().schemeName)
         assert(InputSchemeManager.defaultInputSchemes.length >= 1)
+    })
 
+    test("Add a Custom Scheme", () => {
         const startingLength = InputSchemeManager.availableInputSchemes.length
         InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme)
 
         expect(InputSchemeManager.availableInputSchemes.length).toBe(startingLength + 1)
     })
-    test("Add a Custom Scheme", () => {
-        const startingLength = InputSchemeManager.availableInputSchemes.length
-        InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme)
 
-        assert((InputSchemeManager.availableInputSchemes.length = startingLength + 1))
+    test("Change Custom Scheme Values", () => {
+        const scheme = DefaultInputs.newBlankScheme
+        scheme.schemeName = "Test Scheme"
+        expect(scheme.schemeName).toBe("Test Scheme")
+        InputSchemeManager.addCustomScheme(scheme)
+        scheme.inputs[0].inputName = "Test Input"
+        scheme.inputs.forEach(input => {
+            if (input instanceof ButtonInput) {
+                input.keyCode = "KeyA"
+                expect(input.keyCode).toBe("KeyA")
+            } else if (input instanceof AxisInput) {
+                input.posGamepadButton = 0
+                expect(input.posGamepadButton).toBe(0)
+            }
+        })
     })
+
     test("Get Random Names", () => {
         const names: string[] = []
         for (let i = 0; i < 20; i++) {
