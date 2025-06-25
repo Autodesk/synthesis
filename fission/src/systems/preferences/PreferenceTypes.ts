@@ -14,7 +14,9 @@ export type GlobalPreference =
     | "RenderSceneTags"
     | "RenderScoreboard"
     | "SubsystemGravity"
+    | "TouchControls"
     | "SimAutoReconnect"
+    | "ShowViewCube"
     | "MuteAllSound"
     | "SFXVolume"
 
@@ -37,7 +39,9 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderSceneTags: true,
     RenderScoreboard: true,
     SubsystemGravity: false,
+    TouchControls: false,
     SimAutoReconnect: false,
+    ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
 }
