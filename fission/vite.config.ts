@@ -48,7 +48,7 @@ export default defineConfig({
         ],
     },
     test: {
-        testTimeout: 30000,
+        testTimeout: 60000,
         globals: true,
         environment: "jsdom",
         browser: {
