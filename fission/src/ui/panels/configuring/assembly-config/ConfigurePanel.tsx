@@ -376,15 +376,12 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
                 if (selectedAssembly) {
                     const name = selectedAssembly.assemblyName
-                    if (originalRobotPrefs.current) {
+                    if (originalRobotPrefs.current)
                         PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
-                    }
-                    if (originalFieldPrefs.current) {
+                    if (originalFieldPrefs.current)
                         PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
-                    }
-                    if (originalMotorPrefs.current) {
+                    if (originalMotorPrefs.current) 
                         PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
-                    }
                     selectedAssembly.getPreferences()
                 }
 
