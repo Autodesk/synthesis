@@ -31,7 +31,7 @@ import {
     ConfigMode,
     setNextConfigurePanelSettings,
 } from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
-import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { Global_AddToast, Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import {
     ConfigurationType,
     setSelectedConfigurationType,
@@ -86,6 +86,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _intakeActive = false
     private _ejectorActive = false
+
+    private _ejectableToastShown = false
 
     public get intakeActive() {
         return this._intakeActive
@@ -438,7 +440,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         if (!this._ejectorPreferences || !this._ejectorPreferences.parentNode || !bodyId) {
-            console.log(`Configure an ejectable first.`)
+            if (!this._ejectableToastShown) {
+                console.log(`Configure an ejectable first.`)
+                Global_AddToast?.("info", "Configure Ejectable", `Configure an ejectable first.`)
+                this._ejectableToastShown = true
+            }
             return false
         }
 
