@@ -332,15 +332,12 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
                 const motorPrefs = PreferencesSystem.getMotorPreferences(name)
 
-                if (robotPrefs) {
+                if (robotPrefs)
                     originalRobotPrefs.current = structuredClone(robotPrefs)
-                }
-                if (fieldPrefs) {
+                if (fieldPrefs)
                     originalFieldPrefs.current = structuredClone(fieldPrefs)
-                }
-                if (motorPrefs) {
+                if (motorPrefs)
                     originalMotorPrefs.current = structuredClone(motorPrefs)
-                }
             }
         }
 
