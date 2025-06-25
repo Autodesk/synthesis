@@ -1,5 +1,5 @@
 import { test, describe, assert, expect } from "vitest"
-import InputSystem, { EmptyModifierState, ModifierState } from "@/systems/input/InputSystem"
+import InputSystem, { AxisInput, ButtonInput, EmptyModifierState, ModifierState } from "@/systems/input/InputSystem"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 
@@ -51,6 +51,48 @@ describe("Input System Checks", () => {
         expect(InputSystem.isKeyPressed("keyA")).toBe(false)
         expect(InputSystem.isKeyPressed("ajhsekff")).toBe(false)
         expect(InputSystem.isGamepadButtonPressed(1)).toBe(false)
+    })
+
+    test("Keyboard Input", () => {
+        function testKeyPress(key: string) {
+            // Simulate key press
+            document.dispatchEvent(new KeyboardEvent("keydown", { code: key }))
+
+            // Check if the key is registered as pressed
+            expect(InputSystem.isKeyPressed(key)).toBe(true)
+
+            // Simulate key release
+            document.dispatchEvent(new KeyboardEvent("keyup", { code: key }))
+
+            // Check if the key is no longer registered as pressed
+            expect(InputSystem.isKeyPressed(key)).toBe(false)
+        }
+
+        testKeyPress("keyA")
+        testKeyPress("KeyK")
+        testKeyPress("KeyR")
+        testKeyPress("RightShift")
+        testKeyPress("LeftControl")
+        testKeyPress("Enter")
+        testKeyPress("Escape")
+        testKeyPress("Space")
+    })
+
+    test("Arcade Drive", () => {
+        InputSystem.brainIndexSchemeMap.set(0, DefaultInputs.ernie())
+        inputSystem.Update(-1) // Initialize the input system
+
+        function testArcadeInput(inputMap: string, key: string, expectedValue: number) {
+            document.dispatchEvent(new KeyboardEvent("keydown", { code: key }))
+            expect(InputSystem.getInput(inputMap, 0)).toBe(expectedValue)
+            document.dispatchEvent(new KeyboardEvent("keyup", { code: key }))
+            expect(InputSystem.getInput(inputMap, 0)).toBe(0)
+        }
+
+        testArcadeInput("arcadeDrive", "KeyW", 1) // Forward
+        testArcadeInput("arcadeDrive", "KeyS", -1) // Backward
+        testArcadeInput("arcadeTurn", "KeyD", 1) // Right
+        testArcadeInput("arcadeTurn", "KeyA", -1) // Left
     })
 
     test("Modifier State Comparison", () => {
