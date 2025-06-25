@@ -16,6 +16,7 @@ export type GlobalPreference =
     | "SubsystemGravity"
     | "TouchControls"
     | "SimAutoReconnect"
+    | "ShowViewCube"
     | "MuteAllSound"
     | "SFXVolume"
 
@@ -40,6 +41,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     SubsystemGravity: false,
     TouchControls: false,
     SimAutoReconnect: false,
+    ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
 }
