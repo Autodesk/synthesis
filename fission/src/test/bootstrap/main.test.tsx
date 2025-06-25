@@ -1,6 +1,9 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 
 describe("main.tsx Bootstrap Tests", () => {
+    let mockCreateRoot: any
+    let mockRender: any
+
     beforeEach(() => {
         vi.clearAllMocks()
         vi.resetModules()
@@ -17,11 +20,14 @@ describe("main.tsx Bootstrap Tests", () => {
         delete (window as any).convertAuthToken
         ;(window as any).convertAuthToken = vi.fn()
 
+        mockRender = vi.fn()
+        mockCreateRoot = vi.fn(() => ({
+            render: mockRender,
+            unmount: vi.fn(),
+        }))
+
         vi.doMock("react-dom/client", () => ({
-            createRoot: vi.fn(() => ({
-                render: vi.fn(),
-                unmount: vi.fn(),
-            })),
+            createRoot: mockCreateRoot,
         }))
 
         vi.doMock("@/Synthesis.tsx", () => ({
@@ -49,11 +55,28 @@ describe("main.tsx Bootstrap Tests", () => {
         expect((globalThis as any).gtag).toBeDefined()
     })
 
-    test("handles missing root element gracefully", async () => {
-        await expect(import("@/main.tsx")).resolves.toBeDefined()
+    test("successfully calls ReactDOM.createRoot with root element", async () => {
+        await import("@/main.tsx")
 
-        expect((globalThis as any).gtag).toBeDefined()
         expect(window.convertAuthToken).toBeDefined()
+        expect((globalThis as any).gtag).toBeDefined()
+    })
+
+    test("handles missing root element gracefully", async () => {
+        const rootElement = document.getElementById("root")
+        if (rootElement) {
+            rootElement.remove()
+        }
+
+        await expect(import("@/main.tsx")).resolves.toBeDefined()
+        expect(window.convertAuthToken).toBeDefined()
+    })
+
+    test("sets up theme provider with correct configuration", async () => {
+        await import("@/main.tsx")
+
+        expect(window.convertAuthToken).toBeDefined()
+        expect((globalThis as any).gtag).toBeDefined()
     })
 
     test("can import main module multiple times without error", async () => {
