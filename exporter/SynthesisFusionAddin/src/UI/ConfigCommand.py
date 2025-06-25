@@ -21,9 +21,11 @@ from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.GeneralConfigTab import GeneralConfigTab
 from src.UI.Handlers import PersistentEventHandler
 from src.UI.JointConfigTab import JointConfigTab
+from src.UI.TaggingConfigTab import TaggingConfigTab
 
 generalConfigTab: GeneralConfigTab
 jointConfigTab: JointConfigTab
+taggingConfigTab: TaggingConfigTab
 gamepieceConfigTab: GamepieceConfigTab
 
 logger = getLogger()
@@ -80,6 +82,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         global jointConfigTab
         jointConfigTab = JointConfigTab(args)
         generalConfigTab.jointConfigTab = jointConfigTab
+
+        global taggingConfigTab
+        taggingConfigTab = TaggingConfigTab(args)
+        generalConfigTab.taggingConfigTab = taggingConfigTab
 
         if not exporterOptions.exportMode == ExportMode.FIELD:
             gamepieceConfigTab.isVisible = False
@@ -221,6 +227,9 @@ class ConfigureCommandInputChanged(PersistentEventHandler, adsk.core.InputChange
 
         if gamepieceConfigTab.isVisible and gamepieceConfigTab.isActive:
             gamepieceConfigTab.handleInputChanged(args, INPUTS_ROOT)
+
+        if taggingConfigTab.isVisible and taggingConfigTab.isActive:
+            taggingConfigTab.handleInputChanged(args, INPUTS_ROOT)
 
 
 class MyCommandDestroyHandler(PersistentEventHandler, adsk.core.CommandEventHandler):
