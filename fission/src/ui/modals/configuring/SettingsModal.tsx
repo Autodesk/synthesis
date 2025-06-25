@@ -57,7 +57,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
     )
     const [viewCubeRotationSensitivity, setViewCubeRotationSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity")
+        PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity") * 60
     )
 
     const saveSettings = () => {
@@ -70,7 +70,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
         PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
         PreferencesSystem.setGlobalPreference<number>("SceneRotationSensitivity", sceneRotationSensitivity)
-        PreferencesSystem.setGlobalPreference<number>("ViewCubeRotationSensitivity", viewCubeRotationSensitivity)
+        PreferencesSystem.setGlobalPreference<number>("ViewCubeRotationSensitivity", viewCubeRotationSensitivity / 60)
 
         SoundPlayer.changeVolume() // Apply the new sound volume
 
@@ -148,13 +148,13 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 />
                 {Spacer(2)}
                 <Slider
-                    min={0.001}
-                    max={0.1}
+                    min={0.06}
+                    max={6.0}
                     value={viewCubeRotationSensitivity}
                     label={"ViewCube Rotation Sensitivity"}
-                    format={{ maximumFractionDigits: 3 }}
+                    format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setViewCubeRotationSensitivity(value as number)}
-                    step={0.001}
+                    step={0.06}
                     tooltipText="Controls how fast the view changes when dragging on the view cube."
                 />
                 {Spacer(10)}
