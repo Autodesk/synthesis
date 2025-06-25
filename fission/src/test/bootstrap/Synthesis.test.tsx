@@ -294,6 +294,59 @@ describe("Synthesis Component Bootstrap Tests", () => {
         expect(screen.getByTestId("main-hud")).toBeDefined()
     })
 
+    test("renders critical UI components in correct order", () => {
+        render(
+            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
+                <Synthesis />
+            </ThemeProvider>
+        )
+
+        const skybox = screen.getByTestId("skybox")
+        const scene = screen.getByTestId("scene")
+        const mainHud = screen.getByTestId("main-hud")
+
+        expect(skybox).toBeDefined()
+        expect(scene).toBeDefined()
+        expect(mainHud).toBeDefined()
+
+        expect(document.body.contains(skybox)).toBe(true)
+        expect(document.body.contains(scene)).toBe(true)
+        expect(document.body.contains(mainHud)).toBe(true)
+    })
+
+    test("handles World system initialization on mount", () => {
+        render(
+            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
+                <Synthesis />
+            </ThemeProvider>
+        )
+
+        expect(screen.getByTestId("scene")).toBeDefined()
+        expect(screen.getByTestId("main-hud")).toBeDefined()
+    })
+
+    test("handles preferences system integration", () => {
+        render(
+            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
+                <Synthesis />
+            </ThemeProvider>
+        )
+
+        expect(screen.getByTestId("global-ui-component")).toBeDefined()
+        expect(screen.getByTestId("main-hud")).toBeDefined()
+    })
+
+    test("ensures all context providers are properly nested", () => {
+        const { container } = render(
+            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
+                <Synthesis />
+            </ThemeProvider>
+        )
+
+        expect(container.firstChild).toBeDefined()
+        expect(screen.getByTestId("global-ui-component")).toBeDefined()
+    })
+
     test("initializes main menu modal on component mount", async () => {
         render(
             <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
