@@ -60,11 +60,11 @@ def MapAllComponents(
                     return fill_info_result
 
                 if isinstance(body, adsk.fusion.BRepBody):
-                    parse_result = _ParseBRep(body, options, part_body.triangle_mesh)
+                    parse_result = ParseBRep(body, options, part_body.triangle_mesh)
                     if parse_result.is_err() and parse_result.unwrap_err()[0] == ErrorSeverity.Fatal:
                         return parse_result
                 else:
-                    parse_result = _ParseMesh(body, options, part_body.triangle_mesh)
+                    parse_result = ParseMesh(body, options, part_body.triangle_mesh)
                     if parse_result.is_err() and parse_result.unwrap_err()[0] == ErrorSeverity.Fatal:
                         return parse_result
 
@@ -117,11 +117,12 @@ def ParseComponentRoot(
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
 
-            parse_child_result = __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+            parse_child_result = parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
             if parse_child_result.is_err():
                 return parse_child_result
 
             node.children.append(child_node)
+    return Ok(None)
 
 
 def parseChildOccurrence(
@@ -133,7 +134,7 @@ def parseChildOccurrence(
     node: types_pb2.Node,
 ) -> Result[None]:
     if occurrence.isLightBulbOn is False:
-        return
+        return Ok(None)
 
     progressDialog.addOccurrence(occurrence.name)
 
@@ -193,11 +194,12 @@ def parseChildOccurrence(
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
 
-            parse_child_result = __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+            parse_child_result = parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
             if parse_child_result.is_err(): 
                 return parse_child_result
 
             node.children.append(child_node)
+    return Ok(None)
 
 
 # saw online someone used this to get the correct context but oh boy does it look pricey
