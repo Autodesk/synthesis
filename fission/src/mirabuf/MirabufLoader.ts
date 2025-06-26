@@ -1,6 +1,5 @@
 import { Data, downloadData } from "@/aps/APSDataManagement"
 import { mirabuf } from "@/proto/mirabuf"
-import { Global_AddToast } from "@/components/GlobalUIControls"
 import World from "@/systems/World"
 import Pako from "pako"
 
@@ -119,44 +118,24 @@ class MirabufCachingService {
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
     public static async CacheRemote(fetchLocation: string, miraType?: MiraType): Promise<MirabufCacheInfo | undefined> {
-        if (miraType !== undefined) {
+        if (miraType) {
             const map = MirabufCachingService.GetCacheMap(miraType)
             const target = map[fetchLocation]
-            if (target) return target
-        }
-        try {
-            // grab file remote
-            const resp = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
-            if (!resp.ok) throw new Error(`${resp.status} ${resp.statusText}`)
 
-            const miraBuff = await resp.arrayBuffer()
-
-            World.AnalyticsSystem?.Event("Remote Download", {
-                type: miraType === MiraType.ROBOT ? "robot" : "field",
-                fileSize: miraBuff.byteLength,
-            })
-
-            const cached = await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
-
-            if (cached) return cached
-
-            Global_AddToast?.(
-                "error",
-                "Cache Fallback",
-                `Unable to cache “${fetchLocation}”. Using raw buffer instead.`
-            )
-
-            // fallback: return raw buffer wrapped in MirabufCacheInfo
-            return {
-                id: Date.now().toString(),
-                miraType: miraType ?? (this.AssemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
-                cacheKey: fetchLocation,
-                buffer: miraBuff,
+            if (target) {
+                return target
             }
-        } catch (e) {
-            console.warn("Caching failed", e)
-            return undefined
         }
+
+        // Grab file remote
+        const miraBuff = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
+            .then(x => x.blob())
+            .then(x => x.arrayBuffer())
+        World.AnalyticsSystem?.Event("Remote Download", {
+            type: miraType == MiraType.ROBOT ? "robot" : "field",
+            fileSize: miraBuff.byteLength,
+        })
+        return await MirabufCachingService.StoreInCache(fetchLocation, miraBuff, miraType)
     }
 
     public static async CacheAPS(data: Data, miraType: MiraType): Promise<MirabufCacheInfo | undefined> {
