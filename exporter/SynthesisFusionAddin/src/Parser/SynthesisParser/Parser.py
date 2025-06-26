@@ -1,12 +1,15 @@
 import gzip
 import pathlib
 
+from google.protobuf import message
+
 import adsk.core
 import adsk.fusion
 from google.protobuf.json_format import MessageToJson
 
 from src import gm
 from src.APS.APS import getAuth, upload_mirabuf
+from src.ErrorHandling import ErrorSeverity, Result
 from src.Logging import getLogger, logFailure, timed
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser import (
@@ -44,11 +47,11 @@ class Parser:
             return
 
         assembly_out = assembly_pb2.Assembly()
-        fill_info(
+        handle_err_top(fill_info(
             assembly_out,
             design.rootComponent,
             override_guid=design.parentDocument.name,
-        )
+        ))
 
         # set int to 0 in dropdown selection for dynamic
         assembly_out.dynamic = self.exporterOptions.exportMode == ExportMode.ROBOT
@@ -77,21 +80,21 @@ class Parser:
             progressDialog,
         )
 
-        Materials._MapAllAppearances(
+        handle_err_top(Materials._MapAllAppearances(
             design.appearances,
             assembly_out.data.materials,
             self.exporterOptions,
             self.pdMessage,
-        )
-
-        Materials._MapAllPhysicalMaterials(
+        ))
+        
+        handle_err_top(Materials.MapAllPhysicalMaterials(
             design.materials,
             assembly_out.data.materials,
             self.exporterOptions,
             self.pdMessage,
-        )
+        ))
 
-        Components._MapAllComponents(
+        Components.MapAllComponents(
             design,
             self.exporterOptions,
             self.pdMessage,
@@ -101,7 +104,7 @@ class Parser:
 
         rootNode = types_pb2.Node()
 
-        Components._ParseComponentRoot(
+        Components.ParseComponentRoot(
             design.rootComponent,
             self.pdMessage,
             self.exporterOptions,
@@ -110,7 +113,7 @@ class Parser:
             rootNode,
         )
 
-        Components._MapRigidGroups(design.rootComponent, assembly_out.data.joints)
+        Components.MapRigidGroups(design.rootComponent, assembly_out.data.joints)
 
         assembly_out.design_hierarchy.nodes.append(rootNode)
 
@@ -249,3 +252,9 @@ class Parser:
         )
 
         logger.debug(debug_output.strip())
+
+def handle_err_top[T](err: Result[T]):
+    if err.is_err():
+        message, severity = err.unwrap_err()
+        if severity == ErrorSeverity.Fatal:
+            app.userInterface.messageBox(f"Fatal Error Encountered: {message}")
