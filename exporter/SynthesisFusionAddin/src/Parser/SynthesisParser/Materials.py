@@ -172,7 +172,9 @@ def MapAllAppearances(
 ) -> Result[None]:
     # in case there are no appearances on a body
     # this is just a color tho
-    setDefaultAppearance(materials.appearances["default"])
+    set_default_result = setDefaultAppearance(materials.appearances["default"])
+    if set_default_result.is_err() and set_default_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        return set_default_result
 
     fill_info_result = fill_info(materials, None)
     if fill_info_result.is_err():
@@ -202,6 +204,7 @@ def setDefaultAppearance(appearance: material_pb2.Appearance) -> Result[None]:
     """
 
     # add info
+    # TODO: Check if appearance actually can be passed in here in place of an assembly or smth
     construct_info_result = construct_info("default", appearance)
     if construct_info_result.is_err():
         return construct_info_result
