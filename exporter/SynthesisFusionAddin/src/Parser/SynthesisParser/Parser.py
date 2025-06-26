@@ -80,7 +80,7 @@ class Parser:
             progressDialog,
         )
 
-        handle_err_top(Materials._MapAllAppearances(
+        handle_err_top(Materials.MapAllAppearances(
             design.appearances,
             assembly_out.data.materials,
             self.exporterOptions,
@@ -94,24 +94,24 @@ class Parser:
             self.pdMessage,
         ))
 
-        Components.MapAllComponents(
+        handle_err_top(Components.MapAllComponents(
             design,
             self.exporterOptions,
             self.pdMessage,
             assembly_out.data.parts,
             assembly_out.data.materials,
-        )
+        ))
 
         rootNode = types_pb2.Node()
 
-        Components.ParseComponentRoot(
+        handle_err_top(Components.ParseComponentRoot(
             design.rootComponent,
             self.pdMessage,
             self.exporterOptions,
             assembly_out.data.parts,
             assembly_out.data.materials.appearances,
             rootNode,
-        )
+        ))
 
         Components.MapRigidGroups(design.rootComponent, assembly_out.data.joints)
 
