@@ -92,7 +92,7 @@ class TaggingConfigTab:
 
     @logFailure
     def removeTag(self) -> None:
-        logger.info(self.taggingListTable.selectedRow)
+        logger.info(self.getTags()) # TODO: Remove this line
         if self.taggingListTable.selectedRow == -1:
             app = adsk.core.Application.get()
             ui = app.userInterface
@@ -110,3 +110,17 @@ class TaggingConfigTab:
 
         elif commandInput.id == "removeTagButton":
             self.removeTag()
+
+    @logFailure
+    def getTags(self) -> list:
+        tags = []
+        for row in range(self.taggingListTable.rowCount):
+            bodyNameInput = self.taggingListTable.getInputAtPosition(row, 0)
+            tagTypeInput = self.taggingListTable.getInputAtPosition(row, 1)
+
+            if bodyNameInput and tagTypeInput:
+                tags.append({
+                    "bodyName": bodyNameInput.text,
+                    "tagType": tagTypeInput.text
+                })
+        return tags
