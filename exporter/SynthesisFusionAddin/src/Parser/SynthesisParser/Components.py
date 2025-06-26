@@ -1,7 +1,9 @@
 # Contains all of the logic for mapping the Components / Occurrences
+from requests.models import parse_header_links
 import adsk.core
 import adsk.fusion
 
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser import PhysicalProperties
@@ -15,15 +17,13 @@ from src.Proto import assembly_pb2, joint_pb2, material_pb2, types_pb2
 from src.Types import ExportMode
 
 # TODO: Impelement Material overrides
-
-
-def _MapAllComponents(
+def MapAllComponents(
     design: adsk.fusion.Design,
     options: ExporterOptions,
     progressDialog: PDMessage,
     partsData: assembly_pb2.Parts,
     materials: material_pb2.Materials,
-) -> None:
+) -> Result[None]:
     for component in design.allComponents:
         adsk.doEvents()
         if progressDialog.wasCancelled():
@@ -32,31 +32,42 @@ def _MapAllComponents(
 
         comp_ref = guid_component(component)
 
-        fill_info(partsData, None)
+        fill_info_result = fill_info(partsData, None)
+        if fill_info_result.is_err():
+            return fill_info_result
+
 
         partDefinition = partsData.part_definitions[comp_ref]
 
-        fill_info(partDefinition, component, comp_ref)
+        fill_info_result = fill_info(partDefinition, component, comp_ref)
+        if fill_info_result.is_err():
+            return fill_info_result
+
 
         PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
 
-        if options.exportMode == ExportMode.FIELD:
-            partDefinition.dynamic = False
-        else:
-            partDefinition.dynamic = True
+        partDefinition.dynamic = options.exportMode != ExportMode.FIELD
 
-        def processBody(body: adsk.fusion.BRepBody | adsk.fusion.MeshBody) -> None:
+        def processBody(body: adsk.fusion.BRepBody | adsk.fusion.MeshBody) -> Result[None]:
             if progressDialog.wasCancelled():
                 raise RuntimeError("User canceled export")
             if body.isLightBulbOn:
                 part_body = partDefinition.bodies.add()
-                fill_info(part_body, body)
                 part_body.part = comp_ref
 
+                fill_info_result = fill_info(part_body, body)
+                if fill_info_result.is_err():
+                    return fill_info_result
+
                 if isinstance(body, adsk.fusion.BRepBody):
-                    _ParseBRep(body, options, part_body.triangle_mesh)
+                    parse_result = _ParseBRep(body, options, part_body.triangle_mesh)
+                    if parse_result.is_err() and parse_result.unwrap_err()[0] == ErrorSeverity.Fatal:
+                        return parse_result
                 else:
-                    _ParseMesh(body, options, part_body.triangle_mesh)
+                    parse_result = _ParseMesh(body, options, part_body.triangle_mesh)
+                    if parse_result.is_err() and parse_result.unwrap_err()[0] == ErrorSeverity.Fatal:
+                        return parse_result
+
 
                 appearance_key = "{}_{}".format(body.appearance.name, body.appearance.id)
                 # this should be appearance
@@ -66,13 +77,17 @@ def _MapAllComponents(
                     part_body.appearance_override = "default"
 
         for body in component.bRepBodies:
-            processBody(body)
-
+            process_result = processBody(body)
+            if process_result.is_err() and process_result.unwrap_err()[0] == ErrorSeverity.Fatal:
+                return process_result
         for body in component.meshBodies:
-            processBody(body)
+            process_result = processBody(body)
+            if process_result.is_err() and process_result.unwrap_err()[0] == ErrorSeverity.Fatal:
+                return process_result
 
 
-def _ParseComponentRoot(
+
+def ParseComponentRoot(
     component: adsk.fusion.Component,
     progressDialog: PDMessage,
     options: ExporterOptions,
@@ -86,7 +101,9 @@ def _ParseComponentRoot(
 
     node.value = mapConstant
 
-    fill_info(part, component, mapConstant)
+    fill_info_result = fill_info(part, component, mapConstant)
+    if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        return fill_info_result
 
     def_map = partsData.part_definitions
 
@@ -99,18 +116,22 @@ def _ParseComponentRoot(
 
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
-            __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+
+            parse_child_result = __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+            if parse_child_result.is_err():
+                return parse_child_result
+
             node.children.append(child_node)
 
 
-def __parseChildOccurrence(
+def parseChildOccurrence(
     occurrence: adsk.fusion.Occurrence,
     progressDialog: PDMessage,
     options: ExporterOptions,
     partsData: assembly_pb2.Parts,
     material_map: dict[str, material_pb2.Appearance],
     node: types_pb2.Node,
-) -> None:
+) -> Result[None]:
     if occurrence.isLightBulbOn is False:
         return
 
@@ -124,7 +145,9 @@ def __parseChildOccurrence(
 
     node.value = mapConstant
 
-    fill_info(part, occurrence, mapConstant)
+    fill_info_result = fill_info(part, occurrence, mapConstant)
+    if fill_info_result.is_err() and fill_info_result.unwrap_err() == ErrorSeverity.Fatal:
+        return fill_info_result
 
     collision_attr = occurrence.attributes.itemByName("synthesis", "collision_off")
     if collision_attr != None:
@@ -134,11 +157,15 @@ def __parseChildOccurrence(
         try:
             part.appearance = "{}_{}".format(occurrence.appearance.name, occurrence.appearance.id)
         except:
+            _ = Err("Failed to format part appearance", ErrorSeverity.Warning); # ignore: type
             part.appearance = "default"
         # TODO: Add phyical_material parser
 
+    # TODO: I'm fairly sure that this should be a fatal error
     if occurrence.component.material:
         part.physical_material = occurrence.component.material.id
+    else:
+        _ = Err(f"Component Material is None", ErrorSeverity.Warning)
 
     def_map = partsData.part_definitions
 
@@ -165,7 +192,11 @@ def __parseChildOccurrence(
 
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
-            __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+
+            parse_child_result = __parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+            if parse_child_result.is_err(): 
+                return parse_child_result
+
             node.children.append(child_node)
 
 
@@ -180,12 +211,11 @@ def GetMatrixWorld(occurrence: adsk.fusion.Occurrence) -> adsk.core.Matrix3D:
     return matrix
 
 
-@logFailure
-def _ParseBRep(
+def ParseBRep(
     body: adsk.fusion.BRepBody,
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
-) -> None:
+) -> Result[None]:
     meshManager = body.meshManager
     calc = meshManager.createMeshCalculator()
     # Disabling for now. We need the user to be able to adjust this, otherwise it gets locked
@@ -196,26 +226,36 @@ def _ParseBRep(
     # calc.surfaceTolerance = 0.5
     mesh = calc.calculate()
 
-    fill_info(trimesh, body)
+    fill_info_result = fill_info(trimesh, body)
+    if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        return fill_info_result
+
     trimesh.has_volume = True
 
     plainmesh_out = trimesh.mesh
-
     plainmesh_out.verts.extend(mesh.nodeCoordinatesAsFloat)
     plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
     plainmesh_out.indices.extend(mesh.nodeIndices)
     plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
 
+    return Ok(None)
 
-@logFailure
-def _ParseMesh(
+
+def ParseMesh(
     meshBody: adsk.fusion.MeshBody,
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
-) -> None:
+) -> Result[None]:
     mesh = meshBody.displayMesh
+    if mesh is None:
+        return Err("Component Mesh was None", ErrorSeverity.Fatal)
 
-    fill_info(trimesh, meshBody)
+
+    fill_info_result = fill_info(trimesh, meshBody)
+    if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        return fill_info_result
+
+
     trimesh.has_volume = True
 
     plainmesh_out = trimesh.mesh
@@ -225,8 +265,10 @@ def _ParseMesh(
     plainmesh_out.indices.extend(mesh.nodeIndices)
     plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
 
+    return Ok(None)
 
-def _MapRigidGroups(rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints) -> None:
+
+def MapRigidGroups(rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints) -> None:
     groups = rootComponent.allRigidGroups
     for group in groups:
         mira_group = joint_pb2.RigidGroup()
