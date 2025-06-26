@@ -1,9 +1,11 @@
 import Scene from "@/components/Scene.tsx"
 import { AnimatePresence } from "framer-motion"
-import { ReactElement, useCallback, useEffect, useState } from "react"
-import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
-import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
-import { useTheme } from "@/ui/ThemeContext"
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react"
+import { ModalControlProvider } from "@/ui/ModalContext"
+import { useModalManager } from "@/ui/helpers/UseModalManager.tsx"
+import { PanelControlProvider } from "@/ui/PanelContext"
+import { usePanelManager } from "@/ui/helpers/UsePanelManager.tsx"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers.tsx"
 import { ToastContainer, ToastProvider } from "@/ui/ToastContext"
 import {
     TOOLTIP_DURATION,
@@ -64,10 +66,15 @@ import ContextMenu from "./ui/components/ContextMenu.tsx"
 import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
+import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
+import TouchControls from "./ui/components/TouchControls.tsx"
+import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
+import MainMenuModal from "@/modals/MainMenuModal"
 
 function Synthesis() {
-    const { openModal, closeModal, getActiveModalElement } = useModalManager(initialModals)
+    const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
+        useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
@@ -82,6 +89,32 @@ function Synthesis() {
     const panelElements = getActivePanelElements()
     const modalElement = getActiveModalElement()
 
+    const mainLoopHandle = useRef(0)
+    registerModal("main-menu", {
+        id: "main-menu",
+        component: (
+            <MainMenuModal
+                key="main-menu"
+                modalId="main-menu"
+                startSingleplayerCallback={() => {
+                    World.InitWorld()
+
+                    if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
+                        setConsentPopupDisable(false)
+                    }
+
+                    const mainLoop = () => {
+                        mainLoopHandle.current = requestAnimationFrame(mainLoop)
+                        World.UpdateWorld()
+                    }
+                    mainLoop()
+
+                    World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
+                }}
+            />
+        ),
+    })
+
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
         if (urlParams.has("code")) {
@@ -89,27 +122,11 @@ function Synthesis() {
             window.close()
             return
         }
-
-        World.InitWorld()
-
-        if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
-            setConsentPopupDisable(false)
-        }
-
-        let mainLoopHandle = 0
-        const mainLoop = () => {
-            mainLoopHandle = requestAnimationFrame(mainLoop)
-
-            World.UpdateWorld()
-        }
-        mainLoop()
-
-        World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
-
+        openModal("main-menu")
         // Cleanup
         return () => {
             // TODO: Teardown literally everything
-            cancelAnimationFrame(mainLoopHandle)
+            cancelAnimationFrame(mainLoopHandle.current)
             World.DestroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
@@ -153,6 +170,7 @@ function Synthesis() {
                         openModal(modalId)
                     }}
                     closeModal={closeModal}
+                    activeModalId={activeModalId}
                 >
                     <PanelControlProvider
                         key={"panel-control-provider"}
@@ -166,6 +184,7 @@ function Synthesis() {
                             <GlobalUIComponent />
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
+                            <TouchControls />
                             <ContextMenu />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
@@ -177,6 +196,7 @@ function Synthesis() {
                             <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                             <WPILibConnectionStatus />
+                            <DragModeIndicator />
 
                             {!consentPopupDisable ? (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
@@ -236,6 +256,7 @@ const initialPanels: ReactElement[] = [
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
     <AutoTestPanel key="auto-test" panelId="auto-test" />,
+    <GraphicsSettings key="graphics-settings" panelId="graphics-settings" sidePadding={8} />,
 ]
 
 export default Synthesis

@@ -3,8 +3,8 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import { useModalControlContext } from "@/ui/ModalContext"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { useCallback, useEffect, useMemo } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "../assembly-config/ConfigurationType"
 import { setSelectedScheme } from "../assembly-config/interfaces/inputs/ConfigureInputsInterface"
@@ -14,6 +14,7 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 
 const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
@@ -33,6 +34,11 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         closePanel("import-mirabuf")
+        mirabufPanelState.hasUnconfirmedImport = true
+
+        return () => {
+            mirabufPanelState.hasUnconfirmedImport = false
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 

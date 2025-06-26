@@ -2,7 +2,7 @@ import * as THREE from "three"
 import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import SelectButton from "@/components/SelectButton"
 import Slider from "@/ui/components/Slider"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
@@ -12,7 +12,7 @@ import {
     ReactRgbaColor_ThreeColor,
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/ThemeContext"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import Button from "@/ui/components/Button"

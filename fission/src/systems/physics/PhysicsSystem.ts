@@ -1,7 +1,6 @@
 import {
     JoltRVec3_JoltVec3,
     JoltVec3_JoltRVec3,
-    JoltVec3_ThreeVector3,
     MirabufFloatArr_JoltFloat3,
     MirabufFloatArr_JoltVec3,
     MirabufVector3_JoltRVec3,
@@ -12,7 +11,7 @@ import {
     _JoltQuat,
 } from "../../util/TypeConversions"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { mirabuf } from "../../proto/mirabuf"
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
@@ -46,7 +45,7 @@ const RobotLayers: number[] = [
     3, 4, 5, 6, 7, 8, 9,
 ]
 
-// Layer for ghost object in god mode, interacts with nothing
+// Layer for ghost objects used in constraint systems, interacts with nothing
 const LAYER_GHOST = 10
 
 // Please update this accordingly.
@@ -55,9 +54,9 @@ const COUNT_OBJECT_LAYERS = 11
 export const STANDARD_SIMULATION_PERIOD = 1.0 / 60.0
 const MIN_SIMULATION_PERIOD = 1.0 / 120.0
 const MAX_SIMULATION_PERIOD = 1.0 / 10.0
-const MIN_SUBSTEPS = 2
-const MAX_SUBSTEPS = 6
-const STANDARD_SUB_STEPS = 4
+const MIN_SUBSTEPS = 12
+const MAX_SUBSTEPS = 20
+const STANDARD_SUB_STEPS = 20
 const TIMESTEP_ADJUSTMENT = 0.0001
 
 const SIGNIFICANT_FRICTION_THRESHOLD = 0.05
@@ -128,9 +127,9 @@ class PhysicsSystem extends WorldSystem {
         this._joltPhysSystem.GetPhysicsSettings().mPenetrationSlop = 0.005
 
         const ground = this.CreateBox(
-            new THREE.Vector3(5.0, 0.5, 5.0),
+            new THREE.Vector3(7.5, 0.1, 7.5),
             undefined,
-            new THREE.Vector3(0.0, -0.5, 0.0),
+            new THREE.Vector3(0.0, -0.1, 0.0),
             undefined
         )
         ground.SetFriction(FLOOR_FRICTION)
@@ -1252,7 +1251,7 @@ class PhysicsSystem extends WorldSystem {
 
         const diffDeltaT = deltaT - lastDeltaT
 
-        lastDeltaT = lastDeltaT + Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
+        lastDeltaT += Math.min(TIMESTEP_ADJUSTMENT, Math.max(-TIMESTEP_ADJUSTMENT, diffDeltaT))
         lastDeltaT = Math.min(MAX_SIMULATION_PERIOD, Math.max(MIN_SIMULATION_PERIOD, lastDeltaT))
 
         let substeps = Math.max(1, Math.floor((lastDeltaT / STANDARD_SIMULATION_PERIOD) * STANDARD_SUB_STEPS))
@@ -1304,38 +1303,6 @@ class PhysicsSystem extends WorldSystem {
 
         this._bodies.push(body.GetID())
         return body
-    }
-
-    /**
-     * Creates a ghost object and a distance constraint that connects it to the given body
-     * The ghost body is part of the LAYER_GHOST which doesn't interact with any other layer
-     * The caller is responsible for cleaning up the ghost body and the constraint
-     *
-     * @param id The id of the body to be attatched to and moved
-     * @returns The ghost body and the constraint
-     */
-
-    public CreateGodModeBody(id: Jolt.BodyID, anchorPoint: Jolt.Vec3): [Jolt.Body, Jolt.Constraint] {
-        const body = this.GetBody(id)
-        const ghostBody = this.CreateBox(
-            new THREE.Vector3(0.05, 0.05, 0.05),
-            undefined,
-            JoltVec3_ThreeVector3(anchorPoint),
-            undefined
-        )
-
-        const ghostBodyId = ghostBody.GetID()
-        this._joltBodyInterface.SetObjectLayer(ghostBodyId, LAYER_GHOST)
-        this._joltBodyInterface.AddBody(ghostBodyId, JOLT.EActivation_Activate)
-        this._bodies.push(ghostBodyId)
-
-        const constraintSettings = new JOLT.PointConstraintSettings()
-        constraintSettings.mPoint1 = constraintSettings.mPoint2 = JoltVec3_JoltRVec3(anchorPoint)
-        const constraint = constraintSettings.Create(ghostBody, body)
-        this._joltPhysSystem.AddConstraint(constraint)
-        this._constraints.push(constraint)
-
-        return [ghostBody, constraint]
     }
 
     public CreateSensor(shapeSettings: Jolt.ShapeSettings): Jolt.BodyID | undefined {

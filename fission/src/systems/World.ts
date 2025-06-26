@@ -5,6 +5,7 @@ import SceneRenderer from "./scene/SceneRenderer"
 import SimulationSystem from "./simulation/SimulationSystem"
 import InputSystem from "./input/InputSystem"
 import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
+import DragModeSystem from "./scene/DragModeSystem"
 
 class World {
     private static _isAlive: boolean = false
@@ -16,6 +17,7 @@ class World {
     private static _simulationSystem: SimulationSystem
     private static _inputSystem: InputSystem
     private static _analyticsSystem: AnalyticsSystem | undefined = undefined
+    private static _dragModeSystem: DragModeSystem
 
     private static _accumTimes: AccumTimes = {
         frames: 0,
@@ -49,6 +51,9 @@ class World {
     public static get AnalyticsSystem() {
         return World._analyticsSystem
     }
+    public static get DragModeSystem() {
+        return World._dragModeSystem
+    }
 
     public static resetAccumTimes() {
         this._accumTimes = {
@@ -71,6 +76,7 @@ class World {
         World._physicsSystem = new PhysicsSystem()
         World._simulationSystem = new SimulationSystem()
         World._inputSystem = new InputSystem()
+        World._dragModeSystem = new DragModeSystem()
         try {
             World._analyticsSystem = new AnalyticsSystem()
         } catch (_) {
@@ -87,6 +93,7 @@ class World {
         World._sceneRenderer.Destroy()
         World._simulationSystem.Destroy()
         World._inputSystem.Destroy()
+        World._dragModeSystem.Destroy()
 
         World._analyticsSystem?.Destroy()
     }
@@ -101,6 +108,7 @@ class World {
             this._accumTimes.physicsTime += this.time(() => World._physicsSystem.Update(this._currentDeltaT))
             this._accumTimes.inputTime += this.time(() => World._inputSystem.Update(this._currentDeltaT))
             this._accumTimes.sceneTime += this.time(() => World._sceneRenderer.Update(this._currentDeltaT))
+            World._dragModeSystem.Update(this._currentDeltaT)
         })
 
         World._analyticsSystem?.Update(this._currentDeltaT)

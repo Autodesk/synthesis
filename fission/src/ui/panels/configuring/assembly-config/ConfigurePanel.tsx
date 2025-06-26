@@ -5,12 +5,12 @@ import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useEffect, useMemo, useReducer, useState, MouseEvent } from "react"
+import { MouseEvent, useEffect, useMemo, useReducer, useState } from "react"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Button from "@/ui/components/Button"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -24,6 +24,9 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -101,6 +104,8 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
                 update()
             }}
             onAddClicked={() => {
+                mirabufPanelState.currentMode =
+                    configurationType == ConfigurationType.FIELD ? MiraType.FIELD : MiraType.ROBOT
                 openPanel("import-mirabuf")
             }}
             noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : "fields"} spawned!`}
@@ -130,9 +135,26 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
                 "Select and modify what is controlling of the robot."
             ),
         ],
-        [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
-        [ConfigMode.INTAKE, new ConfigModeSelectionOption("Intake", ConfigMode.INTAKE)],
-        [ConfigMode.EJECTOR, new ConfigModeSelectionOption("Ejector", ConfigMode.EJECTOR)],
+        [
+            ConfigMode.MOVE,
+            new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of robot relative to field."),
+        ],
+        [
+            ConfigMode.INTAKE,
+            new ConfigModeSelectionOption(
+                "Intake",
+                ConfigMode.INTAKE,
+                "Configure the robot’s intake position and parent node for picking up game pieces."
+            ),
+        ],
+        [
+            ConfigMode.EJECTOR,
+            new ConfigModeSelectionOption(
+                "Ejector",
+                ConfigMode.EJECTOR,
+                "Configure the robot’s ejector mechanism, which controls the release or expulsion of game pieces."
+            ),
+        ],
         [
             ConfigMode.SUBSYSTEMS,
             new ConfigModeSelectionOption(
@@ -163,7 +185,10 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
             )
             break
         case "synthesis":
-            modes.set(ConfigMode.CONTROLS, new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS))
+            modes.set(
+                ConfigMode.CONTROLS,
+                new ConfigModeSelectionOption("Controls", ConfigMode.CONTROLS, "Set your controller scheme.")
+            )
             break
         default:
             break
@@ -173,8 +198,18 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
 }
 
 const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
-    [ConfigMode.MOVE, new ConfigModeSelectionOption("Move", ConfigMode.MOVE)],
-    [ConfigMode.SCORING_ZONES, new ConfigModeSelectionOption("Scoring Zones", ConfigMode.SCORING_ZONES)],
+    [
+        ConfigMode.MOVE,
+        new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of field relative to robot."),
+    ],
+    [
+        ConfigMode.SCORING_ZONES,
+        new ConfigModeSelectionOption(
+            "Scoring Zones",
+            ConfigMode.SCORING_ZONES,
+            "Define and manage zones on the field where robots can earn points during simulation."
+        ),
+    ],
 ])
 
 interface ConfigModeSelectionProps {
@@ -325,6 +360,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         new ConfigurationSavedEvent()
                         setConfigMode(undefined)
                     }}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
                     sx={{
                         alignSelf: "center",
                     }}

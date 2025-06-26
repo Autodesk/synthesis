@@ -16,6 +16,7 @@ import { useReducer } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 
 function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
     const [_, update] = useReducer(x => !x, false)
@@ -55,6 +56,10 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                                 {/** Select button */}
                                 {SelectButton(() => {
                                     InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                    // TODO: if touch controls, then ensure that they are enabled.
+                                    if (scheme.usesTouchControls) {
+                                        new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
+                                    }
                                     onSelect?.()
                                     update()
                                 })}
