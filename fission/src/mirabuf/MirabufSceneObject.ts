@@ -87,7 +87,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _intakeActive = false
     private _ejectorActive = false
 
-    private _ejectableToastShown = false
+    private _lastEjectableToastTime = 0
+    private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
     public get intakeActive() {
         return this._intakeActive
@@ -440,10 +441,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         if (!this._ejectorPreferences || !this._ejectorPreferences.parentNode || !bodyId) {
-            if (!this._ejectableToastShown) {
+            const now = Date.now()
+            if (now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS) {
                 console.log(`Configure an ejectable first.`)
-                Global_AddToast?.("info", "Configure Ejectable", `Configure an ejectable first.`)
-                this._ejectableToastShown = true
+                Global_AddToast?.("info", "Configure Ejectable", "Configure an ejectable first.")
+                this._lastEjectableToastTime = now
             }
             return false
         }
