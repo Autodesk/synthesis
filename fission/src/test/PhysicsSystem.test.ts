@@ -5,7 +5,7 @@ import * as THREE from "three"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { JoltRVec3_JoltVec3 } from "@/util/TypeConversions"
 
-describe("Physics Sansity Checks", () => {
+describe("Physics Sanity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
         const points: Float32Array = new Float32Array([
             0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
