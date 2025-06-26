@@ -81,6 +81,10 @@ class SceneRenderer extends WorldSystem {
         return this._cameraControls
     }
 
+    public get screenInteractionHandler(): ScreenInteractionHandler {
+        return this._screenInteractionHandler
+    }
+
     /**
      * Collection that maps Mirabuf objects to active GizmoSceneObjects
      */
