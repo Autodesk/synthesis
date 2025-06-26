@@ -5,7 +5,7 @@ import adsk.core
 import adsk.fusion
 
 from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
-from src.Proto import assembly_pb2, types_pb2
+from src.Proto import assembly_pb2, material_pb2, types_pb2
 
 
 def guid_component(comp: adsk.fusion.Component) -> str:
@@ -20,13 +20,13 @@ def guid_none(_: None) -> str:
     return str(uuid.uuid4())
 
 
-def fill_info(proto_obj: assembly_pb2.Assembly, fus_object: adsk.core.Base, override_guid: str | None = None) -> Result[None]:
+def fill_info(proto_obj: assembly_pb2.Assembly | material_pb2.Materials, fus_object: adsk.core.Base, override_guid: str | None = None) -> Result[None]:
     return construct_info("", proto_obj, fus_object=fus_object, GUID=override_guid)
 
 
 def construct_info(
     name: str,
-    proto_obj: assembly_pb2.Assembly,
+    proto_obj: assembly_pb2.Assembly | material_pb2.Materials | material_pb2.PhysicalMaterial,
     version: int = 5,
     fus_object: adsk.core.Base | None = None,
     GUID: str | None = None,
