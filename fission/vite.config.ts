@@ -1,8 +1,8 @@
-import { defineConfig } from "vitest/config"
-import * as path from "path"
-import react from "@vitejs/plugin-react-swc"
-import basicSsl from "@vitejs/plugin-basic-ssl"
-import glsl from "vite-plugin-glsl"
+import { defineConfig } from 'vitest/config'
+import * as path from 'path'
+import react from '@vitejs/plugin-react-swc'
+import basicSsl from '@vitejs/plugin-basic-ssl'
+import glsl from 'vite-plugin-glsl'
 
 const basePath = "/fission/"
 const serverPort = 3000
@@ -12,24 +12,19 @@ const useLocal = false
 const useSsl = false
 
 const plugins = [
-    react(),
-    glsl({
-        include: [
-            // Glob pattern, or array of glob patterns to import
-            "**/*.glsl",
-            "**/*.wgsl",
-            "**/*.vert",
-            "**/*.frag",
-            "**/*.vs",
-            "**/*.fs",
+    react(), glsl({
+        include: [                   // Glob pattern, or array of glob patterns to import
+          '**/*.glsl', '**/*.wgsl',
+          '**/*.vert', '**/*.frag',
+          '**/*.vs', '**/*.fs'
         ],
-        exclude: undefined, // Glob pattern, or array of glob patterns to ignore
+        exclude: undefined,          // Glob pattern, or array of glob patterns to ignore
         warnDuplicatedImports: true, // Warn if the same chunk was imported multiple times
-        defaultExtension: "glsl", // Shader suffix when no extension is specified
-        minify: false, // Minify/optimize output shader code
-        watch: true, // Recompile shader on change
-        root: "/", // Directory for root imports
-    }),
+        defaultExtension: 'glsl',    // Shader suffix when no extension is specified
+        minify: false,               // Minify/optimize output shader code
+        watch: true,                 // Recompile shader on change
+        root: '/'                    // Directory for root imports
+    })
 ]
 
 if (useSsl) {
