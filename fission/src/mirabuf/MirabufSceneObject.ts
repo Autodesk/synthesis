@@ -78,8 +78,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _fieldPreferences: FieldPreferences | undefined
 
+    private _ejectables: EjectableSceneObject[] = []
     private _intakeSensor?: IntakeSensorSceneObject
-    private _ejectable?: EjectableSceneObject
+    // private _ejectable?: EjectableSceneObject
     private _scoringZones: ScoringZoneSceneObject[] = []
 
     private _nameTag: SceneOverlayTag | undefined
@@ -128,8 +129,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._fieldPreferences
     }
 
-    public get activeEjectable(): Jolt.BodyID | undefined {
-        return this._ejectable?.gamePieceBodyId
+    public get activeEjectables(): Jolt.BodyID[] {
+        return this._ejectables.map(e => e.gamePieceBodyId!)
     }
 
     public get miraType(): MiraType {
@@ -268,10 +269,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._intakeSensor = undefined
         }
 
-        if (this._ejectable) {
-            World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
-            this._ejectable = undefined
-        }
+        this._ejectables.forEach(e => 
+            World.SceneRenderer.RemoveSceneObject(e.id)
+        )
 
         this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
         this._scoringZones = []
@@ -300,11 +300,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public Eject() {
-        if (!this._ejectable) return
+        if (this._ejectables.length === 0) return
 
-        this._ejectable.Eject()
-        World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
-        this._ejectable = undefined
+        const e = this._ejectables.shift()!
+        e.Eject()
+        World.SceneRenderer.RemoveSceneObject(e.id)
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
@@ -429,21 +429,26 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
-    public SetEjectable(bodyId?: Jolt.BodyID, removeExisting: boolean = false): boolean {
-        if (this._ejectable) {
-            if (!removeExisting) return false
-
-            World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
-            this._ejectable = undefined
-        }
-
-        if (!this._ejectorPreferences || !this._ejectorPreferences.parentNode || !bodyId) {
+    public SetEjectable(bodyId?: Jolt.BodyID): boolean {
+        // 1) still require you’ve configured an ejector
+        if (!this._ejectorPreferences?.parentNode || !bodyId) {
             console.log(`Configure an ejectable first.`)
             return false
         }
 
-        this._ejectable = new EjectableSceneObject(this, bodyId)
-        World.SceneRenderer.RegisterSceneObject(this._ejectable)
+        // 2) don’t exceed your configured maxPieces
+        const max = this._intakePreferences?.maxPieces ?? 1
+        if (this._ejectables.length >= max) return false
+
+        // 3) avoid duplicates
+        const key = bodyId.GetIndexAndSequenceNumber()
+        if (this._ejectables.some(e => e.gamePieceBodyId!.GetIndexAndSequenceNumber() === key)) {
+            return false
+        }
+
+        const ejectable = new EjectableSceneObject(this, bodyId)
+        this._ejectables.push(ejectable)
+        World.SceneRenderer.RegisterSceneObject(ejectable)
         return true
     }
 
