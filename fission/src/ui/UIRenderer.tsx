@@ -1,47 +1,34 @@
 import { useContext, useEffect } from "react";
 import { CloseType, UIContext } from "./UIProvider";
 import type React from "react";
-import type { ReactElement, ReactNode } from "react";
-import { Box, Drawer, Modal as MUIModal, Typography } from "@mui/material";
+import { Drawer } from "@mui/material";
 import { Modal } from "@/components/Modal";
+import { Panel } from "@/components/Panel";
 
-export type UIRendererProps = {};
+export type UIRendererProps = object; // TODO: add actual props or delete
 
 export const UIRenderer: React.FC<UIRendererProps> = () => {
 	const { modal, openModal, closeModal, panels, openPanel, closePanel } =
 		useContext(UIContext);
 	useEffect(() => {
 		console.log(
-			`opening test modal ${openModal(<p>test</p>, {
-				onClose: () => {
-					console.log("closed test modal");
-				},
+			`opening test panel ${openPanel(<p>test</p>, "top-right", {
+				onClose: () => console.log("closed test panel"),
+				onAccept: () => console.log("ACCEPTED!"),
+				onCancel: () => console.log("CANCELED!"),
 			})}`,
 		);
 	}, []);
-	console.log(modal);
+	console.log(panels);
 	return (
 		<>
-			{panels.map((p, i) => (
-				<Drawer
-					key={p.id}
-					anchor="right"
-					open={true}
-					onClose={() => closePanel(p.id, CloseType.Cancel)}
-					variant="persistent"
-					sx={{
-						width: 320,
-						flexShrink: 0,
-						"& .MuiDrawer-paper": {
-							width: 320,
-							boxSizing: "border-box",
-							right: i * 320,
-						},
-					}}
-				>
-					{p.content}
-				</Drawer>
-			))}
+			<div id="panel-container" className="relative pointer-events-none w-[100vw] h-[100vh]">
+				{panels.map((p, _i) => (
+					<Panel key={`panel-${p.id}`} panel={p}>
+						{p.content}
+					</Panel>
+				))}
+			</div>
 			<Modal modal={modal}>{modal?.content}</Modal>
 		</>
 	);

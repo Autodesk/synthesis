@@ -11,7 +11,7 @@ import type { Modal as ModalType } from "../UIProvider";
 
 interface ModalProps {
 	children?: ReactNode;
-	modal: ModalType;
+	modal?: ModalType;
 }
 
 export const Modal: React.FC<ModalProps> = ({ children, modal }) => {
