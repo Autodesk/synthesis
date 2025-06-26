@@ -1,11 +1,11 @@
 from enum import Enum
 from typing import Generic, TypeVar
 
+# TODO Figure out if we need an error severity system
+# Warnings are kind of useless if they break control flow anyways, so why not just replace warnings with writing to a log file and have errors break control flow
 class ErrorSeverity(Enum):
     Fatal = 1
     Warning = 2
-type ErrorMessage = str
-type Error = tuple[ErrorSeverity, ErrorMessage]
 
 T = TypeVar('T')
 
@@ -35,9 +35,11 @@ class Ok(Result[T]):
         return f"Ok({self.value})"
 
 class Err(Result[T]):
-    error: Error
-    def __init__(self, error: Error):
-        self.error = error
+    message: str
+    severity: ErrorSeverity
+    def __init__(self, message: str, severity: ErrorSeverity):
+        self.message = message
+        self.severity = severity
 
     def __repr__(self):
         return f"Err({self.error})"
