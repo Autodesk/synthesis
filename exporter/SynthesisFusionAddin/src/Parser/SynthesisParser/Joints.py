@@ -29,6 +29,7 @@ from typing import Any, Callable, Union
 import adsk.core
 import adsk.fusion
 
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Logging import getLogger
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
@@ -76,20 +77,28 @@ def populateJoints(
     progressDialog: PDMessage,
     options: ExporterOptions,
     assembly: assembly_pb2.Assembly,
-) -> None:
-    fill_info(joints, None)
+) -> Result[None]:
+    info_result = fill_info(joints, None)
+    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+        return info_result
 
     # This is for creating all of the Joint Definition objects
     # So we need to iterate through the joints and construct them and add them to the map
     if not options.joints:
-        return
+        return Ok(None)
 
     # Add the grounded joints object - TODO: rename some of the protobuf stuff for the love of god
     joint_definition_ground = joints.joint_definitions["grounded"]
-    construct_info("grounded", joint_definition_ground)
+    info_result = construct_info("grounded", joint_definition_ground)
+    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+        return info_result
+
 
     joint_instance_ground = joints.joint_instances["grounded"]
-    construct_info("grounded", joint_instance_ground)
+    info_result = construct_info("grounded", joint_instance_ground)
+    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+        return info_result
+
 
     joint_instance_ground.joint_reference = joint_definition_ground.info.GUID
 
@@ -106,7 +115,8 @@ def populateJoints(
 
         if joint.jointMotion.jointType in AcceptedJointTypes:
             try:
-                #  Fusion has no instances of joints but lets roll with it anyway
+                # Fusion has no instances of joints but lets roll with it anyway
+                # ^^^ This majorly confuses me ^^^
 
                 # progressDialog.message = f"Exporting Joint configuration {joint.name}"
                 progressDialog.addJoint(joint.name)
@@ -122,7 +132,11 @@ def populateJoints(
                     if parse_joints.jointToken == joint.entityToken:
                         guid = str(uuid.uuid4())
                         signal = signals.signal_map[guid]
-                        construct_info(joint.name, signal, GUID=guid)
+
+                        info_result = construct_info(joint.name, signal, GUID=guid)
+                        if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+                            return info_result
+
                         signal.io = signal_pb2.IOType.OUTPUT
 
                         # really could just map the enum to a friggin string
@@ -133,7 +147,12 @@ def populateJoints(
                                 signal.device_type = signal_pb2.DeviceType.PWM
 
                             motor = joints.motor_definitions[joint.entityToken]
-                            fill_info(motor, joint)
+
+                            info_result = fill_info(motor, joint)
+                            if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+                                return info_result
+
+
                             simple_motor = motor.simple_motor
                             simple_motor.stall_torque = parse_joints.force
                             simple_motor.max_velocity = parse_joints.speed
@@ -144,19 +163,24 @@ def populateJoints(
                         # else:
                         #     signals.signal_map.remove(guid)
 
-                _addJointInstance(joint, joint_instance, joint_definition, signals, options)
+                joint_result = _addJointInstance(joint, joint_instance, joint_definition, signals, options)
+                if joint_result.is_err() and joint_result.severity == ErrorSeverity.Fatal:
+                    return joint_result
 
                 # adds information for joint motion and limits
                 _motionFromJoint(joint.jointMotion, joint_definition)
 
             except:
-                logger.error("Failed:\n{}".format(traceback.format_exc()))
+                # TODO: Figure out how to construct and return this (ie, what actually breaks in this try block)
+                _ = Err("Failed:\n{}".format(traceback.format_exc()), ErrorSeverity.Fatal)
                 continue
+    return Ok(None)
 
 
-def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint) -> None:
-    fill_info(joint_definition, joint)
-
+def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint) -> Result[None]:
+    info_result = fill_info(joint_definition, joint)
+    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+        return info_result
     jointPivotTranslation = _jointOrigin(joint)
 
     if jointPivotTranslation:
@@ -168,9 +192,12 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint) -> No
         joint_definition.origin.y = 0.0
         joint_definition.origin.z = 0.0
 
-        logger.error(f"Cannot find joint origin on joint {joint.name}")
+        # TODO: We definitely could make this fatal, figure out if we should
+        _ = Err(f"Cannot find joint origin on joint {joint.name}", ErrorSeverity.Warning)
 
     joint_definition.break_magnitude = 0.0
+
+    return Ok(None)
 
 
 def _addJointInstance(
@@ -179,8 +206,11 @@ def _addJointInstance(
     joint_definition: joint_pb2.Joint,
     signals: signal_pb2.Signals,
     options: ExporterOptions,
-) -> None:
-    fill_info(joint_instance, joint)
+) -> Result[None]:
+    info_result = fill_info(joint_instance, joint)
+    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+        return info_result
+
     # because there is only one and we are using the token - should be the same
     joint_instance.joint_reference = joint_instance.info.GUID
 
@@ -221,7 +251,11 @@ def _addJointInstance(
                 else:  # if not then create it and add the signal type
                     guid = str(uuid.uuid4())
                     signal = signals.signal_map[guid]
-                    construct_info("joint_signal", signal, GUID=guid)
+
+                    info_result = construct_info("joint_signal", signal, GUID=guid)
+                    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+                        return info_result
+
                     signal.io = signal_pb2.IOType.OUTPUT
                     joint_instance.signal_reference = signal.info.GUID
 
@@ -232,7 +266,7 @@ def _addJointInstance(
                         signal.device_type = signal_pb2.DeviceType.PWM
                 else:
                     joint_instance.signal_reference = ""
-
+    return Ok(None)
 
 def _addRigidGroup(joint: adsk.fusion.Joint, assembly: assembly_pb2.Assembly) -> None:
     if joint.jointMotion.jointType != 0 or not (
@@ -422,7 +456,7 @@ def notImplementedPlaceholder(*argv: Any) -> None: ...
 
 def _searchForGrounded(
     occ: adsk.fusion.Occurrence,
-) -> Union[adsk.fusion.Occurrence, None]:
+) -> adsk.fusion.Occurrence | None:
     """Search for a grounded component or occurrence in the assembly
 
     Args:
@@ -512,7 +546,7 @@ def createJointGraph(
     _wheels: list[Wheel],
     jointTree: types_pb2.GraphContainer,
     progressDialog: PDMessage,
-) -> None:
+) -> Result[None]:
     # progressDialog.message = f"Building Joint Graph Map from given joints"
 
     progressDialog.currentMessage = f"Building Joint Graph Map from given joints"
@@ -542,11 +576,13 @@ def createJointGraph(
         elif nodeMap[suppliedJoint.parent.value] is not None and nodeMap[suppliedJoint.jointToken] is not None:
             nodeMap[str(suppliedJoint.parent)].children.append(nodeMap[suppliedJoint.jointToken])
         else:
-            logger.error(f"Cannot construct hierarhcy because of detached tree at : {suppliedJoint.jointToken}")
+            # TODO: This might not need to be fatal
+            return Err(f"Cannot construct hierarchy because of detached tree at : {suppliedJoint.jointToken}", ErrorSeverity.Fatal)
 
     for node in nodeMap.values():
         # append everything at top level to isolate kinematics
         jointTree.nodes.append(node)
+    return Ok(None)
 
 
 def addWheelsToGraph(wheels: list[Wheel], rootNode: types_pb2.Node, jointTree: types_pb2.GraphContainer) -> None:
