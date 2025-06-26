@@ -269,9 +269,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._intakeSensor = undefined
         }
 
-        this._ejectables.forEach(e => 
-            World.SceneRenderer.RemoveSceneObject(e.id)
-        )
+        this._ejectables.forEach(e => World.SceneRenderer.RemoveSceneObject(e.id))
 
         this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
         this._scoringZones = []
@@ -302,9 +300,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public Eject() {
         if (this._ejectables.length === 0) return
 
-        const e = this._ejectables.shift()!
-        e.Eject()
-        World.SceneRenderer.RemoveSceneObject(e.id)
+        const order = this._ejectorPreferences?.ejectOrder
+        let ejectable: EjectableSceneObject | undefined
+
+        if (order === "FIFO") ejectable = this._ejectables.shift()
+        else ejectable = this._ejectables.pop()
+
+        if (!ejectable) return
+
+        ejectable.Eject()
+        World.SceneRenderer.RemoveSceneObject(ejectable.id)
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {

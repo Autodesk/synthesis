@@ -54,7 +54,7 @@ function save(
     gizmo: GizmoSceneObject,
     selectedRobot: MirabufSceneObject,
     selectedNode?: RigidNodeId,
-    ejectOrder?: 'FIFO' | 'LIFO'
+    ejectOrder?: "FIFO" | "LIFO"
 ) {
     if (!selectedRobot?.ejectorPreferences || !gizmo) {
         return
@@ -92,18 +92,20 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
 
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [ejectorVelocity, setEjectorVelocity] = useState<number>((MIN_VELOCITY + MAX_VELOCITY) / 2.0)
-    const [ejectOrder, setEjectOrder] = useState<'FIFO'|'LIFO'>(selectedRobot.ejectorPreferences?.ejectOrder || 'FIFO')
+    const [ejectOrder, setEjectOrder] = useState<"FIFO" | "LIFO">(
+        selectedRobot.ejectorPreferences?.ejectOrder || "FIFO"
+    )
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            save(ejectorVelocity, gizmoRef.current, selectedRobot, selectedNode)
+            save(ejectorVelocity, gizmoRef.current, selectedRobot, selectedNode, ejectOrder)
             const currentGp = selectedRobot.activeEjectables[0]
             selectedRobot.SetEjectable(undefined)
             selectedRobot.SetEjectable(currentGp)
         }
-    }, [selectedRobot, selectedNode, ejectorVelocity])
+    }, [selectedRobot, selectedNode, ejectorVelocity, ejectOrder])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -222,18 +224,18 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             />
 
             {/* Toggle for adjusting eject order */}
-                <div className="mt-4 flex items-center space-x-2">
+            <div className="mt-4 flex items-center space-x-2">
                 <span>Eject Order</span>
                 <ToggleButtonGroup
                     value={ejectOrder}
                     exclusive
                     onChange={(_, v) => v && setEjectOrder(v as "FIFO" | "LIFO")}
                 >
-                <ToggleButton value="FIFO">FIFO</ToggleButton>
-                <ToggleButton value="LIFO">LIFO</ToggleButton>
+                    <ToggleButton value="FIFO">FIFO</ToggleButton>
+                    <ToggleButton value="LIFO">LIFO</ToggleButton>
                 </ToggleButtonGroup>
             </div>
-            
+
             {gizmoComponent}
             {Spacer(10)}
             <Button
@@ -248,7 +250,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                     }
                     setEjectorVelocity(1)
                     setSelectedNode(selectedRobot?.rootNodeId)
-                    setEjectOrder(selectedRobot.ejectorPreferences?.ejectOrder ?? 'FIFO')
+                    setEjectOrder(selectedRobot.ejectorPreferences?.ejectOrder ?? "FIFO")
                 }}
             />
         </>

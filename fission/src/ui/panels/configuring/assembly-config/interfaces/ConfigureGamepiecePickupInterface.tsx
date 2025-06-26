@@ -57,7 +57,7 @@ function save(
     selectedRobot: MirabufSceneObject,
     selectedNode?: RigidNodeId,
     showZoneAlways?: boolean,
-    maxPieces?: number,
+    maxPieces?: number
 ) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
@@ -255,7 +255,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 min={1}
                 max={10}
                 step={1}
-                value={maxPieces ?? 1} 
+                value={maxPieces ?? 1}
                 label="Max Pieces"
                 onChange={(_, v) => setMaxPieces(v as number)}
             />
