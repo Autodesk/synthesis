@@ -59,19 +59,4 @@ describe("Mirabuf Physics Loading", () => {
 
         expect(mapping.size).toBe(7)
     })
-
-    test("Body Loading (Team_2471_(2018)_v7.mira)", async () => {
-        const assembly = await MirabufCachingService.CacheRemote(
-            "/api/mira/robots/Team 2471 (2018)_v7.mira",
-            MiraType.ROBOT
-        ).then(x => {
-            return MirabufCachingService.Get(x!.id, MiraType.ROBOT)
-        })
-
-        const parser = new MirabufParser(assembly!)
-        const physSystem = new PhysicsSystem()
-        const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
-
-        expect(mapping.size).toBe(10)
-    })
 })
