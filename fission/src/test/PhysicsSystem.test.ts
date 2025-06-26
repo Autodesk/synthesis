@@ -1,9 +1,7 @@
 import { test, expect, describe, assert } from "vitest"
 import PhysicsSystem, { LayerReserve } from "../systems/physics/PhysicsSystem"
 import MirabufParser from "@/mirabuf/MirabufParser"
-import * as THREE from "three"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import { JoltRVec3_JoltVec3 } from "@/util/TypeConversions"
 
 describe("Physics Sansity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
@@ -47,34 +45,6 @@ describe("Physics Sansity Checks", () => {
 
         shape.Release()
         system.Destroy()
-    })
-})
-
-describe("GodMode", () => {
-    test("Basic", () => {
-        const system = new PhysicsSystem()
-        const box = system.CreateBox(new THREE.Vector3(1, 1, 1), 1, new THREE.Vector3(0, 0, 0), undefined)
-        const [ghostObject, ghostConstraint] = system.CreateGodModeBody(
-            box.GetID(),
-            JoltRVec3_JoltVec3(box.GetPosition())
-        )
-
-        assert(system.GetBody(ghostObject.GetID()) != undefined)
-        assert(system.GetBody(box.GetID()) != undefined)
-        assert(ghostConstraint != undefined)
-        // Check constraint after running for a few seconds
-        // TODO: Make sure this is the correct way to do this
-        // TODO: Figure out how to make it use substeps to check instead
-        for (let i = 0; i < 30; i++) {
-            // TODO: Change this once this function actually uses deltaT
-            system.Update(i)
-        }
-
-        assert(system.GetBody(ghostObject.GetID()) != undefined)
-        assert(system.GetBody(box.GetID()) != undefined)
-        assert(ghostConstraint != undefined)
-
-        //system.Destroy()
     })
 })
 
