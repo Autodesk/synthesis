@@ -65,14 +65,14 @@ export const Panel: React.FC<PanelProps> = ({ children, panel }) => {
 					<Button
 						onClick={() => closePanel(panel.id, CloseType.Cancel)}
 						variant="outlined"
-						color="error"
+						color="secondary"
 					>
 						Close
 					</Button>
 					<Button
 						onClick={() => closePanel(panel.id, CloseType.Accept)}
 						variant="contained"
-						color="success"
+						color="primary"
 					>
 						Accept
 					</Button>

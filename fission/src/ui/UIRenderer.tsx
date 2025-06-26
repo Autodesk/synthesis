@@ -8,14 +8,14 @@ import { Panel } from "@/components/Panel";
 export type UIRendererProps = object; // TODO: add actual props or delete
 
 export const UIRenderer: React.FC<UIRendererProps> = () => {
-	const { modal, openModal, closeModal, panels, openPanel, closePanel } =
+	const { modal, openModal, closeModal, panels, openPanel, closePanel, enqueueSnackbar } =
 		useContext(UIContext);
 	useEffect(() => {
 		console.log(
 			`opening test panel ${openPanel(<p>test</p>, "top-right", {
 				onClose: () => console.log("closed test panel"),
-				onAccept: () => console.log("ACCEPTED!"),
-				onCancel: () => console.log("CANCELED!"),
+				onAccept: () => enqueueSnackbar("ACCEPTED!", { variant: 'success' }),
+				onCancel: () => enqueueSnackbar("CANCELED!", { variant: 'error' }),
 			})}`,
 		);
 	}, []);

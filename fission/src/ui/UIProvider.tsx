@@ -1,3 +1,5 @@
+import { useSnackbar } from "notistack";
+import type { EnqueueSnackbar } from "notistack";
 import { createContext, useState } from "react";
 import type React from "react";
 import type { ReactElement, ReactNode } from "react";
@@ -64,6 +66,7 @@ export type UIContextProps = {
 	openPanel: OpenPanelFn;
 	closeModal: CloseModalFn;
 	closePanel: ClosePanelFn;
+	enqueueSnackbar: EnqueueSnackbar;
 };
 
 export const UIContext = createContext<UIContextProps>({
@@ -72,11 +75,14 @@ export const UIContext = createContext<UIContextProps>({
 	openPanel: (_content, _position = "center", _props = {}) => "",
 	closeModal: () => {},
 	closePanel: (_id) => {},
+	enqueueSnackbar: (_msg) => "",
 });
 
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 	const [modal, setModal] = useState<Modal | undefined>(undefined);
 	const [panels, setPanels] = useState<Panel[]>([]);
+
+	const { enqueueSnackbar } = useSnackbar();
 
 	// TODO: add support for modal-specific props (i.e. allowClickAway)
 	const openModal: OpenModalFn = (
@@ -137,7 +143,15 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
 	return (
 		<UIContext.Provider
-			value={{ modal, panels, openModal, openPanel, closeModal, closePanel }}
+			value={{
+				modal,
+				panels,
+				openModal,
+				openPanel,
+				closeModal,
+				closePanel,
+				enqueueSnackbar,
+			}}
 		>
 			{children}
 		</UIContext.Provider>
