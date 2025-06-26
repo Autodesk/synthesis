@@ -4,7 +4,8 @@ import uuid
 import adsk.core
 import adsk.fusion
 
-from src.Proto import assembly_pb2
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
+from src.Proto import assembly_pb2, types_pb2
 
 
 def guid_component(comp: adsk.fusion.Component) -> str:
@@ -19,8 +20,8 @@ def guid_none(_: None) -> str:
     return str(uuid.uuid4())
 
 
-def fill_info(proto_obj: assembly_pb2.Assembly, fus_object: adsk.core.Base, override_guid: str | None = None) -> None:
-    construct_info("", proto_obj, fus_object=fus_object, GUID=override_guid)
+def fill_info(proto_obj: assembly_pb2.Assembly, fus_object: adsk.core.Base, override_guid: str | None = None) -> Result[None]:
+    return construct_info("", proto_obj, fus_object=fus_object, GUID=override_guid)
 
 
 def construct_info(
@@ -29,7 +30,8 @@ def construct_info(
     version: int = 5,
     fus_object: adsk.core.Base | None = None,
     GUID: str | None = None,
-) -> None:
+) -> Result[None]:
+    # TODO Fix out of date documentation
     """Constructs a info object from either a name or a fus_object
 
     Args:
@@ -49,8 +51,10 @@ def construct_info(
 
     if fus_object is not None:
         proto_obj.info.name = fus_object.name
-    else:
+    elif name != "":
         proto_obj.info.name = name
+    else:
+        return Err("Attempted to set proto_obj.info.name to None", ErrorSeverity.Warning)
 
     if GUID is not None:
         proto_obj.info.GUID = str(GUID)
@@ -59,29 +63,13 @@ def construct_info(
     else:
         proto_obj.info.GUID = str(uuid.uuid4())
 
+    return Ok(None)
 
-# Transition: AARD-1765
-# Will likely be removed later as this is no longer used. Avoiding adding typing for now.
-# My previous function was alot more optimized however now I realize the bug was this doesn't work well with degrees
-def euler_to_quaternion(r):  # type: ignore
-    (yaw, pitch, roll) = (r[0], r[1], r[2])
-    qx = math.sin(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) - math.cos(roll / 2) * math.sin(
-        pitch / 2
-    ) * math.sin(yaw / 2)
-    qy = math.cos(roll / 2) * math.sin(pitch / 2) * math.cos(yaw / 2) + math.sin(roll / 2) * math.cos(
-        pitch / 2
-    ) * math.sin(yaw / 2)
-    qz = math.cos(roll / 2) * math.cos(pitch / 2) * math.sin(yaw / 2) - math.sin(roll / 2) * math.sin(
-        pitch / 2
-    ) * math.cos(yaw / 2)
-    qw = math.cos(roll / 2) * math.cos(pitch / 2) * math.cos(yaw / 2) + math.sin(roll / 2) * math.sin(
-        pitch / 2
-    ) * math.sin(yaw / 2)
-    return [qx, qy, qz, qw]
+
 
 
 def rad_to_deg(rad):  # type: ignore
-    """Very simple method to convert Radians to degrees
+    """Converts radians to degrees
 
     Args:
         rad (float): radians unit
@@ -91,49 +79,8 @@ def rad_to_deg(rad):  # type: ignore
     """
     return (rad * 180) / math.pi
 
-
-def quaternion_to_euler(qx, qy, qz, qw):  # type: ignore
-    """Takes in quat values and converts to degrees
-
-    - roll is x axis - atan2(2(qwqy + qzqw), 1-2(qy^2 + qz^2))
-    - pitch is y axis - asin(2(qxqz - qwqy))
-    - yaw is z axis  - atan2(2(qxqw + qyqz), 1-2(qz^2+qw^3))
-
-    Args:
-        qx (float): quat_x
-        qy (float): quat_y
-        qz (float): quat_z
-        qw (float): quat_w
-
-    Returns:
-        roll: x value in degrees
-        pitch: y value in degrees
-        yaw: z value in degrees
-    """
-    # roll
-    sr_cp = 2 * ((qw * qx) + (qy * qz))
-    cr_cp = 1 - (2 * ((qx * qx) + (qy * qy)))
-    roll = math.atan2(sr_cp, cr_cp)
-    # pitch
-    sp = 2 * ((qw * qy) - (qz * qx))
-    if abs(sp) >= 1:
-        pitch = math.copysign(math.pi / 2, sp)
-    else:
-        pitch = math.asin(sp)
-    # yaw
-    sy_cp = 2 * ((qw * qz) + (qx * qy))
-    cy_cp = 1 - (2 * ((qy * qy) + (qz * qz)))
-    yaw = math.atan2(sy_cp, cy_cp)
-    # convert to degrees
-    roll = rad_to_deg(roll)
-    pitch = rad_to_deg(pitch)
-    yaw = rad_to_deg(yaw)
-    # round and return
-    return round(roll, 4), round(pitch, 4), round(yaw, 4)
-
-
 def throwZero():  # type: ignore
-    """Simple function to report incorrect quat values
+    """Errors on incorrect quat values
 
     Raises:
         RuntimeError: Error describing the issue
