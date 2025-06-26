@@ -23,7 +23,6 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import { Box } from "@mui/material"
 import { Switch } from "@mui/base/Switch"
 import Label, { LabelSize } from "@/ui/components/Label"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -110,10 +109,10 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways)
+            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces)
             selectedRobot.UpdateIntakeSensor()
         }
-    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways])
+    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)

@@ -20,7 +20,7 @@ import { Spacer } from "@/ui/components/StyledComponents"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import { ToggleButtonGroup, ToggleButton } from "@mui/material"
+import { ToggleButtonGroup, ToggleButton } from "@/ui/components/ToggleButtonGroup"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -99,8 +99,8 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
             save(ejectorVelocity, gizmoRef.current, selectedRobot, selectedNode)
-            const currentGp = selectedRobot.activeEjectable
-            selectedRobot.SetEjectable(undefined, true)
+            const currentGp = selectedRobot.activeEjectables[0]
+            selectedRobot.SetEjectable(undefined)
             selectedRobot.SetEjectable(currentGp)
         }
     }, [selectedRobot, selectedNode, ejectorVelocity])
