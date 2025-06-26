@@ -94,7 +94,7 @@ def ParseComponentRoot(
     partsData: assembly_pb2.Parts,
     material_map: dict[str, material_pb2.Appearance],
     node: types_pb2.Node,
-) -> None:
+) -> Result[None]:
     mapConstant = guid_component(component)
 
     part = partsData.part_instances[mapConstant]
