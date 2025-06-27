@@ -118,27 +118,27 @@ class Parser:
         assembly_out.design_hierarchy.nodes.append(rootNode)
 
         # Problem Child
-        Joints.populateJoints(
+        handle_err_top(Joints.populateJoints(
             design,
             assembly_out.data.joints,
             assembly_out.data.signals,
             self.pdMessage,
             self.exporterOptions,
             assembly_out,
-        )
+        ))
 
         # add condition in here for advanced joints maybe idk
         # should pre-process to find if there are any grounded joints at all
         # that or add code to existing parser to determine leftovers
 
-        Joints.createJointGraph(
+        handle_err_top(Joints.createJointGraph(
             self.exporterOptions.joints,
             self.exporterOptions.wheels,
             assembly_out.joint_hierarchy,
             self.pdMessage,
-        )
+        ))
 
-        JointHierarchy.BuildJointPartHierarchy(design, assembly_out.data.joints, self.exporterOptions, self.pdMessage)
+        handle_err_top(JointHierarchy.BuildJointPartHierarchy(design, assembly_out.data.joints, self.exporterOptions, self.pdMessage))
 
         # These don't have an effect, I forgot how this is suppose to work
         # progressDialog.message = "Taking Photo for thumbnail..."
@@ -198,10 +198,10 @@ class Parser:
             if self.exporterOptions.compressOutput:
                 logger.debug("Compressing file")
                 with gzip.open(str(self.exporterOptions.fileLocation), "wb", 9) as f:
-                    f.write(assembly_out.SerializeToString())
+                    _ = f.write(assembly_out.SerializeToString())
             else:
                 with open(str(self.exporterOptions.fileLocation), "wb") as f:
-                    f.write(assembly_out.SerializeToString())
+                    _ = f.write(assembly_out.SerializeToString())
 
         _ = progressDialog.hide()
 
