@@ -8,12 +8,26 @@ import {
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
 import Label, { LabelSize } from "./Label"
+import ViewCube from "./ViewCube"
+import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
 function SceneOverlay() {
     /* State to determine if the overlay is disabled */
     const [isDisabled, setIsDisabled] = useState<boolean>(false)
+
+    /* State to determine if the ViewCube should be shown */
+    const [showViewCube, setShowViewCube] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
+    )
+
+    /* Get the active modal context to check if main menu is open */
+    const { activeModalId } = useModalControlContext()
+
+    /* Check if the main menu modal is active */
+    const isMainMenuOpen = activeModalId === "main-menu"
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
@@ -86,6 +100,21 @@ function SceneOverlay() {
         }
     }, [])
 
+    /* Update ViewCube visibility when preferences change */
+    useEffect(() => {
+        const handlePreferenceChange = (e: PreferenceEvent) => {
+            if (e.prefName === "ShowViewCube") {
+                setShowViewCube(e.prefValue as boolean)
+            }
+        }
+
+        PreferencesSystem.addEventListener(handlePreferenceChange)
+
+        return () => {
+            window.removeEventListener("preferenceChanged", handlePreferenceChange as EventListener)
+        }
+    }, [])
+
     /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (
         <Box
@@ -102,6 +131,7 @@ function SceneOverlay() {
             }}
         >
             {components ?? <></>}
+            {showViewCube && !isMainMenuOpen && <ViewCube position={{ top: 20, right: 20 }} />}
         </Box>
     )
 }

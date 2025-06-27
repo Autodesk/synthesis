@@ -49,11 +49,19 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
     )
+    const [showViewCube, setShowViewCube] = useState<boolean>(
+        PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
+    )
     const [muteAllSound, setMuteAllSound] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
     )
-
     const [sfxVolume, setSFXVolume] = useState<number>(PreferencesSystem.getGlobalPreference<number>("SFXVolume"))
+    const [sceneRotationSensitivity, setSceneRotationSensitivity] = useState<number>(
+        PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
+    )
+    const [viewCubeRotationSensitivity, setViewCubeRotationSensitivity] = useState<number>(
+        PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity") * 60
+    )
 
     const saveSettings = () => {
         PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
@@ -62,8 +70,11 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
         PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
         PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
+        PreferencesSystem.setGlobalPreference<boolean>("ShowViewCube", showViewCube)
         PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
         PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
+        PreferencesSystem.setGlobalPreference<number>("SceneRotationSensitivity", sceneRotationSensitivity)
+        PreferencesSystem.setGlobalPreference<number>("ViewCubeRotationSensitivity", viewCubeRotationSensitivity / 60)
 
         SoundPlayer.changeVolume() // Apply the new sound volume
 
@@ -127,6 +138,29 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     onChange={(_, value) => setYawSensitivity(value as number)}
                     tooltipText="Moving the camera left and right."
                 />*/}
+                {Spacer(5)}
+                <Label size={LabelSize.Medium}>Camera Settings</Label>
+                <Slider
+                    min={0.1}
+                    max={2.0}
+                    value={sceneRotationSensitivity}
+                    label={"Scene Rotation Sensitivity"}
+                    format={{ maximumFractionDigits: 2 }}
+                    onChange={(_, value) => setSceneRotationSensitivity(value as number)}
+                    step={0.1}
+                    tooltipText="Controls how fast the scene rotates when dragging with the mouse."
+                />
+                {Spacer(2)}
+                <Slider
+                    min={0.06}
+                    max={6.0}
+                    value={viewCubeRotationSensitivity}
+                    label={"ViewCube Rotation Sensitivity"}
+                    format={{ maximumFractionDigits: 2 }}
+                    onChange={(_, value) => setViewCubeRotationSensitivity(value as number)}
+                    step={0.06}
+                    tooltipText="Controls how fast the view changes when dragging on the view cube."
+                />
                 {Spacer(10)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
@@ -187,6 +221,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         onClick={checked => {
                             setRenderScoreboard(checked)
                         }}
+                    />
+                    <Checkbox
+                        label="Show View Cube"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")}
+                        onClick={checked => {
+                            setShowViewCube(checked)
+                        }}
+                        tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
                     />
                     <Checkbox
                         label="Mute All Sound"

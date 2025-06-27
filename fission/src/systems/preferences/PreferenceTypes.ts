@@ -7,6 +7,8 @@ export type GlobalPreference =
     | "ZoomSensitivity"
     | "PitchSensitivity"
     | "YawSensitivity"
+    | "SceneRotationSensitivity"
+    | "ViewCubeRotationSensitivity"
     | "ReportAnalytics"
     | "UseMetric"
     | "RenderScoringZones"
@@ -17,6 +19,7 @@ export type GlobalPreference =
     | "SubsystemGravity"
     | "TouchControls"
     | "SimAutoReconnect"
+    | "ShowViewCube"
     | "MuteAllSound"
     | "SFXVolume"
 
@@ -32,6 +35,8 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
+    SceneRotationSensitivity: 0.5,
+    ViewCubeRotationSensitivity: 0.025,
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
@@ -42,6 +47,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     SubsystemGravity: false,
     TouchControls: false,
     SimAutoReconnect: false,
+    ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
 }

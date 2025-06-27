@@ -66,13 +66,15 @@ import ContextMenu from "./ui/components/ContextMenu.tsx"
 import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
+import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
 import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
 
 function Synthesis() {
-    const { openModal, closeModal, getActiveModalElement, registerModal } = useModalManager(initialModals)
+    const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
+        useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
@@ -168,6 +170,7 @@ function Synthesis() {
                         openModal(modalId)
                     }}
                     closeModal={closeModal}
+                    activeModalId={activeModalId}
                 >
                     <PanelControlProvider
                         key={"panel-control-provider"}
@@ -193,6 +196,7 @@ function Synthesis() {
                             <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                             <WPILibConnectionStatus />
+                            <DragModeIndicator />
 
                             {!consentPopupDisable ? (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />

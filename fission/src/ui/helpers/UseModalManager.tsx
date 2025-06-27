@@ -10,6 +10,7 @@ export type ModalInstance = {
 export type ModalControlContextType = {
     openModal: (modalId: string, onOpen?: () => void, onClose?: () => void) => void
     closeModal: () => void
+    activeModalId?: string | null
     children?: ReactNode
 }
 
