@@ -272,12 +272,12 @@ class JointParser:
                 _ = Err("Found joint without two occurences", ErrorSeverity.Warning)
 
             if occurrenceOne is None:
-                if joint.geometryOrOriginOne.entityOne.assemblyContext is None
+                if joint.geometryOrOriginOne.entityOne.assemblyContext is None:
                     return Err("occurrenceOne and entityOne's assembly context are None", ErrorSeverity.Fatal)
                 occurrenceOne = joint.geometryOrOriginOne.entityOne.assemblyContext
 
             if occurrenceTwo is None:
-                if joint.geometryOrOriginTwo.entityTwo.assemblyContext is None
+                if joint.geometryOrOriginTwo.entityTwo.assemblyContext is None:
                     return Err("occurrenceOne and entityTwo's assembly context are None", ErrorSeverity.Fatal)
                 occurrenceTwo = joint.geometryOrOriginTwo.entityTwo.assemblyContext
 
