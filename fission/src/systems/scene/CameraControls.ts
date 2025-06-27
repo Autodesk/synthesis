@@ -7,6 +7,7 @@ import ScreenInteractionHandler, {
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 export type CameraControlsType = "Orbit"
 
@@ -29,7 +30,7 @@ export abstract class CameraControls {
     public abstract dispose(): void
 }
 
-interface SphericalCoords {
+export interface SphericalCoords {
     theta: number
     phi: number
     r: number
@@ -43,8 +44,6 @@ const CO_MAX_PHI = Math.PI / 2.1
 const CO_MIN_PHI = -Math.PI / 2.1
 
 const CO_SENSITIVITY_ZOOM = 4.0
-const CO_SENSITIVITY_PHI = 0.5
-const CO_SENSITIVITY_THETA = 0.5
 
 const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0
@@ -110,6 +109,18 @@ export class CustomOrbitControls extends CameraControls {
     }
     public get focusProvider() {
         return this._focusProvider
+    }
+
+    public get coords(): SphericalCoords {
+        return this._coords
+    }
+
+    public get focus(): THREE.Matrix4 {
+        return this._focus
+    }
+
+    public set focus(matrix: THREE.Matrix4) {
+        this._focus.copy(matrix)
     }
 
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
@@ -252,8 +263,10 @@ export class CustomOrbitControls extends CameraControls {
               }
             : { theta: 0, phi: 0, r: 0 }
 
-        this._coords.theta += omega.theta * deltaT * CO_SENSITIVITY_THETA
-        this._coords.phi += omega.phi * deltaT * CO_SENSITIVITY_PHI
+        this._coords.theta +=
+            omega.theta * deltaT * PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
+        this._coords.phi +=
+            omega.phi * deltaT * PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
         this._coords.r += omega.r * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(this._coords.r, 1.4)
 
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, this._coords.phi))
