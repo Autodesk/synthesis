@@ -2,12 +2,14 @@ from .Logging import getLogger
 from enum import Enum
 from typing import Generic, TypeVar
 
+logger = getLogger()
+
 # NOTE
 # Severity refers to to the error's affect on the parser as a whole, rather than on the function itself
 # If an error is non-fatal to the function that generated it, it should be declared but not return, which prints it to the screen
 class ErrorSeverity(Enum):
-    Fatal = 1
-    Warning = 2
+    Fatal = 50 # Critical Error
+    Warning = 30 # Warning
 
 T = TypeVar('T')
 
@@ -49,6 +51,5 @@ class Err(Result[T]):
         return f"Err({self.message})"
 
     def write_error(self) -> None:
-        logger = getLogger()
         # Figure out how to integrate severity with the logger
-        logger.log(1, self.message)
+        logger.log(self.severity.value, self.message)
