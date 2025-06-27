@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import { FaXmark } from "react-icons/fa6"
-import { useModalControlContext } from "@/ui/ModalContext"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { motion } from "framer-motion"
 import logo from "@/assets/autodesk_logo.png"
 import { useToastContext } from "@/ui/ToastContext"
@@ -10,6 +10,7 @@ import { UserIcon } from "./UserIcon"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
+import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import { setAddToast } from "./GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
@@ -60,6 +61,8 @@ const MainHUD: React.FC = () => {
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()
     const [isOpen, setIsOpen] = useState(false)
+
+    const touchCompatibility = matchMedia("(hover: none)").matches
 
     setAddToast(addToast)
 
@@ -161,6 +164,15 @@ const MainHUD: React.FC = () => {
                             openPanel("debug")
                         }}
                     />
+                    {touchCompatibility ? (
+                        <MainHUDButton
+                            value={"Touch Controls"}
+                            icon={SynthesisIcons.Gamepad}
+                            onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
+                        />
+                    ) : (
+                        <></>
+                    )}
                 </Box>
                 {userInfo ? (
                     <MainHUDButton

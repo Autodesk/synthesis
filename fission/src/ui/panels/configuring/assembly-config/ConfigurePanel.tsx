@@ -10,7 +10,7 @@ import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScorin
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Button from "@/ui/components/Button"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
