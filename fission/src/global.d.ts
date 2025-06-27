@@ -4,9 +4,6 @@ declare global {
     let gtag: Mock
     let URL: Mock
     let testProperty: string
-    // interface Window {
-    //     convertAuthToken: Mock
-    // }
 }
 
 export {}
