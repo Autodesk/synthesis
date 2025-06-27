@@ -15,10 +15,10 @@ describe("main.tsx Bootstrap Tests", () => {
             document.body.appendChild(rootElement)
         }
 
-        (globalThis as any).gtag = vi.fn()
+        globalThis.gtag = vi.fn()
 
         delete (window as any).convertAuthToken
-        ;(window as any).convertAuthToken = vi.fn()
+            ; (window as any).convertAuthToken = vi.fn()
 
         mockRender = vi.fn()
         mockCreateRoot = vi.fn(() => ({
@@ -52,14 +52,14 @@ describe("main.tsx Bootstrap Tests", () => {
 
     test("handles analytics setup without throwing", async () => {
         await expect(import("@/main.tsx")).resolves.toBeDefined()
-        expect((globalThis as any).gtag).toBeDefined()
+        expect(globalThis.gtag).toBeDefined()
     })
 
     test("successfully calls ReactDOM.createRoot with root element", async () => {
         await import("@/main.tsx")
 
         expect(window.convertAuthToken).toBeDefined()
-        expect((globalThis as any).gtag).toBeDefined()
+        expect(globalThis.gtag).toBeDefined()
     })
 
     test("handles missing root element gracefully", async () => {
@@ -76,7 +76,7 @@ describe("main.tsx Bootstrap Tests", () => {
         await import("@/main.tsx")
 
         expect(window.convertAuthToken).toBeDefined()
-        expect((globalThis as any).gtag).toBeDefined()
+        expect(globalThis.gtag).toBeDefined()
     })
 
     test("can import main module multiple times without error", async () => {
@@ -107,14 +107,14 @@ describe("main.tsx Bootstrap Tests", () => {
     test("bootstraps in browser environment", async () => {
         await expect(import("@/main.tsx")).resolves.toBeDefined()
 
-        expect((globalThis as any).gtag).toBeDefined()
+        expect(globalThis.gtag).toBeDefined()
         expect(window.convertAuthToken).toBeDefined()
     })
 
     test("handles DOM queries safely", async () => {
         await expect(import("@/main.tsx")).resolves.toBeDefined()
 
-        expect((globalThis as any).gtag).toBeDefined()
+        expect(globalThis.gtag).toBeDefined()
         expect(window.convertAuthToken).toBeDefined()
     })
 

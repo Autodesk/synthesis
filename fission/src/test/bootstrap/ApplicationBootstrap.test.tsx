@@ -12,8 +12,8 @@ describe("Complete Application Bootstrap", () => {
             document.body.appendChild(rootElement)
         }
 
-        (globalThis as any).gtag = vi.fn()
-        ;(window as any).convertAuthToken = vi.fn()
+        globalThis.gtag = vi.fn()
+            ; (window as any).convertAuthToken = vi.fn()
 
         Object.defineProperty(window, "requestAnimationFrame", {
             value: vi.fn((cb: FrameRequestCallback) => {
@@ -47,7 +47,7 @@ describe("Complete Application Bootstrap", () => {
         await expect(import("@/main.tsx")).resolves.toBeDefined()
 
         expect(window.convertAuthToken).toBeDefined()
-        expect((globalThis as any).gtag).toBeDefined()
+        expect(globalThis.gtag).toBeDefined()
     })
 
     test("handles complete application failure gracefully", async () => {
@@ -62,7 +62,7 @@ describe("Complete Application Bootstrap", () => {
         await import("@/main.tsx")
 
         expect(window.convertAuthToken).toBeDefined()
-        expect((globalThis as any).gtag).toBeDefined()
+        expect(globalThis.gtag).toBeDefined()
     })
 
     test("validates critical dependencies are available", async () => {
@@ -79,7 +79,7 @@ describe("Complete Application Bootstrap", () => {
         await import("@/main.tsx")
 
         expect(window.convertAuthToken).toBeDefined()
-        expect((globalThis as any).gtag).toBeDefined()
+        expect(globalThis.gtag).toBeDefined()
     })
 
     test("CSS imports don't break bootstrap", async () => {
