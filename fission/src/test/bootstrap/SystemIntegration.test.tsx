@@ -79,7 +79,7 @@ describe("System Integration and Side Effects Tests", () => {
                 get: vi.fn(),
                 set: vi.fn(),
             },
-        })) as any
+        }))
 
         const mockHistory = {
             replaceState: vi.fn(),

@@ -1,8 +1,12 @@
 import type { Mock } from "vitest"
 
 declare global {
-    var gtag: Mock
-    var testProperty: string
+    let gtag: Mock
+    let URL: Mock
+    let testProperty: string
+    // interface Window {
+    //     convertAuthToken: Mock
+    // }
 }
 
 export {}

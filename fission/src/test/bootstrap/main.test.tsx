@@ -1,8 +1,8 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
+import { describe, test, expect, vi, beforeEach, afterEach, Mock } from "vitest"
 
 describe("main.tsx Bootstrap Tests", () => {
-    let mockCreateRoot: any
-    let mockRender: any
+    let mockCreateRoot: Mock
+    let mockRender: Mock
 
     beforeEach(() => {
         vi.clearAllMocks()
@@ -16,9 +16,7 @@ describe("main.tsx Bootstrap Tests", () => {
         }
 
         globalThis.gtag = vi.fn()
-
-        delete (window as any).convertAuthToken
-            ; (window as any).convertAuthToken = vi.fn()
+        window.convertAuthToken = vi.fn()
 
         mockRender = vi.fn()
         mockCreateRoot = vi.fn(() => ({

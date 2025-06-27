@@ -13,7 +13,7 @@ describe("Complete Application Bootstrap", () => {
         }
 
         globalThis.gtag = vi.fn()
-            ; (window as any).convertAuthToken = vi.fn()
+        window.convertAuthToken = vi.fn()
 
         Object.defineProperty(window, "requestAnimationFrame", {
             value: vi.fn((cb: FrameRequestCallback) => {

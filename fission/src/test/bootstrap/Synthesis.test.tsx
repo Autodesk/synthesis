@@ -119,7 +119,7 @@ vi.mock("@/ui/components/WPILibConnectionStatus.tsx", () => ({
 vi.mock("framer-motion", () => ({
     AnimatePresence: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
     motion: {
-        div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
+        div: ({ children, ...props }: { children: React.ReactNode, props: React.ReactNode[] }) => <div {...props}>{children}</div>,
     },
 }))
 
