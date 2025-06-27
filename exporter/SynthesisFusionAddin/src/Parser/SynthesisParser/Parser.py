@@ -1,31 +1,22 @@
 import gzip
 import pathlib
 
-from google.protobuf import message
-
 import adsk.core
 import adsk.fusion
-from google.protobuf.json_format import MessageToJson
 
 from src import gm
 from src.APS.APS import getAuth, upload_mirabuf
 from src.ErrorHandling import ErrorSeverity, Result
-from src.Logging import getLogger, logFailure, timed
 from src.Parser.ExporterOptions import ExporterOptions
-from src.Parser.SynthesisParser import (
-    Components,
-    JointHierarchy,
-    Joints,
-    Materials,
-    PDMessage,
-)
+from src.Parser.SynthesisParser import (Components, JointHierarchy, Joints, Materials, PDMessage)
+
+from src.Logging import getLogger, logFailure, timed
 from src.Parser.SynthesisParser.Utilities import fill_info
 from src.Proto import assembly_pb2, types_pb2
 from src.Types import ExportLocation, ExportMode
 from src.UI.Camera import captureThumbnail, clearIconCache
 
 logger = getLogger()
-
 
 class Parser:
     def __init__(self, options: ExporterOptions):

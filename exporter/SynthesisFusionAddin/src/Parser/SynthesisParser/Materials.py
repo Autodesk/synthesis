@@ -143,7 +143,7 @@ def getPhysicalMaterialData(
 
     missingProperties: list[str] = [k for k, v in vars(mechanicalProperties).items() if v is None] #ignore: type
     if missingProperties.__len__() > 0:
-        return Err(f"Missing Mechanical Properties {missingProperties}", ErrorSeverity.Warning)
+        _ = Err(f"Missing Mechanical Properties {missingProperties}", ErrorSeverity.Warning)
 
     """
     Strength Properties
@@ -153,7 +153,7 @@ def getPhysicalMaterialData(
 
     missingProperties: list[str] = [k for k, v in vars(strengthProperties).items() if v is None] #ignore: type
     if missingProperties.__len__() > 0:
-        return Err(f"Missing Strength Properties {missingProperties}", ErrorSeverity.Warning)
+        _ = Err(f"Missing Strength Properties {missingProperties}", ErrorSeverity.Warning)
 
     """
     strengthProperties.thermal_treatment = materialProperties.itemById(
