@@ -25,6 +25,7 @@ export type GlobalPreference =
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
+export const MotorPreferencesKey: string = "Motors"
 export const GraphicsPreferenceKey: string = "Quality"
 
 /**
@@ -175,4 +176,12 @@ export function DefaultRobotPreferences(): RobotPreferences {
 
 export function DefaultFieldPreferences(): FieldPreferences {
     return { defaultSpawnLocation: [0, 1, 0], scoringZones: [], protectedZones: [] }
+}
+
+export function DefaultMotorPreferences(name: string): MotorPreferences {
+    return {
+        name: name,
+        maxVelocity: 1,
+        maxForce: 1,
+    }
 }

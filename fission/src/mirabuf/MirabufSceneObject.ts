@@ -580,7 +580,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
-    private getPreferences(): void {
+    public getPreferences(): void {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
             this._intakePreferences = robotPrefs.intake
