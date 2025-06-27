@@ -3,7 +3,7 @@ import PhysicsSystem, { LayerReserve } from "../systems/physics/PhysicsSystem"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 
-describe("Physics Sansity Checks", () => {
+describe("Physics Sanity Checks", () => {
     test("Convex Hull Shape (Cube)", () => {
         const points: Float32Array = new Float32Array([
             0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5,
