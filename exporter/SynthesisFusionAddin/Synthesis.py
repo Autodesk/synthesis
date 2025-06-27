@@ -9,8 +9,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from src.Dependencies import resolveDependencies
 from src.Logging import logFailure, setupLogger
-
 logger = setupLogger()
+from src.ErrorHandling import Err, ErrorSeverity
 
 try:
     # Attempt to import required pip dependencies to verify their installation.
@@ -32,16 +32,8 @@ except (ImportError, ModuleNotFoundError, BaseException) as error:  # BaseExcept
 
 
 from src import APP_NAME, DESCRIPTION, INTERNAL_ID, gm
-from src.UI import (
-    HUI,
-    Camera,
-    ConfigCommand,
-    MarkingMenu,
-    ShowAPSAuthCommand,
-    ShowWebsiteCommand,
-)
+from src.UI import (HUI, Camera, ConfigCommand, MarkingMenu, ShowAPSAuthCommand, ShowWebsiteCommand)
 from src.UI.Toolbar import Toolbar
-
 
 @logFailure
 def run(_context: dict[str, Any]) -> None:
@@ -50,6 +42,7 @@ def run(_context: dict[str, Any]) -> None:
     Arguments:
         **context** *context* -- Fusion context to derive app and UI.
     """
+
 
     # Remove all items prior to start just to make sure
     unregister_all()
@@ -70,6 +63,7 @@ def stop(_context: dict[str, Any]) -> None:
     Arguments:
         **context** *context* -- Fusion Data.
     """
+
     unregister_all()
 
     app = adsk.core.Application.get()

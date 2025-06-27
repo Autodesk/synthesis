@@ -5,6 +5,7 @@ from pathlib import Path
 from src.GlobalManager import GlobalManager
 from src.Util import makeDirectories
 
+
 APP_NAME = "Synthesis"
 APP_TITLE = "Synthesis Robot Exporter"
 APP_WEBSITE_URL = "https://synthesis.autodesk.com/fission/"
