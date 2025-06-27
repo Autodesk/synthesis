@@ -3,6 +3,7 @@ import * as THREE from "three"
 import { Box } from "@mui/material"
 import World from "@/systems/World"
 import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 interface ViewCubeProps {
     size?: number
@@ -67,7 +68,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 const deltaX = event.clientX - lastMousePos.x
                 const deltaY = event.clientY - lastMousePos.y
 
-                const sensitivity = 0.025
+                const sensitivity = PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity")
 
                 const controls = World.SceneRenderer.currentCameraControls
                 if (controls instanceof CustomOrbitControls) {
@@ -821,7 +822,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             const deltaX = event.clientX - lastMousePos.x
             const deltaY = event.clientY - lastMousePos.y
 
-            const sensitivity = 0.004
+            const sensitivity = PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity")
 
             const controls = World.SceneRenderer.currentCameraControls
             if (controls instanceof CustomOrbitControls) {
