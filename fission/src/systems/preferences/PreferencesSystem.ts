@@ -158,11 +158,7 @@ class PreferencesSystem {
     public static getMotorPreferences(miraName: string): MotorPreferences {
         const allMotorPrefs = this.getAllMotorPreferences()
 
-        if (allMotorPrefs[miraName] == undefined) {
-            const defaultPrefs = DefaultMotorPreferences(miraName)
-            allMotorPrefs[miraName] = defaultPrefs
-            return defaultPrefs
-        }
+        allMotorPrefs[miraName] ??= DefaultMotorPreferences(miraName)
 
         return allMotorPrefs[miraName]
     }
