@@ -1,6 +1,11 @@
 import { test, expect, describe, vi, beforeEach } from "vitest"
 import { DOMUnit, DOMUnitExpression } from "@/util/Units"
 
+vi.mock("@/util/Utility", () => {
+    const original = vi.importActual<typeof import("@/util/Utility")>("@/util/Utility")
+    return { ...original, getFontSize: vi.fn(() => 16) }
+})
+
 describe("DOMUnit", () => {
     let mockElement: HTMLElement
 
@@ -8,11 +13,6 @@ describe("DOMUnit", () => {
         mockElement = document.createElement("div")
         Object.defineProperty(mockElement, "clientWidth", { value: 400 })
         Object.defineProperty(mockElement, "clientHeight", { value: 200 })
-
-        vi.mock("@/util/Utility", () => {
-            const original = vi.importActual<typeof import("@/util/Utility")>("@/util/Utility")
-            return { ...original, getFontSize: vi.fn(() => 16) }
-        })
     })
 
     test("Evaluates PX Units Correctly", () => {
@@ -43,11 +43,6 @@ describe("DOMUnitExpression", () => {
         mockElement = document.createElement("div")
         Object.defineProperty(mockElement, "clientWidth", { value: 400 })
         Object.defineProperty(mockElement, "clientHeight", { value: 200 })
-
-        vi.mock("@/util/Utility", () => {
-            const original = vi.importActual<typeof import("@/util/Utility")>("@/util/Utility")
-            return { ...original, getFontSize: vi.fn(() => 16) }
-        })
     })
 
     test("Evaluates Single Unit Expression Correctly", () => {
