@@ -1,7 +1,6 @@
 import Panel, { PanelPropsImpl } from "../components/Panel"
 import Button from "../components/Button"
 import World from "@/systems/World"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { ToastType } from "../ToastContext"
 import { Random } from "@/util/Random"
 import MirabufCachingService, {
@@ -13,12 +12,10 @@ import { Box, styled } from "@mui/material"
 import { usePanelControlContext } from "../helpers/UsePanelManager"
 import APS from "@/aps/APS"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import JOLT from "@/util/loading/JoltSyncLoader"
 import Label from "../components/Label"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import { SynthesisIcons } from "../components/StyledComponents"
 import { Global_AddToast } from "../components/GlobalUIControls"
-import { JoltRVec3_JoltVec3 } from "@/util/TypeConversions"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -26,32 +23,13 @@ const LabelStyled = styled(Label)({
     marginTop: "0.5rem",
 })
 
-async function TestGodMode() {
-    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()]
-        .filter(x => {
-            const y = x[1] instanceof MirabufSceneObject
-            return y
-        })
-        .map(x => x[1])[0] as MirabufSceneObject
-    const rootNodeId = robot.GetRootNodeId()
-    if (rootNodeId == undefined) {
-        console.error("Robot root node not found for god mode")
-        return
+function ToggleDragMode() {
+    const dragSystem = World.DragModeSystem
+    if (dragSystem) {
+        dragSystem.enabled = !dragSystem.enabled
+        const status = dragSystem.enabled ? "enabled" : "disabled"
+        Global_AddToast?.("info", "Drag Mode", `Drag mode has been ${status}`)
     }
-    const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
-    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(
-        rootNodeId,
-        JoltRVec3_JoltVec3(robotPosition)
-    )
-
-    // Move ghostBody to demonstrate godMode movement
-    await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(
-        ghostBody.GetID(),
-        new JOLT.RVec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
-    )
-    await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.RVec3(2, 2, 2))
 }
 
 const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
@@ -96,7 +74,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         }}
                         className="w-full"
                     />
-                    <Button value={"Test God Mode"} onClick={TestGodMode} className="w-full" />
+                    <Button value={"Toggle Drag Mode"} onClick={ToggleDragMode} className="w-full" />
                     <Button
                         value={"Clear Preferences"}
                         onClick={() => PreferencesSystem.clearPreferences()}
