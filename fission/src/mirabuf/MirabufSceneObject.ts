@@ -80,7 +80,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _ejectables: EjectableSceneObject[] = []
     private _intakeSensor?: IntakeSensorSceneObject
-    // private _ejectable?: EjectableSceneObject
     private _scoringZones: ScoringZoneSceneObject[] = []
 
     private _nameTag: SceneOverlayTag | undefined

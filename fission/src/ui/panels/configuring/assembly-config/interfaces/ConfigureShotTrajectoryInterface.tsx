@@ -16,7 +16,7 @@ import { useTheme } from "@/ui/ThemeContext"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import Button from "@/ui/components/Button"
-import { Spacer } from "@/ui/components/StyledComponents"
+import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
@@ -210,6 +210,22 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
             />
 
+            {/* Toggle for adjusting eject order */}
+            <div className="mt-4 flex items-center space-x-2">
+                {LabelWithTooltip(
+                    "Eject Order",
+                    "Choose how to eject pieces: FIFO (first in, first out) ejects the oldest-loaded item first, or LIFO (last in, first out) ejects the most recently loaded item first."
+                )}
+                <ToggleButtonGroup
+                    value={ejectOrder}
+                    exclusive
+                    onChange={(_, v) => v && setEjectOrder(v as "FIFO" | "LIFO")}
+                >
+                    <ToggleButton value="FIFO">FIFO</ToggleButton>
+                    <ToggleButton value="LIFO">LIFO</ToggleButton>
+                </ToggleButtonGroup>
+            </div>
+
             {/* Slider for user to set velocity of ejector configuration */}
             <Slider
                 min={MIN_VELOCITY}
@@ -223,19 +239,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 step={0.01}
             />
 
-            {/* Toggle for adjusting eject order */}
-            <div className="mt-4 flex items-center space-x-2">
-                <span>Eject Order</span>
-                <ToggleButtonGroup
-                    value={ejectOrder}
-                    exclusive
-                    onChange={(_, v) => v && setEjectOrder(v as "FIFO" | "LIFO")}
-                >
-                    <ToggleButton value="FIFO">FIFO</ToggleButton>
-                    <ToggleButton value="LIFO">LIFO</ToggleButton>
-                </ToggleButtonGroup>
-            </div>
-
+            {Spacer(10)}
             {gizmoComponent}
             {Spacer(10)}
             <Button
