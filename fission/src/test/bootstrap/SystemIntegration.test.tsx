@@ -118,7 +118,7 @@ describe("System Integration and Side Effects Tests", () => {
 
     test("manages global state safely", () => {
         expect(() => {
-            ;(globalThis as any).testProperty = "test"
+            (globalThis as any).testProperty = "test"
             delete (globalThis as any).testProperty
         }).not.toThrow()
     })

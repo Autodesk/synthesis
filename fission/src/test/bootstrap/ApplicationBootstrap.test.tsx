@@ -12,7 +12,7 @@ describe("Complete Application Bootstrap", () => {
             document.body.appendChild(rootElement)
         }
 
-        ;(globalThis as any).gtag = vi.fn()
+        (globalThis as any).gtag = vi.fn()
         ;(window as any).convertAuthToken = vi.fn()
 
         Object.defineProperty(window, "requestAnimationFrame", {

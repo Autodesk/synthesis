@@ -15,7 +15,7 @@ describe("main.tsx Bootstrap Tests", () => {
             document.body.appendChild(rootElement)
         }
 
-        ;(globalThis as any).gtag = vi.fn()
+        (globalThis as any).gtag = vi.fn()
 
         delete (window as any).convertAuthToken
         ;(window as any).convertAuthToken = vi.fn()
