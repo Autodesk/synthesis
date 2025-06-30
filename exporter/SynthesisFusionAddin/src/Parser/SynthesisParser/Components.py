@@ -1,7 +1,7 @@
 # Contains all of the logic for mapping the Components / Occurrences
-from requests.models import parse_header_links
 import adsk.core
 import adsk.fusion
+from requests.models import parse_header_links
 
 from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Logging import logFailure

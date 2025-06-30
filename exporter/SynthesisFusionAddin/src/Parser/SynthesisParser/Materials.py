@@ -1,10 +1,10 @@
 import adsk.core
 
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import construct_info, fill_info
 from src.Proto import material_pb2
-from src.ErrorHandling import ErrorSeverity, Result, Ok, Err
 
 OPACITY_RAMPING_CONSTANT = 14.0
 
