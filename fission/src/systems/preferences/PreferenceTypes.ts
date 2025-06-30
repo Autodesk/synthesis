@@ -2,8 +2,6 @@ import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
-
-
 /** Names of all global preferences. */
 
 export type GlobalPreferences = {
