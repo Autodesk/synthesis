@@ -150,8 +150,8 @@ def getPhysicalMaterialData(
     strengthProperties.yield_strength = materialProperties.itemById("structural_Minimum_yield_stress").value
     strengthProperties.tensile_strength = materialProperties.itemById("structural_Minimum_tensile_strength").value
 
-    missingProperties: list[str] = [k for k, v in vars(strengthProperties).items() if v is None]  # ignore: type
-    if missingProperties.__len__() > 0:
+    missingStrengthProperties: list[str] = [k for k, v in vars(strengthProperties).items() if v is None]  # ignore: type
+    if missingStrengthProperties.__len__() > 0:
         _ = Err(f"Missing Strength Properties {missingProperties}", ErrorSeverity.Warning)
 
     """
