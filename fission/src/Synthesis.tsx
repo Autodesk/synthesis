@@ -71,7 +71,6 @@ import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
 import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
-import AnalysisToolPanel from "@/panels/AnalysisPanel.tsx"
 
 function Synthesis() {
     const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
@@ -257,7 +256,6 @@ const initialPanels: ReactElement[] = [
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
     <AutoTestPanel key="auto-test" panelId="auto-test" />,
-    <AnalysisToolPanel key="analysis-tools" panelId="analysis-tools" />,
     <GraphicsSettings key="graphics-settings" panelId="graphics-settings" sidePadding={8} />,
 ]
 

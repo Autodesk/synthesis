@@ -21,6 +21,7 @@ export type GlobalPreference =
     | "ShowViewCube"
     | "MuteAllSound"
     | "SFXVolume"
+    | "ShowCenterOfMassIndicators"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
@@ -49,6 +50,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
+    ShowCenterOfMassIndicators: false,
 }
 
 export type GraphicsPreferences = {

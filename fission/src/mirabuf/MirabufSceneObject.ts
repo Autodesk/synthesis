@@ -15,7 +15,7 @@ import {
     IntakePreferences,
     ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
@@ -38,7 +38,6 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { MirabufObjectCreatedEvent } from "@/components/ObjectCreatedEvents.ts"
 
 const DEBUG_BODIES = false
 
@@ -85,7 +84,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _nameTag: SceneOverlayTag | undefined
     private _centerOfMassIndicator: THREE.Mesh | undefined
-
+    private _centerOfMassSubscriber: EventListener | undefined
     private _intakeActive = false
     private _ejectorActive = false
 
@@ -184,11 +183,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             })
             material.depthTest = false
             this._centerOfMassIndicator = new THREE.Mesh(new THREE.SphereGeometry(0.02), material)
-            this._centerOfMassIndicator.visible = false
+            this._centerOfMassIndicator.visible =
+                PreferencesSystem.getGlobalPreference<boolean>("ShowCenterOfMassIndicators")
 
             World.SceneRenderer.scene.add(this._centerOfMassIndicator)
+            this._centerOfMassSubscriber = ((e: PreferenceEvent) => {
+                if (e.prefName == "ShowCenterOfMassIndicators" && this._centerOfMassIndicator) {
+                    this._centerOfMassIndicator.visible = e.prefValue as boolean
+                }
+            }) as EventListener
+
+            PreferencesSystem.addEventListener(this._centerOfMassSubscriber)
         }
-        new MirabufObjectCreatedEvent(this.miraType)
     }
 
     public Setup(): void {
@@ -310,6 +316,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._centerOfMassIndicator?.geometry?.dispose()
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
+        }
+        if (this._centerOfMassSubscriber) {
+            window.removeEventListener("preferenceChanged", this._centerOfMassSubscriber)
         }
     }
 
@@ -455,12 +464,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public SetIntakeVisualIndicatorVisible(visible: boolean) {
         if (this._intakeSensor) {
             this._intakeSensor.SetVisualIndicatorVisible(visible)
-        }
-    }
-
-    public SetCenterOfMassIndicatorVisible(visible: boolean) {
-        if (this._centerOfMassIndicator) {
-            this._centerOfMassIndicator.visible = visible
         }
     }
 

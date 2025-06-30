@@ -219,6 +219,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
                     />
                     <Checkbox
+                        label="Show Centers of Mass"
+                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowCenterOfMassIndicators")}
+                        onClick={checked => {
+                            PreferencesSystem.setGlobalPreference("ShowCenterOfMassIndicators", checked)
+                        }}
+                        tooltipText={"Show a purple dot to indicate the center of mass of each robot in frame"}
+                    />
+                    <Checkbox
                         label="Mute All Sound"
                         defaultState={PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")}
                         onClick={checked => {
