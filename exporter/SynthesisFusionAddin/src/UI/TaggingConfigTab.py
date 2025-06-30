@@ -6,6 +6,7 @@ from src.UI.CreateCommandInputsHelper import createTableInput, createTextBoxInpu
 
 logger = getLogger()
 
+
 class TaggingConfigTab:
     # stores the types of tags available for selection
     tagTypes = ["Softbody", "Rigid", "Chain", "Spring", "Rope"]
@@ -16,17 +17,13 @@ class TaggingConfigTab:
     tagTypeDropdown: adsk.core.DropDownCommandInput
 
     @logFailure
-    def __init__(self, args:adsk.core.CommandCreatedEventArgs) -> None:
-        self.taggingConfigTab = args.command.commandInputs.addTabCommandInput(
-            "taggingOptionsTab", "Tagging Options"
-        )
+    def __init__(self, args: adsk.core.CommandCreatedEventArgs) -> None:
+        self.taggingConfigTab = args.command.commandInputs.addTabCommandInput("taggingOptionsTab", "Tagging Options")
         self.taggingConfigTab.tooltip = "Configure tagging options for materials"
         taggingConfigTabInputs = self.taggingConfigTab.children
 
         self.tagTypeDropdown = taggingConfigTabInputs.addDropDownCommandInput(
-            "tageTypeDropdown",
-             "Tag Type",
-            dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
+            "tageTypeDropdown", "Tag Type", dropDownStyle=adsk.core.DropDownStyles.LabeledIconDropDownStyle
         )
         self.tagTypeDropdown.isFullWidth = False
         for tag in self.tagTypes:
@@ -34,26 +31,22 @@ class TaggingConfigTab:
         self.tagTypeDropdown.isEnabled = self.tagTypeDropdown.isVisible = False
 
         bodySelection = taggingConfigTabInputs.addSelectionInput(
-            "tagBodySelect", 
-            "Select Body", 
-            "Select a single body."
+            "tagBodySelect", "Select Body", "Select a single body."
         )
-        bodySelection.addSelectionFilter("SolidBodies") 
+        bodySelection.addSelectionFilter("SolidBodies")
         bodySelection.addSelectionFilter("SurfaceBodies")
 
         self.taggingListTable = createTableInput("tagListTable", "Tag List", taggingConfigTabInputs, 6, "1:1")
         self.taggingListTable.addCommandInput(
             createTextBoxInput("headerBodyName", "Body", taggingConfigTabInputs, "Body Name", background="#d9d9d9"),
             0,
-            0
+            0,
         )
         self.taggingListTable.addCommandInput(
-            createTextBoxInput("headerTagType", "Type", taggingConfigTabInputs, "Tag Type", background="#d9d9d9"),
-            0,
-            1
+            createTextBoxInput("headerTagType", "Type", taggingConfigTabInputs, "Tag Type", background="#d9d9d9"), 0, 1
         )
-        self.taggingListTable.getInputAtPosition(0,0).parentCommand.isSelectable = False
-        self.taggingListTable.getInputAtPosition(0,1).parentCommand.isSelectable = False
+        self.taggingListTable.getInputAtPosition(0, 0).parentCommand.isSelectable = False
+        self.taggingListTable.getInputAtPosition(0, 1).parentCommand.isSelectable = False
 
         addTagInputButton = taggingConfigTabInputs.addBoolValueInput("tagAddButton", "Add", False)
         removeTagInputButton = taggingConfigTabInputs.addBoolValueInput("tagRemoveButton", "Remove", False)
@@ -79,9 +72,15 @@ class TaggingConfigTab:
 
     def toggleSelecting(self, value: bool) -> None:
         tagAddButton: adsk.core.BoolValueCommandInput = self.taggingConfigTab.commandInputs.itemById("tagAddButton")
-        tagRemoveButton: adsk.core.BoolValueCommandInput = self.taggingConfigTab.commandInputs.itemById("tagRemoveButton")
-        tagBodySelection: adsk.core.SelectionCommandInput = self.taggingConfigTab.commandInputs.itemById("tagBodySelect")
-        tagCancelButton: adsk.core.BoolValueCommandInput = self.taggingConfigTab.commandInputs.itemById("tagCancelButton")
+        tagRemoveButton: adsk.core.BoolValueCommandInput = self.taggingConfigTab.commandInputs.itemById(
+            "tagRemoveButton"
+        )
+        tagBodySelection: adsk.core.SelectionCommandInput = self.taggingConfigTab.commandInputs.itemById(
+            "tagBodySelect"
+        )
+        tagCancelButton: adsk.core.BoolValueCommandInput = self.taggingConfigTab.commandInputs.itemById(
+            "tagCancelButton"
+        )
 
         tagAddButton.isEnabled = tagRemoveButton.isEnabled = not value
         tagCancelButton.isVisible = value
@@ -96,11 +95,12 @@ class TaggingConfigTab:
 
         else:
             tagBodySelection.isVisible = tagBodySelection.isEnabled = True
-            tagBodySelection.setSelectionLimits(0,1)
-
+            tagBodySelection.setSelectionLimits(0, 1)
 
     @logFailure
-    def handleInputChanged(self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs) -> None:
+    def handleInputChanged(
+        self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
+    ) -> None:
         commandInput = args.input
         tagAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("tagAddButton")
         tagRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("tagRemoveButton")
@@ -110,25 +110,28 @@ class TaggingConfigTab:
         if commandInput.id == "tagAddButton":
             self.toggleSelecting(True)
 
-
         elif commandInput.id == "tagRemoveButton":
             if self.taggingListTable.selectedRow == -1:
                 app = adsk.core.Application.get()
                 ui = app.userInterface
                 ui.messageBox("No tags to remove.")
                 return
-            
+
             self.taggingListTable.deleteRow(self.taggingListTable.selectedRow)
             # TODO: Remove the tag from the dict
 
         elif commandInput.id == "tagCancelButton":
             self.toggleSelecting(False)
 
-        elif (tagBodySelection.selectionCount == 1 or self.tagTypeDropdown.selectedItem is not None):
+        elif tagBodySelection.selectionCount == 1 or self.tagTypeDropdown.selectedItem is not None:
             commandInputs = self.taggingConfigTab.commandInputs
-            row=self.taggingListTable.rowCount
-            bodyName = commandInputs.addTextBoxCommandInput(f"bodyName_{row}", "Body Name", tagBodySelection.selection(0).entity.name, 1, True)
-            tagType = commandInputs.addTextBoxCommandInput(f"tagType_{row}", "Tag Type", self.tagTypeDropdown.selectedItem.name, 1, True)
+            row = self.taggingListTable.rowCount
+            bodyName = commandInputs.addTextBoxCommandInput(
+                f"bodyName_{row}", "Body Name", tagBodySelection.selection(0).entity.name, 1, True
+            )
+            tagType = commandInputs.addTextBoxCommandInput(
+                f"tagType_{row}", "Tag Type", self.tagTypeDropdown.selectedItem.name, 1, True
+            )
 
             row = self.taggingListTable.rowCount
             self.taggingListTable.addCommandInput(bodyName, row, 0)
@@ -136,7 +139,5 @@ class TaggingConfigTab:
 
             self.toggleSelecting(False)
 
-
     # @logFailure
     # def getTags(self) -> list:
-
