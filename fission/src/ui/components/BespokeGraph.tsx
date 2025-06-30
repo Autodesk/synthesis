@@ -8,7 +8,7 @@
 
 import { DOMUnitExpression } from "@/util/Units"
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react"
-import { colorNameToVar } from "../ThemeContext"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 
 const DEBUG_EDGE_CONTROL_LINES = false
 

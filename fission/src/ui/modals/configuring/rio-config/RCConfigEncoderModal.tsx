@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Label, { LabelSize } from "@/components/Label"
 import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"

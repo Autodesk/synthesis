@@ -7,6 +7,8 @@ export type GlobalPreference =
     | "ZoomSensitivity"
     | "PitchSensitivity"
     | "YawSensitivity"
+    | "SceneRotationSensitivity"
+    | "ViewCubeRotationSensitivity"
     | "ReportAnalytics"
     | "UseMetric"
     | "RenderScoringZones"
@@ -14,12 +16,15 @@ export type GlobalPreference =
     | "RenderSceneTags"
     | "RenderScoreboard"
     | "SubsystemGravity"
+    | "TouchControls"
     | "SimAutoReconnect"
+    | "ShowViewCube"
     | "MuteAllSound"
     | "SFXVolume"
 
 export const RobotPreferencesKey: string = "Robots"
 export const FieldPreferencesKey: string = "Fields"
+export const MotorPreferencesKey: string = "Motors"
 export const GraphicsPreferenceKey: string = "Quality"
 
 /**
@@ -30,6 +35,8 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
+    SceneRotationSensitivity: 0.5,
+    ViewCubeRotationSensitivity: 0.025,
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
@@ -37,7 +44,9 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderSceneTags: true,
     RenderScoreboard: true,
     SubsystemGravity: false,
+    TouchControls: false,
     SimAutoReconnect: false,
+    ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
 }
@@ -154,4 +163,12 @@ export function DefaultRobotPreferences(): RobotPreferences {
 
 export function DefaultFieldPreferences(): FieldPreferences {
     return { defaultSpawnLocation: [0, 1, 0], scoringZones: [] }
+}
+
+export function DefaultMotorPreferences(name: string): MotorPreferences {
+    return {
+        name: name,
+        maxVelocity: 1,
+        maxForce: 1,
+    }
 }

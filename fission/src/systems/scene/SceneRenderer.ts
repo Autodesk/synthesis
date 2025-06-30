@@ -5,7 +5,7 @@ import GizmoSceneObject from "./GizmoSceneObject"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
-import { Theme } from "@/ui/ThemeContext"
+import { Theme } from "@/ui/helpers/UseThemeHelpers"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
@@ -13,6 +13,7 @@ import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHan
 import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import { CSM } from "three/examples/jsm/csm/CSM.js"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 import { GraphicsPreferences } from "../preferences/PreferenceTypes"
 import World from "../World"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
@@ -46,6 +47,8 @@ class SceneRenderer extends WorldSystem {
 
     private _cameraControls: CameraControls
 
+    private _isPlacingAssembly: boolean = false
+
     private _light: THREE.DirectionalLight | CSM | undefined
     private _screenInteractionHandler: ScreenInteractionHandler
 
@@ -65,8 +68,21 @@ class SceneRenderer extends WorldSystem {
         return this._renderer
     }
 
+    public get isPlacingAssembly() {
+        return this._isPlacingAssembly
+    }
+
+    public set isPlacingAssembly(value: boolean) {
+        new TouchControlsEvent(TouchControlsEventKeys.PLACE_BUTTON, value)
+        this._isPlacingAssembly = value
+    }
+
     public get currentCameraControls(): CameraControls {
         return this._cameraControls
+    }
+
+    public get screenInteractionHandler(): ScreenInteractionHandler {
+        return this._screenInteractionHandler
     }
 
     /**

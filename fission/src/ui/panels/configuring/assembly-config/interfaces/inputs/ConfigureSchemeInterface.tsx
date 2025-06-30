@@ -12,6 +12,7 @@ interface ConfigSchemeProps {
 /** Interface to configure a specific input scheme */
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
     const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme.usesGamepad)
+    const [useTouchControls, setUseTouchControls] = useState<boolean>(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const saveEvent = useCallback(() => {
@@ -58,6 +59,15 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                 }}
                 tooltipText="Supported controllers: Xbox one, Xbox 360."
             />
+            <Checkbox
+                label="Use Touch Controls"
+                defaultState={selectedScheme.usesTouchControls}
+                onClick={val => {
+                    setUseTouchControls(val)
+                    selectedScheme.usesTouchControls = val
+                }}
+                tooltipText="Enable on-screen touch controls (only for mobile devices)."
+            />
             <SectionDivider />
 
             {/* Scroll view for inputs */}
@@ -68,6 +78,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                             key={i.inputName}
                             input={i}
                             useGamepad={useGamepad}
+                            useTouchControls={useTouchControls}
                             onInputChanged={() => {
                                 selectedScheme.customized = true
                             }}
