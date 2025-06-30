@@ -1,5 +1,6 @@
 # Contains all of the logic for mapping the Components / Occurrences
 from platform import python_build
+
 import adsk.core
 import adsk.fusion
 from requests.models import parse_header_links
