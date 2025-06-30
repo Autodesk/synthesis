@@ -1,7 +1,6 @@
 import {
     JoltRVec3_JoltVec3,
     JoltVec3_JoltRVec3,
-    JoltVec3_ThreeVector3,
     MirabufFloatArr_JoltFloat3,
     MirabufFloatArr_JoltVec3,
     MirabufVector3_JoltRVec3,
@@ -46,7 +45,7 @@ const RobotLayers: number[] = [
     3, 4, 5, 6, 7, 8, 9,
 ]
 
-// Layer for ghost object in god mode, interacts with nothing
+// Layer for ghost objects used in constraint systems, interacts with nothing
 const LAYER_GHOST = 10
 
 // Please update this accordingly.
@@ -1304,38 +1303,6 @@ class PhysicsSystem extends WorldSystem {
 
         this._bodies.push(body.GetID())
         return body
-    }
-
-    /**
-     * Creates a ghost object and a distance constraint that connects it to the given body
-     * The ghost body is part of the LAYER_GHOST which doesn't interact with any other layer
-     * The caller is responsible for cleaning up the ghost body and the constraint
-     *
-     * @param id The id of the body to be attatched to and moved
-     * @returns The ghost body and the constraint
-     */
-
-    public CreateGodModeBody(id: Jolt.BodyID, anchorPoint: Jolt.Vec3): [Jolt.Body, Jolt.Constraint] {
-        const body = this.GetBody(id)
-        const ghostBody = this.CreateBox(
-            new THREE.Vector3(0.05, 0.05, 0.05),
-            undefined,
-            JoltVec3_ThreeVector3(anchorPoint),
-            undefined
-        )
-
-        const ghostBodyId = ghostBody.GetID()
-        this._joltBodyInterface.SetObjectLayer(ghostBodyId, LAYER_GHOST)
-        this._joltBodyInterface.AddBody(ghostBodyId, JOLT.EActivation_Activate)
-        this._bodies.push(ghostBodyId)
-
-        const constraintSettings = new JOLT.PointConstraintSettings()
-        constraintSettings.mPoint1 = constraintSettings.mPoint2 = JoltVec3_JoltRVec3(anchorPoint)
-        const constraint = constraintSettings.Create(ghostBody, body)
-        this._joltPhysSystem.AddConstraint(constraint)
-        this._constraints.push(constraint)
-
-        return [ghostBody, constraint]
     }
 
     public CreateSensor(shapeSettings: Jolt.ShapeSettings): Jolt.BodyID | undefined {
