@@ -140,6 +140,7 @@ def register_ui() -> None:
     )
     gm.elements.append(websiteButton)
 
+
 @logFailure
 def reload() -> None:
     """Reloads the imports of sub modules of the Synthesis package.

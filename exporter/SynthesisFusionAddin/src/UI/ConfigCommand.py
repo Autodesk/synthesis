@@ -31,6 +31,7 @@ logger = getLogger()
 
 INPUTS_ROOT: adsk.core.CommandInputs
 
+
 def reload() -> None:
     """Reloads the sub modules to reflect any changes made during development."""
     importlib.reload(GeneralConfigTab)
@@ -39,6 +40,7 @@ def reload() -> None:
 
     importlib.reload(Parser)
     logger.info("UI modules reloaded successfully.")
+
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     """Called when the panel is initially created."""
