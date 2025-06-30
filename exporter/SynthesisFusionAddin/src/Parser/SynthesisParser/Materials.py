@@ -52,8 +52,6 @@ def MapAllPhysicalMaterials(
     return Ok(None)
 
 
-
-
 def setDefaultMaterial(physicalMaterial: material_pb2.PhysicalMaterial, options: ExporterOptions) -> Result[None]:
     construct_info_result = construct_info("default", physicalMaterial)
     if construct_info_result.is_err():
@@ -72,6 +70,7 @@ def setDefaultMaterial(physicalMaterial: material_pb2.PhysicalMaterial, options:
     physicalMaterial.matType = 0  # type: ignore[assignment]
 
     return Ok(None)
+
 
 def getPhysicalMaterialData(
     fusionMaterial: adsk.core.Material, physicalMaterial: material_pb2.PhysicalMaterial, options: ExporterOptions
@@ -141,7 +140,7 @@ def getPhysicalMaterialData(
     mechanicalProperties.density = materialProperties.itemById("structural_Density").value
     mechanicalProperties.damping_coefficient = materialProperties.itemById("structural_Damping_coefficient").value
 
-    missingProperties: list[str] = [k for k, v in vars(mechanicalProperties).items() if v is None] #ignore: type
+    missingProperties: list[str] = [k for k, v in vars(mechanicalProperties).items() if v is None]  # ignore: type
     if missingProperties.__len__() > 0:
         _ = Err(f"Missing Mechanical Properties {missingProperties}", ErrorSeverity.Warning)
 
@@ -151,7 +150,7 @@ def getPhysicalMaterialData(
     strengthProperties.yield_strength = materialProperties.itemById("structural_Minimum_yield_stress").value
     strengthProperties.tensile_strength = materialProperties.itemById("structural_Minimum_tensile_strength").value
 
-    missingProperties: list[str] = [k for k, v in vars(strengthProperties).items() if v is None] #ignore: type
+    missingProperties: list[str] = [k for k, v in vars(strengthProperties).items() if v is None]  # ignore: type
     if missingProperties.__len__() > 0:
         _ = Err(f"Missing Strength Properties {missingProperties}", ErrorSeverity.Warning)
 
@@ -220,6 +219,7 @@ def setDefaultAppearance(appearance: material_pb2.Appearance) -> Result[None]:
     color.A = 255
 
     return Ok(None)
+
 
 def getMaterialAppearance(
     fusionAppearance: adsk.core.Appearance,

@@ -20,7 +20,11 @@ def guid_none(_: None) -> str:
     return str(uuid.uuid4())
 
 
-def fill_info(proto_obj: assembly_pb2.Assembly | material_pb2.Materials, fus_object: adsk.core.Base, override_guid: str | None = None) -> Result[None]:
+def fill_info(
+    proto_obj: assembly_pb2.Assembly | material_pb2.Materials,
+    fus_object: adsk.core.Base,
+    override_guid: str | None = None,
+) -> Result[None]:
     return construct_info("", proto_obj, fus_object=fus_object, GUID=override_guid)
 
 
@@ -66,8 +70,6 @@ def construct_info(
     return Ok(None)
 
 
-
-
 def rad_to_deg(rad):  # type: ignore
     """Converts radians to degrees
 
@@ -78,6 +80,7 @@ def rad_to_deg(rad):  # type: ignore
         float: degrees
     """
     return (rad * 180) / math.pi
+
 
 def throwZero():  # type: ignore
     """Errors on incorrect quat values
