@@ -79,7 +79,7 @@ def populateJoints(
     assembly: assembly_pb2.Assembly,
 ) -> Result[None]:
     info_result = fill_info(joints, None)
-    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+    if info_result.is_err() and info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
         return info_result
 
     # This is for creating all of the Joint Definition objects
@@ -90,12 +90,12 @@ def populateJoints(
     # Add the grounded joints object - TODO: rename some of the protobuf stuff for the love of god
     joint_definition_ground = joints.joint_definitions["grounded"]
     info_result = construct_info("grounded", joint_definition_ground)
-    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+    if info_result.is_err() and info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
         return info_result
 
     joint_instance_ground = joints.joint_instances["grounded"]
     info_result = construct_info("grounded", joint_instance_ground)
-    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+    if info_result.is_err() and info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
         return info_result
 
     joint_instance_ground.joint_reference = joint_definition_ground.info.GUID
@@ -132,7 +132,7 @@ def populateJoints(
                         signal = signals.signal_map[guid]
 
                         info_result = construct_info(joint.name, signal, GUID=guid)
-                        if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+                        if info_result.is_err() and info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                             return info_result
 
                         signal.io = signal_pb2.IOType.OUTPUT
@@ -147,7 +147,7 @@ def populateJoints(
                             motor = joints.motor_definitions[joint.entityToken]
 
                             info_result = fill_info(motor, joint)
-                            if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+                            if info_result.is_err() and info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                                 return info_result
 
                             simple_motor = motor.simple_motor
@@ -161,7 +161,7 @@ def populateJoints(
                         #     signals.signal_map.remove(guid)
 
                 joint_result = _addJointInstance(joint, joint_instance, joint_definition, signals, options)
-                if joint_result.is_err() and joint_result.severity == ErrorSeverity.Fatal:
+                if joint_result.is_err() and joint_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                     return joint_result
 
                 # adds information for joint motion and limits
@@ -176,7 +176,7 @@ def populateJoints(
 
 def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint) -> Result[None]:
     info_result = fill_info(joint_definition, joint)
-    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+    if info_result.is_err() and info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
         return info_result
     jointPivotTranslation = _jointOrigin(joint)
 
@@ -205,7 +205,7 @@ def _addJointInstance(
     options: ExporterOptions,
 ) -> Result[None]:
     info_result = fill_info(joint_instance, joint)
-    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+    if info_result.is_err() and info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
         return info_result
 
     # because there is only one and we are using the token - should be the same
@@ -250,7 +250,7 @@ def _addJointInstance(
                     signal = signals.signal_map[guid]
 
                     info_result = construct_info("joint_signal", signal, GUID=guid)
-                    if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
+                    if info_result.is_err() and info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                         return info_result
 
                     signal.io = signal_pb2.IOType.OUTPUT
