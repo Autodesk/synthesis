@@ -8,8 +8,8 @@ import checkupSound from "@/assets/sound-files/checkup.mp3"
 
 const preloadSounds = [dropdownMenuSound, clickdownSound, clickupSound, checkdownSound, checkupSound]
 type SoundEffect = {
-    onMouseDown?: (event: MouseEvent) => void
-    onMouseUp?: (event: MouseEvent) => void
+    onMouseDown?: () => void
+    onMouseUp?: () => void
 }
 export class SoundPlayer {
     private static audioElements: Map<string, HTMLAudioElement> = new Map()
