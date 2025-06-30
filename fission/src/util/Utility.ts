@@ -10,3 +10,10 @@ export function getFontSize(element: Element): number {
 export function clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max)
 }
+
+export function* inspect<T>(iterable: Iterable<T>, fn: (item: T) => void): IterableIterator<T> {
+    for (const item of iterable) {
+        fn(item) // side effect
+        yield item // pass the item along unchanged
+    }
+}

@@ -175,20 +175,25 @@ class MirabufParser {
         )
 
         // Create gamepiece rigid nodes from PartInstances with corresponding definitions
-        Object.values(this._assembly.data!.parts!.partInstances!).forEach((inst: mirabuf.IPartInstance) => {
-            if (!gamepieceDefinitions.has(inst.partDefinitionReference!)) return
+        let count = 0
+        const pre_filter = Object.values(this._assembly.data!.parts!.partInstances!)
+            .filter(inst => gamepieceDefinitions.has(inst.partDefinitionReference!))
+            .map(inst => this.BinarySearchDesignTree(inst.info!.GUID!))
+            .forEach(_ => count++)
+            .filter(instNode => !instNode)
+            .forEach((inst: mirabuf.IPartInstance) => {
+                count--
 
-            const instNode = this.BinarySearchDesignTree(inst.info!.GUID!)
-            if (!instNode) {
-                this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
-                return
-            }
+                // TODO: Instead of marking them, separate them into a different body entirely
 
-            const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
-            gpRn.isGamePiece = true
-            this.MovePartToRigidNode(instNode!.value!, gpRn)
-            if (instNode.children) this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
-        })
+                const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
+                gpRn.isGamePiece = true
+                this.MovePartToRigidNode(instNode!.value!, gpRn)
+                if (instNode.children)
+                    this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
+            })
+        if (count !== 0)
+            this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
     }
 
     private BandageRigidNodes(assembly: mirabuf.Assembly) {
