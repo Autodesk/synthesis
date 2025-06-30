@@ -2,12 +2,16 @@ import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
+
+
 /** Names of all global preferences. */
 
 export type GlobalPreferences = {
     ZoomSensitivity: number
     PitchSensitivity: number
     YawSensitivity: number
+    SceneRotationSensitivity: number
+    ViewCubeRotationSensitivity: number
     ReportAnalytics: boolean
     UseMetric: boolean
     RenderScoringZones: boolean
@@ -15,7 +19,9 @@ export type GlobalPreferences = {
     RenderSceneTags: boolean
     RenderScoreboard: boolean
     SubsystemGravity: boolean
+    TouchControls: boolean
     SimAutoReconnect: boolean
+    ShowViewCube: boolean
     MuteAllSound: boolean
     SFXVolume: number
 }
@@ -25,11 +31,13 @@ export type GlobalPreference = keyof GlobalPreferences
 export type Preferences = GlobalPreferences & {
     [RobotPreferencesKey]: Record<string, RobotPreferences>
     [FieldPreferencesKey]: Record<string, FieldPreferences>
+    [MotorPreferencesKey]: Record<string, MotorPreferences>
     [GraphicsPreferenceKey]: GraphicsPreferences
 }
 
 export const RobotPreferencesKey = "Robots" as const
 export const FieldPreferencesKey = "Fields" as const
+export const MotorPreferencesKey = "Motors" as const
 export const GraphicsPreferenceKey = "Quality" as const
 
 /**
@@ -40,6 +48,8 @@ export const DefaultGlobalPreferences: GlobalPreferences = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
+    SceneRotationSensitivity: 0.5,
+    ViewCubeRotationSensitivity: 0.025,
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
@@ -47,7 +57,9 @@ export const DefaultGlobalPreferences: GlobalPreferences = {
     RenderSceneTags: true,
     RenderScoreboard: true,
     SubsystemGravity: false,
+    TouchControls: false,
     SimAutoReconnect: false,
+    ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
 }
@@ -164,4 +176,12 @@ export function DefaultRobotPreferences(): RobotPreferences {
 
 export function DefaultFieldPreferences(): FieldPreferences {
     return { defaultSpawnLocation: [0, 1, 0], scoringZones: [] }
+}
+
+export function DefaultMotorPreferences(name: string): MotorPreferences {
+    return {
+        name: name,
+        maxVelocity: 1,
+        maxForce: 1,
+    }
 }

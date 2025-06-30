@@ -7,6 +7,7 @@ import ScreenInteractionHandler, {
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 export type CameraControlsType = "Orbit"
 
@@ -29,7 +30,7 @@ export abstract class CameraControls {
     public abstract dispose(): void
 }
 
-interface SphericalCoords {
+export interface SphericalCoords {
     theta: number
     phi: number
     r: number
@@ -43,8 +44,6 @@ const CO_MAX_PHI = Math.PI / 2.1
 const CO_MIN_PHI = -Math.PI / 2.1
 
 const CO_SENSITIVITY_ZOOM = 4.0
-const CO_SENSITIVITY_PHI = 0.5
-const CO_SENSITIVITY_THETA = 0.5
 
 const CO_DEFAULT_ZOOM = 3.5
 const CO_DEFAULT_PHI = -Math.PI / 6.0
@@ -110,6 +109,18 @@ export class CustomOrbitControls extends CameraControls {
     }
     public get focusProvider() {
         return this._focusProvider
+    }
+
+    public get coords(): SphericalCoords {
+        return this._coords
+    }
+
+    public get focus(): THREE.Matrix4 {
+        return this._focus
+    }
+
+    public set focus(matrix: THREE.Matrix4) {
+        this._focus.copy(matrix)
     }
 
     public constructor(mainCamera: THREE.Camera, interactionHandler: ScreenInteractionHandler) {
@@ -188,6 +199,56 @@ export class CustomOrbitControls extends CameraControls {
         }
     }
 
+    public getCurrentCoordinates(): SphericalCoords {
+        return { ...this._coords }
+    }
+
+    public setTargetCoordinates(coords: Partial<SphericalCoords>) {
+        if (coords.theta !== undefined) this._nextCoords.theta = coords.theta
+        if (coords.phi !== undefined) this._nextCoords.phi = coords.phi
+        if (coords.r !== undefined) this._nextCoords.r = coords.r
+    }
+
+    public setImmediateCoordinates(coords: Partial<SphericalCoords>) {
+        if (coords.theta !== undefined) {
+            this._coords.theta = coords.theta
+            this._nextCoords.theta = coords.theta
+        }
+        if (coords.phi !== undefined) {
+            this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, coords.phi))
+            this._nextCoords.phi = this._coords.phi
+        }
+        if (coords.r !== undefined) {
+            this._coords.r = Math.min(CO_MAX_ZOOM, Math.max(CO_MIN_ZOOM, coords.r))
+            this._nextCoords.r = this._coords.r
+        }
+    }
+
+    public animateToOrientation(theta: number, phi: number, duration: number = 500) {
+        const startCoords = { ...this._coords }
+        const targetCoords = { theta, phi, r: this._coords.r }
+
+        let startTime: number | null = null
+
+        const animate = (timestamp: number) => {
+            if (!startTime) startTime = timestamp
+
+            const elapsed = timestamp - startTime
+            const progress = Math.min(elapsed / duration, 1)
+
+            const easeOut = 1 - Math.pow(1 - progress, 3)
+
+            this._coords.theta = startCoords.theta + (targetCoords.theta - startCoords.theta) * easeOut
+            this._coords.phi = startCoords.phi + (targetCoords.phi - startCoords.phi) * easeOut
+
+            if (progress < 1) {
+                requestAnimationFrame(animate)
+            }
+        }
+
+        requestAnimationFrame(animate)
+    }
+
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 
@@ -202,8 +263,8 @@ export class CustomOrbitControls extends CameraControls {
               }
             : { theta: 0, phi: 0, r: 0 }
 
-        this._coords.theta += omega.theta * deltaT * CO_SENSITIVITY_THETA
-        this._coords.phi += omega.phi * deltaT * CO_SENSITIVITY_PHI
+        this._coords.theta += omega.theta * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
+        this._coords.phi += omega.phi * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
         this._coords.r += omega.r * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(this._coords.r, 1.4)
 
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, this._coords.phi))

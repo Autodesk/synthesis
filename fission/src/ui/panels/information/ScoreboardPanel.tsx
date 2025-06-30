@@ -46,7 +46,10 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     useEffect(() => {
         OnScoreChangedEvent.AddListener(onScoreChange)
         UpdateTimeLeft.AddListener(onTimeLeftChange)
-        PreferencesSystem.addPreferenceEventListener("RenderScoreboard", onRenderChange)
+        const removeListener = PreferencesSystem.addPreferenceEventListener("RenderScoreboard", onRenderChange)
+        return () => {
+            removeListener()
+        }
     })
 
     return (

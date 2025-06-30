@@ -2,6 +2,7 @@ import {
     DefaultFieldPreferences,
     DefaultGlobalPreferences,
     DefaultGraphicsPreferences,
+    DefaultMotorPreferences,
     DefaultRobotPreferences,
     FieldPreferences,
     FieldPreferencesKey,
@@ -9,6 +10,8 @@ import {
     GlobalPreferences,
     GraphicsPreferenceKey,
     GraphicsPreferences,
+    MotorPreferences,
+    MotorPreferencesKey,
     Preferences,
     RobotPreferences,
     RobotPreferencesKey,
@@ -35,16 +38,20 @@ class PreferencesSystem {
     private static _preferences: Partial<Preferences>
     private static _localStorageKey = "Preferences"
 
-    /** Event dispatched when a specific global preference is updated */
+    /** Event dispatched when a specific global preference is updated, returns a function to unsubscribe */
     public static addPreferenceEventListener<P extends GlobalPreference>(
         preference: P,
         callback: (e: PreferenceEvent<P>) => void
     ) {
-        window.addEventListener("preferenceChanged", event => {
+        const cb: EventListener = event => {
             if ((event as PreferenceEvent<GlobalPreference>).prefName == preference) {
                 callback(event as PreferenceEvent<P>)
             }
-        })
+        }
+        window.addEventListener("preferenceChanged", cb)
+        return () => {
+            window.removeEventListener("preferenceChanged", cb)
+        }
     }
 
     /** Gets any preference from the preferences map */
@@ -105,6 +112,18 @@ class PreferencesSystem {
         allRoboPrefs[miraName] = value
     }
 
+    /** Sets the FieldPreferences object for the field of a specific mira name */
+    public static setFieldPreferences(miraName: string, value: FieldPreferences) {
+        const allFieldPrefs = this.getAllFieldPreferences()
+        allFieldPrefs[miraName] = value
+    }
+
+    /** Sets the MotorPreferences object for the motor of a specific mira name */
+    public static setMotorPreferences(miraName: string, value: MotorPreferences) {
+        const allMotorPrefs = this.getAllMotorPreferences()
+        allMotorPrefs[miraName] = value
+    }
+
     /** @returns Preferences for every robot that was found in local storage. */
     public static getAllRobotPreferences(): { [key: string]: RobotPreferences } {
         let allRoboPrefs = this.getPreference(RobotPreferencesKey)
@@ -143,6 +162,30 @@ class PreferencesSystem {
         }
 
         return allFieldPrefs
+    }
+
+    /**
+     * @param {string} miraName - The name of the motor assembly to get preference for.
+     * @returns {MotorPreferences} Motor preferences found for the given motor, or default motor preferences if none are found.
+     */
+    public static getMotorPreferences(miraName: string): MotorPreferences {
+        const allMotorPrefs = this.getAllMotorPreferences()
+
+        allMotorPrefs[miraName] ??= DefaultMotorPreferences(miraName)
+
+        return allMotorPrefs[miraName]
+    }
+
+    /** @returns Preferences for every motor that was found in local storage. */
+    public static getAllMotorPreferences(): { [key: string]: MotorPreferences } {
+        let motorPrefs = this.getPreference(MotorPreferencesKey)
+
+        if (motorPrefs == undefined) {
+            motorPrefs = {}
+            this._preferences[MotorPreferencesKey] = motorPrefs
+        }
+
+        return motorPrefs
     }
 
     /** Gets simulation quality preferences */

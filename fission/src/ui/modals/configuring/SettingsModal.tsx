@@ -6,16 +6,30 @@ import Label, { LabelSize } from "@/components/Label"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import Slider from "@/ui/components/Slider"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
+const StatefulSlider: React.FC<
+    Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & { defaultValue: number; onChange: (val: number) => void }
+> = props => {
+    const [value, setValue] = useState(props.defaultValue)
+    return (
+        <Slider
+            {...props}
+            value={value}
+            onChange={(_, value) => {
+                setValue(value as number)
+                props.onChange?.(value as number)
+            }}
+        ></Slider>
+    )
+}
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
-    const [volume, setVolume] = useState(PreferencesSystem.getGlobalPreference("SFXVolume"))
+
     return (
         <Modal
             name="Settings"
@@ -68,6 +82,37 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     onChange={(_, value) => setYawSensitivity(value as number)}
                     tooltipText="Moving the camera left and right."
                 />*/}
+                {Spacer(5)}
+                <Label size={LabelSize.Medium}>Camera Settings</Label>
+                <StatefulSlider
+                    min={0.1}
+                    max={2.0}
+                    defaultValue={PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")}
+                    label={"Scene Rotation Sensitivity"}
+                    format={{ maximumFractionDigits: 2 }}
+                    onChange={value => PreferencesSystem.setGlobalPreference("SceneRotationSensitivity", value)}
+                    step={0.1}
+                    tooltipText="Controls how fast the scene rotates when dragging with the mouse."
+                />
+                {Spacer(5)}
+                <StatefulSlider
+                    min={0.06}
+                    max={6.0}
+                    defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
+                    label={"ViewCube Rotation Sensitivity"}
+                    format={{ maximumFractionDigits: 2 }}
+                    onChange={value => PreferencesSystem.setGlobalPreference("ViewCubeRotationSensitivity", value)}
+                    step={0.06}
+                    tooltipText="Controls how fast the view changes when dragging on the view cube."
+                />
+                <Checkbox
+                    label="Show View Cube"
+                    defaultState={PreferencesSystem.getGlobalPreference("ShowViewCube")}
+                    onClick={checked => {
+                        PreferencesSystem.setGlobalPreference("ShowViewCube", checked)
+                    }}
+                    tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
+                />
                 {Spacer(10)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
@@ -77,15 +122,6 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         onClick={checked => PreferencesSystem.setGlobalPreference("ReportAnalytics", checked)}
                         tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                     />
-                    {/* Disabled until this setting is implemented */}
-                    {/*  <Checkbox
-                        label="Use Metric"
-                        defaultState={PreferencesSystem.getGlobalPreference("UseMetric")}
-                        onClick={checked => {
-                            setUseMetric(checked)
-                        }}
-                        tooltipText="Metric measurements. (ex: meters instead of feet)"
-                    /> */}
                     <Checkbox
                         label="Realistic Subsystem Gravity"
                         defaultState={PreferencesSystem.getGlobalPreference("SubsystemGravity")}
@@ -103,8 +139,6 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         defaultState={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
                         onClick={checked => {
                             PreferencesSystem.setGlobalPreference("RenderSceneTags", checked)
-                            if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE)
-                            else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
                         }}
                         tooltipText="Name tags above robot."
                     />
@@ -118,21 +152,19 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             }
                         }}
                     />
+
                     <Checkbox
                         label="Mute All Sound"
                         defaultState={PreferencesSystem.getGlobalPreference("MuteAllSound")}
                         onClick={checked => PreferencesSystem.setGlobalPreference("MuteAllSound", checked)}
                     />
-                    <Slider
+                    <StatefulSlider
                         min={0}
                         max={100}
-                        value={volume}
+                        defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
                         label={"SFX Volume"}
                         format={{ maximumFractionDigits: 2 }}
-                        onChange={(_, value: number | number[]) => {
-                            setVolume(value as number)
-                            PreferencesSystem.setGlobalPreference("SFXVolume", value as number)
-                        }}
+                        onChange={value => PreferencesSystem.setGlobalPreference("SFXVolume", value)}
                         tooltipText="Volume of sound effects (%)."
                     />
                     {Spacer(8)}

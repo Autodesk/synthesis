@@ -3,7 +3,7 @@ import Driver, { DriverControlMode, DriverID } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
-import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { NoraNumber, NoraTypes } from "../Nora"
 
 const MAX_FORCE_WITHOUT_GRAV = 500
@@ -22,8 +22,6 @@ class SliderDriver extends Driver {
     }
 
     private _prevPos: number = 0.0
-
-    private _gravityChange?: (event: PreferenceEvent<"SubsystemGravity">) => void
 
     public get targetPosition(): number {
         return this._targetPosition
@@ -84,20 +82,16 @@ class SliderDriver extends Driver {
         this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
         this.controlMode = DriverControlMode.Velocity
 
-        this._gravityChange = (event: PreferenceEvent<"SubsystemGravity">) => {
-            if (event.prefName == "SubsystemGravity") {
-                const motorSettings = this._constraint.GetMotorSettings()
-                if (event.prefValue) {
-                    motorSettings.set_mMaxForceLimit(this._maxForceWithGrav)
-                    motorSettings.set_mMinForceLimit(-this._maxForceWithGrav)
-                } else {
-                    motorSettings.set_mMaxForceLimit(MAX_FORCE_WITHOUT_GRAV)
-                    motorSettings.set_mMinForceLimit(-MAX_FORCE_WITHOUT_GRAV)
-                }
+        PreferencesSystem.addPreferenceEventListener("SubsystemGravity", event => {
+            const motorSettings = this._constraint.GetMotorSettings()
+            if (event.prefValue) {
+                motorSettings.set_mMaxForceLimit(this._maxForceWithGrav)
+                motorSettings.set_mMinForceLimit(-this._maxForceWithGrav)
+            } else {
+                motorSettings.set_mMaxForceLimit(MAX_FORCE_WITHOUT_GRAV)
+                motorSettings.set_mMinForceLimit(-MAX_FORCE_WITHOUT_GRAV)
             }
-        }
-
-        PreferencesSystem.addPreferenceEventListener("SubsystemGravity", this._gravityChange)
+        })
     }
 
     public Update(_: number): void {
