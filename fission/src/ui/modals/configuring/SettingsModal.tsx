@@ -1,9 +1,6 @@
 import React, { useRef, useState } from "react"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label, { LabelSize } from "@/components/Label"
-import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
@@ -15,9 +12,6 @@ import { Tabs, Tab } from "@mui/material"
 import { GraphicsSettingsContent, GraphicsSettingsRef } from "@/panels/GraphicsSettingsPanel"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { closeModal } = useModalControlContext()
-    const { openPanel } = usePanelControlContext()
-
     // Disabled until camera settings are implemented
     /* const [zoomSensitivity, setZoomSensitivity] = useState<number>(
         PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")
@@ -130,15 +124,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Tabs
                     value={activeTab}
                     onChange={(_, v) => setActiveTab(v as any)}
-                    textColor="inherit"       
+                    textColor="inherit"
                     indicatorColor="primary"
-                    >
+                >
                     {tabs.map(t => (
                         <Tab key={t.key} value={t.key} label={t.label} />
                     ))}
                 </Tabs>
 
-                
                 {activeTab === "graphics" && <GraphicsSettingsContent ref={graphicsRef} />}
 
                 {activeTab === "general" && (
