@@ -39,12 +39,12 @@ def GetPhysicalProperties(
     """
     physical = fusionObject.getPhysicalProperties(level)
     if physical is None:
-        return Err("Physical properties object is None", ErrorSeverity.Warning)
+        return Err("Physical properties object is None", ErrorSeverity.Error)
 
     missing_properties_bools: list[bool] = [prop is None for prop in physical]
     if any(prop for prop in missing_properties_bools):
         missing_properties: list[Any] = [physical[i] for i, prop in enumerate(missing_properties_bools) if prop]
-        _ = Err(f"Missing some physical properties: {missing_properties}", ErrorSeverity.Warning)
+        _: Err[None] = Err(f"Missing some physical properties: {missing_properties}", ErrorSeverity.Warning)
 
     physicalProperties.density = physical.density
     physicalProperties.mass = physical.mass
@@ -59,6 +59,6 @@ def GetPhysicalProperties(
         _com.y = com.y
         _com.z = com.z
     else:
-        _ = Err("com is None", ErrorSeverity.Warning)
+        __: Err[None] = Err("com is None", ErrorSeverity.Warning)
 
     return Ok(None)
