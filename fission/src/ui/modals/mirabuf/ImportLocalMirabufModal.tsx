@@ -12,7 +12,6 @@ import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
@@ -76,7 +75,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     value={miraType}
                     exclusive
                     onChange={(_, v) => v != null && setSelectedType(v)}
-                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                    {...SoundPlayer.buttonSoundEffects()}
                     sx={{
                         alignSelf: "center",
                     }}
