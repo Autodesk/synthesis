@@ -166,7 +166,6 @@ def parseChildOccurrence(
             part.appearance = "{}_{}".format(occurrence.appearance.name, occurrence.appearance.id)
         except:
             _: Err[None] = Err("Failed to format part appearance", ErrorSeverity.Warning)
-            # ignore: type
             part.appearance = "default"
         # TODO: Add phyical_material parser
 
