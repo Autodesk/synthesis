@@ -169,7 +169,7 @@ def populateJoints(
 
             except:
                 # TODO: Figure out how to construct and return this (ie, what actually breaks in this try block)
-                _ = Err("Failed:\n{}".format(traceback.format_exc()), ErrorSeverity.Fatal)
+                _: Err[None] = Err("Failed:\n{}".format(traceback.format_exc()), ErrorSeverity.Fatal)
                 continue
     return Ok(None)
 
@@ -190,7 +190,7 @@ def _addJoint(joint: adsk.fusion.Joint, joint_definition: joint_pb2.Joint) -> Re
         joint_definition.origin.z = 0.0
 
         # TODO: We definitely could make this fatal, figure out if we should
-        _ = Err(f"Cannot find joint origin on joint {joint.name}", ErrorSeverity.Warning)
+        _: Err[None] = Err(f"Cannot find joint origin on joint {joint.name}", ErrorSeverity.Warning)
 
     joint_definition.break_magnitude = 0.0
 

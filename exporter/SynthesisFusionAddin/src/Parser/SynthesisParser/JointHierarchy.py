@@ -270,7 +270,7 @@ class JointParser:
                 occurrenceTwo = joint.occurrenceTwo
             else:
                 # Non-fatal since it's recovered in the next two statements
-                _ = Err("Found joint without two occurences", ErrorSeverity.Warning)
+                _: Err[None] = Err("Found joint without two occurences", ErrorSeverity.Warning)
 
             if occurrenceOne is None:
                 if joint.geometryOrOriginOne.entityOne.assemblyContext is None:
@@ -567,7 +567,7 @@ def createTreeParts(
 
     # Fine way to use try-excepts in this language
     if dynNode.data.objectType is None:
-        _ = Err("Found None object type", ErrorSeverity.Warning)
+        _: Err[None] = Err("Found None object type", ErrorSeverity.Warning)
         objectType = ""
     else:
         objectType = dynNode.data.objectType
@@ -578,7 +578,7 @@ def createTreeParts(
         node.value = guid_component(dynNode.data)
     else:
         if dynNode.data.entityToken is None:
-            _ = Err("Found None EntityToken", ErrorSeverity.Warning)
+            __: Err[None] = Err("Found None EntityToken", ErrorSeverity.Warning)
             node.value = dynNode.data.name
         else:
             node.value = dynNode.data.entityToken
