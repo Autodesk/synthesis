@@ -1,5 +1,6 @@
 import os
 import sys
+import importlib
 from typing import Any
 
 import adsk.core
@@ -50,6 +51,8 @@ def run(_context: dict[str, Any]) -> None:
     Arguments:
         **context** *context* -- Fusion context to derive app and UI.
     """
+
+    reload()
 
     # Remove all items prior to start just to make sure
     unregister_all()
@@ -136,3 +139,17 @@ def register_ui() -> None:
         command=True,
     )
     gm.elements.append(websiteButton)
+
+@logFailure
+def reload() -> None:
+    """Reloads the imports of sub modules of the Synthesis package.
+
+    Allows for reloading the package without restarting Fusion.
+    """
+    logger.info("here")
+    importlib.reload(HUI)
+    importlib.reload(Camera)
+    importlib.reload(ConfigCommand)
+    importlib.reload(MarkingMenu)
+    importlib.reload(ShowAPSAuthCommand)
+    importlib.reload(ShowWebsiteCommand)

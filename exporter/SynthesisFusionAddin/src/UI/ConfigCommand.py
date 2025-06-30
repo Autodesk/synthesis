@@ -17,14 +17,14 @@ from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Parser import Parser
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
-from src.UI.GamepieceConfigTab import GamepieceConfigTab
-from src.UI.GeneralConfigTab import GeneralConfigTab
 from src.UI.Handlers import PersistentEventHandler
-from src.UI.JointConfigTab import JointConfigTab
+import src.UI.GeneralConfigTab as GeneralConfigTab
+import src.UI.GamepieceConfigTab as GamepieceConfigTab
+import src.UI.JointConfigTab as JointConfigTab
 
-generalConfigTab: GeneralConfigTab
-jointConfigTab: JointConfigTab
-gamepieceConfigTab: GamepieceConfigTab
+generalConfigTab: GeneralConfigTab.GeneralConfigTab
+jointConfigTab: JointConfigTab.JointConfigTab
+gamepieceConfigTab: GamepieceConfigTab.GamepieceConfigTab
 
 logger = getLogger()
 
@@ -71,14 +71,14 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
 
         global generalConfigTab
-        generalConfigTab = GeneralConfigTab(args, exporterOptions)
+        generalConfigTab = GeneralConfigTab.GeneralConfigTab(args, exporterOptions)
 
         global gamepieceConfigTab
-        gamepieceConfigTab = GamepieceConfigTab(args, exporterOptions)
+        gamepieceConfigTab = GamepieceConfigTab.GamepieceConfigTab(args, exporterOptions)
         generalConfigTab.gamepieceConfigTab = gamepieceConfigTab
 
         global jointConfigTab
-        jointConfigTab = JointConfigTab(args)
+        jointConfigTab = JointConfigTab.JointConfigTab(args)
         generalConfigTab.jointConfigTab = jointConfigTab
 
         if not exporterOptions.exportMode == ExportMode.FIELD:
