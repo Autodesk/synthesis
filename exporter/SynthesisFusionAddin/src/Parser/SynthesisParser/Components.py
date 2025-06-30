@@ -165,7 +165,7 @@ def parseChildOccurrence(
         try:
             part.appearance = "{}_{}".format(occurrence.appearance.name, occurrence.appearance.id)
         except:
-            _ = Err("Failed to format part appearance", ErrorSeverity.Warning)
+            _: Err[None] = Err("Failed to format part appearance", ErrorSeverity.Warning)
             # ignore: type
             part.appearance = "default"
         # TODO: Add phyical_material parser
@@ -174,7 +174,7 @@ def parseChildOccurrence(
     if occurrence.component.material:
         part.physical_material = occurrence.component.material.id
     else:
-        _ = Err(f"Component Material is None", ErrorSeverity.Warning)
+        __: Err[None] = Err(f"Component Material is None", ErrorSeverity.Warning)
 
     def_map = partsData.part_definitions
 
