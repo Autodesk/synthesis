@@ -126,13 +126,19 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             onAccept={saveHandlers[activeTab]}
             onCancel={resetHandlers[activeTab]}
         >
-            <Tabs value={activeTab} onChange={(_, newTab) => setActiveTab(newTab as any)}>
-                {tabs.map(t => (
-                    <Tab key={t.key} value={t.key} label={t.label} />
-                ))}
-            </Tabs>
-
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
+                <Tabs
+                    value={activeTab}
+                    onChange={(_, v) => setActiveTab(v as any)}
+                    textColor="inherit"       
+                    indicatorColor="primary"
+                    >
+                    {tabs.map(t => (
+                        <Tab key={t.key} value={t.key} label={t.label} />
+                    ))}
+                </Tabs>
+
+                
                 {activeTab === "graphics" && <GraphicsSettingsContent ref={graphicsRef} />}
 
                 {activeTab === "general" && (
