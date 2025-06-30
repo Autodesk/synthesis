@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useRef, useState } from "react"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
@@ -12,7 +12,7 @@ import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import Slider from "@/ui/components/Slider"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { Tabs, Tab } from "@mui/material"
-import GraphicSettings from "@/panels/GraphicsSettingsPanel"
+import { GraphicsSettingsContent, GraphicsSettingsRef } from "@/panels/GraphicsSettingsPanel"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
@@ -30,6 +30,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     ) */
 
     const [activeTab, setActiveTab] = useState<"general" | "graphics">("general")
+    const graphicsRef = useRef<GraphicsSettingsRef>(null)
 
     // Array of tabs that can be added on later
     const tabs = [
@@ -93,14 +94,37 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         PreferencesSystem.savePreferences()
     }
 
+    const resetGeneral = () => {
+        setReportAnalytics(PreferencesSystem.getGlobalPreference("ReportAnalytics"))
+        setRenderScoringZones(PreferencesSystem.getGlobalPreference("RenderScoringZones"))
+        setRenderSceneTags(PreferencesSystem.getGlobalPreference("RenderSceneTags"))
+        setRenderScoreboard(PreferencesSystem.getGlobalPreference("RenderScoreboard"))
+        setSubsystemGravity(PreferencesSystem.getGlobalPreference("SubsystemGravity"))
+        setShowViewCube(PreferencesSystem.getGlobalPreference("ShowViewCube"))
+        setMuteAllSound(PreferencesSystem.getGlobalPreference("MuteAllSound"))
+        setSFXVolume(PreferencesSystem.getGlobalPreference("SFXVolume"))
+        setSceneRotationSensitivity(PreferencesSystem.getGlobalPreference("SceneRotationSensitivity"))
+        setViewCubeRotationSensitivity(
+            PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity") * 60
+        )
+    }
+
+    const saveHandlers: Record<"general" | "graphics", () => void> = {
+        general: saveSettings,
+        graphics: () => graphicsRef.current?.save()!,
+    }
+    const resetHandlers: Record<"general" | "graphics", () => void> = {
+        general: resetGeneral,
+        graphics: () => graphicsRef.current?.reset()!,
+    }
+
     return (
         <Modal
             name="Settings"
             icon={SynthesisIcons.GearLarge}
             modalId={modalId}
-            onAccept={() => {
-                saveSettings()
-            }}
+            onAccept={saveHandlers[activeTab]}
+            onCancel={resetHandlers[activeTab]}
         >
             <Tabs value={activeTab} onChange={(_, newTab) => setActiveTab(newTab as any)}>
                 {tabs.map(t => (
@@ -109,20 +133,41 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             </Tabs>
 
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
-                {activeTab === "graphics" && (
-                    <Box alignSelf={"center"}>
-                        <Button
-                            value="Graphics Settings"
-                            onClick={() => {
-                                openPanel("graphics-settings")
-                                closeModal()
-                            }}
-                        />
-                    </Box>
-                )}
+                {activeTab === "graphics" && <GraphicsSettingsContent ref={graphicsRef} />}
 
                 {activeTab === "general" && (
                     <>
+                        {/* Disabled until these settings are implemented */}
+                        {/*   {Spacer(5)}
+                        <Label size={LabelSize.Medium}>Camera Settings</Label>
+                        <Slider
+                            min={1}
+                            max={15}
+                            value={zoomSensitivity}
+                            label={"Zoom Sensitivity"}
+                            format={{ maximumFractionDigits: 2 }}
+                            onChange={(_, value) => setZoomSensitivity(value as number)}
+                        />
+                        {Spacer(2)}
+                        <Slider
+                            min={1}
+                            max={15}
+                            value={pitchSensitivity}
+                            label={"Pitch Sensitivity"}
+                            format={{ maximumFractionDigits: 2 }}
+                            onChange={(_, value) => setPitchSensitivity(value as number)}
+                            tooltipText="Moving the camera up and down."
+                        />
+                        {Spacer(2)}
+                        <Slider
+                            min={1}
+                            max={15}
+                            value={yawSensitivity}
+                            label={"Yaw Sensitivity"}
+                            format={{ maximumFractionDigits: 2 }}
+                            onChange={(_, value) => setYawSensitivity(value as number)}
+                            tooltipText="Moving the camera left and right."
+                        />*/}
                         {Spacer(5)}
                         <Label size={LabelSize.Medium}>Camera Settings</Label>
                         <Slider
@@ -157,6 +202,15 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 }}
                                 tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                             />
+                            {/* Disabled until this settings is implemented */}
+                            {/*  <Checkbox
+                                label="Use Metric"
+                                defaultState={PreferencesSystem.getGlobalPreference<boolean>("UseMetric")}
+                                onClick={checked => {
+                                    setUseMetric(checked)
+                                }}
+                                tooltipText="Metric measurements. (ex: meters instead of feet)"
+                            /> */}
                             <Checkbox
                                 label="Realistic Subsystem Gravity"
                                 defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
