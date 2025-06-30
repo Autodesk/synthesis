@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterEach, Mock } from "vitest"
-declare const globalThis: any
+declare const globalThis: Global
 
 describe("main.tsx Bootstrap Tests", () => {
     let mockCreateRoot: Mock

@@ -1,9 +1,11 @@
 import type { Mock } from "vitest"
 
 declare global {
-    let gtag: Mock
-    let URL: Mock
-    let testProperty: string
+    interface Global {
+        gtag: Mock
+        URL: Mock & typeof URL
+        testProperty: string
+    }
 }
 
 export {}
