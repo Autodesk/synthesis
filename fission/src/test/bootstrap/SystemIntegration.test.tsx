@@ -1,4 +1,5 @@
 import { describe, test, expect, vi } from "vitest"
+declare const globalThis: any
 
 describe("System Integration and Side Effects Tests", () => {
     test("handles requestAnimationFrame correctly", () => {

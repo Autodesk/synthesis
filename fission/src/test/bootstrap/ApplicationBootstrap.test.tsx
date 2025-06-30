@@ -1,4 +1,5 @@
 import { describe, test, expect, vi, beforeEach } from "vitest"
+declare const globalThis: any
 
 describe("Complete Application Bootstrap", () => {
     beforeEach(() => {
