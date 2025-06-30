@@ -269,8 +269,9 @@ class Parser:
         logger.debug(debug_output.strip())
 
 
-def handle_err_top[T](err: Result[T]):
+def handle_err_top[T](err: Result[T]) -> None:
     if err.is_err():
         message, severity = err.unwrap_err()
         if severity == ErrorSeverity.Fatal:
+            app = adsk.core.Application.get()
             app.userInterface.messageBox(f"Fatal Error Encountered: {message}")

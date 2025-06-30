@@ -1,4 +1,5 @@
 # Contains all of the logic for mapping the Components / Occurrences
+from platform import python_build
 import adsk.core
 import adsk.fusion
 from requests.models import parse_header_links
@@ -43,7 +44,9 @@ def MapAllComponents(
         if fill_info_result.is_err():
             return fill_info_result
 
-        PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
+        physical_properties_result = PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
+        if physical_properties_result.is_err() and physical_properties_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+            return physical_properties_result
 
         partDefinition.dynamic = options.exportMode != ExportMode.FIELD
 
@@ -60,11 +63,11 @@ def MapAllComponents(
 
                 if isinstance(body, adsk.fusion.BRepBody):
                     parse_result = ParseBRep(body, options, part_body.triangle_mesh)
-                    if parse_result.is_err() and parse_result.unwrap_err()[0] == ErrorSeverity.Fatal:
+                    if parse_result.is_err() and parse_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                         return parse_result
                 else:
                     parse_result = ParseMesh(body, options, part_body.triangle_mesh)
-                    if parse_result.is_err() and parse_result.unwrap_err()[0] == ErrorSeverity.Fatal:
+                    if parse_result.is_err() and parse_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                         return parse_result
 
                 appearance_key = "{}_{}".format(body.appearance.name, body.appearance.id)
@@ -74,14 +77,18 @@ def MapAllComponents(
                 else:
                     part_body.appearance_override = "default"
 
+            return Ok(None)
+
         for body in component.bRepBodies:
             process_result = processBody(body)
-            if process_result.is_err() and process_result.unwrap_err()[0] == ErrorSeverity.Fatal:
+            if process_result.is_err() and process_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                 return process_result
         for body in component.meshBodies:
             process_result = processBody(body)
-            if process_result.is_err() and process_result.unwrap_err()[0] == ErrorSeverity.Fatal:
+            if process_result.is_err() and process_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                 return process_result
+
+    return Ok(None)
 
 
 def ParseComponentRoot(
@@ -146,7 +153,7 @@ def parseChildOccurrence(
     node.value = mapConstant
 
     fill_info_result = fill_info(part, occurrence, mapConstant)
-    if fill_info_result.is_err() and fill_info_result.unwrap_err() == ErrorSeverity.Fatal:
+    if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
         return fill_info_result
 
     collision_attr = occurrence.attributes.itemByName("synthesis", "collision_off")

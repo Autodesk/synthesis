@@ -102,7 +102,7 @@ class DynamicOccurrenceNode(GraphNode):
     def __init__(self, occurrence: adsk.fusion.Occurrence, isGround: bool = False, previous: GraphNode | None = None):
         super().__init__(occurrence)
         self.isGround = isGround
-        self.name = occurrence.name  # type: ignore
+        self.name = occurrence.name
 
     def print(self) -> None:
         print(f"\n\t-------{self.data.name}-------")
@@ -255,7 +255,9 @@ class JointParser:
 
         # creates the axis elements - adds all elements to axisNodes
         for key, value in self.dynamicJoints.items():
-            self._populateAxis(key, value)
+            populate_axis_result = self._populateAxis(key, value)
+            if populate_axis_result.is_err():
+                raise RuntimeError(populate_axis_result.unwrap_err()[0])
 
         self._linkAllAxis()
 
@@ -352,21 +354,24 @@ class JointParser:
             )
         return Ok(None)
 
-    def _populateAxis(self, occ_token: str, joint: adsk.fusion.Joint) -> None:
+    def _populateAxis(self, occ_token: str, joint: adsk.fusion.Joint) -> Result[None]:
         occ = self.design.findEntityByToken(occ_token)[0]
         if occ is None:
-            return
+            return Ok(None)
 
         self.currentTraversal = dict()
 
         populate_node_result = self._populateNode(occ, None, None)
         if populate_node_result.is_err():  # We need the value to proceed
-            return populate_node_result
+            unwrapped = populate_node_result.unwrap_err()
+            return Err(unwrapped[0], unwrapped[1])
 
         rootNode = populate_node_result.unwrap()
         if rootNode is not None:
             axisNode = SimulationNode(rootNode, joint)
             self.simulationNodesRef[occ_token] = axisNode
+
+        return Ok(None)
 
     # TODO: Verify that this works after the Result-refactor :skull:
     def _populateNode(
@@ -573,7 +578,7 @@ def createTreeParts(
         node.value = guid_component(dynNode.data)
     else:
         if dynNode.data.entityToken is None:
-            _ = Err("Found None EntityToken", ErrorSeverity.Warning)  # type: ignore
+            _ = Err("Found None EntityToken", ErrorSeverity.Warning)
             node.value = dynNode.data.name
         else:
             node.value = dynNode.data.entityToken

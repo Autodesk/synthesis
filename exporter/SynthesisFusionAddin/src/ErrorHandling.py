@@ -41,7 +41,7 @@ class Ok(Result[T]):
     def __init__(self, value: T):
         self.value = value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Ok({self.value})"
 
 
@@ -55,7 +55,7 @@ class Err(Result[T]):
 
         self.write_error()
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Err({self.message})"
 
     def write_error(self) -> None:
