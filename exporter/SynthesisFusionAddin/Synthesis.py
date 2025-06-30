@@ -146,10 +146,11 @@ def reload() -> None:
 
     Allows for reloading the package without restarting Fusion.
     """
-    logger.info("here")
     importlib.reload(HUI)
     importlib.reload(Camera)
     importlib.reload(ConfigCommand)
     importlib.reload(MarkingMenu)
     importlib.reload(ShowAPSAuthCommand)
     importlib.reload(ShowWebsiteCommand)
+
+    ConfigCommand.reload()

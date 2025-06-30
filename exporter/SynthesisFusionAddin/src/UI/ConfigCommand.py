@@ -5,6 +5,7 @@ Central location for which all UI is generated and handled for the main configur
 import os
 import re
 import webbrowser
+import importlib
 from typing import Any
 
 import adsk.core
@@ -14,7 +15,7 @@ from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
-from src.Parser.SynthesisParser.Parser import Parser
+import src.Parser.SynthesisParser.Parser as Parser
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
 from src.UI.Handlers import PersistentEventHandler
@@ -30,6 +31,14 @@ logger = getLogger()
 
 INPUTS_ROOT: adsk.core.CommandInputs
 
+def reload() -> None:
+    """Reloads the sub modules to reflect any changes made during development."""
+    importlib.reload(GeneralConfigTab)
+    importlib.reload(GamepieceConfigTab)
+    importlib.reload(JointConfigTab)
+
+    importlib.reload(Parser)
+    logger.info("UI modules reloaded successfully.")
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     """Called when the panel is initially created."""
@@ -164,7 +173,7 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
 
-        Parser(exporterOptions).export()
+        Parser.Parser(exporterOptions).export()
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
