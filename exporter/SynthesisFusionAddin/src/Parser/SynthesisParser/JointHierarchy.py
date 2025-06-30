@@ -103,7 +103,7 @@ class DynamicOccurrenceNode(GraphNode):
     def __init__(self, occurrence: adsk.fusion.Occurrence, isGround: bool = False, previous: GraphNode | None = None):
         super().__init__(occurrence)
         self.isGround = isGround
-        self.name = occurrence.name # type: ignore
+        self.name = occurrence.name  # type: ignore
 
     def print(self) -> None:
         print(f"\n\t-------{self.data.name}-------")
@@ -195,24 +195,24 @@ class JointParser:
     # NOTE This function cannot under the value-based error handling system, since it's an  __init__ function
     @logFailure
     def __init__(self, design: adsk.fusion.Design) -> None:
-        """ Create hierarchy with just joint assembly
-         - Assembly
-           - Grounded
-           - Axis 1
-           - Axis 2
-             - Axis 3
+        """Create hierarchy with just joint assembly
+        - Assembly
+          - Grounded
+          - Axis 1
+          - Axis 2
+            - Axis 3
 
-         1. Find all Dynamic joint items to isolate                        [o]
-         2. Find the grounded component                                    [x] (possible - not optimized)
-         3. Populate tree with all items from each set of joints           [x] (done with grounding)
-         - 3. a) Each Child element with no joints                         [x]
-         - 3. b) Each Rigid Joint Connection                               [x]
-         4. Link Joint trees by discovery from root                        [x]
-         5. Record which trees have no children for creating end effectors [x] (next up) - this kinda already exists
+        1. Find all Dynamic joint items to isolate                        [o]
+        2. Find the grounded component                                    [x] (possible - not optimized)
+        3. Populate tree with all items from each set of joints           [x] (done with grounding)
+        - 3. a) Each Child element with no joints                         [x]
+        - 3. b) Each Rigid Joint Connection                               [x]
+        4. Link Joint trees by discovery from root                        [x]
+        5. Record which trees have no children for creating end effectors [x] (next up) - this kinda already exists
 
-         Need to investigate creating an additional button for end effector possibly
-         It might be possible to have multiple end effectors
-         Total Number of final elements"""
+        Need to investigate creating an additional button for end effector possibly
+        It might be possible to have multiple end effectors
+        Total Number of final elements"""
 
         self.current = None
         self.previousJoint = None
@@ -243,7 +243,7 @@ class JointParser:
 
         # dynamic joint node for grounded components and static components
         populate_node_result = self._populateNode(self.grounded, None, None, is_ground=True)
-        if populate_node_result.is_err(): # We need the value to proceed
+        if populate_node_result.is_err():  # We need the value to proceed
             raise RuntimeWarning(populate_node_result.unwrap_err()[0])
 
         rootNode = populate_node_result.unwrap()
@@ -303,7 +303,10 @@ class JointParser:
 
                 # TODO: Check if this is fatal or not
                 if occurrenceTwo is None and occurrenceOne is None:
-                    return Err(f"Occurrences that connect joints could not be found\n\t1: {occurrenceOne}\n\t2: {occurrenceTwo}", ErrorSeverity.Fatal)
+                    return Err(
+                        f"Occurrences that connect joints could not be found\n\t1: {occurrenceOne}\n\t2: {occurrenceTwo}",
+                        ErrorSeverity.Fatal,
+                    )
             else:
                 if oneEntityToken == self.grounded.entityToken:
                     self.groundedConnections.append(occurrenceTwo)
@@ -358,7 +361,7 @@ class JointParser:
         self.currentTraversal = dict()
 
         populate_node_result = self._populateNode(occ, None, None)
-        if populate_node_result.is_err(): # We need the value to proceed
+        if populate_node_result.is_err():  # We need the value to proceed
             return populate_node_result
 
         rootNode = populate_node_result.unwrap()
@@ -391,7 +394,9 @@ class JointParser:
         self.currentTraversal[occ.entityToken] = True
 
         for occurrence in occ.childOccurrences:
-            populate_result = self._populateNode(occurrence, node, OccurrenceRelationship.TRANSFORM, is_ground=is_ground)
+            populate_result = self._populateNode(
+                occurrence, node, OccurrenceRelationship.TRANSFORM, is_ground=is_ground
+            )
             if populate_result.is_err() and populate_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                 return populate_result
 
@@ -426,7 +431,7 @@ class JointParser:
             else:
                 # Check if this joint occurance violation is really a fatal error or just something we should filter on
                 return Err("Joint without two occurrences", ErrorSeverity.Fatal)
-        
+
         if prev is not None:
             edge = DynamicEdge(relationship, node)
             prev.edges.append(edge)
@@ -504,7 +509,10 @@ def BuildJointPartHierarchy(
 
     # I'm fairly certain bubbling this back up is the way to go
     except Warning:
-        return Err("Instantiation of the JointParser failed, likely due to a lack of a grounded component in the assembly", ErrorSeverity.Fatal)
+        return Err(
+            "Instantiation of the JointParser failed, likely due to a lack of a grounded component in the assembly",
+            ErrorSeverity.Fatal,
+        )
 
 
 def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog: PDMessage) -> Result[None]:
@@ -559,18 +567,18 @@ def createTreeParts(
         objectType = ""
     else:
         objectType = dynNode.data.objectType
-    
+
     if objectType == "adsk::fusion::Occurrence":
         node.value = guid_occurrence(dynNode.data)
     elif objectType == "adsk::fusion::Component":
         node.value = guid_component(dynNode.data)
     else:
         if dynNode.data.entityToken is None:
-            _ = Err("Found None EntityToken", ErrorSeverity.Warning) # type: ignore
+            _ = Err("Found None EntityToken", ErrorSeverity.Warning)  # type: ignore
             node.value = dynNode.data.name
         else:
             node.value = dynNode.data.entityToken
-                    
+
     # possibly add additional information for the type of connection made
     # recurse and add all children connections
     for edge in dynNode.edges:

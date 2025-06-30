@@ -16,6 +16,7 @@ from src.Parser.SynthesisParser.Utilities import (
 from src.Proto import assembly_pb2, joint_pb2, material_pb2, types_pb2
 from src.Types import ExportMode
 
+
 # TODO: Impelement Material overrides
 def MapAllComponents(
     design: adsk.fusion.Design,
@@ -36,13 +37,11 @@ def MapAllComponents(
         if fill_info_result.is_err():
             return fill_info_result
 
-
         partDefinition = partsData.part_definitions[comp_ref]
 
         fill_info_result = fill_info(partDefinition, component, comp_ref)
         if fill_info_result.is_err():
             return fill_info_result
-
 
         PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
 
@@ -68,7 +67,6 @@ def MapAllComponents(
                     if parse_result.is_err() and parse_result.unwrap_err()[0] == ErrorSeverity.Fatal:
                         return parse_result
 
-
                 appearance_key = "{}_{}".format(body.appearance.name, body.appearance.id)
                 # this should be appearance
                 if appearance_key in materials.appearances:
@@ -84,7 +82,6 @@ def MapAllComponents(
             process_result = processBody(body)
             if process_result.is_err() and process_result.unwrap_err()[0] == ErrorSeverity.Fatal:
                 return process_result
-
 
 
 def ParseComponentRoot(
@@ -117,7 +114,9 @@ def ParseComponentRoot(
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
 
-            parse_child_result = parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
+            parse_child_result = parseChildOccurrence(
+                occur, progressDialog, options, partsData, material_map, child_node
+            )
             if parse_child_result.is_err():
                 return parse_child_result
 
@@ -158,7 +157,8 @@ def parseChildOccurrence(
         try:
             part.appearance = "{}_{}".format(occurrence.appearance.name, occurrence.appearance.id)
         except:
-            _ = Err("Failed to format part appearance", ErrorSeverity.Warning); # ignore: type
+            _ = Err("Failed to format part appearance", ErrorSeverity.Warning)
+            # ignore: type
             part.appearance = "default"
         # TODO: Add phyical_material parser
 
@@ -194,8 +194,10 @@ def parseChildOccurrence(
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
 
-            parse_child_result = parseChildOccurrence(occur, progressDialog, options, partsData, material_map, child_node)
-            if parse_child_result.is_err(): 
+            parse_child_result = parseChildOccurrence(
+                occur, progressDialog, options, partsData, material_map, child_node
+            )
+            if parse_child_result.is_err():
                 return parse_child_result
 
             node.children.append(child_node)
@@ -252,11 +254,9 @@ def ParseMesh(
     if mesh is None:
         return Err("Component Mesh was None", ErrorSeverity.Fatal)
 
-
     fill_info_result = fill_info(trimesh, meshBody)
     if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
         return fill_info_result
-
 
     trimesh.has_volume = True
 

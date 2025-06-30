@@ -93,12 +93,10 @@ def populateJoints(
     if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
         return info_result
 
-
     joint_instance_ground = joints.joint_instances["grounded"]
     info_result = construct_info("grounded", joint_instance_ground)
     if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
         return info_result
-
 
     joint_instance_ground.joint_reference = joint_definition_ground.info.GUID
 
@@ -151,7 +149,6 @@ def populateJoints(
                             info_result = fill_info(motor, joint)
                             if info_result.is_err() and info_result.severity == ErrorSeverity.Fatal:
                                 return info_result
-
 
                             simple_motor = motor.simple_motor
                             simple_motor.stall_torque = parse_joints.force
@@ -267,6 +264,7 @@ def _addJointInstance(
                 else:
                     joint_instance.signal_reference = ""
     return Ok(None)
+
 
 def _addRigidGroup(joint: adsk.fusion.Joint, assembly: assembly_pb2.Assembly) -> None:
     if joint.jointMotion.jointType != 0 or not (
@@ -577,7 +575,10 @@ def createJointGraph(
             nodeMap[str(suppliedJoint.parent)].children.append(nodeMap[suppliedJoint.jointToken])
         else:
             # TODO: This might not need to be fatal
-            return Err(f"Cannot construct hierarchy because of detached tree at : {suppliedJoint.jointToken}", ErrorSeverity.Fatal)
+            return Err(
+                f"Cannot construct hierarchy because of detached tree at : {suppliedJoint.jointToken}",
+                ErrorSeverity.Fatal,
+            )
 
     for node in nodeMap.values():
         # append everything at top level to isolate kinematics
