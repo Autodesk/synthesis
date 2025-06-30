@@ -2,14 +2,13 @@ import enum
 from logging import ERROR
 from typing import Any, Iterator, cast
 
-from google.protobuf.message import Error
-
 import adsk.core
 import adsk.fusion
+from google.protobuf.message import Error
 
 from src import gm
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Logging import getLogger, logFailure
-from src.ErrorHandling import Result, Err, Ok, ErrorSeverity
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import guid_component, guid_occurrence

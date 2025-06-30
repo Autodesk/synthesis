@@ -1,6 +1,7 @@
-from .Logging import getLogger
 from enum import Enum
 from typing import Generic, TypeVar
+
+from .Logging import getLogger
 
 logger = getLogger()
 
