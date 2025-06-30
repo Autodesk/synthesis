@@ -11,6 +11,8 @@ import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import Slider from "@/ui/components/Slider"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { Tabs, Tab } from "@mui/material"
+import GraphicSettings from "@/panels/GraphicsSettingsPanel"
 
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
@@ -26,6 +28,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [yawSensitivity, setYawSensitivity] = useState<number>(
         PreferencesSystem.getGlobalPreference<number>("YawSensitivity")
     ) */
+
+    const [activeTab, setActiveTab] = useState<"general" | "graphics">("general")
+
+    // Array of tabs that can be added on later
+    const tabs = [
+        { key: "general", label: "General" },
+        { key: "graphics", label: "Graphics" },
+    ] as const
 
     const [reportAnalytics, setReportAnalytics] = useState<boolean>(
         PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")
@@ -92,150 +102,122 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 saveSettings()
             }}
         >
-            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
-                <Box alignSelf={"center"}>
-                    <Button
-                        value="Graphics Settings"
-                        onClick={() => {
-                            openPanel("graphics-settings")
-                            closeModal()
-                        }}
-                    />
-                </Box>
+            <Tabs value={activeTab} onChange={(_, newTab) => setActiveTab(newTab as any)}>
+                {tabs.map(t => (
+                    <Tab key={t.key} value={t.key} label={t.label} />
+                ))}
+            </Tabs>
 
-                {/* Disabled until these settings are implemented */}
-                {/*   {Spacer(5)}
-                <Label size={LabelSize.Medium}>Camera Settings</Label>
-                <Slider
-                    min={1}
-                    max={15}
-                    value={zoomSensitivity}
-                    label={"Zoom Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setZoomSensitivity(value as number)}
-                />
-                {Spacer(2)}
-                <Slider
-                    min={1}
-                    max={15}
-                    value={pitchSensitivity}
-                    label={"Pitch Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setPitchSensitivity(value as number)}
-                    tooltipText="Moving the camera up and down."
-                />
-                {Spacer(2)}
-                <Slider
-                    min={1}
-                    max={15}
-                    value={yawSensitivity}
-                    label={"Yaw Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setYawSensitivity(value as number)}
-                    tooltipText="Moving the camera left and right."
-                />*/}
-                {Spacer(5)}
-                <Label size={LabelSize.Medium}>Camera Settings</Label>
-                <Slider
-                    min={0.1}
-                    max={2.0}
-                    value={sceneRotationSensitivity}
-                    label={"Scene Rotation Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setSceneRotationSensitivity(value as number)}
-                    step={0.1}
-                    tooltipText="Controls how fast the scene rotates when dragging with the mouse."
-                />
-                {Spacer(2)}
-                <Slider
-                    min={0.06}
-                    max={6.0}
-                    value={viewCubeRotationSensitivity}
-                    label={"ViewCube Rotation Sensitivity"}
-                    format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setViewCubeRotationSensitivity(value as number)}
-                    step={0.06}
-                    tooltipText="Controls how fast the view changes when dragging on the view cube."
-                />
-                {Spacer(10)}
-                <Label size={LabelSize.Medium}>Preferences</Label>
-                <Box display="flex" flexDirection={"column"}>
-                    <Checkbox
-                        label="Report Analytics"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")}
-                        onClick={checked => {
-                            setReportAnalytics(checked)
-                        }}
-                        tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
-                    />
-                    {/* Disabled until this settings is implemented */}
-                    {/*  <Checkbox
-                        label="Use Metric"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("UseMetric")}
-                        onClick={checked => {
-                            setUseMetric(checked)
-                        }}
-                        tooltipText="Metric measurements. (ex: meters instead of feet)"
-                    /> */}
-                    <Checkbox
-                        label="Realistic Subsystem Gravity"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
-                        onClick={checked => {
-                            setSubsystemGravity(checked)
-                        }}
-                        tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
-                    />
-                    <Checkbox
-                        label="Show Score Zones"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")}
-                        onClick={checked => {
-                            setRenderScoringZones(checked)
-                        }}
-                        tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
-                    />
-                    <Checkbox
-                        label="Show Scene Tags"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")}
-                        onClick={checked => {
-                            setRenderSceneTags(checked)
-                            if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE)
-                            else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
-                        }}
-                        tooltipText="Name tags above robot."
-                    />
-                    <Checkbox
-                        label="Show Scoreboard"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")}
-                        onClick={checked => {
-                            setRenderScoreboard(checked)
-                        }}
-                    />
-                    <Checkbox
-                        label="Show View Cube"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")}
-                        onClick={checked => {
-                            setShowViewCube(checked)
-                        }}
-                        tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
-                    />
-                    <Checkbox
-                        label="Mute All Sound"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")}
-                        onClick={checked => {
-                            setMuteAllSound(checked)
-                        }}
-                    />
-                    <Slider
-                        min={0}
-                        max={100}
-                        value={sfxVolume}
-                        label={"SFX Volume"}
-                        format={{ maximumFractionDigits: 2 }}
-                        onChange={(_, value: number | number[]) => setSFXVolume(value as number)}
-                        tooltipText="Volume of sound effects (%)."
-                    />
-                    {Spacer(8)}
-                </Box>
+            <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
+                {activeTab === "graphics" && (
+                    <Box alignSelf={"center"}>
+                        <Button
+                            value="Graphics Settings"
+                            onClick={() => {
+                                openPanel("graphics-settings")
+                                closeModal()
+                            }}
+                        />
+                    </Box>
+                )}
+
+                {activeTab === "general" && (
+                    <>
+                        {Spacer(5)}
+                        <Label size={LabelSize.Medium}>Camera Settings</Label>
+                        <Slider
+                            min={0.1}
+                            max={2.0}
+                            value={sceneRotationSensitivity}
+                            label={"Scene Rotation Sensitivity"}
+                            format={{ maximumFractionDigits: 2 }}
+                            onChange={(_, value) => setSceneRotationSensitivity(value as number)}
+                            step={0.1}
+                            tooltipText="Controls how fast the scene rotates when dragging with the mouse."
+                        />
+                        {Spacer(2)}
+                        <Slider
+                            min={0.06}
+                            max={6.0}
+                            value={viewCubeRotationSensitivity}
+                            label={"ViewCube Rotation Sensitivity"}
+                            format={{ maximumFractionDigits: 2 }}
+                            onChange={(_, value) => setViewCubeRotationSensitivity(value as number)}
+                            step={0.06}
+                            tooltipText="Controls how fast the view changes when dragging on the view cube."
+                        />
+                        {Spacer(10)}
+                        <Label size={LabelSize.Medium}>Preferences</Label>
+                        <Box display="flex" flexDirection={"column"}>
+                            <Checkbox
+                                label="Report Analytics"
+                                defaultState={PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")}
+                                onClick={checked => {
+                                    setReportAnalytics(checked)
+                                }}
+                                tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
+                            />
+                            <Checkbox
+                                label="Realistic Subsystem Gravity"
+                                defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
+                                onClick={checked => {
+                                    setSubsystemGravity(checked)
+                                }}
+                                tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
+                            />
+                            <Checkbox
+                                label="Show Score Zones"
+                                defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")}
+                                onClick={checked => {
+                                    setRenderScoringZones(checked)
+                                }}
+                                tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
+                            />
+                            <Checkbox
+                                label="Show Scene Tags"
+                                defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")}
+                                onClick={checked => {
+                                    setRenderSceneTags(checked)
+                                    if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE)
+                                    else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
+                                }}
+                                tooltipText="Name tags above robot."
+                            />
+                            <Checkbox
+                                label="Show Scoreboard"
+                                defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")}
+                                onClick={checked => {
+                                    setRenderScoreboard(checked)
+                                }}
+                            />
+                            <Checkbox
+                                label="Show View Cube"
+                                defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")}
+                                onClick={checked => {
+                                    setShowViewCube(checked)
+                                }}
+                                tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
+                            />
+                            <Checkbox
+                                label="Mute All Sound"
+                                defaultState={PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")}
+                                onClick={checked => {
+                                    setMuteAllSound(checked)
+                                }}
+                            />
+                            <Slider
+                                min={0}
+                                max={100}
+                                value={sfxVolume}
+                                label={"SFX Volume"}
+                                format={{ maximumFractionDigits: 2 }}
+                                onChange={(_, value: number | number[]) => setSFXVolume(value as number)}
+                                tooltipText="Volume of sound effects (%)."
+                            />
+                            {Spacer(8)}
+                        </Box>
+                    </>
+                )}
             </div>
         </Modal>
     )
