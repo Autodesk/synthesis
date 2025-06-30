@@ -5,9 +5,7 @@ import {
     FieldPreferences,
     GraphicsPreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import World from "@/systems/World"
 import { test, describe, expect } from "vitest"
-import { g } from "vitest/dist/chunks/suite.d.FvehnV49.js"
 
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
