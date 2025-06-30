@@ -10,9 +10,9 @@ from typing import Any
 import adsk.core
 import adsk.fusion
 
-from src.Logging import logFailure
 from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
+from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Parser import Parser
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
