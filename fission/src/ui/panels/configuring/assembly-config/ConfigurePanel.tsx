@@ -80,8 +80,16 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u, pendingDeletes])
 
+    const gamePieces = useMemo(() => {
+        return [...World.SceneRenderer.sceneObjects.values()]
+            .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.PIECE)
+            .filter(x => !pendingDeletes.includes(x.id))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [u, pendingDeletes])
+
+
     const options = useMemo(() => {
-        const list = configurationType == ConfigurationType.ROBOT ? robots : fields
+        const list = configurationType == ConfigurationType.ROBOT ? robots : ConfigurationType.FIELD ? fields : gamePieces
         return list
             .filter((assembly): assembly is MirabufSceneObject => assembly != null)
             .map(assembly => makeSelectionOption(configurationType, assembly))
@@ -92,7 +100,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         <SelectMenu
             options={options}
             onOptionSelected={val => onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)}
-            defaultHeaderText={`Select a ${configurationType == ConfigurationType.ROBOT ? "Robot" : "Field"}`}
+            defaultHeaderText={`Select a ${configurationType == ConfigurationType.ROBOT ? "Robot" : configurationType == ConfigurationType.FIELD ? "Field" : "Game Piece"}`}
             onDelete={val => {
                 onStageDelete(val)
                 update()
@@ -100,7 +108,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
             onAddClicked={() => {
                 openPanel("import-mirabuf")
             }}
-            noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : "fields"} spawned!`}
+            noOptionsText={`No ${configurationType == ConfigurationType.ROBOT ? "robots" : configurationType == ConfigurationType.FIELD ? "fields" : "game pieces"} spawned!`}
             defaultSelectedOption={
                 selectedAssembly ? makeSelectionOption(configurationType, selectedAssembly) : undefined
             }
@@ -204,6 +212,13 @@ const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMod
     ],
 ])
 
+const gamePieceModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMode, ConfigModeSelectionOption>([
+    [
+        ConfigMode.MOVE,
+        new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of the game piece relative to field."),
+    ],
+])
+
 interface ConfigModeSelectionProps {
     configurationType: ConfigurationType
     onModeSelected: (mode: ConfigMode | undefined) => void
@@ -222,7 +237,7 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({
 
     return (
         <SelectMenu
-            options={configurationType == ConfigurationType.ROBOT ? [...robotModes.values()] : [...fieldModes.values()]}
+            options={configurationType == ConfigurationType.ROBOT ? [...robotModes.values()] : configurationType == ConfigurationType.FIELD ? [...fieldModes.values()] : [...gamePieceModes.value()]}
             onOptionSelected={val => {
                 onModeSelected((val as ConfigModeSelectionOption)?.configMode)
             }}
@@ -416,6 +431,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 >
                     <ToggleButton value={ConfigurationType.ROBOT}>Robots</ToggleButton>
                     <ToggleButton value={ConfigurationType.FIELD}>Fields</ToggleButton>
+                    <ToggleButton value={ConfigurationType.PIECES}>Game Pieces</ToggleButton>
                     <ToggleButton value={ConfigurationType.INPUTS}>Inputs</ToggleButton>
                 </ToggleButtonGroup>
                 {configurationType == ConfigurationType.INPUTS ? (

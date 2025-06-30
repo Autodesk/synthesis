@@ -1,6 +1,7 @@
 export enum ConfigurationType {
     ROBOT,
     FIELD,
+    PIECES,
     INPUTS,
 }
 

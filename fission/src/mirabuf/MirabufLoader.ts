@@ -131,6 +131,8 @@ class MirabufCachingService {
 
             const miraBuff = await resp.arrayBuffer()
 
+            console.log(miraType)
+
             World.AnalyticsSystem?.Event("Remote Download", {
                 type: miraType === MiraType.ROBOT ? "robot" : "field",
                 fileSize: miraBuff.byteLength,
@@ -437,8 +439,8 @@ class MirabufCachingService {
 
     private static async HashBuffer(buffer: ArrayBuffer): Promise<string> {
         const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
-        let hash = ""
-        new Uint8Array(hashBuffer).forEach(x => (hash = hash + String.fromCharCode(x)))
+        const test = [...new Uint8Array(hashBuffer)]
+        const hash: string = String.fromCharCode([...test])
         return btoa(hash).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
     }
 
@@ -450,6 +452,7 @@ class MirabufCachingService {
 export enum MiraType {
     ROBOT = 1,
     FIELD,
+    PIECE,
 }
 
 export default MirabufCachingService
