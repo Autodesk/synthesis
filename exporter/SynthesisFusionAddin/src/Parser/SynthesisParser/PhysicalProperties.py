@@ -36,12 +36,13 @@ def GetPhysicalProperties(
         level (int): Level of accurracy
     """
     physical = fusionObject.getPhysicalProperties(level)
-
-    missing_properties = [prop is None for prop in physical]
     if physical is None:
         return Err("Physical properties object is None", ErrorSeverity.Warning)
-    if any(missing_properties.):
-        _ = Err(f"Missing some physical properties", ErrorSeverity.Warning)
+
+    missing_properties_bools = [prop is None for prop in physical]
+    if any(prop for prop, i in  missing_properties_bools):
+        missing_properties: list[Unknown] = [physics[i] for i, prop in enumerate(missing_properties) if prop]
+        _ = Err(f"Missing some physical properties: {missing_properties}", ErrorSeverity.Warning)
 
     physicalProperties.density = physical.density
     physicalProperties.mass = physical.mass

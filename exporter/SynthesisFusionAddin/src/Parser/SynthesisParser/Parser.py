@@ -8,7 +8,7 @@ from src import gm
 from src.APS.APS import getAuth, upload_mirabuf
 from src.ErrorHandling import ErrorSeverity, Result
 from src.Parser.ExporterOptions import ExporterOptions
-from src.Parser.SynthesisParser import (Components, JointHierarchy, Joints, Materials, PDMessage)
+from src.Parser.SynthesisParser import Components, JointHierarchy, Joints, Materials, PDMessage
 
 from src.Logging import getLogger, logFailure, timed
 from src.Parser.SynthesisParser.Utilities import fill_info
@@ -17,6 +17,7 @@ from src.Types import ExportLocation, ExportMode
 from src.UI.Camera import captureThumbnail, clearIconCache
 
 logger = getLogger()
+
 
 class Parser:
     def __init__(self, options: ExporterOptions):
@@ -38,11 +39,13 @@ class Parser:
             return
 
         assembly_out = assembly_pb2.Assembly()
-        handle_err_top(fill_info(
-            assembly_out,
-            design.rootComponent,
-            override_guid=design.parentDocument.name,
-        ))
+        handle_err_top(
+            fill_info(
+                assembly_out,
+                design.rootComponent,
+                override_guid=design.parentDocument.name,
+            )
+        )
 
         # set int to 0 in dropdown selection for dynamic
         assembly_out.dynamic = self.exporterOptions.exportMode == ExportMode.ROBOT
@@ -71,65 +74,81 @@ class Parser:
             progressDialog,
         )
 
-        handle_err_top(Materials.MapAllAppearances(
-            design.appearances,
-            assembly_out.data.materials,
-            self.exporterOptions,
-            self.pdMessage,
-        ))
-        
-        handle_err_top(Materials.MapAllPhysicalMaterials(
-            design.materials,
-            assembly_out.data.materials,
-            self.exporterOptions,
-            self.pdMessage,
-        ))
+        handle_err_top(
+            Materials.MapAllAppearances(
+                design.appearances,
+                assembly_out.data.materials,
+                self.exporterOptions,
+                self.pdMessage,
+            )
+        )
 
-        handle_err_top(Components.MapAllComponents(
-            design,
-            self.exporterOptions,
-            self.pdMessage,
-            assembly_out.data.parts,
-            assembly_out.data.materials,
-        ))
+        handle_err_top(
+            Materials.MapAllPhysicalMaterials(
+                design.materials,
+                assembly_out.data.materials,
+                self.exporterOptions,
+                self.pdMessage,
+            )
+        )
+
+        handle_err_top(
+            Components.MapAllComponents(
+                design,
+                self.exporterOptions,
+                self.pdMessage,
+                assembly_out.data.parts,
+                assembly_out.data.materials,
+            )
+        )
 
         rootNode = types_pb2.Node()
 
-        handle_err_top(Components.ParseComponentRoot(
-            design.rootComponent,
-            self.pdMessage,
-            self.exporterOptions,
-            assembly_out.data.parts,
-            assembly_out.data.materials.appearances,
-            rootNode,
-        ))
+        handle_err_top(
+            Components.ParseComponentRoot(
+                design.rootComponent,
+                self.pdMessage,
+                self.exporterOptions,
+                assembly_out.data.parts,
+                assembly_out.data.materials.appearances,
+                rootNode,
+            )
+        )
 
         Components.MapRigidGroups(design.rootComponent, assembly_out.data.joints)
 
         assembly_out.design_hierarchy.nodes.append(rootNode)
 
         # Problem Child
-        handle_err_top(Joints.populateJoints(
-            design,
-            assembly_out.data.joints,
-            assembly_out.data.signals,
-            self.pdMessage,
-            self.exporterOptions,
-            assembly_out,
-        ))
+        handle_err_top(
+            Joints.populateJoints(
+                design,
+                assembly_out.data.joints,
+                assembly_out.data.signals,
+                self.pdMessage,
+                self.exporterOptions,
+                assembly_out,
+            )
+        )
 
         # add condition in here for advanced joints maybe idk
         # should pre-process to find if there are any grounded joints at all
         # that or add code to existing parser to determine leftovers
 
-        handle_err_top(Joints.createJointGraph(
-            self.exporterOptions.joints,
-            self.exporterOptions.wheels,
-            assembly_out.joint_hierarchy,
-            self.pdMessage,
-        ))
+        handle_err_top(
+            Joints.createJointGraph(
+                self.exporterOptions.joints,
+                self.exporterOptions.wheels,
+                assembly_out.joint_hierarchy,
+                self.pdMessage,
+            )
+        )
 
-        handle_err_top(JointHierarchy.BuildJointPartHierarchy(design, assembly_out.data.joints, self.exporterOptions, self.pdMessage))
+        handle_err_top(
+            JointHierarchy.BuildJointPartHierarchy(
+                design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
+            )
+        )
 
         # These don't have an effect, I forgot how this is suppose to work
         # progressDialog.message = "Taking Photo for thumbnail..."
@@ -243,6 +262,7 @@ class Parser:
         )
 
         logger.debug(debug_output.strip())
+
 
 def handle_err_top[T](err: Result[T]):
     if err.is_err():
