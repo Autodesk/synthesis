@@ -23,6 +23,7 @@ export type GlobalPreferences = {
     ShowViewCube: boolean
     MuteAllSound: boolean
     SFXVolume: number
+    ShowCenterOfMassIndicators: boolean
 }
 
 export type GlobalPreference = keyof GlobalPreferences
@@ -62,6 +63,7 @@ export const DefaultGlobalPreferences: GlobalPreferences = {
     ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
+    ShowCenterOfMassIndicators: false,
 }
 
 export type GraphicsPreferences = {
