@@ -39,6 +39,8 @@ class MirabufParser {
 
     private _groundedNode: RigidNode | undefined
 
+    private _gamePieces: mirabuf.INode[]
+
     public get errors() {
         return new Array(...this._errors)
     }
@@ -86,7 +88,9 @@ class MirabufParser {
         this.InitializeRigidGroups() // 1: from ancestral breaks in joints
 
         // Fields Only: Assign Game Piece rigid nodes
-        if (!assembly.dynamic) this.AssignGamePieceRigidNodes()
+        if (!assembly.dynamic) {
+            this._gamePieces = this.PruneGamePieceNodes()
+        }
 
         // 2: Grounded joint
         const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
@@ -164,36 +168,38 @@ class MirabufParser {
         })
     }
 
-    private AssignGamePieceRigidNodes() {
+    private PruneGamePieceNodes(): mirabuf.INode[] {
         // Collect all definitions labeled as gamepieces (dynamic = true)
         const gamepieceDefinitions: Set<string> = new Set(
             Object.values(this._assembly.data!.parts!.partDefinitions!)
                 .filter(def => def.dynamic)
-                .map((def: mirabuf.IPartDefinition) => {
-                    return def.info!.GUID!
-                })
+                .map((def: mirabuf.IPartDefinition) => def.info!.GUID!)
         )
 
         // Create gamepiece rigid nodes from PartInstances with corresponding definitions
-        let count = 0
-        const pre_filter = Object.values(this._assembly.data!.parts!.partInstances!)
+        const gamePieces = Object.values(this._assembly.data!.parts!.partInstances!)
             .filter(inst => gamepieceDefinitions.has(inst.partDefinitionReference!))
             .map(inst => this.BinarySearchDesignTree(inst.info!.GUID!))
-            .forEach(_ => count++)
-            .filter(instNode => !instNode)
-            .forEach((inst: mirabuf.IPartInstance) => {
-                count--
-
+            .map(instNode => {
+                if (instNode == null) {
+                    this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
+                    return
+                }
                 // TODO: Instead of marking them, separate them into a different body entirely
-
+                // Figure out what we actually need to return here
                 const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
                 gpRn.isGamePiece = true
                 this.MovePartToRigidNode(instNode!.value!, gpRn)
                 if (instNode.children)
                     this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
+
+                return instNode
             })
-        if (count !== 0)
-            this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
+            .filter(node => node != null)
+
+        // TODO: Detatch game pieces from tree and remove part instances
+
+        return gamePieces
     }
 
     private BandageRigidNodes(assembly: mirabuf.Assembly) {
@@ -331,25 +337,27 @@ class MirabufParser {
         const valueA = ptv.get(partA)!
         const valueB = ptv.get(partB)!
 
+        const traverse = (value: number | undefined, path: mirabuf.INode | undefined) => {
+            if (!value || !path) return
+
+            const ancestorIndex = this.BinarySearchIndex(value, path.children!)
+            const ancestorValue = ptv.get(path.children![ancestorIndex].value!)!
+            path = path.children![ancestorIndex + (ancestorValue < value ? 1 : 0)]
+        }
+
         while (pathA.value! == pathB.value! && pathA.value! != partA && pathB.value! != partB) {
-            const ancestorIndexA = this.BinarySearchIndex(valueA, pathA.children!)
-            const ancestorValueA = ptv.get(pathA.children![ancestorIndexA].value!)!
-            pathA = pathA.children![ancestorIndexA + (ancestorValueA < valueA ? 1 : 0)]
-
-            const ancestorIndexB = this.BinarySearchIndex(valueB, pathB.children!)
-            const ancestorValueB = ptv.get(pathB.children![ancestorIndexB].value!)!
-            pathB = pathB.children![ancestorIndexB + (ancestorValueB < valueB ? 1 : 0)]
+            traverse(valueB, pathB)
+            traverse(valueA, pathA)
         }
 
-        if (pathA.value! == partA && pathA.value! == pathB.value!) {
-            const ancestorIndexB = this.BinarySearchIndex(valueB, pathB.children!)
-            const ancestorValueB = ptv.get(pathB.children![ancestorIndexB].value!)!
-            pathB = pathB.children![ancestorIndexB + (ancestorValueB < valueB ? 1 : 0)]
-        } else if (pathB.value! == partB && pathA.value! == pathB.value!) {
-            const ancestorIndexA = this.BinarySearchIndex(valueA, pathA.children!)
-            const ancestorValueA = ptv.get(pathA.children![ancestorIndexA].value!)!
-            pathA = pathA.children![ancestorIndexA + (ancestorValueA < valueA ? 1 : 0)]
-        }
+        const [value, path] =
+            pathA.value! == partA && pathA.value! == pathB.value!
+                ? [valueB, pathB]
+                : pathB.value! == partB && pathA.value! == pathB.value!
+                  ? [valueA, pathA]
+                  : [undefined, undefined]
+
+        traverse(value, path)
 
         return [pathA.value!, pathB.value!]
     }
