@@ -4,7 +4,7 @@ import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
 import clickdownSound from "@/assets/sound-files/clickdown.mp3"
 import clickupSound from "@/assets/sound-files/clickup.mp3"
 import checkdownSound from "@/assets/sound-files/checkdown.mp3"
-import checkupSound from "@/assets/sound-files/checkup.mp3"
+import checkupSound from "@/assets/sound-files/checkup.wav"
 
 const preloadSounds = [dropdownMenuSound, clickdownSound, clickupSound, checkdownSound, checkupSound]
 type SoundEffect = {
@@ -63,7 +63,7 @@ export class SoundPlayer {
             },
         }
     }
-    public static playDropdownMenuSound(): SoundEffect {
+    public static dropdownSoundEffects(): SoundEffect {
         return {
             onMouseDown: () => SoundPlayer.play(dropdownMenuSound),
         }
