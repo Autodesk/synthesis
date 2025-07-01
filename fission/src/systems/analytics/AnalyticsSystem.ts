@@ -25,7 +25,7 @@ class AnalyticsSystem extends WorldSystem {
     public constructor() {
         super()
 
-        this._consent = PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")
+        this._consent = PreferencesSystem.getGlobalPreference("ReportAnalytics")
         init({
             measurementId: "G-6XNCRD7QNC",
             debug: import.meta.env.DEV,
@@ -34,9 +34,7 @@ class AnalyticsSystem extends WorldSystem {
             trackingConsent: this._consent,
         })
 
-        PreferencesSystem.addEventListener(
-            e => e.prefName == "ReportAnalytics" && this.ConsentUpdate(e.prefValue as boolean)
-        )
+        PreferencesSystem.addPreferenceEventListener("ReportAnalytics", e => this.ConsentUpdate(e.prefValue))
 
         this.SendMetaData()
     }
