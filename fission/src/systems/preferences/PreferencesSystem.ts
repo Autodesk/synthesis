@@ -1,18 +1,18 @@
 import {
     DefaultFieldPreferences,
     DefaultGlobalPreferences,
-    DefaultRobotPreferences,
-    DefaultMotorPreferences,
     DefaultGraphicsPreferences,
+    DefaultMotorPreferences,
+    DefaultRobotPreferences,
     FieldPreferences,
     FieldPreferencesKey,
     GlobalPreference,
-    RobotPreferences,
-    RobotPreferencesKey,
-    GraphicsPreferences,
     GraphicsPreferenceKey,
+    GraphicsPreferences,
     MotorPreferences,
     MotorPreferencesKey,
+    RobotPreferences,
+    RobotPreferencesKey,
 } from "./PreferenceTypes"
 
 /** An event that's triggered when a preference is changed. */
@@ -179,6 +179,11 @@ class PreferencesSystem {
         }
 
         return graphicsPrefs
+    }
+    /** Gets simulation quality preferences */
+    public static resetGraphicsPreferences() {
+        this._preferences[GraphicsPreferenceKey] = DefaultGraphicsPreferences()
+        this.savePreferences()
     }
 
     /** Loads all preferences from local storage. */
