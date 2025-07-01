@@ -108,7 +108,8 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         World.SceneRenderer.RegisterSceneObject(mainSceneObject)
                         gamePieces?.forEach(piece => {
                             // We have to cache the game pieces while they're in scope
-                            MirabufCachingService.CacheInfo(piece., type, piece.assemblyName ?? undefined)
+                            // TODO: Use specific cache key
+                            MirabufCachingService.CacheInfo(info.cacheKey, type, piece.assemblyName ?? undefined)
                             World.SceneRenderer.RegisterSceneObject(piece)
                         })
                         progressHandle.Done()
