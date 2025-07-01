@@ -57,7 +57,7 @@ class ProtectedZoneSceneObject extends SceneObject {
 
         this._parentAssembly = parentAssembly
         this._prefs = this._parentAssembly.fieldPreferences?.protectedZones[index]
-        this._toRender = render ?? PreferencesSystem.getGlobalPreference<boolean>("RenderProtectedZones")
+        this._toRender = render ?? PreferencesSystem.getGlobalPreference("RenderProtectedZones")
     }
 
     public Setup(): void {
@@ -191,7 +191,7 @@ class ProtectedZoneSceneObject extends SceneObject {
             World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
 
             // Mesh for visualization
-            this._toRender = PreferencesSystem.getGlobalPreference<boolean>("RenderProtectedZones")
+            this._toRender = PreferencesSystem.getGlobalPreference("RenderProtectedZones")
             if (this._mesh)
                 if (this._toRender) {
                     this._mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
