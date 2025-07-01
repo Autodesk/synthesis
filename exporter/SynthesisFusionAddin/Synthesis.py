@@ -11,7 +11,6 @@ from src.Dependencies import resolveDependencies
 from src.Logging import logFailure, setupLogger
 
 logger = setupLogger()
-from src.ErrorHandling import Err, ErrorSeverity
 
 try:
     # Attempt to import required pip dependencies to verify their installation.
