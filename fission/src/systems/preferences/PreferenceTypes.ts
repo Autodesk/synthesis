@@ -3,35 +3,46 @@ import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
 /** Names of all global preferences. */
-export type GlobalPreference =
-    | "ZoomSensitivity"
-    | "PitchSensitivity"
-    | "YawSensitivity"
-    | "SceneRotationSensitivity"
-    | "ViewCubeRotationSensitivity"
-    | "ReportAnalytics"
-    | "UseMetric"
-    | "RenderScoringZones"
-    | "InputSchemes"
-    | "RenderSceneTags"
-    | "RenderScoreboard"
-    | "SubsystemGravity"
-    | "TouchControls"
-    | "SimAutoReconnect"
-    | "ShowViewCube"
-    | "MuteAllSound"
-    | "SFXVolume"
 
-export const RobotPreferencesKey: string = "Robots"
-export const FieldPreferencesKey: string = "Fields"
-export const MotorPreferencesKey: string = "Motors"
-export const GraphicsPreferenceKey: string = "Quality"
+export type GlobalPreferences = {
+    ZoomSensitivity: number
+    PitchSensitivity: number
+    YawSensitivity: number
+    SceneRotationSensitivity: number
+    ViewCubeRotationSensitivity: number
+    ReportAnalytics: boolean
+    UseMetric: boolean
+    RenderScoringZones: boolean
+    InputSchemes: InputScheme[]
+    RenderSceneTags: boolean
+    RenderScoreboard: boolean
+    SubsystemGravity: boolean
+    TouchControls: boolean
+    SimAutoReconnect: boolean
+    ShowViewCube: boolean
+    MuteAllSound: boolean
+    SFXVolume: number
+}
+
+export type GlobalPreference = keyof GlobalPreferences
+
+export type Preferences = GlobalPreferences & {
+    [RobotPreferencesKey]: Record<string, RobotPreferences>
+    [FieldPreferencesKey]: Record<string, FieldPreferences>
+    [MotorPreferencesKey]: Record<string, MotorPreferences>
+    [GraphicsPreferenceKey]: GraphicsPreferences
+}
+
+export const RobotPreferencesKey = "Robots" as const
+export const FieldPreferencesKey = "Fields" as const
+export const MotorPreferencesKey = "Motors" as const
+export const GraphicsPreferenceKey = "Quality" as const
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const DefaultGlobalPreferences: { [key: string]: unknown } = {
+export const DefaultGlobalPreferences: GlobalPreferences = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
