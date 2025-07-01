@@ -3,7 +3,7 @@ import { Global_AddToast, Global_OpenPanel } from "@/components/GlobalUIControls
 import World from "@/systems/World.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 
-export class PerformanceMonitorSystem extends WorldSystem {
+export class PerformanceMonitoringSystem extends WorldSystem {
     isCritical: boolean = false
     activeCount: number = 0
     antiCount: number = 0
@@ -22,7 +22,7 @@ export class PerformanceMonitorSystem extends WorldSystem {
         } else {
             this.antiCount++
             if (this.antiCount <= 10 || this.antiCount <= 0.5 * this.activeCount) return
-            
+
             this.isCritical = newIsCritical
             const oldActive = this.activeCount
             this.activeCount = this.antiCount

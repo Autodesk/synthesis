@@ -6,7 +6,7 @@ import SimulationSystem from "./simulation/SimulationSystem"
 import InputSystem from "./input/InputSystem"
 import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
-import { PerformanceMonitorSystem } from "@/systems/PerformanceMonitor.ts"
+import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
 
 class World {
     private static _isAlive: boolean = false
@@ -19,7 +19,7 @@ class World {
     private static _inputSystem: InputSystem
     private static _analyticsSystem: AnalyticsSystem | undefined = undefined
     private static _dragModeSystem: DragModeSystem
-    private static _performanceMonitorSystem: PerformanceMonitorSystem
+    private static _performanceMonitorSystem: PerformanceMonitoringSystem
 
     private static _accumTimes: AccumTimes = {
         frames: 0,
@@ -79,7 +79,7 @@ class World {
         World._simulationSystem = new SimulationSystem()
         World._inputSystem = new InputSystem()
         World._dragModeSystem = new DragModeSystem()
-        World._performanceMonitorSystem = new PerformanceMonitorSystem()
+        World._performanceMonitorSystem = new PerformanceMonitoringSystem()
         try {
             World._analyticsSystem = new AnalyticsSystem()
         } catch (_) {
