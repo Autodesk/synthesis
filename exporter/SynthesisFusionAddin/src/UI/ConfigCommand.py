@@ -1,15 +1,14 @@
 """
 Central location for which all UI is generated and handled for the main configuration panel.
 """
-
+import json
 import os
 import re
 import webbrowser
-from typing import Any
+from typing import Any, TypedDict, Literal
 
 import adsk.core
 import adsk.fusion
-
 from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
@@ -21,6 +20,7 @@ from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.GeneralConfigTab import GeneralConfigTab
 from src.UI.Handlers import PersistentEventHandler
 from src.UI.JointConfigTab import JointConfigTab
+from src.Utils import fusionAddInUtils as futil
 
 generalConfigTab: GeneralConfigTab
 jointConfigTab: JointConfigTab
@@ -30,6 +30,7 @@ logger = getLogger()
 
 INPUTS_ROOT: adsk.core.CommandInputs
 
+PALETTE_ID="synthesis_configure"
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     """Called when the panel is initially created."""
@@ -69,6 +70,26 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         cmd.okButtonText = "Export"
         cmd.setDialogSize(800, 350)
         cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
+
+        palettes = gm.ui.palettes
+        palette = palettes.itemById(PALETTE_ID)
+        if palette is None:
+            palette = palettes.add(
+                id=PALETTE_ID,
+                name="Synthesis Exporter",
+                htmlFileURL="web/index.html",
+                isVisible=True,
+                showCloseButton=True,
+                isResizable=True,
+                width=800,
+                height=350,
+                useNewWebBrowser=True
+            )
+            # futil.add_handler(palette.closed, palette_closed)
+            # futil.add_handler(palette.navigatingURL, palette_navigating)
+            futil.add_handler(palette.incomingFromHTML, on_palette_message)
+        palette.isVisible = True
+        palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
 
         global generalConfigTab
         generalConfigTab = GeneralConfigTab(args, exporterOptions)
@@ -114,6 +135,70 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
         )
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
+
+Checkbox = Literal["on"]|Literal["off"]|None
+ExportEvent = TypedDict('ExportEvent', {"mode":Literal["dynamic"]|Literal["static"],"location":Literal["upload"]|Literal["download"],"weight":float,"export_as_part":Checkbox,"friction_override":Checkbox, "friction": float, "calculate_weight":Checkbox, "compress_output":Checkbox})
+
+def on_palette_message(html_args: adsk.core.HTMLEventArgs):
+    data  = json.loads(html_args.data)
+
+    gm.ui.messageBox(f"Event arrived<span>{json.dumps(data, indent=2)}</span>")
+    if html_args.action == "export":
+        export(data)
+
+
+
+
+
+@logFailure
+def export(data:ExportEvent):
+    design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
+    exporterOptions = ExporterOptions().readFromDesign() or ExporterOptions()
+
+    fullName = design.rootComponent.name
+    versionMatch = re.search(r"v\d+", fullName)
+    docName = (fullName[: versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
+    docVersion = versionMatch.group() if versionMatch else "v0"
+
+    processedFileName = gm.app.activeDocument.name.replace(" ", "_")
+    defaultFileName = f"{'_'.join([docName, docVersion])}.mira"
+    if generalConfigTab.exportLocation == ExportLocation.DOWNLOAD:
+        savepath = FileDialogConfig.saveFileDialog(exporterOptions.fileLocation, defaultFileName)
+    else:
+        savepath = processedFileName
+
+    if not savepath:  # User cancelled the save dialog
+        return
+
+    adsk.doEvents()
+
+    selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
+    selectedGamepieces = gamepieceConfigTab.getGamepieces()
+
+    exporterOptions = ExporterOptions(
+        savepath,
+        docName,
+        docVersion,
+        materials=0,
+        joints=selectedJoints,
+        wheels=selectedWheels,
+        gamepieces=selectedGamepieces,
+        robotWeight=data.get("weight"),
+        autoCalcRobotWeight=(data.get("calculate_weight") == "on"),
+        autoCalcGamepieceWeight=gamepieceConfigTab.autoCalculateWeight,
+        exportMode=data.get("mode"),
+        exportLocation=data.get("location"),
+        compressOutput=(data.get("compress_output") == "on"),
+        exportAsPart=(data.get("export_as_part") == "on"),
+        frictionOverride=(data.get("friction_override") == "on"),
+        frictionOverrideCoeff=data.get("friction"),
+        openSynthesisUponExport=False,
+    )
+
+    Parser(exporterOptions).export()
+    exporterOptions.writeToDesign()
+    jointConfigTab.reset()
+    gamepieceConfigTab.reset()
 
 
 class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEventHandler):

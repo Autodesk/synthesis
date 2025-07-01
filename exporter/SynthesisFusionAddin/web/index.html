@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="./index.js"></script>
+</head>
+<body>
+<div>
+
+    <h1>Fusion Palette Sample The World</h1>
+    <div>
+        <a href="https://help.autodesk.com/view/fusion360/ENU/?guid=GUID-6C0C8148-98D0-4DBC-A4EC-D8E03A8A3B5B">
+            Learn more about working with Palettes in Fusion
+        </a>
+    </div>
+    <br><hr>
+    <h2>General Settings</h2>
+    <form id="settings" action="#">
+        <div style="display:grid; grid-template-columns: 1fr 1fr; grid-auto-flow: row;margin-left:20%; margin-right:20%">
+        <label for="mode">Export Mode</label>
+        <select name="mode" id="mode">
+            <option value="ROBOT">Dynamic</option>
+            <option value="FIELD">Static</option>
+        </select>
+        <label for="location">Export Location</label>
+        <select name="location" id="location">
+            <option value="UPLOAD">Upload</option>
+            <option value="DOWNLOAD">Download</option>
+        </select>
+        <label for="calculate_weight">Auto Calculate Robot Weight</label>
+        <input name="calculate_weight" id="calculate_weight" type="checkbox">
+        <label for="weight">Weight (kg)</label>
+        <input name="weight" placeholder="0.00" id="weight" type="number" step=0.01>
+        <label for="compress_output">Compress Output</label>
+        <input name="compress_output" id="compress_output" type="checkbox">
+        <label for="export_as_part">Export As Part</label>
+        <input name="export_as_part" id="export_as_part" type="checkbox">
+        <label for="friction_override">Friction Override</label>
+        <input name="friction_override" id="friction_override" type="checkbox">
+            <label for="friction">Friction Value</label>
+            <input name="friction" id="friction" type="range" min="0" max="1" step=0.01>
+        <input style="grid-column: 2" type="submit" value="Export">
+        </div>
+    </form>
+
+    <h3>Send Data to HTML Event Handler</h3>
+    <div style='margin-left: 30px;'>
+        <label for="sampleData"><b>Data to send:</b></label>
+        <input type="text" id="sampleData" value="Enter Some Text"><br/><br/>
+        <button type='button' onclick='sendInfoToFusion()' style='background-color: #cccccc; padding: 5px'>
+            <b>Send HTML Event</b>
+        </button>
+    </div>
+
+    <h3>HTML Event Response Value:</h3>
+    <div id='returnValue' style='margin-left: 30px;'>Response</div>
+
+    <h3>Message from "Send to Palette" Command</h3>
+    <div style='margin-left: 30px;'>
+        <p id='fusionMessage'>Message from Fusion</p>
+        <br/><br/>
+    </div>
+
+</div>
+</body>
+</html>
