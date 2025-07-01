@@ -81,13 +81,13 @@ export type MiraManifest = {
     fields: MirabufRemoteInfo[]
 }
 
-function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
+export function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     return Object.values(
         canOPFS ? MirabufCachingService.GetCacheMap(miraType) : miraType == MiraType.ROBOT ? backUpRobots : backUpFields
     )
 }
 
-function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+export function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type == MiraType.FIELD) {
         World.SceneRenderer.RemoveAllFields()
