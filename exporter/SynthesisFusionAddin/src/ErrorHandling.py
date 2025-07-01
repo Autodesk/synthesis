@@ -34,31 +34,18 @@ class Result(Generic[T]):
     """
 
     def is_ok(self) -> bool:
-        """
-        Returns if the Result is the Ok variant
-        """
         return isinstance(self, Ok)
 
     def is_err(self) -> bool:
-        """
-        Returns if the Result is the Err variant
-        """
-
         return isinstance(self, Err)
 
     def unwrap(self) -> T:
-        """
-        Returns the value contained in the Ok variant of the result, or raises an exception if unwrapping an Err variant. Be sure to check first.
-        """
         if self.is_ok():
             return self.value  # type: ignore
         raise Exception(f"Called unwrap on Err: {self.message}")  # type: ignore
 
     def unwrap_err(self) -> tuple[str, ErrorSeverity]:
-        """
-        Returns the error message and severity contained in the Err variant of the result, or raises an exception if unwrapping an Ok variant. Be sure to check first.
-        """
-
+        
         if self.is_err():
             return (self.message, self.severity)  # type: ignore
         raise Exception(f"Called unwrap_err on Ok: {self.value}")  # type: ignore
