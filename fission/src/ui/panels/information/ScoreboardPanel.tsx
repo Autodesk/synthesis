@@ -37,10 +37,7 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     const onRenderChange = useCallback(
         (e: PreferenceEvent<"RenderScoreboard">) => {
             if (!e.prefValue) {
-                console.log("CLOSE panel")
                 closePanel("scoreboard")
-            } else {
-                console.log("OPEN panel")
             }
         },
         [closePanel]
