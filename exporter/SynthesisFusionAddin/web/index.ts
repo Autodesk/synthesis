@@ -4,37 +4,33 @@ declare global {
             fusionSendData(action:string, body:string):Promise<string>
         };
         fusionJavaScriptHandler: {
+            /* The return value is a string and is passed back to your add-in as the return argument of the sendInfoToHTML method. Returning an empty string is interpreted as an error, so you should always return something in both success and failure cases.*/
             handle(action:string, body:string):string
         }
-        sendInfoToFusion():void
+        initiateSelection(type:SelectionFilter):void
     }
 }
 export {}
 
 console.log("TEST")
 
-function getDateString() {
-    const today = new Date();
-    const date = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
-    const time = `${today.getHours()}:${today.getMinutes()}:${today.getSeconds()}`;
-    return `Date: ${date}, Time: ${time}`;
+async function sendData(action:string, body:any):Promise<any|undefined> {
+    const resp = await window.adsk.fusionSendData(action, JSON.stringify(body));
+    try {
+        return JSON.parse(resp)
+    } catch (error) {
+        console.error(error)
+        return undefined
+    }
 }
 
 
-function sendInfoToFusion() {
-    const args = {
-        arg1: (document.getElementById("sampleData") as HTMLInputElement).value,
-        arg2: getDateString()
-    };
-
-    // Send the data to Fusion as a JSON string. The return value is a Promise.
-    window.adsk.fusionSendData("messageFromPalette", JSON.stringify(args)).then((result) =>
-        document.getElementById("returnValue")!.innerHTML = `${result}`
-    );
-
+window.initiateSelection = async function(t){
+    const id = await sendData("selectJoint", {msg:`Selecting ${t}`})
+    console.log(id)
+    alert("Selected")
 }
 
-window.sendInfoToFusion = sendInfoToFusion;
 
 function updateMessage(messageString:string) {
     // Message is sent from the add-in as a JSON string.
@@ -70,6 +66,6 @@ document.addEventListener("DOMContentLoaded", () => {
     form.addEventListener("submit", async (e) => {
         e.preventDefault();
         const data = new FormData(form);
-        await window.adsk.fusionSendData("export", JSON.stringify(Object.fromEntries(data)));
+        await sendData("export", Object.fromEntries(data));
     });
 });

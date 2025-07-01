@@ -21,6 +21,7 @@ from src.UI.GeneralConfigTab import GeneralConfigTab
 from src.UI.Handlers import PersistentEventHandler
 from src.UI.JointConfigTab import JointConfigTab
 from src.Utils import fusionAddInUtils as futil
+from src.Utils.fusionAddInUtils import log
 
 generalConfigTab: GeneralConfigTab
 jointConfigTab: JointConfigTab
@@ -136,15 +137,36 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         )
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 
+
+
 Checkbox = Literal["on"]|Literal["off"]|None
 ExportEvent = TypedDict('ExportEvent', {"mode":Literal["dynamic"]|Literal["static"],"location":Literal["upload"]|Literal["download"],"weight":float,"export_as_part":Checkbox,"friction_override":Checkbox, "friction": float, "calculate_weight":Checkbox, "compress_output":Checkbox})
 
+@logFailure(messageBox=True)
 def on_palette_message(html_args: adsk.core.HTMLEventArgs):
     data  = json.loads(html_args.data)
 
-    gm.ui.messageBox(f"Event arrived<span>{json.dumps(data, indent=2)}</span>")
+
     if html_args.action == "export":
         export(data)
+    elif html_args.action == "selectJoint":
+        selection = gm.app.userInterface.selectEntity("Select Joints", "Joints")
+        joint= adsk.fusion.Joint.cast(selection.entity)
+        html_args.returnData = json.dumps({
+            "point": {
+                "x": selection.point.x,
+                "y": selection.point.y,
+                "z": selection.point.z,
+            },
+            "name":joint.name,
+            "type":selection.entity.objectType,
+            "entityToken":joint.entityToken,
+            "jointType":joint.jointMotion.jointType,
+        })
+    else:
+
+        gm.ui.messageBox(f"Event {html_args.action} arrived<span>{json.dumps(data, indent=2)}</span>")
+
 
 
 
