@@ -714,7 +714,5 @@ describe("Mirabuf Physics Loading", () => {
 
         expect(mechanism).toBeDefined()
         expect(mechanism.nodeToBody.size).toBeGreaterThan(0)
-
-        physSystem.Destroy()
     })
 })
