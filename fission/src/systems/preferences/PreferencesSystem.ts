@@ -180,7 +180,7 @@ class PreferencesSystem {
 
         return graphicsPrefs
     }
-    /** Gets simulation quality preferences */
+    /** Resets simulation quality preferences to default values */
     public static resetGraphicsPreferences() {
         this._preferences[GraphicsPreferenceKey] = DefaultGraphicsPreferences()
         this.savePreferences()
