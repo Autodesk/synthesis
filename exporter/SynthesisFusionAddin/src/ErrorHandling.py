@@ -45,7 +45,7 @@ class Result(Generic[T]):
         raise Exception(f"Called unwrap on Err: {self.message}")  # type: ignore
 
     def unwrap_err(self) -> tuple[str, ErrorSeverity]:
-        
+
         if self.is_err():
             return (self.message, self.severity)  # type: ignore
         raise Exception(f"Called unwrap_err on Ok: {self.value}")  # type: ignore
