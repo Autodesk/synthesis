@@ -68,7 +68,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 const deltaX = event.clientX - lastMousePos.x
                 const deltaY = event.clientY - lastMousePos.y
 
-                const sensitivity = PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity")
+                const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
                 const controls = World.SceneRenderer.currentCameraControls
                 if (controls instanceof CustomOrbitControls) {
@@ -822,7 +822,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             const deltaX = event.clientX - lastMousePos.x
             const deltaY = event.clientY - lastMousePos.y
 
-            const sensitivity = PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity")
+            const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
             const controls = World.SceneRenderer.currentCameraControls
             if (controls instanceof CustomOrbitControls) {

@@ -130,7 +130,7 @@ class IntakeSensorSceneObject extends SceneObject {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
         if (associate?.isGamePiece) {
             associate.robotLastInContactWith = this._parentAssembly
-            this._parentAssembly.SetEjectable(gpID, false)
+            this._parentAssembly.SetEjectable(gpID)
         }
     }
 }

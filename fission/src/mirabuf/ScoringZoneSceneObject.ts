@@ -61,7 +61,7 @@ class ScoringZoneSceneObject extends SceneObject {
 
         this._parentAssembly = parentAssembly
         this._prefs = this._parentAssembly.fieldPreferences?.scoringZones[index]
-        this._toRender = render ?? PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
+        this._toRender = render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
     }
 
     public Setup(): void {
@@ -158,7 +158,7 @@ class ScoringZoneSceneObject extends SceneObject {
             World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
 
             // Mesh for visualization
-            this._toRender = PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
+            this._toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")
             if (this._mesh)
                 if (this._toRender) {
                     this._mesh.position.set(props.translation.x, props.translation.y, props.translation.z)

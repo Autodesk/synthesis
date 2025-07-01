@@ -4,10 +4,8 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 function TouchControls() {
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const [isPlaceButtonVisible, setIsPlaceButtonVisible] = useState<boolean>(false)
-    const [isJoystickVisible, setIsJoystickVisible] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("TouchControls")
-    )
+    const [isPlaceButtonVisible, setIsPlaceButtonVisible] = useState(false)
+    const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
 
     useEffect(() => {
         const handlePlaceButtonEvent = (e: Event) => {
