@@ -10,6 +10,7 @@ import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import Slider from "@/ui/components/Slider"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { Global_AddToast } from "@/components/GlobalUIControls.ts"
 
 const StatefulSlider: React.FC<
     Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & { defaultValue: number; onChange: (val: number) => void }
@@ -29,15 +30,21 @@ const StatefulSlider: React.FC<
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
-
+    const save = () => {
+        SoundPlayer.changeVolume()
+        PreferencesSystem.savePreferences()
+        Global_AddToast?.("info", "Settings Saved", "")
+    }
     return (
         <Modal
             name="Settings"
             icon={SynthesisIcons.GearLarge}
             modalId={modalId}
-            onAccept={() => {
+            onAccept={save}
+            onClickAway={save}
+            onCancel={() => {
+                PreferencesSystem.revertPreferences()
                 SoundPlayer.changeVolume()
-                PreferencesSystem.savePreferences()
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
@@ -47,6 +54,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         onClick={() => {
                             openPanel("graphics-settings")
                             closeModal()
+                            save()
                         }}
                     />
                 </Box>

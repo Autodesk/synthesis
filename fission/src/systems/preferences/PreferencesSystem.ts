@@ -85,7 +85,6 @@ class PreferencesSystem {
      */
     public static setGlobalPreference<K extends GlobalPreference>(key: K, value: GlobalPreferences[K]) {
         if (this._preferences == undefined) this.loadPreferences()
-
         window.dispatchEvent(new PreferenceEvent(key, value))
         this._preferences[key] = value
     }
@@ -232,6 +231,15 @@ class PreferencesSystem {
         }
 
         window.localStorage.setItem(this._localStorageKey, prefsString)
+    }
+
+    public static revertPreferences() {
+        PreferencesSystem.loadPreferences()
+        Object.entries(this._preferences).forEach(([key, value]) => {
+            window.dispatchEvent(
+                new PreferenceEvent(key as GlobalPreference, value as GlobalPreferences[GlobalPreference])
+            )
+        })
     }
 
     /** Removes all preferences from local storage. */
