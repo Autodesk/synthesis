@@ -1,4 +1,4 @@
-import { test, describe, assert, expect } from "vitest"
+import { beforeEach, test, describe, assert, expect, vi } from "vitest"
 import InputSystem, { AxisInput, ButtonInput, EmptyModifierState, ModifierState } from "@/systems/input/InputSystem"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
@@ -140,5 +140,123 @@ describe("Input System Checks", () => {
         expect(InputSystem.compareModifiers(differentState, InputSystem.currentModifierState)).toBe(false)
         expect(InputSystem.compareModifiers(differentState, differentState)).toBe(true)
         expect(InputSystem.compareModifiers(differentState, allFalse)).toBe(false)
+    })
+})
+
+describe("Gamepad Input Check", () => {
+    let fakeGamepad: Gamepad
+
+    beforeEach(() => {
+        fakeGamepad = {
+            id: "Test Gamepad",
+            index: 0,
+            axes: [0.5, -0.5],
+            buttons: [
+                { pressed: true, value: 1.0 },
+                { pressed: false, value: 0.0 },
+            ],
+            connected: true,
+            mapping: "standard",
+            timestamp: Date.now(),
+        } as unknown as Gamepad
+
+        vi.spyOn(navigator, "getGamepads").mockReturnValue([fakeGamepad, null, null, null])
+        const ev = new Event("gamepadconnected") as GamepadEvent
+        Object.defineProperty(ev, "gamepad", {
+            value: fakeGamepad,
+            writable: false,
+            enumerable: true,
+            configurable: true,
+        })
+        window.dispatchEvent(ev)
+    })
+
+    test("Reads axes correctly", () => {
+        const sys = new InputSystem()
+        sys.Update(0)
+
+        expect(InputSystem.getGamepadAxis(0)).toBe(0.5)
+        expect(InputSystem.getGamepadAxis(1)).toBe(-0.5)
+    })
+
+    test("Applies dead-band", () => {
+        const updatedGamepad = {
+            ...fakeGamepad,
+            axes: [0.1, -0.1],
+        } as unknown as Gamepad
+
+        vi.spyOn(navigator, "getGamepads").mockReturnValue([updatedGamepad, null, null, null])
+        const sys = new InputSystem()
+        sys.Update(0)
+
+        expect(InputSystem.getGamepadAxis(0)).toBe(0)
+        expect(InputSystem.getGamepadAxis(1)).toBe(0)
+    })
+
+    test("Invalid axis indices return 0", () => {
+        const updatedGamepad = {
+            ...fakeGamepad,
+            axes: [0.9],
+        } as unknown as Gamepad
+        vi.spyOn(navigator, "getGamepads").mockReturnValue([updatedGamepad, null, null, null])
+        const sys = new InputSystem()
+        sys.Update(0)
+
+        expect(InputSystem.getGamepadAxis(-1)).toBe(0)
+        expect(InputSystem.getGamepadAxis(0)).toBe(0.9)
+        expect(InputSystem.getGamepadAxis(1)).toBe(0)
+    })
+
+    test("Gamepad button pressed", () => {
+        const sys = new InputSystem()
+        sys.Update(0)
+
+        expect(InputSystem.isGamepadButtonPressed(0)).toBe(true)
+        expect(InputSystem.isGamepadButtonPressed(1)).toBe(false)
+        expect(InputSystem.isGamepadButtonPressed(2)).toBe(false) // Non-existent button
+    })
+
+    test("AxisInput inverts axis values (joystickInverted=true)", () => {
+        vi.spyOn(InputSystem, "getGamepadAxis").mockReturnValue(0.6)
+
+        const axis = new AxisInput("foo", undefined, undefined, 0, /* joystickInverted=true */ true, false)
+        expect(axis.getValue(true, false)).toBe(-0.6)
+    })
+
+    test("Use gamepad buttons mode", () => {
+        const axis = new AxisInput("bar", undefined, undefined, undefined, false, true, 1, 2)
+        vi.spyOn(InputSystem, "isGamepadButtonPressed").mockImplementation(b => b === 1)
+        expect(axis.getValue(true, false)).toBe(1)
+
+        vi.spyOn(InputSystem, "isGamepadButtonPressed").mockImplementation(b => b === 2)
+        expect(axis.getValue(true, false)).toBe(-1)
+
+        vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(false)
+        expect(axis.getValue(true, false)).toBe(0)
+    })
+
+    test("End-to-end button-input", () => {
+        const btn = new ButtonInput("shoot", undefined, /*gamepadButton*/ 0)
+        vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(true)
+        expect(btn.getValue(true)).toBe(1)
+
+        vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(false)
+        expect(btn.getValue(true)).toBe(0)
+    })
+
+    test("Disconnect event", () => {
+        // The connection event is implicitly tested by registering a fake gamepad
+        window.dispatchEvent(Object.assign(new Event("gamepaddisconnected"), { gamepad: fakeGamepad }))
+        expect((InputSystem as any)._gpIndex).toBeNull()
+    })
+
+    test("Get input with gamepad scheme", () => {
+        const scheme = DefaultInputs.newBlankScheme
+        scheme.usesGamepad = true
+        scheme.inputs = [new ButtonInput("foo", undefined, 0)]
+        InputSystem.brainIndexSchemeMap.set(42, scheme)
+
+        vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(true)
+        expect(InputSystem.getInput("foo", 42)).toBe(1)
     })
 })
