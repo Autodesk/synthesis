@@ -58,7 +58,7 @@ def construct_info(
     elif name != "":
         proto_obj.info.name = name
     else:
-        return Err("Attempted to set proto_obj.info.name to None", ErrorSeverity.Warning)
+        _: Err[None] = Err("Attempted to set proto_obj.info.name to None", ErrorSeverity.Warning)
 
     if GUID is not None:
         proto_obj.info.GUID = str(GUID)

@@ -251,7 +251,7 @@ class JointParser:
         self.simulationNodesRef["GROUND"] = self.groundSimNode
 
         # combine all ground prior to this possibly
-        self._lookForGroundedJoints()
+        _ = self._lookForGroundedJoints()
 
         # creates the axis elements - adds all elements to axisNodes
         for key, value in self.dynamicJoints.items():
@@ -259,11 +259,12 @@ class JointParser:
             if populate_axis_result.is_err():
                 raise RuntimeError(populate_axis_result.unwrap_err()[0])
 
-        self._linkAllAxis()
+        __ = self._linkAllAxis()
 
         # self.groundSimNode.printLink()
 
     def __getAllJoints(self) -> Result[None]:
+        logger.log(10, "Getting Joints")
         for joint in list(self.design.rootComponent.allJoints) + list(self.design.rootComponent.allAsBuiltJoints):
             if joint and joint.occurrenceOne and joint.occurrenceTwo:
                 occurrenceOne = joint.occurrenceOne

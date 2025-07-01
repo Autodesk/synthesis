@@ -3,10 +3,11 @@ from platform import python_build
 
 import adsk.core
 import adsk.fusion
+from google.protobuf.message import Error
 from requests.models import parse_header_links
 
 from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
-from src.Logging import logFailure
+from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser import PhysicalProperties
 from src.Parser.SynthesisParser.PDMessage import PDMessage
@@ -18,6 +19,8 @@ from src.Parser.SynthesisParser.Utilities import (
 from src.Proto import assembly_pb2, joint_pb2, material_pb2, types_pb2
 from src.Types import ExportMode
 
+logger = getLogger()
+
 
 # TODO: Impelement Material overrides
 def MapAllComponents(
@@ -27,6 +30,8 @@ def MapAllComponents(
     partsData: assembly_pb2.Parts,
     materials: material_pb2.Materials,
 ) -> Result[None]:
+
+    logger.log(10, f"HELLO")
     for component in design.allComponents:
         adsk.doEvents()
         if progressDialog.wasCancelled():
@@ -36,13 +41,13 @@ def MapAllComponents(
         comp_ref = guid_component(component)
 
         fill_info_result = fill_info(partsData, None)
-        if fill_info_result.is_err():
+        if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
             return fill_info_result
 
         partDefinition = partsData.part_definitions[comp_ref]
 
         fill_info_result = fill_info(partDefinition, component, comp_ref)
-        if fill_info_result.is_err():
+        if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
             return fill_info_result
 
         physical_properties_result = PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
@@ -56,11 +61,12 @@ def MapAllComponents(
                 raise RuntimeError("User canceled export")
             if body.isLightBulbOn:
                 part_body = partDefinition.bodies.add()
-                part_body.part = comp_ref
 
                 fill_info_result = fill_info(part_body, body)
-                if fill_info_result.is_err():
+                if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                     return fill_info_result
+
+                part_body.part = comp_ref
 
                 if isinstance(body, adsk.fusion.BRepBody):
                     parse_result = ParseBRep(body, options, part_body.triangle_mesh)
@@ -227,12 +233,11 @@ def ParseBRep(
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
 ) -> Result[None]:
-    meshManager = body.meshManager
-    calc = meshManager.createMeshCalculator()
+    calc = body.meshManager.createMeshCalculator()
     # Disabling for now. We need the user to be able to adjust this, otherwise it gets locked
     # into whatever the default was at the time it first creates the export options.
     # calc.setQuality(options.visualQuality)
-    calc.setQuality(adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh)
+    _ = calc.setQuality(adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh)
     # calc.maxNormalDeviation = 3.14159 * (1.0 / 6.0)
     # calc.surfaceTolerance = 0.5
     mesh = calc.calculate()

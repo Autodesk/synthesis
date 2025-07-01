@@ -301,7 +301,7 @@ class MirabufParser {
 
             const mat = partInstance.transform
                 ? MirabufTransform_ThreeMatrix4(partInstance.transform)
-                : def.baseTransform
+                : def?.baseTransform
                   ? MirabufTransform_ThreeMatrix4(def.baseTransform)
                   : new THREE.Matrix4().identity()
 
