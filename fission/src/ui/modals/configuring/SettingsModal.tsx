@@ -6,90 +6,45 @@ import Label, { LabelSize } from "@/components/Label"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
 import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import Slider from "@/ui/components/Slider"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { Global_AddToast } from "@/components/GlobalUIControls.ts"
 
+const StatefulSlider: React.FC<
+    Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & { defaultValue: number; onChange: (val: number) => void }
+> = props => {
+    const [value, setValue] = useState(props.defaultValue)
+    return (
+        <Slider
+            {...props}
+            value={value}
+            onChange={(_, value) => {
+                setValue(value as number)
+                props.onChange?.(value as number)
+            }}
+        ></Slider>
+    )
+}
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { closeModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
-
-    // Disabled until camera settings are implemented
-    /* const [zoomSensitivity, setZoomSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("ZoomSensitivity")
-    )
-    const [pitchSensitivity, setPitchSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("PitchSensitivity")
-    )
-    const [yawSensitivity, setYawSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("YawSensitivity")
-    ) */
-
-    const [reportAnalytics, setReportAnalytics] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")
-    )
-
-    // Disabled until use metric is implemented
-    // const [useMetric, setUseMetric] = useState<boolean>(PreferencesSystem.getGlobalPreference<boolean>("UseMetric"))
-
-    const [renderScoringZones, setRenderScoringZones] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
-    )
-    const [renderSceneTags, setRenderSceneTags] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")
-    )
-    const [renderScoreboard, setRenderScoreboard] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")
-    )
-    const [subsystemGravity, setSubsystemGravity] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")
-    )
-    const [showViewCube, setShowViewCube] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")
-    )
-    const [muteAllSound, setMuteAllSound] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
-    )
-    const [sfxVolume, setSFXVolume] = useState<number>(PreferencesSystem.getGlobalPreference<number>("SFXVolume"))
-    const [sceneRotationSensitivity, setSceneRotationSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
-    )
-    const [viewCubeRotationSensitivity, setViewCubeRotationSensitivity] = useState<number>(
-        PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity") * 60
-    )
-
-    const saveSettings = () => {
-        PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", reportAnalytics)
-        PreferencesSystem.setGlobalPreference<boolean>("RenderScoringZones", renderScoringZones)
-        PreferencesSystem.setGlobalPreference<boolean>("RenderSceneTags", renderSceneTags)
-        PreferencesSystem.setGlobalPreference<boolean>("RenderScoreboard", renderScoreboard)
-        PreferencesSystem.setGlobalPreference<boolean>("SubsystemGravity", subsystemGravity)
-        PreferencesSystem.setGlobalPreference<boolean>("ShowViewCube", showViewCube)
-        PreferencesSystem.setGlobalPreference<boolean>("MuteAllSound", muteAllSound)
-        PreferencesSystem.setGlobalPreference<number>("SFXVolume", sfxVolume)
-        PreferencesSystem.setGlobalPreference<number>("SceneRotationSensitivity", sceneRotationSensitivity)
-        PreferencesSystem.setGlobalPreference<number>("ViewCubeRotationSensitivity", viewCubeRotationSensitivity / 60)
-
-        SoundPlayer.changeVolume() // Apply the new sound volume
-
-        // Disabled until these settings are implemented
-        /* PreferencesSystem.setGlobalPreference<number>("ZoomSensitivity", zoomSensitivity)
-        PreferencesSystem.setGlobalPreference<number>("PitchSensitivity", pitchSensitivity)
-        PreferencesSystem.setGlobalPreference<number>("YawSensitivity", yawSensitivity)
-        PreferencesSystem.setGlobalPreference<boolean>("UseMetric", useMetric) */
-
+    const save = () => {
+        SoundPlayer.changeVolume()
         PreferencesSystem.savePreferences()
+        Global_AddToast?.("info", "Settings Saved", "")
     }
-
     return (
         <Modal
             name="Settings"
             icon={SynthesisIcons.GearLarge}
             modalId={modalId}
-            onAccept={() => {
-                saveSettings()
+            onAccept={save}
+            onClickAway={save}
+            onCancel={() => {
+                PreferencesSystem.revertPreferences()
+                SoundPlayer.changeVolume()
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
@@ -99,6 +54,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         onClick={() => {
                             openPanel("graphics-settings")
                             closeModal()
+                            save()
                         }}
                     />
                 </Box>
@@ -136,102 +92,87 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 />*/}
                 {Spacer(5)}
                 <Label size={LabelSize.Medium}>Camera Settings</Label>
-                <Slider
+                <StatefulSlider
                     min={0.1}
                     max={2.0}
-                    value={sceneRotationSensitivity}
+                    defaultValue={PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")}
                     label={"Scene Rotation Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setSceneRotationSensitivity(value as number)}
+                    onChange={value => PreferencesSystem.setGlobalPreference("SceneRotationSensitivity", value)}
                     step={0.1}
                     tooltipText="Controls how fast the scene rotates when dragging with the mouse."
                 />
-                {Spacer(2)}
-                <Slider
+                {Spacer(5)}
+                <StatefulSlider
                     min={0.06}
                     max={6.0}
-                    value={viewCubeRotationSensitivity}
+                    defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
                     label={"ViewCube Rotation Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
-                    onChange={(_, value) => setViewCubeRotationSensitivity(value as number)}
+                    onChange={value => PreferencesSystem.setGlobalPreference("ViewCubeRotationSensitivity", value)}
                     step={0.06}
                     tooltipText="Controls how fast the view changes when dragging on the view cube."
+                />
+                <Checkbox
+                    label="Show View Cube"
+                    defaultState={PreferencesSystem.getGlobalPreference("ShowViewCube")}
+                    onClick={checked => {
+                        PreferencesSystem.setGlobalPreference("ShowViewCube", checked)
+                    }}
+                    tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
                 />
                 {Spacer(10)}
                 <Label size={LabelSize.Medium}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
                     <Checkbox
                         label="Report Analytics"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics")}
-                        onClick={checked => {
-                            setReportAnalytics(checked)
-                        }}
+                        defaultState={PreferencesSystem.getGlobalPreference("ReportAnalytics")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("ReportAnalytics", checked)}
                         tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                     />
-                    {/* Disabled until this settings is implemented */}
-                    {/*  <Checkbox
-                        label="Use Metric"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("UseMetric")}
-                        onClick={checked => {
-                            setUseMetric(checked)
-                        }}
-                        tooltipText="Metric measurements. (ex: meters instead of feet)"
-                    /> */}
                     <Checkbox
                         label="Realistic Subsystem Gravity"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("SubsystemGravity")}
-                        onClick={checked => {
-                            setSubsystemGravity(checked)
-                        }}
+                        defaultState={PreferencesSystem.getGlobalPreference("SubsystemGravity")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("SubsystemGravity", checked)}
                         tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
                     />
                     <Checkbox
                         label="Show Score Zones"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")}
-                        onClick={checked => {
-                            setRenderScoringZones(checked)
-                        }}
+                        defaultState={PreferencesSystem.getGlobalPreference("RenderScoringZones")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("RenderScoringZones", checked)}
                         tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
                     />
                     <Checkbox
                         label="Show Scene Tags"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")}
+                        defaultState={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
                         onClick={checked => {
-                            setRenderSceneTags(checked)
-                            if (!checked) new SceneOverlayEvent(SceneOverlayEventKey.DISABLE)
-                            else new SceneOverlayEvent(SceneOverlayEventKey.ENABLE)
+                            PreferencesSystem.setGlobalPreference("RenderSceneTags", checked)
                         }}
                         tooltipText="Name tags above robot."
                     />
                     <Checkbox
                         label="Show Scoreboard"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("RenderScoreboard")}
+                        defaultState={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
                         onClick={checked => {
-                            setRenderScoreboard(checked)
+                            PreferencesSystem.setGlobalPreference("RenderScoreboard", checked)
+                            if (checked) {
+                                openPanel("scoreboard")
+                            }
                         }}
                     />
-                    <Checkbox
-                        label="Show View Cube"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowViewCube")}
-                        onClick={checked => {
-                            setShowViewCube(checked)
-                        }}
-                        tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
-                    />
+
                     <Checkbox
                         label="Mute All Sound"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")}
-                        onClick={checked => {
-                            setMuteAllSound(checked)
-                        }}
+                        defaultState={PreferencesSystem.getGlobalPreference("MuteAllSound")}
+                        onClick={checked => PreferencesSystem.setGlobalPreference("MuteAllSound", checked)}
                     />
-                    <Slider
+                    <StatefulSlider
                         min={0}
                         max={100}
-                        value={sfxVolume}
+                        defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
                         label={"SFX Volume"}
                         format={{ maximumFractionDigits: 2 }}
-                        onChange={(_, value: number | number[]) => setSFXVolume(value as number)}
+                        onChange={value => PreferencesSystem.setGlobalPreference("SFXVolume", value)}
                         tooltipText="Volume of sound effects (%)."
                     />
                     {Spacer(8)}
