@@ -19,16 +19,16 @@ import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors
-    static redMaterial = new THREE.MeshPhongMaterial({
-        color: 0xed1c24,
+    public static redMaterial = new THREE.MeshPhongMaterial({
+        color: 0xff0000,
         shininess: 0.0,
-        opacity: 0.7,
+        opacity: 0.8,
         transparent: true,
     })
-    static blueMaterial = new THREE.MeshPhongMaterial({
-        color: 0x0066b3,
+    public static blueMaterial = new THREE.MeshPhongMaterial({
+        color: 0x0022ff,
         shininess: 0.0,
-        opacity: 0.7,
+        opacity: 0.8,
         transparent: true,
     }) //0x0000ff
     static transparentMaterial = new THREE.MeshPhongMaterial({

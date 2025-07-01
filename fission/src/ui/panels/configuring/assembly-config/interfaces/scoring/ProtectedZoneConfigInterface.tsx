@@ -17,6 +17,7 @@ import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
 
 /**
  * Saves ejector configuration to selected field.
@@ -99,21 +100,11 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     //Official FIRST hex
     // TODO: Do we want to eventually make these editable?
     const redMaterial = useMemo(() => {
-        return new THREE.MeshPhongMaterial({
-            color: 0xed1c24,
-            shininess: 0.0,
-            opacity: 0.7,
-            transparent: true,
-        })
+        return ProtectedZoneSceneObject.redMaterial.clone() as THREE.MeshPhongMaterial
     }, [])
 
     const blueMaterial = useMemo(() => {
-        return new THREE.MeshPhongMaterial({
-            color: 0x0066b3,
-            shininess: 0.0,
-            opacity: 0.7,
-            transparent: true,
-        })
+        return ProtectedZoneSceneObject.blueMaterial.clone() as THREE.MeshPhongMaterial
     }, [])
 
     const [name, setName] = useState<string>(selectedZone.name)
