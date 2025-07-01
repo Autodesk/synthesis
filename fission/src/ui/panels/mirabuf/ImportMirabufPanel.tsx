@@ -103,7 +103,14 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
             if (assembly) {
                 CreateMirabuf(assembly).then(x => {
                     if (x) {
-                        World.SceneRenderer.RegisterSceneObject(x)
+                        const { mainSceneObject, gamePieces } = x
+
+                        World.SceneRenderer.RegisterSceneObject(mainSceneObject)
+                        gamePieces?.forEach(piece => {
+                            // We have to cache the game pieces while they're in scope
+                            MirabufCachingService.CacheInfo(piece., type, piece.assemblyName ?? undefined)
+                            World.SceneRenderer.RegisterSceneObject(piece)
+                        })
                         progressHandle.Done()
 
                         Global_OpenPanel?.("initial-config")
