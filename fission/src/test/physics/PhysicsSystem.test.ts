@@ -1,5 +1,5 @@
 import { test, expect, describe, assert, beforeEach, afterEach } from "vitest"
-import PhysicsSystem, { LayerReserve, BodyAssociate } from "../systems/physics/PhysicsSystem"
+import PhysicsSystem, { LayerReserve, BodyAssociate } from "../../systems/physics/PhysicsSystem"
 import MirabufParser from "@/mirabuf/MirabufParser"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import * as THREE from "three"
