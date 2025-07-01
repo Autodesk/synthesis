@@ -22,7 +22,7 @@ export type GlobalPreferences = {
     ShowViewCube: boolean
     MuteAllSound: boolean
     SFXVolume: number
-    ShowCenterOfMassIndicators:boolean
+    ShowCenterOfMassIndicators: boolean
 }
 
 export type GlobalPreference = keyof GlobalPreferences

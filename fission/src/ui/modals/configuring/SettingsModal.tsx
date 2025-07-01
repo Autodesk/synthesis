@@ -163,7 +163,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
                     <Checkbox
                         label="Show Centers of Mass"
-                        defaultState={PreferencesSystem.getGlobalPreference<boolean>("ShowCenterOfMassIndicators")}
+                        defaultState={PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")}
                         onClick={checked => {
                             PreferencesSystem.setGlobalPreference("ShowCenterOfMassIndicators", checked)
                         }}
