@@ -700,14 +700,22 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 export async function CreateMirabuf(
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle
-): Promise<MirabufSceneObject | null | undefined> {
+): Promise<{ mainSceneObject: MirabufSceneObject; gamePieces?: MirabufSceneObject[] } | null | undefined> {
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle)
+    const mainSceneObject = new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle)
+    const gamePieces = parser.gamePieces?.map(
+        parser => new MirabufSceneObject(new MirabufInstance(parser), parser.assembly.info!.name!)
+    )
+
+    return {
+        mainSceneObject,
+        gamePieces,
+    }
 }
 
 /**
