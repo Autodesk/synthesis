@@ -151,6 +151,11 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.Gear}
                         onClick={() => openModal("settings")}
                     />
+                    <MainHUDButton
+                        value={"Developer Tool"}
+                        icon={SynthesisIcons.CodeSquare}
+                        onClick={() => openPanel("developer")}
+                    />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
                         value={"View"}
