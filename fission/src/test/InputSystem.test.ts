@@ -35,10 +35,10 @@ describe("Input Scheme Manager Checks", () => {
     })
 
     test("Saving Schemes", () => {
-        const startingLength = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes").length
+        const startingLength = (PreferencesSystem.getGlobalPreference("InputSchemes") as InputScheme[]).length
         InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme)
         InputSchemeManager.saveSchemes()
-        const newLength = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes").length
+        const newLength = (PreferencesSystem.getGlobalPreference("InputSchemes") as InputScheme[]).length
         expect(newLength).toBe(startingLength + 1)
     })
 
