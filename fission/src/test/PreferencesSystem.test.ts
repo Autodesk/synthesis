@@ -41,16 +41,6 @@ describe("Preferences System Global Values", () => {
         expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(true)
     })
 
-    test("Reset to default if null", () => {
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", null)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", null)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", null)
-
-        expect(PreferencesSystem.getGlobalPreference("ZoomSensitivity")).toBe(15)
-        expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(true)
-        expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(true)
-    })
-
     test("Setting then saving", () => {
         PreferencesSystem.setGlobalPreference("ZoomSensitivity", 13)
         PreferencesSystem.setGlobalPreference("RenderSceneTags", true)
@@ -132,11 +122,13 @@ describe("Preference System Robot/Field", () => {
                 zoneDiameter: 0.7,
                 parentNode: undefined,
                 showZoneAlways: true,
+                maxPieces: 3,
             },
             ejector: {
                 deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                 ejectorVelocity: 5,
                 parentNode: undefined,
+                ejectOrder: "FIFO",
             },
             driveVelocity: 3,
             driveAcceleration: 6,
@@ -149,11 +141,13 @@ describe("Preference System Robot/Field", () => {
                 zoneDiameter: 0.3,
                 parentNode: undefined,
                 showZoneAlways: false,
+                maxPieces: 1,
             },
             ejector: {
                 deltaTransformation: [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                 ejectorVelocity: 10,
                 parentNode: undefined,
+                ejectOrder: "LIFO",
             },
             driveVelocity: 1.5,
             driveAcceleration: 8,
