@@ -16,6 +16,18 @@ describe("Mirabuf Parser Tests", () => {
         expect(filterNonPhysicsNodes(rn, spikeMira!).length).toBe(7)
     })
 
+    test("Generate Rigid Nodes (Multi-Joint Wheels)", async () => {
+        const spikeMira = await MirabufCachingService.CacheRemote(
+            "/api/mira/private/Multi-Joint_Wheels_v0.mira",
+            MiraType.ROBOT
+        ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
+
+        const t = new MirabufParser(spikeMira!)
+        const rn = [...t.rigidNodes.values()]
+
+        expect(filterNonPhysicsNodes(rn, spikeMira!).length).toBe(9)
+    })
+
     test("Generate Rigid Nodes (FRC Field 2018_v13.mira)", async () => {
         const field = await MirabufCachingService.CacheRemote(
             "/api/mira/Fields/FRC Field 2018_v13.mira",

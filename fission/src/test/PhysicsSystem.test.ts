@@ -59,4 +59,16 @@ describe("Mirabuf Physics Loading", () => {
 
         expect(mapping.size).toBe(7)
     })
+
+    test("Body Loading (Multi-Joint Wheels)", async () => {
+        const assembly = await MirabufCachingService.CacheRemote(
+            "/api/mira/private/Multi-Joint_Wheels_v0.mira",
+            MiraType.ROBOT
+        ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
+        const parser = new MirabufParser(assembly!)
+        const physSystem = new PhysicsSystem()
+        const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
+
+        expect(mapping.size).toBe(9)
+    })
 })
