@@ -21,17 +21,17 @@ export class PerformanceMonitorSystem extends WorldSystem {
             this.activeCount++
         } else {
             this.antiCount++
-            if (this.antiCount > 10 && this.antiCount > 0.5 * this.activeCount) {
-                this.isCritical = newIsCritical
-                const oldActive = this.activeCount
-                this.activeCount = this.antiCount
-                this.antiCount = oldActive
-                if (this.isCritical) {
-                    PreferencesSystem.resetGraphicsPreferences()
-                    World.SceneRenderer.changeCSMSettings(PreferencesSystem.getGraphicsPreferences())
-                    Global_OpenPanel?.("graphics-settings")
-                    Global_AddToast?.("warning", "Performance Issues Detected", "Reverting to simple graphics")
-                }
+            if (this.antiCount <= 10 || this.antiCount <= 0.5 * this.activeCount) return
+            
+            this.isCritical = newIsCritical
+            const oldActive = this.activeCount
+            this.activeCount = this.antiCount
+            this.antiCount = oldActive
+            if (this.isCritical) {
+                PreferencesSystem.resetGraphicsPreferences()
+                World.SceneRenderer.changeCSMSettings(PreferencesSystem.getGraphicsPreferences())
+                Global_OpenPanel?.("graphics-settings")
+                Global_AddToast?.("warning", "Performance Issues Detected", "Reverting to simple graphics")
             }
         }
 
