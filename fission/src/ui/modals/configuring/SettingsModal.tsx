@@ -105,11 +105,11 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
     const saveHandlers: Record<"general" | "graphics", () => void> = {
         general: saveSettings,
-        graphics: () => graphicsRef.current?.save()!,
+        graphics: () => graphicsRef.current?.save(),
     }
     const resetHandlers: Record<"general" | "graphics", () => void> = {
         general: resetGeneral,
-        graphics: () => graphicsRef.current?.reset()!,
+        graphics: () => graphicsRef.current?.reset(),
     }
 
     return (
