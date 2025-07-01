@@ -98,38 +98,39 @@ class MirabufParser {
         }
 
         // 2: Grounded joint
-        const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
-        const gNode = this.NewRigidNode()
-        this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode)
+        if (assembly.data?.joints) {
+            const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
+            const gNode = this.NewRigidNode()
+            this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode)
 
-        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+            // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
-        // 3: Traverse and round up
-        const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
-            const currentNode = this._partToNodeMap.get(node.value!)
-            if (!currentNode) this.MovePartToRigidNode(node.value!, parentNode)
+            // 3: Traverse and round up
+            const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
+                const currentNode = this._partToNodeMap.get(node.value!)
+                if (!currentNode) this.MovePartToRigidNode(node.value!, parentNode)
 
-            if (!node.children) return
-            node.children.forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
+                if (!node.children) return
+                node.children.forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
+            }
+            this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
+
+            // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
+            this.BandageRigidNodes(assembly) // 4: Bandage via RigidGroups
+            // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
+            // 5. Remove Empty RNs
+            this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0)
+
+            // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
+            this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
+            if (!assembly.dynamic && this._groundedNode) this._groundedNode.isDynamic = false
+
+            // 7. Update root RigidNode
+            const rootNodeId = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)?.id ?? this._rigidNodes[0].id
+            this._rootNode = rootNodeId
         }
-        this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
-
-        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
-
-        this.BandageRigidNodes(assembly) // 4: Bandage via RigidGroups
-        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
-
-        // 5. Remove Empty RNs
-        this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0)
-
-        // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
-        this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
-        if (!assembly.dynamic && this._groundedNode) this._groundedNode.isDynamic = false
-
-        // 7. Update root RigidNode
-        const rootNodeId = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)?.id ?? this._rigidNodes[0].id
-        this._rootNode = rootNodeId
-
         // 8. Retrieve Masses
         this._rigidNodes.forEach(rn => {
             rn.mass = [...rn.parts]
@@ -196,8 +197,13 @@ class MirabufParser {
                 if (instNode.children)
                     this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
 
+                const groundedJoint = new mirabuf.joint.Joint({})
+                mirabuf.Assembly.prototype.data.parts
                 const assembly = new mirabuf.Assembly({
                     ...inst,
+                    data: {
+                        parts: new mirabuf.Parts(),
+                    },
                     designHierarchy: { nodes: [instNode] },
                 })
 
@@ -292,10 +298,11 @@ class MirabufParser {
      */
     private LoadGlobalTransforms() {
         const root = this._designHierarchyRoot
-        const partInstances = new Map<string, mirabuf.IPartInstance>(
-            Object.entries(this._assembly.data!.parts!.partInstances!)
-        )
-        const partDefinitions = this._assembly.data!.parts!.partDefinitions!
+        const parts = this._assembly.data?.parts
+        if (!parts) return // TODO not sure if we should return or provide a default value
+
+        const partInstances = new Map<string, mirabuf.IPartInstance>(Object.entries(parts!.partInstances!))
+        const partDefinitions = parts!.partDefinitions!
 
         this._globalTransforms.clear()
 
