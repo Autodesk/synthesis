@@ -56,7 +56,8 @@ function save(
     gizmo: GizmoSceneObject,
     selectedRobot: MirabufSceneObject,
     selectedNode?: RigidNodeId,
-    showZoneAlways?: boolean
+    showZoneAlways?: boolean,
+    maxPieces?: number
 ) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
@@ -84,6 +85,8 @@ function save(
         selectedRobot.intakePreferences.showZoneAlways = showZoneAlways
     }
 
+    selectedRobot.intakePreferences.maxPieces = maxPieces!
+
     PreferencesSystem.savePreferences()
 }
 
@@ -100,15 +103,16 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
+    const [maxPieces, setMaxPieces] = useState<number>(selectedRobot.intakePreferences?.maxPieces || 1)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways)
+            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces)
             selectedRobot.UpdateIntakeSensor()
         }
-    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways])
+    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces])
 
     useEffect(() => {
         ConfigurationSavedEvent.Listen(saveEvent)
@@ -181,6 +185,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         if (selectedRobot?.intakePreferences) {
             setZoneSize(selectedRobot.intakePreferences.zoneDiameter)
             setSelectedNode(selectedRobot.intakePreferences.parentNode)
+            setMaxPieces(selectedRobot.intakePreferences.maxPieces)
             setShowZoneAlways(selectedRobot.intakePreferences.showZoneAlways ?? false)
         } else {
             setSelectedNode(undefined)
@@ -244,6 +249,17 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }}
                 step={0.01}
             />
+
+            {/* Slider for adjusting max pieces the robot can intake */}
+            <Slider
+                min={1}
+                max={10}
+                step={1}
+                value={maxPieces ?? 1}
+                label="Max Pieces"
+                onChange={(_, v) => setMaxPieces(v as number)}
+            />
+
             {/* Checkbox for showing intake zone indicator at all times */}
             <Box
                 display="flex"
@@ -315,6 +331,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     }
                     setZoneSize(0.5)
                     setSelectedNode(selectedRobot?.rootNodeId)
+                    setMaxPieces(selectedRobot.intakePreferences?.maxPieces ?? 1)
                 }}
             />
         </>

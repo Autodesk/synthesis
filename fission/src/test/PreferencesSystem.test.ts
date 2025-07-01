@@ -32,9 +32,9 @@ describe("Preferences System Global Values", () => {
     })
 
     test("Reset to default if undefined", () => {
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", undefined)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", undefined)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", undefined)
+        PreferencesSystem.setGlobalPreference("ZoomSensitivity", undefined as unknown as number)
+        PreferencesSystem.setGlobalPreference("RenderSceneTags", undefined as unknown as boolean)
+        PreferencesSystem.setGlobalPreference("RenderScoreboard", undefined as unknown as boolean)
 
         expect(PreferencesSystem.getGlobalPreference("ZoomSensitivity")).toBe(15)
         expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(true)
