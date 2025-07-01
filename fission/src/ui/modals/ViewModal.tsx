@@ -39,7 +39,7 @@ const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 defaultValue={"Orbit"}
                 options={["Orbit", "Freecam", "Overview", "Driver Station"] as ViewType[]}
                 onSelect={val => {
-                    setView(val as ViewType)
+                    setView(val)
                 }}
                 label={"Camera View"}
             />

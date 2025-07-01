@@ -17,9 +17,9 @@ export class SoundPlayer {
             }
         })
 
-        audio.volume = PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
+        audio.volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
             ? 0
-            : clamp(PreferencesSystem.getGlobalPreference<number>("SFXVolume") / 100, 0, 1)
+            : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
 
         return audio.play().catch(error => {
             console.error("Error playing the audio file:", error)
@@ -27,9 +27,9 @@ export class SoundPlayer {
     }
 
     public static changeVolume(): void {
-        const volume = PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
+        const volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
             ? 0
-            : clamp(PreferencesSystem.getGlobalPreference<number>("SFXVolume") / 100, 0, 1)
+            : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
         SoundPlayer.audioElements.forEach(audio => (audio.volume = volume))
     }
 }
