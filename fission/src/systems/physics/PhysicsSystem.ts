@@ -1554,7 +1554,7 @@ function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembl
         for (const part of x.parts) {
             const inst = mira.data!.parts!.partInstances![part]!
             const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!
-            if (def.bodies && def.bodies.length > 0) {
+            if (def.bodies && def?.bodies?.length > 0) {
                 return true
             }
         }
