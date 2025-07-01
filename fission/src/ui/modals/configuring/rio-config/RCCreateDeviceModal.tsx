@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Dropdown from "@/components/Dropdown"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
@@ -53,7 +53,7 @@ const RCCreateDeviceModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 label={"Type"}
                 options={["PWM", "CAN", "Encoder"] as DeviceType[]}
                 onSelect={selected => {
-                    setType(selected as DeviceType)
+                    setType(selected)
                 }}
             />
         </Modal>

@@ -2,7 +2,7 @@ import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufScene
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Button from "@/ui/components/Button"
 import Checkbox from "@/ui/components/Checkbox"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { useState } from "react"
 
 type SimulationInterfaceProps = {
@@ -12,7 +12,7 @@ type SimulationInterfaceProps = {
 export default function SimulationInterface({ selectedAssembly }: SimulationInterfaceProps) {
     const { openPanel } = usePanelControlContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("SimAutoReconnect")
+        PreferencesSystem.getGlobalPreference("SimAutoReconnect")
     )
 
     return (

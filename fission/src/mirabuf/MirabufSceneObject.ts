@@ -396,7 +396,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     /** Updates the position of the nametag relative to the robots position */
     private UpdateNameTag() {
-        if (this._nameTag && PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags")) {
+        if (this._nameTag && PreferencesSystem.getGlobalPreference("RenderSceneTags")) {
             const boundingBox = this.ComputeBoundingBox()
             this._nameTag.position = World.SceneRenderer.WorldToPixelSpace(
                 new THREE.Vector3(
@@ -522,7 +522,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
-    private getPreferences(): void {
+    public getPreferences(): void {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
             this._intakePreferences = robotPrefs.intake

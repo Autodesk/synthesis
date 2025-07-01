@@ -1,21 +1,22 @@
 import DefaultInputs from "@/systems/input/DefaultInputs"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { LabelSize } from "@/ui/components/Label"
 import {
-    EditButton,
-    DeleteButton,
-    SelectButton,
     AddButtonInteractiveColor,
-    SectionLabel,
+    DeleteButton,
+    EditButton,
     SectionDivider,
+    SectionLabel,
+    SelectButton,
 } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
 import { useReducer } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 
 function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
     const [_, update] = useReducer(x => !x, false)
@@ -55,6 +56,10 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                                 {/** Select button */}
                                 {SelectButton(() => {
                                     InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                    // TODO: if touch controls, then ensure that they are enabled.
+                                    if (scheme.usesTouchControls) {
+                                        new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
+                                    }
                                     onSelect?.()
                                     update()
                                 })}
@@ -73,8 +78,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                                         // Fetch current custom schemes
                                         InputSchemeManager.saveSchemes()
                                         InputSchemeManager.resetDefaultSchemes()
-                                        const schemes =
-                                            PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+                                        const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
                                         // Find and remove this input scheme
                                         const index = schemes.indexOf(scheme)

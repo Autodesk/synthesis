@@ -12,7 +12,7 @@ import {
     ReactRgbaColor_ThreeColor,
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/ThemeContext"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import Button from "@/ui/components/Button"

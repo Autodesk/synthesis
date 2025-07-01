@@ -3,32 +3,51 @@ import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
 /** Names of all global preferences. */
-export type GlobalPreference =
-    | "QualitySettings"
-    | "ZoomSensitivity"
-    | "PitchSensitivity"
-    | "YawSensitivity"
-    | "ReportAnalytics"
-    | "UseMetric"
-    | "RenderScoringZones"
-    | "InputSchemes"
-    | "RenderSceneTags"
-    | "RenderScoreboard"
-    | "SubsystemGravity"
-    | "SimAutoReconnect"
 
-export const RobotPreferencesKey: string = "Robots"
-export const FieldPreferencesKey: string = "Fields"
+export type GlobalPreferences = {
+    ZoomSensitivity: number
+    PitchSensitivity: number
+    YawSensitivity: number
+    SceneRotationSensitivity: number
+    ViewCubeRotationSensitivity: number
+    ReportAnalytics: boolean
+    UseMetric: boolean
+    RenderScoringZones: boolean
+    InputSchemes: InputScheme[]
+    RenderSceneTags: boolean
+    RenderScoreboard: boolean
+    SubsystemGravity: boolean
+    TouchControls: boolean
+    SimAutoReconnect: boolean
+    ShowViewCube: boolean
+    MuteAllSound: boolean
+    SFXVolume: number
+}
+
+export type GlobalPreference = keyof GlobalPreferences
+
+export type Preferences = GlobalPreferences & {
+    [RobotPreferencesKey]: Record<string, RobotPreferences>
+    [FieldPreferencesKey]: Record<string, FieldPreferences>
+    [MotorPreferencesKey]: Record<string, MotorPreferences>
+    [GraphicsPreferenceKey]: GraphicsPreferences
+}
+
+export const RobotPreferencesKey = "Robots" as const
+export const FieldPreferencesKey = "Fields" as const
+export const MotorPreferencesKey = "Motors" as const
+export const GraphicsPreferenceKey = "Quality" as const
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const DefaultGlobalPreferences: { [key: string]: unknown } = {
-    QualitySettings: "High" as QualitySetting,
+export const DefaultGlobalPreferences: GlobalPreferences = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
+    SceneRotationSensitivity: 0.5,
+    ViewCubeRotationSensitivity: 0.025,
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
@@ -36,10 +55,32 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     RenderSceneTags: true,
     RenderScoreboard: true,
     SubsystemGravity: false,
+    TouchControls: false,
     SimAutoReconnect: false,
+    ShowViewCube: true,
+    MuteAllSound: false,
+    SFXVolume: 25,
 }
 
-export type QualitySetting = "Low" | "Medium" | "High"
+export type GraphicsPreferences = {
+    lightIntensity: number
+    fancyShadows: boolean
+    maxFar: number
+    cascades: number
+    shadowMapSize: number
+    antiAliasing: boolean
+}
+
+export function DefaultGraphicsPreferences(): GraphicsPreferences {
+    return {
+        lightIntensity: 5,
+        fancyShadows: false,
+        maxFar: 30,
+        cascades: 4,
+        shadowMapSize: 4096,
+        antiAliasing: false,
+    }
+}
 
 export type IntakePreferences = {
     deltaTransformation: number[]
@@ -137,4 +178,12 @@ export function DefaultRobotPreferences(): RobotPreferences {
 
 export function DefaultFieldPreferences(): FieldPreferences {
     return { defaultSpawnLocation: [0, 1, 0], scoringZones: [] }
+}
+
+export function DefaultMotorPreferences(name: string): MotorPreferences {
+    return {
+        name: name,
+        maxVelocity: 1,
+        maxForce: 1,
+    }
 }

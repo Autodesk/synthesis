@@ -1,7 +1,9 @@
-import React, { useEffect, useRef, useState } from "react"
+import { ReactElement, useEffect, useRef, useState } from "react"
 import { alpha, styled } from "@mui/system"
 import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
-import { colorNameToVar } from "../ThemeContext"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
 
 /** The clickable button for a dropdown that shows the selected item and opens the menu. Custom styling over the MUI material button.*/
 const CustomButton = styled(Button)({
@@ -65,10 +67,10 @@ const CustomMenu = styled(Menu)({
     },
 })
 
-interface DropdownProps {
-    options: string[]
-    onSelect: (value: string) => void
-    defaultValue?: string
+interface DropdownProps<T extends string> {
+    options: T[]
+    onSelect: (value: T) => void
+    defaultValue?: T
     label?: string
     className?: string
 }
@@ -84,7 +86,7 @@ interface DropdownProps {
  *
  * @returns {JSX.Element} The rendered Dropdown component.
  */
-const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, label }) => {
+function Dropdown<T extends string>({ options, onSelect, defaultValue, label }: DropdownProps<T>): ReactElement {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [selectedValue, setSelectedValue] = useState<string>(defaultValue || "")
     const buttonRef = useRef<HTMLButtonElement>(null)
@@ -104,10 +106,11 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, la
     /** Handles closing the dropdown menu. */
     const handleClose = () => {
         setAnchorEl(null)
+        SoundPlayer.play(dropdownMenuSound)
     }
 
     /** Handles the selection of a dropdown option. */
-    const handleSelect = (value: string) => {
+    const handleSelect = (value: T) => {
         setSelectedValue(value)
         onSelect(value)
         handleClose()
@@ -131,6 +134,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, la
                 <div>
                     <CustomButton
                         onClick={handleClick}
+                        onMouseDown={() => SoundPlayer.play(dropdownMenuSound)}
                         ref={buttonRef}
                         className={`transform transition-transform hover:scale-[1.012] active:scale-[1.024]`}
                     >

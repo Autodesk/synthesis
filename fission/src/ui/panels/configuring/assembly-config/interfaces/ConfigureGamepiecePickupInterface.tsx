@@ -13,7 +13,7 @@ import {
     ReactRgbaColor_ThreeColor,
     ThreeMatrix4_Array,
 } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/ThemeContext"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import Button from "@/ui/components/Button"
 import { Spacer } from "@/ui/components/StyledComponents"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"

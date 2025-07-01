@@ -1,8 +1,8 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Input from "@/components/Input"
-import { useTheme } from "@/ui/ThemeContext"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const NewThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

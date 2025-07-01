@@ -2,7 +2,7 @@ import { defineConfig } from 'vitest/config'
 import * as path from 'path'
 import react from '@vitejs/plugin-react-swc'
 import basicSsl from '@vitejs/plugin-basic-ssl'
-import glsl from 'vite-plugin-glsl';
+import glsl from 'vite-plugin-glsl'
 
 const basePath = "/fission/"
 const serverPort = 3000
@@ -21,7 +21,7 @@ const plugins = [
         exclude: undefined,          // Glob pattern, or array of glob patterns to ignore
         warnDuplicatedImports: true, // Warn if the same chunk was imported multiple times
         defaultExtension: 'glsl',    // Shader suffix when no extension is specified
-        compress: false,             // Compress output shader code
+        minify: false,               // Minify/optimize output shader code
         watch: true,                 // Recompile shader on change
         root: '/'                    // Directory for root imports
     })
@@ -48,9 +48,19 @@ export default defineConfig({
         environment: "jsdom",
         browser: {
             enabled: true,
-            name: "chromium",
-            headless: true,
             provider: "playwright",
+            instances: [
+                {
+                    name: "chromium",
+                    browser: "chromium",
+                    headless: true,
+                },
+                {
+                    name: "firefox",
+                    browser: "firefox",
+                    headless: true,
+                },
+            ],
         },
     },
     server: {

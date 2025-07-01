@@ -8,6 +8,7 @@ export type InputScheme = {
     descriptiveName: string
     customized: boolean
     usesGamepad: boolean
+    usesTouchControls: boolean
     inputs: Input[]
 }
 
@@ -20,7 +21,7 @@ class InputSchemeManager {
         if (this._customSchemes) return this._customSchemes
 
         // Load schemes from preferences and parse into objects
-        this._customSchemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+        this._customSchemes = PreferencesSystem.getGlobalPreference("InputSchemes")
         this._customSchemes.forEach(scheme => this.parseScheme(scheme))
 
         return this._customSchemes
@@ -58,6 +59,7 @@ class InputSchemeManager {
                     rawAxis.useGamepadButtons,
                     rawAxis.posGamepadButton,
                     rawAxis.negGamepadButton,
+                    rawAxis.touchControlAxis,
                     rawAxis.posKeyModifiers,
                     rawAxis.negKeyModifiers
                 )

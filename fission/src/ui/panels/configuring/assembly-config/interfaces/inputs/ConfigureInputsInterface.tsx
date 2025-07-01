@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import InputSystem from "@/systems/input/InputSystem"
@@ -6,7 +6,7 @@ import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeMana
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 let selectedScheme: InputScheme | undefined = undefined
 // eslint-disable-next-line react-refresh/only-export-components
@@ -83,7 +83,7 @@ const ConfigureInputsInterface = () => {
                     InputSchemeManager.resetDefaultSchemes()
 
                     // Find the scheme to remove in preferences
-                    const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+                    const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
                     const index = schemes.indexOf(val.scheme)
 
                     // If currently bound to a robot, remove the binding

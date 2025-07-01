@@ -1,9 +1,11 @@
 import Scene from "@/components/Scene.tsx"
 import { AnimatePresence } from "framer-motion"
 import { ReactElement, useCallback, useEffect, useRef, useState } from "react"
-import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
-import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
-import { useTheme } from "@/ui/ThemeContext"
+import { ModalControlProvider } from "@/ui/ModalContext"
+import { useModalManager } from "@/ui/helpers/UseModalManager.tsx"
+import { PanelControlProvider } from "@/ui/PanelContext"
+import { usePanelManager } from "@/ui/helpers/UsePanelManager.tsx"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers.tsx"
 import { ToastContainer, ToastProvider } from "@/ui/ToastContext"
 import {
     TOOLTIP_DURATION,
@@ -64,11 +66,15 @@ import ContextMenu from "./ui/components/ContextMenu.tsx"
 import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
+import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
+import TouchControls from "./ui/components/TouchControls.tsx"
+import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
 
 function Synthesis() {
-    const { openModal, closeModal, getActiveModalElement, registerModal } = useModalManager(initialModals)
+    const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
+        useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
     const { showTooltip } = useTooltipManager()
 
@@ -93,7 +99,7 @@ function Synthesis() {
                 startSingleplayerCallback={() => {
                     World.InitWorld()
 
-                    if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
+                    if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
                         setConsentPopupDisable(false)
                     }
 
@@ -140,7 +146,7 @@ function Synthesis() {
 
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
-        PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", true)
+        PreferencesSystem.setGlobalPreference("ReportAnalytics", true)
         PreferencesSystem.savePreferences()
     }, [])
 
@@ -164,6 +170,7 @@ function Synthesis() {
                         openModal(modalId)
                     }}
                     closeModal={closeModal}
+                    activeModalId={activeModalId}
                 >
                     <PanelControlProvider
                         key={"panel-control-provider"}
@@ -177,6 +184,7 @@ function Synthesis() {
                             <GlobalUIComponent />
                             <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
                             <SceneOverlay />
+                            <TouchControls />
                             <ContextMenu />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
@@ -188,6 +196,7 @@ function Synthesis() {
                             <ProgressNotifications key={"progress-notifications"} />
                             <ToastContainer key={"toast-container"} />
                             <WPILibConnectionStatus />
+                            <DragModeIndicator />
 
                             {!consentPopupDisable ? (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
@@ -247,6 +256,7 @@ const initialPanels: ReactElement[] = [
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
     <AutoTestPanel key="auto-test" panelId="auto-test" />,
+    <GraphicsSettings key="graphics-settings" panelId="graphics-settings" sidePadding={8} />,
 ]
 
 export default Synthesis

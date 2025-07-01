@@ -1,7 +1,7 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import LabeledButton, { LabelPlacement } from "@/components/LabeledButton"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const RoboRIOModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
