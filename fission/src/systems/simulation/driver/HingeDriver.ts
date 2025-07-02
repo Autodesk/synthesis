@@ -3,7 +3,7 @@ import Driver, { DriverControlMode, DriverID } from "./Driver"
 import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
-import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { NoraNumber, NoraTypes } from "../Nora"
 
 const MAX_TORQUE_WITHOUT_GRAV = 100
@@ -22,8 +22,6 @@ class HingeDriver extends Driver {
     }
 
     private _prevAng: number = 0.0
-
-    private _gravityChange?: (event: PreferenceEvent) => void
 
     public get targetAngle(): number {
         return this._targetAngle
@@ -84,20 +82,16 @@ class HingeDriver extends Driver {
 
         this.controlMode = DriverControlMode.Velocity
 
-        this._gravityChange = (event: PreferenceEvent) => {
-            if (event.prefName == "SubsystemGravity") {
-                const motorSettings = this._constraint.GetMotorSettings()
-                if (event.prefValue) {
-                    motorSettings.set_mMaxTorqueLimit(this._maxTorqueWithGrav)
-                    motorSettings.set_mMinTorqueLimit(-this._maxTorqueWithGrav)
-                } else {
-                    motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
-                    motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
-                }
+        PreferencesSystem.addPreferenceEventListener("SubsystemGravity", event => {
+            const motorSettings = this._constraint.GetMotorSettings()
+            if (event.prefValue) {
+                motorSettings.set_mMaxTorqueLimit(this._maxTorqueWithGrav)
+                motorSettings.set_mMinTorqueLimit(-this._maxTorqueWithGrav)
+            } else {
+                motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
+                motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
             }
-        }
-
-        PreferencesSystem.addEventListener(this._gravityChange)
+        })
     }
 
     public Update(_: number): void {
