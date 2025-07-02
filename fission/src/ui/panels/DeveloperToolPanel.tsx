@@ -179,7 +179,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     </div>
                 </div>
                 {/* Editor */}
-                <div className="flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-sm text-gray-100">
+                <div className="min-w-[360px] flex-1 bg-gray-800 dark:bg-gray-900 rounded-lg p-4 shadow-sm text-gray-100">
                     {selectedKey ? (
                     <>
                         {/* strip off the prefix here */}
