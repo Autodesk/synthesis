@@ -19,6 +19,7 @@ from src.Parser.SynthesisParser.Utilities import (
 from src.Proto import assembly_pb2, joint_pb2, material_pb2, types_pb2
 from src.Types import ExportMode
 
+
 # TODO: Impelement Material overrides
 def MapAllComponents(
     design: adsk.fusion.Design,
@@ -253,7 +254,7 @@ def ParseBRep(
     plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
     plainmesh_out.indices.extend(mesh.nodeIndices)
     plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
-    
+
     return Ok(None)
 
 
