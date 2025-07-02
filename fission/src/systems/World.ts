@@ -6,6 +6,7 @@ import SimulationSystem from "./simulation/SimulationSystem"
 import InputSystem from "./input/InputSystem"
 import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
+import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
 
 class World {
     private static _isAlive: boolean = false
@@ -18,6 +19,7 @@ class World {
     private static _inputSystem: InputSystem
     private static _analyticsSystem: AnalyticsSystem | undefined = undefined
     private static _dragModeSystem: DragModeSystem
+    private static _performanceMonitorSystem: PerformanceMonitoringSystem
 
     private static _accumTimes: AccumTimes = {
         frames: 0,
@@ -77,6 +79,7 @@ class World {
         World._simulationSystem = new SimulationSystem()
         World._inputSystem = new InputSystem()
         World._dragModeSystem = new DragModeSystem()
+        World._performanceMonitorSystem = new PerformanceMonitoringSystem()
         try {
             World._analyticsSystem = new AnalyticsSystem()
         } catch (_) {
@@ -95,6 +98,7 @@ class World {
         World._inputSystem.Destroy()
         World._dragModeSystem.Destroy()
 
+        World._performanceMonitorSystem.Destroy()
         World._analyticsSystem?.Destroy()
     }
 
@@ -112,6 +116,7 @@ class World {
         })
 
         World._analyticsSystem?.Update(this._currentDeltaT)
+        World._performanceMonitorSystem?.Update(this._currentDeltaT)
     }
 
     public static get currentDeltaT(): number {
