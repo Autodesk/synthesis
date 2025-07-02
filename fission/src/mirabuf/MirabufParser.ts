@@ -2,6 +2,8 @@ import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
 import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { randomUUID } from "crypto"
+import { join } from "path"
 
 export type RigidNodeId = string
 
@@ -98,39 +100,38 @@ class MirabufParser {
         }
 
         // 2: Grounded joint
-        if (assembly.data?.joints) {
-            const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
-            const gNode = this.NewRigidNode()
-            this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode)
+        const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
+        const gNode = this.NewRigidNode()
+        this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode)
 
-            // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
-            // 3: Traverse and round up
-            const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
-                const currentNode = this._partToNodeMap.get(node.value!)
-                if (!currentNode) this.MovePartToRigidNode(node.value!, parentNode)
+        // 3: Traverse and round up
+        const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
+            const currentNode = this._partToNodeMap.get(node.value!)
+            if (!currentNode) this.MovePartToRigidNode(node.value!, parentNode)
 
-                if (!node.children) return
-                node.children.forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
-            }
-            this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
-
-            // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
-
-            this.BandageRigidNodes(assembly) // 4: Bandage via RigidGroups
-            // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
-
-            // 5. Remove Empty RNs
-            this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0)
-
-            // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
-            this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
-            if (!assembly.dynamic && this._groundedNode) this._groundedNode.isDynamic = false
-
-            // 7. Update root RigidNode
-            const rootNodeId = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)?.id ?? this._rigidNodes[0].id
-            this._rootNode = rootNodeId
+            if (!node.children) return
+            node.children.forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
         }
+        this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
+
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
+        this.BandageRigidNodes(assembly) // 4: Bandage via RigidGroups
+        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
+
+        // 5. Remove Empty RNs
+        this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0)
+
+        // 6. If field, find grounded node and set isDynamic to false. Also just find grounded node again
+        this._groundedNode = this.partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)
+        if (!assembly.dynamic && this._groundedNode) this._groundedNode.isDynamic = false
+
+        // 7. Update root RigidNode
+        const rootNodeId = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)?.id ?? this._rigidNodes[0].id
+        this._rootNode = rootNodeId
+
         // 8. Retrieve Masses
         this._rigidNodes.forEach(rn => {
             rn.mass = [...rn.parts]
@@ -197,19 +198,63 @@ class MirabufParser {
                 if (instNode.children)
                     this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
 
-                const groundedJoint = new mirabuf.joint.Joint({})
-                mirabuf.Assembly.prototype.data.parts
-                const assembly = new mirabuf.Assembly({
-                    ...inst,
-                    data: {
-                        parts: new mirabuf.Parts(),
+                // Create grounded joint
+                const jointDefinition = new mirabuf.joint.Joint({
+                    info: {
+                        GUID: GROUNDED_JOINT_ID,
+                        name: "grounded",
                     },
-                    designHierarchy: { nodes: [instNode] },
+                    jointMotionType: mirabuf.joint.JointMotion.RIGID,
+                    origin: new mirabuf.Vector3(),
+                })
+                const jointInstance = new mirabuf.joint.JointInstance({
+                    isEndEffector: false,
+                    parentPart: "",
+                    jointReference: jointDefinition.info?.name,
+                    parts: { nodes: [instNode] },
                 })
 
-                return assembly
+                const joints = new mirabuf.joint.Joints({
+                    jointDefinitions: {
+                        [GROUNDED_JOINT_ID]: jointDefinition,
+                    },
+                    jointInstances: {
+                        [GROUNDED_JOINT_ID]: jointInstance,
+                    },
+                    rigidGroups: [],
+                    motorDefinitions: {},
+                })
+
+                const partDefinitionReference = inst?.partDefinitionReference ?? ""
+                const partDefinition = this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
+
+                const parts = new mirabuf.Parts({
+                    info: inst.info,
+                    partDefinitions: {
+                        [partDefinitionReference]: partDefinition,
+                    },
+                    partInstances: {
+                        [inst.info?.GUID ?? ""]: inst,
+                    },
+                })
+
+                const gamePieceAssembly = new mirabuf.Assembly({
+                    info: inst.info,
+                    data: {
+                        parts,
+                        joints,
+                        materials: this.assembly.data?.materials,
+                        signals: {},
+                    },
+                    dynamic: true,
+                    designHierarchy: { nodes: [instNode] },
+                    jointHierarchy: {},
+                    thumbnail: null,
+                })
+
+                return gamePieceAssembly
             })
-            .filter(node => node != null)
+            .filter(asm => asm != null)
 
         // TODO: Detatch game pieces from tree and remove part instances
 
