@@ -1,5 +1,8 @@
-import { test, expect, describe, assert, beforeEach, vi } from "vitest"
+import { test, expect, describe, beforeEach, vi } from "vitest"
 import Mechanism, { MechanismConstraint } from "../../systems/physics/Mechanism"
+import PhysicsSystem from "../../systems/physics/PhysicsSystem"
+import MirabufParser from "@/mirabuf/MirabufParser"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { LayerReserve } from "../../systems/physics/PhysicsSystem"
 import { RigidNodeId } from "../../mirabuf/MirabufParser"
 import { mirabuf } from "../../proto/mirabuf"
@@ -314,7 +317,7 @@ describe("Mechanism Integration Tests", () => {
                 childBody: mockBodyID,
                 primaryConstraint: mockConstraint,
                 maxVelocity: 10.0,
-                info: { name: "hinge-joint" } as mirabuf.IInfo,
+                info: { name: "Revolute 8" } as mirabuf.IInfo,
                 extraConstraints: [],
                 extraBodies: [],
             },
@@ -331,8 +334,43 @@ describe("Mechanism Integration Tests", () => {
         constraints.forEach(constraint => mechanism.AddConstraint(constraint))
 
         expect(mechanism.constraints).toHaveLength(2)
-        expect(mechanism.constraints[0].info?.name).toBe("hinge-joint")
+        expect(mechanism.constraints[0].info?.name).toBe("Revolute 8")
         expect(mechanism.constraints[1].extraConstraints).toHaveLength(2)
         expect(mechanism.constraints[1].extraBodies).toHaveLength(2)
+    })
+})
+
+describe("Mirabuf Mechanism Creation", () => {
+    let physSystem: PhysicsSystem
+
+    beforeEach(() => {
+        physSystem = new PhysicsSystem()
+    })
+
+    test("Body Loading (Dozer)", async () => {
+        const assembly = await MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
+            x => MirabufCachingService.Get(x!.id, MiraType.ROBOT)
+        )
+        const parser = new MirabufParser(assembly!)
+
+        const mechanism = physSystem.CreateMechanismFromParser(parser)
+
+        expect(mechanism).toBeDefined()
+        expect(mechanism.controllable).toBe(true)
+        expect(mechanism.constraints.length).toBe(12)
+    })
+
+    test("Body Loading (Mutli-Joint Robot)", async () => {
+        const assembly = await MirabufCachingService.CacheRemote(
+            "/api/mira/private/Multi-Joint_Wheels_v0.mira",
+            MiraType.ROBOT
+        ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
+        const parser = new MirabufParser(assembly!)
+
+        const mechanism = physSystem.CreateMechanismFromParser(parser)
+
+        expect(mechanism).toBeDefined()
+        expect(mechanism.controllable).toBe(true)
+        expect(mechanism.constraints.length).toBe(12)
     })
 })

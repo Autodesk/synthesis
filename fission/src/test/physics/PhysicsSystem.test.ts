@@ -709,10 +709,5 @@ describe("Mirabuf Physics Loading", () => {
         const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(7)
-
-        const mechanism = physSystem.CreateMechanismFromParser(parser)
-
-        expect(mechanism).toBeDefined()
-        expect(mechanism.nodeToBody.size).toBeGreaterThan(0)
     })
 })
