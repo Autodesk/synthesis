@@ -123,15 +123,6 @@ describe("Mechanism Constraint Management", () => {
         expect(mechanism.constraints[0]).toBe(mockConstraint1)
     })
 
-    test("Add multiple constraints", () => {
-        mechanism.AddConstraint(mockConstraint1)
-        mechanism.AddConstraint(mockConstraint2)
-
-        expect(mechanism.constraints).toHaveLength(2)
-        expect(mechanism.constraints[0]).toBe(mockConstraint1)
-        expect(mechanism.constraints[1]).toBe(mockConstraint2)
-    })
-
     test("Constraint with info and extra components", () => {
         mechanism.AddConstraint(mockConstraint2)
 
@@ -140,6 +131,15 @@ describe("Mechanism Constraint Management", () => {
         expect(addedConstraint.extraConstraints).toHaveLength(1)
         expect(addedConstraint.extraBodies).toHaveLength(1)
         expect(addedConstraint.maxVelocity).toBe(15.0)
+    })
+
+    test("Add multiple constraints", () => {
+        mechanism.AddConstraint(mockConstraint1)
+        mechanism.AddConstraint(mockConstraint2)
+
+        expect(mechanism.constraints).toHaveLength(2)
+        expect(mechanism.constraints[0]).toBe(mockConstraint1)
+        expect(mechanism.constraints[1]).toBe(mockConstraint2)
     })
 })
 
