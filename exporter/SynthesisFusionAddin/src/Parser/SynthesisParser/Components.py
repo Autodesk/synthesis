@@ -19,9 +19,6 @@ from src.Parser.SynthesisParser.Utilities import (
 from src.Proto import assembly_pb2, joint_pb2, material_pb2, types_pb2
 from src.Types import ExportMode
 
-logger = getLogger()
-
-
 # TODO: Impelement Material overrides
 def MapAllComponents(
     design: adsk.fusion.Design,
@@ -31,7 +28,6 @@ def MapAllComponents(
     materials: material_pb2.Materials,
 ) -> Result[None]:
 
-    logger.log(10, f"HELLO")
     for component in design.allComponents:
         adsk.doEvents()
         if progressDialog.wasCancelled():
@@ -233,6 +229,7 @@ def ParseBRep(
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
 ) -> Result[None]:
+
     calc = body.meshManager.createMeshCalculator()
     # Disabling for now. We need the user to be able to adjust this, otherwise it gets locked
     # into whatever the default was at the time it first creates the export options.
@@ -240,7 +237,10 @@ def ParseBRep(
     _ = calc.setQuality(adsk.fusion.TriangleMeshQualityOptions.LowQualityTriangleMesh)
     # calc.maxNormalDeviation = 3.14159 * (1.0 / 6.0)
     # calc.surfaceTolerance = 0.5
-    mesh = calc.calculate()
+    try:
+        mesh = calc.calculate()
+    except:
+        return Err(f"Failed to calculate mesh for {body.name}", ErrorSeverity.Error)
 
     fill_info_result = fill_info(trimesh, body)
     if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
@@ -253,7 +253,7 @@ def ParseBRep(
     plainmesh_out.normals.extend(mesh.normalVectorsAsFloat)
     plainmesh_out.indices.extend(mesh.nodeIndices)
     plainmesh_out.uv.extend(mesh.textureCoordinatesAsFloat)
-
+    
     return Ok(None)
 
 

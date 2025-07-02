@@ -57,9 +57,7 @@ def construct_info(
         proto_obj.info.name = fus_object.name
     elif name != "":
         proto_obj.info.name = name
-    else:
-        _: Err[None] = Err("Attempted to set proto_obj.info.name to None", ErrorSeverity.Warning)
-
+    
     if GUID is not None:
         proto_obj.info.GUID = str(GUID)
     elif fus_object is not None and hasattr(fus_object, "entityToken"):
