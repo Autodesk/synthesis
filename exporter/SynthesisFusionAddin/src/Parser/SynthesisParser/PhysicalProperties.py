@@ -41,7 +41,9 @@ def GetPhysicalProperties(
     if physical is None:
         return Err("Physical properties object is None", ErrorSeverity.Error)
 
-    missing_properties_bools: list[bool] = [value is None for prop, value in vars(physical).items() if not prop.startswith('__')]
+    missing_properties_bools: list[bool] = [
+        value is None for prop, value in vars(physical).items() if not prop.startswith("__")
+    ]
     if any(prop for prop in missing_properties_bools):
         # missing_properties: list[Any] = [physical[i] for i, prop in enumerate(missing_properties_bools) if prop]
         _: Err[None] = Err("Missing some physical properties", ErrorSeverity.Warning)

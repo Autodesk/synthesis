@@ -275,12 +275,14 @@ class JointParser:
 
             if occurrenceOne is None:
                 if joint.geometryOrOriginOne.entityOne.assemblyContext is None:
-                    _ = Err("occurrenceOne and entityOne's assembly context are None", ErrorSeverity.Fatal)
+                    ____: Err[None] = Err(
+                        "occurrenceOne and entityOne's assembly context are None", ErrorSeverity.Fatal
+                    )
                 occurrenceOne = joint.geometryOrOriginOne.entityOne.assemblyContext
 
             if occurrenceTwo is None:
                 if joint.geometryOrOriginTwo.entityTwo.assemblyContext is None:
-                    __ = Err("occurrenceOne and entityTwo's assembly context are None", ErrorSeverity.Fatal)
+                    __: Err[None] = Err("occurrenceOne and entityTwo's assembly context are None", ErrorSeverity.Fatal)
                 occurrenceTwo = joint.geometryOrOriginTwo.entityTwo.assemblyContext
 
             oneEntityToken = ""
@@ -305,7 +307,7 @@ class JointParser:
 
                 # TODO: Check if this is fatal or not
                 if occurrenceTwo is None and occurrenceOne is None:
-                    ___ = Err(
+                    ___: Err[None] = Err(
                         f"Occurrences that connect joints could not be found\n\t1: {occurrenceOne}\n\t2: {occurrenceTwo}",
                         ErrorSeverity.Fatal,
                     )

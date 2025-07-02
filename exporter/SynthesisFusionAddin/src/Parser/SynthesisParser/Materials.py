@@ -140,7 +140,9 @@ def getPhysicalMaterialData(
     mechanicalProperties.density = materialProperties.itemById("structural_Density").value
     mechanicalProperties.damping_coefficient = materialProperties.itemById("structural_Damping_coefficient").value
 
-    missingProperties: list[str] = [k for k, v in vars(mechanicalProperties).items() if v is None and not k.startswith("__")]  # ignore: type
+    missingProperties: list[str] = [
+        k for k, v in vars(mechanicalProperties).items() if v is None and not k.startswith("__")
+    ]  # ignore: type
     if missingProperties.__len__() > 0:
         _: Err[None] = Err(f"Missing Mechanical Properties {missingProperties}", ErrorSeverity.Warning)
 
