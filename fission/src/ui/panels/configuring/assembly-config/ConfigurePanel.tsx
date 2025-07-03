@@ -87,9 +87,6 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u, pendingDeletes])
 
-        ;[...World.SceneRenderer.sceneObjects.values()].forEach(o => { if (o instanceof MirabufSceneObject) console.log(o.assemblyName) })
-
-
     const options = useMemo(() => {
         const list = configurationType == ConfigurationType.ROBOT ? robots : configurationType == ConfigurationType.FIELD ? fields : gamePieces
         return list

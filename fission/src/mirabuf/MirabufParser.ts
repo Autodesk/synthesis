@@ -190,17 +190,12 @@ class MirabufParser {
         const gamePieces = Object.values(this._assembly.data!.parts!.partInstances!)
             .filter(inst => gamepieceDefinitions.has(inst.partDefinitionReference!))
             .map(inst => {
-                // To fix the issue where some game  pieces are child nodes of others, iteratively search the designHierarchy then all the previously pruned gamepieces trees for the current node
                 const instNode = this.BinarySearchDesignTreePrune(inst.info!.GUID!)
                 if (instNode == null) {
-                    console.error("Failed to find Game piece in Design Tree")
-                    this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
+                    this.NewError(ParseErrorSeverity.Unimportable, "Failed to find game piece in Design Tree")
                     return
                 }
-                // TODO: Instead of marking them, separate them into a different body entirely
-                // Figure out what we actually need to return here
-
-                // Trick to capture and delete references to gamePiece
+                // Trick to capture and delete references to gamePiece, potentially unnecessary
                 const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
                 gpRn.isGamePiece = true
                 this.MovePartToRigidNode(instNode!.value!, gpRn)
@@ -222,12 +217,14 @@ class MirabufParser {
             })
             .filter(asm => asm != null)
 
-        // TODO: Detatch game pieces from tree and remove part instances
         console.log(`${gamePieces.length}`)
 
         return gamePieces
     }
 
+    /*
+     * Right now, this function is tailored for game pieces; in the future it could be generalized
+     */
     private PartInstance_Assembly(inst: mirabuf.IPartInstance, instNode: mirabuf.INode): mirabuf.Assembly {
         // Create grounded joint
         // const v = inst.
@@ -419,10 +416,10 @@ class MirabufParser {
 
     private FindAncestorialBreak(partA: string, partB: string): [string, string] {
         if (!this._partTreeValues.has(partA) || !this._partTreeValues.has(partB)) {
-            this._errors.push([ParseErrorSeverity.LikelyIssues, "Part not found in tree."])
+            this.NewError(ParseErrorSeverity.LikelyIssues, "Part not found in tree.")
             return [partA, partB]
         } else if (partA == partB) {
-            this._errors.push([ParseErrorSeverity.LikelyIssues, "Part A and B are the same."])
+            this.NewError(ParseErrorSeverity.LikelyIssues, "Part A and B are the same.")
         }
 
         const ptv = this._partTreeValues
@@ -531,6 +528,17 @@ class MirabufParser {
 
         recursive(this._designHierarchyRoot)
         this._partTreeValues = partTreeValues
+    }
+
+    private NewError(severity: ParseErrorSeverity, message: string) {
+        if (severity >= ParseErrorSeverity.LikelyIssues) {
+            console.error(message)
+            if (severity == ParseErrorSeverity.Unimportable)
+                console.error(`Aborting Parse of assembly: ${this._assembly.info?.name}`)
+        } else {
+            console.warn(message)
+        }
+        this._errors.push([severity, message])
     }
 }
 
