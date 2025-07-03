@@ -20,7 +20,10 @@ T = TypeVar("T")
 
 class Result(Generic[T]):
     """
-    Result class for error handling, similar to the Result enum in Rust. The `Err` and `Ok` variants are child types, rather than enum variants though. Another difference is that the error variant is necessarily packaged with a message and a severity, rather than being arbitrary.
+    Result class for error handling, similar to the Result enum in Rust.
+
+    The `Err` and `Ok` variants are child types, rather than enum variants though. Another difference is that the error variant is necessarily packaged with a message and a severity, rather than being arbitrary.
+
     Since python3 has no match statements, use the `is_ok()` or `is_err()` function to check the variant, then `unwrap()` or `unwrap_err()` to get the value or error message and severity.
 
     ## Example
@@ -67,8 +70,13 @@ class Ok(Result[T]):
 
 class Err(Result[T]):
     """
-    The error variant of the Result class. Contains an error message and severity. Severity is the `ErrorSeverity` enum and is either Fatal, Error, or Warning, each corresponding to a logger severity level, Critical Error (50) and Warning (30) respectively. When an `Err` is instantiated, it is automatically logged in the current synthesis logfile.
+    The error variant of the Result class.
 
+    It contains an error message and severity, which is either Fatal, Error, or Warning, each corresponding to a logger severity level, Critical Error (50) and Warning (30) respectively.
+
+    When an `Err` is instantiated, it is automatically logged in the current synthesis logfile.
+
+    ## Examples
     If an error is fatal to the entire program (or the parent function), it should be returned and marked as Fatal:
     ```python
     return Err("Foo not found", ErrorSeverity.Fatal)

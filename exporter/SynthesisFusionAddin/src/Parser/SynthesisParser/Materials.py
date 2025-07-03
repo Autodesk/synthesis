@@ -26,7 +26,7 @@ DYNAMIC_FRICTION_COEFFS = {
 }
 
 
-def MapAllPhysicalMaterials(
+def mapAllPhysicalMaterials(
     physicalMaterials: list[material_pb2.PhysicalMaterial],
     materials: material_pb2.Materials,
     options: ExporterOptions,
@@ -165,7 +165,7 @@ def getPhysicalMaterialData(
     return Ok(None)
 
 
-def MapAllAppearances(
+def mapAllAppearances(
     appearances: list[material_pb2.Appearance],
     materials: material_pb2.Materials,
     options: ExporterOptions,

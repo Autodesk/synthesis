@@ -25,7 +25,7 @@ from src.Logging import logFailure
 from src.Proto import types_pb2
 
 
-def GetPhysicalProperties(
+def getPhysicalProperties(
     fusionObject: adsk.fusion.BRepBody | adsk.fusion.Occurrence | adsk.fusion.Component,
     physicalProperties: types_pb2.PhysicalProperties,
     level: int = 1,

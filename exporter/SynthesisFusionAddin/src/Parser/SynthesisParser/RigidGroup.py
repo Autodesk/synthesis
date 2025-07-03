@@ -23,7 +23,7 @@ from src.Proto import assembly_pb2
 # According to the type errors I'm getting here this code would have never compiled.
 # Should be removed later
 @logFailure
-def ExportRigidGroups(
+def exportRigidGroups(
     fus_occ: adsk.fusion.Occurrence | adsk.fusion.Component,
     hel_occ: assembly_pb2.Occurrence,  # type: ignore[name-defined]
 ) -> None:

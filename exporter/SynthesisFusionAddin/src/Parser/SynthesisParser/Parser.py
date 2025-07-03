@@ -80,7 +80,7 @@ class Parser:
         )
 
         handle_err_top(
-            Materials.MapAllAppearances(
+            Materials.mapAllAppearances(
                 design.appearances,
                 assembly_out.data.materials,
                 self.exporterOptions,
@@ -89,7 +89,7 @@ class Parser:
         )
 
         handle_err_top(
-            Materials.MapAllPhysicalMaterials(
+            Materials.mapAllPhysicalMaterials(
                 design.materials,
                 assembly_out.data.materials,
                 self.exporterOptions,
@@ -98,7 +98,7 @@ class Parser:
         )
 
         handle_err_top(
-            Components.MapAllComponents(
+            Components.mapAllComponents(
                 design,
                 self.exporterOptions,
                 self.pdMessage,
@@ -110,7 +110,7 @@ class Parser:
         rootNode = types_pb2.Node()
 
         handle_err_top(
-            Components.ParseComponentRoot(
+            Components.parseComponentRoot(
                 design.rootComponent,
                 self.pdMessage,
                 self.exporterOptions,
@@ -120,7 +120,7 @@ class Parser:
             )
         )
 
-        Components.MapRigidGroups(design.rootComponent, assembly_out.data.joints)
+        Components.mapRigidGroups(design.rootComponent, assembly_out.data.joints)
 
         assembly_out.design_hierarchy.nodes.append(rootNode)
 
@@ -150,7 +150,7 @@ class Parser:
         )
 
         handle_err_top(
-            JointHierarchy.BuildJointPartHierarchy(
+            JointHierarchy.buildJointPartHierarchy(
                 design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
             )
         )
