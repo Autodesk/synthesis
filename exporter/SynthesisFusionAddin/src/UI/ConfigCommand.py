@@ -2,6 +2,7 @@
 Central location for which all UI is generated and handled for the main configuration panel.
 """
 
+import importlib
 import os
 import re
 import webbrowser
@@ -10,27 +11,38 @@ from typing import Any
 import adsk.core
 import adsk.fusion
 
+import src.Parser.SynthesisParser.Parser as Parser
+import src.UI.GamepieceConfigTab as GamepieceConfigTab
+import src.UI.GeneralConfigTab as GeneralConfigTab
+import src.UI.JointConfigTab as JointConfigTab
+import src.UI.TaggingConfigTab as TaggingConfigTab
 from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
-from src.Parser.SynthesisParser.Parser import Parser
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
-from src.UI.GamepieceConfigTab import GamepieceConfigTab
-from src.UI.GeneralConfigTab import GeneralConfigTab
 from src.UI.Handlers import PersistentEventHandler
-from src.UI.JointConfigTab import JointConfigTab
-from src.UI.TaggingConfigTab import TaggingConfigTab
 
-generalConfigTab: GeneralConfigTab
-jointConfigTab: JointConfigTab
-taggingConfigTab: TaggingConfigTab
-gamepieceConfigTab: GamepieceConfigTab
+generalConfigTab: GeneralConfigTab.GeneralConfigTab
+jointConfigTab: JointConfigTab.JointConfigTab
+gamepieceConfigTab: GamepieceConfigTab.GamepieceConfigTab
+taggingConfigTab: TaggingConfigTab.TaggingConfigTab
 
 logger = getLogger()
 
 INPUTS_ROOT: adsk.core.CommandInputs
+
+
+def reload() -> None:
+    """Reloads the sub modules to reflect any changes made during development."""
+    importlib.reload(GeneralConfigTab)
+    importlib.reload(GamepieceConfigTab)
+    importlib.reload(JointConfigTab)
+    importlib.reload(TaggingConfigTab)
+
+    importlib.reload(Parser)
+    logger.info("UI modules reloaded successfully.")
 
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
@@ -73,18 +85,18 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
 
         global generalConfigTab
-        generalConfigTab = GeneralConfigTab(args, exporterOptions)
+        generalConfigTab = GeneralConfigTab.GeneralConfigTab(args, exporterOptions)
 
         global gamepieceConfigTab
-        gamepieceConfigTab = GamepieceConfigTab(args, exporterOptions)
+        gamepieceConfigTab = GamepieceConfigTab.GamepieceConfigTab(args, exporterOptions)
         generalConfigTab.gamepieceConfigTab = gamepieceConfigTab
 
         global jointConfigTab
-        jointConfigTab = JointConfigTab(args)
+        jointConfigTab = JointConfigTab.JointConfigTab(args)
         generalConfigTab.jointConfigTab = jointConfigTab
 
         global taggingConfigTab
-        taggingConfigTab = TaggingConfigTab(args)
+        taggingConfigTab = TaggingConfigTab.TaggingConfigTab(args)
         generalConfigTab.taggingConfigTab = taggingConfigTab
 
         if not exporterOptions.exportMode == ExportMode.FIELD:
@@ -170,7 +182,7 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
 
-        Parser(exporterOptions).export()
+        Parser.Parser(exporterOptions).export()
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
