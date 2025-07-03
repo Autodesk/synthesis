@@ -1,12 +1,13 @@
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
-import React, { useEffect, useMemo, useState } from "react"
+import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
 import { SectionLabel, SynthesisIcons, PositiveButton, SectionDivider } from "@/ui/components/StyledComponents"
-import { LabelSize } from "@/components/Label"
+import Label, { LabelSize } from "@/components/Label"
 import { Box } from "@mui/material"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import MatchMode from "@/systems/MatchMode"
 import { Global_AddToast } from "@/ui/components/GlobalUIControls"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import Button from "@/ui/components/Button"
 
 export interface MatchModeConfig {
     id: string
@@ -110,6 +111,72 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         [matchModeConfigs, openModal, closePanel]
     )
 
+    const fileUploadRef = useRef<HTMLInputElement>(null)
+
+    const uploadClicked = () => {
+        if (fileUploadRef.current) {
+            fileUploadRef.current.click()
+        }
+    }
+
+    const validateMatchModeConfig = (config: unknown): config is MatchModeConfig => {
+        return (
+            typeof config === "object" &&
+            config !== null &&
+            typeof (config as Record<string, unknown>).id === "string" &&
+            typeof (config as Record<string, unknown>).name === "string" &&
+            typeof (config as Record<string, unknown>).autonomousTime === "number" &&
+            typeof (config as Record<string, unknown>).teleopTime === "number"
+        )
+    }
+
+    const onInputChanged = async (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files) {
+            const file = e.target.files[0]
+
+            // Check if it's a JSON file
+            if (!file.name.toLowerCase().endsWith(".json")) {
+                Global_AddToast?.("error", "Invalid File Type", "Please select a JSON file")
+                return
+            }
+
+            try {
+                // Read file content
+                const fileContent = await file.text()
+
+                // Parse JSON
+                const parsedConfig = JSON.parse(fileContent)
+
+                // Validate structure
+                if (!validateMatchModeConfig(parsedConfig)) {
+                    Global_AddToast?.(
+                        "error",
+                        "Invalid Match Mode Config",
+                        "The JSON file does not match the required MatchModeConfig structure"
+                    )
+                    return
+                }
+
+                // Ensures that the config id is unique
+                if (matchModeConfigs.find(config => config.id === parsedConfig.id)) {
+                    Global_AddToast?.(
+                        "error",
+                        "Match Mode Config Already Exists",
+                        "There is already a match mode config with this ID"
+                    )
+                    return
+                }
+
+                // If validation passes, add to the list
+                setMatchModeConfigs(prev => [...prev, parsedConfig])
+
+                Global_AddToast?.("info", "Match Mode Config Added", `Successfully added "${parsedConfig.name}"`)
+            } catch (error) {
+                Global_AddToast?.("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
+            }
+        }
+    }
+
     return (
         <Panel
             name={"Match Mode Config"}
@@ -127,6 +194,11 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             </SectionLabel>
             <SectionDivider />
             {matchModeConfigElements}
+            <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />
+
+            <Box alignSelf={"center"}>
+                <Button value="Upload File" onClick={uploadClicked} />
+            </Box>
         </Panel>
     )
 }
