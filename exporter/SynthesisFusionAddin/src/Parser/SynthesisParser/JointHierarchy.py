@@ -481,7 +481,7 @@ def searchForGrounded(
 # ________________________ Build implementation ______________________ #
 
 
-def BuildJointPartHierarchy(
+def buildJointPartHierarchy(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
     options: ExporterOptions,

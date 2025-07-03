@@ -50,7 +50,6 @@ def run(_context: dict[str, Any]) -> None:
     Arguments:
         **context** *context* -- Fusion context to derive app and UI.
     """
-
     # Remove all items prior to start just to make sure
     unregister_all()
 
@@ -70,7 +69,6 @@ def stop(_context: dict[str, Any]) -> None:
     Arguments:
         **context** *context* -- Fusion Data.
     """
-
     unregister_all()
 
     app = adsk.core.Application.get()

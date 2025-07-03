@@ -77,7 +77,7 @@ def generateFilePath() -> str:
     """
     # Transition: AARD-1765
     # Ignoring the type for now, will revisit in the OString refactor
-    tempPath = OString.TempPath("").getPath()  # type: ignore
+    tempPath = OString.tempPath("").getPath()  # type: ignore
     return str(tempPath)
 
 
@@ -100,4 +100,4 @@ def generateFileName() -> str:
     return "{0}_{1}.mira".format(name, version)
 
 
-def OpenFileDialog() -> None: ...
+def openFileDialog() -> None: ...

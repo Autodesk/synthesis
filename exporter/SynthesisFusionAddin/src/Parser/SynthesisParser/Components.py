@@ -21,7 +21,7 @@ from src.Types import ExportMode
 
 
 # TODO: Impelement Material overrides
-def MapAllComponents(
+def mapAllComponents(
     design: adsk.fusion.Design,
     options: ExporterOptions,
     progressDialog: PDMessage,
@@ -47,7 +47,7 @@ def MapAllComponents(
         if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
             return fill_info_result
 
-        physical_properties_result = PhysicalProperties.GetPhysicalProperties(component, partDefinition.physical_data)
+        physical_properties_result = PhysicalProperties.getPhysicalProperties(component, partDefinition.physical_data)
         if physical_properties_result.is_err() and physical_properties_result.unwrap_err()[1] == ErrorSeverity.Fatal:
             return physical_properties_result
 
@@ -99,7 +99,7 @@ def MapAllComponents(
     return Ok(None)
 
 
-def ParseComponentRoot(
+def parseComponentRoot(
     component: adsk.fusion.Component,
     progressDialog: PDMessage,
     options: ExporterOptions,
@@ -221,7 +221,7 @@ def parseChildOccurrence(
 # saw online someone used this to get the correct context but oh boy does it look pricey
 # I think if I can make all parts relative to a parent it should return that parents transform maybe
 # TESTED AND VERIFIED - but unoptimized
-def GetMatrixWorld(occurrence: adsk.fusion.Occurrence) -> adsk.core.Matrix3D:
+def getMatrixWorld(occurrence: adsk.fusion.Occurrence) -> adsk.core.Matrix3D:
     matrix = occurrence.transform2
     while occurrence.assemblyContext:
         matrix.transformBy(occurrence.assemblyContext.transform2)
@@ -229,7 +229,7 @@ def GetMatrixWorld(occurrence: adsk.fusion.Occurrence) -> adsk.core.Matrix3D:
     return matrix
 
 
-def ParseBRep(
+def parseBRep(
     body: adsk.fusion.BRepBody,
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
@@ -262,7 +262,7 @@ def ParseBRep(
     return Ok(None)
 
 
-def ParseMesh(
+def parseMesh(
     meshBody: adsk.fusion.MeshBody,
     options: ExporterOptions,
     trimesh: assembly_pb2.TriangleMesh,
@@ -287,7 +287,7 @@ def ParseMesh(
     return Ok(None)
 
 
-def MapRigidGroups(rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints) -> None:
+def mapRigidGroups(rootComponent: adsk.fusion.Component, joints: joint_pb2.Joints) -> None:
     groups = rootComponent.allRigidGroups
     for group in groups:
         mira_group = joint_pb2.RigidGroup()
