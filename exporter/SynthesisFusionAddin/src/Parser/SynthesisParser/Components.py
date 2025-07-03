@@ -70,11 +70,11 @@ def mapAllComponents(
                     return fill_info_result
 
                 if isinstance(body, adsk.fusion.BRepBody):
-                    parse_result = ParseBRep(body, options, part_body.triangle_mesh)
+                    parse_result = parseBRep(body, options, part_body.triangle_mesh)
                     if parse_result.is_err() and parse_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                         return parse_result
                 else:
-                    parse_result = ParseMesh(body, options, part_body.triangle_mesh)
+                    parse_result = parseMesh(body, options, part_body.triangle_mesh)
                     if parse_result.is_err() and parse_result.unwrap_err()[1] == ErrorSeverity.Fatal:
                         return parse_result
 
@@ -180,7 +180,7 @@ def parseChildOccurrence(
     if occurrence.component.material:
         part.physical_material = occurrence.component.material.id
     else:
-        __: Err[None] = Err(f"Component Material is None", ErrorSeverity.Warning)
+        return Err(f"Component Material is None", ErrorSeverity.Fatal)
 
     def_map = partsData.part_definitions
 
@@ -196,7 +196,7 @@ def parseChildOccurrence(
 
     part.transform.spatial_matrix.extend(occurrence.transform.asArray())
 
-    worldTransform = GetMatrixWorld(occurrence)
+    worldTransform = getMatrixWorld(occurrence)
 
     if worldTransform:
         part.global_transform.spatial_matrix.extend(worldTransform.asArray())
