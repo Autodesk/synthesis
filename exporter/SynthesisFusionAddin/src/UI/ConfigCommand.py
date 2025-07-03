@@ -14,12 +14,14 @@ from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Parser import Parser
+from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
 from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.GeneralConfigTab import GeneralConfigTab
 from src.UI.Handlers import PersistentEventHandler
 from src.UI.JointConfigTab import JointConfigTab
+from src.Util import designMassCalculation, convertMassUnitsTo
 from src.Utils import fusionAddInUtils as futil
 from src.Utils.fusionAddInUtils import log
 
@@ -78,7 +80,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             palette = palettes.add(
                 id=PALETTE_ID,
                 name="Synthesis Exporter",
-                htmlFileURL="web/index.html",
+                htmlFileURL="web/dist/index.html",
                 isVisible=True,
                 showCloseButton=True,
                 isResizable=True,
@@ -90,7 +92,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             # futil.add_handler(palette.navigatingURL, palette_navigating)
             futil.add_handler(palette.incomingFromHTML, on_palette_message)
         palette.isVisible = True
-        palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
+        # palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
 
         global generalConfigTab
         generalConfigTab = GeneralConfigTab(args, exporterOptions)
@@ -147,22 +149,45 @@ def on_palette_message(html_args: adsk.core.HTMLEventArgs):
     data  = json.loads(html_args.data)
 
 
-    if html_args.action == "export":
+    if html_args.action == "init":
+        html_args.returnData = json.dumps({
+            "mass":convertMassUnitsTo(designMassCalculation()),
+        })
+    elif html_args.action == "export":
         export(data)
     elif html_args.action == "selectJoint":
         selection = gm.app.userInterface.selectEntity("Select Joints", "Joints")
         joint= adsk.fusion.Joint.cast(selection.entity)
+
         html_args.returnData = json.dumps({
-            "point": {
-                "x": selection.point.x,
-                "y": selection.point.y,
-                "z": selection.point.z,
-            },
             "name":joint.name,
             "type":selection.entity.objectType,
             "entityToken":joint.entityToken,
             "jointType":joint.jointMotion.jointType,
         })
+    elif html_args.action == "selectGamepiece":
+        selection = gm.app.userInterface.selectEntity("Select Gamepieces", "Occurrences")
+        gamepiece= adsk.fusion.Occurrence.cast(selection.entity)
+        physicalProps = gamepiece.component.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
+        response = {
+            "name":gamepiece.name,
+            "guid": guid_occurrence(gamepiece),
+            "entityToken":gamepiece.entityToken,
+            "mass": physicalProps.mass,
+
+            "entityIDs": [gamepiece.entityToken]
+        }
+        def addChildOccurrences(childOccurrences: adsk.fusion.OccurrenceList) -> None:
+            for occ in childOccurrences:
+                response["entityIDs"].append(occ.entityToken)
+
+                if occ.childOccurrences:
+                    addChildOccurrences(occ.childOccurrences)
+
+        if gamepiece.childOccurrences:
+            addChildOccurrences(gamepiece.childOccurrences)
+
+        html_args.returnData = json.dumps(response)
     else:
 
         gm.ui.messageBox(f"Event {html_args.action} arrived<span>{json.dumps(data, indent=2)}</span>")
