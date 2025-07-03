@@ -42,6 +42,7 @@ class MirabufParser {
     private _groundedNode: RigidNode | undefined
 
     private _gamePieces?: MirabufParser[]
+    private _isGamePiece: boolean
 
     public get errors() {
         return this._errors
@@ -80,12 +81,16 @@ class MirabufParser {
     public get gamePieces(): MirabufParser[] | undefined {
         return this._gamePieces
     }
+    public get isGamePiece(): boolean {
+        return this._isGamePiece
+    }
 
-    public constructor(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle) {
+    public constructor(assembly: mirabuf.Assembly, isGamePiece: boolean = false, progressHandle?: ProgressHandle) {
         this._assembly = assembly
         this._errors = new Array<ParseError>()
         this._globalTransforms = new Map()
         this._gamePieces = undefined
+        this._isGamePiece = isGamePiece
 
         progressHandle?.Update("Parsing assembly...", 0.3)
 
@@ -96,7 +101,7 @@ class MirabufParser {
 
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
-            this._gamePieces = this.PruneGamePieceNodes().map(assembly => new MirabufParser(assembly))
+            this._gamePieces = this.PruneGamePieceNodes().map(assembly => new MirabufParser(assembly, true))
         }
 
         // 2: Grounded joint
@@ -185,80 +190,101 @@ class MirabufParser {
         const gamePieces = Object.values(this._assembly.data!.parts!.partInstances!)
             .filter(inst => gamepieceDefinitions.has(inst.partDefinitionReference!))
             .map(inst => {
-                const instNode = this.BinarySearchDesignTree(inst.info!.GUID!)
+                // To fix the issue where some game  pieces are child nodes of others, iteratively search the designHierarchy then all the previously pruned gamepieces trees for the current node
+                const instNode = this.BinarySearchDesignTreePrune(inst.info!.GUID!)
                 if (instNode == null) {
+                    console.error("Failed to find Game piece in Design Tree")
                     this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
                     return
                 }
                 // TODO: Instead of marking them, separate them into a different body entirely
                 // Figure out what we actually need to return here
-                const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
-                gpRn.isGamePiece = true
-                this.MovePartToRigidNode(instNode!.value!, gpRn)
-                if (instNode.children)
-                    this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
 
-                // Create grounded joint
-                const jointDefinition = new mirabuf.joint.Joint({
-                    info: {
-                        GUID: GROUNDED_JOINT_ID,
-                        name: "grounded",
-                    },
-                    jointMotionType: mirabuf.joint.JointMotion.RIGID,
-                    origin: new mirabuf.Vector3(),
-                })
-                const jointInstance = new mirabuf.joint.JointInstance({
-                    isEndEffector: false,
-                    parentPart: "",
-                    jointReference: jointDefinition.info?.name,
-                    parts: { nodes: [instNode] },
-                })
+                // Trick to capture and delete references to gamePiece
+                // const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
+                // gpRn.isGamePiece = true
+                // this.MovePartToRigidNode(instNode!.value!, gpRn)
+                // if (instNode.children)
+                //     this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
+                // this.DeleteRigidNode(gpRn)
 
-                const joints = new mirabuf.joint.Joints({
-                    jointDefinitions: {
-                        [GROUNDED_JOINT_ID]: jointDefinition,
-                    },
-                    jointInstances: {
-                        [GROUNDED_JOINT_ID]: jointInstance,
-                    },
-                    rigidGroups: [],
-                    motorDefinitions: {},
-                })
+                // Delete partInstances
+                Object.entries(this._assembly.data?.parts?.partInstances!)
+                    .filter(([_key, subInst]) => inst === subInst)
+                    .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
-                const partDefinitionReference = inst?.partDefinitionReference ?? ""
-                const partDefinition = this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
+                // Delete partDefinitions
+                // Object.entries(this._assembly.data?.parts?.partDefinitions!)
+                //     .filter(([_key, subInst]) => inst === subInst)
+                //     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
 
-                const parts = new mirabuf.Parts({
-                    info: inst.info,
-                    partDefinitions: {
-                        [partDefinitionReference]: partDefinition,
-                    },
-                    partInstances: {
-                        [inst.info?.GUID ?? ""]: inst,
-                    },
-                })
-
-                const gamePieceAssembly = new mirabuf.Assembly({
-                    info: inst.info,
-                    data: {
-                        parts,
-                        joints,
-                        materials: this.assembly.data?.materials,
-                        signals: {},
-                    },
-                    dynamic: true,
-                    designHierarchy: { nodes: [instNode] },
-                    jointHierarchy: {},
-                    thumbnail: null,
-                })
-
-                return gamePieceAssembly
+                return this.PartInstance_Assembly(inst, instNode)
             })
             .filter(asm => asm != null)
 
         // TODO: Detatch game pieces from tree and remove part instances
+        console.log(`${gamePieces.length}`)
 
         return gamePieces
+    }
+
+    private PartInstance_Assembly(inst: mirabuf.IPartInstance, instNode: mirabuf.INode): mirabuf.Assembly {
+        // Create grounded joint
+        const jointDefinition = new mirabuf.joint.Joint({
+            info: {
+                GUID: GROUNDED_JOINT_ID,
+                name: "grounded",
+            },
+            jointMotionType: mirabuf.joint.JointMotion.RIGID,
+            origin: new mirabuf.Vector3(),
+        })
+        const jointInstance = new mirabuf.joint.JointInstance({
+            isEndEffector: false,
+            parentPart: "",
+            jointReference: jointDefinition.info?.name,
+            parts: { nodes: [instNode] },
+        })
+
+        const joints = new mirabuf.joint.Joints({
+            jointDefinitions: {
+                [GROUNDED_JOINT_ID]: jointDefinition,
+            },
+            jointInstances: {
+                [GROUNDED_JOINT_ID]: jointInstance,
+            },
+            rigidGroups: [],
+            motorDefinitions: {},
+        })
+
+        const partDefinitionReference = inst?.partDefinitionReference ?? ""
+        const partDefinition = this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
+
+        const parts = new mirabuf.Parts({
+            info: inst.info,
+            partDefinitions: {
+                [partDefinitionReference]: partDefinition,
+            },
+            partInstances: {
+                [inst.info?.GUID ?? ""]: inst,
+            },
+        })
+
+        console.log(inst.info?.name)
+        const gamePieceAssembly = new mirabuf.Assembly({
+            info: inst.info,
+            data: {
+                parts,
+                joints,
+                materials: this.assembly.data?.materials,
+                signals: {},
+            },
+            dynamic: true,
+            designHierarchy: { nodes: [instNode] },
+            jointHierarchy: {},
+            thumbnail: null,
+        })
+
+        return gamePieceAssembly
     }
 
     private BandageRigidNodes(assembly: mirabuf.Assembly) {
@@ -314,6 +340,13 @@ class MirabufParser {
         const node = new RigidNode(`${this._nodeNameCounter++}${suffix ?? ""}`)
         this._rigidNodes.push(node)
         return node
+    }
+
+    private DeleteRigidNode(node: RigidNode) {
+        const index = this._rigidNodes.indexOf(node)
+        if (index != -1 && index != null) {
+            this._rigidNodes.splice(index)
+        }
     }
 
     private MergeRigidNodes(rnA: RigidNode, rnB: RigidNode) {
@@ -440,7 +473,10 @@ class MirabufParser {
         return Math.floor((h + l) / 2.0)
     }
 
-    private BinarySearchDesignTree(target: string): mirabuf.INode | null {
+    /**
+     * Old functon, replaced with BinarySearchDesignTreePrune, but has potentially useful functionality on its own
+     */
+    private _BinarySearchDesignTree(target: string): mirabuf.INode | null {
         let node = this._designHierarchyRoot
         const targetValue = this._partTreeValues.get(target)!
 
@@ -451,6 +487,29 @@ class MirabufParser {
         }
 
         return node.value! == target ? node : null
+    }
+
+    private BinarySearchDesignTreePrune(target: string): mirabuf.INode | null {
+        let parent = this._designHierarchyRoot
+        let node = this._designHierarchyRoot
+        const targetValue = this._partTreeValues.get(target)!
+
+        while (node?.value != target && node?.children) {
+            const i = this.BinarySearchIndex(targetValue, node.children!)
+            const iValue = this._partTreeValues.get(node.children![i].value!)!
+            parent = node
+            node = node.children![i + (iValue < targetValue ? 1 : 0)]
+        }
+
+        if (node?.value! == target) {
+            const index = parent?.children?.indexOf(node)
+            if (index != -1 && index != null) {
+                // parent?.children?.splice(index)
+            }
+            return node
+        }
+
+        return null
     }
 
     private GenerateTreeValues() {

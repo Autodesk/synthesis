@@ -936,15 +936,14 @@ class PhysicsSystem extends WorldSystem {
 
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
-                if (partInstance.skipCollider) return
+                if (!partInstance || partInstance.skipCollider) return
 
                 const partDefinition =
-                    parser.assembly.data!.parts!.partDefinitions![partInstance.partDefinitionReference!]!
+                    parser.assembly.data!.parts!.partDefinitions![partInstance?.partDefinitionReference!]
 
                 const partShapeResult = rn.isDynamic
                     ? this.CreateConvexShapeSettingsFromPart(partDefinition)
                     : this.CreateConcaveShapeSettingsFromPart(partDefinition)
-                // const partShapeResult = this.CreateConvexShapeSettingsFromPart(partDefinition)
 
                 if (!partShapeResult) return
 
@@ -1552,7 +1551,7 @@ function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
     return nodes.filter(x => {
         for (const part of x.parts) {
-            const inst = mira.data!.parts!.partInstances![part]!
+            const inst = mira.data!.parts!.partInstances![part]! // undefined
             const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!
             if (def.bodies && def.bodies.length > 0) {
                 return true
