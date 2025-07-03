@@ -1,4 +1,5 @@
 import SimulationSystem from "./simulation/SimulationSystem"
+import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 
 export enum MatchModeType {
     Sandbox = 0,
@@ -16,11 +17,20 @@ class MatchMode {
     private timeLeft: number = 0
     private intervalId: number | null = null
 
+    // Match Mode Config
+    private autonomousTime: number = 15
+    private teleopTime: number = 135
+
     private constructor() {}
 
     static getInstance(): MatchMode {
         MatchMode.instance ??= new MatchMode()
         return MatchMode.instance
+    }
+
+    setMatchModeConfig(config: MatchModeConfig) {
+        this.autonomousTime = config.autonomousTime
+        this.teleopTime = config.teleopTime
     }
 
     startTimer(duration: number, openModal: (modalName: string) => void) {
@@ -46,13 +56,13 @@ class MatchMode {
     autonomousModeStart(openModal: (modalName: string) => void) {
         // TODO play the autonomous start sound
         this.matchModeType = MatchModeType.Autonomous
-        this.startTimer(15, openModal)
+        this.startTimer(this.autonomousTime, openModal)
     }
 
     teleopModeStart(openModal: (modalName: string) => void) {
         // TODO play the teleop start sound
         this.matchModeType = MatchModeType.Teleop
-        this.startTimer(135, openModal) // 2 minutes and 15 seconds
+        this.startTimer(this.teleopTime, openModal)
     }
 
     start(openModal: (modalName: string) => void) {
