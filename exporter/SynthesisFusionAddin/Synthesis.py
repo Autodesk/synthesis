@@ -141,6 +141,8 @@ def register_ui() -> None:
     gm.elements.append(websiteButton)
 
 
+# Transition AARD-1997: Should revisit this once we start working on a re-write.
+# Jank solution for now - Brandon
 @logFailure
 def reload() -> None:
     """Reloads the imports of sub modules of the Synthesis package.
