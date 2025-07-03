@@ -4,9 +4,17 @@ import { SynthesisIcons } from "../components/StyledComponents"
 import Button from "@/components/Button.tsx"
 import { useModalControlContext } from "../helpers/UseModalManager"
 import { Global_AddToast } from "@/components/GlobalUIControls.ts"
-import { SpawnCachedMira } from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import { SpawnCachedMira } from "@/ui/panels/mirabuf/ImportMirabufPanel";
+import { MiraType } from "@/mirabuf/MirabufLoader";
 import { GetCacheInfo } from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
-import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, {
+    backUpFields,
+    backUpRobots,
+    canOPFS,
+    MirabufCacheInfo,
+    MirabufRemoteInfo,
+} from "@/mirabuf/MirabufLoader"
+
 
 const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () => void }> = ({
     modalId,
@@ -38,18 +46,23 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
                     onClick={() => {
                         closeModal()
                         startSingleplayerCallback()
-                        const allFields = GetCacheInfo(MiraType.FIELD)
-                        const displayField = allFields.find(field => field.id === "1750390764392") // field name:
-                        const allRobots = GetCacheInfo(MiraType.ROBOT)
-                        const displayRobot = allRobots.find(robot => robot.id === "1750914383413")
+                        MirabufCachingService.CacheRemote("/api/mira/fields/FRC Field 2018_v13.mira", MiraType.FIELD)
+                            .then(cacheInfoField => {
+                                if (cacheInfoField) {
+                                    SpawnCachedMira(cacheInfoField, MiraType.FIELD)
+                                }
+                            })
+                        MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
+                            .then(cacheInfoRobot => {
+                                if (cacheInfoRobot) {
+                                    SpawnCachedMira(cacheInfoRobot, MiraType.ROBOT)
+                                }
+                            })
+                        
+                            
+                }
 
-                        if (displayField) {
-                            SpawnCachedMira(displayField, MiraType.FIELD)
-                            if (displayRobot) {
-                                SpawnCachedMira(displayRobot, MiraType.ROBOT)
-                            }
-                        }
-                    }}
+                    }
                     className="w-full my-1"
                 />
                 <Button
