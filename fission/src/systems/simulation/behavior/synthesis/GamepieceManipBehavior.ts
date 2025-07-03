@@ -9,6 +9,8 @@ class GamepieceManipBehavior extends Behavior {
     private _ejector: EjectorDriver
     private _intake: IntakeDriver
 
+    private _prevEjectPressed = false
+
     constructor(ejector: EjectorDriver, intake: IntakeDriver, brainIndex: number) {
         super([ejector, intake], [])
 
@@ -18,7 +20,13 @@ class GamepieceManipBehavior extends Behavior {
     }
 
     public Update(_: number): void {
-        this._ejector.value = InputSystem.getInput("eject", this._brainIndex)
+        const ejectPressed = InputSystem.getInput("eject", this._brainIndex) === 1
+
+        if (ejectPressed && !this._prevEjectPressed) this._ejector.value = 1
+        else this._ejector.value = 0
+
+        this._prevEjectPressed = ejectPressed
+
         this._intake.value = InputSystem.getInput("intake", this._brainIndex)
     }
 }

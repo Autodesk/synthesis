@@ -78,12 +78,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _fieldPreferences: FieldPreferences | undefined
 
+    private _ejectables: EjectableSceneObject[] = []
     private _intakeSensor?: IntakeSensorSceneObject
-    private _ejectable?: EjectableSceneObject
     private _scoringZones: ScoringZoneSceneObject[] = []
 
     private _nameTag: SceneOverlayTag | undefined
-
+    private _centerOfMassIndicator: THREE.Mesh | undefined
+    private _centerOfMassListenerUnsubscribe: (() => void) | undefined
     private _intakeActive = false
     private _ejectorActive = false
 
@@ -128,8 +129,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._fieldPreferences
     }
 
-    public get activeEjectable(): Jolt.BodyID | undefined {
-        return this._ejectable?.gamePieceBodyId
+    public get activeEjectables(): Jolt.BodyID[] {
+        return this._ejectables.map(e => e.gamePieceBodyId!)
     }
 
     public get miraType(): MiraType {
@@ -173,6 +174,26 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                     : this._brain instanceof WPILibBrain
                       ? "Magic"
                       : "Not Configured"
+            )
+            const material = new THREE.MeshBasicMaterial({
+                color: 0xff00ff, // purple
+                transparent: true,
+                opacity: 0.1,
+                wireframe: true,
+            })
+            material.depthTest = false
+            this._centerOfMassIndicator = new THREE.Mesh(new THREE.SphereGeometry(0.02), material)
+            this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+
+            World.SceneRenderer.scene.add(this._centerOfMassIndicator)
+
+            this._centerOfMassListenerUnsubscribe = PreferencesSystem.addPreferenceEventListener(
+                "ShowCenterOfMassIndicators",
+                e => {
+                    if (this._centerOfMassIndicator) {
+                        this._centerOfMassIndicator.visible = e.prefValue
+                    }
+                }
             )
         }
     }
@@ -268,10 +289,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             this._intakeSensor = undefined
         }
 
-        if (this._ejectable) {
-            World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
-            this._ejectable = undefined
-        }
+        this._ejectables.forEach(e => World.SceneRenderer.RemoveSceneObject(e.id))
 
         this._scoringZones.forEach(zone => World.SceneRenderer.RemoveSceneObject(zone.id))
         this._scoringZones = []
@@ -293,18 +311,28 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
         this._debugBodies?.clear()
         this._physicsLayerReserve?.Release()
-
+        this._centerOfMassIndicator?.geometry?.dispose()
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
+        }
+        if (this._centerOfMassListenerUnsubscribe) {
+            this._centerOfMassListenerUnsubscribe()
         }
     }
 
     public Eject() {
-        if (!this._ejectable) return
+        if (this._ejectables.length === 0) return
 
-        this._ejectable.Eject()
-        World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
-        this._ejectable = undefined
+        const order = this._ejectorPreferences?.ejectOrder
+        let ejectable: EjectableSceneObject | undefined
+
+        if (order === "FIFO") ejectable = this._ejectables.shift()
+        else ejectable = this._ejectables.pop()
+
+        if (!ejectable) return
+
+        ejectable.Eject()
+        World.SceneRenderer.RemoveSceneObject(ejectable.id)
     }
 
     private CreateMeshForShape(shape: Jolt.Shape): THREE.Mesh {
@@ -344,6 +372,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      * Matches mesh transforms to their Jolt counterparts.
      */
     public UpdateMeshTransforms() {
+        let weightedCOM = new JOLT.RVec3(0, 0, 0)
+        let totalMass = 0
         this._mirabufInstance.parser.rigidNodes.forEach(rn => {
             if (!this._mirabufInstance.meshes.size) return // if this.dispose() has been ran then return
             const body = World.PhysicsSystem.GetBody(this._mechanism.GetBodyByNodeId(rn.id)!)
@@ -368,7 +398,20 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 comMesh.position.setFromMatrixPosition(comTransform)
                 comMesh.rotation.setFromRotationMatrix(comTransform)
             }
+            if (this._centerOfMassIndicator) {
+                const inverseMass = body.GetMotionProperties().GetInverseMass()
+
+                if (inverseMass > 0) {
+                    const mass = 1 / inverseMass
+                    weightedCOM = weightedCOM.AddRVec3(body.GetCenterOfMassPosition().Mul(mass))
+                    totalMass += mass
+                }
+            }
         })
+        if (this._centerOfMassIndicator) {
+            const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
+            this._centerOfMassIndicator.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
+        }
     }
 
     public UpdateNodeParts(rn: RigidNodeReadOnly, transform: THREE.Matrix4) {
@@ -429,21 +472,26 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
     }
 
-    public SetEjectable(bodyId?: Jolt.BodyID, removeExisting: boolean = false): boolean {
-        if (this._ejectable) {
-            if (!removeExisting) return false
-
-            World.SceneRenderer.RemoveSceneObject(this._ejectable.id)
-            this._ejectable = undefined
-        }
-
-        if (!this._ejectorPreferences || !this._ejectorPreferences.parentNode || !bodyId) {
+    public SetEjectable(bodyId?: Jolt.BodyID): boolean {
+        // 1) still require you’ve configured an ejector
+        if (!this._ejectorPreferences?.parentNode || !bodyId) {
             console.log(`Configure an ejectable first.`)
             return false
         }
 
-        this._ejectable = new EjectableSceneObject(this, bodyId)
-        World.SceneRenderer.RegisterSceneObject(this._ejectable)
+        // 2) don’t exceed your configured maxPieces
+        const max = this._intakePreferences?.maxPieces ?? 1
+        if (this._ejectables.length >= max) return false
+
+        // 3) avoid duplicates
+        const key = bodyId.GetIndexAndSequenceNumber()
+        if (this._ejectables.some(e => e.gamePieceBodyId!.GetIndexAndSequenceNumber() === key)) {
+            return false
+        }
+
+        const ejectable = new EjectableSceneObject(this, bodyId)
+        this._ejectables.push(ejectable)
+        World.SceneRenderer.RegisterSceneObject(ejectable)
         return true
     }
 

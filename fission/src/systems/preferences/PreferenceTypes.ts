@@ -22,6 +22,7 @@ export type GlobalPreferences = {
     ShowViewCube: boolean
     MuteAllSound: boolean
     SFXVolume: number
+    ShowCenterOfMassIndicators: boolean
 }
 
 export type GlobalPreference = keyof GlobalPreferences
@@ -60,6 +61,7 @@ export const DefaultGlobalPreferences: GlobalPreferences = {
     ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
+    ShowCenterOfMassIndicators: false,
 }
 
 export type GraphicsPreferences = {
@@ -87,12 +89,14 @@ export type IntakePreferences = {
     zoneDiameter: number
     parentNode: string | undefined
     showZoneAlways: boolean
+    maxPieces: number
 }
 
 export type EjectorPreferences = {
     deltaTransformation: number[]
     ejectorVelocity: number
     parentNode: string | undefined
+    ejectOrder: "FIFO" | "LIFO"
 }
 
 /** The behavior types that can be sequenced. */
@@ -161,11 +165,13 @@ export function DefaultRobotPreferences(): RobotPreferences {
             zoneDiameter: 0.5,
             parentNode: undefined,
             showZoneAlways: false,
+            maxPieces: 1,
         },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             ejectorVelocity: 1,
             parentNode: undefined,
+            ejectOrder: "FIFO",
         },
         driveVelocity: 0,
         driveAcceleration: 0,
