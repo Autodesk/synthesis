@@ -87,15 +87,17 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u, pendingDeletes])
 
+        ;[...World.SceneRenderer.sceneObjects.values()].forEach(o => { if (o instanceof MirabufSceneObject) console.log(o.assemblyName) })
+
 
     const options = useMemo(() => {
-        const list = configurationType == ConfigurationType.ROBOT ? robots : ConfigurationType.FIELD ? fields : gamePieces
+        const list = configurationType == ConfigurationType.ROBOT ? robots : configurationType == ConfigurationType.FIELD ? fields : gamePieces
         return list
             .filter((assembly): assembly is MirabufSceneObject => assembly != null)
             .map(assembly => makeSelectionOption(configurationType, assembly))
     }, [configurationType, robots, fields])
 
-    /** Robot or field select menu */
+    /** Robot, game piece, or field select menu */
     return (
         <SelectMenu
             options={options}
@@ -237,7 +239,7 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({
 
     return (
         <SelectMenu
-            options={configurationType == ConfigurationType.ROBOT ? [...robotModes.values()] : configurationType == ConfigurationType.FIELD ? [...fieldModes.values()] : [...gamePieceModes.value()]}
+            options={configurationType == ConfigurationType.ROBOT ? [...robotModes.values()] : configurationType == ConfigurationType.FIELD ? [...fieldModes.values()] : [...gamePieceModes.values()]}
             onOptionSelected={val => {
                 onModeSelected((val as ConfigModeSelectionOption)?.configMode)
             }}

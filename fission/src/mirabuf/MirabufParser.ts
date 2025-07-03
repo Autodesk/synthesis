@@ -201,12 +201,12 @@ class MirabufParser {
                 // Figure out what we actually need to return here
 
                 // Trick to capture and delete references to gamePiece
-                // const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
-                // gpRn.isGamePiece = true
-                // this.MovePartToRigidNode(instNode!.value!, gpRn)
-                // if (instNode.children)
-                //     this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
-                // this.DeleteRigidNode(gpRn)
+                const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
+                gpRn.isGamePiece = true
+                this.MovePartToRigidNode(instNode!.value!, gpRn)
+                if (instNode.children)
+                    this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
+                this.DeleteRigidNode(gpRn)
 
                 // Delete partInstances
                 Object.entries(this._assembly.data?.parts?.partInstances!)
@@ -230,13 +230,15 @@ class MirabufParser {
 
     private PartInstance_Assembly(inst: mirabuf.IPartInstance, instNode: mirabuf.INode): mirabuf.Assembly {
         // Create grounded joint
+        // const v = inst.
+        // console.log(`${v?.toString()}`)
         const jointDefinition = new mirabuf.joint.Joint({
             info: {
                 GUID: GROUNDED_JOINT_ID,
                 name: "grounded",
             },
             jointMotionType: mirabuf.joint.JointMotion.RIGID,
-            origin: new mirabuf.Vector3(),
+            origin: new mirabuf.Vector3(), // this._assembly.data?.joints?.jointInstances?.[inst.joints?.[0]!].offset,
         })
         const jointInstance = new mirabuf.joint.JointInstance({
             isEndEffector: false,
