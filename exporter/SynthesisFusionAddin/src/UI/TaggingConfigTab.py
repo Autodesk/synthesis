@@ -10,7 +10,8 @@ logger = getLogger()
 class TaggingConfigTab:
     # stores the types of tags available for selection
     tagTypes = ["Softbody", "Rigid", "Chain", "Spring", "Rope"]
-    # TODO: Add a dict to hold the selections and their respective tags
+    tagMap: dict[str, str] = {}
+    tagList: list[str] = []
 
     taggingConfigTab: adsk.core.TabCommandInput
     taggingListTable: adsk.core.TableCommandInput
@@ -90,8 +91,8 @@ class TaggingConfigTab:
             tagBodySelection.clearSelection()
             tagBodySelection.setSelectionLimits(0)
             tagBodySelection.isEnabled = tagBodySelection.isVisible = False
-            self.taggingListTable.clearSelection()
-            self.tagTypeDropdown.selectedItem = None
+            for listItem in self.tagTypeDropdown.listItems:
+                listItem.isSelected = False
 
         else:
             tagBodySelection.isVisible = tagBodySelection.isEnabled = True
@@ -102,9 +103,6 @@ class TaggingConfigTab:
         self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
     ) -> None:
         commandInput = args.input
-        tagAddButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("tagAddButton")
-        tagRemoveButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("tagRemoveButton")
-        tagCancelButton: adsk.core.BoolValueCommandInput = globalCommandInputs.itemById("tagCancelButton")
         tagBodySelection: adsk.core.SelectionCommandInput = globalCommandInputs.itemById("tagBodySelect")
 
         if commandInput.id == "tagAddButton":
@@ -117,13 +115,17 @@ class TaggingConfigTab:
                 ui.messageBox("No tags to remove.")
                 return
 
-            self.taggingListTable.deleteRow(self.taggingListTable.selectedRow)
-            # TODO: Remove the tag from the dict
+            selectedRow = self.taggingListTable.selectedRow
+            if (selectedRow == 0): return
+
+            self.taggingListTable.deleteRow(selectedRow)
+            self.tagMap.pop(self.tagList[selectedRow - 1])
+            self.tagList.pop(selectedRow - 1)
 
         elif commandInput.id == "tagCancelButton":
             self.toggleSelecting(False)
 
-        elif tagBodySelection.selectionCount == 1 or self.tagTypeDropdown.selectedItem is not None:
+        elif tagBodySelection.selectionCount == 1 and self.tagTypeDropdown.selectedItem is not None:
             commandInputs = self.taggingConfigTab.commandInputs
             row = self.taggingListTable.rowCount
             bodyName = commandInputs.addTextBoxCommandInput(
@@ -137,7 +139,11 @@ class TaggingConfigTab:
             self.taggingListTable.addCommandInput(bodyName, row, 0)
             self.taggingListTable.addCommandInput(tagType, row, 1)
 
+            self.tagMap[tagBodySelection.selection(0).entity.entityToken] = self.tagTypeDropdown.selectedItem.name
+            self.tagList.append(tagBodySelection.selection(0).entity.entityToken)
+
             self.toggleSelecting(False)
 
-    # @logFailure
-    # def getTags(self) -> list:
+    @logFailure
+    def getTags(self) -> dict[str, str]:
+        return self.tagMap
