@@ -6,14 +6,7 @@ import { useModalControlContext } from "../helpers/UseModalManager"
 import { Global_AddToast } from "@/components/GlobalUIControls.ts"
 import { SpawnCachedMira } from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import { GetCacheInfo } from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
-import MirabufCachingService, {
-    backUpFields,
-    backUpRobots,
-    canOPFS,
-    MirabufCacheInfo,
-    MirabufRemoteInfo,
-} from "@/mirabuf/MirabufLoader"
+import MirabufCachingService from "@/mirabuf/MirabufLoader"
 
 const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () => void }> = ({
     modalId,
