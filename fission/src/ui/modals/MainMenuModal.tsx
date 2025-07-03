@@ -4,8 +4,8 @@ import { SynthesisIcons } from "../components/StyledComponents"
 import Button from "@/components/Button.tsx"
 import { useModalControlContext } from "../helpers/UseModalManager"
 import { Global_AddToast } from "@/components/GlobalUIControls.ts"
-import { SpawnCachedMira } from "@/ui/panels/mirabuf/ImportMirabufPanel";
-import { MiraType } from "@/mirabuf/MirabufLoader";
+import { SpawnCachedMira } from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import { GetCacheInfo } from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
 import MirabufCachingService, {
     backUpFields,
@@ -14,7 +14,6 @@ import MirabufCachingService, {
     MirabufCacheInfo,
     MirabufRemoteInfo,
 } from "@/mirabuf/MirabufLoader"
-
 
 const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () => void }> = ({
     modalId,
@@ -46,23 +45,22 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
                     onClick={() => {
                         closeModal()
                         startSingleplayerCallback()
-                        MirabufCachingService.CacheRemote("/api/mira/fields/FRC Field 2018_v13.mira", MiraType.FIELD)
-                            .then(cacheInfoField => {
-                                if (cacheInfoField) {
-                                    SpawnCachedMira(cacheInfoField, MiraType.FIELD)
-                                }
-                            })
-                        MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
-                            .then(cacheInfoRobot => {
+                        MirabufCachingService.CacheRemote(
+                            "/api/mira/fields/FRC Field 2018_v13.mira",
+                            MiraType.FIELD
+                        ).then(cacheInfoField => {
+                            if (cacheInfoField) {
+                                SpawnCachedMira(cacheInfoField, MiraType.FIELD)
+                            }
+                        })
+                        MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
+                            cacheInfoRobot => {
                                 if (cacheInfoRobot) {
                                     SpawnCachedMira(cacheInfoRobot, MiraType.ROBOT)
                                 }
-                            })
-                        
-                            
-                }
-
-                    }
+                            }
+                        )
+                    }}
                     className="w-full my-1"
                 />
                 <Button
