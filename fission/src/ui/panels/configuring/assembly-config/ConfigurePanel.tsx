@@ -318,7 +318,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
     useEffect(() => {
-        const allSchemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes") || []
+        const allSchemes = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
 
         const settings = popConfigurePanelSettings()

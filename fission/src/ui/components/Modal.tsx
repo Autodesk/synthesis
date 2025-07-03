@@ -14,6 +14,7 @@ type ModalProps = {
     onCancel?: () => void
     onMiddle?: () => void
     onAccept?: () => void
+    onClickAway?: () => void
     cancelName?: string
     middleName?: string
     acceptName?: string
@@ -37,6 +38,7 @@ const Modal: React.FC<ModalProps> = ({
     onCancel,
     onMiddle,
     onAccept,
+    onClickAway,
     cancelName,
     middleName,
     acceptName,
@@ -47,6 +49,7 @@ const Modal: React.FC<ModalProps> = ({
     middleBlocked = false,
     acceptBlocked = false,
     allowClickAway = true,
+
     className,
     contentClassName,
 }) => {
@@ -57,7 +60,10 @@ const Modal: React.FC<ModalProps> = ({
     return (
         <ClickAwayListener
             onClickAway={_ => {
-                if (allowClickAway) closeModal()
+                if (allowClickAway) {
+                    closeModal()
+                    onClickAway?.()
+                }
             }}
             key={modalId}
         >

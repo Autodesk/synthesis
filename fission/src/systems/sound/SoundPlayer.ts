@@ -25,9 +25,9 @@ export class SoundPlayer {
         if (audio == null) {
             audio = new Audio(filePath)
             SoundPlayer.audioElements.set(filePath, audio)
-            audio.volume = PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
+            audio.volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
                 ? 0
-                : clamp(PreferencesSystem.getGlobalPreference<number>("SFXVolume") / 100, 0, 1)
+                : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
         }
         return audio
     }
@@ -70,9 +70,9 @@ export class SoundPlayer {
     }
 
     public static changeVolume(): void {
-        const volume = PreferencesSystem.getGlobalPreference<boolean>("MuteAllSound")
+        const volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
             ? 0
-            : clamp(PreferencesSystem.getGlobalPreference<number>("SFXVolume") / 100, 0, 1)
+            : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
         SoundPlayer.audioElements.forEach(audio => (audio.volume = volume))
     }
 }
