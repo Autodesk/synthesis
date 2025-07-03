@@ -1,9 +1,10 @@
-This product bundles the following third-party assets:
+This product bundles the following third-party sound assets:
 
-* fission/src/assets/sound-files/checkdown.mp3
+* fission/src/assets/sound-files/checkdown.wav
 * fission/src/assets/sound-files/checkup.wav
-* fission/src/assets/sound-files/clickdown.mp3
-* fission/src/assets/sound-files/clickup.mp3
-* fission/src/asset/sound-files/DullClick.wav
-  Licensed under CC0 1.0
-  https://creativecommons.org/publicdomain/zero/1.0/
+* fission/src/assets/sound-files/clickdown.wav
+* fission/src/assets/sound-files/clickup.wav
+* fission/src/assets/sound-files/DullClick.wav
+
+All of the above files are licensed under the Creative Commons CC0 1.0 Universal Public Domain Dedication.
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
