@@ -3,9 +3,9 @@ name: Fusion - mypy Typing Validation
 on:
   workflow_dispatch: {}
   push:
-    branches: [prod, dev]
+    branches: [ prod, dev ]
   pull_request:
-    branches: [prod, dev]
+    branches: [ prod, dev ]
 
 jobs:
   mypy:
