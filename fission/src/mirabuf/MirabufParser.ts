@@ -215,7 +215,7 @@ class MirabufParser {
 
                 return this.PartInstance_Assembly(inst, instNode)
             })
-            .filter(asm => asm != null)
+            .filter(asm => asm != undefined)
 
         console.log(`${gamePieces.length}`)
 
@@ -225,22 +225,20 @@ class MirabufParser {
     /*
      * Right now, this function is tailored for game pieces; in the future it could be generalized
      */
-    private PartInstance_Assembly(inst: mirabuf.IPartInstance, instNode: mirabuf.INode): mirabuf.Assembly {
-        // Create grounded joint
-        // const v = inst.
-        // console.log(`${v?.toString()}`)
+    private PartInstance_Assembly(inst: mirabuf.IPartInstance, instNode: mirabuf.INode): mirabuf.Assembly | undefined {
         const jointDefinition = new mirabuf.joint.Joint({
             info: {
                 GUID: GROUNDED_JOINT_ID,
-                name: "grounded",
+                name: GROUNDED_JOINT_ID,
             },
             jointMotionType: mirabuf.joint.JointMotion.RIGID,
+            // Affects the placement of the joints, cannot affect the placement of the assembly in absolute space
             origin: new mirabuf.Vector3(), // this._assembly.data?.joints?.jointInstances?.[inst.joints?.[0]!].offset,
         })
         const jointInstance = new mirabuf.joint.JointInstance({
             isEndEffector: false,
             parentPart: "",
-            jointReference: jointDefinition.info?.name,
+            jointReference: jointDefinition.info?.GUID,
             parts: { nodes: [instNode] },
         })
 
@@ -255,7 +253,14 @@ class MirabufParser {
             motorDefinitions: {},
         })
 
-        const partDefinitionReference = inst?.partDefinitionReference ?? ""
+        const partDefinitionReference = inst?.partDefinitionReference
+        if (partDefinitionReference == null) {
+            this.NewError(
+                ParseErrorSeverity.Unimportable,
+                "Game piece partInstance does not reference a partDefinition"
+            )
+            return
+        }
         const partDefinition = this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
 
         const parts = new mirabuf.Parts({

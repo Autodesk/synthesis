@@ -170,36 +170,36 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.getPreferences()
 
-        // creating nametag for robots
-        if (this.miraType === MiraType.ROBOT) {
-            this._nameTag = new SceneOverlayTag(() =>
-                this._brain instanceof SynthesisBrain
-                    ? this._brain.inputSchemeName
-                    : this._brain instanceof WPILibBrain
-                      ? "Magic"
-                      : "Not Configured"
-            )
-            const material = new THREE.MeshBasicMaterial({
-                color: 0xff00ff, // purple
-                transparent: true,
-                opacity: 0.1,
-                wireframe: true,
-            })
-            material.depthTest = false
-            this._centerOfMassIndicator = new THREE.Mesh(new THREE.SphereGeometry(0.02), material)
-            this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
+        // Creating nametag for robots
+        if (this.miraType !== MiraType.ROBOT) return
 
-            World.SceneRenderer.scene.add(this._centerOfMassIndicator)
+        this._nameTag = new SceneOverlayTag(() =>
+            this._brain instanceof SynthesisBrain
+                ? this._brain.inputSchemeName
+                : this._brain instanceof WPILibBrain
+                  ? "Magic"
+                  : "Not Configured"
+        )
+        const material = new THREE.MeshBasicMaterial({
+            color: 0xff00ff, // purple
+            transparent: true,
+            opacity: 0.1,
+            wireframe: true,
+        })
+        material.depthTest = false
+        this._centerOfMassIndicator = new THREE.Mesh(new THREE.SphereGeometry(0.02), material)
+        this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
 
-            this._centerOfMassListenerUnsubscribe = PreferencesSystem.addPreferenceEventListener(
-                "ShowCenterOfMassIndicators",
-                e => {
-                    if (this._centerOfMassIndicator) {
-                        this._centerOfMassIndicator.visible = e.prefValue
-                    }
+        World.SceneRenderer.scene.add(this._centerOfMassIndicator)
+
+        this._centerOfMassListenerUnsubscribe = PreferencesSystem.addPreferenceEventListener(
+            "ShowCenterOfMassIndicators",
+            e => {
+                if (this._centerOfMassIndicator) {
+                    this._centerOfMassIndicator.visible = e.prefValue
                 }
-            )
-        }
+            }
+        )
     }
 
     public Setup(): void {
@@ -615,7 +615,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public getSupplierData(): ContextData {
-        const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
+        const data: ContextData = {
+            title:
+                this.miraType == MiraType.ROBOT
+                    ? "A Robot"
+                    : this.miraType == MiraType.PIECE
+                      ? "A Game Piece"
+                      : "A Field",
+            items: [],
+        }
 
         data.items.push(
             {
@@ -705,7 +713,7 @@ export async function CreateMirabuf(
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle
 ): Promise<{ mainSceneObject: MirabufSceneObject; gamePieces?: MirabufSceneObject[] } | null | undefined> {
-    const parser = new MirabufParser(assembly, progressHandle)
+    const parser = new MirabufParser(assembly, undefined, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
