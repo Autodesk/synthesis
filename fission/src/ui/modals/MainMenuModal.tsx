@@ -39,7 +39,7 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
                         closeModal()
                         startSingleplayerCallback()
                         MirabufCachingService.CacheRemote(
-                            "/api/mira/fields/FRC Field 2018_v13.mira",
+                            "/api/mira/fields/FRC Field 2023_v7.mira",
                             MiraType.FIELD
                         ).then(cacheInfoField => {
                             if (cacheInfoField) {
