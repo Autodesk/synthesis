@@ -10,11 +10,11 @@ import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Button from "@/ui/components/Button"
 
 export interface MatchModeConfig {
-    id: string
-    name: string
-    autonomousTime: number
-    teleopTime: number
-    endgameTime: number
+    id: string // Required
+    name: string // Required
+    autonomousTime: number // Optional, defaults to 15
+    teleopTime: number // Optional, defaults to 135
+    endgameTime: number // Optional, defaults to 20
 }
 
 function MatchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
@@ -121,62 +121,118 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }
 
     const validateMatchModeConfig = (config: unknown): config is MatchModeConfig => {
-        return (
-            typeof config === "object" &&
-            config !== null &&
-            typeof (config as Record<string, unknown>).id === "string" &&
-            typeof (config as Record<string, unknown>).name === "string" &&
-            typeof (config as Record<string, unknown>).autonomousTime === "number" &&
-            typeof (config as Record<string, unknown>).teleopTime === "number" &&
-            typeof (config as Record<string, unknown>).endgameTime === "number"
+        if (typeof config !== "object" || config === null) {
+            return false
+        }
+
+        const configObj = config as Record<string, unknown>
+
+        // Check required fields
+        if (typeof configObj.id !== "string") {
+            console.error("Match mode config validation failed: 'id' field is required and must be a string")
+            Global_AddToast?.("error", "Invalid Match Mode Config", "The 'id' field is required and must be a string")
+            return false
+        }
+
+        if (typeof configObj.name !== "string") {
+            console.error("Match mode config validation failed: 'name' field is required and must be a string")
+            Global_AddToast?.("error", "Invalid Match Mode Config", "The 'name' field is required and must be a string")
+            return false
+        }
+
+        // Check optional fields and provide defaults/warnings
+        const expectedFields = new Set(["id", "name", "autonomousTime", "teleopTime", "endgameTime"])
+        const actualFields = new Set(Object.keys(configObj))
+
+        // Check for missing optional fields
+        const missingFields = ["autonomousTime", "teleopTime", "endgameTime"].filter(
+            field => !(field in configObj) || typeof configObj[field] !== "number"
         )
+        if (missingFields.length > 0) {
+            console.warn(
+                `Match mode config '${configObj.name}' is missing or has invalid optional fields: ${missingFields.join(", ")}. Default values will be used.`
+            )
+            Global_AddToast?.(
+                "warning",
+                "Invalid Match Mode Config",
+                `The following optional fields are missing or invalid: ${missingFields.join(", ")}. Default values will be used.`
+            )
+        }
+
+        // Check for extra fields
+        const extraFields = [...actualFields].filter(field => !expectedFields.has(field))
+        if (extraFields.length > 0) {
+            console.warn(
+                `Match mode config '${configObj.name}' contains unexpected fields: ${extraFields.join(", ")}. These will be ignored.`
+            )
+            Global_AddToast?.(
+                "warning",
+                "Unexpected Fields in Match Mode Config",
+                `The following fields are unexpected and will be ignored: ${extraFields.join(", ")}`
+            )
+        }
+
+        return true
     }
 
-    const onInputChanged = async (e: ChangeEvent<HTMLInputElement>) => {
-        if (e.target.files) {
-            const file = e.target.files[0]
+    const handleFileUpload = async (file: File) => {
+        // Check if it's a JSON file
+        if (!file.name.toLowerCase().endsWith(".json")) {
+            Global_AddToast?.("error", "Invalid File Type", "Please select a JSON file")
+            return
+        }
 
-            // Check if it's a JSON file
-            if (!file.name.toLowerCase().endsWith(".json")) {
-                Global_AddToast?.("error", "Invalid File Type", "Please select a JSON file")
+        try {
+            // Read file content
+            const fileContent = await file.text()
+            const parsedConfig = JSON.parse(fileContent)
+
+            // Validate structure
+            if (!validateMatchModeConfig(parsedConfig)) {
+                Global_AddToast?.(
+                    "error",
+                    "Invalid Match Mode Config",
+                    "The JSON file does not match the required MatchModeConfig structure"
+                )
                 return
             }
 
-            try {
-                // Read file content
-                const fileContent = await file.text()
-
-                // Parse JSON
-                const parsedConfig = JSON.parse(fileContent)
-
-                // Validate structure
-                if (!validateMatchModeConfig(parsedConfig)) {
-                    Global_AddToast?.(
-                        "error",
-                        "Invalid Match Mode Config",
-                        "The JSON file does not match the required MatchModeConfig structure"
-                    )
-                    return
-                }
-
-                // Ensures that the config id is unique
-                if (matchModeConfigs.find(config => config.id === parsedConfig.id)) {
-                    Global_AddToast?.(
-                        "error",
-                        "Match Mode Config Already Exists",
-                        "There is already a match mode config with this ID"
-                    )
-                    return
-                }
-
-                // If validation passes, add to the list
-                setMatchModeConfigs(prev => [...prev, parsedConfig])
-
-                Global_AddToast?.("info", "Match Mode Config Added", `Successfully added "${parsedConfig.name}"`)
-            } catch (error) {
-                Global_AddToast?.("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
+            // Ensures that the config id is unique
+            if (matchModeConfigs.find(config => config.id === parsedConfig.id)) {
+                console.error(
+                    `Match mode config validation failed: A config with id '${parsedConfig.id}' already exists`
+                )
+                Global_AddToast?.(
+                    "error",
+                    "Match Mode Config Already Exists",
+                    "There is already a match mode config with this ID"
+                )
+                return
             }
+
+            // If validation passes, normalize the config with defaults for missing fields
+            const normalizedConfig: MatchModeConfig = {
+                id: parsedConfig.id,
+                name: parsedConfig.name,
+                autonomousTime: typeof parsedConfig.autonomousTime === "number" ? parsedConfig.autonomousTime : 15,
+                teleopTime: typeof parsedConfig.teleopTime === "number" ? parsedConfig.teleopTime : 135,
+                endgameTime: typeof parsedConfig.endgameTime === "number" ? parsedConfig.endgameTime : 20,
+            }
+
+            setMatchModeConfigs(prev => [...prev, normalizedConfig])
+
+            Global_AddToast?.("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
+        } catch (error) {
+            Global_AddToast?.("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
         }
+    }
+
+    const onInputChanged = async (e: ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            await handleFileUpload(e.target.files[0])
+        }
+        // Reset the input value so the same file can be selected again
+        e.target.value = ""
     }
 
     return (
