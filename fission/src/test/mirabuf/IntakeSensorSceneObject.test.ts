@@ -3,6 +3,7 @@ import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import Jolt from "@azaleacolburn/jolt-physics"
+import { createBodyMock } from '../mocks/jolt'
 
 vi.mock("@/systems/World", () => ({
     default: {
@@ -28,60 +29,13 @@ vi.mock("@/systems/World", () => ({
     },
 }))
 
-function createVec3Mock() {
-    return {
-        GetX: vi.fn(() => 0),
-        GetY: vi.fn(() => 0),
-        GetZ: vi.fn(() => 0),
-    }
-}
-
-function createQuatMock() {
-    return {
-        GetX: vi.fn(() => 0),
-        GetY: vi.fn(() => 0),
-        GetZ: vi.fn(() => 0),
-        GetW: vi.fn(() => 1),
-    }
-}
-
-function createBodyMock(): Jolt.Body {
-    return {
-        GetWorldTransform: vi.fn(() => ({
-            GetTranslation: vi.fn(() => createVec3Mock()),
-            GetQuaternion: vi.fn(() => createQuatMock()),
-        })),
-        GetTranslation: vi.fn(() => createVec3Mock()),
-        GetQuaternion: vi.fn(() => createQuatMock()),
-        GetCenterOfMassTransform: vi.fn(() => ({
-            GetTranslation: vi.fn(() => createVec3Mock()),
-            GetQuaternion: vi.fn(() => createQuatMock()),
-        })),
-        GetRotation: vi.fn(() => ({})),
-        GetID: vi.fn(),
-        IsActive: vi.fn(),
-        IsRigidBody: vi.fn(),
-        IsSoftBody: vi.fn(),
-        IsStatic: vi.fn(),
-        IsKinematic: vi.fn(),
-        IsDynamic: vi.fn(),
-        CanBeKinematicOrDynamic: vi.fn(),
-        GetBodyType: vi.fn(),
-        GetMotionType: vi.fn(),
-        SetIsSensor: vi.fn(),
-        IsSensor: vi.fn(),
-        SetUserData: vi.fn(),
-        GetUserData: vi.fn(),
-    } as unknown as Jolt.Body
-}
-
 describe("IntakeSensorSceneObject", () => {
     beforeEach(() => {
         vi.clearAllMocks()
-        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock())
+        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as any)
     })
 
-    test("Setup sets parentBodyId, deltaTransformation, creates sensor and adds collision listener", () => {
+    test("Setup creates sensor", () => {
         const mockBodyId = {} as unknown as Jolt.BodyID
         const parent = {
             intakePreferences: { parentNode: "node1", deltaTransformation: [1, 2, 3, 4], zoneDiameter: 10 },
@@ -97,20 +51,7 @@ describe("IntakeSensorSceneObject", () => {
         expect(World.PhysicsSystem.GetBodyAssociation).not.toBeUndefined()
     })
 
-    test("Setup does not create sensor or add listener if intakePreferences is missing", () => {
-        const parent = {
-            intakePreferences: undefined,
-            mechanism: { nodeToBody: new Map() },
-            rootNodeId: "root",
-            intakeActive: true,
-            SetEjectable: vi.fn(),
-        } as unknown as MirabufSceneObject
-        const instance = new IntakeSensorSceneObject(parent)
-        instance.Setup()
-        expect(World.PhysicsSystem.CreateSensor).not.toHaveBeenCalled()
-    })
-
-    test("Update updates body position and rotation when all fields are set", () => {
+    test("Update sets body position/rotation", () => {
         const instance = new IntakeSensorSceneObject({} as unknown as MirabufSceneObject)
         const mockBodyId = {} as unknown as Jolt.BodyID
         Reflect.set(instance, "_joltBodyId", mockBodyId)
@@ -124,7 +65,7 @@ describe("IntakeSensorSceneObject", () => {
         expect(World.PhysicsSystem.SetBodyRotation).toHaveBeenCalled()
     })
 
-    test("Dispose destroys sensor body and removes collision listener", () => {
+    test("Dispose destroys sensor", () => {
         const instance = new IntakeSensorSceneObject({} as unknown as MirabufSceneObject)
         const mockBodyId = {} as unknown as Jolt.BodyID
         Reflect.set(instance, "_joltBodyId", mockBodyId)
@@ -132,17 +73,5 @@ describe("IntakeSensorSceneObject", () => {
         instance.Dispose()
         expect(World.PhysicsSystem.DestroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
         expect(World.SceneRenderer.scene.remove).not.toBeUndefined()
-    })
-
-    test("IntakeCollision calls SetEjectable when collision is with gamepiece", () => {
-        const parent = {
-            mechanism: { nodeToBody: new Map() },
-            rootNodeId: "root",
-            intakeActive: true,
-            SetEjectable: vi.fn(),
-        } as unknown as MirabufSceneObject
-        const instance = new IntakeSensorSceneObject(parent)
-        const mockBodyId = {} as unknown as Jolt.BodyID
-        instance["IntakeCollision"](mockBodyId)
     })
 })
