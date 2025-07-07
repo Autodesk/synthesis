@@ -1,7 +1,7 @@
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
 import { SectionLabel, SynthesisIcons, PositiveButton, SectionDivider } from "@/ui/components/StyledComponents"
-import Label, { LabelSize } from "@/components/Label"
+import { LabelSize } from "@/components/Label"
 import { Box } from "@mui/material"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import MatchMode from "@/systems/MatchMode"
@@ -14,6 +14,7 @@ export interface MatchModeConfig {
     name: string
     autonomousTime: number
     teleopTime: number
+    endgameTime: number
 }
 
 function MatchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
@@ -126,7 +127,8 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             typeof (config as Record<string, unknown>).id === "string" &&
             typeof (config as Record<string, unknown>).name === "string" &&
             typeof (config as Record<string, unknown>).autonomousTime === "number" &&
-            typeof (config as Record<string, unknown>).teleopTime === "number"
+            typeof (config as Record<string, unknown>).teleopTime === "number" &&
+            typeof (config as Record<string, unknown>).endgameTime === "number"
         )
     }
 

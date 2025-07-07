@@ -2,5 +2,6 @@
   "id": "Match-Test",
   "name": "Match Test",
   "autonomousTime": 5,
-  "teleopTime": 15
+  "teleopTime": 15,
+  "endgameTime": 5
 }

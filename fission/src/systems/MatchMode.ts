@@ -21,12 +21,19 @@ class MatchMode {
     // Match Mode Config
     private autonomousTime: number = 15
     private teleopTime: number = 135
+    private endgameTime: number = 20
 
     private constructor() {}
 
     static getInstance(): MatchMode {
         MatchMode.instance ??= new MatchMode()
         return MatchMode.instance
+    }
+
+    setMatchModeConfig(config: MatchModeConfig) {
+        this.autonomousTime = config.autonomousTime
+        this.teleopTime = config.teleopTime
+        this.endgameTime = config.endgameTime
     }
 
     startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
@@ -44,7 +51,7 @@ class MatchMode {
             }
 
             // Checks if endgame has started
-            if (this.matchModeType === MatchModeType.Teleop && this.timeLeft == 20) {
+            if (this.matchModeType === MatchModeType.Teleop && this.timeLeft == this.endgameTime) {
                 this.endgameStart()
             }
 
