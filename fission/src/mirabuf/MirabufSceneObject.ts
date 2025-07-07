@@ -202,9 +202,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 const body2 = event.message.body2
 
                 if (body1.GetIndexAndSequenceNumber() === this.GetRootNodeId()?.GetIndexAndSequenceNumber()) {
-                    this.RobotCollision(body2)
+                    this.RecordRobotCollision(body2)
                 } else if (body2.GetIndexAndSequenceNumber() === this.GetRootNodeId()?.GetIndexAndSequenceNumber()) {
-                    this.RobotCollision(body1)
+                    this.RecordRobotCollision(body1)
                 }
             }
             OnContactAddedEvent.AddListener(this._collision)
@@ -765,7 +765,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return data
     }
 
-    private RobotCollision(collision: Jolt.BodyID) {
+    private RecordRobotCollision(collision: Jolt.BodyID) {
         const objectCollidedWith = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(collision)
         if (objectCollidedWith && objectCollidedWith.isGamePiece) {
             objectCollidedWith.robotLastInContactWith = this
