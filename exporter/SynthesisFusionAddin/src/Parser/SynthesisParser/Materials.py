@@ -42,7 +42,7 @@ def mapAllPhysicalMaterials(
 
         progressDialog.addMaterial(material.name)
         if progressDialog.wasCancelled():
-            raise RuntimeError("User canceled export")
+            return Err("User canceled export", ErrorSeverity.Fatal)
 
         newmaterial = materials.physicalMaterials[material.id]
         material_result = getPhysicalMaterialData(material, newmaterial, options)
@@ -187,7 +187,7 @@ def mapAllAppearances(
         # NOTE I'm not sure if this should be integrated with the error handling system or not, since it's fully intentional and immediantly aborts, which is the desired behavior
         # TODO Talk to Brandon about this
         if progressDialog.wasCancelled():
-            raise RuntimeError("User canceled export")
+            return Err("User canceled export", ErrorSeverity.Fatal)
 
         material = materials.appearances["{}_{}".format(appearance.name, appearance.id)]
         material_result = getMaterialAppearance(appearance, options, material)

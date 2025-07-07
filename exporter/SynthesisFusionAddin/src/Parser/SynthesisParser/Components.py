@@ -32,7 +32,7 @@ def mapAllComponents(
     for component in design.allComponents:
         adsk.doEvents()
         if progressDialog.wasCancelled():
-            raise RuntimeError("User canceled export")
+            return Err("User canceled export", ErrorSeverity.Fatal)
         progressDialog.addComponent(component.name)
 
         comp_ref = guid_component(component)
@@ -55,7 +55,7 @@ def mapAllComponents(
 
         def processBody(body: adsk.fusion.BRepBody | adsk.fusion.MeshBody) -> Result[None]:
             if progressDialog.wasCancelled():
-                raise RuntimeError("User canceled export")
+                return Err("User canceled export", ErrorSeverity.Fatal)
             if body.isLightBulbOn:
                 part_body = partDefinition.bodies.add()
 
@@ -120,7 +120,7 @@ def parseComponentRoot(
 
     for occur in component.occurrences:
         if progressDialog.wasCancelled():
-            raise RuntimeError("User canceled export")
+            return Err("User canceled export", ErrorSeverity.Fatal)
 
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()
@@ -199,7 +199,7 @@ def parseChildOccurrence(
 
     for occur in occurrence.childOccurrences:
         if progressDialog.wasCancelled():
-            raise RuntimeError("User canceled export")
+            return Err("User canceled export", ErrorSeverity.Fatal)
 
         if occur.isLightBulbOn:
             child_node = types_pb2.Node()

@@ -510,7 +510,7 @@ def buildJointPartHierarchy(
         # now add each wheel to the root I believe
 
         if progressDialog.wasCancelled():
-            raise RuntimeError("User canceled export")
+            return Err("User canceled export", ErrorSeverity.Fatal)
 
         return Ok(None)
 
@@ -524,7 +524,7 @@ def buildJointPartHierarchy(
 
 def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog: PDMessage) -> Result[None]:
     if progressDialog.wasCancelled():
-        raise RuntimeError("User canceled export")
+        return Err("User canceled export", ErrorSeverity.Fatal)
 
     if not simNode.joint:
         proto_joint = joints.joint_instances["grounded"]
@@ -557,9 +557,9 @@ def createTreeParts(
     relationship: RelationshipBase | None,
     node: types_pb2.Node,
     progressDialog: PDMessage,
-) -> None:
+) -> Result[None]:
     if progressDialog.wasCancelled():
-        raise RuntimeError("User canceled export")
+        return Err("User canceled export", ErrorSeverity.Fatal)
 
     # if it's the next part just exit early for our own sanity
     # This shouldn't be fatal nor even an error
