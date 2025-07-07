@@ -38,17 +38,17 @@ def mapAllComponents(
         comp_ref = guid_component(component)
 
         fill_info_result = fill_info(partsData, None)
-        if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        if fill_info_result.is_fatal():
             return fill_info_result
 
         partDefinition = partsData.part_definitions[comp_ref]
 
         fill_info_result = fill_info(partDefinition, component, comp_ref)
-        if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        if fill_info_result.is_fatal():
             return fill_info_result
 
         physical_properties_result = PhysicalProperties.getPhysicalProperties(component, partDefinition.physical_data)
-        if physical_properties_result.is_err() and physical_properties_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        if physical_properties_result.is_fatal():
             return physical_properties_result
 
         partDefinition.dynamic = options.exportMode != ExportMode.FIELD
@@ -60,7 +60,7 @@ def mapAllComponents(
                 part_body = partDefinition.bodies.add()
 
                 fill_info_result = fill_info(part_body, body)
-                if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+                if fill_info_result.is_fatal():
                     return fill_info_result
 
                 part_body.part = comp_ref
@@ -71,11 +71,11 @@ def mapAllComponents(
 
                 if isinstance(body, adsk.fusion.BRepBody):
                     parse_result = parseBRep(body, options, part_body.triangle_mesh)
-                    if parse_result.is_err() and parse_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+                    if parse_result.is_fatal():
                         return parse_result
                 else:
                     parse_result = parseMesh(body, options, part_body.triangle_mesh)
-                    if parse_result.is_err() and parse_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+                    if parse_result.is_fatal():
                         return parse_result
 
                 appearance_key = "{}_{}".format(body.appearance.name, body.appearance.id)
@@ -89,11 +89,11 @@ def mapAllComponents(
 
         for body in component.bRepBodies:
             process_result = processBody(body)
-            if process_result.is_err() and process_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+            if process_result.is_fatal():
                 return process_result
         for body in component.meshBodies:
             process_result = processBody(body)
-            if process_result.is_err() and process_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+            if process_result.is_fatal():
                 return process_result
 
     return Ok(None)
@@ -114,7 +114,7 @@ def parseComponentRoot(
     node.value = mapConstant
 
     fill_info_result = fill_info(part, component, mapConstant)
-    if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+    if fill_info_result.is_fatal():
         return fill_info_result
 
     def_map = partsData.part_definitions
@@ -161,7 +161,7 @@ def parseChildOccurrence(
     node.value = mapConstant
 
     fill_info_result = fill_info(part, occurrence, mapConstant)
-    if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+    if fill_info_result.is_fatal():
         return fill_info_result
 
     collision_attr = occurrence.attributes.itemByName("synthesis", "collision_off")
@@ -248,7 +248,7 @@ def parseBRep(
         return Err(f"Failed to calculate mesh for {body.name}", ErrorSeverity.Error)
 
     fill_info_result = fill_info(trimesh, body)
-    if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+    if fill_info_result.is_fatal():
         return fill_info_result
 
     trimesh.has_volume = True
@@ -272,7 +272,7 @@ def parseMesh(
         return Err("Component Mesh was None", ErrorSeverity.Fatal)
 
     fill_info_result = fill_info(trimesh, meshBody)
-    if fill_info_result.is_err() and fill_info_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+    if fill_info_result.is_fatal():
         return fill_info_result
 
     trimesh.has_volume = True

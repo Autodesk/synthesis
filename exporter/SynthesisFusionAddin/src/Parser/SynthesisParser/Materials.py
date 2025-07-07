@@ -33,7 +33,7 @@ def mapAllPhysicalMaterials(
     progressDialog: PDMessage,
 ) -> Result[None]:
     set_result = setDefaultMaterial(materials.physicalMaterials["default"], options)
-    if set_result.is_err() and set_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+    if set_result.is_fatal():
         return set_result
 
     for material in physicalMaterials:
@@ -46,7 +46,7 @@ def mapAllPhysicalMaterials(
 
         newmaterial = materials.physicalMaterials[material.id]
         material_result = getPhysicalMaterialData(material, newmaterial, options)
-        if material_result.is_err() and material_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        if material_result.is_fatal():
             return material_result
 
     return Ok(None)
@@ -174,7 +174,7 @@ def mapAllAppearances(
     # in case there are no appearances on a body
     # this is just a color tho
     set_default_result = setDefaultAppearance(materials.appearances["default"])
-    if set_default_result.is_err() and set_default_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+    if set_default_result.is_fatal():
         return set_default_result
 
     fill_info_result = fill_info(materials, None)
@@ -191,7 +191,7 @@ def mapAllAppearances(
 
         material = materials.appearances["{}_{}".format(appearance.name, appearance.id)]
         material_result = getMaterialAppearance(appearance, options, material)
-        if material_result.is_err() and material_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        if material_result.is_fatal():
             return material_result
 
     return Ok(None)

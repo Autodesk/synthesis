@@ -29,7 +29,7 @@ class Result(Generic[T]):
     ## Example
     ```py
     foo_result = foo()
-    if foo_result.is_err() and foo_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+    if foo_result.is_fatal():
         return foo_result
     ```
 
@@ -41,6 +41,9 @@ class Result(Generic[T]):
 
     def is_err(self) -> bool:
         return isinstance(self, Err)
+
+    def is_fatal(self) -> bool:
+        return self.is_err() and self.unwrap_err()[1] == ErrorSeverity.Fatal
 
     def unwrap(self) -> T:
         if self.is_ok():

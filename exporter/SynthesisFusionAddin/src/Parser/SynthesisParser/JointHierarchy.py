@@ -337,7 +337,7 @@ class JointParser:
                 simNode.edges.append(edge)
 
                 recurse_result = self._recurseLink(connectedAxis)
-                if recurse_result.is_err() and recurse_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+                if recurse_result.is_fatal():
                     return recurse_result
         return Ok(None)
 
@@ -404,7 +404,7 @@ class JointParser:
             populate_result = self._populateNode(
                 occurrence, node, OccurrenceRelationship.TRANSFORM, is_ground=is_ground
             )
-            if populate_result.is_err() and populate_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+            if populate_result.is_fatal():
                 return populate_result
 
         # if not is_ground:  # THIS IS A BUG - OCCURRENCE ACCESS VIOLATION
@@ -433,7 +433,7 @@ class JointParser:
                             (OccurrenceRelationship.CONNECTION if rigid else OccurrenceRelationship.NEXT),
                             is_ground=is_ground,
                         )
-                        if populate_result.is_err() and populate_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+                        if populate_result.is_fatal():
                             return populate_result
             else:
                 # Check if this joint occurance violation is really a fatal error or just something we should filter on
@@ -496,7 +496,7 @@ def buildJointPartHierarchy(
         rootSimNode = jointParser.groundSimNode
 
         populate_joint_result = populateJoint(rootSimNode, joints, progressDialog)
-        if populate_joint_result.is_err() and populate_joint_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        if populate_joint_result.is_fatal():
             return populate_joint_result
 
         # 1. Get Node
@@ -547,7 +547,7 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
     # next in line to be populated
     for edge in simNode.edges:
         populate_joint_result = populateJoint(cast(SimulationNode, edge.node), joints, progressDialog)
-        if populate_joint_result.is_err() and populate_joint_result.unwrap_err()[1] == ErrorSeverity.Fatal:
+        if populate_joint_result.is_fatal():
             return populate_joint_result
     return Ok(None)
 
