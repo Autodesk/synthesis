@@ -98,6 +98,21 @@ class TaggingConfigTab:
             tagBodySelection.isVisible = tagBodySelection.isEnabled = True
             tagBodySelection.setSelectionLimits(0, 1)
 
+    def addTag(self, body: adsk.fusion.BRepBody, tag: str) -> None:
+        commandInputs = self.taggingConfigTab.commandInputs
+        row = self.taggingListTable.rowCount
+        bodyName = commandInputs.addTextBoxCommandInput(
+            f"bodyName_{row}", "Body Name", body.name, 1, True
+        )
+        tagType = commandInputs.addTextBoxCommandInput(f"tagType_{row}", "Tag Type", tag, 1, True)
+
+        row = self.taggingListTable.rowCount
+        self.taggingListTable.addCommandInput(bodyName, row, 0)
+        self.taggingListTable.addCommandInput(tagType, row, 1)
+
+        self.tagMap[body.entityToken] = tag
+        self.tagList.append(body.entityToken)
+
     @logFailure
     def handleInputChanged(
         self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
@@ -116,7 +131,8 @@ class TaggingConfigTab:
                 return
 
             selectedRow = self.taggingListTable.selectedRow
-            if (selectedRow == 0): return
+            if selectedRow == 0:
+                return
 
             self.taggingListTable.deleteRow(selectedRow)
             self.tagMap.pop(self.tagList[selectedRow - 1])
@@ -126,22 +142,7 @@ class TaggingConfigTab:
             self.toggleSelecting(False)
 
         elif tagBodySelection.selectionCount == 1 and self.tagTypeDropdown.selectedItem is not None:
-            commandInputs = self.taggingConfigTab.commandInputs
-            row = self.taggingListTable.rowCount
-            bodyName = commandInputs.addTextBoxCommandInput(
-                f"bodyName_{row}", "Body Name", tagBodySelection.selection(0).entity.name, 1, True
-            )
-            tagType = commandInputs.addTextBoxCommandInput(
-                f"tagType_{row}", "Tag Type", self.tagTypeDropdown.selectedItem.name, 1, True
-            )
-
-            row = self.taggingListTable.rowCount
-            self.taggingListTable.addCommandInput(bodyName, row, 0)
-            self.taggingListTable.addCommandInput(tagType, row, 1)
-
-            self.tagMap[tagBodySelection.selection(0).entity.entityToken] = self.tagTypeDropdown.selectedItem.name
-            self.tagList.append(tagBodySelection.selection(0).entity.entityToken)
-
+            self.addTag(tagBodySelection.selection(0).entity, self.tagTypeDropdown.selectedItem.name)
             self.toggleSelecting(False)
 
     @logFailure

@@ -126,6 +126,12 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             if len(fusionJoints):
                 jointConfigTab.addWheel(fusionJoints[0], wheel)
 
+        if len(exporterOptions.tags):
+            for token, tag in exporterOptions.tags.items():
+                fusionBody = design.findEntityByToken(token)
+                if len(fusionBody):
+                    taggingConfigTab.addTag(fusionBody[0], tag)
+
         getAuth()
         user_info = getUserInfo()
         apsSettings = INPUTS_ROOT.addTabCommandInput(
@@ -161,6 +167,7 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
 
         selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
         selectedGamepieces = gamepieceConfigTab.getGamepieces()
+        selectedTags = taggingConfigTab.getTags()
 
         exporterOptions = ExporterOptions(
             savepath,
@@ -170,6 +177,7 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             joints=selectedJoints,
             wheels=selectedWheels,
             gamepieces=selectedGamepieces,
+            tags=selectedTags,
             robotWeight=generalConfigTab.robotWeight,
             autoCalcRobotWeight=generalConfigTab.autoCalculateWeight,
             autoCalcGamepieceWeight=gamepieceConfigTab.autoCalculateWeight,

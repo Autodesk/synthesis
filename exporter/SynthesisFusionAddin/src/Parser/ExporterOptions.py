@@ -42,7 +42,7 @@ class ExporterOptions:
     wheels: list[Wheel] = field(default_factory=list)
     joints: list[Joint] = field(default_factory=list)
     gamepieces: list[Gamepiece] = field(default_factory=list)
-    tags: list[str] = field(default_factory=list)
+    tags: dict[str, str] = field(default_factory=dict)
     robotWeight: KG = field(default=KG(0.0))
     autoCalcRobotWeight: bool = field(default=False)
     autoCalcGamepieceWeight: bool = field(default=False)
