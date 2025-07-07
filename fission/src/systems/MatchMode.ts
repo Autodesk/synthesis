@@ -11,6 +11,7 @@ export enum MatchModeType {
 class MatchMode {
     private static instance: MatchMode
     private matchEnabled: boolean = false
+    private endgame: boolean = false
     private matchModeType: MatchModeType = MatchModeType.Sandbox
 
     private initialTime: number = 0
@@ -28,27 +29,28 @@ class MatchMode {
         return MatchMode.instance
     }
 
-    setMatchModeConfig(config: MatchModeConfig) {
-        this.autonomousTime = config.autonomousTime
-        this.teleopTime = config.teleopTime
-    }
-
-    startTimer(duration: number, openModal: (modalName: string) => void) {
+    startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
         this.initialTime = duration
         this.timeLeft = duration
 
         // Dispatch an event to update the time left in the UI
-        new UpdateTimeLeft(this.initialTime).Dispatch()
+        if (updateTimeLeft) new UpdateTimeLeft(this.initialTime).Dispatch()
 
         this.intervalId = window.setInterval(() => {
             this.timeLeft--
 
-            if (this.timeLeft > 0) {
+            if (this.timeLeft >= 0 && updateTimeLeft) {
                 new UpdateTimeLeft(this.timeLeft).Dispatch()
             }
 
+            // Checks if endgame has started
+            if (this.matchModeType === MatchModeType.Teleop && this.timeLeft == 20) {
+                this.endgameStart()
+            }
+
             if (this.timeLeft <= 0) {
-                this.stop(openModal)
+                clearInterval(this.intervalId as number)
+                functionCall()
             }
         }, 1000)
     }
@@ -56,13 +58,19 @@ class MatchMode {
     autonomousModeStart(openModal: (modalName: string) => void) {
         // TODO play the autonomous start sound
         this.matchModeType = MatchModeType.Autonomous
-        this.startTimer(this.autonomousTime, openModal)
+        this.startTimer(this.autonomousTime, () => this.teleopModeStart(openModal))
     }
 
     teleopModeStart(openModal: (modalName: string) => void) {
         // TODO play the teleop start sound
         this.matchModeType = MatchModeType.Teleop
-        this.startTimer(this.teleopTime, openModal)
+        this.startTimer(this.teleopTime, () => this.matchEnded(openModal)) // 2 minutes and 15 seconds
+    }
+
+    endgameStart() {
+        // TODO play the endgame start sound
+        console.log("Endgame started")
+        this.endgame = true
     }
 
     start(openModal: (modalName: string) => void) {
@@ -71,17 +79,12 @@ class MatchMode {
         SimulationSystem.ResetScores()
     }
 
-    stop(openModal: (modalName: string) => void) {
+    matchEnded(openModal: (modalName: string) => void) {
+        // TODO play the match end sound
         clearInterval(this.intervalId as number)
-        if (this.matchModeType === MatchModeType.Autonomous) {
-            // Autonomous Mode Ended, Start Teleop Mode
-            this.teleopModeStart(openModal)
-        } else {
-            // Teleop Mode Ended, Match Ended
-            this.matchEnabled = false
-            this.matchModeType = MatchModeType.MatchEnded
-            if (openModal) openModal("match-results")
-        }
+        this.matchEnabled = false
+        this.matchModeType = MatchModeType.MatchEnded
+        if (openModal) openModal("match-results")
     }
 
     sandboxModeStart() {
@@ -95,6 +98,10 @@ class MatchMode {
 
     isMatchEnabled(): boolean {
         return this.matchEnabled
+    }
+
+    isEndgame(): boolean {
+        return this.endgame
     }
 
     getMatchModeType(): MatchModeType {
