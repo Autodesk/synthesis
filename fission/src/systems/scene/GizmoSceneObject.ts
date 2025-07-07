@@ -83,7 +83,7 @@ class GizmoSceneObject extends SceneObject {
     public Setup(): void {
         // adding the mesh and gizmo to the scene
         World.SceneRenderer.AddObject(this._obj)
-        World.SceneRenderer.AddObject(this._gizmo)
+        World.SceneRenderer.AddObject(this._gizmo.getHelper())
 
         // forcing the gizmo to rotate and transform with the object
         this._gizmo.setSpace("local")
@@ -152,7 +152,7 @@ class GizmoSceneObject extends SceneObject {
     }
 
     public Update(): void {
-        this._gizmo.updateMatrixWorld()
+        this._gizmo.getHelper().updateMatrixWorld()
 
         if (!this.gizmo.object) {
             console.error("No object added to gizmo")
@@ -184,7 +184,7 @@ class GizmoSceneObject extends SceneObject {
         this._gizmo.detach()
         this._parentObject?.EnablePhysics()
         World.SceneRenderer.RemoveObject(this._obj)
-        World.SceneRenderer.RemoveObject(this._gizmo)
+        World.SceneRenderer.RemoveObject(this._gizmo.getHelper())
 
         this._relativeTransformations?.clear()
     }
