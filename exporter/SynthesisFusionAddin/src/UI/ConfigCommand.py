@@ -25,10 +25,8 @@ from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
 from src.UI.Handlers import PersistentEventHandler
-from src.UI.JointConfigTab import JointConfigTab
 from src.Util import designMassCalculation, convertMassUnitsTo
 from src.Utils import fusionAddInUtils as futil
-from src.Utils.fusionAddInUtils import log
 
 generalConfigTab: GeneralConfigTab.GeneralConfigTab
 jointConfigTab: JointConfigTab.JointConfigTab
