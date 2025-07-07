@@ -1,6 +1,6 @@
 import { beforeEach, test, describe, assert, expect, vi } from "vitest"
 import InputSystem, { AxisInput, ButtonInput, EmptyModifierState, ModifierState } from "@/systems/input/InputSystem"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
