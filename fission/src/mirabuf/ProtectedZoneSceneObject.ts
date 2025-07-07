@@ -52,6 +52,8 @@ class ProtectedZoneSceneObject extends SceneObject {
 
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
 
+    private lastRobotCollisionTime: number = 0
+
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
         super()
 
@@ -124,23 +126,28 @@ class ProtectedZoneSceneObject extends SceneObject {
                     if (collisionObjectBody1.alliance === collisionObjectBody2.alliance) return
                     // Ensure that both bodies are robots are inside the zone
                     if (
-                        (this._robotsInside.get(collisionObjectBody1) ?? 0 - Date.now() > 500) &&
-                        (this._robotsInside.get(collisionObjectBody2) ?? 0 - Date.now() > 500)
+                        Date.now() - (this._robotsInside.get(collisionObjectBody1) ?? 0) > 500 ||
+                        Date.now() - (this._robotsInside.get(collisionObjectBody2) ?? 0) > 500
                     ) {
-                        // Penalize the robot that entered the opposing alliance protected zone
-                        if (collisionObjectBody1.alliance === this._prefs?.alliance) {
-                            SimulationSystem.RobotPenalty(
-                                collisionObjectBody2,
-                                this._prefs?.penaltyPoints ?? 0,
-                                `Touched robot in protected zone`
-                            )
-                        } else {
-                            SimulationSystem.RobotPenalty(
-                                collisionObjectBody1,
-                                this._prefs?.penaltyPoints ?? 0,
-                                `Touched robot in protected zone`
-                            )
-                        }
+                        return
+                    }
+                    // Ensures that infinite collisions do not occur
+                    if (Date.now() - this.lastRobotCollisionTime < 1000) return
+                    this.lastRobotCollisionTime = Date.now()
+
+                    // Penalize the robot that entered the opposing alliance protected zone
+                    if (collisionObjectBody1.alliance === this._prefs?.alliance) {
+                        SimulationSystem.RobotPenalty(
+                            collisionObjectBody2,
+                            this._prefs?.penaltyPoints ?? 0,
+                            `Touched robot in protected zone`
+                        )
+                    } else {
+                        SimulationSystem.RobotPenalty(
+                            collisionObjectBody1,
+                            this._prefs?.penaltyPoints ?? 0,
+                            `Touched robot in protected zone`
+                        )
                     }
                 }
                 OnContactAddedEvent.AddListener(this._collision)
