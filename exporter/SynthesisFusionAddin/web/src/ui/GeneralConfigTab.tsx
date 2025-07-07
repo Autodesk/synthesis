@@ -1,9 +1,8 @@
 import * as React from "react"
 import { type ChangeEvent } from "react"
-import type { ExporterConfig } from "../lib/types.ts"
+import { ExportLocation, ExportMode, type GeneralConfig } from "../lib/types.ts"
 import {
     Box,
-    Button,
     Collapse,
     InputAdornment,
     List,
@@ -24,32 +23,27 @@ import ArchiveIcon from "@mui/icons-material/Archive"
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import TuneIcon from "@mui/icons-material/Tune"
 import LaunchIcon from "@mui/icons-material/Launch"
-import DownloadIcon from "@mui/icons-material/Download"
-import {sendData} from "../lib";
 
 interface ConfigTabProps {
-    config: ExporterConfig
-    updateConfigItem: <K extends keyof ExporterConfig>(key: K, value: ExporterConfig[K]) => void
+    config: GeneralConfig
+    updateConfigItem: <K extends keyof GeneralConfig>(key: K, value: GeneralConfig[K]) => void
 }
 function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.ReactElement {
-    function updateSelect<K extends keyof ExporterConfig>(key: K) {
+    function updateSelect<K extends keyof GeneralConfig>(key: K) {
         return (
             e:
-                | ChangeEvent<Omit<HTMLInputElement, "value"> & { value: ExporterConfig[K] }>
-                | (Event & { target: { value: ExporterConfig[K] } })
+                | ChangeEvent<Omit<HTMLInputElement, "value"> & { value: GeneralConfig[K] }>
+                | (Event & { target: { value: GeneralConfig[K] } })
         ) => {
             updateConfigItem(key, e.target.value)
         }
     }
 
-    function updateLiteral<K extends keyof ExporterConfig>(key: K) {
-        return (_: Event | ChangeEvent, v: ExporterConfig[K]) => {
+    function updateLiteral<K extends keyof GeneralConfig>(key: K) {
+        return (_: Event | ChangeEvent, v: GeneralConfig[K]) => {
             updateConfigItem(key, v)
         }
     }
-    sendData("init", undefined).then((data) => {
-      updateConfigItem("calculatedWeight", data?.mass ?? 0)
-    })
 
     return (
         <>
@@ -60,9 +54,12 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                             <AnimationIcon />
                         </ListItemIcon>
                         <ListItemText primary={"Exporter Mode"} secondary="Does this object move dynamically?" />
-                        <Select value={config.mode} onChange={updateSelect("mode")} style={{ minWidth: "10rem" }}>
-                            <MenuItem value={"ROBOT"}>Dynamic</MenuItem>
-                            <MenuItem value={"FIELD"}>Static</MenuItem>
+                        <Select
+                            value={config.exportMode}
+                            onChange={updateSelect("exportMode")}
+                            style={{ minWidth: "10rem" }}>
+                            <MenuItem value={ExportMode.ROBOT}>Dynamic</MenuItem>
+                            <MenuItem value={ExportMode.FIELD}>Static</MenuItem>
                         </Select>
                     </ListItem>
                     <ListItem>
@@ -74,11 +71,11 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                             secondary="Where should the exported file be saved?"
                         />
                         <Select
-                            value={config.destination}
-                            onChange={updateSelect("destination")}
+                            value={config.exportLocation}
+                            onChange={updateSelect("exportLocation")}
                             style={{ minWidth: "10rem" }}>
-                            <MenuItem value={"UPLOAD"}>Upload to APS</MenuItem>
-                            <MenuItem value={"DOWNLOAD"}>Download</MenuItem>
+                            <MenuItem value={ExportLocation.UPLOAD}>Upload to APS</MenuItem>
+                            <MenuItem value={ExportLocation.DOWNLOAD}>Download</MenuItem>
                         </Select>
                     </ListItem>
                     <ListItem>
@@ -91,38 +88,43 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                         />
                         <Switch
                             edge="end"
-                            onChange={updateLiteral("autoCalculateRobotWeight")}
-                            checked={config.autoCalculateRobotWeight}
+                            onChange={(_, v) => {
+                                updateConfigItem("autoCalcRobotWeight", v)
+                                if (v) {
+                                    updateConfigItem("robotWeight", config.calculatedRobotWeight)
+                                }
+                            }}
+                            checked={config.autoCalcRobotWeight}
                         />
                     </ListItem>
-                        <ListItem>
-                            <ListItemIcon></ListItemIcon>
-                            <ListItemText
-                                inset
-                                primary="Robot Weight"
-                                secondary="Manually provided robot weight value (kg)"
-                            />
-                            <TextField
-                                placeholder="0.0"
-                                type="number"
-                                disabled={config.autoCalculateRobotWeight}
-                                slotProps={{
-                                    htmlInput: {
-                                        min: 0,
-                                        step: 1,
-                                    },
-                                    input: {
-                                        endAdornment: <InputAdornment position="end">kg</InputAdornment>,
-                                    },
-                                }}
-                                size="small"
-                                style={{ minWidth: "10rem" }}
-                                onChange={e => {
-                                    updateConfigItem("userDefinedWeight", safeParseFloat(e.target.value) ?? 0)
-                                }}
-                                value={config.autoCalculateRobotWeight ? config.calculatedWeight : config.userDefinedWeight}
-                            />
-                        </ListItem>
+                    <ListItem>
+                        <ListItemIcon></ListItemIcon>
+                        <ListItemText
+                            inset
+                            primary="Robot Weight"
+                            secondary="Manually provided robot weight value (kg)"
+                        />
+                        <TextField
+                            placeholder="0.0"
+                            type="number"
+                            disabled={config.autoCalcRobotWeight}
+                            slotProps={{
+                                htmlInput: {
+                                    min: 0,
+                                    step: 1,
+                                },
+                                input: {
+                                    endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+                                },
+                            }}
+                            size="small"
+                            style={{ minWidth: "10rem" }}
+                            onChange={e => {
+                                updateConfigItem("robotWeight", safeParseFloat(e.target.value) ?? 0)
+                            }}
+                            value={config.robotWeight}
+                        />
+                    </ListItem>
                     <ListItem>
                         <ListItemIcon>
                             <ArchiveIcon />
@@ -150,11 +152,11 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                         />
                         <Switch
                             edge="end"
-                            onChange={updateLiteral("overrideFriction")}
-                            checked={config.overrideFriction}
+                            onChange={updateLiteral("frictionOverride")}
+                            checked={config.frictionOverride}
                         />
                     </ListItem>
-                    <Collapse in={config.overrideFriction}>
+                    <Collapse in={config.frictionOverride}>
                         <ListItem dense>
                             <ListItemIcon></ListItemIcon>
                             {/*<ListItemText inset primary="Friction Coefficient" secondary="From 0 (ice) to 1 (rubber)."/>*/}
@@ -163,8 +165,8 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                                 max={1}
                                 step={0.01}
                                 style={{ minWidth: "10rem", marginLeft: "2rem" }}
-                                onChange={updateLiteral("userDefinedFriction")}
-                                value={config.userDefinedFriction}
+                                onChange={updateLiteral("frictionOverrideCoeff")}
+                                value={config.frictionOverrideCoeff}
                             />
                             <TextField
                                 placeholder="0.0"
@@ -180,11 +182,11 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                                 style={{ paddingLeft: "2rem", minWidth: "5rem" }}
                                 onChange={e => {
                                     updateConfigItem(
-                                        "userDefinedFriction",
-                                        safeParseFloat(e.target.value) ?? config.userDefinedFriction
+                                        "frictionOverrideCoeff",
+                                        safeParseFloat(e.target.value) ?? config.frictionOverrideCoeff
                                     )
                                 }}
-                                value={config.userDefinedFriction}
+                                value={config.frictionOverrideCoeff}
                             />
                         </ListItem>
                     </Collapse>
@@ -198,14 +200,11 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                         />
                         <Switch
                             edge="end"
-                            onChange={updateLiteral("openSynthesisWhenDone")}
-                            checked={config.openSynthesisWhenDone}
+                            onChange={updateLiteral("openSynthesisUponExport")}
+                            checked={config.openSynthesisUponExport}
                         />
                     </ListItem>
                 </List>
-                <Button fullWidth style={{ marginTop: "3rem" }} variant="contained" startIcon={<DownloadIcon />}>
-                    Export
-                </Button>
             </Box>
         </>
     )

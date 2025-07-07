@@ -11,18 +11,18 @@ declare global {
         }
     }
 }
-export {}
 
-console.log("TEST")
+type Empty = Record<PropertyKey, never>
 interface Messages {
-    selectJoint: [undefined, FusionJoint]
-    selectGamepiece: [undefined, FusionGamepiece]
-    export: [ExporterConfig, undefined]
-    init: [undefined, { mass: number }]
+    selectJoint: [Empty, FusionJoint]
+    selectGamepiece: [Empty, FusionGamepiece]
+    export: [ExporterConfig, Empty]
+    init: [Empty, { calculatedMass: number; options: ExporterConfig }]
 }
+
 export async function sendData<A extends keyof Messages>(
     action: A,
-    body: Messages[A][0]
+    body: Messages[A][0] & object
 ): Promise<Messages[A][1] | undefined> {
     const resp = await window.adsk.fusionSendData(action, JSON.stringify(body))
     try {
@@ -32,7 +32,8 @@ export async function sendData<A extends keyof Messages>(
         return undefined
     }
 }
-interface FusionJoint {
+
+export interface FusionJoint {
     entityToken: string
     name: string
     jointType: JointType
@@ -51,7 +52,7 @@ export async function selectJoint(): Promise<FusionJoint | undefined> {
             }, 2000)
         })
     }
-    return await sendData("selectJoint", undefined)
+    return await sendData("selectJoint", {})
 }
 
 export interface FusionGamepiece {
@@ -80,34 +81,12 @@ export async function selectGamepiece(): Promise<FusionGamepiece | undefined> {
             }, 2000)
         })
     }
-    return await sendData("selectGamepiece", undefined)
-}
-
-function updateMessage(messageString: string) {
-    // Message is sent from the add-in as a JSON string.
-    const messageData = JSON.parse(messageString)
-
-    // Update a paragraph with the data passed in.
-    document.getElementById("fusionMessage")!.innerHTML =
-        `<b>Your text</b>: ${messageData.myText} <br/>` +
-        `<b>Your expression</b>: ${messageData.myExpression} <br/>` +
-        `<b>Your value</b>: ${messageData.myValue}`
+    return await sendData("selectGamepiece", {})
 }
 
 window.fusionJavaScriptHandler = {
     handle: function (action, data) {
-        try {
-            if (action === "updateMessage") {
-                updateMessage(data)
-            } else if (action === "debugger") {
-                debugger
-            } else {
-                return `Unexpected command type: ${action}`
-            }
-        } catch (e) {
-            console.log(e)
-            console.log(`Exception caught with command: ${action}, data: ${data}`)
-        }
+        console.log({ action, data })
         return "OK"
     },
 }

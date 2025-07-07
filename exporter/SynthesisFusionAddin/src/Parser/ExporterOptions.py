@@ -10,7 +10,6 @@ from dataclasses import dataclass, field, fields
 
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
-
 from src import INTERNAL_ID
 from src.Logging import logFailure, timed
 from src.Types import (
@@ -75,8 +74,29 @@ class ExporterOptions:
 
     @logFailure
     @timed
+    def readFromJSON(self, data:dict) -> "ExporterOptions":
+        for field in fields(self):
+            attribute = data[field.name]
+            if attribute:
+                attrJsonData = makeObjectFromJson(type(field.type), attribute)
+                setattr(self, field.name, attrJsonData)
+
+        self.visualQuality = TriangleMeshQualityOptions.LowQualityTriangleMesh
+        return self
+
+    @logFailure
+    @timed
     def writeToDesign(self) -> None:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
             data = json.dumps(getattr(self, field.name), default=encodeNestedObjects, indent=4)
             designAttributes.add(INTERNAL_ID, field.name, data)
+
+    @logFailure
+    @timed
+    def writeToJson(self) -> any:
+        out = {}
+        for field in fields(self):
+            data = json.dumps(getattr(self, field.name), default=encodeNestedObjects, indent=4)
+            out[field.name] = json.loads(data)
+        return out

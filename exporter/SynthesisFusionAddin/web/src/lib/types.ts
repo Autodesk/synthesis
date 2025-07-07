@@ -1,15 +1,32 @@
-export interface ExporterConfig {
-    mode: "ROBOT" | "FIELD"
-    destination: "UPLOAD" | "DOWNLOAD"
-    autoCalculateRobotWeight: boolean
-    userDefinedWeight: number
-    calculatedWeight: number
-    compressOutput: boolean
-    exportAsPart: boolean
-    overrideFriction: boolean
-    userDefinedFriction: number
-    openSynthesisWhenDone: boolean
-    autoCalculateGamepieceWeight: boolean
+export type GeneralConfig = ExporterConfig & { calculatedRobotWeight: number }
+
+export function DefaultExporterConfig(): GeneralConfig {
+    return {
+        fileLocation: "",
+
+        gamepieces: [],
+        joints: [],
+        wheels: [],
+
+        materials: 0,
+        exportMode: ExportMode.ROBOT,
+        exportLocation: ExportLocation.UPLOAD,
+        autoCalcRobotWeight: true,
+        robotWeight: 0,
+        compressOutput: true,
+        exportAsPart: false,
+        frictionOverride: false,
+        frictionOverrideCoeff: 0.5,
+        autoCalcGamepieceWeight: true,
+        openSynthesisUponExport: false,
+
+        calculatedRobotWeight: 0,
+
+        hierarchy: ModelHierarchy.FusionAssembly,
+        physicalCalculationLevel: CalculationAccuracy.LowCalculationAccuracy,
+        physicalDepth: PhysicalDepth.AllOccurrence,
+        visualQuality: TriangleMeshQualityOptions.LowQualityTriangleMesh,
+    }
 }
 export interface Gamepiece {
     entityToken: string
@@ -18,6 +35,76 @@ export interface Gamepiece {
     calculatedMass: number
     entityIDs: string[]
     friction: number
+}
+
+export interface Joint {
+    id: string
+    name: string
+    type: JointType
+    parentNode: string
+    signalType: SignalType
+    speed: number
+    force: number
+    isWheel: boolean
+    wheelType: WheelType
+}
+
+export enum ExportLocation {
+    UPLOAD = 1,
+    DOWNLOAD,
+}
+
+export enum ExportMode {
+    ROBOT= 1,
+    FIELD,
+}
+export enum WheelType {
+    STANDARD=1,
+    OMNI,
+    MECANUM,
+}
+
+export enum CalculationAccuracy {
+    LowCalculationAccuracy = 0,
+    MediumCalculationAccuracy = 1,
+    HighCalculationAccuracy = 2,
+    VeryHighCalculationAccuracy = 3,
+}
+
+export enum TriangleMeshQualityOptions {
+    LowQualityTriangleMesh = 8,
+
+    NormalQualityTriangleMesh = 11,
+    HighQualityTriangleMesh = 13,
+    VeryHighQualityTriangleMesh = 15,
+}
+
+enum PhysicalDepth {
+    // No Physical Properties are generated
+    NoPhysical = 0,
+
+    // Only Body Physical Objects are generated
+    Body = 1,
+
+    // Only Occurrence that contain Bodies and Bodies have Physical Properties
+    SurfaceOccurrence = 2,
+
+    // Every Single Occurrence has Physical Properties even if empty
+    AllOccurrence = 3,
+}
+
+enum ModelHierarchy {
+    // Model exactly as it is shown in Fusion in the model view tree
+    FusionAssembly = 0,
+
+    // Flattened Assembly with all bodies as children of the root object
+    FlatAssembly = 1,
+
+    // A Model represented with parented objects that are part of a jointed tree
+    PhysicalAssembly = 2,
+
+    // Generates the root assembly as a single mesh and stores the associated data
+    SingleMesh = 3,
 }
 
 export enum SignalType {
@@ -34,31 +121,10 @@ export enum JointType {
     PlanarJointType,
     BallJointType,
 }
-export interface Joint {
-    id: string
-    name: string
-    type: JointType
-    parentNode: string
-    signalType: SignalType
-    speed: number
-    force: number
-    isWheel: boolean
-}
 
-export function DefaultExporterConfig(): ExporterConfig {
-    return {
-        mode: "ROBOT",
-        destination: "UPLOAD",
-        autoCalculateRobotWeight: true,
-        userDefinedWeight: 0,
-        compressOutput: true,
-        exportAsPart: false,
-        overrideFriction: false,
-        userDefinedFriction: 0,
-        calculatedWeight: 0,
-        autoCalculateGamepieceWeight: false,
-        openSynthesisWhenDone: false,
-    }
+export enum JointParentType {
+    ROOT,
+    END,
 }
 
 export type SelectionFilter =
@@ -101,3 +167,48 @@ export type SelectionFilter =
     | "Profiles"
     | "Texts"
     | "CustomGraphics"
+
+export interface ExporterConfig {
+    fileLocation: string
+    name?: string
+    version?: string
+    materials: number
+    exportMode: ExportMode
+    wheels: ExporterWheel[]
+    joints: ExporterJoint[]
+    gamepieces: ExporterGamepiece[]
+    robotWeight: number
+    autoCalcRobotWeight: boolean
+    autoCalcGamepieceWeight: boolean
+    frictionOverride: boolean
+    frictionOverrideCoeff: number
+    compressOutput: boolean
+    exportAsPart: boolean
+    exportLocation: ExportLocation
+    openSynthesisUponExport: boolean
+    hierarchy: ModelHierarchy
+    visualQuality: TriangleMeshQualityOptions
+    physicalDepth: PhysicalDepth
+    physicalCalculationLevel: CalculationAccuracy
+}
+
+interface ExporterJoint {
+    jointToken: string
+    parent: JointParentType
+    signalType: SignalType
+    speed: number
+    force: number
+    isWheel: boolean
+}
+
+interface ExporterGamepiece {
+    occurrenceToken: string
+    weight: number
+    friction: number
+}
+
+interface ExporterWheel {
+    jointToken: string
+    wheelType: WheelType
+    signalType: SignalType
+}

@@ -19,13 +19,14 @@ import DeleteIcon from "@mui/icons-material/Delete"
 
 import { useRef, useState } from "react"
 import { type FusionGamepiece, selectGamepiece } from "../lib"
-import { type ExporterConfig, type Gamepiece } from "../lib/types"
+import { type Gamepiece, type GeneralConfig } from "../lib/types"
+import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 
 interface GamepiecesConfigTabProps {
     gamepieces: Gamepiece[]
     updateGamepieces: (cb: (gamepieces: Gamepiece[]) => void) => void
-    config: ExporterConfig
-    updateConfigItem: <K extends keyof ExporterConfig>(key: K, value: ExporterConfig[K]) => void
+    config: GeneralConfig
+    updateConfigItem: <K extends keyof GeneralConfig>(key: K, value: GeneralConfig[K]) => void
     // updateJoint: <K extends keyof Joint>(index: number, key: K, value: Joint[K]) => void
     // removeJoint: (index: number) => void
 }
@@ -43,9 +44,9 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
             <FormControlLabel
                 control={<Switch />}
                 label="Automatically calculate gamepiece weight"
-                value={config.autoCalculateGamepieceWeight}
+                value={config.autoCalcGamepieceWeight}
                 onChange={(_, v) => {
-                    updateConfigItem("autoCalculateGamepieceWeight", v)
+                    updateConfigItem("autoCalcGamepieceWeight", v)
                 }}
             />
             <TableContainer component={Paper}>
@@ -74,41 +75,50 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                                     <TextField
                                         type="number"
                                         size="small"
-                                        disabled={config.autoCalculateGamepieceWeight}
+                                        disabled={config.autoCalcGamepieceWeight}
                                         slotProps={{
                                             input: {
                                                 endAdornment: <InputAdornment position="end">kg</InputAdornment>,
                                             },
                                         }}
-                                        value={config.autoCalculateGamepieceWeight ? gamepiece.calculatedMass : gamepiece.userDefinedMass}
+                                        value={
+                                            config.autoCalcGamepieceWeight
+                                                ? gamepiece.calculatedMass
+                                                : gamepiece.userDefinedMass
+                                        }
                                         onInput={e => {
-                                            updateItem(i, "userDefinedMass", parseFloat((e.target as HTMLInputElement).value) || 0)
+                                            updateItem(
+                                                i,
+                                                "userDefinedMass",
+                                                parseFloat((e.target as HTMLInputElement).value) || 0
+                                            )
                                         }}
                                     />
                                 </TableCell>
                                 <TableCell align="center">
                                     <Box display={"flex"} flexDirection={"row"}>
-
-                                    <Slider
-                                        min={0}
-                                        max={1}
-                                        step={0.01}
-                                        style={{  marginRight: "2rem" }}
-                                        onChange={(_, v) => {
-                                            updateItem(i, "friction", v)
-                                        }}
-                                        sx = {{flexBasis:"80%"}}
-                                        value={gamepiece.friction}
-                                    />
+                                        <Slider
+                                            min={0}
+                                            max={1}
+                                            step={0.01}
+                                            style={{ marginRight: "2rem" }}
+                                            onChange={(_, v) => {
+                                                updateItem(i, "friction", v)
+                                            }}
+                                            sx={{ flexBasis: "80%" }}
+                                            value={gamepiece.friction}
+                                        />
                                         <TextField
                                             type="number"
                                             size="small"
-                                            slotProps={{htmlInput: {
+                                            slotProps={{
+                                                htmlInput: {
                                                     step: 0.05,
-                                                    min:0,
-                                                    max:1
-                                                }}}
-                                            sx = {{flexBasis:"20%"}}
+                                                    min: 0,
+                                                    max: 1,
+                                                },
+                                            }}
+                                            sx={{ flexBasis: "20%" }}
                                             value={gamepiece.friction}
                                             onInput={e => {
                                                 updateItem(
@@ -161,11 +171,17 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
 
                         setSelectingActive(false)
                         if (data == null) return
+                        if (gamepieces.some(gamepiece => gamepiece.entityIDs.includes(data.entityToken))) {
+                            console.warn("attempted to add existing element")
+                            Global_SetAlert("warning", "Component already added")
+                            return
+                        }
                         updateGamepieces(draft => {
+                            const roundedMass = Math.round(data.mass * 100) / 100
                             draft.push({
                                 ...data,
-                                userDefinedMass:data.mass,
-                                calculatedMass:data.mass,
+                                userDefinedMass: roundedMass,
+                                calculatedMass: roundedMass,
                                 friction: 0.5,
                             })
                         })

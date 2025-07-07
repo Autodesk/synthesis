@@ -6,6 +6,7 @@ from enum import Enum, EnumType
 from typing import Any, TypeAlias, get_args, get_origin
 
 import adsk.fusion
+from src.Utils.fusionAddInUtils import log
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
@@ -100,6 +101,7 @@ def encodeNestedObjects(obj: Any) -> Any:
     elif hasattr(obj, "__dict__"):
         return {key: encodeNestedObjects(value) for key, value in obj.__dict__.items()}
     else:
+        log(obj)
         assert isinstance(obj, PRIMITIVES)
         return obj
 

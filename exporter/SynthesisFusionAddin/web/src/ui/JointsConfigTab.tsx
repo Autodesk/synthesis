@@ -19,8 +19,9 @@ import DeleteIcon from "@mui/icons-material/Delete"
 import revoluteIcon from "../../../src/Resources/JointIcons/JointRev/32x32.png"
 import sliderIcon from "../../../src/Resources/JointIcons/JointSlider/32x32.png"
 import { useRef, useState } from "react"
-import { selectJoint } from "../lib"
-import { type Joint, JointType, SignalType } from "../lib/types"
+import { type FusionJoint, selectJoint } from "../lib"
+import { type Joint, JointType, SignalType, WheelType } from "../lib/types"
+import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 
 const jointInfo: Partial<Record<JointType, { icon: string; name: string; speedUnits: string }>> = {
     [JointType.RevoluteJointType]: {
@@ -223,15 +224,19 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                         setSelectingJoint(true)
                         // const data = await initiateSelection("Select joint")
 
-                        const data: any = await new Promise(async resolve => {
+                        const data: FusionJoint | undefined = await new Promise(async resolve => {
                             jointCancelCallback.current = () => {
-                                resolve(null)
+                                resolve(undefined)
                             }
-                            resolve(await selectJoint("Select joint"))
+                            resolve(await selectJoint())
                         })
 
                         setSelectingJoint(false)
                         if (data == null) return
+                        if (joints.some(joint => joint.id == data.entityToken)) {
+                            Global_SetAlert("warning", "Joint already selected")
+                            return
+                        }
                         updateJoints(draft => {
                             draft.push({
                                 id: data.entityToken,
@@ -242,6 +247,7 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                                 speed: 0,
                                 force: 0,
                                 isWheel: false,
+                                wheelType: WheelType.STANDARD,
                             })
                         })
                     }}>
@@ -258,6 +264,43 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                     Cancel
                 </Button>
             </Box>
+            {joints.filter(j => j.isWheel).length} Wheels
+            <TableContainer component={Paper}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ width: "5%" }} align="center">
+                                Joint
+                            </TableCell>
+                            <TableCell sx={{ width: "10%" }} align="center">
+                                Type
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {joints.filter((j) => j.isWheel).map((joint, i) => (
+                            <TableRow key={joint.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                                {/*<TableCell>{jointInfo[row.type]?.name}</TableCell>*/}
+                                <TableCell align="center">{joint.name}</TableCell>
+                                <TableCell align="center">
+                                    <Select
+                                        size="small"
+                                        value={joint.wheelType}
+                                        onChange={e => {
+                                            updateJoint(i, "wheelType", e.target.value)
+                                        }}
+                                        fullWidth>
+                                        <MenuItem value={WheelType.STANDARD}>Standard</MenuItem>
+                                        <MenuItem value={WheelType.MECANUM}>Mecanum</MenuItem>
+                                        <MenuItem value={WheelType.OMNI}>Omni</MenuItem>
+                                    </Select>
+                                </TableCell>
+
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
         </>
     )
 }
