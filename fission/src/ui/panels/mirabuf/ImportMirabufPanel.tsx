@@ -87,16 +87,17 @@ function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
         canOPFS
             ? MirabufCachingService.GetCacheMap(miraType)
             : miraType == MiraType.ROBOT
-              ? backUpRobots
-              : miraType == MiraType.FIELD
-                ? backUpFields
-                : backUpPieces
+                ? backUpRobots
+                : miraType == MiraType.FIELD
+                    ? backUpFields
+                    : backUpPieces
     )
 }
 
 function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     if (type == MiraType.FIELD) {
         World.SceneRenderer.RemoveAllFields()
+        World.SceneRenderer.RemoveAllGamePieces()
     }
 
     progressHandle ??= new ProgressHandle(info.name ?? info.cacheKey)

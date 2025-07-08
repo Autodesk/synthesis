@@ -392,6 +392,14 @@ class SceneRenderer extends WorldSystem {
         }
     }
 
+    public RemoveAllGamePieces() {
+        for (const [id, obj] of this._sceneObjects) {
+            if (obj instanceof MirabufSceneObject && obj.miraType == MiraType.PIECE) {
+                this.RemoveSceneObject(id)
+            }
+        }
+    }
+
     public CreateSphere(radius: number, material?: THREE.Material | undefined): THREE.Mesh {
         const geo = new THREE.SphereGeometry(radius)
         if (material) {
