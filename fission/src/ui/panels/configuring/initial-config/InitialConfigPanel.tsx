@@ -5,7 +5,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "../assembly-config/ConfigurationType"
 import { setSelectedScheme } from "../assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelection from "./InputSchemeSelection"
@@ -15,10 +15,15 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import Button from "@/components/Button"
+import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import Label from "@/ui/components/Label"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
+    const [alliance, setAlliance] = useState<Alliance>("red")
 
     const targetAssembly = useMemo(() => {
         return getSpotlightAssembly()
@@ -44,6 +49,9 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
+            targetAssembly.alliance = alliance
+            SimulationSystem.AddPerRobotScore(targetAssembly, 0) // Initialize score for the robot
+
             setSelectedConfigurationType(ConfigurationType.ROBOT)
             const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
 
@@ -54,14 +62,12 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
             setSelectedScheme(scheme)
-        } else if (targetAssembly?.miraType === MiraType.FIELD) {
-            setSelectedConfigurationType(ConfigurationType.FIELD)
         } else {
-            setSelectedConfigurationType(ConfigurationType.PIECES)
+            setSelectedConfigurationType(ConfigurationType.FIELD)
         }
 
         closePanel(panelId)
-    }, [closePanel, panelId, targetAssembly])
+    }, [closePanel, panelId, alliance, targetAssembly])
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) {
@@ -91,7 +97,22 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
-                {targetAssembly?.miraType !== MiraType.PIECE ? (
+                {targetAssembly?.miraType === MiraType.ROBOT ? (
+                    <div>
+                        <Label>Alliance: </Label>
+                        {/** Set the alliance color */}
+                        <Button
+                            value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
+                            onClick={() => {
+                                setAlliance(alliance == "blue" ? "red" : "blue")
+                            }}
+                            colorOverrideClass={`bg-match-${alliance}-alliance`}
+                        />
+                    </div>
+                ) : (
+                    <></>
+                )}
+                {targetAssembly ? (
                     <TransformGizmoControl
                         key={"init-config-gizmo"}
                         defaultMode="translate"

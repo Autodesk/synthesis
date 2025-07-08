@@ -11,9 +11,9 @@ export function clamp(num: number, min: number, max: number): number {
     return Math.min(Math.max(num, min), max)
 }
 
-export function* inspect<T>(iterable: Iterable<T>, fn: (item: T) => void): IterableIterator<T> {
-    for (const item of iterable) {
-        fn(item) // side effect
-        yield item // pass the item along unchanged
-    }
+export function findListDifference<T>(previousList: T[], currentList: T[]): { added: T[]; removed: T[] } {
+    const added = currentList.filter(item => !previousList.includes(item))
+    const removed = previousList.filter(item => !currentList.includes(item))
+
+    return { added, removed }
 }

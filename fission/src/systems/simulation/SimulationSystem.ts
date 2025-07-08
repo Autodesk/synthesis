@@ -16,9 +16,11 @@ import World from "../World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EjectorDriver from "./driver/EjectorDriver"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
+import { Global_AddToast } from "@/ui/components/GlobalUIControls"
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
+    public static perRobotScore: Map<MirabufSceneObject, number> = new Map()
 
     public static redScore = 0
     public static blueScore = 0
@@ -61,7 +63,31 @@ class SimulationSystem extends WorldSystem {
     public static ResetScores(): void {
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
+        this.perRobotScore = new Map()
         new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).Dispatch()
+    }
+
+    public static AddPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
+        const currentRobotScore = this.perRobotScore.get(robot) ?? 0
+        this.perRobotScore.set(robot, currentRobotScore + scoreToAdd)
+    }
+
+    public static RobotPenalty(robot: MirabufSceneObject, penaltyPoints: number, penaltyInfo: string): void {
+        // Display a toast showing that a penalty was committed
+        Global_AddToast?.(
+            "warning",
+            "PENALTY COMMITTED",
+            `Robot ${robot.nameTag?.text()} (${robot.assemblyName}), Committed Penalty: ${penaltyInfo}`
+        )
+        // Update match score
+        if (robot.alliance == "red") {
+            SimulationSystem.blueScore += penaltyPoints
+        } else {
+            SimulationSystem.redScore += penaltyPoints
+        }
+        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).Dispatch()
+        // Update per robot score
+        this.AddPerRobotScore(robot, -penaltyPoints)
     }
 }
 

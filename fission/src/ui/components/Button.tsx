@@ -1,7 +1,6 @@
 import React, { ReactNode } from "react"
 import { Button as BaseButton } from "@mui/base/Button"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 export enum ButtonSize {
     Small,
@@ -55,7 +54,7 @@ const Button: React.FC<ButtonProps> = ({
     return (
         <BaseButton
             onClick={onClick}
-            onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+            {...SoundPlayer.buttonSoundEffects()}
             className={`
                 ${colorOverrideClass || "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"}  
                 ${sizeClassNames} 
