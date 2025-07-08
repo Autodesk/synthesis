@@ -121,9 +121,8 @@ function validateJoints(assembly: mirabuf.Assembly): JointValidationResult {
             }
 
             // Get all joints
-            if (jointDef.jointMotionType !== null && jointDef.jointMotionType !== undefined) {
+            if (jointDef.jointMotionType !== null && jointDef.jointMotionType !== undefined)
                 result.allJoints.push(jointDef.jointMotionType)
-            }
 
             // Check for wheel joints
             if (
