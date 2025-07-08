@@ -3,7 +3,6 @@ import * as THREE from "three"
 import MirabufInstance, { MaterialStyle } from "../../mirabuf/MirabufInstance"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { ParseErrorSeverity } from "../../mirabuf/MirabufParser"
-import { ProgressHandle } from "../../ui/components/ProgressNotificationData"
 
 vi.mock("@/systems/World.ts", () => ({
     default: {
@@ -17,7 +16,6 @@ vi.mock("@/systems/World.ts", () => ({
 describe("MirabufInstance", () => {
     let parser: MirabufParser
     let scene: THREE.Scene
-    let progressHandle: ProgressHandle
 
     beforeEach(() => {
         parser = {
@@ -60,7 +58,6 @@ describe("MirabufInstance", () => {
             globalTransforms: new Map([["inst1", new THREE.Matrix4()]]),
         } as unknown as MirabufParser
         scene = new THREE.Scene()
-        progressHandle = { Update: vi.fn() } as unknown as ProgressHandle
     })
 
     test("throws if parser has unimportable errors", () => {
