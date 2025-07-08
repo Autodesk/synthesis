@@ -91,7 +91,6 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     })
                 )
                 const localConfigs = JSON.parse(window.localStorage.getItem("match-mode-configs") || "[]")
-                console.log("localConfigs", localConfigs)
 
                 const combinedConfigs = [...defaultConfigs, ...localConfigs]
                 const uniqueConfigsById = Array.from(new Map(combinedConfigs.map(item => [item.id, item])).values())
@@ -243,7 +242,6 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             setMatchModeConfigs(prev => [...prev, normalizedConfig])
             window.localStorage.setItem("match-mode-configs", JSON.stringify([...matchModeConfigs, normalizedConfig]))
-            console.log("matchModeConfigs", matchModeConfigs)
 
             Global_AddToast?.("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
         } catch (error) {

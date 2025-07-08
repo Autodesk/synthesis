@@ -18,6 +18,9 @@ describe("MatchModeConfigPanel", () => {
         console.warn = vi.fn()
         console.log = vi.fn()
 
+        // Clear local storage
+        window.localStorage.setItem("match-mode-configs", JSON.stringify([]))
+
         container = createTestContainer()
     })
 
