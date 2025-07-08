@@ -1,0 +1,25 @@
+{
+    "name": "synthesis-multiplayer-spike",
+    "version": "1.0.0",
+    "description": "Real-time multiplayer robot simulator spike using WebSockets",
+    "type": "module",
+    "main": "server.js",
+    "scripts": {
+        "start": "node server.js",
+        "dev": "node --watch server.js",
+        "client": "npx http-server client -p 8080 -o"
+    },
+    "dependencies": {
+        "ws": "^8.18.0",
+        "uuid": "^9.0.1",
+        "express": "^4.18.2"
+    },
+    "devDependencies": {
+        "@types/node": "^20.10.0",
+        "@types/ws": "^8.5.10",
+        "@types/uuid": "^9.0.7"
+    },
+    "engines": {
+        "node": ">=18.0.0"
+    }
+}

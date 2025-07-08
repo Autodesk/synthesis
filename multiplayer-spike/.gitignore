@@ -28,5 +28,3 @@ dist-ssr
 *.sw?
 
 yarn.lock
-
-__screenshots__

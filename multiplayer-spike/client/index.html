@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Multiplayer Robot Simulator</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            body {
+                font-family: monospace;
+                background: #222;
+                color: white;
+                overflow: hidden;
+                height: 100vh;
+            }
+
+            #gameCanvas {
+                background: #000;
+                display: block;
+            }
+
+            #info {
+                position: absolute;
+                top: 10px;
+                left: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px;
+                font-size: 12px;
+                border: 1px solid #333;
+            }
+
+            #controls {
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                background: rgba(0, 0, 0, 0.7);
+                padding: 10px;
+                font-size: 12px;
+                border: 1px solid #333;
+            }
+        </style>
+    </head>
+    <body>
+        <canvas id="gameCanvas"></canvas>
+
+        <div id="info">
+            <div>s: <span id="status">Connecting...</span></div>
+            <div>count: <span id="playerCount">0</span></div>
+            <div>ping: <span id="latency">-</span>ms</div>
+        </div>
+
+        <script src="client.js"></script>
+    </body>
+</html>
