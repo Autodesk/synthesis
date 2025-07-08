@@ -88,7 +88,12 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
     }, [u, pendingDeletes])
 
     const options = useMemo(() => {
-        const list = configurationType == ConfigurationType.ROBOT ? robots : configurationType == ConfigurationType.FIELD ? fields : gamePieces
+        const list =
+            configurationType == ConfigurationType.ROBOT
+                ? robots
+                : configurationType == ConfigurationType.FIELD
+                  ? fields
+                  : gamePieces
         return list
             .filter((assembly): assembly is MirabufSceneObject => assembly != null)
             .map(assembly => makeSelectionOption(configurationType, assembly))
@@ -236,7 +241,13 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({
 
     return (
         <SelectMenu
-            options={configurationType == ConfigurationType.ROBOT ? [...robotModes.values()] : configurationType == ConfigurationType.FIELD ? [...fieldModes.values()] : [...gamePieceModes.values()]}
+            options={
+                configurationType == ConfigurationType.ROBOT
+                    ? [...robotModes.values()]
+                    : configurationType == ConfigurationType.FIELD
+                      ? [...fieldModes.values()]
+                      : [...gamePieceModes.values()]
+            }
             onOptionSelected={val => {
                 onModeSelected((val as ConfigModeSelectionOption)?.configMode)
             }}

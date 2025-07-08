@@ -107,7 +107,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 {brainIndex != undefined ? (
                     <InputSchemeSelection
                         brainIndex={brainIndex}
-                        onSelect={() => { }}
+                        onSelect={() => {}}
                         onEdit={() => openPanel("configure")}
                         onCreateNew={() => openModal("assign-new-scheme")}
                     />
