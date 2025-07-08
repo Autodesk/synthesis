@@ -326,7 +326,6 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
         const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
-        const transform = parser.assembly.transform
         const bodyMap = this.CreateBodiesFromParser(parser, layer)
         const rootBody = parser.rootNode
         const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)

@@ -98,7 +98,6 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
     MirabufCachingService.Get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                console.log("have asm")
                 CreateMirabuf(assembly).then(x => {
                     if (x) {
                         const { mainSceneObject, gamePieces } = x
@@ -113,7 +112,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         progressHandle.Done()
 
                         // TODO Disable for fields/game pieces
-                        if (gamePieces != undefined && gamePieces.length > 0) Global_OpenPanel?.("initial-config")
+                        if (gamePieces == undefined || gamePieces.length < 0) Global_OpenPanel?.("initial-config")
                     } else {
                         progressHandle.Fail()
                     }

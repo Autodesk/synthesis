@@ -439,8 +439,7 @@ class MirabufCachingService {
 
     private static async HashBuffer(buffer: ArrayBuffer): Promise<string> {
         const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
-        const test = [...new Uint8Array(hashBuffer)]
-        const hash: string = String.fromCharCode([...test])
+        const hash: string = String.fromCharCode(...new Uint8Array(hashBuffer))
         return btoa(hash).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
     }
 

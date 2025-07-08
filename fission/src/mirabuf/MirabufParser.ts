@@ -102,7 +102,6 @@ class MirabufParser {
         this.LoadGlobalTransforms()
 
         this.InitializeRigidGroups() // 1: from ancestral breaks in joints
-        console.log("initialized")
 
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
@@ -115,7 +114,6 @@ class MirabufParser {
         const gInst = assembly.data!.joints!.jointInstances![GROUNDED_JOINT_ID]
         const gNode = this.NewRigidNode()
         this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode)
-        console.log("grounded")
 
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
@@ -128,12 +126,10 @@ class MirabufParser {
             node.children.forEach(x => traverseNodeRoundup(x, currentNode ?? parentNode))
         }
         this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
-        console.log("traversed")
 
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
         this.BandageRigidNodes(assembly) // 4: Bandage via RigidGroups
-        console.log("bandaged")
         // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
         // 5. Remove Empty RNs
@@ -146,7 +142,6 @@ class MirabufParser {
         // 7. Update root RigidNode
         const rootNodeId = this._partToNodeMap.get(gInst.parts!.nodes!.at(0)!.value!)?.id ?? this._rigidNodes[0].id
         this._rootNode = rootNodeId
-        console.log("updated")
 
         // 8. Retrieve Masses
         this._rigidNodes.forEach(rn => {
@@ -188,36 +183,10 @@ class MirabufParser {
             })
     }
 
-    private AssignGamePieceRigidNodes() {
-        // Collect all definitions labeled as gamepieces (dynamic = true)
-        const gamepieceDefinitions: Set<string> = new Set(
-            Object.values(this._assembly.data!.parts!.partDefinitions!)
-                .filter(def => def.dynamic)
-                .map((def: mirabuf.IPartDefinition) => {
-                    return def.info!.GUID!
-                })
-        )
-
-        // Create gamepiece rigid nodes from PartInstances with corresponding definitions
-        Object.values(this._assembly.data!.parts!.partInstances!).forEach((inst: mirabuf.IPartInstance) => {
-            if (!gamepieceDefinitions.has(inst.partDefinitionReference!)) return
-
-            const instNode = this.BinarySearchDesignTreePrune(inst.info!.GUID!)
-            if (!instNode) {
-                this._errors.push([ParseErrorSeverity.LikelyIssues, "Failed to find Game piece in Design Tree"])
-                return
-            }
-
-            const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
-            gpRn.isGamePiece = true
-            this.MovePartToRigidNode(instNode!.value!, gpRn)
-            if (instNode.children) this.TraverseTree(instNode.children, x => this.MovePartToRigidNode(x.value!, gpRn))
-        })
-    }
-
-    // Separates and returns the sub-asmeblies (partInstances) of each game piece
+    /*
+     * Separates and returns the sub-assemblies (partInstances) of each game piece
+     */
     private PruneGamePieceNodes(): mirabuf.Assembly[] {
-        console.log(`here`)
         // Collect all definitions labeled as gamepieces (dynamic = true)
         const gamepieceDefinitions: Set<string> = new Set(
             Object.values(this._assembly.data!.parts!.partDefinitions!)
@@ -248,23 +217,26 @@ class MirabufParser {
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
                 // Delete partDefinitions
-                // Object.entries(this._assembly.data?.parts?.partDefinitions!)
-                //     .filter(([_key, subInst]) => inst === subInst)
-                //     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
+                Object.entries(this._assembly.data?.parts?.partDefinitions!)
+                    .filter(([_key, subInst]) => inst === subInst)
+                    .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
 
                 return this.PartInstance_Assembly(inst, instNode)
             })
             .filter(asm => asm != undefined)
 
-        console.log(`${gamePieces.length}`)
-
         return gamePieces
     }
 
     /*
-     * Right now, this function is tailored for game pieces; in the future it could be generalized
+     * Converts specfic part instances to entire assemblies. Designed and tested for gamePiece instances, but theoretically should generalize
      */
-    private PartInstance_Assembly(inst: mirabuf.IPartInstance, instNode: mirabuf.INode): mirabuf.Assembly | undefined {
+    private PartInstance_Assembly(
+        inst: mirabuf.IPartInstance,
+        instNode: mirabuf.INode,
+        isEndEffector: boolean = false,
+        isDynamic: boolean = true
+    ): mirabuf.Assembly | undefined {
         const jointDefinition = new mirabuf.joint.Joint({
             info: {
                 GUID: GROUNDED_JOINT_ID,
@@ -272,10 +244,10 @@ class MirabufParser {
             },
             jointMotionType: mirabuf.joint.JointMotion.RIGID,
             // Affects the placement of the joints, cannot affect the placement of the assembly in absolute space
-            origin: new mirabuf.Vector3(), // this._assembly.data?.joints?.jointInstances?.[inst.joints?.[0]!].offset,
+            origin: new mirabuf.Vector3(),
         })
         const jointInstance = new mirabuf.joint.JointInstance({
-            isEndEffector: false,
+            isEndEffector,
             parentPart: "",
             jointReference: jointDefinition.info?.GUID,
             parts: { nodes: [instNode] },
@@ -289,15 +261,13 @@ class MirabufParser {
                 [GROUNDED_JOINT_ID]: jointInstance,
             },
             rigidGroups: [],
+            // This probably needs to be changed if this function gets generalized for mix-n-match or something
             motorDefinitions: {},
         })
 
         const partDefinitionReference = inst?.partDefinitionReference
         if (partDefinitionReference == null) {
-            this.NewError(
-                ParseErrorSeverity.Unimportable,
-                "Game piece partInstance does not reference a partDefinition"
-            )
+            this.NewError(ParseErrorSeverity.Unimportable, "partInstance does not reference a partDefinition")
             return
         }
         const partDefinition = this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
@@ -312,17 +282,18 @@ class MirabufParser {
             },
         })
 
-        console.log(inst.info?.name)
         const gamePieceAssembly = new mirabuf.Assembly({
             info: inst.info,
             data: {
                 parts,
                 joints,
                 materials: this.assembly.data?.materials,
+                // This probably needs to be changed if this function gets generalized for mix-n-match or something
                 signals: {},
             },
-            dynamic: true,
+            dynamic: isDynamic,
             designHierarchy: { nodes: [instNode] },
+            // This probably needs to be changed if this function gets generalized for mix-n-match or something
             jointHierarchy: {},
             thumbnail: null,
             transform: inst.transform,
@@ -333,7 +304,7 @@ class MirabufParser {
 
     private BandageRigidNodes(assembly: mirabuf.Assembly) {
         assembly.data!.joints!.rigidGroups!.forEach(rg => {
-            let rn: RigidNode | null = rg.occurrences!.reduce<RigidNode | null>((rn, y) => {
+            rg.occurrences!.reduce<RigidNode | null>((rn, y) => {
                 const currentRn = this._partToNodeMap.get(y)!
 
                 return !rn ? currentRn : currentRn.id != rn.id ? this.MergeRigidNodes(currentRn, rn) : rn
@@ -435,8 +406,6 @@ class MirabufParser {
                 if (!partInstance || this.globalTransforms.has(child.value!)) return
                 const mat = MirabufTransform_ThreeMatrix4(partInstance.transform!)!
 
-                // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat)}`);
-
                 this._globalTransforms.set(child.value!, mat.premultiply(parent))
                 getTransforms(child, mat)
             })
@@ -451,8 +420,6 @@ class MirabufParser {
                 : def.baseTransform
                   ? MirabufTransform_ThreeMatrix4(def.baseTransform)
                   : new THREE.Matrix4().identity()
-
-            // console.log(`[${partInstance.info!.name!}] -> ${matToString(mat!)}`);
 
             this._globalTransforms.set(partInstance.info!.GUID!, mat)
             getTransforms(child, mat)
@@ -474,7 +441,6 @@ class MirabufParser {
         const valueB = ptv.get(partB)!
 
         // TODO: Figure out why initial refactor failed
-
         const traverse = (path: mirabuf.INode, value: number) => {
             const ancestorIndex = this.BinarySearchIndex(value, path.children!)
             const ancestorValue = ptv.get(path.children![ancestorIndex].value!)!
