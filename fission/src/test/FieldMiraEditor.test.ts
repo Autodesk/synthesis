@@ -58,7 +58,8 @@ describe("Basic Field Mira Editor Tests", () => {
         editor.setUserData("devtool:test", payload)
         const read = editor.getUserData("devtool:test")!
         if (read && typeof read === "object" && "nested" in read) {
-            ;(read as { nested: { x: number } }).nested.x = 42
+            const readNested = read as { nested: { x: number } }
+            readNested.nested.x = 42
         }
         const reread = editor.getUserData("devtool:test")!
         if (reread && typeof reread === "object" && "nested" in reread) {
