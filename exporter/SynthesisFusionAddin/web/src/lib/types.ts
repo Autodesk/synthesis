@@ -10,7 +10,7 @@ export function DefaultExporterConfig(): GeneralConfig {
 
         materials: 0,
         exportMode: ExportMode.ROBOT,
-        exportLocation: ExportLocation.UPLOAD,
+        exportLocation: ExportLocation.DOWNLOAD,
         autoCalcRobotWeight: true,
         robotWeight: 0,
         compressOutput: true,

@@ -36,6 +36,7 @@ logger = getLogger()
 
 INPUTS_ROOT: adsk.core.CommandInputs
 PALETTE_ID="synthesis_configure"
+USE_NEW_UI=True
 
 def reload() -> None:
     """Reloads the sub modules to reflect any changes made during development."""
@@ -61,99 +62,99 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     @logFailure(messageBox=True)
     def notify(self, args: adsk.core.CommandCreatedEventArgs) -> None:
         cmd = args.command
-
-        global INPUTS_ROOT
-        INPUTS_ROOT = cmd.commandInputs
-
         gm.ui.activeSelections.clear()
-        onExecute = ConfigureCommandExecuteHandler()
-        cmd.execute.add(onExecute)
-
-        onInputChanged = ConfigureCommandInputChanged()
-        cmd.inputChanged.add(onInputChanged)
-
-        onExecutePreview = CommandExecutePreviewHandler()
-        cmd.executePreview.add(onExecutePreview)
-
-        onSelect = MySelectHandler()
-        cmd.select.add(onSelect)
-
-        onPreSelectEnd = MyPreselectEndHandler(cmd)
-        cmd.preSelectEnd.add(onPreSelectEnd)
-
-        onDestroy = MyCommandDestroyHandler()
-        cmd.destroy.add(onDestroy)
-
-        exporterOptions = moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
-
-        cmd.isAutoExecute = True
-        cmd.isExecutedWhenPreEmpted = False
-        cmd.okButtonText = "Export"
-        cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
-
-        palettes = gm.ui.palettes
-        global exporterPalette
-        exporterPalette = palettes.itemById(PALETTE_ID)
-        if exporterPalette:
-            exporterPalette.deleteMe()
-
-        exporterPalette = palettes.add(
-            id=PALETTE_ID,
-            name="Synthesis Exporter",
-            htmlFileURL="web/dist/index.html",
-            isVisible=True,
-            showCloseButton=True,
-            isResizable=True,
-            width=600,
-            height=800,
-            useNewWebBrowser=True
-        )
-        # futil.add_handler(palette.closed, palette_closed)
-        # futil.add_handler(palette.navigatingURL, palette_navigating)
-        futil.add_handler(exporterPalette.incomingFromHTML, on_palette_message)
-        futil.add_handler(exporterPalette.closed, on_palette_close)
-        exporterPalette.isVisible = True
-        # palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
+        if not USE_NEW_UI:
+            global INPUTS_ROOT
+            INPUTS_ROOT = cmd.commandInputs
 
 
-        global generalConfigTab
-        generalConfigTab = GeneralConfigTab.GeneralConfigTab(args, exporterOptions)
+            onExecute = ConfigureCommandExecuteHandler()
+            cmd.execute.add(onExecute)
 
-        global gamepieceConfigTab
-        gamepieceConfigTab = GamepieceConfigTab.GamepieceConfigTab(args, exporterOptions)
-        generalConfigTab.gamepieceConfigTab = gamepieceConfigTab
+            onInputChanged = ConfigureCommandInputChanged()
+            cmd.inputChanged.add(onInputChanged)
 
-        global jointConfigTab
-        jointConfigTab = JointConfigTab.JointConfigTab(args)
-        generalConfigTab.jointConfigTab = jointConfigTab
+            onExecutePreview = CommandExecutePreviewHandler()
+            cmd.executePreview.add(onExecutePreview)
 
-        design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
-        for synGamepiece in exporterOptions.gamepieces: # Copy this
-            fusionOccurrence = design.findEntityByToken(synGamepiece.occurrenceToken)[0]
-            gamepieceConfigTab.addGamepiece(fusionOccurrence, synGamepiece)
+            onSelect = MySelectHandler()
+            cmd.select.add(onSelect)
 
-        if len(exporterOptions.joints):
-            for synJoint in exporterOptions.joints:
-                fusionJoints = design.findEntityByToken(synJoint.jointToken)
+            onPreSelectEnd = MyPreselectEndHandler(cmd)
+            cmd.preSelectEnd.add(onPreSelectEnd)
+
+            onDestroy = MyCommandDestroyHandler()
+            cmd.destroy.add(onDestroy)
+
+            exporterOptions = moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
+
+            cmd.isAutoExecute = True
+            cmd.isExecutedWhenPreEmpted = False
+            cmd.okButtonText = "Export"
+            cmd.helpFile = os.path.join(".", "src", "Resources", "HTML", "info.html")
+
+            global generalConfigTab
+            generalConfigTab = GeneralConfigTab.GeneralConfigTab(args, exporterOptions)
+
+            global gamepieceConfigTab
+            gamepieceConfigTab = GamepieceConfigTab.GamepieceConfigTab(args, exporterOptions)
+            generalConfigTab.gamepieceConfigTab = gamepieceConfigTab
+
+            global jointConfigTab
+            jointConfigTab = JointConfigTab.JointConfigTab(args)
+            generalConfigTab.jointConfigTab = jointConfigTab
+
+            design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
+            for synGamepiece in exporterOptions.gamepieces: # Copy this
+                fusionOccurrence = design.findEntityByToken(synGamepiece.occurrenceToken)[0]
+                gamepieceConfigTab.addGamepiece(fusionOccurrence, synGamepiece)
+
+            if len(exporterOptions.joints):
+                for synJoint in exporterOptions.joints:
+                    fusionJoints = design.findEntityByToken(synJoint.jointToken)
+                    if len(fusionJoints):
+                        jointConfigTab.addJoint(fusionJoints[0], synJoint)
+            else:
+                for joint in [*design.rootComponent.allJoints, *design.rootComponent.allAsBuiltJoints]:
+                    if joint.jointMotion.jointType in SELECTABLE_JOINT_TYPES and not joint.isSuppressed:
+                        jointConfigTab.addJoint(joint)
+
+            # Adding saved wheels must take place after joints are added as a result of how the two types are connected.
+            for wheel in exporterOptions.wheels:
+                fusionJoints = design.findEntityByToken(wheel.jointToken)
                 if len(fusionJoints):
-                    jointConfigTab.addJoint(fusionJoints[0], synJoint)
+                    jointConfigTab.addWheel(fusionJoints[0], wheel)
+
+            getAuth()
+            user_info = getUserInfo()
+            apsSettings = INPUTS_ROOT.addTabCommandInput(
+                "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
+            )
+            apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
         else:
-            for joint in [*design.rootComponent.allJoints, *design.rootComponent.allAsBuiltJoints]:
-                if joint.jointMotion.jointType in SELECTABLE_JOINT_TYPES and not joint.isSuppressed:
-                    jointConfigTab.addJoint(joint)
+            palettes = gm.ui.palettes
+            global exporterPalette
+            exporterPalette = palettes.itemById(PALETTE_ID)
+            if exporterPalette:
+                exporterPalette.deleteMe()
 
-        # Adding saved wheels must take place after joints are added as a result of how the two types are connected.
-        for wheel in exporterOptions.wheels:
-            fusionJoints = design.findEntityByToken(wheel.jointToken)
-            if len(fusionJoints):
-                jointConfigTab.addWheel(fusionJoints[0], wheel)
-
-        getAuth()
-        user_info = getUserInfo()
-        apsSettings = INPUTS_ROOT.addTabCommandInput(
-            "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-        )
-        apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
+            exporterPalette = palettes.add(
+                id=PALETTE_ID,
+                name="Synthesis Exporter",
+                htmlFileURL="web/dist/index.html",
+                isVisible=True,
+                showCloseButton=True,
+                isResizable=True,
+                width=1200,
+                height=800,
+                useNewWebBrowser=True
+            )
+            # futil.add_handler(palette.closed, palette_closed)
+            # futil.add_handler(palette.navigatingURL, palette_navigating)
+            futil.add_handler(exporterPalette.incomingFromHTML, on_palette_message)
+            futil.add_handler(exporterPalette.closed, on_palette_close)
+            exporterPalette.isVisible = True
+            # palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
 
 
 
@@ -182,12 +183,18 @@ def on_palette_message(html_args: adsk.core.HTMLEventArgs):
             for synJoint in exporterOptions.joints:
                 fusionJoints = design.findEntityByToken(synJoint.jointToken)
                 if len(fusionJoints):
-                    joint = adsk.fusion.Joint.cast(fusionJoints[0])
-                    jointData.append(buildJoint(joint))
+                    try:
+                        joint = adsk.fusion.Joint.cast(fusionJoints[0])
+                        jointData.append(buildJoint(joint))
+                    except Exception as e:
+                        logger.error(e)
         else:
             for joint in [*design.rootComponent.allJoints, *design.rootComponent.allAsBuiltJoints]:
                 if joint.jointMotion.jointType in SELECTABLE_JOINT_TYPES and not joint.isSuppressed:
-                    jointData.append(buildJoint(joint))
+                    try:
+                        jointData.append(buildJoint(joint))
+                    except Exception as e:
+                        logger.error(e)
 
         html_args.returnData = json.dumps({
             "gamepieceData": gamepieceData,
@@ -210,10 +217,9 @@ def on_palette_message(html_args: adsk.core.HTMLEventArgs):
         html_args.returnData = json.dumps(buildJoint(joint))
     elif html_args.action == "selectGamepiece":
         selection = gm.app.userInterface.selectEntity("Select Gamepieces", "Occurrences")
-        gamepiece= adsk.fusion.Occurrences.cast(selection.entity).item(0)
+        gamepiece = adsk.fusion.Occurrence.cast(selection.entity)
         html_args.returnData = json.dumps(buildGamepiece(gamepiece))
     else:
-
         gm.ui.messageBox(f"Event {html_args.action} arrived<span>{json.dumps(data, indent=2)}</span>")
 
 def buildJoint(joint:adsk.fusion.Joint):

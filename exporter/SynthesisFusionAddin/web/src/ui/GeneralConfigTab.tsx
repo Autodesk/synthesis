@@ -78,53 +78,55 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                             <MenuItem value={ExportLocation.DOWNLOAD}>Download</MenuItem>
                         </Select>
                     </ListItem>
-                    <ListItem>
-                        <ListItemIcon>
-                            <BalanceIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary="Auto Calculate Robot Weight"
-                            secondary="Approximates the weight of your robot assembly based on defined materials"
-                        />
-                        <Switch
-                            edge="end"
-                            onChange={(_, v) => {
-                                updateConfigItem("autoCalcRobotWeight", v)
-                                if (v) {
-                                    updateConfigItem("robotWeight", config.calculatedRobotWeight)
-                                }
-                            }}
-                            checked={config.autoCalcRobotWeight}
-                        />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemIcon></ListItemIcon>
-                        <ListItemText
-                            inset
-                            primary="Robot Weight"
-                            secondary="Manually provided robot weight value (kg)"
-                        />
-                        <TextField
-                            placeholder="0.0"
-                            type="number"
-                            disabled={config.autoCalcRobotWeight}
-                            slotProps={{
-                                htmlInput: {
-                                    min: 0,
-                                    step: 1,
-                                },
-                                input: {
-                                    endAdornment: <InputAdornment position="end">kg</InputAdornment>,
-                                },
-                            }}
-                            size="small"
-                            style={{ minWidth: "10rem" }}
-                            onChange={e => {
-                                updateConfigItem("robotWeight", safeParseFloat(e.target.value) ?? 0)
-                            }}
-                            value={config.robotWeight}
-                        />
-                    </ListItem>
+                    <Collapse in={config.exportMode == ExportMode.ROBOT}>
+                        <ListItem>
+                            <ListItemIcon>
+                                <BalanceIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary="Auto Calculate Robot Weight"
+                                secondary="Approximates the weight of your robot assembly based on defined materials"
+                            />
+                            <Switch
+                                edge="end"
+                                onChange={(_, v) => {
+                                    updateConfigItem("autoCalcRobotWeight", v)
+                                    if (v) {
+                                        updateConfigItem("robotWeight", config.calculatedRobotWeight)
+                                    }
+                                }}
+                                checked={config.autoCalcRobotWeight}
+                            />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon></ListItemIcon>
+                            <ListItemText
+                                inset
+                                primary="Robot Weight"
+                                secondary="Manually provided robot weight value (kg)"
+                            />
+                            <TextField
+                                placeholder="0.0"
+                                type="number"
+                                disabled={config.autoCalcRobotWeight}
+                                slotProps={{
+                                    htmlInput: {
+                                        min: 0,
+                                        step: 1,
+                                    },
+                                    input: {
+                                        endAdornment: <InputAdornment position="end">kg</InputAdornment>,
+                                    },
+                                }}
+                                size="small"
+                                style={{ minWidth: "10rem" }}
+                                onChange={e => {
+                                    updateConfigItem("robotWeight", safeParseFloat(e.target.value) ?? 0)
+                                }}
+                                value={config.robotWeight}
+                            />
+                        </ListItem>
+                    </Collapse>
                     <ListItem>
                         <ListItemIcon>
                             <ArchiveIcon />
@@ -135,6 +137,7 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                         />
                         <Switch edge="end" onChange={updateLiteral("compressOutput")} checked={config.compressOutput} />
                     </ListItem>
+                    <Collapse in={config.exportMode == ExportMode.ROBOT}>
                     <ListItem>
                         <ListItemIcon>
                             <PrecisionManufacturingIcon />
@@ -189,6 +192,7 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                                 value={config.frictionOverrideCoeff}
                             />
                         </ListItem>
+                    </Collapse>
                     </Collapse>
                     <ListItem>
                         <ListItemIcon>

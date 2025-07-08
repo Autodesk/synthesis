@@ -14,9 +14,8 @@
 }
 
 html {
-  /*font-size: 12px;*/
-  /*transform: scale(0.75);*/
-  /*transform-origin: top center*/
+  overflow: hidden;
+  height: 100%;
 }
 
 a {
@@ -34,6 +33,8 @@ body {
   place-items: center;
   min-width: 100vw;
   min-height: 100vh;
+  height: 100%;
+  overflow: auto;
 }
 
 h1 {

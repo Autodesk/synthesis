@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react"
 
 import "./App.css"
-import { selectJoint, sendData } from "./lib"
-import { Box, Button, Container, Tab, Tabs, Tooltip } from "@mui/material"
+import { selectJoint, sendData, sendDataAndToast } from "./lib"
+import { AppBar, Box, Button, Container, Tab, Tabs, ThemeProvider } from "@mui/material"
 import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
 import JointsConfigTab from "./ui/JointsConfigTab.tsx"
 import { useImmer } from "use-immer"
@@ -21,6 +21,10 @@ import GlobalAlert from "./ui/GlobalAlert.tsx"
 import { Global_SetAlert } from "./lib/GlobalUtils.tsx"
 import DownloadIcon from "@mui/icons-material/Download"
 import { current } from "immer"
+import { theme } from "./lib/theme.ts"
+import { RestartAlt, Settings, SportsFootball } from "@mui/icons-material"
+import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
+import SaveIcon from "@mui/icons-material/Save"
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
@@ -42,31 +46,30 @@ function App() {
             config[k] = v
         })
     }
-    useEffect(() => {
-        const fetchCb = () => {
-            if (window.adsk == undefined) {
-                requestAnimationFrame(fetchCb)
+    function loadConfigFromFusion() {
+        if (window.adsk == undefined) {
+            requestAnimationFrame(loadConfigFromFusion)
+            return
+        }
+        sendData("init", {}).then(data => {
+            if (data == undefined) {
+                Global_SetAlert("error", "Could not extract data from fusion")
                 return
             }
-            console.log("Requesting data")
-            sendData("init", {}).then(data => {
-                if (data == undefined) {
-                    Global_SetAlert("error", "Could not extract data from fusion")
-                    return
-                }
-                console.log(data)
-                updateGeneralConfig(config => {
-                    const entries = Object.entries(data.options)
-                    entries.forEach(([k, v]) => {
-                        if (k in config) {
-                            config[k as "robotWeight"] = v // Object.entries is terribly typed
-                        }
-                    })
-                    config.calculatedRobotWeight = data.calculatedMass
-                    config.robotWeight = config.autoCalcRobotWeight ? data.calculatedMass : config.robotWeight
+            console.log(data)
+            updateGeneralConfig(config => {
+                const entries = Object.entries(data.options)
+                entries.forEach(([k, v]) => {
+                    if (k in config) {
+                        config[k as "robotWeight"] = v // Object.entries is terribly typed
+                    }
                 })
-                updateJoints(() => {
-                    const res: Joint[] = data.options.joints.map(joint => {
+                config.calculatedRobotWeight = data.calculatedMass
+                config.robotWeight = config.autoCalcRobotWeight ? data.calculatedMass : config.robotWeight
+            })
+            updateJoints(() => {
+                const res: Joint[] = data.options.joints
+                    .map(joint => {
                         const wheel = joint.isWheel
                             ? data.options.wheels.find(wheel => wheel.jointToken === joint.jointToken)
                             : undefined
@@ -86,11 +89,13 @@ function App() {
                             name: fusionJoint?.name ?? "",
                             type: fusionJoint?.jointType ?? JointType.RigidJointType,
                         }
-                    }).filter((e) => e != null)
-                    return res
-                })
-                updateGamepieces(() => {
-                    const res: Gamepiece[] = data.options.gamepieces.map(gamepiece => {
+                    })
+                    .filter(e => e != null)
+                return res
+            })
+            updateGamepieces(() => {
+                const res: Gamepiece[] = data.options.gamepieces
+                    .map(gamepiece => {
                         const fusionGamepiece = data.gamepieceData.find(
                             g => g.occurrenceToken == gamepiece.occurrenceToken
                         )
@@ -105,12 +110,15 @@ function App() {
                             name: fusionGamepiece?.name ?? "",
                             entityIDs: fusionGamepiece?.entityIDs ?? [],
                         }
-                    }).filter((e) => e != null)
-                    return res
-                })
+                    })
+                    .filter(e => e != null)
+                return res
             })
-        }
-        fetchCb()
+        })
+    }
+
+    useEffect(() => {
+        loadConfigFromFusion()
     }, [])
     const getFinalizedConfig = () =>
         new Promise<ExporterConfig>(resolve => {
@@ -141,73 +149,94 @@ function App() {
             })
         })
     return (
-        <>
+        <ThemeProvider theme={theme}>
             <GlobalAlert />
-            <Button
-                fullWidth
-                style={{ margin: "0.5rem" }}
-                variant="contained"
-                onClick={async () => sendData("export", await getFinalizedConfig())}
-                startIcon={<DownloadIcon />}>
-                Export
-            </Button>
-            <Button
-                fullWidth
-                style={{ margin: "0.5rem" }}
-                variant="contained"
-                onClick={async () => sendData("save", await getFinalizedConfig())}
-                startIcon={<DownloadIcon />}>
-                Save
-            </Button>
-            <Box sx={{}}>
-                <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+            <AppBar position={"sticky"}>
+                <Box>
                     <Tabs
+                        sx={{ bgcolor: "white" }}
                         value={activeTab}
                         onChange={(_, v) => {
                             setActiveTab(v)
                         }}>
-                        <Tab label="General" />
-                        {generalConfig.exportMode == ExportMode.ROBOT ? (
-                            <Tab label="Joints" />
-                        ) : (
-                            <Tooltip title={"Only available when configuring a dynamic assembly"}>
-                                <span>
-                                    <Tab label="Joints" disabled />
-                                </span>
-                            </Tooltip>
-                        )}
-                        {generalConfig.exportMode == ExportMode.FIELD ? (
-                            <Tab label="Gamepieces" />
-                        ) : (
-                            <Tooltip title={"Only available when configuring a static assembly"}>
-                                <span>
-                                    <Tab label="Gamepieces" disabled />
-                                </span>
-                            </Tooltip>
-                        )}
+                        <Tab icon={<Settings />} iconPosition={"start"} label="General" />
+                        <Tab
+                            icon={<PrecisionManufacturingIcon />}
+                            iconPosition={"start"}
+                            label="Joints"
+                            disabled={generalConfig.exportMode == ExportMode.FIELD}
+                        />
+                        <Tab
+                            icon={<SportsFootball />}
+                            iconPosition={"start"}
+                            label="Gamepieces"
+                            disabled={generalConfig.exportMode == ExportMode.ROBOT}
+                        />
+
                         {/*<Tab label="APS" />*/}
                     </Tabs>
                 </Box>
-                <TabPanel value={activeTab} index={0}>
-                    <GeneralConfigTab config={generalConfig} updateConfigItem={updateConfigItem} />
-                </TabPanel>
-                <TabPanel value={activeTab} index={1}>
-                    <JointsConfigTab joints={joints} updateJoints={updateJoints} />
-                </TabPanel>
-                <TabPanel value={activeTab} index={2}>
-                    <GamepiecesConfigTab
-                        gamepieces={gamepieces}
-                        updateGamepieces={updateGamepieces}
-                        config={generalConfig}
-                        updateConfigItem={updateConfigItem}
-                    />
-                </TabPanel>
-                <TabPanel value={activeTab} index={3}>
-                    <h3>APS</h3>
-                    <button onClick={() => selectJoint()}>Select Joints</button>
-                </TabPanel>
+            </AppBar>
+            <TabPanel value={activeTab} index={0}>
+                <GeneralConfigTab config={generalConfig} updateConfigItem={updateConfigItem} />
+            </TabPanel>
+            <TabPanel value={activeTab} index={1}>
+                <JointsConfigTab joints={joints} updateJoints={updateJoints} />
+            </TabPanel>
+            <TabPanel value={activeTab} index={2}>
+                <GamepiecesConfigTab
+                    gamepieces={gamepieces}
+                    updateGamepieces={updateGamepieces}
+                    config={generalConfig}
+                    updateConfigItem={updateConfigItem}
+                />
+            </TabPanel>
+            <TabPanel value={activeTab} index={3}>
+                <h3>APS</h3>
+                <button onClick={() => selectJoint()}>Select Joints</button>
+            </TabPanel>
+
+            <Box
+                position="sticky"
+                bottom={0}
+                bgcolor={"white"}
+                padding={"0.5rem"}
+                display={"flex"}
+                flexDirection={"row"}
+                gap={"0.5rem"}>
+                <Button
+                    variant="contained"
+                    color="error"
+                    sx={{ flexGrow: 1 }}
+                    onClick={async () => {
+                        updateGeneralConfig(DefaultExporterConfig())
+                        updateJoints([])
+                        updateGamepieces([])
+                        sendData("save", DefaultExporterConfig())
+                        loadConfigFromFusion()
+                        Global_SetAlert("info", "Configuration reset")
+                    }}
+                    startIcon={<RestartAlt />}>
+                    Reset
+                </Button>
+                <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ flexGrow: 9 }}
+                    onClick={async () => sendDataAndToast("export", await getFinalizedConfig(), "Exported!")}
+                    startIcon={<DownloadIcon />}>
+                    Export
+                </Button>
+                <Button
+                    variant="contained"
+                    color="secondary"
+                    sx={{ flexGrow: 1 }}
+                    onClick={async () => sendDataAndToast("save", await getFinalizedConfig(), "Saved!")}
+                    startIcon={<SaveIcon />}>
+                    Save
+                </Button>
             </Box>
-        </>
+        </ThemeProvider>
     )
 }
 

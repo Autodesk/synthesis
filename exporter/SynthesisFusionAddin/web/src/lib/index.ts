@@ -1,4 +1,5 @@
 import { type ExporterConfig, JointType } from "./types.ts"
+import { Global_SetAlert } from "./GlobalUtils.tsx"
 
 declare global {
     interface Window {
@@ -30,9 +31,32 @@ export async function sendData<A extends keyof Messages>(
 ): Promise<Messages[A][1] | undefined> {
     console.log({ action, body: JSON.stringify(body) })
     const resp = await window.adsk.fusionSendData(action, JSON.stringify(body))
-
+    if (resp == "") {
+        Global_SetAlert("error", "Fusion did not respond. Try restarting the application")
+    }
     try {
         return JSON.parse(resp)
+    } catch (error) {
+        console.error({ error, resp })
+        return undefined
+    }
+}
+
+export async function sendDataAndToast<A extends keyof Messages>(
+    action: A,
+    body: Messages[A][0] & object,
+    sucessMsg: string,
+    failureMsg = "Fusion did not respond. Try restarting the application"
+): Promise<Messages[A][1] | undefined> {
+    console.log({ action, body: JSON.stringify(body) })
+    const resp = await window.adsk.fusionSendData(action, JSON.stringify(body))
+    if (resp == "") {
+        Global_SetAlert("error", failureMsg)
+    }
+    try {
+        const data = JSON.parse(resp)
+        Global_SetAlert("success", sucessMsg)
+        return data
     } catch (error) {
         console.error({ error, resp })
         return undefined

@@ -23,15 +23,17 @@ import { type FusionJoint, selectJoint } from "../lib"
 import { type Joint, JointParentType, JointType, SignalType, WheelType } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 
-const jointInfo: Partial<Record<JointType, { icon: string; name: string; speedUnits: string }>> = {
+const jointInfo: Partial<Record<JointType, { icon: string; name: string; speedUnits: string, defaultSpeed:number }>> = {
     [JointType.RevoluteJointType]: {
         icon: revoluteIcon,
         name: "Revolute",
+        defaultSpeed: 3.14159,
         speedUnits: "rad/s",
     },
     [JointType.SliderJointType]: {
         icon: sliderIcon,
         name: "Slider",
+        defaultSpeed: 100,
         speedUnits: "cm/s",
     },
 }
@@ -59,15 +61,17 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
     const jointCancelCallback = useRef<(() => void) | undefined>(undefined)
     return (
         <>
-            {joints.length} Joints
-            <TableContainer component={Paper}>
+            <h4>
+            {joints.length} Joint{joints.length != 1 ? "s": ""}
+            </h4>
+            <TableContainer component={Paper} elevation={6} sx={{marginBottom:"10px"}}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
                             <TableCell sx={{ width: "5%" }} align="center">
                                 Type
                             </TableCell>
-                            <TableCell sx={{ width: "10%" }} align="center">
+                            <TableCell sx={{ width: "12%" }} align="center">
                                 Name
                             </TableCell>
                             <TableCell sx={{ width: "10%" }} align="center">
@@ -76,10 +80,10 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                             <TableCell sx={{ width: "10%" }} align="center">
                                 Signal Type
                             </TableCell>
-                            <TableCell sx={{ width: "10%" }} align="center">
+                            <TableCell sx={{ width: "30%" }} align="center">
                                 Joint Speed
                             </TableCell>
-                            <TableCell sx={{ width: "10%" }} align="center">
+                            <TableCell sx={{ width: "30%" }} align="center">
                                 Joint Force
                             </TableCell>
                             <TableCell sx={{ width: "5%" }} align="center">
@@ -219,8 +223,11 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                 }}>
                 <Button
                     variant="contained"
+                    color="secondary"
+                    sx={{ px: "20px" }}
                     loading={selectingJoint}
                     loadingIndicator={"Selecting..."}
+                    title={"Select a joint in Fusion"}
                     onClick={async () => {
                         setSelectingJoint(true)
                         // const data = await initiateSelection("Select joint")
@@ -245,8 +252,8 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                                 type: data.jointType,
                                 parentNode: JointParentType.ROOT,
                                 signalType: SignalType.PWM,
-                                speed: 0,
-                                force: 0,
+                                speed: jointInfo[data.jointType]?.defaultSpeed ?? 0,
+                                force: 0.05,
                                 isWheel: false,
                                 wheelType: WheelType.STANDARD,
                             })
@@ -265,8 +272,11 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                     Cancel
                 </Button>
             </Box>
-            {joints.filter(j => j.isWheel).length} Wheels
-            <TableContainer component={Paper}>
+
+            <h4>
+                {joints.filter((j) => j.isWheel).length} Wheel{joints.filter((j) => j.isWheel).length != 1 ? "s": ""}
+            </h4>
+            <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>

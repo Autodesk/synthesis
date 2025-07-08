@@ -1,9 +1,12 @@
 import {
     Box,
     Button,
-    FormControlLabel,
     IconButton,
     InputAdornment,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
     Paper,
     Slider,
     Switch,
@@ -21,6 +24,7 @@ import { useRef, useState } from "react"
 import { type FusionGamepiece, selectGamepiece } from "../lib"
 import { type Gamepiece, type GeneralConfig } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
+import BalanceIcon from "@mui/icons-material/Balance"
 
 interface GamepiecesConfigTabProps {
     gamepieces: Gamepiece[]
@@ -41,15 +45,27 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
     const selectionCancelCallback = useRef<(() => void) | undefined>(undefined)
     return (
         <>
-            <FormControlLabel
-                control={<Switch />}
-                label="Automatically calculate gamepiece weight"
-                value={config.autoCalcGamepieceWeight}
-                onChange={(_, v) => {
-                    updateConfigItem("autoCalcGamepieceWeight", v)
-                }}
-            />
-            <TableContainer component={Paper}>
+            <List component={Paper}>
+                <ListItem>
+                    <ListItemIcon>
+                        <BalanceIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                        primary={"Automatically Calculate Gamepiece Weight"}
+                        secondary="Approximates the weight of your gamepiece assemblies based on defined materials"
+                    />
+                    <Switch
+                        value={config.autoCalcGamepieceWeight}
+                        onChange={(_, v) => {
+                            updateConfigItem("autoCalcGamepieceWeight", v)
+                        }}
+                    />
+                </ListItem>
+            </List>
+            <h4>
+                {gamepieces.length} Gamepiece{gamepieces.length == 1 ? "" : "s"}
+            </h4>
+            <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table" size={"small"}>
                     <TableHead>
                         <TableRow>
@@ -156,6 +172,7 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                 }}>
                 <Button
                     variant="contained"
+                    color="secondary"
                     loading={selectingActive}
                     loadingIndicator={"Selecting..."}
                     onClick={async () => {
