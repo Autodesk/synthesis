@@ -35,7 +35,7 @@ describe("ScoringZoneSceneObject", () => {
         vi.clearAllMocks()
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
-        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as any)
+        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body)
         vi.stubGlobal("World", {
             ...World,
             PhysicsSystem: {

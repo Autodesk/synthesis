@@ -32,8 +32,7 @@ vi.mock("@/systems/World", () => ({
 describe("EjectableSceneObject", () => {
     beforeEach(() => {
         vi.clearAllMocks()
-        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as any)
-        // Mock PhysicsSystem
+        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body)
         vi.stubGlobal("World", {
             ...World,
             PhysicsSystem: {
@@ -77,7 +76,7 @@ describe("EjectableSceneObject", () => {
         Reflect.set(instance, "_parentBodyId", {} as unknown as Jolt.BodyID)
         Reflect.set(instance, "_ejectVelocity", 1)
         Reflect.set(instance, "_gamePieceBodyId", {} as unknown as Jolt.BodyID)
-        ;(World.PhysicsSystem.IsBodyAdded as any).mockReturnValue(true)
+        World.PhysicsSystem.IsBodyAdded = vi.fn(() => true)
         const quatMock = {
             GetX: vi.fn(() => 0),
             GetY: vi.fn(() => 0),
