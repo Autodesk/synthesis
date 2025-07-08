@@ -143,6 +143,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
                     />
                     <Checkbox
+                        label="Show Protected Zones"
+                        defaultState={PreferencesSystem.getGlobalPreference("RenderProtectedZones")}
+                        onClick={checked => {
+                            PreferencesSystem.setGlobalPreference("RenderProtectedZones", checked)
+                        }}
+                        tooltipText="If disabled, protected zones will not be visible but will continue to function the same."
+                    />
+                    <Checkbox
                         label="Show Scene Tags"
                         defaultState={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
                         onClick={checked => {
