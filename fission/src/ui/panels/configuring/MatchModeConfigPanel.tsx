@@ -1,6 +1,12 @@
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
-import { SectionLabel, SynthesisIcons, PositiveButton, SectionDivider } from "@/ui/components/StyledComponents"
+import {
+    SectionLabel,
+    SynthesisIcons,
+    PositiveButton,
+    SectionDivider,
+    NegativeButton,
+} from "@/ui/components/StyledComponents"
 import { LabelSize } from "@/components/Label"
 import { Box } from "@mui/material"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
@@ -36,9 +42,10 @@ interface ItemCardProps {
     id: string
     name: string
     primaryOnClick: () => void
+    secondaryOnClick?: () => void
 }
 
-const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick }) => {
+const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
     return (
         <Box
             component={"div"}
@@ -58,7 +65,8 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick }) => {
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                <PositiveButton value={"Select"} onClick={primaryOnClick} />
+                <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={secondaryOnClick} />
+                <PositiveButton value={SynthesisIcons.SelectLarge} onClick={primaryOnClick} />
             </Box>
         </Box>
     )
@@ -76,14 +84,19 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 const indexRes = await fetch("match-mode-config/index.json")
                 const fileNames: string[] = await indexRes.json()
 
-                const allConfigs = await Promise.all(
+                const defaultConfigs = await Promise.all(
                     fileNames.map(async fileName => {
                         const res = await fetch(`match-mode-config/${fileName}`)
                         return res.json()
                     })
                 )
+                const localConfigs = JSON.parse(window.localStorage.getItem("match-mode-configs") || "[]")
+                console.log("localConfigs", localConfigs)
 
-                setMatchModeConfigs(allConfigs)
+                const combinedConfigs = [...defaultConfigs, ...localConfigs]
+                const uniqueConfigsById = Array.from(new Map(combinedConfigs.map(item => [item.id, item])).values())
+
+                setMatchModeConfigs(uniqueConfigsById)
             } catch (err) {
                 console.error("Error loading JSON files:", err)
                 Global_AddToast?.(
@@ -106,6 +119,15 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     primaryOnClick: () => {
                         MatchConfigSelected(config, openModal)
                         closePanel("match-mode-config")
+                    },
+                    secondaryOnClick: () => {
+                        // Delete the config from the local storage
+                        setMatchModeConfigs(prev => prev.filter(c => c.id !== config.id))
+                        window.localStorage.setItem(
+                            "match-mode-configs",
+                            JSON.stringify(matchModeConfigs.filter(c => c.id !== config.id))
+                        )
+                        matchModeConfigs.filter(c => c.id !== config.id)
                     },
                 })
             ),
@@ -220,6 +242,8 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }
 
             setMatchModeConfigs(prev => [...prev, normalizedConfig])
+            window.localStorage.setItem("match-mode-configs", JSON.stringify([...matchModeConfigs, normalizedConfig]))
+            console.log("matchModeConfigs", matchModeConfigs)
 
             Global_AddToast?.("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
         } catch (error) {
