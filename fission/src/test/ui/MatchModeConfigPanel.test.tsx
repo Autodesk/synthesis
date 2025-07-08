@@ -173,6 +173,18 @@ describe("MatchModeConfigPanel", () => {
         await testUploadMatchModeConfig(invalidJson, false)
     })
 
+    test("Upload Invalid MatchModeConfig - Invalid id data type", async () => {
+        const invalidJson = {
+            id: 123,
+            name: "Invalid MatchModeConfig",
+            autonomousTime: 10,
+            teleopTime: 20,
+            endgameTime: 15,
+        }
+
+        await testUploadMatchModeConfig(invalidJson, false)
+    })
+
     test("Upload Valid MatchModeConfig - Missing autonomousTime field", async () => {
         const validJson = {
             id: "test",
