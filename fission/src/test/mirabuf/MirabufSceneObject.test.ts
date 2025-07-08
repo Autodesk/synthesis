@@ -5,6 +5,7 @@ import type Mechanism from "@/systems/physics/Mechanism"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { createBodyMock } from "../mocks/jolt"
 import World from "@/systems/World"
+import IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
 
 function mockBodyId() {
     return { GetIndex: () => 0, GetIndexAndSequenceNumber: () => 0 }
@@ -100,6 +101,7 @@ function mockMirabufInstance(): MirabufInstance {
 }
 
 function setPrivate<T>(obj: T, key: string, value: unknown) {
+    // eslint-disable-next-line no-extra-semi
     ;(obj as Record<string, unknown>)[key] = value
 }
 
@@ -130,7 +132,7 @@ describe("MirabufSceneObject", () => {
     test("Dispose cleans up scene objects and mechanism", () => {
         setPrivate(instance, "_ejectables", [{ id: 1, gamePieceBodyId: mockBodyId() }])
         setPrivate(instance, "_scoringZones", [{ id: 2 }])
-        setPrivate(instance, "_intakeSensor", { id: 3 } as unknown as any)
+        setPrivate(instance, "_intakeSensor", { id: 3 } as unknown as IntakeSensorSceneObject)
         instance.Dispose()
         expect(World.SceneRenderer.RemoveSceneObject).toHaveBeenCalled()
         expect(World.PhysicsSystem.DestroyMechanism).toHaveBeenCalled()
