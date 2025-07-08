@@ -32,7 +32,7 @@ vi.mock("@/systems/World", () => ({
 describe("IntakeSensorSceneObject", () => {
     beforeEach(() => {
         vi.clearAllMocks()
-        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as any)
+        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body)
     })
 
     test("Setup creates sensor", () => {
