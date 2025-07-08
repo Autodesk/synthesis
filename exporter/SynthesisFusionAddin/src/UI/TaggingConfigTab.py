@@ -1,10 +1,8 @@
 import adsk.core
 import adsk.fusion
 
-from src.Logging import getLogger, logFailure
+from src.Logging import logFailure
 from src.UI.CreateCommandInputsHelper import createTableInput, createTextBoxInput
-
-logger = getLogger()
 
 
 class TaggingConfigTab:

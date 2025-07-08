@@ -18,7 +18,7 @@ import src.UI.JointConfigTab as JointConfigTab
 import src.UI.TaggingConfigTab as TaggingConfigTab
 from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
-from src.Logging import getLogger, logFailure
+from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
@@ -28,8 +28,6 @@ generalConfigTab: GeneralConfigTab.GeneralConfigTab
 jointConfigTab: JointConfigTab.JointConfigTab
 gamepieceConfigTab: GamepieceConfigTab.GamepieceConfigTab
 taggingConfigTab: TaggingConfigTab.TaggingConfigTab
-
-logger = getLogger()
 
 INPUTS_ROOT: adsk.core.CommandInputs
 
@@ -42,7 +40,6 @@ def reload() -> None:
     importlib.reload(TaggingConfigTab)
 
     importlib.reload(Parser)
-    logger.info("UI modules reloaded successfully.")
 
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
