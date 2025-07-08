@@ -52,11 +52,11 @@ describe("MirabufLoader", () => {
         fetchMock = vi.fn() as MockedFunction<typeof fetch>
         globalThis.fetch = fetchMock
         if (!globalThis.crypto) {
-            // @ts-expect-error
+            // @ts-expect-error: Polyfill for crypto in test environment
             globalThis.crypto = {}
         }
         if (!globalThis.crypto.subtle) {
-            // @ts-expect-error
+            // @ts-expect-error: Polyfill for crypto.subtle in test environment
             globalThis.crypto.subtle = {}
         }
         originalDigest = globalThis.crypto.subtle.digest
