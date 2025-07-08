@@ -325,7 +325,7 @@ class PhysicsSystem extends WorldSystem {
     }
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
-        const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
+        const layer = parser.assembly.dynamic && !parser.isGamePiece ? new LayerReserve() : undefined
         const bodyMap = this.CreateBodiesFromParser(parser, layer)
         const rootBody = parser.rootNode
         const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)
@@ -900,8 +900,8 @@ class PhysicsSystem extends WorldSystem {
     public CreateBodiesFromParser(parser: MirabufParser, layerReserve?: LayerReserve): Map<string, Jolt.BodyID> {
         const rnToBodies = new Map<string, Jolt.BodyID>()
 
-        if ((parser.assembly.dynamic && !layerReserve) || layerReserve?.isReleased) {
-            throw new Error("No layer reserve for dynamic assembly")
+        if ((parser.assembly.dynamic && !layerReserve && !parser.isGamePiece) || layerReserve?.isReleased) {
+            throw new Error("No layer reserve for non-game piece dynamic assembly")
         }
 
         const reservedLayer: number | undefined = layerReserve?.layer
@@ -935,7 +935,7 @@ class PhysicsSystem extends WorldSystem {
 
             const rnLayer: number = reservedLayer
                 ? reservedLayer
-                : rn.id.endsWith(GAMEPIECE_SUFFIX)
+                : parser.isGamePiece
                   ? LAYER_GENERAL_DYNAMIC
                   : LAYER_FIELD
 
