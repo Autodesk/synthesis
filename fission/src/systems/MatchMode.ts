@@ -76,7 +76,6 @@ class MatchMode {
 
     endgameStart() {
         // TODO play the endgame start sound
-        console.log("Endgame started")
         this.endgame = true
     }
 

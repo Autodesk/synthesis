@@ -73,12 +73,12 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     useEffect(() => {
         const loadAllJsonFiles = async () => {
             try {
-                const indexRes = await fetch("public/match-mode-config/index.json")
+                const indexRes = await fetch("match-mode-config/index.json")
                 const fileNames: string[] = await indexRes.json()
 
                 const allConfigs = await Promise.all(
                     fileNames.map(async fileName => {
-                        const res = await fetch(`public/match-mode-config/${fileName}`)
+                        const res = await fetch(`match-mode-config/${fileName}`)
                         return res.json()
                     })
                 )
