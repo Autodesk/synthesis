@@ -4,7 +4,7 @@ import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import Jolt from "@azaleacolburn/jolt-physics"
-import { createBodyMock } from '../mocks/jolt'
+import { createBodyMock } from "../mocks/jolt"
 
 vi.mock("@/systems/World", () => ({
     default: {

@@ -3,7 +3,7 @@ import EjectableSceneObject from "../../mirabuf/EjectableSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
 import World from "@/systems/World"
-import { createVec3Mock, createBodyMock } from '../mocks/jolt'
+import { createVec3Mock, createBodyMock } from "../mocks/jolt"
 
 vi.mock("@/systems/World", () => ({
     default: {

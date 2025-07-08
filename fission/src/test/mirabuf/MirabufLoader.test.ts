@@ -2,12 +2,8 @@ import { describe, test, expect, vi, beforeEach, afterEach, type MockedFunction 
 import MirabufLoader, { MiraType, MirabufCacheInfo } from "../../mirabuf/MirabufLoader"
 
 type MockLoader = {
-  StoreInCache(
-    key: string,
-    buff: ArrayBuffer,
-    miraType?: MiraType
-  ): Promise<MirabufCacheInfo | undefined>
-  AssemblyFromBuffer(buff: ArrayBuffer): { dynamic: boolean }
+    StoreInCache(key: string, buff: ArrayBuffer, miraType?: MiraType): Promise<MirabufCacheInfo | undefined>
+    AssemblyFromBuffer(buff: ArrayBuffer): { dynamic: boolean }
 }
 
 vi.mock("@/systems/World", () => ({
@@ -26,9 +22,11 @@ function uint8ToBase64(bytes: Uint8Array): string {
     return btoa(binary)
 }
 
-globalThis.btoa = globalThis.btoa || ((str: string) => {
-    return uint8ToBase64(new TextEncoder().encode(str))
-})
+globalThis.btoa =
+    globalThis.btoa ||
+    ((str: string) => {
+        return uint8ToBase64(new TextEncoder().encode(str))
+    })
 
 describe("MirabufLoader", () => {
     let localStorageMock: Record<string, string>
@@ -39,9 +37,15 @@ describe("MirabufLoader", () => {
         localStorageMock = {}
         vi.stubGlobal("localStorage", {
             getItem: vi.fn(key => localStorageMock[key] ?? null),
-            setItem: vi.fn((key, value) => { localStorageMock[key] = value }),
-            removeItem: vi.fn(key => { delete localStorageMock[key] }),
-            clear: vi.fn(() => { localStorageMock = {} }),
+            setItem: vi.fn((key, value) => {
+                localStorageMock[key] = value
+            }),
+            removeItem: vi.fn(key => {
+                delete localStorageMock[key]
+            }),
+            clear: vi.fn(() => {
+                localStorageMock = {}
+            }),
             key: vi.fn(),
             length: 0,
         })
@@ -112,7 +116,9 @@ describe("MirabufLoader", () => {
         const miraType = MiraType.ROBOT
         const map = { [key]: { id, miraType, cacheKey: key } }
         localStorageMock["Robots"] = JSON.stringify(map)
-        ;(MirabufLoader as typeof MirabufLoader & { backUpRobots: Record<string, { buffer: ArrayBuffer }> }).backUpRobots = { [id]: { buffer: new ArrayBuffer(1) } } 
+        ;(
+            MirabufLoader as typeof MirabufLoader & { backUpRobots: Record<string, { buffer: ArrayBuffer }> }
+        ).backUpRobots = { [id]: { buffer: new ArrayBuffer(1) } }
     })
 
     test("HashBuffer returns a base64 string", async () => {
@@ -121,4 +127,4 @@ describe("MirabufLoader", () => {
         expect(typeof hash).toBe("string")
         expect(hash.length).toBeGreaterThan(0)
     })
-}) 
+})
