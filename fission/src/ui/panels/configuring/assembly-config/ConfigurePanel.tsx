@@ -7,6 +7,7 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { MouseEvent, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -26,6 +27,7 @@ import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
@@ -163,6 +165,14 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
                 "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
             ),
         ],
+        [
+            ConfigMode.ALLIANCE,
+            new ConfigModeSelectionOption(
+                "Alliance",
+                ConfigMode.ALLIANCE,
+                "Set the robot's alliance color for matches. (red or blue)"
+            ),
+        ],
     ])
 
     switch (assembly.brain?.brainType) {
@@ -200,6 +210,14 @@ const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMod
             "Scoring Zones",
             ConfigMode.SCORING_ZONES,
             "Define and manage zones on the field where robots can earn points during simulation."
+        ),
+    ],
+    [
+        ConfigMode.PROTECTED_ZONES,
+        new ConfigModeSelectionOption(
+            "Protected Zones",
+            ConfigMode.PROTECTED_ZONES,
+            "Define and manage protected zones on the field where robots can not enter."
         ),
     ],
 ])
@@ -282,6 +300,14 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         }
+        case ConfigMode.PROTECTED_ZONES: {
+            const zones = assembly.fieldPreferences?.protectedZones ?? []
+            if (zones == undefined) {
+                console.error("Field does not contain protected zone preferences!")
+                return <Label>ERROR: Field does not contain protected zone configuration!</Label>
+            }
+            return <ConfigureProtectedZonesInterface selectedField={assembly} initialZones={zones} />
+        }
         case ConfigMode.MOVE: {
             return (
                 <TransformGizmoControl
@@ -300,6 +326,9 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
         }
         case ConfigMode.BRAIN: {
             return <BrainSelectionInterface selectedAssembly={assembly} />
+        }
+        case ConfigMode.ALLIANCE: {
+            return <AllianceSelectionInterface selectedAssembly={assembly} />
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
