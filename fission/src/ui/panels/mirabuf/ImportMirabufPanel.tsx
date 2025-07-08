@@ -39,7 +39,6 @@ import { Global_AddToast, Global_OpenPanel } from "@/ui/components/GlobalUIContr
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 interface ItemCardProps {
     id: string
@@ -434,7 +433,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             setViewType(v)
                         }
                     }}
-                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                    {...SoundPlayer.buttonSoundEffects()}
                     sx={{
                         alignSelf: "center",
                     }}
