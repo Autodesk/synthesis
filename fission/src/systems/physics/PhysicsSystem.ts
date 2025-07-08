@@ -326,6 +326,7 @@ class PhysicsSystem extends WorldSystem {
 
     public CreateMechanismFromParser(parser: MirabufParser): Mechanism {
         const layer = parser.assembly.dynamic ? new LayerReserve() : undefined
+        const transform = parser.assembly.transform
         const bodyMap = this.CreateBodiesFromParser(parser, layer)
         const rootBody = parser.rootNode
         const mechanism = new Mechanism(rootBody, bodyMap, parser.assembly.dynamic, layer)
@@ -915,6 +916,9 @@ class PhysicsSystem extends WorldSystem {
             return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
         })()
 
+        const translation = parser.assembly.transform
+        // console.log(`x: ${translation.GetX()} y: ${translation.GetY()} z: ${translation.GetZ()}`)
+
         nonPhysicsNodes.forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
             let shapesAdded = 0
@@ -949,7 +953,6 @@ class PhysicsSystem extends WorldSystem {
                 const partShapeResult = rn.isDynamic
                     ? this.CreateConvexShapeSettingsFromPart(partDefinition)
                     : this.CreateConcaveShapeSettingsFromPart(partDefinition)
-
                 if (!partShapeResult) return
 
                 const [shapeSettings, partMin, partMax] = partShapeResult

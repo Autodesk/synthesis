@@ -88,19 +88,17 @@ function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
 }
 
 function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
-    // If spawning a field, then remove all other fields
     if (type == MiraType.FIELD) {
         World.SceneRenderer.RemoveAllFields()
     }
 
-    if (!progressHandle) {
-        progressHandle = new ProgressHandle(info.name ?? info.cacheKey)
-    }
+    progressHandle ??= new ProgressHandle(info.name ?? info.cacheKey)
 
     World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_SPAWNING)
     MirabufCachingService.Get(info.id, type)
         .then(assembly => {
             if (assembly) {
+                console.log("have asm")
                 CreateMirabuf(assembly).then(x => {
                     if (x) {
                         const { mainSceneObject, gamePieces } = x
@@ -114,7 +112,8 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         })
                         progressHandle.Done()
 
-                        Global_OpenPanel?.("initial-config")
+                        // TODO Disable for fields/game pieces
+                        if (gamePieces != undefined && gamePieces.length > 0) Global_OpenPanel?.("initial-config")
                     } else {
                         progressHandle.Fail()
                     }
@@ -123,7 +122,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                 if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
             } else {
                 progressHandle.Fail()
-                console.error("Failed to spawn robot")
+                console.error("Failed to spawn assembly")
             }
         })
         .catch(() => progressHandle.Fail())

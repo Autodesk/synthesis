@@ -4,7 +4,7 @@ import MirabufInstance from "./MirabufInstance"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import World from "@/systems/World"
 import Jolt from "@azaleacolburn/jolt-physics"
-import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
+import { JoltMat44_ThreeMatrix4, JoltVec3_ThreeVector3, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -234,7 +234,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         // Simulation
-        if (this.miraType == MiraType.ROBOT) {
+        if (this.miraType === MiraType.ROBOT) {
             World.SimulationSystem.RegisterMechanism(this._mechanism)
             const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
             this._brain = new SynthesisBrain(this, this._assemblyName)
@@ -248,6 +248,21 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         setSpotlightAssembly(this)
 
         this.UpdateBatches()
+
+        if (this.miraType === MiraType.PIECE) {
+            const jBodyId = this.mechanism.GetBodyByNodeId(this.mechanism.rootBody)
+            if (!jBodyId) {
+                console.warn(
+                    `Jolt Body for SceneObjet ${this.id} with rootBody ${this.mechanism.rootBody} as NodeId not found`
+                )
+                return
+            }
+            const position = ThreeVector3_JoltRVec3(
+                new THREE.Vector3().setFromMatrixPosition(this.mirabufInstance.parser.gamePieceTransform!)
+            )
+            World.PhysicsSystem.SetBodyPosition(jBodyId, position)
+            this.UpdateMeshTransforms()
+        }
 
         const bounds = this.ComputeBoundingBox()
         if (!Number.isFinite(bounds.min.y)) return
@@ -713,7 +728,7 @@ export async function CreateMirabuf(
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle
 ): Promise<{ mainSceneObject: MirabufSceneObject; gamePieces?: MirabufSceneObject[] } | null | undefined> {
-    const parser = new MirabufParser(assembly, undefined, progressHandle)
+    const parser = new MirabufParser(assembly, false, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return

@@ -54,8 +54,10 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
             setSelectedScheme(scheme)
-        } else {
+        } else if (targetAssembly?.miraType === MiraType.FIELD) {
             setSelectedConfigurationType(ConfigurationType.FIELD)
+        } else {
+            setSelectedConfigurationType(ConfigurationType.PIECES)
         }
 
         closePanel(panelId)
@@ -89,7 +91,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
-                {targetAssembly ? (
+                {targetAssembly?.miraType !== MiraType.PIECE ? (
                     <TransformGizmoControl
                         key={"init-config-gizmo"}
                         defaultMode="translate"
@@ -105,7 +107,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 {brainIndex != undefined ? (
                     <InputSchemeSelection
                         brainIndex={brainIndex}
-                        onSelect={() => {}}
+                        onSelect={() => { }}
                         onEdit={() => openPanel("configure")}
                         onCreateNew={() => openModal("assign-new-scheme")}
                     />
