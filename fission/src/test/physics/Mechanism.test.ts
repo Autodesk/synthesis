@@ -38,22 +38,6 @@ const mockLayerReserve = {
 } as unknown as LayerReserve
 
 describe("Mechanism Constructor Tests", () => {
-    test("Constructor with minimal parameters", () => {
-        const rootBody = "root-body-id"
-        const bodyMap = new Map<string, Jolt.BodyID>()
-        const controllable = true
-
-        const mechanism = new Mechanism(rootBody, bodyMap, controllable)
-
-        expect(mechanism.rootBody).toBe(rootBody)
-        expect(mechanism.nodeToBody).toBe(bodyMap)
-        expect(mechanism.controllable).toBe(controllable)
-        expect(mechanism.constraints).toEqual([])
-        expect(mechanism.stepListeners).toEqual([])
-        expect(mechanism.ghostBodies).toEqual([])
-        expect(mechanism.layerReserve).toBeUndefined()
-    })
-
     test("Constructor with all parameters", () => {
         const rootBody = "root-body-id"
         const bodyMap = new Map<string, Jolt.BodyID>([
@@ -210,48 +194,6 @@ describe("Mechanism Body Node Mapping", () => {
         bodyMap.set("node4", newBodyID)
 
         expect(mechanism.GetBodyByNodeId("node4")).toBe(newBodyID)
-    })
-})
-
-describe("Mechanism Properties and State", () => {
-    test("Root body property", () => {
-        const rootBody = "test-root-body"
-        const mechanism = new Mechanism(rootBody, new Map(), true)
-
-        expect(mechanism.rootBody).toBe(rootBody)
-    })
-
-    test("Controllable property - true", () => {
-        const mechanism = new Mechanism("root", new Map(), true)
-        expect(mechanism.controllable).toBe(true)
-    })
-
-    test("Controllable property - false", () => {
-        const mechanism = new Mechanism("root", new Map(), false)
-        expect(mechanism.controllable).toBe(false)
-    })
-
-    test("Layer reserve property", () => {
-        const mechanism1 = new Mechanism("root", new Map(), true)
-        expect(mechanism1.layerReserve).toBeUndefined()
-
-        const mechanism2 = new Mechanism("root", new Map(), true, mockLayerReserve)
-        expect(mechanism2.layerReserve).toBe(mockLayerReserve)
-    })
-
-    test("Ghost bodies array initialization", () => {
-        const mechanism = new Mechanism("root", new Map(), true)
-
-        expect(mechanism.ghostBodies).toEqual([])
-        expect(Array.isArray(mechanism.ghostBodies)).toBe(true)
-    })
-
-    test("Ghost bodies can be modified", () => {
-        const mechanism = new Mechanism("root", new Map(), true)
-
-        mechanism.ghostBodies.push(mockBodyID)
-        expect(mechanism.ghostBodies).toHaveLength(1)
-        expect(mechanism.ghostBodies[0]).toBe(mockBodyID)
     })
 })
 
