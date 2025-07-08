@@ -515,7 +515,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public SetEjectable(bodyId?: Jolt.BodyID): boolean {
-        if (!this._ejectorPreferences?.parentNode || !bodyId) {
+        if (!bodyId) { return false }
+
+        if (!this._ejectorPreferences?.parentNode) {
+            console.log(bodyId)
             const now = Date.now()
             if (now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS) {
                 console.log(`Configure an ejectable first.`)
