@@ -109,7 +109,7 @@ is handled within the simulator.
 
 For more information on the original implementation of this swerve module detection system you can here:
 
-https://github.com/BrandonPacewic/synthesis/blob/636668d534564610eca7e80db856f2eb43fc60e9/engine/Assets/Scripts/SimObjects/RobotSimObject.cs#L540-L579
+https://github.com/Autodesk/synthesis/blob/636668d534564610eca7e80db856f2eb43fc60e9/engine/Assets/Scripts/SimObjects/RobotSimObject.cs#L540-L579
 
 This commit hash represents v6 of Synthesis.
 
