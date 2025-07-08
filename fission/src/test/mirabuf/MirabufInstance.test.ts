@@ -6,108 +6,106 @@ import { ParseErrorSeverity } from "../../mirabuf/MirabufParser"
 import { ProgressHandle } from "../../ui/components/ProgressNotificationData"
 
 vi.mock("@/systems/World.ts", () => ({
-  default: {
-    SceneRenderer: {
-      CreateToonMaterial: vi.fn(() => new THREE.MeshStandardMaterial({ color: 0x123456 })),
-      SetupMaterial: vi.fn(),
+    default: {
+        SceneRenderer: {
+            CreateToonMaterial: vi.fn(() => new THREE.MeshStandardMaterial({ color: 0x123456 })),
+            SetupMaterial: vi.fn(),
+        },
     },
-  },
 }))
 
 describe("MirabufInstance", () => {
-  let parser: MirabufParser
-  let scene: THREE.Scene
-  let progressHandle: ProgressHandle
+    let parser: MirabufParser
+    let scene: THREE.Scene
+    let progressHandle: ProgressHandle
 
-  beforeEach(() => {
-    parser = {
-      errors: [],
-      assembly: {
-        data: {
-          materials: {
-            appearances: {
-              "mat1": { albedo: { A: 255, R: 10, G: 20, B: 30 }, roughness: 0.5, metallic: 0.1 },
-            },
-          },
-          parts: {
-            partDefinitions: {
-              "def1": {
-                info: { GUID: "def1" },
-                bodies: [
-                  {
-                    info: { GUID: "body1" },
-                    triangleMesh: {
-                      mesh: {
-                        verts: [0, 0, 0, 1, 1, 1, 2, 2, 2],
-                        normals: [0, 0, 1, 0, 1, 0, 1, 0, 0],
-                        uv: [0, 0, 1, 1, 2, 2],
-                        indices: [0, 1, 2],
-                      },
+    beforeEach(() => {
+        parser = {
+            errors: [],
+            assembly: {
+                data: {
+                    materials: {
+                        appearances: {
+                            mat1: { albedo: { A: 255, R: 10, G: 20, B: 30 }, roughness: 0.5, metallic: 0.1 },
+                        },
                     },
-                  },
-                ],
-              },
+                    parts: {
+                        partDefinitions: {
+                            def1: {
+                                info: { GUID: "def1" },
+                                bodies: [
+                                    {
+                                        info: { GUID: "body1" },
+                                        triangleMesh: {
+                                            mesh: {
+                                                verts: [0, 0, 0, 1, 1, 1, 2, 2, 2],
+                                                normals: [0, 0, 1, 0, 1, 0, 1, 0, 0],
+                                                uv: [0, 0, 1, 1, 2, 2],
+                                                indices: [0, 1, 2],
+                                            },
+                                        },
+                                    },
+                                ],
+                            },
+                        },
+                        partInstances: {
+                            inst1: {
+                                partDefinitionReference: "def1",
+                                info: { GUID: "inst1" },
+                            },
+                        },
+                    },
+                },
             },
-            partInstances: {
-              "inst1": {
-                partDefinitionReference: "def1",
-                info: { GUID: "inst1" },
-              },
-            },
-          },
-        },
-      },
-      globalTransforms: new Map([
-        ["inst1", new THREE.Matrix4()]
-      ]),
-    } as unknown as MirabufParser
-    scene = new THREE.Scene()
-    progressHandle = { Update: vi.fn() } as unknown as ProgressHandle
-  })
+            globalTransforms: new Map([["inst1", new THREE.Matrix4()]]),
+        } as unknown as MirabufParser
+        scene = new THREE.Scene()
+        progressHandle = { Update: vi.fn() } as unknown as ProgressHandle
+    })
 
-  test("throws if parser has unimportable errors", () => {
-    const badParser = { ...parser, errors: [[ParseErrorSeverity.Unimportable, "fail"]] } as MirabufParser
-    expect(() => new MirabufInstance(badParser)).toThrow()
-  })
+    test("throws if parser has unimportable errors", () => {
+        const badParser = { ...parser, errors: [[ParseErrorSeverity.Unimportable, "fail"]] } as MirabufParser
+        expect(() => new MirabufInstance(badParser)).toThrow()
+    })
 
-  test("AddToScene adds all batches to scene", () => {
-    const instance = new MirabufInstance(parser)
-    const addSpy = vi.spyOn(scene, "add")
-    instance.AddToScene(scene)
-    expect(addSpy).toHaveBeenCalled()
-    expect(scene.children.length).toBeGreaterThan(0)
-  })
+    test("AddToScene adds all batches to scene", () => {
+        const instance = new MirabufInstance(parser)
+        const addSpy = vi.spyOn(scene, "add")
+        instance.AddToScene(scene)
+        expect(addSpy).toHaveBeenCalled()
+        expect(scene.children.length).toBeGreaterThan(0)
+    })
 
-  test("Dispose removes all batches and clears materials", () => {
-    const instance = new MirabufInstance(parser)
-    instance.AddToScene(scene)
-    expect(scene.children.length).toBeGreaterThan(0)
-    instance.Dispose(scene)
-    expect(scene.children.length).toBe(0)
-    expect(instance.batches.length).toBe(0)
-    expect(instance.meshes.size).toBe(0)
-    expect(instance.materials.size).toBe(0)
-  })
+    test("Dispose removes all batches and clears materials", () => {
+        const instance = new MirabufInstance(parser)
+        instance.AddToScene(scene)
+        expect(scene.children.length).toBeGreaterThan(0)
+        instance.Dispose(scene)
+        expect(scene.children.length).toBe(0)
+        expect(instance.batches.length).toBe(0)
+        expect(instance.meshes.size).toBe(0)
+        expect(instance.materials.size).toBe(0)
+    })
 
-  test("creates materials for all MaterialStyles", () => {
-    const styles: MaterialStyle[] = [MaterialStyle.Regular, MaterialStyle.Normals, MaterialStyle.Toon]
-    for (const style of styles) {
-      const instance = new MirabufInstance(parser, style)
-      expect(instance.materials.size).toBeGreaterThan(0)
-    }
-  })
+    test("creates materials for all MaterialStyles", () => {
+        const styles: MaterialStyle[] = [MaterialStyle.Regular, MaterialStyle.Normals, MaterialStyle.Toon]
+        for (const style of styles) {
+            const instance = new MirabufInstance(parser, style)
+            expect(instance.materials.size).toBeGreaterThan(0)
+        }
+    })
 
-  test("Dispose is idempotent and safe to call multiple times", () => {
-    const instance = new MirabufInstance(parser)
-    instance.AddToScene(scene)
-    expect(() => {
-      instance.Dispose(scene)
-      instance.Dispose(scene)
-      instance.Dispose(scene)
-    }).not.toThrow()
-    expect(scene.children.length).toBe(0)
-    expect(instance.batches.length).toBe(0)
-    expect(instance.meshes.size).toBe(0)
-    expect(instance.materials.size).toBe(0)
-  })
-}) 
+    test("Dispose is idempotent and safe to call multiple times", () => {
+        const instance = new MirabufInstance(parser)
+        instance.AddToScene(scene)
+        expect(() => {
+            instance.Dispose(scene)
+            instance.Dispose(scene)
+            instance.Dispose(scene)
+        }).not.toThrow()
+        expect(scene.children.length).toBe(0)
+        expect(instance.batches.length).toBe(0)
+        expect(instance.meshes.size).toBe(0)
+        expect(instance.materials.size).toBe(0)
+    })
+})
