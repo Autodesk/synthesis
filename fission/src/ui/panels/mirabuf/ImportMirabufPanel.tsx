@@ -84,7 +84,13 @@ export type MiraManifest = {
 
 function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     return Object.values(
-        canOPFS ? MirabufCachingService.GetCacheMap(miraType) : miraType == MiraType.ROBOT ? backUpRobots : miraType == MiraType.FIELD ? backUpFields : backUpPieces
+        canOPFS
+            ? MirabufCachingService.GetCacheMap(miraType)
+            : miraType == MiraType.ROBOT
+              ? backUpRobots
+              : miraType == MiraType.FIELD
+                ? backUpFields
+                : backUpPieces
     )
 }
 
@@ -439,7 +445,6 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             )
     }, [manifest?.fields, cachedPieces, selectRemote])
 
-
     function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         return useCallback(() => {
@@ -528,15 +533,16 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         <SectionDivider />
                         {cachedFieldElements}
                     </>
-                ) : (<>
-                    <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {cachedGamePieces
-                            ? `${cachedGamePieces.length} Saved Game Piece${cachedGamePieces.length == 1 ? "" : "s"}`
-                            : "Loading Saved Game Pieces"}
-                    </SectionLabel>
-                    <SectionDivider />
-                    {cachedGamePieces}
-                </>
+                ) : (
+                    <>
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {cachedGamePieces
+                                ? `${cachedGamePieces.length} Saved Game Piece${cachedGamePieces.length == 1 ? "" : "s"}`
+                                : "Loading Saved Game Pieces"}
+                        </SectionLabel>
+                        <SectionDivider />
+                        {cachedGamePieces}
+                    </>
                 )}
                 <Box
                     component={"div"}
@@ -582,18 +588,19 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             <PositiveButton value="Download All" onClick={downloadAllRemoteFields} />
                         </Box>
                     </>
-                ) : (<>
-                    <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {remoteGamePieces
-                            ? `${remoteGamePieces.length} Default Game Piece${remoteGamePieces.length == 1 ? "" : "s"}`
-                            : "Loading Default Game Pieces"}
-                    </SectionLabel>
-                    <SectionDivider />
-                    {remoteGamePieces}
-                    <Box display="flex" justifyContent="center" mt={1}>
-                        <PositiveButton value="Download All" onClick={downloadAllRemotePieces} />
-                    </Box>
-                </>
+                ) : (
+                    <>
+                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {remoteGamePieces
+                                ? `${remoteGamePieces.length} Default Game Piece${remoteGamePieces.length == 1 ? "" : "s"}`
+                                : "Loading Default Game Pieces"}
+                        </SectionLabel>
+                        <SectionDivider />
+                        {remoteGamePieces}
+                        <Box display="flex" justifyContent="center" mt={1}>
+                            <PositiveButton value="Download All" onClick={downloadAllRemotePieces} />
+                        </Box>
+                    </>
                 )}
                 <Box alignSelf={"center"}>
                     <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
