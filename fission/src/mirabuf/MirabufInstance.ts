@@ -235,8 +235,8 @@ class MirabufInstance {
                     const geometry = new THREE.BufferGeometry()
                     transformGeometry(geometry, body.triangleMesh!.mesh!)
                     const geoId = batchedMesh.addGeometry(geometry)
-
-                    batchedMesh.setMatrixAt(geoId, mat)
+                    const instanceId = batchedMesh.addInstance(geoId)
+                    batchedMesh.setMatrixAt(instanceId, mat)
 
                     let bodies = this._meshes.get(instance.info!.GUID!)
                     if (!bodies) {
