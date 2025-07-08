@@ -178,6 +178,7 @@ describe("Preference System Robot/Field", () => {
                     deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                 },
             ],
+            protectedZones: [],
         }
         const fieldPreferences_2: FieldPreferences = {
             defaultSpawnLocation: [1, 1, 1],
@@ -190,6 +191,16 @@ describe("Preference System Robot/Field", () => {
                     destroyGamepiece: false,
                     persistentPoints: true,
                     deltaTransformation: [1, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 1, 0, 0, 1],
+                },
+            ],
+            protectedZones: [
+                {
+                    name: "ProtectedZone1",
+                    alliance: "red",
+                    parentNode: undefined,
+                    deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                    penaltyPoints: 2,
+                    requireRobotContact: false,
                 },
             ],
         }
