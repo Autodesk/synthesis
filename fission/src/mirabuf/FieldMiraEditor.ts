@@ -1,5 +1,19 @@
 import { mirabuf } from "../proto/mirabuf"
 
+interface DevtoolMiraData {
+    "devtool:scoring_zones": unknown
+    "devtool:camera_locations": unknown
+    "devtool:spawn_points": unknown
+    "devtool:a": unknown
+    "devtool:b": unknown
+    "devtool:test": unknown
+    "devtool:keep": unknown
+    "devtool:drop": unknown
+    "devtool:bad": unknown
+    "devtool:foo": unknown
+    // additional devtool keys to be added in future
+}
+
 /**
  * Utility for reading and writing developer tool data in the mira file's UserData field.
  * Docs: https://www.mirabuf.dev/#mirabuf.UserData
@@ -20,7 +34,7 @@ export default class FieldMiraEditor {
     /**
      * Get parsed data for a devtool key (e.g., 'devtool:scoring_zones').
      */
-    getUserData<T = any>(key: string): T | undefined {
+    getUserData<K extends keyof DevtoolMiraData>(key: K): DevtoolMiraData[K] | undefined {
         const raw = this.parts.userData!.data![key]
         if (!raw) return undefined
         try {
@@ -33,14 +47,14 @@ export default class FieldMiraEditor {
     /**
      * Set data for a devtool key. Value will be stringified as JSON.
      */
-    setUserData(key: string, value: any): void {
+    setUserData<K extends keyof DevtoolMiraData>(key: K, value: DevtoolMiraData[K]): void {
         this.parts.userData!.data![key] = JSON.stringify(value)
     }
 
     /**
      * Remove a devtool key from userData.
      */
-    removeUserData(key: string): void {
+    removeUserData(key: keyof DevtoolMiraData): void {
         delete this.parts.userData!.data![key]
     }
 
