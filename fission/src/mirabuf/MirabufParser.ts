@@ -149,7 +149,7 @@ class MirabufParser {
                 .map(part => assembly.data?.parts?.partInstances?.[part])
                 .filter(inst => inst?.partDefinitionReference)
                 .reduce<number>((acc, inst) => {
-                    const def = assembly.data?.parts?.partDefinitions?.[inst?.partDefinitionReference!]
+                    const def = assembly.data?.parts?.partDefinitions?.[inst?.partDefinitionReference as string]
                     return acc + (def?.massOverride ?? def?.physicalData?.mass ?? 0)
                 }, 0)
         })
@@ -212,12 +212,12 @@ class MirabufParser {
                 this.DeleteRigidNode(gpRn)
 
                 // Delete partInstances
-                Object.entries(this._assembly.data?.parts?.partInstances!)
+                Object.entries(this._assembly.data?.parts?.partInstances ?? {})
                     .filter(([_key, subInst]) => inst === subInst)
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
                 // Delete partDefinitions
-                Object.entries(this._assembly.data?.parts?.partDefinitions!)
+                Object.entries(this._assembly.data?.parts?.partDefinitions ?? {})
                     .filter(([_key, subInst]) => inst === subInst)
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
 
@@ -440,13 +440,6 @@ class MirabufParser {
         const valueA = ptv.get(partA)!
         const valueB = ptv.get(partB)!
 
-        // TODO: Figure out why initial refactor failed
-        const traverse = (path: mirabuf.INode, value: number) => {
-            const ancestorIndex = this.BinarySearchIndex(value, path.children!)
-            const ancestorValue = ptv.get(path.children![ancestorIndex].value!)!
-            path = path.children![ancestorIndex + (ancestorValue < value ? 1 : 0)]
-        }
-
         while (pathA.value! == pathB.value! && pathA.value! != partA && pathB.value! != partB) {
             const ancestorIndexA = this.BinarySearchIndex(valueA, pathA.children!)
             const ancestorValueA = ptv.get(pathA.children![ancestorIndexA].value!)!
@@ -489,22 +482,6 @@ class MirabufParser {
         return Math.floor((h + l) / 2.0)
     }
 
-    /**
-     * Old functon, replaced with BinarySearchDesignTreePrune, but has potentially useful functionality on its own
-     */
-    private _BinarySearchDesignTree(target: string): mirabuf.INode | null {
-        let node = this._designHierarchyRoot
-        const targetValue = this._partTreeValues.get(target)!
-
-        while (node.value != target && node.children) {
-            const i = this.BinarySearchIndex(targetValue, node.children!)
-            const iValue = this._partTreeValues.get(node.children![i].value!)!
-            node = node.children![i + (iValue < targetValue ? 1 : 0)]
-        }
-
-        return node.value! == target ? node : null
-    }
-
     private BinarySearchDesignTreePrune(target: string): mirabuf.INode | null {
         let parent = this._designHierarchyRoot
         let node = this._designHierarchyRoot
@@ -517,7 +494,7 @@ class MirabufParser {
             node = node.children![i + (iValue < targetValue ? 1 : 0)]
         }
 
-        if (node?.value! == target) {
+        if (node?.value === target) {
             const index = parent?.children?.indexOf(node)
             if (index != -1 && index != null) {
                 // parent?.children?.splice(index)

@@ -10,7 +10,6 @@ import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
-import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
@@ -58,9 +57,12 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         .then(x => CreateMirabuf(x!))
                         .then(x => {
                             if (x) {
-                                World.SceneRenderer.RegisterSceneObject(x)
+                                const { mainSceneObject, gamePieces } = x
 
-                                Global_OpenPanel?.("initial-config")
+                                World.SceneRenderer.RegisterSceneObject(mainSceneObject)
+                                gamePieces?.forEach(piece => {
+                                    World.SceneRenderer.RegisterSceneObject(piece)
+                                })
                             }
                         })
                         .finally(() =>

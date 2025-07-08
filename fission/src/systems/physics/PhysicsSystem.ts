@@ -915,9 +915,6 @@ class PhysicsSystem extends WorldSystem {
             return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
         })()
 
-        const translation = parser.assembly.transform
-        // console.log(`x: ${translation.GetX()} y: ${translation.GetY()} z: ${translation.GetZ()}`)
-
         nonPhysicsNodes.forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
             let shapesAdded = 0
@@ -944,10 +941,10 @@ class PhysicsSystem extends WorldSystem {
 
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
-                if (!partInstance || partInstance.skipCollider) return
+                if (!partInstance?.partDefinitionReference || partInstance?.skipCollider) return
 
                 const partDefinition =
-                    parser.assembly.data!.parts!.partDefinitions![partInstance?.partDefinitionReference!]
+                    parser.assembly.data!.parts!.partDefinitions![partInstance?.partDefinitionReference]
 
                 const partShapeResult = rn.isDynamic
                     ? this.CreateConvexShapeSettingsFromPart(partDefinition)
