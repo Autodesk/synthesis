@@ -33,7 +33,7 @@ import {
     ConfigMode,
     setNextConfigurePanelSettings,
 } from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
-import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { Global_AddToast, Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import {
     ConfigurationType,
     setSelectedConfigurationType,
@@ -93,6 +93,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _centerOfMassListenerUnsubscribe: (() => void) | undefined
     private _intakeActive = false
     private _ejectorActive = false
+
+    private _lastEjectableToastTime = 0
+    private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
     private _collision?: (event: OnContactAddedEvent) => void
 
@@ -512,9 +515,18 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public SetEjectable(bodyId?: Jolt.BodyID): boolean {
-        // 1) still require you’ve configured an ejector
-        if (!this._ejectorPreferences?.parentNode || !bodyId) {
-            console.log(`Configure an ejectable first.`)
+        if (!bodyId) {
+            return false
+        }
+
+        if (!this._ejectorPreferences?.parentNode) {
+            console.log(bodyId)
+            const now = Date.now()
+            if (now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS) {
+                console.log(`Configure an ejectable first.`)
+                Global_AddToast?.("info", "Configure Ejectable", "Configure an ejectable first.")
+                this._lastEjectableToastTime = now
+            }
             return false
         }
 
