@@ -419,9 +419,9 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             )
     }, [manifest?.fields, cachedFields, selectRemote])
 
-    // Generate Item cards for remote fields.
+    // Generate Item cards for remote game pieces.
     const remoteGamePieces = useMemo(() => {
-        const remotePieces = manifest?.fields.filter(
+        const remotePieces = manifest?.pieces.filter(
             path => !cachedPieces.some(info => info.cacheKey.includes(path.src))
         )
         return remotePieces
