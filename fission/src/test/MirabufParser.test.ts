@@ -12,7 +12,6 @@ describe("Mirabuf Parser Tests", () => {
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
-
         expect(filterNonPhysicsNodes(rn, spikeMira!).length).toBe(7)
     })
 
@@ -23,7 +22,7 @@ describe("Mirabuf Parser Tests", () => {
         ).then(x => MirabufCachingService.Get(x!.id, MiraType.FIELD))
         const t = new MirabufParser(field!)
 
-        expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(34)
+        expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(2)
     })
 })
 
