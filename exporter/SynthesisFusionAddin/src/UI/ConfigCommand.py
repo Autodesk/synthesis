@@ -15,6 +15,7 @@ import src.Parser.SynthesisParser.Parser as Parser
 import src.UI.GamepieceConfigTab as GamepieceConfigTab
 import src.UI.GeneralConfigTab as GeneralConfigTab
 import src.UI.JointConfigTab as JointConfigTab
+import src.UI.DesignCheckTab as DesignCheckTab
 from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
@@ -26,6 +27,7 @@ from src.UI.Handlers import PersistentEventHandler
 generalConfigTab: GeneralConfigTab.GeneralConfigTab
 jointConfigTab: JointConfigTab.JointConfigTab
 gamepieceConfigTab: GamepieceConfigTab.GamepieceConfigTab
+designCheckTab: DesignCheckTab.DesignCheckTab
 
 logger = getLogger()
 
@@ -37,6 +39,7 @@ def reload() -> None:
     importlib.reload(GeneralConfigTab)
     importlib.reload(GamepieceConfigTab)
     importlib.reload(JointConfigTab)
+    importlib.reload(DesignCheckTab)
 
     importlib.reload(Parser)
     logger.info("UI modules reloaded successfully.")
@@ -91,6 +94,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         global jointConfigTab
         jointConfigTab = JointConfigTab.JointConfigTab(args)
         generalConfigTab.jointConfigTab = jointConfigTab
+
+        global designCheckTab
+        designCheckTab = DesignCheckTab.DesignCheckTab(args)
+        generalConfigTab.designCheckTab = designCheckTab
 
         if not exporterOptions.exportMode == ExportMode.FIELD:
             gamepieceConfigTab.isVisible = False
