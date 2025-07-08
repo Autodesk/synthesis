@@ -11,6 +11,7 @@ import {
 import MirabufCachingService, {
     backUpFields,
     backUpRobots,
+    backUpPieces,
     canOPFS,
     MirabufCacheInfo,
     MirabufRemoteInfo,
@@ -78,11 +79,12 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primar
 export type MiraManifest = {
     robots: MirabufRemoteInfo[]
     fields: MirabufRemoteInfo[]
+    pieces: MirabufRemoteInfo[]
 }
 
 function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     return Object.values(
-        canOPFS ? MirabufCachingService.GetCacheMap(miraType) : miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+        canOPFS ? MirabufCachingService.GetCacheMap(miraType) : miraType == MiraType.ROBOT ? backUpRobots : miraType == MiraType.FIELD ? backUpFields : backUpPieces
     )
 }
 
@@ -136,6 +138,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(GetCacheInfo(MiraType.FIELD))
+    const [cachedPieces, setCachedPieces] = useState(GetCacheInfo(MiraType.PIECE))
 
     const [manifest, setManifest] = useState<MiraManifest | undefined>()
     const [viewType, setViewType] = useState<MiraType>(MiraType.ROBOT)
@@ -209,9 +212,20 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             if (!map[src["src"]]) fields.push({ displayName: src["displayName"], src: src["src"] })
                         }
                     }
+                    const pieces: MirabufRemoteInfo[] = []
+                    for (const src of x["pieces"] ?? []) {
+                        if (typeof src == "string") {
+                            const str = `/api/mira/pieces/${src}`
+                            if (!map[str]) pieces.push({ displayName: src, src: str })
+                        } else {
+                            if (!map[src["src"]]) pieces.push({ displayName: src["displayName"], src: src["src"] })
+                        }
+                    }
+
                     setManifest({
                         robots,
                         fields,
+                        pieces,
                     })
                 })
         }
@@ -341,6 +355,30 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         [cachedFields, selectCache, setCachedFields]
     )
 
+    const cachedGamePieces = useMemo(
+        () =>
+            cachedPieces
+                .sort((a, b) => a.name?.localeCompare(b.name ?? "") ?? -1)
+                .map(info =>
+                    ItemCard({
+                        name: info.name || info.cacheKey || "Unnamed Piece",
+                        id: info.id,
+                        primaryButtonNode: SynthesisIcons.AddLarge,
+                        primaryOnClick: () => {
+                            console.log(`Selecting cached game pieces: ${info.cacheKey}`)
+                            selectCache(info, MiraType.PIECE)
+                        },
+                        secondaryOnClick: () => {
+                            console.log(`Deleting cache of: ${info.cacheKey}`)
+                            MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.PIECE)
+
+                            setCachedPieces(GetCacheInfo(MiraType.PIECE))
+                        },
+                    })
+                ),
+        [cachedPieces, selectCache, setCachedPieces]
+    )
+
     // Generate Item cards for remote robots.
     const remoteRobotElements = useMemo(() => {
         const remoteRobots = manifest?.robots.filter(
@@ -381,6 +419,27 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             )
     }, [manifest?.fields, cachedFields, selectRemote])
 
+    // Generate Item cards for remote fields.
+    const remoteGamePieces = useMemo(() => {
+        const remotePieces = manifest?.fields.filter(
+            path => !cachedPieces.some(info => info.cacheKey.includes(path.src))
+        )
+        return remotePieces
+            ?.sort((a, b) => a.displayName.localeCompare(b.displayName))
+            .map(path =>
+                ItemCard({
+                    name: path.displayName,
+                    id: path.src,
+                    primaryButtonNode: SynthesisIcons.DownloadLarge,
+                    primaryOnClick: () => {
+                        console.log(`Selecting remote: ${path}`)
+                        selectRemote(path, MiraType.PIECE)
+                    },
+                })
+            )
+    }, [manifest?.fields, cachedPieces, selectRemote])
+
+
     function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         return useCallback(() => {
@@ -398,6 +457,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const downloadAllRemoteRobots = downloadAllRemote(cachedRobots)
     const downloadAllRemoteFields = downloadAllRemote(cachedFields)
+    const downloadAllRemotePieces = downloadAllRemote(cachedPieces)
 
     // Generate Item cards for APS robots and fields.
     const hubElements = useMemo(
@@ -446,6 +506,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 >
                     <ToggleButton value={MiraType.ROBOT}>Robots</ToggleButton>
                     <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
+                    <ToggleButton value={MiraType.PIECE}>Game Pieces</ToggleButton>
                 </ToggleButtonGroup>
                 {viewType == MiraType.ROBOT ? (
                     <>
@@ -457,7 +518,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         <SectionDivider />
                         {cachedRobotElements}
                     </>
-                ) : (
+                ) : viewType == MiraType.FIELD ? (
                     <>
                         <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedFieldElements
@@ -467,6 +528,15 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         <SectionDivider />
                         {cachedFieldElements}
                     </>
+                ) : (<>
+                    <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        {cachedGamePieces
+                            ? `${cachedGamePieces.length} Saved Game Piece${cachedGamePieces.length == 1 ? "" : "s"}`
+                            : "Loading Saved Game Pieces"}
+                    </SectionLabel>
+                    <SectionDivider />
+                    {cachedGamePieces}
+                </>
                 )}
                 <Box
                     component={"div"}
@@ -499,7 +569,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             <PositiveButton value="Download All" onClick={downloadAllRemoteRobots} />
                         </Box>
                     </>
-                ) : (
+                ) : viewType == MiraType.FIELD ? (
                     <>
                         <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteFieldElements
@@ -512,6 +582,18 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             <PositiveButton value="Download All" onClick={downloadAllRemoteFields} />
                         </Box>
                     </>
+                ) : (<>
+                    <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        {remoteGamePieces
+                            ? `${remoteGamePieces.length} Default Game Piece${remoteGamePieces.length == 1 ? "" : "s"}`
+                            : "Loading Default Game Pieces"}
+                    </SectionLabel>
+                    <SectionDivider />
+                    {remoteGamePieces}
+                    <Box display="flex" justifyContent="center" mt={1}>
+                        <PositiveButton value="Download All" onClick={downloadAllRemotePieces} />
+                    </Box>
+                </>
                 )}
                 <Box alignSelf={"center"}>
                     <Button value="Import from File" onClick={() => openModal("import-local-mirabuf")} />
