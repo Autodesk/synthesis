@@ -13,6 +13,7 @@ export type GlobalPreferences = {
     ReportAnalytics: boolean
     UseMetric: boolean
     RenderScoringZones: boolean
+    RenderProtectedZones: boolean
     InputSchemes: InputScheme[]
     RenderSceneTags: boolean
     RenderScoreboard: boolean
@@ -22,6 +23,7 @@ export type GlobalPreferences = {
     ShowViewCube: boolean
     MuteAllSound: boolean
     SFXVolume: number
+    ShowCenterOfMassIndicators: boolean
 }
 
 export type GlobalPreference = keyof GlobalPreferences
@@ -51,6 +53,7 @@ export const DefaultGlobalPreferences: GlobalPreferences = {
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
+    RenderProtectedZones: true,
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
@@ -60,6 +63,7 @@ export const DefaultGlobalPreferences: GlobalPreferences = {
     ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
+    ShowCenterOfMassIndicators: false,
 }
 
 export type GraphicsPreferences = {
@@ -148,10 +152,21 @@ export type ScoringZonePreferences = {
     deltaTransformation: number[]
 }
 
+export type ProtectedZonePreferences = {
+    name: string
+    alliance: Alliance
+    penaltyPoints: number
+    parentNode: string | undefined
+    requireRobotContact: boolean
+
+    deltaTransformation: number[]
+}
+
 export type FieldPreferences = {
     // TODO: implement this
     defaultSpawnLocation: Vector3Tuple
     scoringZones: ScoringZonePreferences[]
+    protectedZones: ProtectedZonePreferences[]
 }
 
 export function DefaultRobotPreferences(): RobotPreferences {
@@ -177,7 +192,7 @@ export function DefaultRobotPreferences(): RobotPreferences {
 }
 
 export function DefaultFieldPreferences(): FieldPreferences {
-    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [] }
+    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [], protectedZones: [] }
 }
 
 export function DefaultMotorPreferences(name: string): MotorPreferences {

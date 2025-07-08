@@ -1,36 +1,36 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import React, { useState } from "react"
-import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
-import ZoneConfigInterface from "./ScoringZoneConfigInterface"
+import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
+import ZoneConfigInterface from "./ProtectedZoneConfigInterface"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { Box } from "@mui/material"
 import { ButtonIcon, SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { LabelSize } from "@/ui/components/Label"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 
-const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+const protectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
 
     const fieldPrefs = field.fieldPreferences
-    if (fieldPrefs) fieldPrefs.scoringZones = zones
+    if (fieldPrefs) fieldPrefs.protectedZones = zones
 
     PreferencesSystem.savePreferences()
-    field.UpdateScoringZones()
+    field.UpdateProtectedZones()
 }
 
 interface ConfigureZonesProps {
     selectedField: MirabufSceneObject
-    initialZones: ScoringZonePreferences[]
+    initialZones: ProtectedZonePreferences[]
 }
 
-const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selectedField, initialZones }) => {
-    const [selectedZone, setSelectedZone] = useState<ScoringZonePreferences | undefined>(undefined)
+const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selectedField, initialZones }) => {
+    const [selectedZone, setSelectedZone] = useState<ProtectedZonePreferences | undefined>(undefined)
 
     return (
         <>
             {selectedZone == undefined ? (
-                <ManageScoringZonesInterface
+                <ManageProtectedZonesInterface
                     selectedField={selectedField}
                     initialZones={initialZones}
                     selectZone={setSelectedZone}
@@ -63,7 +63,7 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
                         selectedField={selectedField}
                         selectedZone={selectedZone}
                         saveAllZones={() => {
-                            saveZones(selectedField.fieldPreferences?.scoringZones, selectedField)
+                            protectedZones(selectedField.fieldPreferences?.protectedZones, selectedField)
                         }}
                     />
                 </>
@@ -72,4 +72,4 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
     )
 }
 
-export default ConfigureScoringZonesInterface
+export default ConfigureProtectedZonesInterface

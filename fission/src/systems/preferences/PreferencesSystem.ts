@@ -199,6 +199,12 @@ class PreferencesSystem {
         return graphicsPrefs
     }
 
+    /** Resets simulation quality preferences to default values */
+    public static resetGraphicsPreferences() {
+        this._preferences[GraphicsPreferenceKey] = DefaultGraphicsPreferences()
+        this.savePreferences()
+    }
+
     /** Loads all preferences from local storage. */
     public static loadPreferences() {
         const loadedPrefs = window.localStorage.getItem(this._localStorageKey)

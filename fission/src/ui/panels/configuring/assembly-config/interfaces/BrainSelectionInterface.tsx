@@ -5,7 +5,6 @@ import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { useState } from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 type BrainSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
@@ -35,7 +34,7 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
                     }
                     setRobotBrainType(brainType)
                 }}
-                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                {...SoundPlayer.buttonSoundEffects()}
                 sx={{
                     alignSelf: "center",
                 }}

@@ -13,7 +13,6 @@ import { Box } from "@mui/material"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import { setAddToast } from "./GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import MatchMode from "@/systems/MatchMode"
 import { Global_AddToast } from "@/components/GlobalUIControls.ts"
 
@@ -29,7 +28,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
     return (
         <Button
             onClick={onClick}
-            onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+            {...SoundPlayer.buttonSoundEffects()}
             className={`relative flex flex-row
                 cursor-pointer
                 bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}

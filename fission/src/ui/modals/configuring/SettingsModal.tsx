@@ -143,6 +143,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
                     />
                     <Checkbox
+                        label="Show Protected Zones"
+                        defaultState={PreferencesSystem.getGlobalPreference("RenderProtectedZones")}
+                        onClick={checked => {
+                            PreferencesSystem.setGlobalPreference("RenderProtectedZones", checked)
+                        }}
+                        tooltipText="If disabled, protected zones will not be visible but will continue to function the same."
+                    />
+                    <Checkbox
                         label="Show Scene Tags"
                         defaultState={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
                         onClick={checked => {
@@ -161,6 +169,14 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         }}
                     />
 
+                    <Checkbox
+                        label="Show Centers of Mass"
+                        defaultState={PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")}
+                        onClick={checked => {
+                            PreferencesSystem.setGlobalPreference("ShowCenterOfMassIndicators", checked)
+                        }}
+                        tooltipText={"Show a purple dot to indicate the center of mass of each robot in frame"}
+                    />
                     <Checkbox
                         label="Mute All Sound"
                         defaultState={PreferencesSystem.getGlobalPreference("MuteAllSound")}
