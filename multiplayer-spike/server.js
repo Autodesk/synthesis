@@ -3,6 +3,7 @@ import express from "express";
 import { v4 as uuidv4 } from "uuid";
 import path from "path";
 import { fileURLToPath } from "url";
+import helmet from "helmet";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,6 +33,8 @@ class GameServer {
 
     setupExpress() {
         this.app.use(express.static(path.join(__dirname, "client")));
+
+        this.app.use(helmet());
 
         this.app.get("/api/info", (req, res) => {
             res.json({
