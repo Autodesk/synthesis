@@ -100,7 +100,7 @@ function Synthesis() {
                 startSingleplayerCallback={() => {
                     World.InitWorld()
 
-                    if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
+                    if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
                         setConsentPopupDisable(false)
                     }
 
@@ -147,7 +147,7 @@ function Synthesis() {
 
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
-        PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", true)
+        PreferencesSystem.setGlobalPreference("ReportAnalytics", true)
         PreferencesSystem.savePreferences()
     }, [])
 
