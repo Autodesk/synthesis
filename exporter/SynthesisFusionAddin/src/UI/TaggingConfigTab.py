@@ -101,9 +101,7 @@ class TaggingConfigTab:
     def addTag(self, body: adsk.fusion.BRepBody, tag: str) -> None:
         commandInputs = self.taggingConfigTab.commandInputs
         row = self.taggingListTable.rowCount
-        bodyName = commandInputs.addTextBoxCommandInput(
-            f"bodyName_{row}", "Body Name", body.name, 1, True
-        )
+        bodyName = commandInputs.addTextBoxCommandInput(f"bodyName_{row}", "Body Name", body.name, 1, True)
         tagType = commandInputs.addTextBoxCommandInput(f"tagType_{row}", "Tag Type", tag, 1, True)
 
         row = self.taggingListTable.rowCount
