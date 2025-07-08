@@ -26,7 +26,6 @@ import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -438,7 +437,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         new ConfigurationSavedEvent()
                         setConfigMode(undefined)
                     }}
-                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                    {...SoundPlayer.buttonSoundEffects()}
                     sx={{
                         alignSelf: "center",
                     }}
