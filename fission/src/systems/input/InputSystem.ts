@@ -12,6 +12,8 @@ export type ModifierState = {
 }
 export const EmptyModifierState: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
 
+const LOG_GAMEPAD_EVENTS = false
+
 /** Represents any user input */
 abstract class Input {
     public inputName: string
@@ -262,20 +264,24 @@ class InputSystem extends WorldSystem {
 
     /* Called once when a gamepad is first connected */
     private gamepadConnected(event: GamepadEvent) {
-        console.log(
-            "Gamepad connected at index %d: %s. %d buttons, %d axes.",
-            event.gamepad.index,
-            event.gamepad.id,
-            event.gamepad.buttons.length,
-            event.gamepad.axes.length
-        )
+        if (LOG_GAMEPAD_EVENTS) {
+            console.log(
+                "Gamepad connected at index %d: %s. %d buttons, %d axes.",
+                event.gamepad.index,
+                event.gamepad.id,
+                event.gamepad.buttons.length,
+                event.gamepad.axes.length
+            )
+        }
 
         InputSystem._gpIndex = event.gamepad.index
     }
 
     /* Called once when a gamepad is first disconnected */
     private gamepadDisconnected(event: GamepadEvent) {
-        console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
+        if (LOG_GAMEPAD_EVENTS) {
+            console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
+        }
 
         InputSystem._gpIndex = null
     }
