@@ -8,7 +8,8 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Button, { ButtonSize } from "../components/Button"
 
-const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"]
+const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
+type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
 
 function getCurrentFieldObj() {
     for (const obj of World.SceneRenderer.sceneObjects.values()) {
@@ -21,7 +22,7 @@ function getCurrentFieldObj() {
 
 const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel } = usePanelControlContext()
-    const [selectedKey, setSelectedKey] = useState<string | undefined>(undefined)
+    const [selectedKey, setSelectedKey] = useState<DevtoolKey | undefined>(undefined)
     const [jsonValue, setJsonValue] = useState<string>("")
     const [error, setError] = useState<string>("")
     const [editor, setEditor] = useState<FieldMiraEditor | undefined>(undefined)
@@ -98,7 +99,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         setError("")
     }
 
-    const handleAdd = (key: string) => {
+    const handleAdd = (key: DevtoolKey) => {
         setSelectedKey(key)
         setJsonValue("{}")
         setError("")
@@ -134,7 +135,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 {keys.map(key => (
                                     <li key={key} className="mb-1">
                                         <button
-                                            onClick={() => setSelectedKey(key)}
+                                            onClick={() => setSelectedKey(key as DevtoolKey)}
                                             className={`
                             w-full whitespace-normal break-words text-left
                             px-2 py-1 rounded

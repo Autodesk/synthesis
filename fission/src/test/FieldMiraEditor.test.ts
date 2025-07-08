@@ -1,7 +1,8 @@
 import { describe, expect, test } from "vitest"
 import FieldMiraEditor from "../mirabuf/FieldMiraEditor"
+import { mirabuf } from "../proto/mirabuf"
 
-function mockParts(): any {
+function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }
 }
 
@@ -43,7 +44,9 @@ describe("Basic Field Mira Editor Tests", () => {
 
     test("malformed JSON in underlying data is caught and returns undefined", () => {
         const parts = mockParts()
-        parts.userData.data["devtool:bad"] = "{ not valid json "
+        if (parts.userData?.data) {
+            parts.userData.data["devtool:bad"] = "{ not valid json "
+        }
         const editor = new FieldMiraEditor(parts)
         expect(() => editor.getUserData("devtool:bad")).not.toThrow()
         expect(editor.getUserData("devtool:bad")).toBeUndefined()
@@ -53,9 +56,14 @@ describe("Basic Field Mira Editor Tests", () => {
         const editor = new FieldMiraEditor(mockParts())
         const payload = { nested: { x: 1 } }
         editor.setUserData("devtool:test", payload)
-        const read = editor.getUserData<{ nested: { x: number } }>("devtool:test")!
-        read.nested.x = 42
-        expect(editor.getUserData("devtool:test")!.nested.x).toBe(1)
+        const read = editor.getUserData("devtool:test")!
+        if (read && typeof read === "object" && "nested" in read) {
+            ;(read as { nested: { x: number } }).nested.x = 42
+        }
+        const reread = editor.getUserData("devtool:test")!
+        if (reread && typeof reread === "object" && "nested" in reread) {
+            expect((reread as { nested: { x: number } }).nested.x).toBe(1)
+        }
     })
 
     test("removeUserData only deletes the target key", () => {
