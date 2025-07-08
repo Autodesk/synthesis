@@ -17,14 +17,20 @@ interface Messages {
     selectJoint: [Empty, FusionJoint]
     selectGamepiece: [Empty, FusionGamepiece]
     export: [ExporterConfig, Empty]
-    init: [Empty, { calculatedMass: number; options: ExporterConfig }]
+    save: [ExporterConfig, Empty]
+    init: [
+        Empty,
+        { calculatedMass: number; options: ExporterConfig; jointData: FusionJoint[]; gamepieceData: FusionGamepiece[] },
+    ]
 }
 
 export async function sendData<A extends keyof Messages>(
     action: A,
     body: Messages[A][0] & object
 ): Promise<Messages[A][1] | undefined> {
+    console.log({ action, body: JSON.stringify(body) })
     const resp = await window.adsk.fusionSendData(action, JSON.stringify(body))
+
     try {
         return JSON.parse(resp)
     } catch (error) {
@@ -57,21 +63,19 @@ export async function selectJoint(): Promise<FusionJoint | undefined> {
 
 export interface FusionGamepiece {
     name: string
-    guid: string
-    entityToken: string
+    occurrenceToken: string
     mass: number
     entityIDs: string[]
 }
 export async function selectGamepiece(): Promise<FusionGamepiece | undefined> {
     if (!window.adsk) {
-        return new Promise<any>(resolve => {
+        return new Promise<FusionGamepiece>(resolve => {
             setTimeout(() => {
                 const token = Math.random().toString(36).substring(2, 15)
                 resolve({
-                    entityToken: token,
+                    occurrenceToken: token + "_" + Math.random().toString(36).substring(2, 15),
                     name: "Component " + token.substring(0, 2).toUpperCase(),
                     mass: Math.round(Math.random() * 100) / 10,
-                    guid: token + "_" + Math.random().toString(36).substring(2, 15),
                     entityIDs: [
                         token,
                         Math.random().toString(36).substring(2, 15),

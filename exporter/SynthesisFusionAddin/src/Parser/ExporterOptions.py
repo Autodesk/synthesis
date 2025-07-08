@@ -7,11 +7,12 @@ import json
 import os
 import platform
 from dataclasses import dataclass, field, fields
+from typing import List
 
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
 from src import INTERNAL_ID
-from src.Logging import logFailure, timed
+from src.Logging import logFailure, timed, getLogger
 from src.Types import (
     KG,
     ExportLocation,
@@ -22,7 +23,7 @@ from src.Types import (
     PhysicalDepth,
     Wheel,
     encodeNestedObjects,
-    makeObjectFromJson,
+    makeObjectFromJson, makeObjectFromJson2,
 )
 
 
@@ -38,7 +39,7 @@ class ExporterOptions:
     version: str | None = field(default=None)
     materials: int = field(default=0)
     exportMode: ExportMode = field(default=ExportMode.ROBOT)
-    wheels: list[Wheel] = field(default_factory=list)
+    wheels: List[Wheel] = field(default_factory=list)
     joints: list[Joint] = field(default_factory=list)
     gamepieces: list[Gamepiece] = field(default_factory=list)
     robotWeight: KG = field(default=KG(0.0))
@@ -66,19 +67,21 @@ class ExporterOptions:
         for field in fields(self):
             attribute = designAttributes.itemByName(INTERNAL_ID, field.name)
             if attribute:
-                attrJsonData = makeObjectFromJson(type(field.type), json.loads(attribute.value))
+                attrJsonData = makeObjectFromJson2(field.type, json.loads(attribute.value))
                 setattr(self, field.name, attrJsonData)
 
         self.visualQuality = TriangleMeshQualityOptions.LowQualityTriangleMesh
         return self
 
     @logFailure
-    @timed
+    # @timed
     def readFromJSON(self, data:dict) -> "ExporterOptions":
         for field in fields(self):
-            attribute = data[field.name]
-            if attribute:
-                attrJsonData = makeObjectFromJson(type(field.type), attribute)
+            attribute = data.get(field.name)
+            # ui = adsk.core.Application.get().userInterface
+            # ui.messageBox(f"{field.name}, {attribute}, {field.type}", "Synthesis: Error")
+            if attribute is not None:
+                attrJsonData = makeObjectFromJson2(field.type, attribute)
                 setattr(self, field.name, attrJsonData)
 
         self.visualQuality = TriangleMeshQualityOptions.LowQualityTriangleMesh
@@ -90,6 +93,7 @@ class ExporterOptions:
         designAttributes = adsk.core.Application.get().activeProduct.attributes
         for field in fields(self):
             data = json.dumps(getattr(self, field.name), default=encodeNestedObjects, indent=4)
+            getLogger().log(40, field.name, data)
             designAttributes.add(INTERNAL_ID, field.name, data)
 
     @logFailure

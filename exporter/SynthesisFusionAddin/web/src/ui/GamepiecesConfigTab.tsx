@@ -68,7 +68,7 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                     <TableBody>
                         {gamepieces.map((gamepiece, i) => (
                             <TableRow
-                                key={gamepiece.entityToken}
+                                key={gamepiece.occurrenceToken}
                                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                                 <TableCell>{gamepiece.name}</TableCell>
                                 <TableCell align="center">
@@ -171,7 +171,7 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
 
                         setSelectingActive(false)
                         if (data == null) return
-                        if (gamepieces.some(gamepiece => gamepiece.entityIDs.includes(data.entityToken))) {
+                        if (gamepieces.some(gamepiece => gamepiece.entityIDs.includes(data.entityIDs[0]))) {
                             console.warn("attempted to add existing element")
                             Global_SetAlert("warning", "Component already added")
                             return

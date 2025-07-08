@@ -20,19 +20,19 @@ import revoluteIcon from "../../../src/Resources/JointIcons/JointRev/32x32.png"
 import sliderIcon from "../../../src/Resources/JointIcons/JointSlider/32x32.png"
 import { useRef, useState } from "react"
 import { type FusionJoint, selectJoint } from "../lib"
-import { type Joint, JointType, SignalType, WheelType } from "../lib/types"
+import { type Joint, JointParentType, JointType, SignalType, WheelType } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 
 const jointInfo: Partial<Record<JointType, { icon: string; name: string; speedUnits: string }>> = {
     [JointType.RevoluteJointType]: {
         icon: revoluteIcon,
         name: "Revolute",
-        speedUnits: "deg/s",
+        speedUnits: "rad/s",
     },
     [JointType.SliderJointType]: {
         icon: sliderIcon,
         name: "Slider",
-        speedUnits: "m/s",
+        speedUnits: "cm/s",
     },
 }
 
@@ -108,11 +108,12 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                                             updateJoint(i, "parentNode", e.target.value)
                                         }}
                                         fullWidth>
-                                        <MenuItem value="root">Root</MenuItem>
-                                        {joints.map((joint, j) => {
-                                            if (j == i || joint.parentNode != "root") return
-                                            return <MenuItem value={joint.id}>{joint.name}</MenuItem>
-                                        })}
+                                        <MenuItem value={JointParentType.ROOT}>Root</MenuItem>
+                                        <MenuItem value={JointParentType.END}>End</MenuItem>
+                                        {/*{joints.map((joint, j) => {*/}
+                                        {/*    if (j == i || joint.parentNode != "root") return*/}
+                                        {/*    return <MenuItem value={joint.id}>{joint.name}</MenuItem>*/}
+                                        {/*})}*/}
                                     </Select>
                                 </TableCell>
                                 <TableCell align="center">
@@ -242,7 +243,7 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                                 id: data.entityToken,
                                 name: data.name,
                                 type: data.jointType,
-                                parentNode: "root",
+                                parentNode: JointParentType.ROOT,
                                 signalType: SignalType.PWM,
                                 speed: 0,
                                 force: 0,
@@ -278,26 +279,28 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {joints.filter((j) => j.isWheel).map((joint, i) => (
-                            <TableRow key={joint.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                                {/*<TableCell>{jointInfo[row.type]?.name}</TableCell>*/}
-                                <TableCell align="center">{joint.name}</TableCell>
-                                <TableCell align="center">
-                                    <Select
-                                        size="small"
-                                        value={joint.wheelType}
-                                        onChange={e => {
-                                            updateJoint(i, "wheelType", e.target.value)
-                                        }}
-                                        fullWidth>
-                                        <MenuItem value={WheelType.STANDARD}>Standard</MenuItem>
-                                        <MenuItem value={WheelType.MECANUM}>Mecanum</MenuItem>
-                                        <MenuItem value={WheelType.OMNI}>Omni</MenuItem>
-                                    </Select>
-                                </TableCell>
-
-                            </TableRow>
-                        ))}
+                        {joints.map(
+                            (joint, i) =>
+                                joint.isWheel && (
+                                    <TableRow key={joint.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                                        {/*<TableCell>{jointInfo[row.type]?.name}</TableCell>*/}
+                                        <TableCell align="center">{joint.name}</TableCell>
+                                        <TableCell align="center">
+                                            <Select
+                                                size="small"
+                                                value={joint.wheelType}
+                                                onChange={e => {
+                                                    updateJoint(i, "wheelType", e.target.value)
+                                                }}
+                                                fullWidth>
+                                                <MenuItem value={WheelType.STANDARD}>Standard</MenuItem>
+                                                <MenuItem value={WheelType.MECANUM}>Mecanum</MenuItem>
+                                                <MenuItem value={WheelType.OMNI}>Omni</MenuItem>
+                                            </Select>
+                                        </TableCell>
+                                    </TableRow>
+                                )
+                        )}
                     </TableBody>
                 </Table>
             </TableContainer>

@@ -29,7 +29,7 @@ export function DefaultExporterConfig(): GeneralConfig {
     }
 }
 export interface Gamepiece {
-    entityToken: string
+    occurrenceToken: string
     name: string
     userDefinedMass: number
     calculatedMass: number
@@ -41,7 +41,7 @@ export interface Joint {
     id: string
     name: string
     type: JointType
-    parentNode: string
+    parentNode: JointParentType
     signalType: SignalType
     speed: number
     force: number
@@ -55,11 +55,11 @@ export enum ExportLocation {
 }
 
 export enum ExportMode {
-    ROBOT= 1,
+    ROBOT = 1,
     FIELD,
 }
 export enum WheelType {
-    STANDARD=1,
+    STANDARD = 1,
     OMNI,
     MECANUM,
 }
@@ -108,7 +108,7 @@ enum ModelHierarchy {
 }
 
 export enum SignalType {
-    PWM,
+    PWM = 1,
     CAN,
     PASSIVE,
 }
@@ -123,7 +123,7 @@ export enum JointType {
 }
 
 export enum JointParentType {
-    ROOT,
+    ROOT = 1,
     END,
 }
 

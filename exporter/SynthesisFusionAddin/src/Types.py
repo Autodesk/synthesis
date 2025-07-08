@@ -6,7 +6,6 @@ from enum import Enum, EnumType
 from typing import Any, TypeAlias, get_args, get_origin
 
 import adsk.fusion
-from src.Utils.fusionAddInUtils import log
 
 # Not 100% sure what this is for - Brandon
 JointParentType = Enum("JointParentType", ["ROOT", "END"])
@@ -101,7 +100,6 @@ def encodeNestedObjects(obj: Any) -> Any:
     elif hasattr(obj, "__dict__"):
         return {key: encodeNestedObjects(value) for key, value in obj.__dict__.items()}
     else:
-        log(obj)
         assert isinstance(obj, PRIMITIVES)
         return obj
 
@@ -113,12 +111,29 @@ def makeObjectFromJson(objType: type, data: Any) -> Any:
         return data
     elif get_origin(objType) is list:
         return [makeObjectFromJson(get_args(objType)[0], item) for item in data]
-
     obj = objType()
     assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
     for field in fields(obj):
         if field.name in data:
             setattr(obj, field.name, makeObjectFromJson(type(field.type), data[field.name]))
+        else:
+            setattr(obj, field.name, field.default_factory if field.default_factory is not MISSING else field.default)
+
+    return obj
+
+
+def makeObjectFromJson2(objType: type, data: Any) -> Any:
+    if isinstance(objType, EnumType):
+        return objType(data)
+    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
+        return data
+    elif get_origin(objType) is list:
+        return [makeObjectFromJson2(get_args(objType)[0], item) for item in data]
+    obj = objType()
+    assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
+    for field in fields(obj):
+        if field.name in data:
+            setattr(obj, field.name, makeObjectFromJson2(field.type, data[field.name]))
         else:
             setattr(obj, field.name, field.default_factory if field.default_factory is not MISSING else field.default)
 
