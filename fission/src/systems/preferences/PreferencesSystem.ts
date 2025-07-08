@@ -252,7 +252,6 @@ class PreferencesSystem {
     public static clearPreferences() {
         window.localStorage.removeItem(this._localStorageKey)
         this._preferences = {}
-        console.log("Cleared all preferences")
     }
 }
 
