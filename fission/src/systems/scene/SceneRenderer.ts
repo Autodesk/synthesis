@@ -17,9 +17,8 @@ import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/Touc
 import { GraphicsPreferences } from "../preferences/PreferenceTypes"
 import World from "../World"
 import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
-import { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import autodeskLogo from "@/assets/autodesk_symbol.png"
@@ -229,8 +228,7 @@ class SceneRenderer extends WorldSystem {
         this._skybox.position.copy(this._mainCamera.position)
 
         // Update the tags each frame if they are enabled in preferences
-        if (PreferencesSystem.getGlobalPreference<boolean>("RenderSceneTags"))
-            new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
+        if (PreferencesSystem.getGlobalPreference("RenderSceneTags")) new SceneOverlayEvent(SceneOverlayEventKey.UPDATE)
 
         this._screenInteractionHandler.update(deltaT)
         this._cameraControls.update(deltaT)
@@ -414,7 +412,7 @@ class SceneRenderer extends WorldSystem {
     }
 
     public CreateToonMaterial(color: THREE.ColorRepresentation = 0xff00aa, steps: number = 5): THREE.MeshToonMaterial {
-        const format = this._renderer.capabilities.isWebGL2 ? THREE.RedFormat : THREE.LuminanceFormat
+        const format = THREE.RedFormat
         const colors = new Uint8Array(steps)
         for (let c = 0; c < colors.length; c++) {
             colors[c] = 128 + (c / colors.length) * 128

@@ -5,6 +5,7 @@ import { JoltVec3_JoltRVec3, ThreeVector3_JoltVec3 } from "@/util/TypeConversion
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
 import { SynthesisIcons } from "../components/StyledComponents"
+import * as THREE from "three"
 
 const RAY_MAX_LENGTH = 20.0
 

@@ -15,6 +15,7 @@ import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DeltaFieldTransforms_PhysicalProp } from "@/util/threejs/MeshCreation"
+import { findListDifference } from "@/util/Utility"
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
@@ -60,7 +61,7 @@ class ScoringZoneSceneObject extends SceneObject {
 
         this._parentAssembly = parentAssembly
         this._prefs = this._parentAssembly.fieldPreferences?.scoringZones[index]
-        this._toRender = render ?? PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
+        this._toRender = render ?? PreferencesSystem.getGlobalPreference("RenderScoringZones")
     }
 
     public Setup(): void {
@@ -157,7 +158,7 @@ class ScoringZoneSceneObject extends SceneObject {
             World.PhysicsSystem.SetShape(this._joltBodyId, shape.Get(), false, Jolt.EActivation_Activate)
 
             // Mesh for visualization
-            this._toRender = PreferencesSystem.getGlobalPreference<boolean>("RenderScoringZones")
+            this._toRender = PreferencesSystem.getGlobalPreference("RenderScoringZones")
             if (this._mesh)
                 if (this._toRender) {
                     this._mesh.position.set(props.translation.x, props.translation.y, props.translation.z)
@@ -174,15 +175,33 @@ class ScoringZoneSceneObject extends SceneObject {
             // If persistent points, update points based on how many gamepieces in zone
             if (this._prefs.persistentPoints)
                 if (this._gpContacted.length != this._prevGP.length) {
+                    const { added: gpAdded, removed: gpRemoved } = findListDifference(this._prevGP, this._gpContacted)
+                    const points = this._prefs.points
+
                     if (this._prefs.alliance == "red") {
-                        SimulationSystem.redScore +=
-                            (this._gpContacted.length - this._prevGP.length) * this._prefs.points
+                        SimulationSystem.redScore += (gpAdded.length - gpRemoved.length) * points
                     } else {
-                        SimulationSystem.blueScore +=
-                            (this._gpContacted.length - this._prevGP.length) * this._prefs.points
+                        SimulationSystem.blueScore += (gpAdded.length - gpRemoved.length) * points
                     }
                     const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
                     event.Dispatch()
+
+                    // Per robot score calculations
+                    gpAdded.forEach(gpID => {
+                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+                        const robotAlliancePoints =
+                            associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
+                        associate.robotLastInContactWith &&
+                            SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
+                    })
+                    gpRemoved.forEach(gpID => {
+                        const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
+                        const robotAlliancePoints =
+                            associate.robotLastInContactWith?.alliance !== this._prefs?.alliance ? -points : points
+                        associate.robotLastInContactWith &&
+                            SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, -robotAlliancePoints)
+                    })
+
                     this._prevGP = Object.assign([], this._gpContacted)
                 }
         } else {
@@ -218,6 +237,13 @@ class ScoringZoneSceneObject extends SceneObject {
                 }
                 const event = new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore)
                 event.Dispatch()
+
+                const robotAlliancePoints =
+                    associate.robotLastInContactWith?.alliance !== this._prefs?.alliance
+                        ? -this._prefs.points
+                        : this._prefs.points
+                associate.robotLastInContactWith &&
+                    SimulationSystem.AddPerRobotScore(associate.robotLastInContactWith, robotAlliancePoints)
             }
         }
     }

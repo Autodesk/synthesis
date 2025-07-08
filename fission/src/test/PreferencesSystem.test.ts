@@ -1,5 +1,5 @@
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { test, describe, expect } from "vitest"
+import { describe, expect, test } from "vitest"
 
 describe("Preferences System", () => {
     test("Setting without saving", () => {
@@ -12,9 +12,9 @@ describe("Preferences System", () => {
         expect(PreferencesSystem.getGlobalPreference("RenderScoreboard")).toBe(false)
     })
     test("Reset to default if undefined", () => {
-        PreferencesSystem.setGlobalPreference("ZoomSensitivity", undefined)
-        PreferencesSystem.setGlobalPreference("RenderSceneTags", undefined)
-        PreferencesSystem.setGlobalPreference("RenderScoreboard", undefined)
+        PreferencesSystem.setGlobalPreference("ZoomSensitivity", undefined as unknown as number)
+        PreferencesSystem.setGlobalPreference("RenderSceneTags", undefined as unknown as boolean)
+        PreferencesSystem.setGlobalPreference("RenderScoreboard", undefined as unknown as boolean)
 
         expect(PreferencesSystem.getGlobalPreference("ZoomSensitivity")).toBe(15)
         expect(PreferencesSystem.getGlobalPreference("RenderSceneTags")).toBe(true)

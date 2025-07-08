@@ -1,8 +1,8 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import React, { useState } from "react"
-import ManageZonesInterface from "./ManageZonesInterface"
-import ZoneConfigInterface from "./ZoneConfigInterface"
+import ManageScoringZonesInterface from "./ManageScoringZonesInterface"
+import ZoneConfigInterface from "./ScoringZoneConfigInterface"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { Box } from "@mui/material"
 import { ButtonIcon, SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -30,7 +30,7 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
     return (
         <>
             {selectedZone == undefined ? (
-                <ManageZonesInterface
+                <ManageScoringZonesInterface
                     selectedField={selectedField}
                     initialZones={initialZones}
                     selectZone={setSelectedZone}
