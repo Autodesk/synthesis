@@ -14,7 +14,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { mirabuf } from "../../proto/mirabuf"
-import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
+import MirabufParser, { GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
 import {
