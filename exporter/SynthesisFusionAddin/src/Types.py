@@ -104,7 +104,8 @@ def encodeNestedObjects(obj: Any) -> Any:
         return obj
 
 
-def makeObjectFromJson(objType: type, data: Any) -> Any:
+# This function was previously taking type(field.type) instead of just field.type, but it didn't seem to be able to deal with lists like that, and this version does seem to be working in all the places where it's used
+def makeObjectFromJson(objType: type[Any] | str | Any, data: Any) -> Any:
     if isinstance(objType, EnumType):
         return objType(data)
     elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
@@ -115,25 +116,7 @@ def makeObjectFromJson(objType: type, data: Any) -> Any:
     assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
     for field in fields(obj):
         if field.name in data:
-            setattr(obj, field.name, makeObjectFromJson(type(field.type), data[field.name]))
-        else:
-            setattr(obj, field.name, field.default_factory if field.default_factory is not MISSING else field.default)
-
-    return obj
-
-
-def makeObjectFromJson2(objType: type, data: Any) -> Any:
-    if isinstance(objType, EnumType):
-        return objType(data)
-    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
-        return data
-    elif get_origin(objType) is list:
-        return [makeObjectFromJson2(get_args(objType)[0], item) for item in data]
-    obj = objType()
-    assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
-    for field in fields(obj):
-        if field.name in data:
-            setattr(obj, field.name, makeObjectFromJson2(field.type, data[field.name]))
+            setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
         else:
             setattr(obj, field.name, field.default_factory if field.default_factory is not MISSING else field.default)
 

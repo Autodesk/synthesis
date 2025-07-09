@@ -8,6 +8,7 @@ import os
 import re
 import webbrowser
 from typing import Any
+from xml.dom import ValidationErr
 
 import adsk.core
 import adsk.fusion
@@ -25,7 +26,6 @@ from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode, encode
 from src.UI import FileDialogConfig
 from src.UI.Handlers import PersistentEventHandler
 from src.Util import designMassCalculation, convertMassUnitsTo
-from src.Utils import fusionAddInUtils as futil
 
 generalConfigTab: GeneralConfigTab.GeneralConfigTab
 jointConfigTab: JointConfigTab.JointConfigTab
@@ -35,8 +35,9 @@ exporterPalette: Palette
 logger = getLogger()
 
 INPUTS_ROOT: adsk.core.CommandInputs
-PALETTE_ID="synthesis_configure"
-USE_NEW_UI=True
+PALETTE_ID = "synthesis_configure"
+USE_NEW_UI = True
+
 
 def reload() -> None:
     """Reloads the sub modules to reflect any changes made during development."""
@@ -67,7 +68,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             global INPUTS_ROOT
             INPUTS_ROOT = cmd.commandInputs
 
-
             onExecute = ConfigureCommandExecuteHandler()
             cmd.execute.add(onExecute)
 
@@ -86,7 +86,9 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             onDestroy = MyCommandDestroyHandler()
             cmd.destroy.add(onDestroy)
 
-            exporterOptions = moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
+            exporterOptions = (
+                moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
+            )
 
             cmd.isAutoExecute = True
             cmd.isExecutedWhenPreEmpted = False
@@ -105,7 +107,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             generalConfigTab.jointConfigTab = jointConfigTab
 
             design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
-            for synGamepiece in exporterOptions.gamepieces: # Copy this
+            for synGamepiece in exporterOptions.gamepieces:  # Copy this
                 fusionOccurrence = design.findEntityByToken(synGamepiece.occurrenceToken)[0]
                 gamepieceConfigTab.addGamepiece(fusionOccurrence, synGamepiece)
 
@@ -147,95 +149,119 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 isResizable=True,
                 width=1200,
                 height=800,
-                useNewWebBrowser=True
+                useNewWebBrowser=True,
             )
             # futil.add_handler(palette.closed, palette_closed)
             # futil.add_handler(palette.navigatingURL, palette_navigating)
-            futil.add_handler(exporterPalette.incomingFromHTML, on_palette_message)
-            futil.add_handler(exporterPalette.closed, on_palette_close)
+            onMessage = IncomingHTMLMessageHandler()
+            exporterPalette.incomingFromHTML.add(onMessage)
+
+            onClose = PaletteCloseHandler()
+            exporterPalette.closed.add(onClose)
+
             exporterPalette.isVisible = True
             # palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
 
 
-
-def on_palette_close():
-    if exporterPalette:
-        futil.log("deleting palette")
-        exporterPalette.deleteMe()
-
-@logFailure(messageBox=True)
-def on_palette_message(html_args: adsk.core.HTMLEventArgs):
-    data  = json.loads(html_args.data)
+class PaletteCloseHandler(PersistentEventHandler, adsk.core.UserInterfaceGeneralEventHandler):
+    @logFailure
+    def notify(self) -> None:
+        if exporterPalette:
+            exporterPalette.deleteMe()
 
 
-    if html_args.action == "init":
-        exporterOptions = moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
+class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHandler):
+    @logFailure(messageBox=True)
+    def notify(self, html_args: adsk.core.HTMLEventArgs) -> None:
+        data = json.loads(html_args.data)
 
-        design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
-        gamepieceData = []
-        for synGamepiece in exporterOptions.gamepieces: # Copy this
-            fusionOccurrence = design.findEntityByToken(synGamepiece.occurrenceToken)[0]
-            gamepiece = adsk.fusion.Occurrence.cast(fusionOccurrence)
-            gamepieceData.append(buildGamepiece(gamepiece))
+        if html_args.action == "init":
+            exporterOptions = (
+                moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
+            )
 
-        jointData = []
-        if len(exporterOptions.joints):
-            for synJoint in exporterOptions.joints:
-                fusionJoints = design.findEntityByToken(synJoint.jointToken)
-                if len(fusionJoints):
-                    try:
-                        joint = adsk.fusion.Joint.cast(fusionJoints[0])
-                        jointData.append(buildJoint(joint))
-                    except Exception as e:
-                        logger.error(e)
+            design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
+            gamepieceData = []
+            for synGamepiece in exporterOptions.gamepieces:  # Copy this
+                fusionOccurrence = design.findEntityByToken(synGamepiece.occurrenceToken)[0]
+                gamepiece = adsk.fusion.Occurrence.cast(fusionOccurrence)
+                gamepieceData.append(buildGamepiece(gamepiece))
+
+            jointData = []
+            if len(exporterOptions.joints):
+                for synJoint in exporterOptions.joints:
+                    fusionJoints = design.findEntityByToken(synJoint.jointToken)
+                    if len(fusionJoints):
+                        try:
+                            joint = adsk.fusion.Joint.cast(fusionJoints[0])
+                            jointData.append(buildJoint(joint))
+                        except Exception as e:
+                            logger.error(e)
+            else:
+                for joint in [*design.rootComponent.allJoints, *design.rootComponent.allAsBuiltJoints]:
+                    if joint.jointMotion.jointType in SELECTABLE_JOINT_TYPES and not joint.isSuppressed:
+                        try:
+                            jointData.append(buildJoint(joint))
+                        except Exception as e:
+                            logger.error(e)
+
+            html_args.returnData = json.dumps(
+                {
+                    "gamepieceData": gamepieceData,
+                    "jointData": jointData,
+                    "options": exporterOptions.writeToJson(),
+                    "calculatedMass": convertMassUnitsTo(designMassCalculation()),
+                }
+            )
+        elif html_args.action == "export":
+            opts = moduleExporterOptions.ExporterOptions().readFromJSON(data)
+            export(opts)
+            html_args.returnData = "{}"
+        elif html_args.action == "save":
+            opts = moduleExporterOptions.ExporterOptions().readFromJSON(data)
+            opts.writeToDesign()
+            html_args.returnData = "{}"
+
+        elif html_args.action == "selectJoint":
+            try:
+                selection = gm.app.userInterface.selectEntity("Select Joints", "Joints")
+                joint = adsk.fusion.Joint.cast(selection.entity)
+                html_args.returnData = json.dumps(buildJoint(joint))
+            except ValidationErr as e:
+                html_args.returnData = ""
+            gm.ui.activeSelections.clear()
+        elif html_args.action == "selectGamepiece":
+            try:
+                selection = gm.app.userInterface.selectEntity("Select Gamepieces", "Occurrences")
+                gamepiece = adsk.fusion.Occurrence.cast(selection.entity)
+                html_args.returnData = json.dumps(buildGamepiece(gamepiece))
+            except ValidationErr as e:
+                html_args.returnData = ""
+            gm.ui.activeSelections.clear()
+        elif html_args.action == "cancelSelection":
+            gm.ui.terminateActiveCommand()
+            html_args.returnData = "{}"
         else:
-            for joint in [*design.rootComponent.allJoints, *design.rootComponent.allAsBuiltJoints]:
-                if joint.jointMotion.jointType in SELECTABLE_JOINT_TYPES and not joint.isSuppressed:
-                    try:
-                        jointData.append(buildJoint(joint))
-                    except Exception as e:
-                        logger.error(e)
+            gm.ui.messageBox(f"Event {html_args.action} arrived<span>{json.dumps(data, indent=2)}</span>")
 
-        html_args.returnData = json.dumps({
-            "gamepieceData": gamepieceData,
-            "jointData": jointData,
-            "options": exporterOptions.writeToJson(),
-            "calculatedMass":convertMassUnitsTo(designMassCalculation()),
-        })
-    elif html_args.action == "export":
-        opts = moduleExporterOptions.ExporterOptions().readFromJSON(data)
-        export(opts)
-        html_args.returnData = "{}"
-    elif html_args.action == "save":
-        opts = moduleExporterOptions.ExporterOptions().readFromJSON(data)
-        opts.writeToDesign()
-        html_args.returnData = "{}"
 
-    elif html_args.action == "selectJoint":
-        selection = gm.app.userInterface.selectEntity("Select Joints", "Joints")
-        joint = adsk.fusion.Joint.cast(selection.entity)
-        html_args.returnData = json.dumps(buildJoint(joint))
-    elif html_args.action == "selectGamepiece":
-        selection = gm.app.userInterface.selectEntity("Select Gamepieces", "Occurrences")
-        gamepiece = adsk.fusion.Occurrence.cast(selection.entity)
-        html_args.returnData = json.dumps(buildGamepiece(gamepiece))
-    else:
-        gm.ui.messageBox(f"Event {html_args.action} arrived<span>{json.dumps(data, indent=2)}</span>")
-
-def buildJoint(joint:adsk.fusion.Joint):
+def buildJoint(joint: adsk.fusion.Joint) -> dict[str, Any]:
     return {
-        "name":joint.name,
-        "entityToken":joint.entityToken,
-        "jointType":joint.jointMotion.jointType,
+        "name": joint.name,
+        "entityToken": joint.entityToken,
+        "jointType": joint.jointMotion.jointType,
     }
-def buildGamepiece(gamepiece: adsk.fusion.Occurrence):
+
+
+def buildGamepiece(gamepiece: adsk.fusion.Occurrence) -> dict[str, Any]:
     physicalProps = gamepiece.component.getPhysicalProperties(adsk.fusion.CalculationAccuracy.LowCalculationAccuracy)
     response = {
-        "name":gamepiece.name,
+        "name": gamepiece.name,
         "occurrenceToken": guid_occurrence(gamepiece),
         "mass": physicalProps.mass,
-        "entityIDs": [gamepiece.entityToken]
+        "entityIDs": [gamepiece.entityToken],
     }
+
     def addChildOccurrences(childOccurrences: adsk.fusion.OccurrenceList) -> None:
         for occ in childOccurrences:
             response["entityIDs"].append(occ.entityToken)
@@ -248,14 +274,9 @@ def buildGamepiece(gamepiece: adsk.fusion.Occurrence):
     return response
 
 
-
-
-
 @logFailure(messageBox=True)
-def export(exporterOptions:moduleExporterOptions.ExporterOptions):
-    getLogger().log(40,exporterOptions)
+def export(exporterOptions: moduleExporterOptions.ExporterOptions) -> None:
     design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
-
     fullName = design.rootComponent.name
     versionMatch = re.search(r"v\d+", fullName)
     docName = (fullName[: versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
@@ -277,7 +298,7 @@ def export(exporterOptions:moduleExporterOptions.ExporterOptions):
     exporterOptions.version = docVersion
     exporterOptions.materials = 0
 
-    getLogger().log(40,exporterOptions)
+
 
     Parser.Parser(exporterOptions).export()
     exporterOptions.writeToDesign()
@@ -294,7 +315,9 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
     @logFailure(messageBox=True)
     def notify(self, _: adsk.core.CommandEventArgs) -> None:
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
-        exporterOptions = moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
+        exporterOptions = (
+            moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
+        )
 
         fullName = design.rootComponent.name
         versionMatch = re.search(r"v\d+", fullName)
@@ -335,8 +358,6 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             frictionOverrideCoeff=generalConfigTab.frictionOverrideCoeff,
             openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
-
-        getLogger().log(40,exporterOptions)
         Parser.Parser(exporterOptions).export()
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
@@ -380,6 +401,7 @@ class MyPreselectEndHandler(PersistentEventHandler, adsk.core.SelectionEventHand
     def notify(self, _: adsk.core.SelectionEventArgs) -> None:
         self.cmd.setCursor("", 0, 0)  # Reset mouse icon to default
 
+
 class ConfigureCommandInputChanged(PersistentEventHandler, adsk.core.InputChangedEventHandler):
     """Called when an input field in the configuration panel has been updated."""
 
@@ -393,6 +415,7 @@ class ConfigureCommandInputChanged(PersistentEventHandler, adsk.core.InputChange
 
         if gamepieceConfigTab.isVisible and gamepieceConfigTab.isActive:
             gamepieceConfigTab.handleInputChanged(args, INPUTS_ROOT)
+
 
 class MyCommandDestroyHandler(PersistentEventHandler, adsk.core.CommandEventHandler):
     """Called when the configuration panel is destroyed."""
