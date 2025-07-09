@@ -169,6 +169,12 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 if (prop.required) {
                     typeError(prop.id, prop.expected_type)
                     valid = false
+                } else {
+                    Global_AddToast?.(
+                        "warning",
+                        "Invalid Match Mode Config",
+                        `The '${prop.id}' field must be a ${prop.expected_type}, ignoring ${prop.id} field`
+                    )
                 }
             }
         }
