@@ -8,7 +8,6 @@ import os
 import re
 import webbrowser
 from typing import Any
-from xml.dom import ValidationErr
 
 import adsk.core
 import adsk.fusion
@@ -228,7 +227,7 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
                 selection = gm.app.userInterface.selectEntity("Select Joints", "Joints")
                 joint = adsk.fusion.Joint.cast(selection.entity)
                 html_args.returnData = json.dumps(buildJoint(joint))
-            except ValidationErr as e:
+            except Exception as e:
                 html_args.returnData = ""
             gm.ui.activeSelections.clear()
         elif html_args.action == "selectGamepiece":
@@ -236,7 +235,7 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
                 selection = gm.app.userInterface.selectEntity("Select Gamepieces", "Occurrences")
                 gamepiece = adsk.fusion.Occurrence.cast(selection.entity)
                 html_args.returnData = json.dumps(buildGamepiece(gamepiece))
-            except ValidationErr as e:
+            except Exception as e:
                 html_args.returnData = ""
             gm.ui.activeSelections.clear()
         elif html_args.action == "cancelSelection":
