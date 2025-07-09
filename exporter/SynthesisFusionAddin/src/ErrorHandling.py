@@ -1,4 +1,6 @@
+import adsk.core
 import inspect
+
 from collections.abc import Callable
 from enum import Enum
 from typing import Generic, TypeVar
@@ -105,22 +107,23 @@ class Err(Result[T]):
     line: int
 
     def __init__(self, message: str, severity: ErrorSeverity):
-        self.message = message
-        self.severity = severity
-
         frame = inspect.currentframe()
         caller_frame = inspect.getouterframes(frame)[1]
 
         self.function = caller_frame.function
         self.line = caller_frame.lineno
 
+        self.severity = severity
+        self.message = f"In `{self.function}` on line {self.line}: {message}"
+
+        
         self.write_error()
 
     def __repr__(self) -> str:
         return f"Err({self.message})"
 
     def write_error(self) -> None:
-        logger.log(self.severity.value, f"In `{self.function}` on line {self.line}: {self.message}")
+        logger.log(self.severity.value, self.message)
 
 
 def handle_err_top(func: Callable[..., Result[None]]) -> Callable[..., None]:
@@ -131,5 +134,5 @@ def handle_err_top(func: Callable[..., Result[None]]) -> Callable[..., None]:
             message, severity = result.unwrap_err()
             if severity == ErrorSeverity.Fatal:
                 app = adsk.core.Application.get()
-                app.userInterface.messageBox(f"Fatal Error Encountered: {message}")
+                app.userInterface.messageBox(f"Fatal Error Encountered {message}")
     return wrapper

@@ -182,7 +182,7 @@ def parseChildOccurrence(
     if occurrence.component.material:
         part.physical_material = occurrence.component.material.id
     else:
-        return Err(f"Component Material is None", ErrorSeverity.Fatal)
+        __: Err[None] = Err(f"Component Material is None", ErrorSeverity.Warning)
 
     def_map = partsData.part_definitions
 
