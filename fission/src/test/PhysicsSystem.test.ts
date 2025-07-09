@@ -69,13 +69,13 @@ describe("Mirabuf Physics Loading", () => {
      * Mira FIle: https://synthesis.autodesk.com/api/mira/private/Multi-Joint_Wheels_v0.mira
      */
     test("Body Loading (Multi-Joint Wheels)", async () => {
-        const assembly = await MirabufCachingService.CacheRemote(
+        const assembly = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
+        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
-        const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
+        const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(9)
     })

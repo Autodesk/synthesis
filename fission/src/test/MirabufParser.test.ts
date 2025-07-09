@@ -33,10 +33,10 @@ describe("Mirabuf Parser Tests", () => {
      * Mira FIle: https://synthesis.autodesk.com/api/mira/private/Multi-Joint_Wheels_v0.mira
      */
     test("Generate Rigid Nodes (Multi-Joint Wheels)", async () => {
-        const spikeMira = await MirabufCachingService.CacheRemote(
+        const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
+        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
