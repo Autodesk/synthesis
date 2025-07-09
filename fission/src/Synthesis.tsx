@@ -1,6 +1,6 @@
 import Scene from "@/components/Scene.tsx"
 import { AnimatePresence } from "framer-motion"
-import { ReactElement, useCallback, useEffect, useRef, useState } from "react"
+import React, { ReactElement, useCallback, useEffect, useRef, useState } from "react"
 import { ModalControlProvider } from "@/ui/ModalContext"
 import { useModalManager } from "@/ui/helpers/UseModalManager.tsx"
 import { PanelControlProvider } from "@/ui/PanelContext"
@@ -73,7 +73,7 @@ import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
 import DeveloperToolPanel from "./ui/panels/DeveloperToolPanel.tsx"
 
-function Synthesis() {
+const Synthesis: React.FC = () => {
     const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
         useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
@@ -98,7 +98,7 @@ function Synthesis() {
                 key="main-menu"
                 modalId="main-menu"
                 startSingleplayerCallback={() => {
-                    World.InitWorld()
+                    World.initWorld()
 
                     if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
                         setConsentPopupDisable(false)
@@ -106,11 +106,11 @@ function Synthesis() {
 
                     const mainLoop = () => {
                         mainLoopHandle.current = requestAnimationFrame(mainLoop)
-                        World.UpdateWorld()
+                        World.updateWorld()
                     }
                     mainLoop()
 
-                    World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
+                    World.sceneRenderer.updateSkyboxColors(defaultTheme)
                 }}
             />
         ),
@@ -128,7 +128,7 @@ function Synthesis() {
         return () => {
             // TODO: Teardown literally everything
             cancelAnimationFrame(mainLoopHandle.current)
-            World.DestroyWorld()
+            World.destroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
 
