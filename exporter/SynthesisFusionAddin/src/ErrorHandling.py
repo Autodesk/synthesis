@@ -1,9 +1,9 @@
-import adsk.core
 import inspect
-
 from collections.abc import Callable
 from enum import Enum
 from typing import Generic, TypeVar
+
+import adsk.core
 
 from .Logging import getLogger
 
@@ -116,7 +116,6 @@ class Err(Result[T]):
         self.severity = severity
         self.message = f"In `{self.function}` on line {self.line}: {message}"
 
-        
         self.write_error()
 
     def __repr__(self) -> str:
@@ -127,12 +126,13 @@ class Err(Result[T]):
 
 
 def handle_err_top(func: Callable[..., Result[None]]) -> Callable[..., None]:
-    
-    def wrapper(*args, **kwargs): # type: ignore
+
+    def wrapper(*args, **kwargs):  # type: ignore
         result = func(*args, **kwargs)
         if result.is_err():
             message, severity = result.unwrap_err()
             if severity == ErrorSeverity.Fatal:
                 app = adsk.core.Application.get()
                 app.userInterface.messageBox(f"Fatal Error Encountered {message}")
+
     return wrapper

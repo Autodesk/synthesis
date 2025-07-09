@@ -11,12 +11,11 @@ from typing import Any
 import adsk.core
 import adsk.fusion
 
-from src import Logging
 import src.Parser.SynthesisParser.Parser as Parser
 import src.UI.GamepieceConfigTab as GamepieceConfigTab
 import src.UI.GeneralConfigTab as GeneralConfigTab
 import src.UI.JointConfigTab as JointConfigTab
-from src import APP_WEBSITE_URL, gm
+from src import APP_WEBSITE_URL, Logging, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions

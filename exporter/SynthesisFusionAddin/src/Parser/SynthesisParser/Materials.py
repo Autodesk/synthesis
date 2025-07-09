@@ -259,7 +259,6 @@ def getMaterialAppearance(
         appearance.roughness = roughnessProp.value
 
     # Thank Liam for this.
-    # TODO Test if this is should be an error that we're just ignoring, or if it's actually just something we can skip over
     modelItem = properties.itemById("interior_model")
     if modelItem:
         matModelType = modelItem.value
