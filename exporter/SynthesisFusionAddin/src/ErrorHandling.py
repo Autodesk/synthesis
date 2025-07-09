@@ -109,7 +109,7 @@ class Err(Result[T]):
         self.severity = severity
 
         frame = inspect.currentframe()
-        caller_frame = inspect.getouterframes(frame)[2]
+        caller_frame = inspect.getouterframes(frame)[1]
 
         self.function = caller_frame.function
         self.line = caller_frame.lineno
