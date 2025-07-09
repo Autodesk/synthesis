@@ -19,7 +19,7 @@ class GamepieceManipBehavior extends Behavior {
         this._intake = intake
     }
 
-    public Update(_: number): void {
+    public update(_: number): void {
         const ejectPressed = InputSystem.getInput("eject", this._brainIndex) === 1
 
         if (ejectPressed && !this._prevEjectPressed) this._ejector.value = 1

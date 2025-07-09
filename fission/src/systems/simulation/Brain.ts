@@ -15,10 +15,10 @@ abstract class Brain {
         this._brainType = brainType
     }
 
-    public abstract Update(deltaT: number): void
+    public abstract update(deltaT: number): void
 
-    public abstract Enable(): void
-    public abstract Disable(): void
+    public abstract enable(): void
+    public abstract disable(): void
 }
 
 export default Brain

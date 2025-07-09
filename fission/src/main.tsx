@@ -1,5 +1,5 @@
 import ReactDOM from "react-dom/client"
-import { ThemeProvider } from "@/ui/ThemeContext"
+import { THEME_PROVIDER } from "@/ui/ThemeContext"
 import { Theme } from "@/ui/helpers/UseThemeHelpers"
 import Synthesis from "./Synthesis"
 import "./index.css"
@@ -77,7 +77,7 @@ const themes = {
 window.convertAuthToken = code => APS.convertAuthToken(code)
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <ThemeProvider initialThemeName={initialThemeName} themes={themes} defaultTheme={defaultColors}>
+    <THEME_PROVIDER initialThemeName={initialThemeName} themes={themes} defaultTheme={defaultColors}>
         <Synthesis />
-    </ThemeProvider>
+    </THEME_PROVIDER>
 )

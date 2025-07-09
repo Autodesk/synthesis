@@ -85,7 +85,7 @@ interface DropdownProps<T extends string> {
  *
  * @returns {JSX.Element} The rendered Dropdown component.
  */
-function Dropdown<T extends string>({ options, onSelect, defaultValue, label }: DropdownProps<T>): ReactElement {
+const Dropdown = <T extends string>({ options, onSelect, defaultValue, label }: DropdownProps<T>): ReactElement => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [selectedValue, setSelectedValue] = useState<string>(defaultValue || "")
     const buttonRef = useRef<HTMLButtonElement>(null)

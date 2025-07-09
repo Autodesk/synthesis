@@ -14,13 +14,13 @@ import SliderDriver from "../driver/SliderDriver"
 import SliderStimulus from "../stimulus/SliderStimulus"
 import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { DefaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
+import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
 import InputSystem from "@/systems/input/InputSystem"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import IntakeDriver from "../driver/IntakeDriver"
 import EjectorDriver from "../driver/EjectorDriver"
 import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
-import { JoltVec3_JoltRVec3 } from "@/util/TypeConversions"
+import { joltVec3JoltRVec3 } from "@/util/TypeConversions"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -66,7 +66,7 @@ class SynthesisBrain extends Brain {
         super(assembly.mechanism, "synthesis")
 
         this._assembly = assembly
-        this._simLayer = World.SimulationSystem.GetSimulationLayer(assembly.mechanism)!
+        this._simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)!
         this._assemblyName = assemblyName
 
         // I'm not fixing this right now, but this is going to become an issue...
@@ -89,16 +89,16 @@ class SynthesisBrain extends Brain {
         }
     }
 
-    public Enable(): void {}
+    public enable(): void {}
 
-    public Update(deltaT: number): void {
-        this._behaviors.forEach(b => b.Update(deltaT))
+    public update(deltaT: number): void {
+        this._behaviors.forEach(b => b.update(deltaT))
 
         this._assembly.ejectorActive = InputSystem.getInput("eject", this._brainIndex) > 0.5
         this._assembly.intakeActive = InputSystem.getInput("intake", this._brainIndex) > 0.5
     }
 
-    public Disable(): void {
+    public disable(): void {
         this.clearControls()
         this._behaviors = []
     }
@@ -129,11 +129,11 @@ class SynthesisBrain extends Brain {
 
         // Determines which wheels and stimuli belong to which side of the robot
         for (let i = 0; i < wheelDrivers.length; i++) {
-            const wheelPos = JoltVec3_JoltRVec3(fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation())
+            const wheelPos = joltVec3JoltRVec3(fixedConstraints[i].GetConstraintToBody1Matrix().GetTranslation())
 
-            const robotCOM = World.PhysicsSystem.GetBody(
-                this._mechanism.constraints[0].childBody
-            ).GetCenterOfMassPosition()
+            const robotCOM = World.physicsSystem
+                .getBody(this._mechanism.constraints[0].childBody)
+                .GetCenterOfMassPosition()
             const rightVector = new JOLT.RVec3(1, 0, 0)
 
             const dotProduct = rightVector.Dot(wheelPos.SubRVec3(robotCOM))
@@ -167,7 +167,7 @@ class SynthesisBrain extends Brain {
             )
 
             if (sequentialConfig == undefined) {
-                sequentialConfig = DefaultSequentialConfig(this._currentJointIndex, "Arm")
+                sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Arm")
 
                 if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
                     PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
@@ -204,7 +204,7 @@ class SynthesisBrain extends Brain {
             )
 
             if (sequentialConfig == undefined) {
-                sequentialConfig = DefaultSequentialConfig(this._currentJointIndex, "Elevator")
+                sequentialConfig = defaultSequentialConfig(this._currentJointIndex, "Elevator")
 
                 if (PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig == undefined)
                     PreferencesSystem.getRobotPreferences(this._assemblyName).sequentialConfig = []
@@ -249,7 +249,7 @@ class SynthesisBrain extends Brain {
         /** Put any field configuration here */
     }
 
-    public static GetBrainIndex(assembly: MirabufSceneObject | undefined): number | undefined {
+    public static getBrainIndex(assembly: MirabufSceneObject | undefined): number | undefined {
         return (assembly?.brain as SynthesisBrain)?.brainIndex
     }
 }

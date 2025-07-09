@@ -8,10 +8,10 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import {
-    Array_ThreeMatrix4,
-    JoltMat44_ThreeMatrix4,
-    ReactRgbaColor_ThreeColor,
-    ThreeMatrix4_Array,
+    arrayThreeMatrix4,
+    joltMat44ThreeMatrix4,
+    reactRgbaColorThreeColor,
+    threeMatrix4Array,
 } from "@/util/TypeConversions"
 import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import Button from "@/ui/components/Button"
@@ -75,10 +75,10 @@ function save(
     gizmo.obj.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(1, 1, 1))
-    const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+    const robotTransformation = joltMat44ThreeMatrix4(World.physicsSystem.getBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
-    selectedRobot.intakePreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
+    selectedRobot.intakePreferences.deltaTransformation = threeMatrix4Array(deltaTransformation)
     selectedRobot.intakePreferences.parentNode = selectedNode
     selectedRobot.intakePreferences.zoneDiameter = zoneSize
     if (showZoneAlways !== undefined) {
@@ -110,15 +110,15 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
             save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces)
-            selectedRobot.UpdateIntakeSensor()
+            selectedRobot.updateIntakeSensor()
         }
     }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -131,7 +131,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [zoneSize])
 
     const placeholderMesh = useMemo(() => {
-        const material = World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
+        const material = World.sceneRenderer.createToonMaterial(reactRgbaColorThreeColor(theme.HighlightHover.color))
         material.transparent = true
         material.opacity = 0.6
         return new THREE.Mesh(new THREE.SphereGeometry(0.5), material)
@@ -143,7 +143,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
-                const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences!.deltaTransformation)
+                const deltaTransformation = arrayThreeMatrix4(selectedRobot.intakePreferences!.deltaTransformation)
 
                 let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
                     selectedRobot.intakePreferences!.parentNode ?? selectedRobot.rootNodeId
@@ -154,12 +154,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }
 
                 /** W = L x R. See save() for math details */
-                const robotTransformation = JoltMat44_ThreeMatrix4(
-                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                const robotTransformation = joltMat44ThreeMatrix4(
+                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
-                gizmo.SetTransform(gizmoTransformation)
+                gizmo.setTransform(gizmoTransformation)
             }
 
             return (
@@ -194,19 +194,19 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [selectedRobot])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         // Hide the visual indicator when entering configuration mode
         if (selectedRobot) {
-            selectedRobot.SetIntakeVisualIndicatorVisible(false)
+            selectedRobot.setIntakeVisualIndicatorVisible(false)
         }
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
 
             // Show the visual indicator when exiting configuration mode
             if (selectedRobot) {
-                selectedRobot.SetIntakeVisualIndicatorVisible(true)
+                selectedRobot.setIntakeVisualIndicatorVisible(true)
             }
         }
     }, [selectedRobot])
@@ -217,7 +217,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 return false
             }
 
-            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || !assoc.sceneObject || assoc.sceneObject != selectedRobot) {
                 return false
             }
@@ -268,7 +268,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 alignItems={"center"}
                 textAlign={"center"}
             >
-                <Label size={LabelSize.Small} className="mr-12 whitespace-nowrap">
+                <Label size={LabelSize.SMALL} className="mr-12 whitespace-nowrap">
                     Show intake zone indicator always
                 </Label>
                 <Switch
@@ -323,8 +323,8 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 value="Reset"
                 onClick={() => {
                     if (gizmoRef.current) {
-                        const robotTransformation = JoltMat44_ThreeMatrix4(
-                            World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
+                        const robotTransformation = joltMat44ThreeMatrix4(
+                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)

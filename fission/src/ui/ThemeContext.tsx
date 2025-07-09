@@ -10,7 +10,7 @@ type ThemeProviderProps = {
     children: ReactNode
 }
 
-export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialThemeName, themes, defaultTheme, children }) => {
+export const THEME_PROVIDER: React.FC<ThemeProviderProps> = ({ initialThemeName, themes, defaultTheme, children }) => {
     const [currentTheme, setCurrentTheme] = useState<string>(initialThemeName)
 
     addGlobalFunc<Theme>("getTheme", () => themes[currentTheme])

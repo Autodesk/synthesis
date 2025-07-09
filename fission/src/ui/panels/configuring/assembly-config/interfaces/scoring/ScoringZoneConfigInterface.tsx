@@ -8,11 +8,11 @@ import SelectButton from "@/ui/components/SelectButton"
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import World from "@/systems/World"
-import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
+import { arrayThreeMatrix4, joltMat44ThreeMatrix4, threeMatrix4Array } from "@/util/TypeConversions"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
+import { deltaFieldTransformsPhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -76,10 +76,10 @@ function save(
     scale.z = Math.abs(scale.z)
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
-    const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+    const fieldTransformation = joltMat44ThreeMatrix4(World.physicsSystem.getBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(fieldTransformation.invert())
 
-    zone.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
+    zone.deltaTransformation = threeMatrix4Array(deltaTransformation)
     zone.name = name
     zone.alliance = alliance
     zone.parentNode = selectedNode
@@ -146,19 +146,19 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
     /** Holds a pause for the duration of the interface component */
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 
@@ -185,7 +185,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
-                const deltaTransformation = Array_ThreeMatrix4(selectedZone.deltaTransformation)
+                const deltaTransformation = arrayThreeMatrix4(selectedZone.deltaTransformation)
 
                 let nodeBodyId = selectedField.mechanism.nodeToBody.get(
                     selectedZone.parentNode ?? selectedField.rootNodeId
@@ -196,15 +196,15 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 }
 
                 /** W = L x R. See save() for math details */
-                const fieldTransformation = JoltMat44_ThreeMatrix4(
-                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                const fieldTransformation = joltMat44ThreeMatrix4(
+                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
                 const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
 
                 gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
                 gizmo.obj.rotation.setFromQuaternion(props.rotation)
                 gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
-                selectedField.RemoveScoringZoneObject(selectedZone) // avoid rendering twice
+                selectedField.removeScoringZoneObject(selectedZone) // avoid rendering twice
             }
 
             return (
@@ -230,7 +230,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 return false
             }
 
-            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || assoc?.sceneObject != selectedField) {
                 return false
             }
