@@ -6,9 +6,12 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "lint": "eslint .",
+    "lint": "eslint . --ext ts,tsc --report-unused-disable-directives",
+    "lint:fix": "eslint . --ext ts,tsc --report-unused-disable-directives --fix",
+    "prettier": "prettier src --check",
+    "prettier:fix": "prettier src --write",
     "preview": "vite preview",
-    "format": "eslint --fix; prettier --write ."
+    "format": "bun run prettier:fix || npm run prettier:fix ; bun run lint:fix || npm run lint:fix"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

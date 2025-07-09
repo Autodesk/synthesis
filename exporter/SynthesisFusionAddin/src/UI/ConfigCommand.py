@@ -12,12 +12,13 @@ from xml.dom import ValidationErr
 
 import adsk.core
 import adsk.fusion
+from adsk.core import Palette
+
 import src.Parser.ExporterOptions as moduleExporterOptions
 import src.Parser.SynthesisParser.Parser as Parser
 import src.UI.GamepieceConfigTab as GamepieceConfigTab
 import src.UI.GeneralConfigTab as GeneralConfigTab
 import src.UI.JointConfigTab as JointConfigTab
-from adsk.core import Palette
 from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
@@ -25,7 +26,7 @@ from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation
 from src.UI import FileDialogConfig
 from src.UI.Handlers import PersistentEventHandler
-from src.Util import designMassCalculation, convertMassUnitsTo
+from src.Util import convertMassUnitsTo, designMassCalculation
 
 generalConfigTab: GeneralConfigTab.GeneralConfigTab
 jointConfigTab: JointConfigTab.JointConfigTab
