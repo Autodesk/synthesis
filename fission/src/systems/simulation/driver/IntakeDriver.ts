@@ -15,7 +15,7 @@ class IntakeDriver extends Driver {
         this.value = 0.0
     }
 
-    public Update(_deltaT: number): void {
+    public update(_deltaT: number): void {
         this._assembly.intakeActive = this.value > 0.5
     }
 
@@ -23,9 +23,9 @@ class IntakeDriver extends Driver {
         this.value = val
     }
     public getReceiverType(): NoraTypes {
-        return NoraTypes.Number
+        return NoraTypes.NUMBER
     }
-    public DisplayName(): string {
+    public displayName(): string {
         return "Intake"
     }
 }

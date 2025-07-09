@@ -12,7 +12,7 @@ type SoundEffect = {
     onMouseUp?: () => void
 }
 export class SoundPlayer {
-    private static audioElements: Map<string, HTMLAudioElement> = new Map()
+    private static _audioElements: Map<string, HTMLAudioElement> = new Map()
 
     constructor() {}
     static {
@@ -21,10 +21,10 @@ export class SoundPlayer {
         })
     }
     private static async loadSound(filePath: string): Promise<HTMLAudioElement> {
-        let audio = this.audioElements.get(filePath)
+        let audio = this._audioElements.get(filePath)
         if (audio == null) {
             audio = new Audio(filePath)
-            SoundPlayer.audioElements.set(filePath, audio)
+            SoundPlayer._audioElements.set(filePath, audio)
             audio.volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
                 ? 0
                 : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
@@ -47,7 +47,7 @@ export class SoundPlayer {
         return {
             onMouseDown: () => SoundPlayer.play(clickdownSound),
             onMouseUp: () => {
-                if (SoundPlayer.audioElements.get(clickdownSound)?.ended) {
+                if (SoundPlayer._audioElements.get(clickdownSound)?.ended) {
                     return SoundPlayer.play(clickupSound)
                 }
             },
@@ -57,7 +57,7 @@ export class SoundPlayer {
         return {
             onMouseDown: () => SoundPlayer.play(checkdownSound),
             onMouseUp: () => {
-                if (SoundPlayer.audioElements.get(checkdownSound)?.ended) {
+                if (SoundPlayer._audioElements.get(checkdownSound)?.ended) {
                     return SoundPlayer.play(checkupSound)
                 }
             },
@@ -73,6 +73,6 @@ export class SoundPlayer {
         const volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
             ? 0
             : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
-        SoundPlayer.audioElements.forEach(audio => (audio.volume = volume))
+        SoundPlayer._audioElements.forEach(audio => (audio.volume = volume))
     }
 }

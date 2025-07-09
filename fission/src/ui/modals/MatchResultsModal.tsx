@@ -60,7 +60,7 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Match Results"}
-            icon={SynthesisIcons.Gamepad}
+            icon={SynthesisIcons.GAMEPAD}
             modalId={modalId}
             cancelEnabled={false}
             acceptEnabled={false}
@@ -71,7 +71,7 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             </LabelStyled>
             <div className="flex flex-col">
                 {entries.map(e => (
-                    <Stack key={e.name} direction={StackDirection.Horizontal}>
+                    <Stack key={e.name} direction={StackDirection.HORIZONTAL}>
                         <Label>{e.name}</Label>
                         <Label>{e.value}</Label>
                     </Stack>
@@ -85,7 +85,7 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             </LabelStyled>
             <div className="flex flex-col">
                 {redRobotScores.map(e => (
-                    <Stack key={e.name} direction={StackDirection.Horizontal}>
+                    <Stack key={e.name} direction={StackDirection.HORIZONTAL}>
                         <Label>{e.name}</Label>
                         <Label>{e.value}</Label>
                     </Stack>
@@ -96,7 +96,7 @@ const MatchResultsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             </LabelStyled>
             <div className="flex flex-col">
                 {blueRobotScores.map(e => (
-                    <Stack key={e.name} direction={StackDirection.Horizontal}>
+                    <Stack key={e.name} direction={StackDirection.HORIZONTAL}>
                         <Label>{e.name}</Label>
                         <Label>{e.value}</Label>
                     </Stack>

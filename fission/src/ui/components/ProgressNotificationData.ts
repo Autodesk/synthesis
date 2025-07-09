@@ -1,9 +1,9 @@
 let nextHandleId = 0
 
 export enum ProgressHandleStatus {
-    inProgress = 0,
-    Done = 1,
-    Error = 2,
+    IN_PROGRESS = 0,
+    DONE = 1,
+    ERROR = 2,
 }
 
 export class ProgressHandle {
@@ -11,7 +11,7 @@ export class ProgressHandle {
     private _title: string
     public message: string = ""
     public progress: number = 0.0
-    public status: ProgressHandleStatus = ProgressHandleStatus.inProgress
+    public status: ProgressHandleStatus = ProgressHandleStatus.IN_PROGRESS
 
     public get handleId() {
         return this._handleId
@@ -24,27 +24,27 @@ export class ProgressHandle {
         this._handleId = nextHandleId++
         this._title = title
 
-        this.Push()
+        this.push()
     }
 
-    public Update(message: string, progress: number, status?: ProgressHandleStatus) {
+    public update(message: string, progress: number, status?: ProgressHandleStatus) {
         this.message = message
         this.progress = progress
         status && (this.status = status)
 
-        this.Push()
+        this.push()
     }
 
-    public Fail(message?: string) {
-        this.Update(message ?? "Failed", 1, ProgressHandleStatus.Error)
+    public fail(message?: string) {
+        this.update(message ?? "Failed", 1, ProgressHandleStatus.ERROR)
     }
 
-    public Done(message?: string) {
-        this.Update(message ?? "Done", 1, ProgressHandleStatus.Done)
+    public done(message?: string) {
+        this.update(message ?? "Done", 1, ProgressHandleStatus.DONE)
     }
 
-    public Push() {
-        ProgressEvent.Dispatch(this)
+    public push() {
+        ProgressEvent.dispatch(this)
     }
 }
 
@@ -59,15 +59,15 @@ export class ProgressEvent extends Event {
         this.handle = handle
     }
 
-    public static Dispatch(handle: ProgressHandle) {
+    public static dispatch(handle: ProgressHandle) {
         window.dispatchEvent(new ProgressEvent(handle))
     }
 
-    public static AddListener(func: (e: ProgressEvent) => void) {
+    public static addListener(func: (e: ProgressEvent) => void) {
         window.addEventListener(this.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: ProgressEvent) => void) {
+    public static removeListener(func: (e: ProgressEvent) => void) {
         window.removeEventListener(this.EVENT_KEY, func as (e: Event) => void)
     }
 }
