@@ -1,13 +1,10 @@
-This product bundles the following third-party asset:
+This product bundles the following third-party sound assets:
 
-* fission/src/assets/sound-files/ButtonPress.mp3
-  Licensed under CC0 1.0
-  https://creativecommons.org/publicdomain/zero/1.0/
+* fission/src/assets/sound-files/checkdown.wav
+* fission/src/assets/sound-files/checkup.wav
+* fission/src/assets/sound-files/clickdown.wav
+* fission/src/assets/sound-files/clickup.wav
+* fission/src/assets/sound-files/DullClick.wav
 
-* fission/src/asset/sound-files/CheckboxPress.wav
-  Licensed under CC0 1.0
-  https://creativecommons.org/publicdomain/zero/1.0/
-
-* fission/src/asset/sound-files/DullClick.wav
-  Licensed under CC0 1.0
-  https://creativecommons.org/publicdomain/zero/1.0/
+All of the above files are licensed under the Creative Commons CC0 1.0 Universal Public Domain Dedication.
+License URL: https://creativecommons.org/publicdomain/zero/1.0/
