@@ -205,16 +205,15 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                     }}>
                     Add Gamepiece
                 </Button>
-                <Button
-                    disabled={!selectingActive}
-                    onClick={() => {
-                        selectionCancelCallback.current?.()
-                        setSelectingActive(false)
-                    }}
-                    color="warning"
-                    variant="contained">
-                    Cancel
-                </Button>
+                {/*<Button*/}
+                {/*    disabled={!selectingActive}*/}
+                {/*    onClick={() => {*/}
+                {/*        selectionCancelCallback.current?.()*/}
+                {/*    }}*/}
+                {/*    color="warning"*/}
+                {/*    variant="contained">*/}
+                {/*    Cancel*/}
+                {/*</Button>*/}
             </Box>
         </>
     )

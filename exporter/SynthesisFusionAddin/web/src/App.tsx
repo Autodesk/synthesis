@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 import "./App.css"
-import { selectJoint, sendData, sendDataAndToast } from "./lib"
+import { sendData, sendDataAndToast } from "./lib"
 import { AppBar, Box, Button, Container, Tab, Tabs, ThemeProvider } from "@mui/material"
 import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
 import JointsConfigTab from "./ui/JointsConfigTab.tsx"
@@ -13,7 +13,6 @@ import {
     type Gamepiece,
     type GeneralConfig,
     type Joint,
-    JointType,
     WheelType,
 } from "./lib/types.ts"
 import GamepiecesConfigTab from "./ui/GamepiecesConfigTab.tsx"
@@ -30,7 +29,7 @@ function TabPanel(props: { children?: React.ReactNode; value: number; index: num
     const { children, value, index, ...other } = props
 
     return (
-        <div hidden={value !== index} id={`tabpanel-${index}`} {...other}>
+        <div hidden={value !== index} id={`tabpanel-${index.toString()}`} {...other}>
             <Container sx={{ p: 3 }}>{children}</Container>
         </div>
     )
@@ -47,74 +46,79 @@ function App() {
         })
     }
     function loadConfigFromFusion() {
-        if (window.adsk == undefined) {
+        if (typeof window.adsk === "undefined") {
             requestAnimationFrame(loadConfigFromFusion)
             return
         }
-        sendData("init", {}).then(data => {
-            if (data == undefined) {
-                Global_SetAlert("error", "Could not extract data from fusion")
-                return
-            }
-            console.log(data)
-            updateGeneralConfig(config => {
-                const entries = Object.entries(data.options)
-                entries.forEach(([k, v]) => {
-                    if (k in config) {
-                        config[k as "robotWeight"] = v // Object.entries is terribly typed
-                    }
+        sendData("init", {})
+            .then(data => {
+                if (data == undefined) {
+                    Global_SetAlert("error", "Could not extract data from fusion")
+                    return
+                }
+                console.log(data)
+                updateGeneralConfig(config => {
+                    const entries = Object.entries(data.options)
+                    entries.forEach(([k, v]) => {
+                        if (k in config) {
+                            config[k as "robotWeight"] = v as number // Object.entries is terribly typed
+                        }
+                    })
+                    config.calculatedRobotWeight = data.calculatedMass
+                    config.robotWeight = config.autoCalcRobotWeight ? data.calculatedMass : config.robotWeight
                 })
-                config.calculatedRobotWeight = data.calculatedMass
-                config.robotWeight = config.autoCalcRobotWeight ? data.calculatedMass : config.robotWeight
-            })
-            updateJoints(() => {
-                const res: Joint[] = data.options.joints
-                    .map(joint => {
-                        const wheel = joint.isWheel
-                            ? data.options.wheels.find(wheel => wheel.jointToken === joint.jointToken)
-                            : undefined
-                        const fusionJoint = data.jointData.find(j => j.entityToken == joint.jointToken)
-                        if (fusionJoint == undefined) {
-                            return null // No longer in the assembly
-                        }
-                        return {
-                            id: joint.jointToken,
+                updateJoints(() => {
+                    const res: Joint[] = data.options.joints
+                        .map(joint => {
+                            const wheel = joint.isWheel
+                                ? data.options.wheels.find(wheel => wheel.jointToken === joint.jointToken)
+                                : undefined
+                            const fusionJoint = data.jointData.find(j => j.entityToken == joint.jointToken)
+                            if (fusionJoint == undefined) {
+                                return null // No longer in the assembly
+                            }
+                            return {
+                                id: joint.jointToken,
 
-                            parentNode: joint.parent,
-                            force: joint.force,
-                            isWheel: joint.isWheel,
-                            speed: joint.speed,
-                            signalType: joint.signalType,
-                            wheelType: wheel?.wheelType ?? WheelType.STANDARD,
-                            name: fusionJoint?.name ?? "",
-                            type: fusionJoint?.jointType ?? JointType.RigidJointType,
-                        }
-                    })
-                    .filter(e => e != null)
-                return res
+                                parentNode: joint.parent,
+                                force: joint.force,
+                                isWheel: joint.isWheel,
+                                speed: joint.speed,
+                                signalType: joint.signalType,
+                                wheelType: wheel?.wheelType ?? WheelType.STANDARD,
+                                name: fusionJoint.name,
+                                type: fusionJoint.jointType,
+                            }
+                        })
+                        .filter(e => e != null)
+                    return res
+                })
+                updateGamepieces(() => {
+                    const res: Gamepiece[] = data.options.gamepieces
+                        .map(gamepiece => {
+                            const fusionGamepiece = data.gamepieceData.find(
+                                g => g.occurrenceToken == gamepiece.occurrenceToken
+                            )
+                            if (fusionGamepiece == undefined) {
+                                return null // No longer in the assembly
+                            }
+                            return {
+                                occurrenceToken: gamepiece.occurrenceToken,
+                                userDefinedMass: gamepiece.weight,
+                                friction: gamepiece.friction,
+                                calculatedMass: fusionGamepiece.mass,
+                                name: fusionGamepiece.name,
+                                entityIDs: fusionGamepiece.entityIDs,
+                            }
+                        })
+                        .filter(e => e != null)
+                    return res
+                })
             })
-            updateGamepieces(() => {
-                const res: Gamepiece[] = data.options.gamepieces
-                    .map(gamepiece => {
-                        const fusionGamepiece = data.gamepieceData.find(
-                            g => g.occurrenceToken == gamepiece.occurrenceToken
-                        )
-                        if (fusionGamepiece == undefined) {
-                            return null // No longer in the assembly
-                        }
-                        return {
-                            occurrenceToken: gamepiece.occurrenceToken,
-                            userDefinedMass: gamepiece.weight,
-                            friction: gamepiece.friction,
-                            calculatedMass: fusionGamepiece?.mass ?? 0,
-                            name: fusionGamepiece?.name ?? "",
-                            entityIDs: fusionGamepiece?.entityIDs ?? [],
-                        }
-                    })
-                    .filter(e => e != null)
-                return res
+            .catch((e: unknown) => {
+                console.error(e)
+                Global_SetAlert("error", "Could not load config")
             })
-        })
     }
 
     useEffect(() => {
@@ -157,7 +161,7 @@ function App() {
                         sx={{ bgcolor: "white" }}
                         value={activeTab}
                         onChange={(_, v) => {
-                            setActiveTab(v)
+                            setActiveTab(v as number)
                         }}>
                         <Tab icon={<Settings />} iconPosition={"start"} label="General" />
                         <Tab
@@ -191,10 +195,6 @@ function App() {
                     updateConfigItem={updateConfigItem}
                 />
             </TabPanel>
-            <TabPanel value={activeTab} index={3}>
-                <h3>APS</h3>
-                <button onClick={() => selectJoint()}>Select Joints</button>
-            </TabPanel>
 
             <Box
                 position="sticky"
@@ -212,7 +212,7 @@ function App() {
                         updateGeneralConfig(DefaultExporterConfig())
                         updateJoints([])
                         updateGamepieces([])
-                        sendData("save", DefaultExporterConfig())
+                        await sendData("save", DefaultExporterConfig())
                         loadConfigFromFusion()
                         Global_SetAlert("info", "Configuration reset")
                     }}

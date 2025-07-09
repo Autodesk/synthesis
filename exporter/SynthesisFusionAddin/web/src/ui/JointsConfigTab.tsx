@@ -23,20 +23,21 @@ import { type FusionJoint, selectJoint } from "../lib"
 import { type Joint, JointParentType, JointType, SignalType, WheelType } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 
-const jointInfo: Partial<Record<JointType, { icon: string; name: string; speedUnits: string, defaultSpeed:number }>> = {
-    [JointType.RevoluteJointType]: {
-        icon: revoluteIcon,
-        name: "Revolute",
-        defaultSpeed: 3.14159,
-        speedUnits: "rad/s",
-    },
-    [JointType.SliderJointType]: {
-        icon: sliderIcon,
-        name: "Slider",
-        defaultSpeed: 100,
-        speedUnits: "cm/s",
-    },
-}
+const jointInfo: Partial<Record<JointType, { icon: string; name: string; speedUnits: string; defaultSpeed: number }>> =
+    {
+        [JointType.RevoluteJointType]: {
+            icon: revoluteIcon,
+            name: "Revolute",
+            defaultSpeed: 3.14159,
+            speedUnits: "rad/s",
+        },
+        [JointType.SliderJointType]: {
+            icon: sliderIcon,
+            name: "Slider",
+            defaultSpeed: 100,
+            speedUnits: "cm/s",
+        },
+    }
 
 const signalInfo: Record<SignalType, { bg: string; outline: string; fg: string }> = {
     [SignalType.PWM]: { bg: "#ffa779", outline: "#ff894a", fg: "#ce5d21" },
@@ -62,9 +63,9 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
     return (
         <>
             <h4>
-            {joints.length} Joint{joints.length != 1 ? "s": ""}
+                {joints.length} Joint{joints.length != 1 ? "s" : ""}
             </h4>
-            <TableContainer component={Paper} elevation={6} sx={{marginBottom:"10px"}}>
+            <TableContainer component={Paper} elevation={6} sx={{ marginBottom: "10px" }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
                     <TableHead>
                         <TableRow>
@@ -232,11 +233,15 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                         setSelectingJoint(true)
                         // const data = await initiateSelection("Select joint")
 
-                        const data: FusionJoint | undefined = await new Promise(async resolve => {
+                        const data: FusionJoint | undefined = await new Promise(resolve => {
                             jointCancelCallback.current = () => {
                                 resolve(undefined)
                             }
-                            resolve(await selectJoint())
+                            selectJoint()
+                                .then(v => {
+                                    resolve(v)
+                                })
+                                .catch(console.error)
                         })
 
                         setSelectingJoint(false)
@@ -261,20 +266,19 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                     }}>
                     Add Joint
                 </Button>
-                <Button
-                    disabled={!selectingJoint}
-                    onClick={() => {
-                        jointCancelCallback.current?.()
-                        setSelectingJoint(false)
-                    }}
-                    color="warning"
-                    variant="contained">
-                    Cancel
-                </Button>
+                {/*<Button*/}
+                {/*    disabled={!selectingJoint}*/}
+                {/*    onClick={async () => {*/}
+                {/*        jointCancelCallback.current?.()*/}
+                {/*    }}*/}
+                {/*    color="warning"*/}
+                {/*    variant="contained">*/}
+                {/*    Cancel*/}
+                {/*</Button>*/}
             </Box>
 
             <h4>
-                {joints.filter((j) => j.isWheel).length} Wheel{joints.filter((j) => j.isWheel).length != 1 ? "s": ""}
+                {joints.filter(j => j.isWheel).length} Wheel{joints.filter(j => j.isWheel).length != 1 ? "s" : ""}
             </h4>
             <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">

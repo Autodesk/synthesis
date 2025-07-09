@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite build --watch",
-
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "eslint --fix; prettier --write ."
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",

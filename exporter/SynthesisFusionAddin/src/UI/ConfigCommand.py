@@ -22,7 +22,7 @@ from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.SynthesisParser.Utilities import guid_occurrence
-from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode, encodeNestedObjects
+from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation
 from src.UI import FileDialogConfig
 from src.UI.Handlers import PersistentEventHandler
 from src.Util import designMassCalculation, convertMassUnitsTo
@@ -428,3 +428,6 @@ class MyCommandDestroyHandler(PersistentEventHandler, adsk.core.CommandEventHand
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         for group in design.rootComponent.customGraphicsGroups:
             group.deleteMe()
+
+
+

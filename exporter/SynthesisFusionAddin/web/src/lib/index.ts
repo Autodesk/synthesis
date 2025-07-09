@@ -14,20 +14,25 @@ declare global {
 }
 
 type Empty = Record<PropertyKey, never>
+
+interface InitResponse {
+    calculatedMass: number
+    options: ExporterConfig
+    jointData: FusionJoint[]
+    gamepieceData: FusionGamepiece[]
+}
+
 interface Messages {
     selectJoint: [Empty, FusionJoint]
     selectGamepiece: [Empty, FusionGamepiece]
     export: [ExporterConfig, Empty]
     save: [ExporterConfig, Empty]
-    init: [
-        Empty,
-        { calculatedMass: number; options: ExporterConfig; jointData: FusionJoint[]; gamepieceData: FusionGamepiece[] },
-    ]
+    init: [Empty, InitResponse]
 }
 
 export async function sendData<A extends keyof Messages>(
     action: A,
-    body: Messages[A][0] & object
+    body: Messages[A][0]
 ): Promise<Messages[A][1] | undefined> {
     console.log({ action, body: JSON.stringify(body) })
     const resp = await window.adsk.fusionSendData(action, JSON.stringify(body))
@@ -35,7 +40,7 @@ export async function sendData<A extends keyof Messages>(
         Global_SetAlert("error", "Fusion did not respond. Try restarting the application")
     }
     try {
-        return JSON.parse(resp)
+        return JSON.parse(resp) as Messages[A][1]
     } catch (error) {
         console.error({ error, resp })
         return undefined
@@ -48,19 +53,14 @@ export async function sendDataAndToast<A extends keyof Messages>(
     sucessMsg: string,
     failureMsg = "Fusion did not respond. Try restarting the application"
 ): Promise<Messages[A][1] | undefined> {
-    console.log({ action, body: JSON.stringify(body) })
-    const resp = await window.adsk.fusionSendData(action, JSON.stringify(body))
-    if (resp == "") {
+    const resp = await sendData(action, body)
+
+    if (resp == undefined) {
         Global_SetAlert("error", failureMsg)
+    } else {
+        Global_SetAlert("info", sucessMsg)
     }
-    try {
-        const data = JSON.parse(resp)
-        Global_SetAlert("success", sucessMsg)
-        return data
-    } catch (error) {
-        console.error({ error, resp })
-        return undefined
-    }
+    return resp
 }
 
 export interface FusionJoint {
@@ -69,8 +69,8 @@ export interface FusionJoint {
     jointType: JointType
 }
 export async function selectJoint(): Promise<FusionJoint | undefined> {
-    if (!window.adsk) {
-        return new Promise<any>(resolve => {
+    if (import.meta.env.DEV && typeof window.adsk == "undefined") {
+        return new Promise<FusionJoint>(resolve => {
             setTimeout(() => {
                 const jointType = Math.round(1 + Math.random())
                 const token = Math.random().toString(36).substring(2, 15)
@@ -92,7 +92,7 @@ export interface FusionGamepiece {
     entityIDs: string[]
 }
 export async function selectGamepiece(): Promise<FusionGamepiece | undefined> {
-    if (!window.adsk) {
+    if (import.meta.env.DEV && typeof window.adsk == "undefined") {
         return new Promise<FusionGamepiece>(resolve => {
             setTimeout(() => {
                 const token = Math.random().toString(36).substring(2, 15)

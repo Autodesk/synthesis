@@ -25,7 +25,7 @@ export const theme = createTheme({
         MuiSelect: {
             defaultProps: {
                 size: "small",
-            }
+            },
         },
         MuiIconButton: {
             defaultProps: {

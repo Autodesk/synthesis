@@ -138,61 +138,64 @@ function GeneralConfigTab({ config, updateConfigItem }: ConfigTabProps): React.R
                         <Switch edge="end" onChange={updateLiteral("compressOutput")} checked={config.compressOutput} />
                     </ListItem>
                     <Collapse in={config.exportMode == ExportMode.ROBOT}>
-                    <ListItem>
-                        <ListItemIcon>
-                            <PrecisionManufacturingIcon />
-                        </ListItemIcon>
-                        <ListItemText primary="Export as Part" secondary="Use to export as a part for Mix And Match" />
-                        <Switch edge="end" onChange={updateLiteral("exportAsPart")} checked={config.exportAsPart} />
-                    </ListItem>
-                    <ListItem>
-                        <ListItemIcon>
-                            <TuneIcon />
-                        </ListItemIcon>
-                        <ListItemText
-                            primary="Override Friction"
-                            secondary="Manually override the default friction values on the bodies in the assembly. From 0 (ice) to 1 (rubber)"
-                        />
-                        <Switch
-                            edge="end"
-                            onChange={updateLiteral("frictionOverride")}
-                            checked={config.frictionOverride}
-                        />
-                    </ListItem>
-                    <Collapse in={config.frictionOverride}>
-                        <ListItem dense>
-                            <ListItemIcon></ListItemIcon>
-                            {/*<ListItemText inset primary="Friction Coefficient" secondary="From 0 (ice) to 1 (rubber)."/>*/}
-                            <Slider
-                                min={0}
-                                max={1}
-                                step={0.01}
-                                style={{ minWidth: "10rem", marginLeft: "2rem" }}
-                                onChange={updateLiteral("frictionOverrideCoeff")}
-                                value={config.frictionOverrideCoeff}
+                        <ListItem>
+                            <ListItemIcon>
+                                <PrecisionManufacturingIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary="Export as Part"
+                                secondary="Use to export as a part for Mix And Match"
                             />
-                            <TextField
-                                placeholder="0.0"
-                                type="number"
-                                size="small"
-                                slotProps={{
-                                    htmlInput: {
-                                        min: 0,
-                                        step: 0.01,
-                                        max: 1000,
-                                    },
-                                }}
-                                style={{ paddingLeft: "2rem", minWidth: "5rem" }}
-                                onChange={e => {
-                                    updateConfigItem(
-                                        "frictionOverrideCoeff",
-                                        safeParseFloat(e.target.value) ?? config.frictionOverrideCoeff
-                                    )
-                                }}
-                                value={config.frictionOverrideCoeff}
+                            <Switch edge="end" onChange={updateLiteral("exportAsPart")} checked={config.exportAsPart} />
+                        </ListItem>
+                        <ListItem>
+                            <ListItemIcon>
+                                <TuneIcon />
+                            </ListItemIcon>
+                            <ListItemText
+                                primary="Override Friction"
+                                secondary="Manually override the default friction values on the bodies in the assembly. From 0 (ice) to 1 (rubber)"
+                            />
+                            <Switch
+                                edge="end"
+                                onChange={updateLiteral("frictionOverride")}
+                                checked={config.frictionOverride}
                             />
                         </ListItem>
-                    </Collapse>
+                        <Collapse in={config.frictionOverride}>
+                            <ListItem dense>
+                                <ListItemIcon></ListItemIcon>
+                                {/*<ListItemText inset primary="Friction Coefficient" secondary="From 0 (ice) to 1 (rubber)."/>*/}
+                                <Slider
+                                    min={0}
+                                    max={1}
+                                    step={0.01}
+                                    style={{ minWidth: "10rem", marginLeft: "2rem" }}
+                                    onChange={updateLiteral("frictionOverrideCoeff")}
+                                    value={config.frictionOverrideCoeff}
+                                />
+                                <TextField
+                                    placeholder="0.0"
+                                    type="number"
+                                    size="small"
+                                    slotProps={{
+                                        htmlInput: {
+                                            min: 0,
+                                            step: 0.01,
+                                            max: 1000,
+                                        },
+                                    }}
+                                    style={{ paddingLeft: "2rem", minWidth: "5rem" }}
+                                    onChange={e => {
+                                        updateConfigItem(
+                                            "frictionOverrideCoeff",
+                                            safeParseFloat(e.target.value) ?? config.frictionOverrideCoeff
+                                        )
+                                    }}
+                                    value={config.frictionOverrideCoeff}
+                                />
+                            </ListItem>
+                        </Collapse>
                     </Collapse>
                     <ListItem>
                         <ListItemIcon>
