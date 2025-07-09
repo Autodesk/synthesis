@@ -1,6 +1,6 @@
 import adsk.core
 
-from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result, handle_err_top
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import construct_info, fill_info
@@ -26,6 +26,7 @@ DYNAMIC_FRICTION_COEFFS = {
 }
 
 
+@handle_err_top
 def mapAllPhysicalMaterials(
     physicalMaterials: list[material_pb2.PhysicalMaterial],
     materials: material_pb2.Materials,
@@ -165,6 +166,7 @@ def getPhysicalMaterialData(
     return Ok(None)
 
 
+@handle_err_top
 def mapAllAppearances(
     appearances: list[material_pb2.Appearance],
     materials: material_pb2.Materials,

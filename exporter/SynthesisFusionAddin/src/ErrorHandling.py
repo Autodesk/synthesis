@@ -1,3 +1,4 @@
+from collections.abc import Callable
 from enum import Enum
 from typing import Generic, TypeVar
 
@@ -111,3 +112,15 @@ class Err(Result[T]):
 
     def write_error(self) -> None:
         logger.log(self.severity.value, self.message)
+
+
+def handle_err_top(func: Callable[..., Result[None]]) -> Callable[[], None]:
+    
+    def wrapper():
+        result = func()
+        if result.is_err():
+            message, severity = result.unwrap_err()
+            if severity == ErrorSeverity.Fatal:
+                app = adsk.core.Application.get()
+                app.userInterface.messageBox(f"Fatal Error Encountered: {message}")
+    return wrapper

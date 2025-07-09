@@ -6,7 +6,7 @@ import adsk.fusion
 from google.protobuf.message import Error
 from requests.models import parse_header_links
 
-from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result, handle_err_top
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser import PhysicalProperties
@@ -21,6 +21,7 @@ from src.Types import ExportMode
 
 
 # TODO: Impelement Material overrides
+@handle_err_top
 def mapAllComponents(
     design: adsk.fusion.Design,
     options: ExporterOptions,
@@ -99,6 +100,7 @@ def mapAllComponents(
     return Ok(None)
 
 
+@handle_err_top
 def parseComponentRoot(
     component: adsk.fusion.Component,
     progressDialog: PDMessage,
