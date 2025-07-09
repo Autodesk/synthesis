@@ -100,71 +100,65 @@ describe("Context Providers Bootstrap Tests", () => {
         vi.clearAllMocks()
     })
 
-    test("ThemeProvider renders without errors", () => {
-        render(
+    test("all context providers render without errors individually", () => {
+        // Test ThemeProvider
+        const { unmount: unmountTheme } = render(
             <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
                 <TestComponent />
             </ThemeProvider>
         )
-
         expect(screen.getByTestId("test-component")).toBeDefined()
         expect(screen.getByTestId("context-test")).toBeDefined()
-    })
+        unmountTheme()
 
-    test("ModalControlProvider renders without errors", () => {
+        // Test ModalControlProvider
         const mockModalMethods = {
             openModal: vi.fn(),
             closeModal: vi.fn(),
             activeModalId: null,
         }
-
-        render(
+        const { unmount: unmountModal } = render(
             <ModalControlProvider {...mockModalMethods}>
                 <TestComponent />
             </ModalControlProvider>
         )
-
         expect(screen.getByTestId("test-component")).toBeDefined()
-    })
+        unmountModal()
 
-    test("PanelControlProvider renders without errors", () => {
+        // Test PanelControlProvider
         const mockPanelMethods = {
             openPanel: vi.fn(),
             closePanel: vi.fn(),
             closeAllPanels: vi.fn(),
         }
-
-        render(
+        const { unmount: unmountPanel } = render(
             <PanelControlProvider {...mockPanelMethods}>
                 <TestComponent />
             </PanelControlProvider>
         )
-
         expect(screen.getByTestId("test-component")).toBeDefined()
-    })
+        unmountPanel()
 
-    test("ToastProvider renders without errors", () => {
-        render(
+        // Test ToastProvider
+        const { unmount: unmountToast } = render(
             <ToastProvider>
                 <TestComponent />
             </ToastProvider>
         )
-
         expect(screen.getByTestId("test-component")).toBeDefined()
-    })
+        unmountToast()
 
-    test("TooltipControlProvider renders without errors", () => {
+        // Test TooltipControlProvider
         const mockTooltipMethods = {
             showTooltip: vi.fn(),
         }
-
-        render(
+        const { unmount: unmountTooltip } = render(
             <TooltipControlProvider {...mockTooltipMethods}>
                 <TestComponent />
             </TooltipControlProvider>
         )
-
         expect(screen.getByTestId("test-component")).toBeDefined()
+        unmountTooltip()
     })
 
     test("all providers work together in nested structure", () => {
@@ -214,7 +208,8 @@ describe("Context Providers Bootstrap Tests", () => {
         expect(screen.getByTestId("test-component")).toBeDefined()
     })
 
-    test("providers handle missing children gracefully", () => {
+    test("providers handle edge cases and maintain robustness", () => {
+        // Test providers with missing children
         expect(() => {
             render(
                 <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
@@ -222,10 +217,8 @@ describe("Context Providers Bootstrap Tests", () => {
                 </ThemeProvider>
             )
         }).not.toThrow()
-    })
 
-    test("providers handle undefined props gracefully", () => {
-        // Test with minimal required props
+        // Test providers with minimal props
         expect(() => {
             render(
                 <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
@@ -233,12 +226,10 @@ describe("Context Providers Bootstrap Tests", () => {
                 </ThemeProvider>
             )
         }).not.toThrow()
-    })
 
-    test("theme provider works with empty theme object", () => {
+        // Test with empty theme object
         const emptyTheme = {} as Theme
         const emptyThemes = { Empty: emptyTheme }
-
         expect(() => {
             render(
                 <ThemeProvider initialThemeName="Empty" themes={emptyThemes} defaultTheme={emptyTheme}>

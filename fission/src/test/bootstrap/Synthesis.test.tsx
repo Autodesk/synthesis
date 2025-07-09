@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react"
+import { render, screen } from "@testing-library/react"
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import Synthesis from "@/Synthesis"
 import { ThemeProvider } from "@/ui/ThemeContext"
@@ -244,34 +244,24 @@ describe("Synthesis Component Bootstrap Tests", () => {
         vi.clearAllTimers()
     })
 
-    test("renders Synthesis component without crashing", () => {
+    test("renders Synthesis component with all required UI components", () => {
         render(
             <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
                 <Synthesis />
             </ThemeProvider>
         )
 
+        // Core UI components
         expect(screen.getByTestId("skybox")).toBeDefined()
         expect(screen.getByTestId("scene")).toBeDefined()
         expect(screen.getByTestId("main-hud")).toBeDefined()
         expect(screen.getByTestId("global-ui-component")).toBeDefined()
-    })
 
-    test("renders all required UI components", () => {
-        render(
-            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
-                <Synthesis />
-            </ThemeProvider>
-        )
-
-        expect(screen.getByTestId("skybox")).toBeDefined()
-        expect(screen.getByTestId("scene")).toBeDefined()
+        // Additional UI components
         expect(screen.getByTestId("scene-overlay")).toBeDefined()
         expect(screen.getByTestId("touch-controls")).toBeDefined()
         expect(screen.getByTestId("context-menu")).toBeDefined()
-        expect(screen.getByTestId("main-hud")).toBeDefined()
         expect(screen.getByTestId("progress-notifications")).toBeDefined()
-        expect(screen.getByTestId("global-ui-component")).toBeDefined()
         expect(screen.getByTestId("wpilib-connection-status")).toBeDefined()
     })
 
@@ -296,72 +286,21 @@ describe("Synthesis Component Bootstrap Tests", () => {
         expect(screen.getByTestId("main-hud")).toBeDefined()
     })
 
-    test("renders critical UI components in correct order", () => {
-        render(
-            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
-                <Synthesis />
-            </ThemeProvider>
-        )
-
-        const skybox = screen.getByTestId("skybox")
-        const scene = screen.getByTestId("scene")
-        const mainHud = screen.getByTestId("main-hud")
-
-        expect(skybox).toBeDefined()
-        expect(scene).toBeDefined()
-        expect(mainHud).toBeDefined()
-
-        expect(document.body.contains(skybox)).toBe(true)
-        expect(document.body.contains(scene)).toBe(true)
-        expect(document.body.contains(mainHud)).toBe(true)
-    })
-
-    test("handles World system initialization on mount", () => {
-        render(
-            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
-                <Synthesis />
-            </ThemeProvider>
-        )
-
-        expect(screen.getByTestId("scene")).toBeDefined()
-        expect(screen.getByTestId("main-hud")).toBeDefined()
-    })
-
-    test("handles preferences system integration", () => {
-        render(
-            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
-                <Synthesis />
-            </ThemeProvider>
-        )
-
-        expect(screen.getByTestId("global-ui-component")).toBeDefined()
-        expect(screen.getByTestId("main-hud")).toBeDefined()
-    })
-
-    test("ensures all context providers are properly nested", () => {
+    test("handles system initialization and context providers", () => {
         const { container } = render(
             <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
                 <Synthesis />
             </ThemeProvider>
         )
 
+        // Verify container and context providers are properly set up
         expect(container.firstChild).toBeDefined()
         expect(screen.getByTestId("global-ui-component")).toBeDefined()
+        expect(screen.getByTestId("main-hud")).toBeDefined()
     })
 
-    test("initializes main menu modal on component mount", async () => {
-        render(
-            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
-                <Synthesis />
-            </ThemeProvider>
-        )
-
-        await waitFor(() => {
-            expect(screen.getByTestId("scene")).toBeDefined()
-        })
-    })
-
-    test("shows analytics consent popup when required", async () => {
+    test("handles analytics consent and development mode", async () => {
+        // Test analytics consent in production mode
         render(
             <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
                 <Synthesis />
@@ -370,57 +309,25 @@ describe("Synthesis Component Bootstrap Tests", () => {
 
         expect(screen.getByTestId("scene")).toBeDefined()
         expect(screen.getByTestId("main-hud")).toBeDefined()
-    })
 
-    test("does not show analytics consent in development", async () => {
+        // Test development mode (should not show analytics consent)
         Object.defineProperty(import.meta, "env", {
             value: { DEV: true },
             configurable: true,
         })
 
-        render(
-            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
-                <Synthesis />
-            </ThemeProvider>
-        )
-
-        expect(screen.queryByTestId("analytics-consent")).toBeNull()
-    })
-
-    test("provides all required contexts to child components", () => {
-        render(
-            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
-                <Synthesis />
-            </ThemeProvider>
-        )
-
-        expect(screen.getByTestId("global-ui-component")).toBeDefined()
-        expect(screen.getByTestId("main-hud")).toBeDefined()
-    })
-
-    test("handles cleanup on unmount", () => {
         const { unmount } = render(
             <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
                 <Synthesis />
             </ThemeProvider>
         )
 
+        expect(screen.queryByTestId("analytics-consent")).toBeNull()
         unmount()
-
-        expect(window.cancelAnimationFrame).toHaveBeenCalled()
     })
 
-    test("applies theme correctly", () => {
-        render(
-            <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
-                <Synthesis />
-            </ThemeProvider>
-        )
-
-        expect(screen.getByTestId("scene")).toBeDefined()
-    })
-
-    test("handles missing URL parameters gracefully", () => {
+    test("handles URL parameters and theme application", () => {
+        // Test missing URL parameters
         mockURLSearchParams.mockImplementation(() => ({
             has: vi.fn(() => false),
             get: vi.fn(() => null),
@@ -434,21 +341,24 @@ describe("Synthesis Component Bootstrap Tests", () => {
 
         expect(window.opener.convertAuthToken).not.toHaveBeenCalled()
         expect(window.close).not.toHaveBeenCalled()
-
         expect(screen.getByTestId("scene")).toBeDefined()
     })
 
-    test("initializes with correct modal and panel state", () => {
-        render(
+    test("manages component lifecycle and state initialization", () => {
+        const { unmount } = render(
             <ThemeProvider initialThemeName="Default" themes={mockThemes} defaultTheme={mockTheme}>
                 <Synthesis />
             </ThemeProvider>
         )
 
+        // Verify initial state
         const panelContainer = screen.queryByTestId("panels-container")
         expect(panelContainer).toBeNull()
-
         expect(screen.getByTestId("scene")).toBeDefined()
         expect(screen.getByTestId("main-hud")).toBeDefined()
+
+        // Test cleanup on unmount
+        unmount()
+        expect(window.cancelAnimationFrame).toHaveBeenCalled()
     })
 })
