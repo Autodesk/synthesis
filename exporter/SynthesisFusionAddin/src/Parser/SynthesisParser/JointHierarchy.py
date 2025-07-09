@@ -7,7 +7,7 @@ import adsk.fusion
 from google.protobuf.message import Error
 
 from src import gm
-from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result, handle_err_top
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
@@ -481,6 +481,7 @@ def searchForGrounded(
 # ________________________ Build implementation ______________________ #
 
 
+@handle_err_top
 def buildJointPartHierarchy(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,

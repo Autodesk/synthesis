@@ -44,6 +44,7 @@ class Parser:
             return
 
         assembly_out = assembly_pb2.Assembly()
+        # This can't use the wrapper because there are lower level calls of this utility function
         handle_err_top(
             fill_info(
                 assembly_out,
@@ -79,45 +80,38 @@ class Parser:
             progressDialog,
         )
 
-        handle_err_top(
-            Materials.mapAllAppearances(
-                design.appearances,
-                assembly_out.data.materials,
-                self.exporterOptions,
-                self.pdMessage,
-            )
+        Materials.mapAllAppearances(
+            design.appearances,
+            assembly_out.data.materials,
+            self.exporterOptions,
+            self.pdMessage,
+        )
+       
+
+        Materials.mapAllPhysicalMaterials(
+            design.materials,
+            assembly_out.data.materials,
+            self.exporterOptions,
+            self.pdMessage,
         )
 
-        handle_err_top(
-            Materials.mapAllPhysicalMaterials(
-                design.materials,
-                assembly_out.data.materials,
-                self.exporterOptions,
-                self.pdMessage,
-            )
-        )
-
-        handle_err_top(
-            Components.mapAllComponents(
-                design,
-                self.exporterOptions,
-                self.pdMessage,
-                assembly_out.data.parts,
-                assembly_out.data.materials,
-            )
+        Components.mapAllComponents(
+            design,
+            self.exporterOptions,
+            self.pdMessage,
+            assembly_out.data.parts,
+            assembly_out.data.materials,
         )
 
         rootNode = types_pb2.Node()
 
-        handle_err_top(
-            Components.parseComponentRoot(
-                design.rootComponent,
-                self.pdMessage,
-                self.exporterOptions,
-                assembly_out.data.parts,
-                assembly_out.data.materials.appearances,
-                rootNode,
-            )
+        Components.parseComponentRoot(
+            design.rootComponent,
+            self.pdMessage,
+            self.exporterOptions,
+            assembly_out.data.parts,
+            assembly_out.data.materials.appearances,
+            rootNode,
         )
 
         Components.mapRigidGroups(design.rootComponent, assembly_out.data.joints)
@@ -125,35 +119,30 @@ class Parser:
         assembly_out.design_hierarchy.nodes.append(rootNode)
 
         # Problem Child
-        handle_err_top(
-            Joints.populateJoints(
-                design,
-                assembly_out.data.joints,
-                assembly_out.data.signals,
-                self.pdMessage,
-                self.exporterOptions,
-                assembly_out,
-            )
+        Joints.populateJoints(
+            design,
+            assembly_out.data.joints,
+            assembly_out.data.signals,
+            self.pdMessage,
+            self.exporterOptions,
+            assembly_out,
         )
 
         # add condition in here for advanced joints maybe idk
         # should pre-process to find if there are any grounded joints at all
         # that or add code to existing parser to determine leftovers
 
-        handle_err_top(
-            Joints.createJointGraph(
-                self.exporterOptions.joints,
-                self.exporterOptions.wheels,
-                assembly_out.joint_hierarchy,
-                self.pdMessage,
-            )
+        Joints.createJointGraph(
+            self.exporterOptions.joints,
+            self.exporterOptions.wheels,
+            assembly_out.joint_hierarchy,
+            self.pdMessage,
         )
 
-        handle_err_top(
-            JointHierarchy.buildJointPartHierarchy(
-                design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
-            )
+        JointHierarchy.buildJointPartHierarchy(
+            design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
         )
+        
 
         # These don't have an effect, I forgot how this is suppose to work
         # progressDialog.message = "Taking Photo for thumbnail..."
@@ -269,9 +258,10 @@ class Parser:
         logger.debug(debug_output.strip())
 
 
-def handle_err_top[T](err: Result[T]) -> None:
-    if err.is_err():
-        message, severity = err.unwrap_err()
+def handle_err_top[T](result: Result[T]):
+    if result.is_err():
+        message, severity = result.unwrap_err()
         if severity == ErrorSeverity.Fatal:
             app = adsk.core.Application.get()
             app.userInterface.messageBox(f"Fatal Error Encountered: {message}")
+

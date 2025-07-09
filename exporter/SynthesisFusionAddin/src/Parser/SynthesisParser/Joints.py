@@ -29,7 +29,7 @@ from typing import Any, Callable, Union
 import adsk.core
 import adsk.fusion
 
-from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result, handle_err_top
 from src.Logging import getLogger
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
@@ -70,6 +70,7 @@ AcceptedJointTypes = [
 # 3. connect all instances with graphcontainer
 
 
+@handle_err_top
 def populateJoints(
     design: adsk.fusion.Design,
     joints: joint_pb2.Joints,
@@ -539,6 +540,7 @@ def _jointOrigin(fusionJoint: Union[adsk.fusion.Joint, adsk.fusion.AsBuiltJoint]
         return adsk.core.Point3D.create(origin.x + offsetX, origin.y + offsetY, origin.z + offsetZ)
 
 
+@handle_err_top
 def createJointGraph(
     suppliedJoints: list[Joint],
     _wheels: list[Wheel],
