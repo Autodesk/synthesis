@@ -32,9 +32,6 @@ vi.mock("@/systems/World", () => ({
 
 describe("ScoringZoneSceneObject", () => {
     const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
 
     beforeEach(() => {
         vi.clearAllMocks()
@@ -65,17 +62,11 @@ describe("ScoringZoneSceneObject", () => {
         })
 
         console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
     })
 
     afterEach(() => {
         vi.clearAllMocks()
         console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
     })
 
     test("Setup creates sensor and mesh", () => {

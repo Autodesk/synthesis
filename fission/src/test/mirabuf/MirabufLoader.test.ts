@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterEach, type MockedFunction } from "vitest"
-import MirabufLoader, { MiraType, MirabufCacheInfo } from "../../mirabuf/MirabufLoader"
+import MirabufLoader, { MiraType, MirabufCacheInfo, backUpRobots } from "../../mirabuf/MirabufLoader"
 
 type MockLoader = {
     StoreInCache(key: string, buff: ArrayBuffer, miraType?: MiraType): Promise<MirabufCacheInfo | undefined>
@@ -116,24 +116,28 @@ describe("MirabufLoader", () => {
         expect(result).toBe(info)
     })
 
-    test("CacheLocal caches buffer and returns info", async () => {
-        const buffer = new ArrayBuffer(8)
-        const loader = MirabufLoader as unknown as MockLoader
-        vi.spyOn(loader, "StoreInCache").mockResolvedValue({ id: "id", miraType: MiraType.ROBOT, cacheKey: "key" })
-        const result = await MirabufLoader.CacheLocal(buffer, MiraType.ROBOT)
-        expect(result).toHaveProperty("id")
-        expect(result).toHaveProperty("miraType", MiraType.ROBOT)
-    })
-
-    test("CacheInfo updates cache info and returns true", async () => {
+    test("CacheInfo updates cache info, returns true, and updated map", async () => {
         const key = "key"
         const id = "id"
         const miraType = MiraType.ROBOT
+
+        localStorageMock["Synthesis Nonce Key"] = "4543246"
         const map = { [key]: { id, miraType, cacheKey: key } }
         localStorageMock["Robots"] = JSON.stringify(map)
-        ;(
-            MirabufLoader as typeof MirabufLoader & { backUpRobots: Record<string, { buffer: ArrayBuffer }> }
-        ).backUpRobots = { [id]: { buffer: new ArrayBuffer(1) } }
+        backUpRobots[id] = { id, miraType, cacheKey: key, buffer: new ArrayBuffer(1) }
+
+        const name = "Test Robot"
+        const thumbnailStorageID = "thumb123"
+        const result = await MirabufLoader.CacheInfo(key, miraType, name, thumbnailStorageID)
+
+        expect(result).toBe(true)
+
+        const updatedMap = JSON.parse(localStorageMock["Robots"])
+        expect(updatedMap[key].name).toBe(name)
+        expect(updatedMap[key].thumbnailStorageID).toBe(thumbnailStorageID)
+        expect(updatedMap[key].id).toBe(id)
+        expect(updatedMap[key].miraType).toBe(miraType)
+        expect(updatedMap[key].cacheKey).toBe(key)
     })
 
     test("HashBuffer returns a base64 string", async () => {

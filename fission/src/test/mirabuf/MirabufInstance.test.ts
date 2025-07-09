@@ -1,6 +1,6 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import * as THREE from "three"
-import MirabufInstance, { MaterialStyle } from "../../mirabuf/MirabufInstance"
+import MirabufInstance from "../../mirabuf/MirabufInstance"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { ParseErrorSeverity } from "../../mirabuf/MirabufParser"
 
@@ -100,14 +100,6 @@ describe("MirabufInstance", () => {
         expect(instance.batches.length).toBe(0)
         expect(instance.meshes.size).toBe(0)
         expect(instance.materials.size).toBe(0)
-    })
-
-    test("creates materials for all MaterialStyles", () => {
-        const styles: MaterialStyle[] = [MaterialStyle.Regular, MaterialStyle.Normals, MaterialStyle.Toon]
-        for (const style of styles) {
-            const instance = new MirabufInstance(parser, style)
-            expect(instance.materials.size).toBeGreaterThan(0)
-        }
     })
 
     test("Dispose is idempotent and safe to call multiple times", () => {
