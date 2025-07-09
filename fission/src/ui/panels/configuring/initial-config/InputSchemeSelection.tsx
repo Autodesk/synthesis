@@ -33,9 +33,9 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
 
                 {/** Creates list items with buttons */}
                 {InputSchemeManager.availableInputSchemes.map(scheme => {
-                    if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) {
+                    if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) { // Skip schemes that use touch controls if the device does not support touch
                         return null
-                    } // Skip schemes that use touch controls if the device does not support touch
+                    } 
                     return (
                         <Box
                             component={"div"}
