@@ -74,7 +74,7 @@ class SimulationSystem extends WorldSystem {
 
     public static RobotPenalty(robot: MirabufSceneObject, penaltyPoints: number, penaltyInfo: string): void {
         // Display a toast showing that a penalty was committed
-        Global_AddToast?.(
+        Global_AddToast(
             "warning",
             "PENALTY COMMITTED",
             `Robot ${robot.nameTag?.text()} (${robot.assemblyName}), Committed Penalty: ${penaltyInfo}`

@@ -22,7 +22,7 @@ function GlobalUIComponent() {
         setOpenModal(openModal)
 
         return () => {
-            setOpenModal(undefined)
+            setOpenModal(() => {})
         }
     }, [openModal])
 
@@ -30,7 +30,7 @@ function GlobalUIComponent() {
         setOpenPanel(openPanel)
 
         return () => {
-            setOpenPanel(undefined)
+            setOpenPanel(() => {})
         }
     }, [openPanel])
 
@@ -38,7 +38,7 @@ function GlobalUIComponent() {
         setAddToast(addToast)
 
         return () => {
-            setAddToast(undefined)
+            setAddToast(() => {})
         }
     }, [addToast])
 

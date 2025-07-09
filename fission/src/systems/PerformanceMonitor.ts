@@ -29,8 +29,8 @@ export class PerformanceMonitoringSystem extends WorldSystem {
                 if (this.isCritical) {
                     PreferencesSystem.resetGraphicsPreferences()
                     World.SceneRenderer.changeCSMSettings(PreferencesSystem.getGraphicsPreferences())
-                    Global_OpenPanel?.("graphics-settings")
-                    Global_AddToast?.("warning", "Performance Issues Detected", "Reverting to simple graphics")
+                    Global_OpenPanel("graphics-settings")
+                    Global_AddToast("warning", "Performance Issues Detected", "Reverting to simple graphics")
                 }
             }
         }

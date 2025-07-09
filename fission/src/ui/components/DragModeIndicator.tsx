@@ -20,7 +20,7 @@ export default function DragModeIndicator() {
 
     const handleClick = () => {
         window.dispatchEvent(new CustomEvent("disableDragMode"))
-        Global_AddToast?.("info", "Drag Mode", "Drag mode has been disabled")
+        Global_AddToast("info", "Drag Mode", "Drag mode has been disabled")
     }
 
     return enabled ? (

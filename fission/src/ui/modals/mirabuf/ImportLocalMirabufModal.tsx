@@ -59,7 +59,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             if (x) {
                                 World.SceneRenderer.RegisterSceneObject(x)
 
-                                Global_OpenPanel?.("initial-config")
+                                Global_OpenPanel("initial-config")
                             }
                         })
                         .finally(() =>

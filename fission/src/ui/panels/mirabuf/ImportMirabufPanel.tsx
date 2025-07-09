@@ -105,7 +105,7 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         World.SceneRenderer.RegisterSceneObject(x)
                         progressHandle.Done()
 
-                        Global_OpenPanel?.("initial-config")
+                        Global_OpenPanel("initial-config")
                     } else {
                         progressHandle.Fail()
                     }
@@ -166,7 +166,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     useLayoutEffect(() => {
         if (mirabufPanelState.hasUnconfirmedImport) {
             closePanel("import-mirabuf")
-            Global_AddToast?.(
+            Global_AddToast(
                 "warning",
                 "You're already importing a model!",
                 "Confirm that one before importing another."
