@@ -299,8 +299,6 @@ def export(exporterOptions: moduleExporterOptions.ExporterOptions) -> None:
     exporterOptions.version = docVersion
     exporterOptions.materials = 0
 
-
-
     Parser.Parser(exporterOptions).export()
     exporterOptions.writeToDesign()
 
@@ -429,6 +427,3 @@ class MyCommandDestroyHandler(PersistentEventHandler, adsk.core.CommandEventHand
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         for group in design.rootComponent.customGraphicsGroups:
             group.deleteMe()
-
-
-

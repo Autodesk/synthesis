@@ -23,7 +23,7 @@ jobs:
     - name: JavaScript Setup
       uses: actions/setup-node@v4
       with:
-        node-version: 20
+        node-version: 24
     - name: Install Dependencies
       run: |
         cd exporter/SynthesisFusionAddin/web
@@ -50,7 +50,7 @@ jobs:
       - name: JavaScript Setup
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24.2.0
       - name: Install Dependencies
         run: |
           cd exporter/SynthesisFusionAddin/web

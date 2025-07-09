@@ -6,6 +6,7 @@ export default defineConfig({
     plugins: [react()],
     base: "./",
     build: {
+        target: "esnext",
         rollupOptions: {
             output: {
                 manualChunks: {
