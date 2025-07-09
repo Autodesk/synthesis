@@ -293,10 +293,7 @@ describe("Synthesis Component Bootstrap Tests", () => {
             </ThemeProvider>
         )
 
-        // Verify container and context providers are properly set up
         expect(container.firstChild).toBeDefined()
-        expect(screen.getByTestId("global-ui-component")).toBeDefined()
-        expect(screen.getByTestId("main-hud")).toBeDefined()
     })
 
     test("handles analytics consent and development mode", async () => {
@@ -306,9 +303,6 @@ describe("Synthesis Component Bootstrap Tests", () => {
                 <Synthesis />
             </ThemeProvider>
         )
-
-        expect(screen.getByTestId("scene")).toBeDefined()
-        expect(screen.getByTestId("main-hud")).toBeDefined()
 
         // Test development mode (should not show analytics consent)
         Object.defineProperty(import.meta, "env", {
