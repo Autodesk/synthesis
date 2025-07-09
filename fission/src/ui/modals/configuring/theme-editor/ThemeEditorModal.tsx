@@ -5,7 +5,7 @@ import Button from "@/components/Button"
 import Dropdown from "@/components/Dropdown"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Stack, { StackDirection } from "@/components/Stack"
-import { Random } from "@/util/Random"
+import { random } from "@/util/Random"
 import { extend as cdExtend, random as cdRandom, colord } from "colord"
 import a11yPlugin from "colord/plugins/a11y"
 import React, { useState } from "react"
@@ -28,7 +28,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Theme Editor"
-            icon={SynthesisIcons.ChessBoard}
+            icon={SynthesisIcons.CHESS_BOARD}
             modalId={modalId}
             middleEnabled={true}
             middleName="Preview"
@@ -44,9 +44,9 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 applyTheme(currentTheme)
             }}
         >
-            <Stack direction={StackDirection.Horizontal}>
-                <Stack direction={StackDirection.Vertical} align="center" justify="between" className="w-1/2">
-                    <Stack direction={StackDirection.Vertical}>
+            <Stack direction={StackDirection.HORIZONTAL}>
+                <Stack direction={StackDirection.VERTICAL} align="center" justify="between" className="w-1/2">
+                    <Stack direction={StackDirection.VERTICAL}>
                         <Dropdown
                             label="Select a Theme"
                             options={[currentTheme, ...Object.keys(themes).filter(t => t != currentTheme)]}
@@ -54,7 +54,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             onSelect={setSelectedTheme}
                             className="h-min"
                         />
-                        <Stack direction={StackDirection.Horizontal} spacing={10}>
+                        <Stack direction={StackDirection.HORIZONTAL} spacing={10}>
                             <Button
                                 value="Create Theme"
                                 onClick={() => {
@@ -77,7 +77,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                             )}
                         </Stack>
                     </Stack>
-                    <Stack direction={StackDirection.Vertical}>
+                    <Stack direction={StackDirection.VERTICAL}>
                         <RgbaColorPicker
                             color={
                                 themes[selectedTheme]
@@ -124,7 +124,7 @@ const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 if (selectedTheme == initialThemeName) return
                                 const keys: ColorName[] = Object.keys(themes[selectedTheme]) as ColorName[]
                                 keys.forEach(k => {
-                                    const randAlpha = () => Math.max(0.1, Random())
+                                    const randAlpha = () => Math.max(0.1, random())
                                     updateColor(selectedTheme, k, {
                                         ...cdRandom().toRgb(),
                                         a: randAlpha(),

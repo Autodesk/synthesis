@@ -99,22 +99,22 @@ describe("Preferences System Global Values", () => {
 
 describe("Preference System Robot/Field", () => {
     test("Setting motor preferences", () => {
-        const motorPreferences_1: MotorPreferences = { name: "testName", maxForce: 10, maxVelocity: 5 }
-        const motorPreferences_2: MotorPreferences = { name: "testName2", maxForce: 20, maxVelocity: 10 }
+        const motorPreferences1: MotorPreferences = { name: "testName", maxForce: 10, maxVelocity: 5 }
+        const motorPreferences2: MotorPreferences = { name: "testName2", maxForce: 20, maxVelocity: 10 }
 
-        PreferencesSystem.setMotorPreferences("MotorPreferences_1", motorPreferences_1)
-        PreferencesSystem.setMotorPreferences("MotorPreferences_2", motorPreferences_2)
+        PreferencesSystem.setMotorPreferences("MotorPreferences1", motorPreferences1)
+        PreferencesSystem.setMotorPreferences("MotorPreferences2", motorPreferences2)
 
-        expect(PreferencesSystem.getMotorPreferences("MotorPreferences_1")).toEqual(motorPreferences_1)
-        expect(PreferencesSystem.getMotorPreferences("MotorPreferences_2")).toEqual(motorPreferences_2)
+        expect(PreferencesSystem.getMotorPreferences("MotorPreferences1")).toEqual(motorPreferences1)
+        expect(PreferencesSystem.getMotorPreferences("MotorPreferences2")).toEqual(motorPreferences2)
         expect(PreferencesSystem.getAllMotorPreferences()).toEqual({
-            MotorPreferences_1: motorPreferences_1,
-            MotorPreferences_2: motorPreferences_2,
+            MotorPreferences1: motorPreferences1,
+            MotorPreferences2: motorPreferences2,
         })
     })
 
     test("Setting robot preferences", () => {
-        const robotPreferences_1: RobotPreferences = {
+        const robotPreferences1: RobotPreferences = {
             inputsSchemes: [],
             motors: [],
             intake: {
@@ -133,7 +133,7 @@ describe("Preference System Robot/Field", () => {
             driveVelocity: 3,
             driveAcceleration: 6,
         }
-        const robotPreferences_2: RobotPreferences = {
+        const robotPreferences2: RobotPreferences = {
             inputsSchemes: [],
             motors: [],
             intake: {
@@ -153,19 +153,19 @@ describe("Preference System Robot/Field", () => {
             driveAcceleration: 8,
         }
 
-        PreferencesSystem.setRobotPreferences("RobotPreferences_1", robotPreferences_1)
-        PreferencesSystem.setRobotPreferences("RobotPreferences_2", robotPreferences_2)
+        PreferencesSystem.setRobotPreferences("RobotPreferences1", robotPreferences1)
+        PreferencesSystem.setRobotPreferences("RobotPreferences2", robotPreferences2)
 
-        expect(PreferencesSystem.getRobotPreferences("RobotPreferences_1")).toEqual(robotPreferences_1)
-        expect(PreferencesSystem.getRobotPreferences("RobotPreferences_2")).toEqual(robotPreferences_2)
+        expect(PreferencesSystem.getRobotPreferences("RobotPreferences1")).toEqual(robotPreferences1)
+        expect(PreferencesSystem.getRobotPreferences("RobotPreferences2")).toEqual(robotPreferences2)
         expect(PreferencesSystem.getAllRobotPreferences()).toEqual({
-            RobotPreferences_1: robotPreferences_1,
-            RobotPreferences_2: robotPreferences_2,
+            RobotPreferences1: robotPreferences1,
+            RobotPreferences2: robotPreferences2,
         })
     })
 
     test("Setting field preferences", () => {
-        const fieldPreferences_1: FieldPreferences = {
+        const fieldPreferences1: FieldPreferences = {
             defaultSpawnLocation: [0, 1, 0],
             scoringZones: [
                 {
@@ -180,7 +180,7 @@ describe("Preference System Robot/Field", () => {
             ],
             protectedZones: [],
         }
-        const fieldPreferences_2: FieldPreferences = {
+        const fieldPreferences2: FieldPreferences = {
             defaultSpawnLocation: [1, 1, 1],
             scoringZones: [
                 {
@@ -205,14 +205,14 @@ describe("Preference System Robot/Field", () => {
             ],
         }
 
-        PreferencesSystem.setFieldPreferences("FieldPreferences_1", fieldPreferences_1)
-        PreferencesSystem.setFieldPreferences("FieldPreferences_2", fieldPreferences_2)
+        PreferencesSystem.setFieldPreferences("FieldPreferences1", fieldPreferences1)
+        PreferencesSystem.setFieldPreferences("FieldPreferences2", fieldPreferences2)
 
-        expect(PreferencesSystem.getFieldPreferences("FieldPreferences_1")).toEqual(fieldPreferences_1)
-        expect(PreferencesSystem.getFieldPreferences("FieldPreferences_2")).toEqual(fieldPreferences_2)
+        expect(PreferencesSystem.getFieldPreferences("FieldPreferences1")).toEqual(fieldPreferences1)
+        expect(PreferencesSystem.getFieldPreferences("FieldPreferences2")).toEqual(fieldPreferences2)
         expect(PreferencesSystem.getAllFieldPreferences()).toEqual({
-            FieldPreferences_1: fieldPreferences_1,
-            FieldPreferences_2: fieldPreferences_2,
+            FieldPreferences1: fieldPreferences1,
+            FieldPreferences2: fieldPreferences2,
         })
     })
 })

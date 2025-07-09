@@ -1,6 +1,6 @@
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import { InputScheme } from "./InputSchemeManager"
-import { AxisInput, ButtonInput, EmptyModifierState } from "./InputSystem"
+import { AxisInput, ButtonInput, EMPTY_MODIFIER_STATE } from "./InputSystem"
 
 /** The purpose of this class is to store any defaults related to the input system. */
 class DefaultInputs {
@@ -28,7 +28,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: false,
                         alt: false,
@@ -46,7 +46,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: false,
                         alt: false,
@@ -64,7 +64,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: false,
                         alt: false,
@@ -82,7 +82,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: false,
                         alt: false,
@@ -100,7 +100,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: false,
                         alt: false,
@@ -141,7 +141,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: true,
                         alt: false,
@@ -159,7 +159,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: true,
                         alt: false,
@@ -177,7 +177,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: true,
                         alt: false,
@@ -195,7 +195,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: true,
                         alt: false,
@@ -213,7 +213,7 @@ class DefaultInputs {
                     -1,
                     -1,
                     TouchControlsAxes.NONE,
-                    EmptyModifierState,
+                    EMPTY_MODIFIER_STATE,
                     {
                         ctrl: true,
                         alt: false,
@@ -390,7 +390,7 @@ class DefaultInputs {
         }
     }
 
-    public static NAMES: string[] = [
+    public static readonly NAMES: string[] = [
         "Kennedy",
         "Duke",
         "Bria",

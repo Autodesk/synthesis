@@ -34,7 +34,7 @@ const DrivetrainModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Change Drivetrain"
-            icon={SynthesisIcons.Car}
+            icon={SynthesisIcons.CAR}
             modalId={modalId}
             onAccept={() => showTooltip("controls", controls[drivetrain])}
         >

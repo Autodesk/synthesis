@@ -46,9 +46,9 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
         (vel: number, force: number) => {
             if (driver instanceof WheelDriver) {
                 const wheelDrivers = robot?.mechanism
-                    ? World.SimulationSystem.GetSimulationLayer(robot.mechanism)?.drivers.filter(
-                          x => x instanceof WheelDriver
-                      )
+                    ? World.simulationSystem
+                          .getSimulationLayer(robot.mechanism)
+                          ?.drivers.filter(x => x instanceof WheelDriver)
                     : undefined
                 wheelDrivers?.forEach(x => {
                     x.maxVelocity = vel
@@ -90,8 +90,8 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
     return (
         <>
             <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-                <Stack direction={StackDirection.Vertical} spacing={8} justify="start">
-                    <Label size={LabelSize.Medium}>
+                <Stack direction={StackDirection.VERTICAL} spacing={8} justify="start">
+                    <Label size={LabelSize.MEDIUM}>
                         {driver instanceof WheelDriver ? "Drive" : driver.info?.name ?? "UnnamedMotor"}
                     </Label>
                     <Slider
@@ -100,9 +100,9 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         value={velocity}
                         label="Max Velocity"
                         format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                        onChange={(_, _velocity: number | number[]) => {
-                            setVelocity(_velocity as number)
-                            onChange(_velocity as number, force)
+                        onChange={(_, velocity: number | number[]) => {
+                            setVelocity(velocity as number)
+                            onChange(velocity as number, force)
                         }}
                         step={0.01}
                     />
@@ -114,9 +114,9 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                                 value={force}
                                 label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
                                 format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                                onChange={(_, _force: number | number[]) => {
-                                    setForce(_force as number)
-                                    onChange(velocity, _force as number)
+                                onChange={(_, force: number | number[]) => {
+                                    setForce(force as number)
+                                    onChange(velocity, force as number)
                                 }}
                                 step={0.01}
                             />

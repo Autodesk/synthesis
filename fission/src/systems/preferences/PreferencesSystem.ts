@@ -1,20 +1,20 @@
 import {
-    DefaultFieldPreferences,
-    DefaultGlobalPreferences,
-    DefaultGraphicsPreferences,
-    DefaultMotorPreferences,
-    DefaultRobotPreferences,
+    defaultFieldPreferences,
+    defaultGlobalPreferences,
+    defaultGraphicsPreferences,
+    defaultMotorPreferences,
+    defaultRobotPreferences,
     FieldPreferences,
-    FieldPreferencesKey,
+    FIELD_PREFERENCE_KEY,
     GlobalPreference,
     GlobalPreferences,
-    GraphicsPreferenceKey,
+    GRAPHICS_PREFERENCE_KEY,
     GraphicsPreferences,
     MotorPreferences,
-    MotorPreferencesKey,
+    MOTOR_PREFERENCES_KEY,
     Preferences,
     RobotPreferences,
-    RobotPreferencesKey,
+    ROBOT_PREFERENCE_KEY,
 } from "./PreferenceTypes"
 
 /** An event that's triggered when a preference is changed. */
@@ -71,7 +71,7 @@ class PreferencesSystem {
         const customPref = this.getPreference(key)
         if (customPref != undefined) return customPref
 
-        const defaultPref = DefaultGlobalPreferences[key]
+        const defaultPref = defaultGlobalPreferences[key]
         if (defaultPref != undefined) return defaultPref
 
         throw new Error("Preference '" + key + "' is not assigned a default!")
@@ -97,7 +97,7 @@ class PreferencesSystem {
         const allRoboPrefs = this.getAllRobotPreferences()
 
         if (allRoboPrefs[miraName] == undefined) {
-            const defaultPrefs = DefaultRobotPreferences()
+            const defaultPrefs = defaultRobotPreferences()
             allRoboPrefs[miraName] = defaultPrefs
             return defaultPrefs
         }
@@ -125,11 +125,11 @@ class PreferencesSystem {
 
     /** @returns Preferences for every robot that was found in local storage. */
     public static getAllRobotPreferences(): { [key: string]: RobotPreferences } {
-        let allRoboPrefs = this.getPreference(RobotPreferencesKey)
+        let allRoboPrefs = this.getPreference(ROBOT_PREFERENCE_KEY)
 
         if (allRoboPrefs == undefined) {
             allRoboPrefs = {}
-            this._preferences[RobotPreferencesKey] = allRoboPrefs
+            this._preferences[ROBOT_PREFERENCE_KEY] = allRoboPrefs
         }
 
         return allRoboPrefs
@@ -143,7 +143,7 @@ class PreferencesSystem {
         const allFieldPrefs = this.getAllFieldPreferences()
 
         if (allFieldPrefs[miraName] == undefined) {
-            const defaultPrefs = DefaultFieldPreferences()
+            const defaultPrefs = defaultFieldPreferences()
             allFieldPrefs[miraName] = defaultPrefs
             return defaultPrefs
         }
@@ -153,11 +153,11 @@ class PreferencesSystem {
 
     /** @returns Preferences for every field that was found in local storage. */
     public static getAllFieldPreferences(): { [key: string]: FieldPreferences } {
-        let allFieldPrefs = this.getPreference(FieldPreferencesKey)
+        let allFieldPrefs = this.getPreference(FIELD_PREFERENCE_KEY)
 
         if (allFieldPrefs == undefined) {
             allFieldPrefs = {}
-            this._preferences[FieldPreferencesKey] = allFieldPrefs
+            this._preferences[FIELD_PREFERENCE_KEY] = allFieldPrefs
         }
 
         return allFieldPrefs
@@ -170,18 +170,18 @@ class PreferencesSystem {
     public static getMotorPreferences(miraName: string): MotorPreferences {
         const allMotorPrefs = this.getAllMotorPreferences()
 
-        allMotorPrefs[miraName] ??= DefaultMotorPreferences(miraName)
+        allMotorPrefs[miraName] ??= defaultMotorPreferences(miraName)
 
         return allMotorPrefs[miraName]
     }
 
     /** @returns Preferences for every motor that was found in local storage. */
     public static getAllMotorPreferences(): { [key: string]: MotorPreferences } {
-        let motorPrefs = this.getPreference(MotorPreferencesKey)
+        let motorPrefs = this.getPreference(MOTOR_PREFERENCES_KEY)
 
         if (motorPrefs == undefined) {
             motorPrefs = {}
-            this._preferences[MotorPreferencesKey] = motorPrefs
+            this._preferences[MOTOR_PREFERENCES_KEY] = motorPrefs
         }
 
         return motorPrefs
@@ -189,11 +189,11 @@ class PreferencesSystem {
 
     /** Gets simulation quality preferences */
     public static getGraphicsPreferences(): GraphicsPreferences {
-        let graphicsPrefs = this.getPreference(GraphicsPreferenceKey)
+        let graphicsPrefs = this.getPreference(GRAPHICS_PREFERENCE_KEY)
 
         if (graphicsPrefs == undefined) {
-            graphicsPrefs = DefaultGraphicsPreferences()
-            this._preferences[GraphicsPreferenceKey] = graphicsPrefs
+            graphicsPrefs = defaultGraphicsPreferences()
+            this._preferences[GRAPHICS_PREFERENCE_KEY] = graphicsPrefs
         }
 
         return graphicsPrefs
@@ -201,7 +201,7 @@ class PreferencesSystem {
 
     /** Resets simulation quality preferences to default values */
     public static resetGraphicsPreferences() {
-        this._preferences[GraphicsPreferenceKey] = DefaultGraphicsPreferences()
+        this._preferences[GRAPHICS_PREFERENCE_KEY] = defaultGraphicsPreferences()
         this.savePreferences()
     }
 
