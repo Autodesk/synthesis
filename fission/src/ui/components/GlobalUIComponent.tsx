@@ -13,7 +13,7 @@ import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
  *
  * @returns Global UI Component
  */
-function GlobalUIComponent() {
+const GlobalUIComponent: React.FC = () => {
     const { openModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()

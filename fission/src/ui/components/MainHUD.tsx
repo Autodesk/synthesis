@@ -6,7 +6,7 @@ import { motion } from "framer-motion"
 import logo from "@/assets/autodesk_logo.png"
 import { useToastContext } from "@/ui/ToastContext"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
-import { UserIcon } from "./UserIcon"
+import UserIcon from "./UserIcon"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
@@ -14,7 +14,7 @@ import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import { setAddToast } from "./GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import MatchMode from "@/systems/MatchMode"
-import { Global_AddToast } from "@/components/GlobalUIControls.ts"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 type ButtonProps = {
     value: string
@@ -100,7 +100,7 @@ const MainHUD: React.FC = () => {
                         <Box className="flex w-full h-full items-center justify-center">
                             <ButtonIcon
                                 onClick={() => setIsOpen(!isOpen)}
-                                value={SynthesisIcons.OpenHudIcon}
+                                value={SynthesisIcons.OPEN_HUD_ICON}
                                 className=""
                             />
                         </Box>
@@ -131,7 +131,7 @@ const MainHUD: React.FC = () => {
                 </div>
                 <MainHUDButton
                     value={"Spawn Asset"}
-                    icon={SynthesisIcons.Add}
+                    icon={SynthesisIcons.ADD}
                     larger={true}
                     onClick={() => openPanel("import-mirabuf")}
                 />
@@ -142,12 +142,12 @@ const MainHUD: React.FC = () => {
                 >
                     <MainHUDButton
                         value={"Configure Assets"}
-                        icon={SynthesisIcons.Wrench}
+                        icon={SynthesisIcons.WRENCH}
                         onClick={() => openPanel("configure")}
                     />
                     <MainHUDButton
                         value={"General Settings"}
-                        icon={SynthesisIcons.Gear}
+                        icon={SynthesisIcons.GEAR}
                         onClick={() => openModal("settings")}
                     />
                     {/** Will be coming soonish...tm */}
@@ -158,7 +158,7 @@ const MainHUD: React.FC = () => {
                     /> */}
                     <MainHUDButton
                         value={"Debug Tools"}
-                        icon={SynthesisIcons.Bug}
+                        icon={SynthesisIcons.BUG}
                         onClick={() => {
                             openPanel("debug")
                         }}
@@ -166,7 +166,7 @@ const MainHUD: React.FC = () => {
                     {touchCompatibility ? (
                         <MainHUDButton
                             value={"Touch Controls"}
-                            icon={SynthesisIcons.Gamepad}
+                            icon={SynthesisIcons.GAMEPAD}
                             onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
                         />
                     ) : (
@@ -183,18 +183,18 @@ const MainHUD: React.FC = () => {
                 ) : (
                     <MainHUDButton
                         value={`APS Login`}
-                        icon={SynthesisIcons.People}
+                        icon={SynthesisIcons.PEOPLE}
                         larger={true}
                         onClick={() => APS.requestAuthCode()}
                     />
                 )}
                 <MainHUDButton
                     value={"Start Match Mode"}
-                    icon={SynthesisIcons.Gamepad}
+                    icon={SynthesisIcons.GAMEPAD}
                     larger={true}
                     onClick={() => {
                         MatchMode.getInstance().isMatchEnabled()
-                            ? Global_AddToast(
+                            ? globalAddToast(
                                   "error",
                                   "Match Mode Already Running",
                                   "You can't start match mode if its already running"

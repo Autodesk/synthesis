@@ -3,7 +3,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import Label, { LabelSize } from "@/ui/components/Label"
 import { Box, Button as MUIButton, styled, alpha } from "@mui/material"
 import Button, { ButtonSize } from "@/ui/components/Button"
-import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import { defaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
@@ -69,7 +69,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                 {behavior.parentJointIndex != undefined ? (
                     <ChildLabelStyled
                         key={`arm-nodes-notation ${elementKey}`}
-                        size={LabelSize.Small}
+                        size={LabelSize.SMALL}
                         className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
                     >
                         {name}
@@ -77,7 +77,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                 ) : (
                     <SectionLabel
                         key={`arm-nodes-notation ${elementKey}`}
-                        size={LabelSize.Small}
+                        size={LabelSize.SMALL}
                         className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
                     >
                         {name}
@@ -114,10 +114,10 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                 {/* Button to set the parent of this behavior */}
                 <Button
                     key="follow"
-                    size={ButtonSize.Small}
+                    size={ButtonSize.SMALL}
                     value={
                         lookingForParent == behavior || behavior.parentJointIndex != undefined
-                            ? SynthesisIcons.XmarkLarge
+                            ? SynthesisIcons.XMARK_LARGE
                             : "follow"
                     }
                     onClick={() => {
@@ -187,7 +187,7 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
         PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
-                .map(b => DefaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))
+                .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator"))
     )
     const [lookingForParent, setLookingForParent] = useState<SequentialBehaviorPreferences | undefined>(undefined)
 
@@ -204,10 +204,10 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
     }, [behaviors, selectedRobot])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 

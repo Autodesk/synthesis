@@ -12,10 +12,10 @@ const TransformAssemblyPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 
@@ -26,7 +26,7 @@ const TransformAssemblyPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             openLocation={"right"}
             sidePadding={8}
             acceptEnabled={false}
-            icon={SynthesisIcons.Gamepad}
+            icon={SynthesisIcons.GAMEPAD}
             cancelEnabled={true}
             cancelName="Close"
         >

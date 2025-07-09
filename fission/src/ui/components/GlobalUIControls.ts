@@ -5,16 +5,16 @@
 
 import { ToastType } from "@/ui/ToastContext"
 
-export let Global_AddToast: (type: ToastType, title: string, description: string) => void = () => {}
-export let Global_OpenPanel: (panelId: string) => void = () => {}
-export let Global_OpenModal: (modalId: string) => void = () => {}
+export let globalAddToast: (type: ToastType, title: string, description: string) => void = () => {}
+export let globalOpenPanel: (panelId: string) => void = () => {}
+export let globalOpenModal: (modalId: string) => void = () => {}
 
-export function setAddToast(func: typeof Global_AddToast) {
-    Global_AddToast = func
+export function setAddToast(func: typeof globalAddToast) {
+    globalAddToast = func
 }
-export function setOpenPanel(func: typeof Global_OpenPanel) {
-    Global_OpenPanel = func
+export function setOpenPanel(func: typeof globalOpenPanel) {
+    globalOpenPanel = func
 }
-export function setOpenModal(func: typeof Global_OpenModal) {
-    Global_OpenModal = func
+export function setOpenModal(func: typeof globalOpenModal) {
+    globalOpenModal = func
 }

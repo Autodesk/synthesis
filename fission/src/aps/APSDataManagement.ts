@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Global_AddToast } from "@/ui/components/GlobalUIControls"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import APS from "./APS"
 import TaskStatus from "@/util/TaskStatus"
 import { Mutex } from "async-mutex"
@@ -11,14 +11,14 @@ let mirabufFiles: Data[] | undefined
 const mirabufFilesMutex: Mutex = new Mutex()
 
 export class APSDataError extends Error {
-    error_code: string
+    errorCode: string
     title: string
     detail: string
 
-    constructor(error_code: string, title: string, detail: string) {
+    constructor(errorCode: string, title: string, detail: string) {
         super(title)
         this.name = "APSDataError"
-        this.error_code = error_code
+        this.errorCode = errorCode
         this.title = title
         this.detail = detail
     }
@@ -140,9 +140,9 @@ export async function getHubs(): Promise<Hub[] | undefined> {
         console.log(auth)
         console.log(APS.userInfo)
         if (e instanceof APSDataError) {
-            Global_AddToast("error", e.title, e.detail)
+            globalAddToast("error", e.title, e.detail)
         } else if (e instanceof Error) {
-            Global_AddToast("error", "Failed to get hubs.", e.message)
+            globalAddToast("error", "Failed to get hubs.", e.message)
         }
         return undefined
     }
@@ -179,7 +179,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
     } catch (e) {
         console.error("Failed to get hubs")
         if (e instanceof Error) {
-            Global_AddToast("error", "Failed to get hubs.", e.message)
+            globalAddToast("error", "Failed to get hubs.", e.message)
         }
         return undefined
     }
@@ -224,7 +224,7 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
     } catch (e) {
         console.error("Failed to get folder data")
         if (e instanceof Error) {
-            Global_AddToast("error", "Failed to get folder data.", e.message)
+            globalAddToast("error", "Failed to get folder data.", e.message)
         }
         return undefined
     }
@@ -250,7 +250,7 @@ export async function searchFolder(project: Project, folder: Folder, filters?: F
         },
     })
     if (!res.ok) {
-        Global_AddToast("error", "Error getting cloud files.", "Please sign in again.")
+        globalAddToast("error", "Error getting cloud files.", "Please sign in again.")
         return []
     }
     const json = await res.json()
@@ -280,11 +280,11 @@ export async function downloadData(data: Data): Promise<ArrayBuffer | undefined>
     }).then(x => x.arrayBuffer())
 }
 
-export function HasMirabufFiles(): boolean {
+export function hasMirabufFiles(): boolean {
     return mirabufFiles != undefined
 }
 
-export async function RequestMirabufFiles() {
+export async function requestMirabufFiles() {
     if (mirabufFilesMutex.isLocked()) {
         return
     }
@@ -327,7 +327,7 @@ export async function RequestMirabufFiles() {
     })
 }
 
-export function GetMirabufFiles(): Data[] | undefined {
+export function getMirabufFiles(): Data[] | undefined {
     return mirabufFiles
 }
 

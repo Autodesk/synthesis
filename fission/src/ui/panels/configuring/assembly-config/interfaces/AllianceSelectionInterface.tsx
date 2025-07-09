@@ -1,7 +1,7 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
 import Button from "@/components/Button"
-import { useState } from "react"
+import React, { useState } from "react"
 
 type AllianceSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
@@ -11,7 +11,7 @@ const saveSetAlliance = (alliance: Alliance, assembly: MirabufSceneObject) => {
     assembly.alliance = alliance
 }
 
-export default function AllianceSelectionInterface({ selectedAssembly }: AllianceSelectionInterfaceProps) {
+const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({ selectedAssembly }) => {
     const [alliance, setAlliance] = useState<Alliance>(selectedAssembly.alliance ?? "red")
 
     return (
@@ -25,3 +25,5 @@ export default function AllianceSelectionInterface({ selectedAssembly }: Allianc
         />
     )
 }
+
+export default AllianceSelectionInterface
