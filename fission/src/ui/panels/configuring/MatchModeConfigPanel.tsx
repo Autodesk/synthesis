@@ -154,7 +154,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         ]
 
         const typeError = (id: string, expected_type?: string) => {
-            const error_message = expected_type ? "is required" : `must be a ${expected_type}`
+            const error_message = expected_type ? `must be a ${expected_type}` : "is required"
             console.error(`Match mode config validation failed: the '${id}' field ${error_message}`)
             Global_AddToast?.("error", "Invalid Match Mode Config", `The '${id}' field ${error_message}`)
         }
@@ -166,8 +166,10 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     valid = false
                 }
             } else if (typeof config[prop.id] != prop.expected_type) {
-                typeError(prop.id, prop.expected_type)
-                valid = false
+                if (prop.required) {
+                    typeError(prop.id, prop.expected_type)
+                    valid = false
+                }
             }
         }
 
