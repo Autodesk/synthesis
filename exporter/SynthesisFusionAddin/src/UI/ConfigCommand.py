@@ -11,6 +11,7 @@ from typing import Any
 import adsk.core
 import adsk.fusion
 
+from src import Logging
 import src.Parser.SynthesisParser.Parser as Parser
 import src.UI.GamepieceConfigTab as GamepieceConfigTab
 import src.UI.GeneralConfigTab as GeneralConfigTab
@@ -29,6 +30,8 @@ gamepieceConfigTab: GamepieceConfigTab.GamepieceConfigTab
 
 
 INPUTS_ROOT: adsk.core.CommandInputs
+
+logger = Logging.getLogger()
 
 
 def reload() -> None:
