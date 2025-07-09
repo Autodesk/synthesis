@@ -66,7 +66,7 @@ describe("IntakeSensorSceneObject", () => {
         instance.Setup()
         expect(instance["_parentBodyId"]).toBe(mockBodyId)
         expect(World.PhysicsSystem.CreateSensor).toHaveBeenCalled()
-        expect(World.PhysicsSystem.GetBodyAssociation).not.toBeUndefined()
+        expect(World.PhysicsSystem.GetBodyAssociation).toBeDefined()
     })
 
     test("Update sets body position/rotation", () => {
@@ -90,6 +90,6 @@ describe("IntakeSensorSceneObject", () => {
         Reflect.set(instance, "_collision", vi.fn())
         instance.Dispose()
         expect(World.PhysicsSystem.DestroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
-        expect(World.SceneRenderer.scene.remove).not.toBeUndefined()
+        expect(World.SceneRenderer.scene.remove).toBeDefined()
     })
 })
