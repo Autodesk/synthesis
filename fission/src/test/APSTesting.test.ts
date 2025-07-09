@@ -74,7 +74,7 @@ const createMockResponse = (data: unknown, ok: boolean = true) => ({
     json: vi.fn().mockResolvedValue(data),
 })
 
-describe("APS", () => {
+describe("APS Authentication System", () => {
     const originalConsoleLog = console.log
     const originalConsoleError = console.error
     const originalConsoleWarn = console.warn
@@ -118,7 +118,8 @@ describe("APS", () => {
         console.debug = originalConsoleDebug
     })
 
-    describe("Complete User Authentication Flow", () => {
+    describe("End-to-End User Journeys", () => {
+        // These test complete workflows and method interactions
         test("successful authentication journey from login to logout", async () => {
             // === SCENARIO 1: User starts with no authentication ===
 
@@ -486,22 +487,149 @@ describe("APS", () => {
         })
     })
 
-    describe("Basic functionality", () => {
-        test("APS is defined", () => {
-            expect(APS).toBeDefined()
-        })
+    describe("Individual Method Behavior", () => {
+        // These test specific method inputs, outputs, and edge cases
 
-        test("numApsCalls tracking works", () => {
-            expect(APS.numApsCalls.size).toBe(0)
+        describe("Core Authentication Methods", () => {
+            test("getAuth returns undefined when no auth data", async () => {
+                mockLocalStorage.getItem.mockReturnValue(null)
+                const result = await APS.getAuth()
+                expect(result).toBeUndefined()
+            })
 
-            APS.incApsCalls("test-endpoint")
-            expect(APS.numApsCalls.get("test-endpoint")).toBe(1)
+            test("getAuth returns auth data when valid and not expired", async () => {
+                const validAuth = { ...mockAuth, expires_at: mockNow + 1000000 }
+                mockLocalStorage.getItem.mockReturnValue(JSON.stringify(validAuth))
 
-            APS.incApsCalls("test-endpoint")
-            expect(APS.numApsCalls.get("test-endpoint")).toBe(2)
+                const result = await APS.getAuth()
+                expect(result).toEqual(validAuth)
+            })
 
-            APS.resetNumApsCalls()
-            expect(APS.numApsCalls.size).toBe(0)
+            test("logout calls revoke token and clears auth data", async () => {
+                mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockAuth))
+                mockFetch.mockResolvedValueOnce(createMockResponse({}))
+
+                await APS.logout()
+
+                expect(mockFetch).toHaveBeenCalledWith(
+                    "https://developer.api.autodesk.com/authentication/v2/revoke",
+                    expect.objectContaining({
+                        method: "POST",
+                    })
+                )
+                expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("aps_auth")
+            })
+
+            test("requestAuthCode generates correct authorization URL", async () => {
+                // This tests URL parameters that integration tests don't check
+                mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "test_challenge" }))
+
+                await APS.requestAuthCode()
+
+                expect(mockWindowOpen).toHaveBeenCalledWith(
+                    expect.stringContaining("https://developer.api.autodesk.com/authentication/v2/authorize")
+                )
+
+                const callArgs = mockWindowOpen.mock.calls[0][0]
+                expect(callArgs).toContain("client_id=GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU")
+                expect(callArgs).toContain("response_type=code")
+                // Fix URL encoding issue - scope gets URL encoded
+                expect(callArgs).toContain("scope=data%3Aread")
+                expect(callArgs).toContain("code_challenge=test_challenge")
+            })
+
+            test("codeChallenge fetches challenge from correct endpoint", async () => {
+                // This tests specific return value and endpoint
+                mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "test_challenge" }))
+
+                const result = await APS.codeChallenge()
+
+                expect(result).toBe("test_challenge")
+                expect(mockFetch).toHaveBeenCalledWith("/api/aps/challenge")
+            })
+
+            test("convertAuthToken makes correct API call", async () => {
+                // This tests specific endpoint and parameters
+                mockFetch.mockResolvedValueOnce(
+                    createMockResponse({
+                        response: mockAuth,
+                    })
+                )
+
+                // Mock loadUserInfo
+                mockFetch.mockResolvedValueOnce(
+                    createMockResponse({
+                        name: mockUserInfo.name,
+                        given_name: mockUserInfo.givenName,
+                        picture: mockUserInfo.picture,
+                        email: mockUserInfo.email,
+                    })
+                )
+
+                // Set up localStorage mock to return auth data
+                mockLocalStorage.setItem.mockImplementation((key, value) => {
+                    if (key === "aps_auth") {
+                        mockLocalStorage.getItem.mockImplementation(getKey => {
+                            if (getKey === "aps_auth") return value
+                            return null
+                        })
+                    }
+                })
+
+                await APS.convertAuthToken("test_auth_code")
+
+                expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining("/api/aps/code?code=test_auth_code"))
+            })
+
+            test("refreshAuthToken successfully refreshes token", async () => {
+                const newAuth = { ...mockAuth, access_token: "new_token" }
+                mockFetch.mockResolvedValueOnce(createMockResponse(newAuth))
+
+                // Mock loadUserInfo
+                mockFetch.mockResolvedValueOnce(
+                    createMockResponse({
+                        name: mockUserInfo.name,
+                        given_name: mockUserInfo.givenName,
+                        picture: mockUserInfo.picture,
+                        email: mockUserInfo.email,
+                    })
+                )
+
+                const result = await APS.refreshAuthToken("test_refresh_token", false)
+
+                expect(result).toBe(true)
+                expect(mockFetch).toHaveBeenCalledWith(
+                    "https://developer.api.autodesk.com/authentication/v2/token",
+                    expect.objectContaining({
+                        method: "POST",
+                        body: expect.any(URLSearchParams),
+                    })
+                )
+            })
+
+            test("loadUserInfo calls correct endpoint with auth header", async () => {
+                // This tests specific API call structure
+                mockFetch.mockResolvedValueOnce(
+                    createMockResponse({
+                        name: mockUserInfo.name,
+                        given_name: mockUserInfo.givenName,
+                        picture: mockUserInfo.picture,
+                        email: mockUserInfo.email,
+                    })
+                )
+
+                await APS.loadUserInfo(mockAuth)
+
+                expect(mockFetch).toHaveBeenCalledWith(
+                    "https://api.userprofile.autodesk.com/userinfo",
+                    expect.objectContaining({
+                        method: "GET",
+                        headers: {
+                            Authorization: mockAuth.access_token,
+                        },
+                    })
+                )
+            })
         })
     })
 
@@ -522,189 +650,7 @@ describe("APS", () => {
         })
     })
 
-    describe("User info management", () => {
-        test("userInfo getter returns undefined when no data", () => {
-            mockLocalStorage.getItem.mockReturnValue(null)
-            expect(APS.userInfo).toBeUndefined()
-        })
-
-        test("userInfo getter returns parsed data when valid", () => {
-            mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockUserInfo))
-            expect(APS.userInfo).toEqual(mockUserInfo)
-        })
-
-        test("userInfo setter saves data to localStorage", () => {
-            APS.userInfo = mockUserInfo
-            expect(mockLocalStorage.setItem).toHaveBeenCalledWith("aps_user_info", JSON.stringify(mockUserInfo))
-            expect(mockDispatchEvent).toHaveBeenCalledWith(new Event("aps_user_info_update"))
-        })
-
-        test("userInfo setter removes data when undefined", () => {
-            APS.userInfo = undefined
-            expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("aps_user_info")
-        })
-
-        test("handles corrupted user info gracefully", () => {
-            mockLocalStorage.getItem.mockReturnValue("invalid json")
-            expect(APS.userInfo).toBeUndefined()
-        })
-    })
-
-    describe("Authentication flow", () => {
-        test("getAuth returns undefined when no auth data", async () => {
-            mockLocalStorage.getItem.mockReturnValue(null)
-            const result = await APS.getAuth()
-            expect(result).toBeUndefined()
-        })
-
-        test("getAuth returns auth data when valid and not expired", async () => {
-            const validAuth = { ...mockAuth, expires_at: mockNow + 1000000 }
-            mockLocalStorage.getItem.mockReturnValue(JSON.stringify(validAuth))
-
-            const result = await APS.getAuth()
-            expect(result).toEqual(validAuth)
-        })
-
-        test("logout calls revoke token and clears auth data", async () => {
-            mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockAuth))
-            mockFetch.mockResolvedValueOnce(createMockResponse({}))
-
-            await APS.logout()
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                "https://developer.api.autodesk.com/authentication/v2/revoke",
-                expect.objectContaining({
-                    method: "POST",
-                })
-            )
-            expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("aps_auth")
-        })
-
-        test("requestAuthCode opens authorization window", async () => {
-            mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "test_challenge" }))
-
-            await APS.requestAuthCode()
-
-            expect(mockWindowOpen).toHaveBeenCalledWith(
-                expect.stringContaining("https://developer.api.autodesk.com/authentication/v2/authorize")
-            )
-
-            const callArgs = mockWindowOpen.mock.calls[0][0]
-            expect(callArgs).toContain("client_id=GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU")
-            expect(callArgs).toContain("response_type=code")
-            // Fix URL encoding issue - scope gets URL encoded
-            expect(callArgs).toContain("scope=data%3Aread")
-            expect(callArgs).toContain("code_challenge=test_challenge")
-        })
-
-        test("codeChallenge successfully fetches challenge", async () => {
-            mockFetch.mockResolvedValueOnce(createMockResponse({ challenge: "test_challenge" }))
-
-            const result = await APS.codeChallenge()
-
-            expect(result).toBe("test_challenge")
-            expect(mockFetch).toHaveBeenCalledWith("/api/aps/challenge")
-        })
-
-        test("convertAuthToken successfully converts auth code", async () => {
-            mockFetch.mockResolvedValueOnce(
-                createMockResponse({
-                    response: mockAuth,
-                })
-            )
-
-            // Mock loadUserInfo
-            mockFetch.mockResolvedValueOnce(
-                createMockResponse({
-                    name: mockUserInfo.name,
-                    given_name: mockUserInfo.givenName,
-                    picture: mockUserInfo.picture,
-                    email: mockUserInfo.email,
-                })
-            )
-
-            // Set up localStorage mock to return auth data
-            mockLocalStorage.setItem.mockImplementation((key, value) => {
-                if (key === "aps_auth") {
-                    mockLocalStorage.getItem.mockImplementation(getKey => {
-                        if (getKey === "aps_auth") return value
-                        return null
-                    })
-                }
-            })
-
-            await APS.convertAuthToken("test_auth_code")
-
-            expect(mockFetch).toHaveBeenCalledWith(expect.stringContaining("/api/aps/code?code=test_auth_code"))
-        })
-
-        test("refreshAuthToken successfully refreshes token", async () => {
-            const newAuth = { ...mockAuth, access_token: "new_token" }
-            mockFetch.mockResolvedValueOnce(createMockResponse(newAuth))
-
-            // Mock loadUserInfo
-            mockFetch.mockResolvedValueOnce(
-                createMockResponse({
-                    name: mockUserInfo.name,
-                    given_name: mockUserInfo.givenName,
-                    picture: mockUserInfo.picture,
-                    email: mockUserInfo.email,
-                })
-            )
-
-            const result = await APS.refreshAuthToken("test_refresh_token", false)
-
-            expect(result).toBe(true)
-            expect(mockFetch).toHaveBeenCalledWith(
-                "https://developer.api.autodesk.com/authentication/v2/token",
-                expect.objectContaining({
-                    method: "POST",
-                    body: expect.any(URLSearchParams),
-                })
-            )
-        })
-
-        test("loadUserInfo successfully loads user info", async () => {
-            mockFetch.mockResolvedValueOnce(
-                createMockResponse({
-                    name: mockUserInfo.name,
-                    given_name: mockUserInfo.givenName,
-                    picture: mockUserInfo.picture,
-                    email: mockUserInfo.email,
-                })
-            )
-
-            await APS.loadUserInfo(mockAuth)
-
-            expect(mockFetch).toHaveBeenCalledWith(
-                "https://api.userprofile.autodesk.com/userinfo",
-                expect.objectContaining({
-                    method: "GET",
-                    headers: {
-                        Authorization: mockAuth.access_token,
-                    },
-                })
-            )
-        })
-    })
-
     describe("Error handling", () => {
-        test("handles refresh token failure", async () => {
-            mockFetch.mockResolvedValueOnce(createMockResponse({ error: "invalid_token" }, false))
-
-            const result = await APS.refreshAuthToken("invalid_token", false)
-
-            expect(result).toBe(false)
-        })
-
-        test("handles network errors gracefully", async () => {
-            mockFetch.mockRejectedValueOnce(new Error("Network error"))
-
-            const result = await APS.refreshAuthToken("test_token", false)
-
-            expect(result).toBe(false)
-        })
-
         test("handles code challenge failure", async () => {
             mockFetch.mockRejectedValueOnce(new Error("Network error"))
 
