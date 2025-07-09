@@ -86,7 +86,6 @@ class Parser:
             self.exporterOptions,
             self.pdMessage,
         )
-       
 
         Materials.mapAllPhysicalMaterials(
             design.materials,
@@ -139,10 +138,7 @@ class Parser:
             self.pdMessage,
         )
 
-        JointHierarchy.buildJointPartHierarchy(
-            design, assembly_out.data.joints, self.exporterOptions, self.pdMessage
-        )
-        
+        JointHierarchy.buildJointPartHierarchy(design, assembly_out.data.joints, self.exporterOptions, self.pdMessage)
 
         # These don't have an effect, I forgot how this is suppose to work
         # progressDialog.message = "Taking Photo for thumbnail..."
@@ -258,10 +254,9 @@ class Parser:
         logger.debug(debug_output.strip())
 
 
-def handle_err_top[T](result: Result[T]):
+def handle_err_top[T](result: Result[T]) -> None:
     if result.is_err():
         message, severity = result.unwrap_err()
         if severity == ErrorSeverity.Fatal:
             app = adsk.core.Application.get()
             app.userInterface.messageBox(f"Fatal Error Encountered: {message}")
-

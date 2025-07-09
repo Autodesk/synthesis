@@ -1,6 +1,6 @@
 import math
-from typing import Never
 import uuid
+from typing import Never
 
 import adsk.core
 import adsk.fusion
@@ -67,4 +67,3 @@ def construct_info(
         proto_obj.info.GUID = str(uuid.uuid4())
 
     return Ok(None)
-

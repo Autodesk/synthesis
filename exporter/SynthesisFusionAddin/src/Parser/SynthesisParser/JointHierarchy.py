@@ -541,7 +541,9 @@ def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDia
     root = types_pb2.Node()
 
     # construct body tree if possible
-    createTreeParts(simNode.data, OccurrenceRelationship.CONNECTION, root, progressDialog)
+    tree_parts_result = createTreeParts(simNode.data, OccurrenceRelationship.CONNECTION, root, progressDialog)
+    if tree_parts_result.is_fatal():
+        return tree_parts_result
 
     proto_joint.parts.nodes.append(root)
 
@@ -565,7 +567,7 @@ def createTreeParts(
     # if it's the next part just exit early for our own sanity
     # This shouldn't be fatal nor even an error
     if relationship == OccurrenceRelationship.NEXT or dynNode.data.isLightBulbOn == False:
-        return
+        return Ok(None)
 
     # set the occurrence / component id to reference the part
 
@@ -591,5 +593,11 @@ def createTreeParts(
     # recurse and add all children connections
     for edge in dynNode.edges:
         child_node = types_pb2.Node()
-        createTreeParts(cast(DynamicOccurrenceNode, edge.node), edge.relationship, child_node, progressDialog)
+        tree_parts_result = createTreeParts(
+            cast(DynamicOccurrenceNode, edge.node), edge.relationship, child_node, progressDialog
+        )
+        if tree_parts_result.is_fatal():
+            return tree_parts_result
         node.children.append(child_node)
+
+    return Ok(None)
