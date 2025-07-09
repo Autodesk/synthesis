@@ -15,19 +15,19 @@ const Tooltip: React.FC<TooltipProps> = ({ type, controls }) => {
                 <FaCircleInfo className="text-main-text mx-auto pt-1 pb-2 w-8 h-8" />
                 {controls?.map(c => (
                     <Stack
-                        direction={StackDirection.Horizontal}
+                        direction={StackDirection.HORIZONTAL}
                         key={`${c.control}`}
                         spacing={8}
                         justify="around"
                         className="min-w-max"
                     >
                         <Label
-                            size={LabelSize.Small}
+                            size={LabelSize.SMALL}
                             className="bg-background-secondary align-middle px-2 rounded-md min-w-fit"
                         >
                             {c.control}
                         </Label>
-                        <Label size={LabelSize.Small} className="min-w-fit align-middle">
+                        <Label size={LabelSize.SMALL} className="min-w-fit align-middle">
                             {c.description}
                         </Label>
                     </Stack>

@@ -91,7 +91,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
 
                 <SectionLabel
                     key={value.name + index}
-                    size={LabelSize.Small}
+                    size={LabelSize.SMALL}
                     className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
                 >
                     {value.name}
@@ -186,7 +186,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 {/** Back arrow button when an option is selected */}
                 {selectedOption != undefined && (
                     <ButtonIcon
-                        value={SynthesisIcons.LeftArrowLarge}
+                        value={SynthesisIcons.LEFT_ARROW_LARGE}
                         onClick={() => {
                             setSelectedOption(undefined)
                             onOptionSelected(undefined)
@@ -198,7 +198,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 {/** Label with either the header text, or the name of the selected option if an option is selected */}
                 <Box alignSelf={"center"} display="flex">
                     <Box width="8px" />
-                    <SectionLabel size={LabelSize.Small} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    <SectionLabel size={LabelSize.SMALL} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {selectedOption != undefined ? selectedOption.name : defaultHeaderText}
                     </SectionLabel>
                 </Box>
@@ -227,7 +227,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                     ) : (
                         <>
                             {/** No options available text */}
-                            <Label size={LabelSize.Small}>{noOptionsText ?? "No options available!"}</Label>
+                            <Label size={LabelSize.SMALL}>{noOptionsText ?? "No options available!"}</Label>
                         </>
                     )}
                     {/** Add button */}

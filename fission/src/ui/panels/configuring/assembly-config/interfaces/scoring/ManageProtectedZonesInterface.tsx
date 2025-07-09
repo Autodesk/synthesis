@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react"
 import Label, { LabelSize } from "@/components/Label"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
-import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -11,32 +11,32 @@ import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 
-const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
 
     const fieldPrefs = field.fieldPreferences
-    if (fieldPrefs) fieldPrefs.scoringZones = zones
+    if (fieldPrefs) fieldPrefs.protectedZones = zones
 
     PreferencesSystem.savePreferences()
-    field.UpdateScoringZones()
+    field.updateProtectedZones()
 }
 
-type ScoringZoneRowProps = {
-    zone: ScoringZonePreferences
+type ProtectedZoneRowProps = {
+    zone: ProtectedZonePreferences
     save: () => void
     deleteZone: () => void
-    selectZone: (zone: ScoringZonePreferences) => void
+    selectZone: (zone: ProtectedZonePreferences) => void
 }
 
-const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone, selectZone }) => {
+const ProtectedZoneRow: React.FC<ProtectedZoneRowProps> = ({ zone, save, deleteZone, selectZone }) => {
     return (
         <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-            <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
+            <Stack direction={StackDirection.HORIZONTAL} spacing={8} justify="start">
                 <div className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`} />
-                <Stack direction={StackDirection.Vertical} spacing={4} justify={"center"} className="w-max">
-                    <Label size={LabelSize.Small}>{zone.name}</Label>
-                    <Label size={LabelSize.Small}>
-                        {zone.points} {zone.points == 1 ? "point" : "points"}
+                <Stack direction={StackDirection.VERTICAL} spacing={4} justify={"center"} className="w-max">
+                    <Label size={LabelSize.SMALL}>{zone.name}</Label>
+                    <Label size={LabelSize.SMALL}>
+                        {zone.penaltyPoints} {zone.penaltyPoints == 1 ? "penalty point" : "penalty points"}
                     </Label>
                 </Stack>
             </Stack>
@@ -61,34 +61,34 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone,
     )
 }
 
-interface ScoringZonesProps {
+interface ProtectedZonesProps {
     selectedField: MirabufSceneObject
-    initialZones: ScoringZonePreferences[]
-    selectZone: (zone: ScoringZonePreferences) => void
+    initialZones: ProtectedZonePreferences[]
+    selectZone: (zone: ProtectedZonePreferences) => void
 }
 
-const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, initialZones, selectZone }) => {
-    const [zones, setZones] = useState<ScoringZonePreferences[]>(initialZones)
+const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, initialZones, selectZone }) => {
+    const [zones, setZones] = useState<ProtectedZonePreferences[]>(initialZones)
 
     const saveEvent = useCallback(() => {
         saveZones(zones, selectedField)
     }, [zones, selectedField])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
     useEffect(() => {
         saveZones(zones, selectedField)
 
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [selectedField, zones])
 
@@ -96,8 +96,8 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
         <>
             {zones?.length > 0 ? (
                 <ScrollView className="flex flex-col gap-4">
-                    {zones.map((zonePrefs: ScoringZonePreferences, i: number) => (
-                        <ScoringZoneRow
+                    {zones.map((zonePrefs: ProtectedZonePreferences, i: number) => (
+                        <ProtectedZoneRow
                             key={i}
                             zone={(() => {
                                 return zonePrefs
@@ -115,18 +115,17 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
                     ))}
                 </ScrollView>
             ) : (
-                <Label>No scoring zones</Label>
+                <Label>No protected zones</Label>
             )}
             {AddButtonInteractiveColor(() => {
                 if (zones == undefined) return
 
-                const newZone: ScoringZonePreferences = {
-                    name: "New Scoring Zone",
+                const newZone: ProtectedZonePreferences = {
+                    name: "New Protected Zone",
                     alliance: "blue",
+                    penaltyPoints: 0,
                     parentNode: undefined,
-                    points: 0,
-                    destroyGamepiece: false,
-                    persistentPoints: false,
+                    requireRobotContact: true,
                     deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                 }
 

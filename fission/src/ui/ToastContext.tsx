@@ -17,7 +17,7 @@ type ToastContextType = {
     removeToast: (toastId: string) => void
 }
 
-const ToastContext = createContext<ToastContextType | null>(null)
+const ToastContext: React.Context<ToastContextType | null> = createContext<ToastContextType | null>(null)
 
 export const useToastContext = () => {
     const context = useContext(ToastContext)

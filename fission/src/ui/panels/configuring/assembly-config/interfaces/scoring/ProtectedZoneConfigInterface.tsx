@@ -8,15 +8,20 @@ import SelectButton from "@/ui/components/SelectButton"
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import World from "@/systems/World"
-import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
+import {
+    convertArrayToThreeMatrix4,
+    convertJoltMat44ToThreeMatrix4,
+    convertThreeMatrix4ToArray,
+} from "@/util/TypeConversions"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
+import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
 
 /**
  * Saves ejector configuration to selected field.
@@ -36,22 +41,20 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
  * don't like this terminology as it's thrown me off multiple times, but I suppose it does go
  * against most other multiplication operations.
  *
- * @param name Name given to the scoring zone by the user.
- * @param alliance Scoring zone alliance.
- * @param points Number of points the zone is worth.
- * @param destroy Destroy gamepiece setting.
- * @param persistent Persistent points setting.
+ * @param name Name given to the protected zone by the user.
+ * @param alliance protected zone alliance.
+ * @param points Number of points to penalize.
+ * @param requireRobotContact Do you need to contact a robot for the penalty to apply.
  * @param gizmo Reference to the transform gizmo object.
  * @param selectedNode Selected node that configuration is relative to.
  */
 function save(
     field: MirabufSceneObject,
-    zone: ScoringZonePreferences,
+    zone: ProtectedZonePreferences,
     name: string,
     alliance: Alliance,
     points: number,
-    destroy: boolean,
-    persistent: boolean,
+    requireRobotContact: boolean,
     gizmo: GizmoSceneObject,
     selectedNode?: RigidNodeId
 ) {
@@ -76,25 +79,26 @@ function save(
     scale.z = Math.abs(scale.z)
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
-    const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+    const fieldTransformation = convertJoltMat44ToThreeMatrix4(
+        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+    )
     const deltaTransformation = gizmoTransformation.premultiply(fieldTransformation.invert())
 
-    zone.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
+    zone.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
     zone.name = name
     zone.alliance = alliance
     zone.parentNode = selectedNode
-    zone.points = points
-    zone.destroyGamepiece = destroy
-    zone.persistentPoints = persistent
+    zone.penaltyPoints = points
+    zone.requireRobotContact = requireRobotContact
 
-    if (!field.fieldPreferences.scoringZones.includes(zone)) field.fieldPreferences.scoringZones.push(zone)
+    if (!field.fieldPreferences.protectedZones.includes(zone)) field.fieldPreferences.protectedZones.push(zone)
 
     PreferencesSystem.savePreferences()
 }
 
 interface ZoneConfigProps {
     selectedField: MirabufSceneObject
-    selectedZone: ScoringZonePreferences
+    selectedZone: ProtectedZonePreferences
     saveAllZones: () => void
 }
 
@@ -102,29 +106,18 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     //Official FIRST hex
     // TODO: Do we want to eventually make these editable?
     const redMaterial = useMemo(() => {
-        return new THREE.MeshPhongMaterial({
-            color: 0xed1c24,
-            shininess: 0.0,
-            opacity: 0.7,
-            transparent: true,
-        })
+        return ProtectedZoneSceneObject.redMaterial.clone() as THREE.MeshPhongMaterial
     }, [])
 
     const blueMaterial = useMemo(() => {
-        return new THREE.MeshPhongMaterial({
-            color: 0x0066b3,
-            shininess: 0.0,
-            opacity: 0.7,
-            transparent: true,
-        })
+        return ProtectedZoneSceneObject.blueMaterial.clone() as THREE.MeshPhongMaterial
     }, [])
 
     const [name, setName] = useState<string>(selectedZone.name)
     const [alliance, setAlliance] = useState<Alliance>(selectedZone.alliance)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(selectedZone.parentNode)
-    const [points, setPoints] = useState<number>(selectedZone.points)
-    const [destroy] = useState<boolean>(selectedZone.destroyGamepiece)
-    const [persistent, setPersistent] = useState<boolean>(selectedZone.persistentPoints)
+    const [points, setPoints] = useState<number>(selectedZone.penaltyPoints)
+    const [requireRobotContact, setRequireRobotContact] = useState<boolean>(selectedZone.requireRobotContact)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
@@ -136,29 +129,28 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 name,
                 alliance,
                 points,
-                destroy,
-                persistent,
+                requireRobotContact,
                 gizmoRef.current,
                 selectedNode
             )
             saveAllZones()
         }
-    }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
+    }, [selectedField, selectedZone, name, alliance, points, requireRobotContact, selectedNode, saveAllZones])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
     /** Holds a pause for the duration of the interface component */
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 
@@ -185,7 +177,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
-                const deltaTransformation = Array_ThreeMatrix4(selectedZone.deltaTransformation)
+                const deltaTransformation = convertArrayToThreeMatrix4(selectedZone.deltaTransformation)
 
                 let nodeBodyId = selectedField.mechanism.nodeToBody.get(
                     selectedZone.parentNode ?? selectedField.rootNodeId
@@ -196,15 +188,15 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 }
 
                 /** W = L x R. See save() for math details */
-                const fieldTransformation = JoltMat44_ThreeMatrix4(
-                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                const fieldTransformation = convertJoltMat44ToThreeMatrix4(
+                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
-                const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
+                const props = deltaFieldTransformsPhysicalProp(deltaTransformation, fieldTransformation)
 
                 gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
                 gizmo.obj.rotation.setFromQuaternion(props.rotation)
                 gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
-                selectedField.RemoveScoringZoneObject(selectedZone) // avoid rendering twice
+                selectedField.removeProtectedZoneObject(selectedZone) // avoid rendering twice
             }
 
             return (
@@ -230,7 +222,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 return false
             }
 
-            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || assoc?.sceneObject != selectedField) {
                 return false
             }
@@ -266,9 +258,9 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
             {/** Set the point value */}
             <NumberInput
-                label="Points"
-                placeholder="Zone points"
-                defaultValue={selectedZone.points}
+                label="Penalty Points"
+                placeholder="Zone penalty points"
+                defaultValue={selectedZone.penaltyPoints}
                 onInput={v => setPoints(v || 1)}
             />
 
@@ -280,7 +272,11 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 /> */}
 
             {/** When checked, points will stay even when a gamepiece leaves the zone */}
-            <Checkbox label="Persistent Points" defaultState={selectedZone.persistentPoints} onClick={setPersistent} />
+            <Checkbox
+                label="Require Robot Contact"
+                defaultState={selectedZone.requireRobotContact}
+                onClick={setRequireRobotContact}
+            />
 
             {/** Switch between transform control modes */}
 
