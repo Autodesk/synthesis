@@ -1,4 +1,5 @@
 import math
+from typing import Never
 import uuid
 
 import adsk.core
@@ -68,7 +69,7 @@ def construct_info(
     return Ok(None)
 
 
-def rad_to_deg(rad):  # type: ignore
+def rad_to_deg(rad: float) -> float:
     """Converts radians to degrees
 
     Args:
@@ -80,16 +81,16 @@ def rad_to_deg(rad):  # type: ignore
     return (rad * 180) / math.pi
 
 
-def throwZero():  # type: ignore
+def throwZero() -> Err[tuple[float, float, float, float]]:  # type: ignore
     """Errors on incorrect quat values
 
     Raises:
         RuntimeError: Error describing the issue
     """
-    raise RuntimeError("While computing the quaternion the trace was reported as 0 which is invalid")
+    return Err("While computing the quaternion the trace was reported as 0 which is invalid", ErrorSeverity.Fatal)
 
 
-def spatial_to_quaternion(mat):  # type: ignore
+def spatial_to_quaternion(mat: list[float]) -> Result[tuple[float, float, float, float]]:
     """Takes a 1D Spatial Transform Matrix and derives rotational quaternion
 
     I wrote this however it is difficult to extensibly test so use with caution
@@ -107,7 +108,7 @@ def spatial_to_quaternion(mat):  # type: ignore
         if trace > 0:
             s = math.sqrt(trace + 1.0) * 2
             if s == 0:
-                throwZero()
+                return throwZero()
             qw = 0.25 * s
             qx = (mat[9] - mat[6]) / s
             qy = (mat[2] - mat[8]) / s
@@ -115,7 +116,7 @@ def spatial_to_quaternion(mat):  # type: ignore
         elif (mat[0] > mat[5]) and (mat[0] > mat[8]):
             s = math.sqrt(1.0 + mat[0] - mat[5] - mat[10]) * 2.0
             if s == 0:
-                throwZero()
+                return throwZero()
             qw = (mat[9] - mat[6]) / s
             qx = 0.25 * s
             qy = (mat[1] + mat[4]) / s
@@ -123,7 +124,7 @@ def spatial_to_quaternion(mat):  # type: ignore
         elif mat[5] > mat[10]:
             s = math.sqrt(1.0 + mat[5] - mat[0] - mat[10]) * 2.0
             if s == 0:
-                throwZero()
+                return throwZero()
             qw = (mat[2] - mat[8]) / s
             qx = (mat[1] + mat[4]) / s
             qy = 0.25 * s
@@ -131,7 +132,7 @@ def spatial_to_quaternion(mat):  # type: ignore
         else:
             s = math.sqrt(1.0 + mat[10] - mat[0] - mat[5]) * 2.0
             if s == 0:
-                throwZero()
+                return throwZero()
             qw = (mat[4] - mat[1]) / s
             qx = (mat[2] + mat[8]) / s
             qy = (mat[6] + mat[9]) / s
@@ -141,13 +142,13 @@ def spatial_to_quaternion(mat):  # type: ignore
         qx, qy, qz, qw = normalize_quaternion(qx, qy, qz, qw)
 
         # So these quat values need to be reversed? I have no idea why at the moment
-        return round(qx, 13), round(-qy, 13), round(-qz, 13), round(qw, 13)
+        return Ok((round(qx, 13), round(-qy, 13), round(-qz, 13), round(qw, 13)))
 
     else:
-        raise RuntimeError("Supplied matrix to spatial_to_quaternion is not a 1D spatial matrix in size.")
+        return Err("Supplied matrix to spatial_to_quaternion is not a 1D spatial matrix in size.", ErrorSeverity.Fatal)
 
 
-def normalize_quaternion(x, y, z, w):  # type: ignore
+def normalize_quaternion(x: float, y: float, z: float, w: float) -> tuple[float, float, float, float]:
     f = 1.0 / math.sqrt((x * x) + (y * y) + (z * z) + (w * w))
     return x * f, y * f, z * f, w * f
 
