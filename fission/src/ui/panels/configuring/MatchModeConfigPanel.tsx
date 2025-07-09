@@ -141,59 +141,31 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }
 
-    const validateMatchModeConfig = (config: unknown): config is MatchModeConfig => {
-        if (typeof config !== "object" || config === null) {
-            return false
+    const validateMatchModeConfig = (config: any): config is MatchModeConfig => {
+        let valid = true
+
+        const props: { id: string, expected_type: string, required: boolean }[] = [{ id: "id", expected_type: "string", required: true }, { id: "name", expected_type: "string", required: true }, { id: "autonomousTime", expected_type: "number", required: false }, { id: "teleopTime", expected_type: "number", required: false }, { id: "endgameTime", expected_type: "number", required: false }]
+
+        const typeError = (id: string, expected_type?: string) => {
+            const error_message = expected_type ? 'is required' : `must be a ${expected_type}`
+            console.error(`Match mode config validation failed: the '${id}' field ${error_message}`)
+            Global_AddToast?.("error", "Invalid Match Mode Config", `The '${id}' field ${error_message}`)
+
         }
 
-        const configObj = config as Record<string, unknown>
-
-        // Check required fields
-        if (typeof configObj.id !== "string") {
-            console.error("Match mode config validation failed: 'id' field is required and must be a string")
-            Global_AddToast?.("error", "Invalid Match Mode Config", "The 'id' field is required and must be a string")
-            return false
+        for (const prop of props) {
+            if (config[prop.id] == undefined) {
+                if (prop.required) {
+                    typeError(prop.id);
+                    valid = false
+                }
+            } else if (typeof config[prop.id] != prop.expected_type) {
+                typeError(prop.id, prop.expected_type);
+                valid = false
+            }
         }
 
-        if (typeof configObj.name !== "string") {
-            console.error("Match mode config validation failed: 'name' field is required and must be a string")
-            Global_AddToast?.("error", "Invalid Match Mode Config", "The 'name' field is required and must be a string")
-            return false
-        }
-
-        // Check optional fields and provide defaults/warnings
-        const expectedFields = new Set(["id", "name", "autonomousTime", "teleopTime", "endgameTime"])
-        const actualFields = new Set(Object.keys(configObj))
-
-        // Check for missing optional fields
-        const missingFields = ["autonomousTime", "teleopTime", "endgameTime"].filter(
-            field => !(field in configObj) || typeof configObj[field] !== "number"
-        )
-        if (missingFields.length > 0) {
-            console.warn(
-                `Match mode config '${configObj.name}' is missing or has invalid optional fields: ${missingFields.join(", ")}. Default values will be used.`
-            )
-            Global_AddToast?.(
-                "warning",
-                "Invalid Match Mode Config",
-                `The following optional fields are missing or invalid: ${missingFields.join(", ")}. Default values will be used.`
-            )
-        }
-
-        // Check for extra fields
-        const extraFields = [...actualFields].filter(field => !expectedFields.has(field))
-        if (extraFields.length > 0) {
-            console.warn(
-                `Match mode config '${configObj.name}' contains unexpected fields: ${extraFields.join(", ")}. These will be ignored.`
-            )
-            Global_AddToast?.(
-                "warning",
-                "Unexpected Fields in Match Mode Config",
-                `The following fields are unexpected and will be ignored: ${extraFields.join(", ")}`
-            )
-        }
-
-        return true
+        return valid
     }
 
     const handleFileUpload = async (file: File) => {
@@ -206,7 +178,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         try {
             // Read file content
             const fileContent = await file.text()
-            const parsedConfig = JSON.parse(fileContent)
+            const parsedConfig = JSON.parse(fileContent) // ?? {}
 
             // Validate structure
             if (!validateMatchModeConfig(parsedConfig)) {
