@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from "vitest"
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import EjectableSceneObject from "../../mirabuf/EjectableSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
@@ -30,6 +30,11 @@ vi.mock("@/systems/World", () => ({
 }))
 
 describe("EjectableSceneObject", () => {
+    const originalConsoleLog = console.log
+    const originalConsoleError = console.error
+    const originalConsoleWarn = console.warn
+    const originalConsoleDebug = console.debug
+
     beforeEach(() => {
         vi.clearAllMocks()
         World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body)
@@ -55,6 +60,19 @@ describe("EjectableSceneObject", () => {
                 },
             },
         })
+
+        console.log = vi.fn()
+        console.error = vi.fn()
+        console.warn = vi.fn()
+        console.debug = vi.fn()
+    })
+
+    afterEach(() => {
+        vi.clearAllMocks()
+        console.log = originalConsoleLog
+        console.error = originalConsoleError
+        console.warn = originalConsoleWarn
+        console.debug = originalConsoleDebug
     })
 
     test("Setup disables physics for game piece", () => {

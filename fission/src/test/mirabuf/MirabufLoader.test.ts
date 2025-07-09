@@ -29,6 +29,11 @@ globalThis.btoa =
     })
 
 describe("MirabufLoader", () => {
+    const originalConsoleLog = console.log
+    const originalConsoleError = console.error
+    const originalConsoleWarn = console.warn
+    const originalConsoleDebug = console.debug
+
     let localStorageMock: Record<string, string>
     let fetchMock: MockedFunction<typeof fetch>
     let originalDigest: typeof crypto.subtle.digest
@@ -63,6 +68,11 @@ describe("MirabufLoader", () => {
         globalThis.crypto.subtle.digest = vi.fn(async (_alg, _data) => {
             return new Uint8Array(32).buffer
         }) as typeof crypto.subtle.digest
+
+        console.log = vi.fn()
+        console.error = vi.fn()
+        console.warn = vi.fn()
+        console.debug = vi.fn()
     })
 
     afterEach(() => {
@@ -71,6 +81,11 @@ describe("MirabufLoader", () => {
         if (globalThis.crypto && globalThis.crypto.subtle && originalDigest) {
             globalThis.crypto.subtle.digest = originalDigest
         }
+
+        console.log = originalConsoleLog
+        console.error = originalConsoleError
+        console.warn = originalConsoleWarn
+        console.debug = originalConsoleDebug
     })
 
     test("GetCacheMap initializes and retrieves cache", () => {

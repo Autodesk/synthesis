@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from "vitest"
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import type MirabufInstance from "../../mirabuf/MirabufInstance"
 import type Mechanism from "@/systems/physics/Mechanism"
@@ -106,6 +106,11 @@ function setPrivate<T>(obj: T, key: string, value: unknown) {
 }
 
 describe("MirabufSceneObject", () => {
+    const originalConsoleLog = console.log
+    const originalConsoleError = console.error
+    const originalConsoleWarn = console.warn
+    const originalConsoleDebug = console.debug
+
     let instance: MirabufSceneObject
     let mirabufInstance: MirabufInstance
     let progressHandle: ProgressHandle | undefined
@@ -115,6 +120,19 @@ describe("MirabufSceneObject", () => {
         mirabufInstance = mockMirabufInstance()
         progressHandle = undefined
         instance = new MirabufSceneObject(mirabufInstance, "TestAssembly", progressHandle)
+
+        console.log = vi.fn()
+        console.error = vi.fn()
+        console.warn = vi.fn()
+        console.debug = vi.fn()
+    })
+
+    afterEach(() => {
+        vi.clearAllMocks()
+        console.log = originalConsoleLog
+        console.error = originalConsoleError
+        console.warn = originalConsoleWarn
+        console.debug = originalConsoleDebug
     })
 
     test("Setup calls AddToScene, SetBodyAssociation, RegisterMechanism, and sets brain", () => {
