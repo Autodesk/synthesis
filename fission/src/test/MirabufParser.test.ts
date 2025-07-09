@@ -24,7 +24,7 @@ describe("Mirabuf Parser Tests", () => {
         const t = new MirabufParser(field!)
 
         expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(34)
-    }, 30000)
+    })
 })
 
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
