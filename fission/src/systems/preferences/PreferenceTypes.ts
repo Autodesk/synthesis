@@ -3,35 +3,48 @@ import { InputScheme } from "../input/InputSchemeManager"
 import { Vector3Tuple } from "three"
 
 /** Names of all global preferences. */
-export type GlobalPreference =
-    | "ZoomSensitivity"
-    | "PitchSensitivity"
-    | "YawSensitivity"
-    | "SceneRotationSensitivity"
-    | "ViewCubeRotationSensitivity"
-    | "ReportAnalytics"
-    | "UseMetric"
-    | "RenderScoringZones"
-    | "InputSchemes"
-    | "RenderSceneTags"
-    | "RenderScoreboard"
-    | "SubsystemGravity"
-    | "TouchControls"
-    | "SimAutoReconnect"
-    | "ShowViewCube"
-    | "MuteAllSound"
-    | "SFXVolume"
 
-export const RobotPreferencesKey: string = "Robots"
-export const FieldPreferencesKey: string = "Fields"
-export const MotorPreferencesKey: string = "Motors"
-export const GraphicsPreferenceKey: string = "Quality"
+export type GlobalPreferences = {
+    ZoomSensitivity: number
+    PitchSensitivity: number
+    YawSensitivity: number
+    SceneRotationSensitivity: number
+    ViewCubeRotationSensitivity: number
+    ReportAnalytics: boolean
+    UseMetric: boolean
+    RenderScoringZones: boolean
+    RenderProtectedZones: boolean
+    InputSchemes: InputScheme[]
+    RenderSceneTags: boolean
+    RenderScoreboard: boolean
+    SubsystemGravity: boolean
+    TouchControls: boolean
+    SimAutoReconnect: boolean
+    ShowViewCube: boolean
+    MuteAllSound: boolean
+    SFXVolume: number
+    ShowCenterOfMassIndicators: boolean
+}
+
+export type GlobalPreference = keyof GlobalPreferences
+
+export type Preferences = GlobalPreferences & {
+    [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
+    [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
+    [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>
+    [GRAPHICS_PREFERENCE_KEY]: GraphicsPreferences
+}
+
+export const ROBOT_PREFERENCE_KEY = "Robots" as const
+export const FIELD_PREFERENCE_KEY = "Fields" as const
+export const MOTOR_PREFERENCES_KEY = "Motors" as const
+export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const DefaultGlobalPreferences: { [key: string]: unknown } = {
+export const defaultGlobalPreferences: GlobalPreferences = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
@@ -40,6 +53,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     ReportAnalytics: false,
     UseMetric: false,
     RenderScoringZones: true,
+    RenderProtectedZones: true,
     InputSchemes: [],
     RenderSceneTags: true,
     RenderScoreboard: true,
@@ -49,6 +63,7 @@ export const DefaultGlobalPreferences: { [key: string]: unknown } = {
     ShowViewCube: true,
     MuteAllSound: false,
     SFXVolume: 25,
+    ShowCenterOfMassIndicators: false,
 }
 
 export type GraphicsPreferences = {
@@ -60,7 +75,7 @@ export type GraphicsPreferences = {
     antiAliasing: boolean
 }
 
-export function DefaultGraphicsPreferences(): GraphicsPreferences {
+export function defaultGraphicsPreferences(): GraphicsPreferences {
     return {
         lightIntensity: 5,
         fancyShadows: false,
@@ -76,12 +91,14 @@ export type IntakePreferences = {
     zoneDiameter: number
     parentNode: string | undefined
     showZoneAlways: boolean
+    maxPieces: number
 }
 
 export type EjectorPreferences = {
     deltaTransformation: number[]
     ejectorVelocity: number
     parentNode: string | undefined
+    ejectOrder: "FIFO" | "LIFO"
 }
 
 /** The behavior types that can be sequenced. */
@@ -96,7 +113,7 @@ export type SequentialBehaviorPreferences = {
 }
 
 /** Default preferences for a joint with not parent specified and inverted set to false. */
-export function DefaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
+export function defaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
     return {
         jointIndex: index,
         parentJointIndex: undefined,
@@ -135,13 +152,24 @@ export type ScoringZonePreferences = {
     deltaTransformation: number[]
 }
 
+export type ProtectedZonePreferences = {
+    name: string
+    alliance: Alliance
+    penaltyPoints: number
+    parentNode: string | undefined
+    requireRobotContact: boolean
+
+    deltaTransformation: number[]
+}
+
 export type FieldPreferences = {
     // TODO: implement this
     defaultSpawnLocation: Vector3Tuple
     scoringZones: ScoringZonePreferences[]
+    protectedZones: ProtectedZonePreferences[]
 }
 
-export function DefaultRobotPreferences(): RobotPreferences {
+export function defaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
         motors: [],
@@ -150,22 +178,24 @@ export function DefaultRobotPreferences(): RobotPreferences {
             zoneDiameter: 0.5,
             parentNode: undefined,
             showZoneAlways: false,
+            maxPieces: 1,
         },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             ejectorVelocity: 1,
             parentNode: undefined,
+            ejectOrder: "FIFO",
         },
         driveVelocity: 0,
         driveAcceleration: 0,
     }
 }
 
-export function DefaultFieldPreferences(): FieldPreferences {
-    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [] }
+export function defaultFieldPreferences(): FieldPreferences {
+    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [], protectedZones: [] }
 }
 
-export function DefaultMotorPreferences(name: string): MotorPreferences {
+export function defaultMotorPreferences(name: string): MotorPreferences {
     return {
         name: name,
         maxVelocity: 1,

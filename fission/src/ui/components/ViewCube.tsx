@@ -68,9 +68,9 @@ const ViewCube: React.FC<ViewCubeProps> = ({
                 const deltaX = event.clientX - lastMousePos.x
                 const deltaY = event.clientY - lastMousePos.y
 
-                const sensitivity = PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity")
+                const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
-                const controls = World.SceneRenderer.currentCameraControls
+                const controls = World.sceneRenderer.currentCameraControls
                 if (controls instanceof CustomOrbitControls) {
                     const currentCoords = controls.getCurrentCoordinates()
 
@@ -131,8 +131,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     }, [hoveredElement, isDragging])
 
     const getTopBottomOrientation = (isTop: boolean) => {
-        if (World && World.SceneRenderer && World.SceneRenderer.currentCameraControls) {
-            const controls = World.SceneRenderer.currentCameraControls
+        if (World && World.sceneRenderer && World.sceneRenderer.currentCameraControls) {
+            const controls = World.sceneRenderer.currentCameraControls
             if (controls instanceof CustomOrbitControls) {
                 const currentCoords = controls.getCurrentCoordinates()
 
@@ -559,8 +559,8 @@ const ViewCube: React.FC<ViewCubeProps> = ({
 
         const animate = () => {
             if (rendererRef.current && sceneRef.current && cameraRef.current) {
-                const mainCamera = World.SceneRenderer.mainCamera
-                const controls = World.SceneRenderer.currentCameraControls
+                const mainCamera = World.sceneRenderer.mainCamera
+                const controls = World.sceneRenderer.currentCameraControls
 
                 if (mainCamera && cubeRef.current && controls instanceof CustomOrbitControls) {
                     const coords = controls.getCurrentCoordinates()
@@ -791,7 +791,7 @@ const ViewCube: React.FC<ViewCubeProps> = ({
     }
 
     const snapToOrientation = (orientation: { theta: number; phi: number }) => {
-        const controls = World.SceneRenderer.currentCameraControls
+        const controls = World.sceneRenderer.currentCameraControls
         if (controls instanceof CustomOrbitControls) {
             const currentCoords = controls.getCurrentCoordinates()
 
@@ -822,9 +822,9 @@ const ViewCube: React.FC<ViewCubeProps> = ({
             const deltaX = event.clientX - lastMousePos.x
             const deltaY = event.clientY - lastMousePos.y
 
-            const sensitivity = PreferencesSystem.getGlobalPreference<number>("ViewCubeRotationSensitivity")
+            const sensitivity = PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")
 
-            const controls = World.SceneRenderer.currentCameraControls
+            const controls = World.sceneRenderer.currentCameraControls
             if (controls instanceof CustomOrbitControls) {
                 const currentCoords = controls.getCurrentCoordinates()
 

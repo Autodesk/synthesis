@@ -252,7 +252,7 @@ export class CustomOrbitControls extends CameraControls {
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
 
-        if (this.enabled) this._focusProvider?.LoadFocusTransform(this._focus)
+        if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
 
         // Generate delta of spherical coordinates
         const omega: SphericalCoords = this.enabled
@@ -263,10 +263,8 @@ export class CustomOrbitControls extends CameraControls {
               }
             : { theta: 0, phi: 0, r: 0 }
 
-        this._coords.theta +=
-            omega.theta * deltaT * PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
-        this._coords.phi +=
-            omega.phi * deltaT * PreferencesSystem.getGlobalPreference<number>("SceneRotationSensitivity")
+        this._coords.theta += omega.theta * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
+        this._coords.phi += omega.phi * deltaT * PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")
         this._coords.r += omega.r * deltaT * CO_SENSITIVITY_ZOOM * Math.pow(this._coords.r, 1.4)
 
         this._coords.phi = Math.min(CO_MAX_PHI, Math.max(CO_MIN_PHI, this._coords.phi))

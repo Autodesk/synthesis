@@ -5,7 +5,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { useCallback, useEffect, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "../assembly-config/ConfigurationType"
 import { setSelectedScheme } from "../assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelection from "./InputSchemeSelection"
@@ -15,20 +15,25 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import Button from "@/components/Button"
+import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import Label from "@/ui/components/Label"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
+    const [alliance, setAlliance] = useState<Alliance>("red")
 
     const targetAssembly = useMemo(() => {
         return getSpotlightAssembly()
     }, [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 
@@ -44,8 +49,11 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
+            targetAssembly.alliance = alliance
+            SimulationSystem.addPerRobotScore(targetAssembly, 0) // Initialize score for the robot
+
             setSelectedConfigurationType(ConfigurationType.ROBOT)
-            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+            const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
@@ -59,18 +67,18 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         closePanel(panelId)
-    }, [closePanel, panelId, targetAssembly])
+    }, [closePanel, panelId, alliance, targetAssembly])
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) {
-            World.SceneRenderer.RemoveSceneObject(targetAssembly.id)
+            World.sceneRenderer.removeSceneObject(targetAssembly.id)
         }
 
         closePanel(panelId)
     }, [closePanel, panelId, targetAssembly])
 
     const brainIndex = useMemo(() => {
-        return SynthesisBrain.GetBrainIndex(targetAssembly)
+        return SynthesisBrain.getBrainIndex(targetAssembly)
     }, [targetAssembly])
 
     return (
@@ -82,13 +90,28 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             acceptEnabled={true}
             acceptName="Finish"
             onAccept={() => closeFinish()}
-            icon={SynthesisIcons.Gamepad}
+            icon={SynthesisIcons.GAMEPAD}
             cancelEnabled={true}
             cancelName="Remove"
             onCancel={() => closeDelete()}
         >
             {/** A scroll view with buttons to select default and custom input schemes */}
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2">
+                {targetAssembly?.miraType === MiraType.ROBOT ? (
+                    <div>
+                        <Label>Alliance: </Label>
+                        {/** Set the alliance color */}
+                        <Button
+                            value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
+                            onClick={() => {
+                                setAlliance(alliance == "blue" ? "red" : "blue")
+                            }}
+                            colorOverrideClass={`bg-match-${alliance}-alliance`}
+                        />
+                    </div>
+                ) : (
+                    <></>
+                )}
                 {targetAssembly ? (
                     <TransformGizmoControl
                         key={"init-config-gizmo"}

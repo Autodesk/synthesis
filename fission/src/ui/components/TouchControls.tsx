@@ -1,13 +1,11 @@
-import { useEffect, useRef, useState } from "react"
+import React, { useEffect, useRef, useState } from "react"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
-function TouchControls() {
+const TouchControls: React.FC = () => {
     const inputRef = useRef<HTMLInputElement>(null)
 
-    const [isPlaceButtonVisible, setIsPlaceButtonVisible] = useState<boolean>(false)
-    const [isJoystickVisible, setIsJoystickVisible] = useState<boolean>(
-        PreferencesSystem.getGlobalPreference<boolean>("TouchControls")
-    )
+    const [isPlaceButtonVisible, setIsPlaceButtonVisible] = useState(false)
+    const [isJoystickVisible, setIsJoystickVisible] = useState(PreferencesSystem.getGlobalPreference("TouchControls"))
 
     useEffect(() => {
         const handlePlaceButtonEvent = (e: Event) => {
@@ -20,14 +18,14 @@ function TouchControls() {
             setIsJoystickVisible(!isJoystickVisible)
         }
 
-        TouchControlsEvent.Listen(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
-        TouchControlsEvent.Listen(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
+        TouchControlsEvent.listen(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
+        TouchControlsEvent.listen(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
 
         window.dispatchEvent(new Event("touchcontrolsloaded"))
 
         return () => {
-            TouchControlsEvent.RemoveListener(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
-            TouchControlsEvent.RemoveListener(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
+            TouchControlsEvent.removeListener(TouchControlsEventKeys.PLACE_BUTTON, handlePlaceButtonEvent)
+            TouchControlsEvent.removeListener(TouchControlsEventKeys.JOYSTICK, handleJoystickEvent)
         }
     }, [isJoystickVisible, isPlaceButtonVisible])
 
@@ -92,11 +90,11 @@ export class TouchControlsEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static Listen(eventKey: TouchControlsEventKeys, func: (e: Event) => void) {
+    public static listen(eventKey: TouchControlsEventKeys, func: (e: Event) => void) {
         window.addEventListener(eventKey, func)
     }
 
-    public static RemoveListener(eventKey: TouchControlsEventKeys, func: (e: Event) => void) {
+    public static removeListener(eventKey: TouchControlsEventKeys, func: (e: Event) => void) {
         window.removeEventListener(eventKey, func)
     }
 }

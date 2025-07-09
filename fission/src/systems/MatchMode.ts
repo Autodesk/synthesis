@@ -6,50 +6,50 @@ import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 
 export enum MatchModeType {
-    Sandbox = 0,
-    Autonomous = 1,
-    Teleop = 2,
-    MatchEnded = 3,
+    SANDBOX = 0,
+    AUTONOMOUS = 1,
+    TELEOP = 2,
+    MATCH_ENDED = 3,
 }
 
 class MatchMode {
-    private static instance: MatchMode
-    private matchEnabled: boolean = false
-    private matchModeType: MatchModeType = MatchModeType.Sandbox
+    private static _instance: MatchMode
+    private _matchEnabled: boolean = false
+    private _endgame: boolean = false
+    private _matchModeType: MatchModeType = MatchModeType.SANDBOX
 
-    private initialTime: number = 0
-    private timeLeft: number = 0
-    private intervalId: number | null = null
+    private _initialTime: number = 0
+    private _timeLeft: number = 0
+    private _intervalId: number | null = null
 
     private constructor() {}
 
     static getInstance(): MatchMode {
-        MatchMode.instance ??= new MatchMode()
-        return MatchMode.instance
+        MatchMode._instance ??= new MatchMode()
+        return MatchMode._instance
     }
 
     startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
-        this.initialTime = duration
-        this.timeLeft = duration
+        this._initialTime = duration
+        this._timeLeft = duration
 
         // Dispatch an event to update the time left in the UI
-        if (updateTimeLeft) new UpdateTimeLeft(this.initialTime).Dispatch()
+        if (updateTimeLeft) new UpdateTimeLeft(this._initialTime).dispatch()
 
-        this.intervalId = window.setInterval(() => {
-            this.timeLeft--
+        this._intervalId = window.setInterval(() => {
+            this._timeLeft--
 
-            // Updates the time left in the UI
-            if (this.timeLeft >= 0 && updateTimeLeft) {
-                new UpdateTimeLeft(this.timeLeft).Dispatch()
+            if (this._timeLeft >= 0 && updateTimeLeft) {
+                new UpdateTimeLeft(this._timeLeft).dispatch()
             }
 
             // Checks if endgame has started
-            if (this.matchModeType === MatchModeType.Teleop && this.timeLeft == 20) {
+            if (this._matchModeType === MatchModeType.TELEOP && this._timeLeft == 20) {
                 this.endgameStart()
             }
 
-            if (this.timeLeft <= 0) {
-                clearInterval(this.intervalId as number)
+            if (this._timeLeft <= 0) {
+                clearInterval(this._intervalId as number)
                 functionCall()
             }
         }, 1000)
@@ -57,7 +57,7 @@ class MatchMode {
 
     autonomousModeStart(openModal: (modalName: string) => void) {
         SoundPlayer.play(MatchStart)
-        this.matchModeType = MatchModeType.Autonomous
+        this._matchModeType = MatchModeType.AUTONOMOUS
         this.startTimer(15, () => this.autonomousModeEnd(openModal))
     }
 
@@ -68,43 +68,48 @@ class MatchMode {
 
     teleopModeStart(openModal: (modalName: string) => void) {
         SoundPlayer.play(MatchResume)
-        this.matchModeType = MatchModeType.Teleop
+        this._matchModeType = MatchModeType.TELEOP
         this.startTimer(135, () => this.matchEnded(openModal)) // 2 minutes and 15 seconds
     }
 
     endgameStart() {
         SoundPlayer.play(EndgameSonar)
+        this._endgame = true
     }
 
     start(openModal: (modalName: string) => void) {
-        this.matchEnabled = true
+        this._matchEnabled = true
         this.autonomousModeStart(openModal)
-        SimulationSystem.ResetScores()
+        SimulationSystem.resetScores()
     }
 
     matchEnded(openModal: (modalName: string) => void) {
         SoundPlayer.play(MatchEnd)
-        clearInterval(this.intervalId as number)
-        this.matchEnabled = false
-        this.matchModeType = MatchModeType.MatchEnded
+        clearInterval(this._intervalId as number)
+        this._matchEnabled = false
+        this._matchModeType = MatchModeType.MATCH_ENDED
         if (openModal) openModal("match-results")
     }
 
     sandboxModeStart() {
-        this.matchEnabled = false
-        this.matchModeType = MatchModeType.Sandbox
-        clearInterval(this.intervalId as number)
-        this.initialTime = 0
-        this.timeLeft = 0
-        new UpdateTimeLeft(this.timeLeft).Dispatch()
+        this._matchEnabled = false
+        this._matchModeType = MatchModeType.SANDBOX
+        clearInterval(this._intervalId as number)
+        this._initialTime = 0
+        this._timeLeft = 0
+        new UpdateTimeLeft(this._timeLeft).dispatch()
     }
 
     isMatchEnabled(): boolean {
-        return this.matchEnabled
+        return this._matchEnabled
+    }
+
+    isEndgame(): boolean {
+        return this._endgame
     }
 
     getMatchModeType(): MatchModeType {
-        return this.matchModeType
+        return this._matchModeType
     }
 }
 
@@ -120,15 +125,15 @@ export class UpdateTimeLeft extends Event {
         this.autonomousTime = autonomousTime.toFixed(0)
     }
 
-    public Dispatch(): void {
+    public dispatch(): void {
         window.dispatchEvent(this)
     }
 
-    public static AddListener(func: (e: UpdateTimeLeft) => void) {
+    public static addListener(func: (e: UpdateTimeLeft) => void) {
         window.addEventListener(UpdateTimeLeft.EVENT_KEY, func as (e: Event) => void)
     }
 
-    public static RemoveListener(func: (e: UpdateTimeLeft) => void) {
+    public static removeListener(func: (e: UpdateTimeLeft) => void) {
         window.removeEventListener(UpdateTimeLeft.EVENT_KEY, func as (e: Event) => void)
     }
 }

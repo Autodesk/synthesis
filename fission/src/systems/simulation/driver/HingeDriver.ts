@@ -1,9 +1,9 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import Driver, { DriverControlMode, DriverID } from "./Driver"
-import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
+import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
-import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { NoraNumber, NoraTypes } from "../Nora"
 
 const MAX_TORQUE_WITHOUT_GRAV = 100
@@ -11,7 +11,7 @@ const MAX_TORQUE_WITHOUT_GRAV = 100
 class HingeDriver extends Driver {
     private _constraint: Jolt.HingeConstraint
 
-    private _controlMode: DriverControlMode = DriverControlMode.Velocity
+    private _controlMode: DriverControlMode = DriverControlMode.VELOCITY
     private _targetAngle: number
     private _maxTorqueWithGrav: number = 0.0
     public accelerationDirection: number = 0.0
@@ -22,8 +22,6 @@ class HingeDriver extends Driver {
     }
 
     private _prevAng: number = 0.0
-
-    private _gravityChange?: (event: PreferenceEvent) => void
 
     public get targetAngle(): number {
         return this._targetAngle
@@ -49,10 +47,10 @@ class HingeDriver extends Driver {
     public set controlMode(mode: DriverControlMode) {
         this._controlMode = mode
         switch (mode) {
-            case DriverControlMode.Velocity:
+            case DriverControlMode.VELOCITY:
                 this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
                 break
-            case DriverControlMode.Position:
+            case DriverControlMode.POSITION:
                 this._constraint.SetMotorState(JOLT.EMotorState_Position)
                 break
             default:
@@ -72,7 +70,7 @@ class HingeDriver extends Driver {
         const springSettings = motorSettings.mSpringSettings
 
         // These values were selected based on the suggestions of the documentation for stiff control.
-        springSettings.mFrequency = 20 * (1.0 / GetLastDeltaT())
+        springSettings.mFrequency = 20 * (1.0 / getLastDeltaT())
         springSettings.mDamping = 0.995
         motorSettings.mSpringSettings = springSettings
 
@@ -82,28 +80,24 @@ class HingeDriver extends Driver {
             motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
         }
 
-        this.controlMode = DriverControlMode.Velocity
+        this.controlMode = DriverControlMode.VELOCITY
 
-        this._gravityChange = (event: PreferenceEvent) => {
-            if (event.prefName == "SubsystemGravity") {
-                const motorSettings = this._constraint.GetMotorSettings()
-                if (event.prefValue) {
-                    motorSettings.set_mMaxTorqueLimit(this._maxTorqueWithGrav)
-                    motorSettings.set_mMinTorqueLimit(-this._maxTorqueWithGrav)
-                } else {
-                    motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
-                    motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
-                }
+        PreferencesSystem.addPreferenceEventListener("SubsystemGravity", event => {
+            const motorSettings = this._constraint.GetMotorSettings()
+            if (event.prefValue) {
+                motorSettings.set_mMaxTorqueLimit(this._maxTorqueWithGrav)
+                motorSettings.set_mMinTorqueLimit(-this._maxTorqueWithGrav)
+            } else {
+                motorSettings.set_mMaxTorqueLimit(MAX_TORQUE_WITHOUT_GRAV)
+                motorSettings.set_mMinTorqueLimit(-MAX_TORQUE_WITHOUT_GRAV)
             }
-        }
-
-        PreferencesSystem.addEventListener(this._gravityChange)
+        })
     }
 
-    public Update(_: number): void {
-        if (this._controlMode == DriverControlMode.Velocity) {
+    public update(_: number): void {
+        if (this._controlMode == DriverControlMode.VELOCITY) {
             this._constraint.SetTargetAngularVelocity(this.accelerationDirection * this.maxVelocity)
-        } else if (this._controlMode == DriverControlMode.Position) {
+        } else if (this._controlMode == DriverControlMode.POSITION) {
             let ang = this._targetAngle
 
             if (ang - this._prevAng < -this.maxVelocity) ang = this._prevAng - this.maxVelocity
@@ -113,14 +107,14 @@ class HingeDriver extends Driver {
     }
 
     public getReceiverType(): NoraTypes {
-        return NoraTypes.Number
+        return NoraTypes.NUMBER
     }
 
     public setReceiverValue(val: NoraNumber): void {
         this.accelerationDirection = val
     }
 
-    public DisplayName(): string {
+    public displayName(): string {
         return `${this.info?.name ?? "-"} [Hinge]`
     }
 }

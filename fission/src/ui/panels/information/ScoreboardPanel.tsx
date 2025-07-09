@@ -6,11 +6,11 @@ import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import MatchMode, { UpdateTimeLeft, MatchModeType } from "@/systems/MatchMode"
+import MatchMode, { MatchModeType, UpdateTimeLeft } from "@/systems/MatchMode"
 import { Spacer } from "@/components/StyledComponents"
 
 function showTime(): boolean {
-    return MatchMode.getInstance().getMatchModeType() !== MatchModeType.Sandbox
+    return MatchMode.getInstance().getMatchModeType() !== MatchModeType.SANDBOX
 }
 
 const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
@@ -35,8 +35,8 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     )
 
     const onRenderChange = useCallback(
-        (e: PreferenceEvent) => {
-            if (e.prefName == "RenderScoreboard" && e.prefValue == false) {
+        (e: PreferenceEvent<"RenderScoreboard">) => {
+            if (!e.prefValue) {
                 closePanel("scoreboard")
             }
         },
@@ -44,9 +44,12 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     )
 
     useEffect(() => {
-        OnScoreChangedEvent.AddListener(onScoreChange)
-        UpdateTimeLeft.AddListener(onTimeLeftChange)
-        PreferencesSystem.addEventListener(onRenderChange)
+        OnScoreChangedEvent.addListener(onScoreChange)
+        UpdateTimeLeft.addListener(onTimeLeftChange)
+        const removeListener = PreferencesSystem.addPreferenceEventListener("RenderScoreboard", onRenderChange)
+        return () => {
+            removeListener()
+        }
     })
 
     return (
@@ -65,13 +68,13 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
             ) : (
                 Spacer(0)
             )}
-            <Stack direction={StackDirection.Horizontal} className="px-4 pb-4 pt-1" spacing={16}>
+            <Stack direction={StackDirection.HORIZONTAL} className="px-4 pb-4 pt-1" spacing={16}>
                 <div className="flex flex-col items-center text-center justify-center w-20 h-20 rounded-lg bg-match-red-alliance">
-                    <Label size={LabelSize.Small}>RED</Label>
+                    <Label size={LabelSize.SMALL}>RED</Label>
                     <Label size={LabelSize.XL}>{redScore}</Label>
                 </div>
                 <div className="flex flex-col items-center text-center justify-center w-20 h-20 rounded-lg bg-match-blue-alliance">
-                    <Label size={LabelSize.Small}>BLUE</Label>
+                    <Label size={LabelSize.SMALL}>BLUE</Label>
                     <Label size={LabelSize.XL}>{blueScore}</Label>
                 </div>
             </Stack>

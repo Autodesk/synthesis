@@ -9,7 +9,7 @@ interface AnalyticsConsentProps {
     onConsent: () => void
 }
 
-function AnalyticsConsent({ onConsent, onClose }: AnalyticsConsentProps) {
+const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose }) => {
     return (
         <Box
             component="div"
@@ -26,7 +26,7 @@ function AnalyticsConsent({ onConsent, onClose }: AnalyticsConsentProps) {
                 gap: "0.5rem",
             }}
         >
-            <Label size={LabelSize.Small}>
+            <Label size={LabelSize.SMALL}>
                 Synthesis uses cookies to improve the performance and quality of our app. Do you consent to the usage of
                 cookies for tracking analytics data?
             </Label>

@@ -1,4 +1,4 @@
-import { Random } from "@/util/Random"
+import { random } from "@/util/Random"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import DefaultInputs from "./DefaultInputs"
 import InputSystem, { AxisInput, ButtonInput, Input } from "./InputSystem"
@@ -21,7 +21,7 @@ class InputSchemeManager {
         if (this._customSchemes) return this._customSchemes
 
         // Load schemes from preferences and parse into objects
-        this._customSchemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+        this._customSchemes = PreferencesSystem.getGlobalPreference("InputSchemes")
         this._customSchemes.forEach(scheme => this.parseScheme(scheme))
 
         return this._customSchemes
@@ -112,7 +112,7 @@ class InputSchemeManager {
         const usedNames = this.availableInputSchemes.map(s => s.schemeName)
 
         const randomName = () => {
-            const index = Math.floor(Random() * DefaultInputs.NAMES.length)
+            const index = Math.floor(random() * DefaultInputs.NAMES.length)
             return DefaultInputs.NAMES[index]
         }
 
