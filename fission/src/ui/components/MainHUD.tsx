@@ -152,7 +152,7 @@ const MainHUD: React.FC = () => {
                     />
                     <MainHUDButton
                         value={"Developer Tool"}
-                        icon={SynthesisIcons.CodeSquare}
+                        icon={SynthesisIcons.CODE_SQUARE}
                         onClick={() => openPanel("developer")}
                     />
                     {/** Will be coming soonish...tm */}

@@ -12,7 +12,7 @@ const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
 
 function getCurrentFieldObj() {
-    for (const obj of World.SceneRenderer.sceneObjects.values()) {
+    for (const obj of World.sceneRenderer.sceneObjects.values()) {
         if (obj instanceof MirabufSceneObject && obj.miraType === MiraType.FIELD) {
             return obj
         }
@@ -108,12 +108,12 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const handleAccept = () => closePanel(panelId)
     const handleCancel = () => closePanel(panelId)
 
-    const buttonSize = ButtonSize.Small
+    const buttonSize = ButtonSize.SMALL
 
     return (
         <Panel
             name="Developer Tool"
-            icon={SynthesisIcons.CodeSquare}
+            icon={SynthesisIcons.CODE_SQUARE}
             panelId={panelId}
             acceptEnabled={true}
             cancelEnabled={true}
