@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from "vitest"
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import * as THREE from "three"
 import MirabufInstance, { MaterialStyle } from "../../mirabuf/MirabufInstance"
 import type MirabufParser from "../../mirabuf/MirabufParser"
@@ -14,6 +14,11 @@ vi.mock("@/systems/World.ts", () => ({
 }))
 
 describe("MirabufInstance", () => {
+    const originalConsoleLog = console.log
+    const originalConsoleError = console.error
+    const originalConsoleWarn = console.warn
+    const originalConsoleDebug = console.debug
+
     let parser: MirabufParser
     let scene: THREE.Scene
 
@@ -58,6 +63,19 @@ describe("MirabufInstance", () => {
             globalTransforms: new Map([["inst1", new THREE.Matrix4()]]),
         } as unknown as MirabufParser
         scene = new THREE.Scene()
+
+        console.log = vi.fn()
+        console.error = vi.fn()
+        console.warn = vi.fn()
+        console.debug = vi.fn()
+    })
+
+    afterEach(() => {
+        vi.clearAllMocks()
+        console.log = originalConsoleLog
+        console.error = originalConsoleError
+        console.warn = originalConsoleWarn
+        console.debug = originalConsoleDebug
     })
 
     test("throws if parser has unimportable errors", () => {

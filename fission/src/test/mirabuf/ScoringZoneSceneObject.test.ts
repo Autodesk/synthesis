@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from "vitest"
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import ScoringZoneSceneObject, { OnScoreChangedEvent } from "../../mirabuf/ScoringZoneSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
@@ -31,6 +31,11 @@ vi.mock("@/systems/World", () => ({
 }))
 
 describe("ScoringZoneSceneObject", () => {
+    const originalConsoleLog = console.log
+    const originalConsoleError = console.error
+    const originalConsoleWarn = console.warn
+    const originalConsoleDebug = console.debug
+
     beforeEach(() => {
         vi.clearAllMocks()
         SimulationSystem.redScore = 0
@@ -58,6 +63,19 @@ describe("ScoringZoneSceneObject", () => {
                 },
             },
         })
+
+        console.log = vi.fn()
+        console.error = vi.fn()
+        console.warn = vi.fn()
+        console.debug = vi.fn()
+    })
+
+    afterEach(() => {
+        vi.clearAllMocks()
+        console.log = originalConsoleLog
+        console.error = originalConsoleError
+        console.warn = originalConsoleWarn
+        console.debug = originalConsoleDebug
     })
 
     test("Setup creates sensor and mesh", () => {

@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from "vitest"
+import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
@@ -30,9 +30,27 @@ vi.mock("@/systems/World", () => ({
 }))
 
 describe("IntakeSensorSceneObject", () => {
+    const originalConsoleLog = console.log
+    const originalConsoleError = console.error
+    const originalConsoleWarn = console.warn
+    const originalConsoleDebug = console.debug
+
     beforeEach(() => {
         vi.clearAllMocks()
         World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body)
+
+        console.log = vi.fn()
+        console.error = vi.fn()
+        console.warn = vi.fn()
+        console.debug = vi.fn()
+    })
+
+    afterEach(() => {
+        vi.clearAllMocks()
+        console.log = originalConsoleLog
+        console.error = originalConsoleError
+        console.warn = originalConsoleWarn
+        console.debug = originalConsoleDebug
     })
 
     test("Setup creates sensor", () => {
