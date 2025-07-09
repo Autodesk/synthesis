@@ -12,7 +12,8 @@ type TooltipControlContextType = {
     children?: ReactNode
 }
 
-const TooltipControlContext = createContext<TooltipControlContextType | null>(null)
+const TooltipControlContext: React.Context<TooltipControlContextType | null> =
+    createContext<TooltipControlContextType | null>(null)
 
 export const useTooltipControlContext = () => {
     const context = useContext(TooltipControlContext)

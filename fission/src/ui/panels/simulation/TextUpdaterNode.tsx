@@ -1,9 +1,9 @@
-import { useCallback, ChangeEvent } from "react"
+import React, { useCallback, ChangeEvent } from "react"
 import { Handle, NodeProps, Position } from "@xyflow/react"
 
 const handleStyle = { left: 10 }
 
-function TextUpdaterNode({ data, isConnectable }: NodeProps) {
+const TextUpdaterNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
     const onChange = useCallback((evt: ChangeEvent<HTMLInputElement>) => {
         console.log(evt.target.value)
     }, [])

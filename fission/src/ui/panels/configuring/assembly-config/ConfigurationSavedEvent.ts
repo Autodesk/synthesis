@@ -6,11 +6,11 @@ export class ConfigurationSavedEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static Listen(func: (e: Event) => void) {
+    public static listen(func: (e: Event) => void) {
         window.addEventListener("ConfigurationSaved", func)
     }
 
-    public static RemoveListener(func: (e: Event) => void) {
+    public static removeListener(func: (e: Event) => void) {
         window.removeEventListener("ConfigurationSaved", func)
     }
 }

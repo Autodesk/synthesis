@@ -35,7 +35,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
     return (
         <Panel
             name={"Graphics Settings"}
-            icon={SynthesisIcons.Gear}
+            icon={SynthesisIcons.GEAR}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
@@ -52,7 +52,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                 if (reload) window.location.reload()
             }}
             onCancel={() => {
-                World.SceneRenderer.ChangeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+                World.sceneRenderer.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
@@ -64,7 +64,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value: number | number[]) => {
                         setLightIntensity(value as number)
-                        World.SceneRenderer.setLightIntensity(value as number)
+                        World.sceneRenderer.setLightIntensity(value as number)
                     }}
                     step={0.25}
                 />
@@ -73,7 +73,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     defaultState={fancyShadows}
                     onClick={checked => {
                         setFancyShadows(checked)
-                        World.SceneRenderer.ChangeLighting(checked)
+                        World.sceneRenderer.changeLighting(checked)
                     }}
                     tooltipText="Cascading shadows implementation"
                 />
@@ -86,7 +86,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             label="Max Far"
                             onChange={(_, value: number | number[]) => {
                                 setMaxFar(value as number)
-                                World.SceneRenderer.changeCSMSettings({
+                                World.sceneRenderer.changeCSMSettings({
                                     maxFar: value as number,
 
                                     lightIntensity: lightIntensity,
@@ -105,7 +105,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             label="Cascade Count"
                             onChange={(_, value: number | number[]) => {
                                 setCascades(value as number)
-                                World.SceneRenderer.changeCSMSettings({
+                                World.sceneRenderer.changeCSMSettings({
                                     cascades: value as number,
 
                                     maxFar: maxFar,
@@ -119,12 +119,12 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                         />
                         <Slider
                             min={MIN_SHADOW_MAP_SIZE}
-                            max={World.SceneRenderer.renderer.capabilities.maxTextureSize}
+                            max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
                             value={shadowMapSize}
                             label="Shadow Map Size"
                             onChange={(_, value: number | number[]) => {
                                 setShadowMapSize(value as number)
-                                World.SceneRenderer.changeCSMSettings({
+                                World.sceneRenderer.changeCSMSettings({
                                     shadowMapSize: value as number,
                                     maxFar: maxFar,
                                     lightIntensity: lightIntensity,
@@ -145,7 +145,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                                     setLightIntensity(5)
                                     setCascades(4)
 
-                                    World.SceneRenderer.changeCSMSettings({
+                                    World.sceneRenderer.changeCSMSettings({
                                         shadowMapSize: 4096,
                                         maxFar: 30,
                                         lightIntensity: 5,
@@ -161,7 +161,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     <></>
                 )}
                 <div className="flex items-center justify-center mt-1 mb-0.5 mx-[5%]">
-                    <SectionLabel size={LabelSize.Medium} className="text-center">
+                    <SectionLabel size={LabelSize.MEDIUM} className="text-center">
                         Requires Browser Refresh
                     </SectionLabel>
                 </div>

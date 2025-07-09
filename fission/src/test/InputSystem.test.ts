@@ -1,5 +1,5 @@
 import { beforeEach, test, describe, assert, expect, vi } from "vitest"
-import InputSystem, { AxisInput, ButtonInput, EmptyModifierState, ModifierState } from "@/systems/input/InputSystem"
+import InputSystem, { AxisInput, ButtonInput, EMPTY_MODIFIER_STATE, ModifierState } from "@/systems/input/InputSystem"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -103,7 +103,7 @@ describe("Input System Checks", () => {
 
     test("Arcade Drive", () => {
         InputSystem.brainIndexSchemeMap.set(0, DefaultInputs.ernie())
-        inputSystem.Update(-1) // Initialize the input system
+        inputSystem.update(-1) // Initialize the input system
 
         function testArcadeInput(inputMap: string, key: string, expectedValue: number) {
             document.dispatchEvent(new KeyboardEvent("keydown", { code: key }))
@@ -133,9 +133,9 @@ describe("Input System Checks", () => {
             meta: true,
         }
 
-        inputSystem.Update(-1)
+        inputSystem.update(-1)
 
-        expect(InputSystem.compareModifiers(allFalse, EmptyModifierState)).toBe(true)
+        expect(InputSystem.compareModifiers(allFalse, EMPTY_MODIFIER_STATE)).toBe(true)
         expect(InputSystem.compareModifiers(allFalse, InputSystem.currentModifierState)).toBe(true)
         expect(InputSystem.compareModifiers(differentState, InputSystem.currentModifierState)).toBe(false)
         expect(InputSystem.compareModifiers(differentState, differentState)).toBe(true)
@@ -173,7 +173,7 @@ describe("Gamepad Input Check", () => {
 
     test("Reads axes correctly", () => {
         const sys = new InputSystem()
-        sys.Update(0)
+        sys.update(0)
 
         expect(InputSystem.getGamepadAxis(0)).toBe(0.5)
         expect(InputSystem.getGamepadAxis(1)).toBe(-0.5)
@@ -187,7 +187,7 @@ describe("Gamepad Input Check", () => {
 
         vi.spyOn(navigator, "getGamepads").mockReturnValue([updatedGamepad, null, null, null])
         const sys = new InputSystem()
-        sys.Update(0)
+        sys.update(0)
 
         expect(InputSystem.getGamepadAxis(0)).toBe(0)
         expect(InputSystem.getGamepadAxis(1)).toBe(0)
@@ -200,7 +200,7 @@ describe("Gamepad Input Check", () => {
         } as unknown as Gamepad
         vi.spyOn(navigator, "getGamepads").mockReturnValue([updatedGamepad, null, null, null])
         const sys = new InputSystem()
-        sys.Update(0)
+        sys.update(0)
 
         expect(InputSystem.getGamepadAxis(-1)).toBe(0)
         expect(InputSystem.getGamepadAxis(0)).toBe(0.9)
@@ -209,7 +209,7 @@ describe("Gamepad Input Check", () => {
 
     test("Gamepad button pressed", () => {
         const sys = new InputSystem()
-        sys.Update(0)
+        sys.update(0)
 
         expect(InputSystem.isGamepadButtonPressed(0)).toBe(true)
         expect(InputSystem.isGamepadButtonPressed(1)).toBe(false)
