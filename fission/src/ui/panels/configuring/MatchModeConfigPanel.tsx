@@ -141,26 +141,32 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }
 
+    // eslint-disable-next-line
     const validateMatchModeConfig = (config: any): config is MatchModeConfig => {
         let valid = true
 
-        const props: { id: string, expected_type: string, required: boolean }[] = [{ id: "id", expected_type: "string", required: true }, { id: "name", expected_type: "string", required: true }, { id: "autonomousTime", expected_type: "number", required: false }, { id: "teleopTime", expected_type: "number", required: false }, { id: "endgameTime", expected_type: "number", required: false }]
+        const props: { id: string; expected_type: string; required: boolean }[] = [
+            { id: "id", expected_type: "string", required: true },
+            { id: "name", expected_type: "string", required: true },
+            { id: "autonomousTime", expected_type: "number", required: false },
+            { id: "teleopTime", expected_type: "number", required: false },
+            { id: "endgameTime", expected_type: "number", required: false },
+        ]
 
         const typeError = (id: string, expected_type?: string) => {
-            const error_message = expected_type ? 'is required' : `must be a ${expected_type}`
+            const error_message = expected_type ? "is required" : `must be a ${expected_type}`
             console.error(`Match mode config validation failed: the '${id}' field ${error_message}`)
             Global_AddToast?.("error", "Invalid Match Mode Config", `The '${id}' field ${error_message}`)
-
         }
 
         for (const prop of props) {
             if (config[prop.id] == undefined) {
                 if (prop.required) {
-                    typeError(prop.id);
+                    typeError(prop.id)
                     valid = false
                 }
             } else if (typeof config[prop.id] != prop.expected_type) {
-                typeError(prop.id, prop.expected_type);
+                typeError(prop.id, prop.expected_type)
                 valid = false
             }
         }
