@@ -34,7 +34,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                 {/** Creates list items with buttons */}
                 {InputSchemeManager.availableInputSchemes.map(scheme => {
                     if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) {
-                        return <></>
+                        return null
                     } // Skip schemes that use touch controls if the device does not support touch
                     return (
                         <Box
