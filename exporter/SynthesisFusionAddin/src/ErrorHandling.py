@@ -1,3 +1,4 @@
+import inspect
 from collections.abc import Callable
 from enum import Enum
 from typing import Generic, TypeVar
@@ -100,10 +101,18 @@ class Err(Result[T]):
 
     message: str
     severity: ErrorSeverity
+    function: str
+    line: int
 
     def __init__(self, message: str, severity: ErrorSeverity):
         self.message = message
         self.severity = severity
+
+        frame = inspect.currentframe()
+        caller_frame = inspect.getouterframes(frame)[2]
+
+        self.function = caller_frame.function
+        self.line = caller_frame.lineno
 
         self.write_error()
 
@@ -111,13 +120,13 @@ class Err(Result[T]):
         return f"Err({self.message})"
 
     def write_error(self) -> None:
-        logger.log(self.severity.value, self.message)
+        logger.log(self.severity.value, f"In `{self.function}` on line {self.line}: {self.message}")
 
 
-def handle_err_top(func: Callable[..., Result[None]]) -> Callable[[], None]:
+def handle_err_top(func: Callable[..., Result[None]]) -> Callable[..., None]:
     
-    def wrapper():
-        result = func()
+    def wrapper(*args, **kwargs): # type: ignore
+        result = func(*args, **kwargs)
         if result.is_err():
             message, severity = result.unwrap_err()
             if severity == ErrorSeverity.Fatal:
