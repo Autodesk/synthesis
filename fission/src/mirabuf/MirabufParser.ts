@@ -106,8 +106,6 @@ class MirabufParser {
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
             this._gamePieces = this.PruneGamePieceNodes().map(assembly => new MirabufParser(assembly, true))
-            // this._gamePieces = []
-            // this.AssignGamePieceRigidNodes()
         }
 
         // 2: Grounded joint
