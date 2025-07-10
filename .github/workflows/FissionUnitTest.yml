@@ -49,6 +49,15 @@ jobs:
       #       ~/.cache/ms-playwright/
       #     key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
 
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          key: "${{runner.os}}-npm-fission-${{hashFiles('package.json')}}"
+          path: 'fission/node_modules'
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
+
       - name: Install Dependencies
         run: |
           cd fission
