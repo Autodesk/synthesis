@@ -264,7 +264,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         const rigidNodes = this._mirabufInstance.parser.rigidNodes
+        // for pies nodeToBody is empty
+        console.log(`${this.assemblyName} ${[...this._mechanism.nodeToBody.entries()].map(n => n[0])}`)
         this._mechanism.nodeToBody.forEach((bodyId, rigidNodeId) => {
+            console.log(`${this.assemblyName} ${rigidNodeId}`)
             const rigidNode = rigidNodes.get(rigidNodeId)
             if (!rigidNode) {
                 console.warn("Found a RigidNodeId with no related RigidNode. Skipping for now...")
@@ -294,7 +297,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const jBodyId = this.mechanism.GetBodyByNodeId(this.mechanism.rootBody)
             if (!jBodyId) {
                 console.warn(
-                    `Jolt Body for SceneObjet ${this.id} with rootBody ${this.mechanism.rootBody} as NodeId not found`
+                    `Jolt Body for SceneObject ${this.id} with rootBody ${this.mechanism.rootBody} as NodeId not found`
                 )
                 return
             }

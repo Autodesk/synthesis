@@ -2,6 +2,7 @@ import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
 import { MirabufTransform_ThreeMatrix4 } from "@/util/TypeConversions"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { randomUUID } from "crypto"
 
 export type RigidNodeId = string
 
@@ -113,8 +114,6 @@ class MirabufParser {
         const gNode = this.NewRigidNode()
         this.MovePartToRigidNode(gInst.parts!.nodes!.at(0)!.value!, gNode)
 
-        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
-
         // 3: Traverse and round up
         const traverseNodeRoundup = (node: mirabuf.INode, parentNode: RigidNode) => {
             const currentNode = this._partToNodeMap.get(node.value!)
@@ -125,10 +124,7 @@ class MirabufParser {
         }
         this._designHierarchyRoot.children?.forEach(x => traverseNodeRoundup(x, gNode))
 
-        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
-
         this.BandageRigidNodes(assembly) // 4: Bandage via RigidGroups
-        // this.DebugPrintHierarchy(1, ...this._designHierarchyRoot.children!);
 
         // 5. Remove Empty RNs
         this._rigidNodes = this._rigidNodes.filter(x => x.parts.size > 0)
@@ -202,6 +198,7 @@ class MirabufParser {
                     return
                 }
                 // Trick to capture and delete references to gamePiece, potentially unnecessary
+                // Removing this yields a null function runtime error
                 const gpRn = this.NewRigidNode(GAMEPIECE_SUFFIX)
                 gpRn.isGamePiece = true
                 this.MovePartToRigidNode(instNode!.value!, gpRn)
@@ -215,11 +212,11 @@ class MirabufParser {
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
                 // Delete partDefinitions
-                Object.entries(this._assembly.data?.parts?.partDefinitions ?? {})
-                    .filter(([_key, subInst]) => inst === subInst)
-                    .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
+                // Object.entries(this._assembly.data?.parts?.partDefinitions ?? {})
+                //     .filter(([_key, subInst]) => inst === subInst)
+                //     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
 
-                return this.PartInstance_Assembly(inst, instNode)
+                return this.ConvertPartInstanceToAssembly(inst, instNode)
             })
             .filter(asm => asm != undefined)
 
@@ -229,7 +226,7 @@ class MirabufParser {
     /*
      * Converts specfic part instances to entire assemblies. Designed and tested for gamePiece instances, but theoretically should generalize
      */
-    private PartInstance_Assembly(
+    private ConvertPartInstanceToAssembly(
         inst: mirabuf.IPartInstance,
         instNode: mirabuf.INode,
         isEndEffector: boolean = false,
@@ -270,6 +267,7 @@ class MirabufParser {
         }
         const partDefinition = this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
 
+        console.log(`${inst.info?.name} ${inst.info?.GUID}`)
         const parts = new mirabuf.Parts({
             info: inst.info,
             partDefinitions: {
