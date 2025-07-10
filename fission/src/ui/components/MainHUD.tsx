@@ -1,19 +1,22 @@
-import React, { useEffect, useState } from "react"
-import { FaXmark } from "react-icons/fa6"
-// import { useModalControlContext } from "@/ui/ModalContext"
-// import { usePanelControlContext } from "@/ui/PanelContext"
+import { Box, Button } from "@mui/material"
 import { motion } from "framer-motion"
-import logo from "@/assets/autodesk_logo.png"
-// import { useToastContext } from "@/ui/ToastContext"
+import type React from "react"
+import { useContext, useEffect, useState } from "react"
+import { FaXmark } from "react-icons/fa6"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import UserIcon from "./UserIcon"
 import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
-import { setAddToast } from "./GlobalUIControls"
+import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import MatchMode from "@/systems/MatchMode"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import DebugPanel from "../panels/DebugPanel"
+import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
+import { UIContext } from "../UIProvider"
+import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel"
+import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 
 type ButtonProps = {
     value: string
@@ -41,7 +44,12 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
             {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
             <span
                 className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} text-main-text cursor-pointer`}
-                style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
+                style={{
+                    userSelect: "none",
+                    MozUserSelect: "none",
+                    msUserSelect: "none",
+                    WebkitUserSelect: "none",
+                }}
             >
                 {value}
             </span>
@@ -55,12 +63,14 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-    // const { openModal } = useModalControlContext()
-    // const { openPanel } = usePanelControlContext()
-    // const { addToast } = useToastContext()
+    const { openModal, openPanel, enqueueSnackbar } = useContext(UIContext)
     const [isOpen, setIsOpen] = useState(false)
 
-    // setAddToast(addToast)
+    const touchCompatibility = matchMedia("(hover: none)").matches
+
+    setAddToast(enqueueSnackbar)
+    setOpenPanel(openPanel)
+    setOpenModal(openModal)
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
 
@@ -95,11 +105,7 @@ const MainHUD: React.FC = () => {
                         }}
                     >
                         <Box className="flex w-full h-full items-center justify-center">
-                            <ButtonIcon
-                                onClick={() => setIsOpen(!isOpen)}
-                                value={SynthesisIcons.OPEN_HUD_ICON}
-                                className=""
-                            />
+                            <Button onClick={() => setIsOpen(!isOpen)} startIcon={SynthesisIcons.OPEN_HUD_ICON} />
                         </Box>
                     </Box>
                 </Box>
@@ -121,8 +127,8 @@ const MainHUD: React.FC = () => {
                             WebkitUserSelect: "none",
                         }}
                     />
-                    <ButtonIcon
-                        value={<FaXmark color="bg-icon" size={23} className="text-main-hud-close-icon" />}
+                    <Button
+                        startIcon={<FaXmark color="bg-icon" size={23} className="text-main-hud-close-icon" />}
                         onClick={() => setIsOpen(false)}
                     />
                 </div>
@@ -130,7 +136,7 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={SynthesisIcons.ADD}
                     larger={true}
-                    // onClick={() => openPanel("import-mirabuf")}
+                    onClick={() => openPanel(<ImportMirabufPanel />)}
                 />
                 <Box
                     display="flex"
@@ -139,18 +145,18 @@ const MainHUD: React.FC = () => {
                 >
                     <MainHUDButton
                         value={"Configure Assets"}
-                        icon={SynthesisIcons.Wrench}
-                        // onClick={() => openPanel("configure")}
+                        icon={SynthesisIcons.WRENCH}
+                        onClick={() => openPanel(<ConfigurePanel />)}
                     />
                     <MainHUDButton
                         value={"General Settings"}
-                        icon={SynthesisIcons.Gear}
+                        icon={SynthesisIcons.GEAR}
                         // onClick={() => openModal("settings")}
                     />
                     <MainHUDButton
                         value={"Developer Tool"}
                         icon={SynthesisIcons.CODE_SQUARE}
-                        onClick={() => openPanel("developer")}
+                        // onClick={() => openPanel("developer")}
                     />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
@@ -162,17 +168,15 @@ const MainHUD: React.FC = () => {
                         value={"Debug Tools"}
                         icon={SynthesisIcons.BUG}
                         onClick={() => {
-                            // openPanel("debug")
+                            openPanel(<DebugPanel />)
                         }}
                     />
-                    {touchCompatibility ? (
+                    {touchCompatibility && (
                         <MainHUDButton
                             value={"Touch Controls"}
                             icon={SynthesisIcons.GAMEPAD}
                             onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
                         />
-                    ) : (
-                        <></>
                     )}
                 </Box>
                 {userInfo ? (
@@ -184,7 +188,7 @@ const MainHUD: React.FC = () => {
                     />
                 ) : (
                     <MainHUDButton
-                        value={`APS Login`}
+                        value={"APS Login"}
                         icon={SynthesisIcons.PEOPLE}
                         larger={true}
                         onClick={() => APS.requestAuthCode()}
@@ -195,13 +199,12 @@ const MainHUD: React.FC = () => {
                     icon={SynthesisIcons.GAMEPAD}
                     larger={true}
                     onClick={() => {
-                        // MatchMode.getInstance().isMatchEnabled()
-                        //     ? Global_AddToast?.(
-                        //           "error",
-                        //           "Match Mode Already Running",
-                        //           "You can't start match mode if its already running"
-                        //       )
-                        //     : MatchMode.getInstance().start(openModal)
+                        MatchMode.getInstance().isMatchEnabled()
+                            ? globalAddToast(
+                                  "error",
+                                  "Match Mode Already Running\nYou can't start match mode if its already running"
+                              )
+                            : MatchMode.getInstance().start(openModal)
                         setIsOpen(false)
                     }}
                 />

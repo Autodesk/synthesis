@@ -1,13 +1,14 @@
+import type { VariantType } from "notistack"
+import type { OpenModalFn, OpenPanelFn } from "../UIProvider"
+
 /**
  * This is where all the global references to the Global UI controls are located.
  * See GlobalUIComponent.tsx for explanation of this madness.
  */
 
-import { ToastType } from "@/ui/ToastContext"
-
-export let globalAddToast: (type: ToastType, title: string, description: string) => void = () => {}
-export let globalOpenPanel: (panelId: string) => void = () => {}
-export let globalOpenModal: (modalId: string) => void = () => {}
+export let globalAddToast: <v extends VariantType>(title: string, description: string) => void = () => {}
+export let globalOpenPanel: OpenPanelFn = () => ""
+export let globalOpenModal: OpenModalFn = () => ""
 
 export function setAddToast(func: typeof globalAddToast) {
     globalAddToast = func

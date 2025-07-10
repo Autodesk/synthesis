@@ -711,7 +711,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public getSupplierData(): ContextData {
-        const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
+        const data: ContextData = {
+            title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
+            items: [],
+        }
 
         data.items.push(
             {

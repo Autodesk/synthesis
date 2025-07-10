@@ -1,6 +1,4 @@
-import { Box } from "@mui/material"
-import Label, { LabelSize } from "./Label"
-import Button from "./Button"
+import { Box, Button, Typography } from "@mui/material"
 // import { colorNameToVar } from "../ThemeContext"
 import { AiOutlineClose } from "react-icons/ai"
 
@@ -26,15 +24,15 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                 gap: "0.5rem",
             }}
         >
-            <Label size={LabelSize.SMALL}>
+            <Typography variant="h6">
                 Synthesis uses cookies to improve the performance and quality of our app. Do you consent to the usage of
                 cookies for tracking analytics data?
-            </Label>
+            </Typography>
             <a
                 target="_blank"
                 rel="noopener noreferrer"
                 href="https://synthesis.autodesk.com/data-collection/"
-                className={`text-sm font-artifakt-normal`}
+                className="text-sm font-artifakt-normal"
             >
                 See here for more information
             </a>
@@ -48,12 +46,7 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                 }}
             >
                 <Button value="I consent" onClick={() => onConsent()} />
-                <Button
-                    value={<AiOutlineClose />}
-                    onClick={() => onClose()}
-                    sizeOverrideClass="h-full"
-                    colorOverrideClass="bg-background-secondary"
-                />
+                <Button startIcon={<AiOutlineClose />} onClick={() => onClose()} color="secondary" />
             </Box>
         </Box>
     )

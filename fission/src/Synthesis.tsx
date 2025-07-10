@@ -1,7 +1,7 @@
-import Scene from "@/components/Scene.tsx";
-import { AnimatePresence } from "framer-motion";
-import { ReactElement, useCallback, useEffect, useRef, useState } from "react";
-import { UIRenderer } from "@/ui/UIRenderer.tsx";
+import Scene from "@/components/Scene.tsx"
+import { AnimatePresence } from "framer-motion"
+import { ReactElement, useCallback, useEffect, useRef, useState } from "react"
+import { UIRenderer } from "@/ui/UIRenderer.tsx"
 // import { ModalControlProvider, useModalManager } from "@/ui/ModalContext"
 // import { PanelControlProvider, usePanelManager } from "@/ui/PanelContext"
 // import { useTheme } from "@/ui/ThemeContext"
@@ -13,7 +13,7 @@ import { UIRenderer } from "@/ui/UIRenderer.tsx";
 //     TooltipType,
 //     useTooltipManager,
 // } from "@/ui/TooltipContext"
-import MainHUD from "@/components/MainHUD";
+import MainHUD from "@/components/MainHUD"
 // import DownloadAssetsModal from "@/modals/DownloadAssetsModal"
 // import ExitSynthesisModal from "@/modals/ExitSynthesisModal"
 // import MatchResultsModal from "@/modals/MatchResultsModal"
@@ -40,13 +40,13 @@ import MainHUD from "@/components/MainHUD";
 // import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 // import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
 // import PokerPanel from "@/panels/PokerPanel.tsx"
-import World from "@/systems/World.ts";
+import World from "@/systems/World.ts"
 // import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 // import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
-import Skybox from "./ui/components/Skybox.tsx";
+import Skybox from "./ui/components/Skybox.tsx"
 // import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
-import ProgressNotifications from "./ui/components/ProgressNotification.tsx";
-import SceneOverlay from "./ui/components/SceneOverlay.tsx";
+import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
+import SceneOverlay from "./ui/components/SceneOverlay.tsx"
 
 // import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 
@@ -55,68 +55,66 @@ import SceneOverlay from "./ui/components/SceneOverlay.tsx";
 // import DebugPanel from "./ui/panels/DebugPanel.tsx"
 // import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
 // import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
-import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx";
-import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts";
+import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
+import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
 // import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
 // import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
 // import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
 // import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
-import ContextMenu from "./ui/components/ContextMenu.tsx";
-import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx";
+import ContextMenu from "./ui/components/ContextMenu.tsx"
+import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 // import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
-import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx";
-import { UIProvider } from "./ui/UIProvider.tsx";
-import { SnackbarProvider } from "notistack";
-import { ThemeProvider } from "./ui/ThemeProvider.tsx";
+import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
+import { UIProvider } from "./ui/UIProvider.tsx"
+import { SnackbarProvider } from "notistack"
+import { ThemeProvider } from "./ui/ThemeProvider.tsx"
+import { StateProvider } from "./ui/StateProvider.tsx"
 // import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 // import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 // import MainMenuModal from "@/modals/MainMenuModal"
 
 function Synthesis() {
-	// const { openModal, closeModal, getActiveModalElement, registerModal } = useModalManager(initialModals)
-	// const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
-	// const { showTooltip } = useTooltipManager()
+    // const { openModal, closeModal, getActiveModalElement, registerModal } = useModalManager(initialModals)
+    // const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
+    // const { showTooltip } = useTooltipManager()
 
-	const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true);
+    const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
-	// const { currentTheme, applyTheme, defaultTheme } = useTheme()
+    // const { currentTheme, applyTheme, defaultTheme } = useTheme()
 
-	// useEffect(() => {
-	//     applyTheme(currentTheme)
-	// }, [currentTheme, applyTheme])
+    // useEffect(() => {
+    //     applyTheme(currentTheme)
+    // }, [currentTheme, applyTheme])
 
-	// const panelElements = getActivePanelElements()
-	// const modalElement = getActiveModalElement()
+    // const panelElements = getActivePanelElements()
+    // const modalElement = getActiveModalElement()
 
-	const mainLoopHandle = useRef(0);
-	// registerModal("main-menu", {
-	//     id: "main-menu",
-	//     component: (
-	//         <MainMenuModal
-	//             key="main-menu"
-	//             modalId="main-menu"
-	//             startSingleplayerCallback={() => {
-	//             }}
-	//         />
-	//     ),
-	// })
-	//
-	World.InitWorld();
+    const mainLoopHandle = useRef(0)
+    // registerModal("main-menu", {
+    //     id: "main-menu",
+    //     component: (
+    //         <MainMenuModal
+    //             key="main-menu"
+    //             modalId="main-menu"
+    //             startSingleplayerCallback={() => {
+    //             }}
+    //         />
+    //     ),
+    // })
+    //
+    World.InitWorld()
 
-	if (
-		!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") &&
-		!import.meta.env.DEV
-	) {
-		setConsentPopupDisable(false);
-	}
+    if (!PreferencesSystem.getGlobalPreference<boolean>("ReportAnalytics") && !import.meta.env.DEV) {
+        setConsentPopupDisable(false)
+    }
 
-	const mainLoop = () => {
-		mainLoopHandle.current = requestAnimationFrame(mainLoop);
-		World.UpdateWorld();
-	};
-	mainLoop();
+    const mainLoop = () => {
+        mainLoopHandle.current = requestAnimationFrame(mainLoop)
+        World.UpdateWorld()
+    }
+    mainLoop()
 
-	// World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
+    // World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
 
     useEffect(() => {
         const urlParams = new URLSearchParams(document.location.search)
@@ -133,61 +131,49 @@ function Synthesis() {
             World.destroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
+    }, [])
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, []);
-
-	useEffect(() => {
-		const scoreboardExists = false;
-		// panelElements.forEach(x => {
-		//     if (x.key == "scoreboard") scoreboardExists = true
-		// })
-		// if (PreferencesSystem.getGlobalPreference("RenderScoreboard") && !scoreboardExists) {
-		//     openPanel("scoreboard")
-		// }
-	});
+    useEffect(() => {
+        const scoreboardExists = false
+        // panelElements.forEach(x => {
+        //     if (x.key == "scoreboard") scoreboardExists = true
+        // })
+        // if (PreferencesSystem.getGlobalPreference("RenderScoreboard") && !scoreboardExists) {
+        //     openPanel("scoreboard")
+        // }
+    })
 
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
-        PreferencesSystem.setGlobalPreference("ReportAnalytics", true)
+        PreferencesSystem.setGlobalPreference<boolean>("ReportAnalytics", true)
         PreferencesSystem.savePreferences()
     }, [])
 
-	const onDisableConsent = useCallback(() => {
-		setConsentPopupDisable(true);
-	}, []);
+    return (
+        <AnimatePresence key={"animate-presence"}>
+            <ThemeProvider>
+                <SnackbarProvider maxSnack={5}>
+                    <Skybox key={"skybox"} />
+                    <UIProvider>
+                        <StateProvider>
+                            <GlobalUIComponent />
+                            <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
+                            <SceneOverlay />
+                            <ContextMenu />
+                            <MainHUD key={"main-hud"} />
+                            <UIRenderer />
+                            <ProgressNotifications key={"progress-notifications"} />
+                            <WPILibConnectionStatus />
 
-	return (
-		<AnimatePresence key={"animate-presence"}>
-			<ThemeProvider>
-				<SnackbarProvider maxSnack={5}>
-					<Skybox key={"skybox"} />
-					<UIProvider>
-						<GlobalUIComponent />
-						<Scene
-							useStats={import.meta.env.DEV}
-							key="scene-in-toast-provider"
-						/>
-						<SceneOverlay />
-						<ContextMenu />
-						<MainHUD key={"main-hud"} />
-						<UIRenderer />
-						<ProgressNotifications key={"progress-notifications"} />
-						<WPILibConnectionStatus />
-
-						{!consentPopupDisable ? (
-							<AnalyticsConsent
-								onClose={onDisableConsent}
-								onConsent={onConsent}
-							/>
-						) : (
-							<></>
-						)}
-					</UIProvider>
-				</SnackbarProvider>
-			</ThemeProvider>
-		</AnimatePresence>
-	);
+                            {!consentPopupDisable && (
+                                <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
+                            )}
+                        </StateProvider>
+                    </UIProvider>
+                </SnackbarProvider>
+            </ThemeProvider>
+        </AnimatePresence>
+    )
 }
 
 // const initialModals = [
@@ -238,4 +224,4 @@ function Synthesis() {
 //     <GraphicsSettings key="graphics-settings" panelId="graphics-settings" sidePadding={8} />,
 // ]
 
-export default Synthesis;
+export default Synthesis

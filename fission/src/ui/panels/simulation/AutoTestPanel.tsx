@@ -1,0 +1,358 @@
+import type Jolt from "@azaleacolburn/jolt-physics"
+import { Button, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import { Stack, styled } from "@mui/system"
+import type React from "react"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { FaInfinity } from "react-icons/fa6"
+import * as THREE from "three"
+import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { type AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import World from "@/systems/World"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { UIContext } from "@/ui/UIProvider"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { JoltMat44_ThreeMatrix4, ThreeQuaternion_JoltQuat, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
+
+type StagingProps = {
+    state: "Staging"
+    assembly: MirabufSceneObject
+    setPlaying?: (props: PlayingProps) => void
+}
+
+type PlayingProps = {
+    state: "Playing"
+    assembly: MirabufSceneObject
+    countdown: number
+    captures: BodyCapture[]
+    setEnd?: (props: EndProps) => void
+}
+
+type EndProps = {
+    state: "End"
+    assembly: MirabufSceneObject
+    captures: BodyCapture[]
+    setStaging?: (props: StagingProps) => void
+}
+
+type BodyCapture = {
+    id: Jolt.BodyID
+    pos: Jolt.RVec3
+    rot: Jolt.Quat
+}
+
+const AUTO_TEST_PAUSE_REF = "auto-testing"
+
+export const BlueAllianceToggleButton = styled(ToggleButton)({
+    "borderColor": "transparent",
+    "fontFamily": "Artifakt",
+    "fontWeight": 700,
+    "color": "#5f60ff",
+    "&.Mui-selected": {
+        color: "black",
+        backgroundImage: "linear-gradient(to right, #5f60ff, #5f60ff)",
+        borderColor: "transparent",
+    },
+    ".MuiTouchRipple-ripple": {
+        color: "#ffffff30",
+    },
+    "&:focus": {
+        borderColor: "transparent !important",
+        outline: "none",
+    },
+    "&:selected": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&:hover": {
+        outline: "none",
+        borderColor: "transparent",
+        backgroundColor: "#ffffff20",
+    },
+    "&:focus-visible": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&:active": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&::-moz-focus-inner": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+})
+
+export const RedAllianceToggleButton = styled(ToggleButton)({
+    "borderColor": "transparent",
+    "fontFamily": "Artifakt",
+    "fontWeight": 700,
+    "color": "#d74e26",
+    "&.Mui-selected": {
+        color: "black",
+        backgroundImage: "linear-gradient(to right, #d74e26, #d74e26)",
+        borderColor: "transparent",
+    },
+    ".MuiTouchRipple-ripple": {
+        color: "#ffffff30",
+    },
+    "&:focus": {
+        borderColor: "transparent !important",
+        outline: "none",
+    },
+    "&:selected": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&:hover": {
+        outline: "none",
+        borderColor: "transparent",
+        backgroundColor: "#ffffff20",
+    },
+    "&:focus-visible": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&:active": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+    "&::-moz-focus-inner": {
+        outline: "none",
+        borderColor: "transparent",
+    },
+})
+
+function captureBodies(): BodyCapture[] {
+    const captures: BodyCapture[] = []
+    World.SceneRenderer.sceneObjects.forEach(sceneObj => {
+        if (sceneObj instanceof MirabufSceneObject) {
+            sceneObj.mechanism.nodeToBody.forEach(bodyId => {
+                const body = World.PhysicsSystem.GetBody(bodyId)
+                const transform = body.GetWorldTransform()
+                const translation = new THREE.Vector3(0, 0, 0)
+                const rotation = new THREE.Quaternion(0, 0, 0, 1)
+                JoltMat44_ThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
+                captures.push({
+                    id: bodyId,
+                    pos: ThreeVector3_JoltRVec3(translation),
+                    rot: ThreeQuaternion_JoltQuat(rotation),
+                })
+            })
+        }
+    })
+    return captures
+}
+
+function resetBodies(captures: BodyCapture[]) {
+    const zero = new JOLT.Vec3(0, 0, 0)
+    captures.forEach(x => {
+        World.PhysicsSystem.SetBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
+    })
+    JOLT.destroy(zero)
+}
+
+function End({ assembly, setStaging, captures }: EndProps) {
+    useEffect(() => {
+        SimDriverStation.SetMode(RobotSimMode.Disabled)
+    }, [])
+
+    const reset = useCallback(() => {
+        resetBodies(captures)
+        setStaging?.({ state: "Staging", assembly })
+    }, [assembly, captures, setStaging])
+
+    return (
+        <Button className="self-center" onClick={reset}>
+            Reset
+        </Button>
+    )
+}
+
+function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
+    const [remaining, setRemaining] = useState<number>(countdown)
+
+    useEffect(() => {
+        World.PhysicsSystem.ReleasePause(AUTO_TEST_PAUSE_REF)
+        SimDriverStation.SetMode(RobotSimMode.Auto)
+    }, [])
+
+    const end = useCallback(() => {
+        SimDriverStation.SetMode(RobotSimMode.Disabled)
+        World.PhysicsSystem.HoldPause(AUTO_TEST_PAUSE_REF)
+        setEnd?.({ assembly: assembly, captures: captures, state: "End" })
+    }, [assembly, captures, setEnd])
+
+    useEffect(() => {
+        let handle: number | undefined
+        const endTime = Date.now() / 1000.0 + countdown
+        const func = () => {
+            if (handle !== undefined) cancelAnimationFrame(handle)
+
+            setRemaining(endTime - Date.now() / 1000.0)
+
+            handle = requestAnimationFrame(func)
+        }
+        if (countdown > 0) {
+            func()
+        }
+
+        return () => {
+            if (handle !== undefined) cancelAnimationFrame(handle)
+        }
+    }, [countdown])
+
+    useEffect(() => {
+        if (remaining <= 0) {
+            end()
+        }
+    }, [end, remaining])
+
+    return (
+        <>
+            <Typography className="text-center">{Math.max(remaining, 0).toFixed(1)}s</Typography>
+            <Button className="self-center" onClick={end}>
+                Stop
+            </Button>
+        </>
+    )
+}
+
+function Staging({ assembly, setPlaying }: StagingProps) {
+    const [countdown, setCountdown] = useState<number>(15)
+    const [station, setStation] = useState<AllianceStation>("red1")
+    const [gameData, setGameData] = useState<string>("")
+
+    const next = useCallback(() => {
+        SimDriverStation.SetGameData(gameData)
+        SimDriverStation.SetStation(station)
+
+        const captures = captureBodies()
+        setPlaying?.({ assembly, captures, countdown, state: "Playing" })
+    }, [assembly, countdown, gameData, setPlaying, station])
+
+    return (
+        <>
+            <Stack>
+                <Typography textAlign="center">Countdown</Typography>
+                <ToggleButtonGroup
+                    value={countdown}
+                    exclusive
+                    onChange={(_, v) => setCountdown(v)}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                    className="self-center"
+                >
+                    <ToggleButton value={5}>5</ToggleButton>
+                    <ToggleButton value={10}>10</ToggleButton>
+                    <ToggleButton value={15}>15</ToggleButton>
+                    <ToggleButton value={20}>20</ToggleButton>
+                    <ToggleButton value={30}>30</ToggleButton>
+                    <ToggleButton value={-1}>
+                        <FaInfinity />
+                    </ToggleButton>
+                </ToggleButtonGroup>
+            </Stack>
+            <Stack>
+                <Typography textAlign="center">Alliance Station</Typography>
+                <ToggleButtonGroup
+                    value={station}
+                    exclusive
+                    onChange={(_, v) => setStation(v)}
+                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                    className="self-center"
+                >
+                    <RedAllianceToggleButton value="red1">1</RedAllianceToggleButton>
+                    <RedAllianceToggleButton value="red2">2</RedAllianceToggleButton>
+                    <RedAllianceToggleButton value="red3">3</RedAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue1">1</BlueAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue2">2</BlueAllianceToggleButton>
+                    <BlueAllianceToggleButton value="blue3">3</BlueAllianceToggleButton>
+                </ToggleButtonGroup>
+            </Stack>
+            <Stack>
+                <TextField
+                    label="Game Data"
+                    placeholder="..."
+                    defaultValue={gameData}
+                    onInput={(e: React.ChangeEvent<HTMLInputElement>) => setGameData(e.target.value)}
+                />
+            </Stack>
+            <Stack>
+                <Typography textAlign="center">Placement</Typography>
+                <TransformGizmoControl parent={assembly} size={3} defaultMode="translate" scaleDisabled />
+            </Stack>
+            <Button className="self-center" onClick={next}>
+                Test
+            </Button>
+        </>
+    )
+}
+
+const AutoTestPanel: React.FC = () => {
+    const { closePanel } = useContext(UIContext)
+    const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
+
+    const assembly = useMemo(
+        () =>
+            [...World.SceneRenderer.sceneObjects.values()].find(
+                x => (x as MirabufSceneObject).brain?.brainType === "wpilib"
+            ) as MirabufSceneObject,
+        []
+    )
+
+    useEffect(() => {
+        SimDriverStation.SetMode(RobotSimMode.Disabled)
+        return () => {
+            SimDriverStation.SetMode(RobotSimMode.Disabled)
+        }
+    }, [])
+
+    useEffect(() => {
+        World.PhysicsSystem.HoldPause(AUTO_TEST_PAUSE_REF)
+
+        setActiveProps({
+            state: "Staging",
+            assembly: assembly,
+            setPlaying: setActiveProps,
+        })
+
+        return () => {
+            World.PhysicsSystem.ReleasePause(AUTO_TEST_PAUSE_REF)
+        }
+    }, [assembly])
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
+    useEffect(() => {
+        // TODO:
+        // closePanel("configure")
+    }, [])
+
+    return (
+        <Stack gap={4}>
+            {activeProps !== undefined &&
+                (activeProps.state === "Staging" ? (
+                    <Staging assembly={activeProps.assembly} setPlaying={setActiveProps} state="Staging" />
+                ) : activeProps.state === "Playing" ? (
+                    <Playing
+                        assembly={activeProps.assembly}
+                        captures={activeProps.captures}
+                        countdown={activeProps.countdown}
+                        setEnd={setActiveProps}
+                        state="Playing"
+                    />
+                ) : activeProps.state === "End" ? (
+                    <End
+                        assembly={activeProps.assembly}
+                        setStaging={setActiveProps}
+                        captures={activeProps.captures}
+                        state="End"
+                    />
+                ) : (
+                    <></>
+                ))}
+        </Stack>
+    )
+}
+
+export default AutoTestPanel

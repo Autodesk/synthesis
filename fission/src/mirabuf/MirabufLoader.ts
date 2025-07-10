@@ -28,8 +28,12 @@ type MapCache = { [id: MirabufCacheID]: MirabufCacheInfo }
 const robotsDirName = "Robots"
 const fieldsDirName = "Fields"
 const root = await navigator.storage.getDirectory()
-const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, { create: true })
-const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, { create: true })
+const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, {
+    create: true,
+})
+const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, {
+    create: true,
+})
 
 export let backUpRobots: MapCache = {}
 export let backUpFields: MapCache = {}
@@ -40,7 +44,9 @@ export const canOPFS = await (async () => {
             robotFolderHandle.entries
             robotFolderHandle.keys
 
-            const fileHandle = await robotFolderHandle.getFileHandle("0", { create: true })
+            const fileHandle = await robotFolderHandle.getFileHandle("0", {
+                create: true,
+            })
             const writable = await fileHandle.createWritable()
             await writable.close()
             await fileHandle.getFile()

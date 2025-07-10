@@ -176,7 +176,9 @@ class SceneRenderer extends WorldSystem {
         this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
 
         if (PreferencesSystem.getGraphicsPreferences().antiAliasing) {
-            const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+            const antiAliasEffect = new SMAAEffect({
+                edgeDetectionMode: EdgeDetectionMode.COLOR,
+            })
             const antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
             this._composer.addPass(antiAliasPass)
         }

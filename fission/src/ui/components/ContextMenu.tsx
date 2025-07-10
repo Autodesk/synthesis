@@ -1,10 +1,7 @@
-import { Box } from "@mui/material"
+import { Box, Button, Divider, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
-import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
+import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
 // import { colorNameToVar } from "../ThemeContext"
-import Button, { ButtonSize } from "./Button"
-import Label, { LabelSize } from "./Label"
-import { SectionDivider } from "./StyledComponents"
 
 interface ContextMenuStateData {
     data: ContextData
@@ -16,7 +13,10 @@ const ContextMenu: React.FC = () => {
 
     useEffect(() => {
         const func = (e: ContextSupplierEvent) => {
-            setState({ data: e.data, location: [e.mousePosition[0], e.mousePosition[1]] })
+            setState({
+                data: e.data,
+                location: [e.mousePosition[0], e.mousePosition[1]],
+            })
         }
 
         ContextSupplierEvent.listen(func)
@@ -68,15 +68,12 @@ const ContextMenu: React.FC = () => {
                         flexDirection: "column",
                     }}
                 >
-                    <Label key={"context-title"} size={LabelSize.SMALL}>
-                        {state.data.title}
-                    </Label>
-                    <SectionDivider />
+                    <Typography key="context-title">{state.data.title}</Typography>
+                    <Divider />
                 </Box>
                 {state.data.items.map(x => (
                     <Button
                         key={x.name}
-                        size={ButtonSize.SMALL}
                         className={"w-full text-sm"}
                         value={x.name}
                         onClick={() => {

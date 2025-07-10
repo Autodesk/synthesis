@@ -1,0 +1,136 @@
+import { Box, Stack, Typography } from "@mui/material"
+import { useCallback, useEffect, useState } from "react"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import World from "@/systems/World"
+import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+
+const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
+    if (!zones || !field) return
+
+    const fieldPrefs = field.fieldPreferences
+    if (fieldPrefs) fieldPrefs.scoringZones = zones
+
+    PreferencesSystem.savePreferences()
+    field.UpdateScoringZones()
+}
+
+type ScoringZoneRowProps = {
+    zone: ScoringZonePreferences
+    save: () => void
+    deleteZone: () => void
+    selectZone: (zone: ScoringZonePreferences) => void
+}
+
+const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone, selectZone }) => {
+    return (
+        <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
+            <Stack direction="row" gap={8}>
+                <div
+                    className={`w-12 h-12 rounded-lg`}
+                    style={{
+                        background: zone.alliance === "red" ? "#ff0000" : "#0000ff",
+                    }}
+                />
+                <Stack direction="row" gap={4} className="w-max">
+                    <Typography variant="h5">{zone.name}</Typography>
+                    <Typography variant="h5">
+                        {zone.points} {zone.points === 1 ? "point" : "points"}
+                    </Typography>
+                </Stack>
+            </Stack>
+            <Stack direction={"row-reverse"} gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
+                {EditButton(() => {
+                    selectZone(zone)
+                    save()
+                })}
+
+                {DeleteButton(() => {
+                    deleteZone()
+                })}
+            </Stack>
+        </Stack>
+    )
+}
+
+interface ScoringZonesProps {
+    selectedField: MirabufSceneObject
+    initialZones: ScoringZonePreferences[]
+    selectZone: (zone: ScoringZonePreferences) => void
+}
+
+const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, initialZones, selectZone }) => {
+    const [zones, setZones] = useState<ScoringZonePreferences[]>(initialZones)
+
+    const saveEvent = useCallback(() => {
+        saveZones(zones, selectedField)
+    }, [zones, selectedField])
+
+    useEffect(() => {
+        ConfigurationSavedEvent.Listen(saveEvent)
+
+        return () => {
+            ConfigurationSavedEvent.RemoveListener(saveEvent)
+        }
+    }, [saveEvent])
+
+    useEffect(() => {
+        saveZones(zones, selectedField)
+
+        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+
+        return () => {
+            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+        }
+    }, [selectedField, zones])
+
+    return (
+        <>
+            {zones?.length > 0 ? (
+                <Stack gap={4} className="overflow-y-auto w-full">
+                    {zones.map((zonePrefs: ScoringZonePreferences, i: number) => (
+                        <ScoringZoneRow
+                            key={i}
+                            zone={(() => {
+                                return zonePrefs
+                            })()}
+                            save={() => saveZones(zones, selectedField)}
+                            deleteZone={() => {
+                                setZones(zones.filter((_, idx) => idx !== i))
+                                saveZones(
+                                    zones.filter((_, idx) => idx !== i),
+                                    selectedField
+                                )
+                            }}
+                            selectZone={selectZone}
+                        />
+                    ))}
+                </Stack>
+            ) : (
+                <Typography>No scoring zones</Typography>
+            )}
+            {AddButtonInteractiveColor(() => {
+                if (zones === undefined) return
+
+                const newZone: ScoringZonePreferences = {
+                    name: "New Scoring Zone",
+                    alliance: "blue",
+                    parentNode: undefined,
+                    points: 0,
+                    destroyGamepiece: false,
+                    persistentPoints: false,
+                    deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+                }
+
+                saveZones(zones, selectedField)
+
+                selectZone(newZone)
+            })}
+        </>
+    )
+}
+
+export default ManageZonesInterface

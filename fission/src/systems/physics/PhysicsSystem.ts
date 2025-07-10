@@ -704,7 +704,13 @@ class PhysicsSystem extends WorldSystem {
         const yawAxis = new JOLT.Vec3(yawDof?.axis?.x ?? 0, yawDof?.axis?.y ?? 0, yawDof?.axis?.z ?? 0)
         const rollAxis = new JOLT.Vec3(rollDof?.axis?.x ?? 0, rollDof?.axis?.y ?? 0, rollDof?.axis?.z ?? 0)
 
-        const constraints: { axis: Jolt.Vec3; friction: number; value: number; upper?: number; lower?: number }[] = []
+        const constraints: {
+            axis: Jolt.Vec3
+            friction: number
+            value: number
+            upper?: number
+            lower?: number
+        }[] = []
 
         if (!pitchDof?.limits || (pitchDof.limits.upper ?? 0) - (pitchDof.limits.lower ?? 0) > 0.001) {
             constraints.push({

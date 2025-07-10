@@ -1,46 +1,7 @@
 import React, { useEffect, useState } from "react"
 
-import { Box, Button as MUIButton, styled, alpha } from "@mui/material"
-import Label, { LabelSize } from "./Label"
-import {
-    AddButtonInteractiveColor,
-    ButtonIcon,
-    CustomTooltip,
-    DeleteButton,
-    SectionDivider,
-    SectionLabel,
-    Spacer,
-    SynthesisIcons,
-} from "./StyledComponents"
-
-// Select menu item button (appears as an outline when hovered over, the text is a separate component)
-const CustomButton = styled(MUIButton)({
-    "borderStyle": "none",
-    "borderWidth": "1px",
-    "transition": "border-color 0s",
-    "outline": "none",
-    "&:hover": {
-        borderStyle: "solid",
-        borderColor: "grey",
-        backgroundColor: "transparent",
-    },
-    "position": "relative",
-    "overflow": "hidden",
-    "& .MuiTouchRipple-root span": {
-        backgroundColor: alpha("#ffffff", 0.07),
-        animationDuration: "300ms",
-    },
-    "&:focus": {
-        borderColor: "grey",
-        backgroundColor: "transparent",
-        outline: "none",
-    },
-    "&:selected": {
-        outline: "none",
-        backgroundColor: "transparent",
-        borderColor: "none",
-    },
-})
+import { Box, styled, alpha, Button, Stack, Typography, Divider } from "@mui/material"
+import { AddButtonInteractiveColor, CustomTooltip, DeleteButton, Spacer, SynthesisIcons } from "./StyledComponents"
 
 /** Extend this to make a type that contains custom data */
 export class SelectMenuOption {
@@ -75,31 +36,16 @@ interface OptionCardProps {
  */
 const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDelete, includeDelete }) => {
     return (
-        <Box
-            display="flex"
-            textAlign={"center"}
-            key={value.name}
-            minHeight={"30px"}
-            overflow="hidden"
-            position={"relative"}
-        >
+        <Stack textAlign="center" key={value.name} minHeight="30px" overflow="hidden" position="relative">
             {/* Box containing the label */}
-            <Box position="absolute" alignSelf={"center"} display="flex">
-                {/* Indentation before the name */}
-                <Box width="8px" />
-                {/* Label for joint index and type (grey if child) */}
-
-                <SectionLabel
-                    key={value.name + index}
-                    size={LabelSize.SMALL}
-                    className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
-                >
+            <Stack position="absolute" alignSelf="center" width="100%">
+                <Typography key={value.name + index} variant="h5" className="text-left mt-[4pt] mb-[2pt] mx-[5%]">
                     {value.name}
-                </SectionLabel>
-            </Box>
+                </Typography>
+            </Stack>
 
             {/* Button used for selecting a parent (shows up as an outline) */}
-            <CustomButton
+            <Button
                 fullWidth={true}
                 onClick={() => {
                     onSelected(value)
@@ -113,10 +59,10 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
             {onDelete && includeDelete && (
                 <>
                     {Spacer(0, 10)}
-                    {DeleteButton(onDelete != undefined ? onDelete : () => {}, "select-menu-delete-button")}
+                    {DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")}
                 </>
             )}
-        </Box>
+        </Stack>
     )
 }
 
@@ -180,13 +126,13 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     return (
         <>
             {/** Box containing the menu header */}
-            <Box display="flex" textAlign={"center"} minHeight={"30px"} key="selected-item">
+            <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
                 <Box width={`${20 * (indentation ?? 0)}px`} />
 
                 {/** Back arrow button when an option is selected */}
-                {selectedOption != undefined && (
-                    <ButtonIcon
-                        value={SynthesisIcons.LEFT_ARROW_LARGE}
+                {selectedOption !== undefined && (
+                    <Button
+                        startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
                         onClick={() => {
                             setSelectedOption(undefined)
                             onOptionSelected(undefined)
@@ -196,16 +142,16 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 )}
 
                 {/** Label with either the header text, or the name of the selected option if an option is selected */}
-                <Box alignSelf={"center"} display="flex">
+                <Stack alignSelf={"center"}>
                     <Box width="8px" />
-                    <SectionLabel size={LabelSize.SMALL} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {selectedOption != undefined ? selectedOption.name : defaultHeaderText}
-                    </SectionLabel>
-                </Box>
-            </Box>
-            <SectionDivider />
+                    <Typography variant="h5" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        {selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
+                    </Typography>
+                </Stack>
+            </Stack>
+            <Divider />
 
-            {selectedOption == undefined && (
+            {selectedOption === undefined && (
                 <>
                     {/** List of options */}
                     {options.length > 0 ? (
@@ -220,14 +166,14 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                                     }}
                                     key={option.name + i}
                                     onDelete={onDelete ? () => onDelete(option) : undefined}
-                                    includeDelete={deleteCondition == undefined || deleteCondition(option)}
+                                    includeDelete={deleteCondition === undefined || deleteCondition(option)}
                                 />
                             )
                         })
                     ) : (
                         <>
                             {/** No options available text */}
-                            <Label size={LabelSize.SMALL}>{noOptionsText ?? "No options available!"}</Label>
+                            <Typography variant="h5">{noOptionsText ?? "No options available!"}</Typography>
                         </>
                     )}
                     {/** Add button */}

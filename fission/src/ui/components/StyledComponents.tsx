@@ -1,6 +1,4 @@
-import { Box, Divider, styled, IconButton, Tooltip } from "@mui/material"
-import Label, { LabelSize } from "./Label"
-import Button, { ButtonProps, ButtonSize } from "./Button"
+import { Box, Button, Divider, styled, IconButton, Tooltip, type ButtonProps, Stack, Typography } from "@mui/material"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
 import { AiOutlineInfoCircle } from "react-icons/ai"
@@ -84,81 +82,44 @@ export class SynthesisIcons {
     )
 }
 
-export const SectionDivider = styled(Divider)({
-    borderColor: "grey",
-})
-
-export const SectionLabel = styled(Label)({
-    fontWeight: 700,
-    margin: "0pt",
-})
-
 export const Spacer = (heightPx?: number, widthPx?: number) => {
     return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
 }
 
 export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick }) => {
-    return (
-        <Button
-            size={ButtonSize.MEDIUM}
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-accept-button hover:brightness-90"
-        />
-    )
+    return <Button value={value} onClick={onClick} color="success" />
 }
 
 export const DownloadButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.DELETE_LARGE} onClick={onClick} />
+    return <PositiveButton startIcon={SynthesisIcons.DELETE_LARGE} onClick={onClick} />
 }
 
 export const AddButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.DELETE_LARGE} onClick={onClick} />
+    return <PositiveButton startIcon={SynthesisIcons.DELETE_LARGE} onClick={onClick} />
 }
 
 export const SelectButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.SELECT_LARGE} onClick={onClick} />
+    return <PositiveButton startIcon={SynthesisIcons.SELECT_LARGE} onClick={onClick} />
 }
 
 export const EditButton = (onClick: () => void) => {
-    return <PositiveButton value={SynthesisIcons.EDIT_LARGE} onClick={onClick} />
+    return <PositiveButton startIcon={SynthesisIcons.EDIT_LARGE} onClick={onClick} />
 }
 
 export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick, id }) => {
-    return (
-        <Button
-            size={ButtonSize.MEDIUM}
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-cancel-button hover:brightness-90"
-            id={id}
-        />
-    )
+    return <Button value={value} onClick={onClick} id={id} color="error" />
 }
 
 export const DeleteButton = (onClick: () => void, id?: string) => {
-    return <NegativeButton value={SynthesisIcons.DELETE_LARGE} onClick={onClick} id={id} />
-}
-
-export const ButtonIcon: React.FC<ButtonProps> = ({ value, onClick, id }) => {
-    return (
-        <Button
-            value={value}
-            onClick={onClick}
-            colorOverrideClass="bg-[#00000000] hover:brightness-90"
-            sizeOverrideClass="p-[0.25rem]"
-            id={id}
-            className="h-fit"
-        />
-    )
+    return <NegativeButton startIcon={SynthesisIcons.DELETE_LARGE} onClick={onClick} id={id} />
 }
 
 export const RefreshButton = (onClick: () => void) => {
-    return <ButtonIcon value={SynthesisIcons.REFRESH_LARGE} onClick={onClick} />
+    return <Button startIcon={SynthesisIcons.REFRESH_LARGE} onClick={onClick} />
 }
 
 export const AddButtonInteractiveColor = (onClick: () => void, id?: string) => {
-    return <Button value={SynthesisIcons.ADD_LARGE} onClick={onClick} id={id} />
+    return <Button startIcon={SynthesisIcons.ADD_LARGE} onClick={onClick} id={id} />
 }
 
 export const CustomTooltip = (text: string) => {
@@ -198,11 +159,11 @@ export const CustomTooltip = (text: string) => {
     )
 }
 
-export const LabelWithTooltip = (labelText: string, tooltipText: string, size?: LabelSize) => {
+export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
     return (
-        <Box display={"flex"} flexDirection={"row"} alignItems={"center"} textAlign={"center"}>
-            <Label size={size ?? LabelSize.SMALL}>{labelText}</Label>
+        <Stack direction="row" alignItems={"center"} textAlign={"center"}>
+            <Typography variant="h5">{labelText}</Typography>
             {CustomTooltip(tooltipText)}
-        </Box>
+        </Stack>
     )
 }

@@ -295,7 +295,10 @@ export async function requestMirabufFiles() {
             getHubs().then(async hubs => {
                 if (!hubs) {
                     window.dispatchEvent(
-                        new MirabufFilesStatusUpdateEvent({ isDone: true, message: "Failed to get Hubs" })
+                        new MirabufFilesStatusUpdateEvent({
+                            isDone: true,
+                            message: "Failed to get Hubs",
+                        })
                     )
                     return
                 }

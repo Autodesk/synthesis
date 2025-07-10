@@ -1,0 +1,106 @@
+import { Box, Button, Stack, Typography } from "@mui/material"
+import type React from "react"
+import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSystem from "@/systems/input/InputSystem"
+import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import World from "@/systems/World"
+import type { PanelImplProps } from "@/ui/components/Panel"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { CloseType, UIContext } from "@/ui/UIProvider"
+import { StateContext } from "@/ui/StateProvider"
+import ConfigurePanel from "../assembly-config/ConfigurePanel"
+import InputSchemeSelection from "./InputSchemeSelection"
+import { Alliance } from "@/systems/preferences/PreferenceTypes"
+
+const InitialConfigPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
+    const { configurationType, setConfigurationType } = useContext(StateContext)
+    const { openModal, closePanel, openPanel } = useContext(UIContext)
+    const { setSelectedScheme } = useContext(StateContext)
+    const [alliance, setAlliance] = useState<Alliance>("red")
+
+    const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
+
+    useEffect(() => {
+        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+
+        return () => {
+            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+        }
+    }, [])
+
+    useEffect(() => {
+        // TODO:
+        // if (parent)
+        //     closePanel(parent.id, CloseType.Overwrite);
+    }, [])
+
+    const closeFinish = useCallback(() => {
+        if (targetAssembly?.miraType === MiraType.ROBOT) {
+            setConfigurationType("ROBOTS")
+            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+
+            if (brainIndex === undefined) return
+            if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
+
+            const scheme = InputSchemeManager.availableInputSchemes[0]
+            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+
+            setSelectedScheme(scheme)
+        } else {
+            setConfigurationType("FIELDS")
+        }
+
+        if (panel) closePanel(panel.id, CloseType.Cancel)
+    }, [closePanel, panel, targetAssembly])
+
+    const closeDelete = useCallback(() => {
+        if (targetAssembly) World.SceneRenderer.RemoveSceneObject(targetAssembly.id)
+
+        if (panel) closePanel(panel.id, CloseType.Cancel)
+    }, [closePanel, panel, targetAssembly])
+
+    const brainIndex = useMemo(() => {
+        return SynthesisBrain.GetBrainIndex(targetAssembly)
+    }, [targetAssembly])
+
+    return (
+        <Stack gap={2}>
+            {targetAssembly?.miraType === MiraType.ROBOT && (
+                <Box>
+                    <Typography>Alliance: </Typography>
+                    <Button
+                        onClick={() => setAlliance(alliance === "blue" ? "red" : "blue")}
+                        style={{ background: alliance === "red" ? "#ff0000" : "#0000ff" }}
+                    >
+                        {`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
+                    </Button>
+                </Box>
+            )}
+            {targetAssembly && (
+                <TransformGizmoControl
+                    key="init-config-gizmo"
+                    defaultMode="translate"
+                    scaleDisabled={true}
+                    size={3.0}
+                    parent={targetAssembly}
+                    onAccept={closeFinish}
+                    onCancel={closeDelete}
+                />
+            )}
+            {brainIndex !== undefined && (
+                <InputSchemeSelection
+                    brainIndex={brainIndex}
+                    onSelect={() => {}}
+                    onEdit={() => openPanel(<ConfigurePanel />, panel)}
+                    // onCreateNew={() => openModal("assign-new-scheme")}
+                />
+            )}
+        </Stack>
+    )
+}
+
+export default InitialConfigPanel

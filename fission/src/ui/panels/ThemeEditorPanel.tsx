@@ -1,0 +1,65 @@
+import { ThemeContext } from "../ThemeProvider"
+import { Box, Switch, Button, Stack, TextField, Typography } from "@mui/material"
+import type React from "react"
+import { useContext, useState } from "react"
+
+interface ThemeEditorProps {}
+
+export const ThemeEditorPanel: React.FC<ThemeEditorProps> = ({}) => {
+    const { mode, toggleColorMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =
+        useContext(ThemeContext)
+
+    const [tempPrimary, setTempPrimary] = useState(primaryColor)
+    const [tempSecondary, setTempSecondary] = useState(secondaryColor)
+
+    return (
+        <Stack gap={4}>
+            <Typography variant="h3">Theme Editor</Typography>
+            <Stack direction="row" gap={2}>
+                <TextField
+                    label="Primary Color"
+                    variant="outlined"
+                    defaultValue={tempPrimary}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        setTempPrimary(event.target.value)
+                    }}
+                />
+                <Box
+                    sx={{
+                        height: 55,
+                        aspectRatio: 1,
+                        borderRadius: 1,
+                        bgcolor: `${tempPrimary}`,
+                    }}
+                />
+            </Stack>
+            <Stack direction="row" gap={2}>
+                <TextField
+                    label="Secondary Color"
+                    variant="outlined"
+                    defaultValue={tempSecondary}
+                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                        setTempSecondary(event.target.value)
+                    }}
+                />
+                <Box
+                    sx={{
+                        height: 55,
+                        aspectRatio: 1,
+                        borderRadius: 1,
+                        bgcolor: `${tempSecondary}`,
+                    }}
+                />
+            </Stack>
+            <Button
+                onClick={() => {
+                    setPrimaryColor(tempPrimary)
+                    setSecondaryColor(tempSecondary)
+                }}
+                variant="contained"
+            >
+                Apply
+            </Button>
+        </Stack>
+    )
+}

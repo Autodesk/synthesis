@@ -1,16 +1,15 @@
-import { Box } from "@mui/material"
-import React, { useEffect, useReducer, useState } from "react"
+import { Box, Typography } from "@mui/material"
+import { useEffect, useReducer, useState } from "react"
 import {
+    type SceneOverlayTag,
     SceneOverlayEvent,
     SceneOverlayEventKey,
     SceneOverlayTag,
     SceneOverlayTagEvent,
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
-import Label, { LabelSize } from "./Label"
 import ViewCube from "./ViewCube"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -21,11 +20,9 @@ const SceneOverlay: React.FC = () => {
     /* State to determine if the ViewCube should be shown */
     const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getGlobalPreference("ShowViewCube"))
 
-    /* Get the active modal context to check if main menu is open */
-    const { activeModalId } = useModalControlContext()
-
     /* Check if the main menu modal is active */
-    const isMainMenuOpen = activeModalId === "main-menu"
+    // TODO:
+    const isMainMenuOpen = false
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
@@ -45,9 +42,7 @@ const SceneOverlay: React.FC = () => {
                     transform: "translate(-50%, -100%)",
                 }}
             >
-                <Label className="select-none" size={LabelSize.LARGE}>
-                    {x.text()}
-                </Label>
+                <Typography variant="h3">{x.text()}</Typography>
             </div>
         ))
     }, [])
@@ -116,7 +111,6 @@ const SceneOverlay: React.FC = () => {
             }}
         >
             {components ?? <></>}
-            {showViewCube && !isMainMenuOpen && <ViewCube position={{ top: 20, right: 20 }} />}
         </Box>
     )
 }
