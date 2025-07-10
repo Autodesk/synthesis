@@ -12,13 +12,13 @@ import {
     SelectButton,
 } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
-import { useReducer } from "react"
+import React, { useReducer } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 
-function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
+const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex, onSelect, onEdit, onCreateNew }) => {
     const [_, update] = useReducer(x => !x, false)
 
     return (
@@ -26,7 +26,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
             {/** A scroll view with buttons to select default and custom input schemes */}
             <>
                 {/** The label and divider at the top of the scroll view */}
-                <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${InputSchemeManager.availableInputSchemes.length} Input Schemes`}
                 </SectionLabel>
                 <SectionDivider />

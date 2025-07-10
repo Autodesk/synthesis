@@ -4,7 +4,6 @@ import { Switch } from "@mui/base/Switch"
 import { Box } from "@mui/material"
 import { LabelWithTooltip } from "./StyledComponents"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import checkboxPressSound from "@/assets/sound-files/CheckboxPress.wav"
 
 type CheckboxProps = {
     label: string
@@ -51,13 +50,13 @@ const Checkbox: React.FC<CheckboxProps> = ({
             {hideLabel ? null : tooltipText ? (
                 LabelWithTooltip(label, tooltipText)
             ) : (
-                <Label size={LabelSize.Small} className={`mr-12 ${className} whitespace-nowrap`}>
+                <Label size={LabelSize.SMALL} className={`mr-12 ${className} whitespace-nowrap`}>
                     {label}
                 </Label>
             )}
             <Switch
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
-                onMouseDown={() => SoundPlayer.play(checkboxPressSound)}
+                {...SoundPlayer.checkboxSoundEffects()}
                 slotProps={{
                     root: {
                         className: `group relative inline-block w-[24px] h-[24px] m-2.5 cursor-pointer transform transition-transform hover:scale-[1.03] active:scale-[1.06]`,
