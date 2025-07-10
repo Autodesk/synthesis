@@ -783,6 +783,7 @@ class PhysicsSystem extends WorldSystem {
 
         console.log(`${parser.assembly.info?.name} rigid nodes ${[...parser.rigidNodes.values()]}`) // pipes have no nodes
         const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
+        console.log(`physics filtering: ${[...parser.rigidNodes.values()].length} ${nonPhysicsNodes.length}`)
 
         const massMod = (() => {
             let assemblyMass = 0

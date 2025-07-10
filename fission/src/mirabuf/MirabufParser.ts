@@ -212,9 +212,9 @@ class MirabufParser {
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
                 // Delete partDefinitions
-                // Object.entries(this._assembly.data?.parts?.partDefinitions ?? {})
-                //     .filter(([_key, subInst]) => inst === subInst)
-                //     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
+                Object.entries(this._assembly.data?.parts?.partDefinitions ?? {})
+                    .filter(([_key, subInst]) => inst === subInst)
+                    .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
 
                 return this.ConvertPartInstanceToAssembly(inst, instNode)
             })
