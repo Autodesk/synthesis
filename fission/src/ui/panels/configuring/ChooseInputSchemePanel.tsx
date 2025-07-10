@@ -36,7 +36,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemes[0]
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex)[0]
 
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 

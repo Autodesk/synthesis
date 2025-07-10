@@ -14,12 +14,14 @@ abstract class Input {
     public inputName: string
 
     /** @param {string} inputName - The name given to this input to identify it's function. */
-    constructor(inputName: string) {
+    protected constructor(inputName: string) {
         this.inputName = inputName
     }
 
     /** @returns {number} a number between -1 and 1 for this input. */
     abstract getValue(useGamepad: boolean): number
+
+    abstract get keysUsed(): string[]
 }
 
 /** Represents any user input that is a single true/false button. */
@@ -56,6 +58,10 @@ class ButtonInput extends Input {
 
         // Keyboard button input
         return InputSystem.isKeyPressed(this.keyCode, this.keyModifiers) ? 1 : 0
+    }
+
+    get keysUsed() {
+        return [this.keyCode]
     }
 }
 
@@ -136,6 +142,10 @@ class AxisInput extends Input {
             (InputSystem.isKeyPressed(this.posKeyCode, this.posKeyModifiers) ? 1 : 0) -
             (InputSystem.isKeyPressed(this.negKeyCode, this.negKeyModifiers) ? 1 : 0)
         )
+    }
+
+    get keysUsed() {
+        return [this.posKeyCode, this.negKeyCode]
     }
 }
 

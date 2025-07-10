@@ -1,14 +1,17 @@
 import { InputScheme } from "./InputSchemeManager"
 import { AxisInput, ButtonInput, EmptyModifierState } from "./InputSystem"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
+type InputSupplier = () => InputScheme
 /** The purpose of this class is to store any defaults related to the input system. */
 class DefaultInputs {
-    static ernie = () => {
+    static ernie: InputSupplier = () => {
         return {
             schemeName: "Ernie",
             descriptiveName: "WASD",
             customized: false,
             usesGamepad: false,
+            driveType: DriveType.ARCADE,
             inputs: [
                 new AxisInput("arcadeDrive", "KeyW", "KeyS"),
                 new AxisInput("arcadeTurn", "KeyD", "KeyA"),
@@ -55,12 +58,66 @@ class DefaultInputs {
         }
     }
 
-    public static luna = () => {
+    static ernietank: InputSupplier = () => {
+        return {
+            schemeName: "Bert",
+            descriptiveName: "WSIK",
+            customized: false,
+            usesGamepad: false,
+            driveType: DriveType.TANK,
+            inputs: [
+                new AxisInput("tankLeft", "KeyW", "KeyS"),
+                new AxisInput("tankRight", "KeyI", "KeyK"),
+
+                new ButtonInput("intake", "KeyE"),
+                new ButtonInput("eject", "KeyQ"),
+
+                new AxisInput("joint 1", "Digit1", "Digit1", -1, false, false, -1, -1, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 2", "Digit2", "Digit2", -1, false, false, -1, -1, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 3", "Digit3", "Digit3", -1, false, false, -1, -1, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 4", "Digit4", "Digit4", -1, false, false, -1, -1, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 5", "Digit5", "Digit5", -1, false, false, -1, -1, EmptyModifierState, {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                new AxisInput("joint 6"),
+                new AxisInput("joint 7"),
+                new AxisInput("joint 8"),
+                new AxisInput("joint 9"),
+                new AxisInput("joint 10"),
+            ],
+        }
+    }
+
+    public static luna: InputSupplier = () => {
         return {
             schemeName: "Luna",
             descriptiveName: "Arrow Keys",
             customized: false,
             usesGamepad: false,
+            driveType: DriveType.ARCADE,
             inputs: [
                 new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown"),
                 new AxisInput("arcadeTurn", "ArrowRight", "ArrowLeft"),
@@ -107,12 +164,13 @@ class DefaultInputs {
         }
     }
 
-    public static jax = () => {
+    public static jax: InputSupplier = () => {
         return {
             schemeName: "Jax",
             descriptiveName: "Full Controller",
             customized: false,
             usesGamepad: true,
+            driveType: DriveType.ARCADE,
             inputs: [
                 new AxisInput("arcadeDrive", "", "", 1, true),
                 new AxisInput("arcadeTurn", "", "", 2, false),
@@ -135,12 +193,13 @@ class DefaultInputs {
     }
 
     /** We like this guy */
-    public static hunter = () => {
+    public static hunter: InputSupplier = () => {
         return {
             schemeName: "Hunter",
             descriptiveName: "Left Stick",
             customized: false,
             usesGamepad: true,
+            driveType: DriveType.ARCADE,
             inputs: [
                 new AxisInput("arcadeDrive", "", "", 1, true),
                 new AxisInput("arcadeTurn", "", "", 0, false),
@@ -162,12 +221,13 @@ class DefaultInputs {
         }
     }
 
-    public static carmela = () => {
+    public static carmela: InputSupplier = () => {
         return {
             schemeName: "Carmela",
             descriptiveName: "Right Stick",
             customized: false,
             usesGamepad: true,
+            driveType: DriveType.ARCADE,
             inputs: [
                 new AxisInput("arcadeDrive", "", "", 3, true),
                 new AxisInput("arcadeTurn", "", "", 2, false),
@@ -193,6 +253,7 @@ class DefaultInputs {
     public static get defaultInputCopies(): InputScheme[] {
         return [
             DefaultInputs.ernie(),
+            DefaultInputs.ernietank(),
             DefaultInputs.luna(),
             DefaultInputs.jax(),
             DefaultInputs.hunter(),
@@ -201,15 +262,27 @@ class DefaultInputs {
     }
 
     /** @returns {InputScheme} A new blank input scheme with no control bound. */
-    public static get newBlankScheme(): InputScheme {
+    public static newBlankScheme(drivetype: DriveType): InputScheme {
+        let driveInputs: AxisInput[]
+        switch (drivetype) {
+            case DriveType.ARCADE:
+                driveInputs = [new AxisInput("arcadeDrive"), new AxisInput("arcadeTurn")]
+                break
+            case DriveType.TANK:
+                driveInputs = [new AxisInput("tankLeft"), new AxisInput("tankRight")]
+                break
+            case DriveType.SWERVE:
+                driveInputs = [new AxisInput("swerveX"), new AxisInput("swerveZ"), new AxisInput("swerveYaw")]
+                break
+        }
         return {
             schemeName: "",
             descriptiveName: "",
             customized: true,
             usesGamepad: false,
+            driveType: drivetype,
             inputs: [
-                new AxisInput("arcadeDrive"),
-                new AxisInput("arcadeTurn"),
+                ...driveInputs,
 
                 new ButtonInput("intake"),
                 new ButtonInput("eject"),

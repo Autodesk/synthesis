@@ -44,7 +44,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemes[0]
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).available[0]
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
             setSelectedScheme(scheme)
