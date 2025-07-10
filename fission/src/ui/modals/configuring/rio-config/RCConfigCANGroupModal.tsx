@@ -24,15 +24,15 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     let simLayer
     let brain: WPILibBrain
 
-    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
     if (miraObjs.length > 0) {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-        simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
         brain = simLayer?.brain as WPILibBrain
     }
 
-    const cans = getSimMap()?.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
+    const cans = getSimMap()?.get(SimType.CAN_MOTOR) ?? new Map<string, Map<string, number>>()
     const devices: [string, Map<string, number | boolean | string>][] = [...cans.entries()]
         .filter(([_, data]) => data.get("<init"))
         .reverse()
@@ -40,7 +40,7 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Create Device"
-            icon={SynthesisIcons.Add}
+            icon={SynthesisIcons.ADD}
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {
@@ -52,9 +52,9 @@ const RCConfigCANGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 openModal("roborio")
             }}
         >
-            <Label size={LabelSize.Small}>Name</Label>
+            <Label size={LabelSize.SMALL}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Stack direction={StackDirection.Horizontal} className="w-full min-w-full">
+            <Stack direction={StackDirection.HORIZONTAL} className="w-full min-w-full">
                 <Container className="w-max">
                     <Label>Ports</Label>
                     <ScrollView className="h-full px-2">

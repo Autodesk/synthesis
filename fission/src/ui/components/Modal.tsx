@@ -2,7 +2,6 @@ import React, { ReactNode } from "react"
 import { ClickAwayListener } from "@mui/base/ClickAwayListener"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 export type ModalPropsImpl = {
     modalId: string
@@ -110,7 +109,7 @@ const Modal: React.FC<ModalProps> = ({
                                     closeModal()
                                     if (!cancelBlocked && onCancel) onCancel()
                                 }}
-                                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
@@ -125,7 +124,7 @@ const Modal: React.FC<ModalProps> = ({
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
                                 }}
-                                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     middleBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90 
@@ -141,7 +140,7 @@ const Modal: React.FC<ModalProps> = ({
                                     closeModal()
                                     if (!acceptBlocked && onAccept) onAccept()
                                 }}
-                                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90

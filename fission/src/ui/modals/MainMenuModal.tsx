@@ -3,7 +3,7 @@ import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "../components/StyledComponents"
 import Button from "@/components/Button.tsx"
 import { useModalControlContext } from "../helpers/UseModalManager"
-import { Global_AddToast } from "@/components/GlobalUIControls.ts"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () => void }> = ({
     modalId,
@@ -14,7 +14,7 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
     return (
         <Modal
             name={"Welcome"}
-            icon={SynthesisIcons.Gamepad}
+            icon={SynthesisIcons.GAMEPAD}
             modalId={modalId}
             middleEnabled={false}
             cancelEnabled={false}
@@ -33,7 +33,7 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
                 <Button
                     value={"Multiplayer"}
                     onClick={() => {
-                        Global_AddToast?.("error", "Not Supported", "Multiplayer is not yet supported. Come back soon!")
+                        globalAddToast?.("error", "Not Supported", "Multiplayer is not yet supported. Come back soon!")
                     }}
                     className="w-full mt-1 mb-3"
                 />
