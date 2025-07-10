@@ -14,7 +14,7 @@ describe("Physics Sanity Checks", () => {
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Convex Hull Shape (Cube)", () => {
@@ -23,7 +23,7 @@ describe("Physics Sanity Checks", () => {
             0.5, -0.5, 0.5, 0.5, -0.5,
         ])
 
-        const shapeResult = system.CreateConvexHull(points)
+        const shapeResult = system.createConvexHull(points)
 
         assert(shapeResult.HasError() == false, shapeResult.GetError().c_str())
         expect(shapeResult.IsValid()).toBe(true)
@@ -39,7 +39,7 @@ describe("Physics Sanity Checks", () => {
     test("Convex Hull Shape (Tetrahedron)", () => {
         const points: Float32Array = new Float32Array([0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0])
 
-        const shapeResult = system.CreateConvexHull(points)
+        const shapeResult = system.createConvexHull(points)
 
         assert(shapeResult.HasError() == false, shapeResult.GetError().c_str())
         expect(shapeResult.IsValid()).toBe(true)
@@ -64,7 +64,7 @@ describe("Physics Sanity Checks", () => {
         ])
 
         const density = 2.5
-        const shapeResult = system.CreateConvexHull(points, density)
+        const shapeResult = system.createConvexHull(points, density)
 
         assert(shapeResult.HasError() == false, shapeResult.GetError().c_str())
         expect(shapeResult.IsValid()).toBe(true)
@@ -84,20 +84,20 @@ describe("Shape Creation Edge Cases", () => {
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Convex Hull Shape (Invalid Points)", () => {
         const points: Float32Array = new Float32Array([0.0, 0.0, 0.0]) // Only one point
 
-        const shapeResult = system.CreateConvexHull(points)
+        const shapeResult = system.createConvexHull(points)
 
         expect(shapeResult.HasError()).toBe(true)
     })
 
     test("Convex Hull with Invalid Point Count", () => {
         expect(() => {
-            system.CreateConvexHull(new Float32Array([1, 2])) // Not divisible by 3
+            system.createConvexHull(new Float32Array([1, 2])) // Not divisible by 3
         }).toThrow("Invalid size of points: 2")
     })
 
@@ -107,7 +107,7 @@ describe("Shape Creation Edge Cases", () => {
             0.5, -0.5, 0.5, 0.5, -0.5,
         ])
 
-        const shapeResult = system.CreateConvexHull(points, 0.0)
+        const shapeResult = system.createConvexHull(points, 0.0)
 
         expect(shapeResult.IsValid()).toBe(true)
         const shape = shapeResult.Get()
@@ -117,16 +117,16 @@ describe("Shape Creation Edge Cases", () => {
     })
 
     test("Box with Zero Extents", () => {
-        const body = system.CreateBox(new THREE.Vector3(0, 0, 0), 1.0, undefined, undefined)
-        system.AddBodyToSystem(body.GetID(), false)
+        const body = system.createBox(new THREE.Vector3(0, 0, 0), 1.0, undefined, undefined)
+        system.addBodyToSystem(body.GetID(), false)
 
         expect(body).toBeDefined()
-        expect(system.IsBodyAdded(body.GetID())).toBe(true)
+        expect(system.isBodyAdded(body.GetID())).toBe(true)
     })
 
     test("Box with Negative Mass", () => {
-        const body = system.CreateBox(new THREE.Vector3(1, 1, 1), -1.0, undefined, undefined)
-        system.AddBodyToSystem(body.GetID(), false)
+        const body = system.createBox(new THREE.Vector3(1, 1, 1), -1.0, undefined, undefined)
+        system.addBodyToSystem(body.GetID(), false)
 
         expect(body).toBeDefined()
         // Body should still be created but mass should be handled appropriately
@@ -142,18 +142,18 @@ describe("Body Creation and Management", () => {
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Create Static Box", () => {
         const halfExtents = new THREE.Vector3(1, 2, 3)
         const position = new THREE.Vector3(5, 10, 15)
 
-        const body = system.CreateBox(halfExtents, undefined, position, undefined)
-        system.AddBodyToSystem(body.GetID(), false)
+        const body = system.createBox(halfExtents, undefined, position, undefined)
+        system.addBodyToSystem(body.GetID(), false)
 
         expect(body).toBeDefined()
-        expect(system.IsBodyAdded(body.GetID())).toBe(true)
+        expect(system.isBodyAdded(body.GetID())).toBe(true)
 
         const bodyPosition = body.GetPosition()
         expect(bodyPosition.GetX()).toBeCloseTo(5, 2)
@@ -165,8 +165,8 @@ describe("Body Creation and Management", () => {
         const halfExtents = new THREE.Vector3(0.5, 0.5, 0.5)
         const mass = 10.0
 
-        const body = system.CreateBox(halfExtents, mass, undefined, undefined)
-        system.AddBodyToSystem(body.GetID(), false)
+        const body = system.createBox(halfExtents, mass, undefined, undefined)
+        system.addBodyToSystem(body.GetID(), false)
 
         expect(body).toBeDefined()
         expect(body.GetMotionType()).toBe(JOLT.EMotionType_Dynamic)
@@ -174,8 +174,8 @@ describe("Body Creation and Management", () => {
 
         // Test that different masses produce different inverse masses
         const mass2 = 5.0
-        const body2 = system.CreateBox(halfExtents, mass2, undefined, undefined)
-        system.AddBodyToSystem(body2.GetID(), false)
+        const body2 = system.createBox(halfExtents, mass2, undefined, undefined)
+        system.addBodyToSystem(body2.GetID(), false)
 
         expect(body2.GetMotionProperties().GetInverseMass()).toBeCloseTo(1.0 / mass2, 2)
         expect(body.GetMotionProperties().GetInverseMass()).not.toBeCloseTo(
@@ -188,8 +188,8 @@ describe("Body Creation and Management", () => {
         const halfExtents = new THREE.Vector3(1, 1, 1)
         const rotation = new THREE.Euler(Math.PI / 4, 0, 0)
 
-        const body = system.CreateBox(halfExtents, 1.0, undefined, rotation)
-        system.AddBodyToSystem(body.GetID(), false)
+        const body = system.createBox(halfExtents, 1.0, undefined, rotation)
+        system.addBodyToSystem(body.GetID(), false)
 
         expect(body).toBeDefined()
         const bodyRotation = body.GetRotation()
@@ -202,18 +202,18 @@ describe("Body Creation and Management", () => {
             0.5, -0.5, 0.5, 0.5, -0.5,
         ])
 
-        const shapeResult = system.CreateConvexHull(points)
+        const shapeResult = system.createConvexHull(points)
         const shape = shapeResult.Get()
         const mass = 5.0
 
-        const body = system.CreateBody(shape, mass, undefined, undefined)
+        const body = system.createBody(shape, mass, undefined, undefined)
 
         expect(body).toBeDefined()
         expect(body.GetMotionType()).toBe(JOLT.EMotionType_Dynamic)
-        expect(system.IsBodyAdded(body.GetID())).toBe(false) // Not added to system yet
+        expect(system.isBodyAdded(body.GetID())).toBe(false) // Not added to system yet
 
-        system.AddBodyToSystem(body.GetID(), true)
-        expect(system.IsBodyAdded(body.GetID())).toBe(true)
+        system.addBodyToSystem(body.GetID(), true)
+        expect(system.isBodyAdded(body.GetID())).toBe(true)
 
         shape.Release()
     })
@@ -225,18 +225,18 @@ describe("Body Position and Rotation Manipulation", () => {
 
     beforeEach(() => {
         system = new PhysicsSystem()
-        body = system.CreateBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
-        system.AddBodyToSystem(body.GetID(), false)
+        body = system.createBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
+        system.addBodyToSystem(body.GetID(), false)
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Set Body Position", () => {
         const newPosition = new JOLT.RVec3(10, 20, 30)
 
-        system.SetBodyPosition(body.GetID(), newPosition)
+        system.setBodyPosition(body.GetID(), newPosition)
 
         const bodyPosition = body.GetPosition()
         expect(bodyPosition.GetX()).toBeCloseTo(10, 2)
@@ -249,7 +249,7 @@ describe("Body Position and Rotation Manipulation", () => {
     test("Set Body Rotation", () => {
         const newRotation = new JOLT.Quat(0, 0, Math.sin(Math.PI / 8), Math.cos(Math.PI / 8))
 
-        system.SetBodyRotation(body.GetID(), newRotation)
+        system.setBodyRotation(body.GetID(), newRotation)
 
         const bodyRotation = body.GetRotation()
         expect(bodyRotation.GetZ()).toBeCloseTo(Math.sin(Math.PI / 8), 2)
@@ -262,7 +262,7 @@ describe("Body Position and Rotation Manipulation", () => {
         const newPosition = new JOLT.RVec3(5, 10, 15)
         const newRotation = new JOLT.Quat(0, 0, 0, 1)
 
-        system.SetBodyPositionAndRotation(body.GetID(), newPosition, newRotation)
+        system.setBodyPositionAndRotation(body.GetID(), newPosition, newRotation)
 
         const bodyPosition = body.GetPosition()
         const bodyRotation = body.GetRotation()
@@ -282,7 +282,7 @@ describe("Body Position and Rotation Manipulation", () => {
         const linearVel = new JOLT.Vec3(5, 0, 0)
         const angularVel = new JOLT.Vec3(0, 1, 0)
 
-        system.SetBodyPositionRotationAndVelocity(body.GetID(), newPosition, newRotation, linearVel, angularVel)
+        system.setBodyPositionRotationAndVelocity(body.GetID(), newPosition, newRotation, linearVel, angularVel)
 
         const bodyLinearVel = body.GetLinearVelocity()
         const bodyAngularVel = body.GetAngularVelocity()
@@ -297,8 +297,8 @@ describe("Body Position and Rotation Manipulation", () => {
     })
 
     test("Set Body Position on Non-Added Body", () => {
-        const nonAddedBody = system.CreateBody(
-            system.CreateConvexHull(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1])).Get(),
+        const nonAddedBody = system.createBody(
+            system.createConvexHull(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1])).Get(),
             1.0,
             undefined,
             undefined
@@ -306,8 +306,8 @@ describe("Body Position and Rotation Manipulation", () => {
         const newPosition = new JOLT.RVec3(10, 20, 30)
 
         // Should not throw error, but also should not affect position since body is not added
-        system.SetBodyPosition(nonAddedBody.GetID(), newPosition)
-        system.AddBodyToSystem(nonAddedBody.GetID(), false)
+        system.setBodyPosition(nonAddedBody.GetID(), newPosition)
+        system.addBodyToSystem(nonAddedBody.GetID(), false)
 
         expect(nonAddedBody.GetPosition().GetX()).toBeCloseTo(0, 2)
         expect(nonAddedBody.GetPosition().GetY()).toBeCloseTo(0, 2)
@@ -323,40 +323,40 @@ describe("Physics Enable/Disable", () => {
 
     beforeEach(() => {
         system = new PhysicsSystem()
-        body = system.CreateBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
-        system.AddBodyToSystem(body.GetID(), false)
+        body = system.createBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
+        system.addBodyToSystem(body.GetID(), false)
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Disable Physics for Body", () => {
-        system.DisablePhysicsForBody(body.GetID())
+        system.disablePhysicsForBody(body.GetID())
 
         expect(body.IsSensor()).toBe(true)
         expect(body.IsActive()).toBe(false)
     })
 
     test("Enable Physics for Body", () => {
-        system.DisablePhysicsForBody(body.GetID())
-        system.EnablePhysicsForBody(body.GetID())
+        system.disablePhysicsForBody(body.GetID())
+        system.enablePhysicsForBody(body.GetID())
 
         expect(body.IsSensor()).toBe(false)
         expect(body.IsActive()).toBe(true)
     })
 
     test("Disable Physics on Non-Added Body", () => {
-        const nonAddedBody = system.CreateBody(
-            system.CreateConvexHull(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1])).Get(),
+        const nonAddedBody = system.createBody(
+            system.createConvexHull(new Float32Array([0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1])).Get(),
             1.0,
             undefined,
             undefined
         )
 
         // Should not throw error
-        system.DisablePhysicsForBody(nonAddedBody.GetID())
-        system.EnablePhysicsForBody(nonAddedBody.GetID())
+        system.disablePhysicsForBody(nonAddedBody.GetID())
+        system.enablePhysicsForBody(nonAddedBody.GetID())
     })
 })
 
@@ -368,43 +368,43 @@ describe("Pause System", () => {
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Hold and Release Pause", () => {
         expect(system.isPaused).toBe(false)
 
-        system.HoldPause("test-pause")
+        system.holdPause("test-pause")
         expect(system.isPaused).toBe(true)
 
-        const released = system.ReleasePause("test-pause")
+        const released = system.releasePause("test-pause")
         expect(released).toBe(true)
         expect(system.isPaused).toBe(false)
     })
 
     test("Multiple Pause References", () => {
-        system.HoldPause("pause1")
-        system.HoldPause("pause2")
+        system.holdPause("pause1")
+        system.holdPause("pause2")
         expect(system.isPaused).toBe(true)
 
-        system.ReleasePause("pause1")
+        system.releasePause("pause1")
         expect(system.isPaused).toBe(true) // Still paused due to pause2
 
-        system.ReleasePause("pause2")
+        system.releasePause("pause2")
         expect(system.isPaused).toBe(false)
     })
 
     test("Release Non-Existent Pause", () => {
-        const released = system.ReleasePause("non-existent")
+        const released = system.releasePause("non-existent")
         expect(released).toBe(false)
     })
 
     test("Force Unpause", () => {
-        system.HoldPause("pause1")
-        system.HoldPause("pause2")
+        system.holdPause("pause1")
+        system.holdPause("pause2")
         expect(system.isPaused).toBe(true)
 
-        system.ForceUnpause()
+        system.forceUnpause()
         expect(system.isPaused).toBe(false)
     })
 })
@@ -415,19 +415,19 @@ describe("Raycast System", () => {
 
     beforeEach(() => {
         system = new PhysicsSystem()
-        targetBody = system.CreateBox(new THREE.Vector3(1, 1, 1), 1.0, new THREE.Vector3(0, 5, 0), undefined)
-        system.AddBodyToSystem(targetBody.GetID(), false)
+        targetBody = system.createBox(new THREE.Vector3(1, 1, 1), 1.0, new THREE.Vector3(0, 5, 0), undefined)
+        system.addBodyToSystem(targetBody.GetID(), false)
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Successful Raycast Hit", () => {
         const from = new JOLT.Vec3(0, 0, 0)
         const direction = new JOLT.Vec3(0, 10, 0) // Ray pointing up
 
-        const hit = system.RayCast(from, direction)
+        const hit = system.rayCast(from, direction)
 
         expect(hit).toBeDefined()
         expect(hit!.point.GetY()).toBeGreaterThan(0)
@@ -441,7 +441,7 @@ describe("Raycast System", () => {
         const from = new JOLT.Vec3(10, 0, 0)
         const direction = new JOLT.Vec3(0, 5, 0) // Ray pointing up but offset
 
-        const hit = system.RayCast(from, direction)
+        const hit = system.rayCast(from, direction)
 
         expect(hit).toBeUndefined()
 
@@ -453,7 +453,7 @@ describe("Raycast System", () => {
         const from = new JOLT.Vec3(0, 0, 0)
         const direction = new JOLT.Vec3(0, 10, 0)
 
-        const hit = system.RayCast(from, direction, targetBody.GetID())
+        const hit = system.rayCast(from, direction, targetBody.GetID())
 
         expect(hit).toBeUndefined() // Should miss because target body is ignored
 
@@ -470,19 +470,19 @@ describe("Sensor Creation", () => {
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Create Valid Sensor", () => {
         const size = new JOLT.Vec3(1, 1, 1)
         const shapeSettings = new JOLT.BoxShapeSettings(size)
 
-        const sensorId = system.CreateSensor(shapeSettings)
+        const sensorId = system.createSensor(shapeSettings)
 
         expect(sensorId).toBeDefined()
-        expect(system.IsBodyAdded(sensorId!)).toBe(true)
+        expect(system.isBodyAdded(sensorId!)).toBe(true)
 
-        const sensorBody = system.GetBody(sensorId!)
+        const sensorBody = system.getBody(sensorId!)
         expect(sensorBody.IsSensor()).toBe(true)
 
         JOLT.destroy(size)
@@ -499,7 +499,7 @@ describe("Sensor Creation", () => {
             const shapeSettings = new JOLT.ConvexHullShapeSettings()
             // Don't add any points - this should make it invalid
 
-            const sensorId = system.CreateSensor(shapeSettings)
+            const sensorId = system.createSensor(shapeSettings)
 
             expect(sensorId).toBeUndefined()
 
@@ -517,34 +517,34 @@ describe("Body Associations", () => {
 
     beforeEach(() => {
         system = new PhysicsSystem()
-        body = system.CreateBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
+        body = system.createBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Set and Get Body Association", () => {
         const association = new BodyAssociate(body.GetID())
 
-        system.SetBodyAssociation(association)
+        system.setBodyAssociation(association)
 
-        const retrieved = system.GetBodyAssociation(body.GetID())
+        const retrieved = system.getBodyAssociation(body.GetID())
         expect(retrieved).toBe(association)
     })
 
     test("Remove Body Association", () => {
         const association = new BodyAssociate(body.GetID())
-        system.SetBodyAssociation(association)
+        system.setBodyAssociation(association)
 
-        system.RemoveBodyAssociation(body.GetID())
+        system.removeBodyAssociation(body.GetID())
 
-        const retrieved = system.GetBodyAssociation(body.GetID())
+        const retrieved = system.getBodyAssociation(body.GetID())
         expect(retrieved).toBeUndefined()
     })
 
     test("Get Non-Existent Association", () => {
-        const retrieved = system.GetBodyAssociation(body.GetID())
+        const retrieved = system.getBodyAssociation(body.GetID())
         expect(retrieved).toBeUndefined()
     })
 })
@@ -563,7 +563,7 @@ describe("Layer Reserve System", () => {
         const reserve = new LayerReserve()
         const originalLayer = reserve.layer
 
-        reserve.Release()
+        reserve.release()
 
         expect(reserve.isReleased).toBe(true)
         expect(reserve.layer).toBe(originalLayer) // Layer number should remain the same
@@ -572,8 +572,8 @@ describe("Layer Reserve System", () => {
     test("Multiple Layer Reserve Release", () => {
         const reserve = new LayerReserve()
 
-        reserve.Release()
-        reserve.Release() // Should not cause issues
+        reserve.release()
+        reserve.release() // Should not cause issues
 
         expect(reserve.isReleased).toBe(true)
     })
@@ -584,8 +584,8 @@ describe("Layer Reserve System", () => {
 
         expect(reserve1.layer).not.toBe(reserve2.layer)
 
-        reserve1.Release()
-        reserve2.Release()
+        reserve1.release()
+        reserve2.release()
     })
 })
 
@@ -596,41 +596,41 @@ describe("Body Cleanup", () => {
 
     beforeEach(() => {
         system = new PhysicsSystem()
-        body1 = system.CreateBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
-        body2 = system.CreateBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
-        system.AddBodyToSystem(body1.GetID(), false)
-        system.AddBodyToSystem(body2.GetID(), false)
+        body1 = system.createBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
+        body2 = system.createBox(new THREE.Vector3(1, 1, 1), 1.0, undefined, undefined)
+        system.addBodyToSystem(body1.GetID(), false)
+        system.addBodyToSystem(body2.GetID(), false)
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Destroy Single Body", () => {
         const bodyId = body1.GetID()
 
-        expect(system.IsBodyAdded(bodyId)).toBe(true)
+        expect(system.isBodyAdded(bodyId)).toBe(true)
 
-        system.DestroyBodies(body1)
+        system.destroyBodies(body1)
 
-        expect(system.IsBodyAdded(bodyId)).toBe(false)
+        expect(system.isBodyAdded(bodyId)).toBe(false)
     })
 
     test("Destroy Multiple Bodies", () => {
-        system.DestroyBodies(body1, body2)
+        system.destroyBodies(body1, body2)
 
-        expect(system.IsBodyAdded(body1.GetID())).toBe(false)
-        expect(system.IsBodyAdded(body2.GetID())).toBe(false)
+        expect(system.isBodyAdded(body1.GetID())).toBe(false)
+        expect(system.isBodyAdded(body2.GetID())).toBe(false)
     })
 
     test("Destroy Bodies by ID", () => {
         const id1 = body1.GetID()
         const id2 = body2.GetID()
 
-        system.DestroyBodyIds(id1, id2)
+        system.destroyBodyIds(id1, id2)
 
-        expect(system.IsBodyAdded(id1)).toBe(false)
-        expect(system.IsBodyAdded(id2)).toBe(false)
+        expect(system.isBodyAdded(id1)).toBe(false)
+        expect(system.isBodyAdded(id2)).toBe(false)
     })
 })
 
@@ -640,12 +640,12 @@ describe("Update Loop", () => {
 
     beforeEach(() => {
         system = new PhysicsSystem()
-        body = system.CreateBox(new THREE.Vector3(1, 1, 1), 1.0, new THREE.Vector3(0, 10, 0), undefined)
-        system.AddBodyToSystem(body.GetID(), true)
+        body = system.createBox(new THREE.Vector3(1, 1, 1), 1.0, new THREE.Vector3(0, 10, 0), undefined)
+        system.addBodyToSystem(body.GetID(), true)
     })
 
     afterEach(() => {
-        system.Destroy()
+        system.destroy()
     })
 
     test("Update with Normal Delta Time", () => {
@@ -654,7 +654,7 @@ describe("Update Loop", () => {
 
         // Run several update steps
         for (let i = 0; i < 10; i++) {
-            system.Update(1 / 60) // 60 FPS
+            system.update(1 / 60) // 60 FPS
         }
 
         const finalPosition = body.GetPosition()
@@ -669,11 +669,11 @@ describe("Update Loop", () => {
         const initialPos = body.GetPosition()
         const initialPosition = new JOLT.RVec3(initialPos.GetX(), initialPos.GetY(), initialPos.GetZ())
 
-        system.HoldPause("test-pause")
+        system.holdPause("test-pause")
 
         // Run update steps while paused
         for (let i = 0; i < 10; i++) {
-            system.Update(1 / 60)
+            system.update(1 / 60)
         }
 
         const finalPosition = body.GetPosition()
@@ -686,14 +686,14 @@ describe("Update Loop", () => {
 
     test("Update with Large Delta Time", () => {
         // Should not crash or cause issues
-        system.Update(10.0) // Very large delta time
+        system.update(10.0) // Very large delta time
 
         expect(body.GetPosition().GetY()).toBeLessThan(10)
     })
 
     test("Update with Very Small Delta Time", () => {
         // Should not crash or cause issues
-        system.Update(0.001) // Very small delta time
+        system.update(0.001) // Very small delta time
 
         expect(body.GetPosition().GetY()).toBeLessThanOrEqual(10)
     })
@@ -701,12 +701,12 @@ describe("Update Loop", () => {
 
 describe("Mirabuf Physics Loading", () => {
     test("Body Loading (Dozer)", async () => {
-        const assembly = await MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
-            x => MirabufCachingService.Get(x!.id, MiraType.ROBOT)
+        const assembly = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
+            x => MirabufCachingService.get(x!.id, MiraType.ROBOT)
         )
         const parser = new MirabufParser(assembly!)
         const physSystem = new PhysicsSystem()
-        const mapping = physSystem.CreateBodiesFromParser(parser, new LayerReserve())
+        const mapping = physSystem.createBodiesFromParser(parser, new LayerReserve())
 
         expect(mapping.size).toBe(7)
     })

@@ -1229,7 +1229,7 @@ class PhysicsSystem extends WorldSystem {
 
     public destroyBodyIds(...bodies: Jolt.BodyID[]) {
         bodies.forEach(x => {
-            if (this.IsBodyAdded(x)) {
+            if (this.isBodyAdded(x)) {
                 this._joltBodyInterface.RemoveBody(x)
                 this._joltBodyInterface.DestroyBody(x)
             }

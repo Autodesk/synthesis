@@ -49,39 +49,39 @@ describe("Contact Event Integration Tests", () => {
         physicsSystem = new PhysicsSystem()
 
         // Create a static ground body
-        groundBody = physicsSystem.CreateBox(
+        groundBody = physicsSystem.createBox(
             new THREE.Vector3(10, 0.5, 10), // Large flat ground
             undefined, // No mass (static)
             new THREE.Vector3(0, -1, 0), // Position below origin
             undefined // No rotation
         )
-        physicsSystem.AddBodyToSystem(groundBody.GetID(), false)
+        physicsSystem.addBodyToSystem(groundBody.GetID(), false)
 
         // Create a dynamic falling body
-        fallingBody = physicsSystem.CreateBox(
+        fallingBody = physicsSystem.createBox(
             new THREE.Vector3(1, 1, 1), // 1x1x1 cube
             1.0, // 1kg mass
             new THREE.Vector3(0, 10, 0), // Start 10 units above ground
             undefined // No rotation
         )
-        physicsSystem.AddBodyToSystem(fallingBody.GetID(), true)
+        physicsSystem.addBodyToSystem(fallingBody.GetID(), true)
 
         // Add event listeners
-        OnContactAddedEvent.AddListener(onContactAdded)
-        OnContactPersistedEvent.AddListener(onContactPersisted)
-        OnContactRemovedEvent.AddListener(onContactRemoved)
-        OnContactValidateEvent.AddListener(onContactValidate)
+        OnContactAddedEvent.addListener(onContactAdded)
+        OnContactPersistedEvent.addListener(onContactPersisted)
+        OnContactRemovedEvent.addListener(onContactRemoved)
+        OnContactValidateEvent.addListener(onContactValidate)
     })
 
     afterEach(() => {
         // Remove event listeners
-        OnContactAddedEvent.RemoveListener(onContactAdded)
-        OnContactPersistedEvent.RemoveListener(onContactPersisted)
-        OnContactRemovedEvent.RemoveListener(onContactRemoved)
-        OnContactValidateEvent.RemoveListener(onContactValidate)
+        OnContactAddedEvent.removeListener(onContactAdded)
+        OnContactPersistedEvent.removeListener(onContactPersisted)
+        OnContactRemovedEvent.removeListener(onContactRemoved)
+        OnContactValidateEvent.removeListener(onContactValidate)
 
         // Clean up physics system
-        physicsSystem.Destroy()
+        physicsSystem.destroy()
     })
 
     test("Falling body actually moves downward", async () => {
@@ -91,7 +91,7 @@ describe("Contact Event Integration Tests", () => {
         // Run simulation for a bit
         for (let i = 0; i < 60; i++) {
             // 1 second at 60 FPS
-            physicsSystem.Update(1 / 60)
+            physicsSystem.update(1 / 60)
         }
 
         const finalPosition = fallingBody.GetPosition()
@@ -113,7 +113,7 @@ describe("Contact Event Integration Tests", () => {
         const deltaTime = 1 / 60 // 60 FPS
 
         while (simulationSteps < maxSteps && contactAddedEvents.length === 0) {
-            physicsSystem.Update(deltaTime)
+            physicsSystem.update(deltaTime)
             simulationSteps++
         }
 
@@ -140,7 +140,7 @@ describe("Contact Event Integration Tests", () => {
 
         // Wait for initial contact (Usually around 82 steps)
         while (simulationSteps < maxSteps && contactAddedEvents.length === 0) {
-            physicsSystem.Update(deltaTime)
+            physicsSystem.update(deltaTime)
             simulationSteps++
         }
 
@@ -149,7 +149,7 @@ describe("Contact Event Integration Tests", () => {
         // Continue simulation to get persisted events
         const additionalSteps = 30 // Run for 0.5 seconds after contact
         for (let i = 0; i < additionalSteps; i++) {
-            physicsSystem.Update(deltaTime)
+            physicsSystem.update(deltaTime)
         }
 
         // Should have persisted contact events since the box is resting on ground
@@ -165,13 +165,13 @@ describe("Contact Event Integration Tests", () => {
 
     test("Multiple collisions generate multiple contact events", async () => {
         // Create a second falling body
-        const secondFallingBody = physicsSystem.CreateBox(
+        const secondFallingBody = physicsSystem.createBox(
             new THREE.Vector3(1, 1, 1),
             1.0,
             new THREE.Vector3(5, 15, 0), // Different X position, higher up
             undefined
         )
-        physicsSystem.AddBodyToSystem(secondFallingBody.GetID(), true)
+        physicsSystem.addBodyToSystem(secondFallingBody.GetID(), true)
 
         // Run simulation until both bodies collide with ground
         let simulationSteps = 0
@@ -179,7 +179,7 @@ describe("Contact Event Integration Tests", () => {
         const deltaTime = 1 / 60
 
         while (simulationSteps < maxSteps) {
-            physicsSystem.Update(deltaTime)
+            physicsSystem.update(deltaTime)
             simulationSteps++
 
             // Wait until we have at least 2 contact events (both bodies hit ground)
@@ -191,7 +191,7 @@ describe("Contact Event Integration Tests", () => {
         expect(contactAddedEvents.length).toBeGreaterThanOrEqual(2)
 
         // Clean up the additional body
-        physicsSystem.DestroyBodies(secondFallingBody)
+        physicsSystem.destroyBodies(secondFallingBody)
     })
 
     test("Contact removed events are fired when objects stop colliding", async () => {
@@ -201,7 +201,7 @@ describe("Contact Event Integration Tests", () => {
         const deltaTime = 1 / 60
 
         while (simulationSteps < maxSteps && contactAddedEvents.length === 0) {
-            physicsSystem.Update(deltaTime)
+            physicsSystem.update(deltaTime)
             simulationSteps++
         }
 
@@ -212,7 +212,7 @@ describe("Contact Event Integration Tests", () => {
         // Run simulation for a bit longer
         const additionalSteps = 30
         for (let i = 0; i < additionalSteps; i++) {
-            physicsSystem.Update(deltaTime)
+            physicsSystem.update(deltaTime)
         }
 
         expect(contactRemovedEvents.length).toBeGreaterThan(0)
@@ -225,7 +225,7 @@ describe("Contact Event Integration Tests", () => {
         const deltaTime = 1 / 60 // 60 FPS
 
         while (simulationSteps < maxSteps && contactValidateEvents.length === 0) {
-            physicsSystem.Update(deltaTime)
+            physicsSystem.update(deltaTime)
             simulationSteps++
         }
 

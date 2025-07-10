@@ -66,7 +66,7 @@ describe("Mechanism Constructor Tests", () => {
         const mechanism = new Mechanism(rootBody, bodyMap, controllable)
 
         expect(mechanism.nodeToBody.size).toBe(0)
-        expect(mechanism.GetBodyByNodeId("nonexistent")).toBeUndefined()
+        expect(mechanism.getBodyByNodeId("nonexistent")).toBeUndefined()
     })
 })
 
@@ -101,14 +101,14 @@ describe("Mechanism Constraint Management", () => {
     test("Add single constraint", () => {
         expect(mechanism.constraints).toHaveLength(0)
 
-        mechanism.AddConstraint(mockConstraint1)
+        mechanism.addConstraint(mockConstraint1)
 
         expect(mechanism.constraints).toHaveLength(1)
         expect(mechanism.constraints[0]).toBe(mockConstraint1)
     })
 
     test("Constraint with info and extra components", () => {
-        mechanism.AddConstraint(mockConstraint2)
+        mechanism.addConstraint(mockConstraint2)
 
         const addedConstraint = mechanism.constraints[0]
         expect(addedConstraint.info?.name).toBe("test-joint")
@@ -118,8 +118,8 @@ describe("Mechanism Constraint Management", () => {
     })
 
     test("Add multiple constraints", () => {
-        mechanism.AddConstraint(mockConstraint1)
-        mechanism.AddConstraint(mockConstraint2)
+        mechanism.addConstraint(mockConstraint1)
+        mechanism.addConstraint(mockConstraint2)
 
         expect(mechanism.constraints).toHaveLength(2)
         expect(mechanism.constraints[0]).toBe(mockConstraint1)
@@ -137,7 +137,7 @@ describe("Mechanism Step Listener Management", () => {
     test("Add single step listener", () => {
         expect(mechanism.stepListeners).toHaveLength(0)
 
-        mechanism.AddStepListener(mockStepListener)
+        mechanism.addStepListener(mockStepListener)
 
         expect(mechanism.stepListeners).toHaveLength(1)
         expect(mechanism.stepListeners[0]).toBe(mockStepListener)
@@ -147,8 +147,8 @@ describe("Mechanism Step Listener Management", () => {
         const listener1 = { ...mockStepListener }
         const listener2 = { ...mockStepListener }
 
-        mechanism.AddStepListener(listener1)
-        mechanism.AddStepListener(listener2)
+        mechanism.addStepListener(listener1)
+        mechanism.addStepListener(listener2)
 
         expect(mechanism.stepListeners).toHaveLength(2)
         expect(mechanism.stepListeners[0]).toBe(listener1)
@@ -170,19 +170,19 @@ describe("Mechanism Body Node Mapping", () => {
     })
 
     test("Get existing body by node ID", () => {
-        const body = mechanism.GetBodyByNodeId("node1")
+        const body = mechanism.getBodyByNodeId("node1")
         expect(body).toBe(mockBodyID)
     })
 
     test("Get non-existing body by node ID", () => {
-        const body = mechanism.GetBodyByNodeId("nonexistent")
+        const body = mechanism.getBodyByNodeId("nonexistent")
         expect(body).toBeUndefined()
     })
 
     test("Get all mapped bodies", () => {
-        expect(mechanism.GetBodyByNodeId("node1")).toBeDefined()
-        expect(mechanism.GetBodyByNodeId("node2")).toBeDefined()
-        expect(mechanism.GetBodyByNodeId("node3")).toBeDefined()
+        expect(mechanism.getBodyByNodeId("node1")).toBeDefined()
+        expect(mechanism.getBodyByNodeId("node2")).toBeDefined()
+        expect(mechanism.getBodyByNodeId("node3")).toBeDefined()
     })
 
     test("Body map reference integrity", () => {
@@ -193,7 +193,7 @@ describe("Mechanism Body Node Mapping", () => {
         const newBodyID = createMockBodyID(999)
         bodyMap.set("node4", newBodyID)
 
-        expect(mechanism.GetBodyByNodeId("node4")).toBe(newBodyID)
+        expect(mechanism.getBodyByNodeId("node4")).toBe(newBodyID)
     })
 })
 
@@ -206,7 +206,7 @@ describe("Mechanism Methods", () => {
 
     test("DisablePhysics method exists and is callable", () => {
         // The method currently has no implementation, but should be callable
-        expect(() => mechanism.DisablePhysics()).not.toThrow()
+        expect(() => mechanism.disablePhysics()).not.toThrow()
     })
 })
 
@@ -232,8 +232,8 @@ describe("Mechanism Integration Tests", () => {
             extraBodies: [],
         }
 
-        mechanism.AddConstraint(wheelConstraint)
-        mechanism.AddStepListener(mockStepListener)
+        mechanism.addConstraint(wheelConstraint)
+        mechanism.addStepListener(mockStepListener)
         mechanism.ghostBodies.push(mockBodyID)
 
         // Verify all components are properly set
@@ -246,8 +246,8 @@ describe("Mechanism Integration Tests", () => {
         expect(mechanism.controllable).toBe(true)
 
         // Test body retrieval
-        expect(mechanism.GetBodyByNodeId("wheel1")).toBeDefined()
-        expect(mechanism.GetBodyByNodeId("nonexistent")).toBeUndefined()
+        expect(mechanism.getBodyByNodeId("wheel1")).toBeDefined()
+        expect(mechanism.getBodyByNodeId("nonexistent")).toBeUndefined()
     })
 
     test("Mechanism with complex constraint setup", () => {
@@ -273,7 +273,7 @@ describe("Mechanism Integration Tests", () => {
             },
         ]
 
-        constraints.forEach(constraint => mechanism.AddConstraint(constraint))
+        constraints.forEach(constraint => mechanism.addConstraint(constraint))
 
         expect(mechanism.constraints).toHaveLength(2)
         expect(mechanism.constraints[0].info?.name).toBe("Revolute 8")
@@ -290,12 +290,12 @@ describe("Mirabuf Mechanism Creation", () => {
     })
 
     test("Body Loading (Dozer)", async () => {
-        const assembly = await MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
-            x => MirabufCachingService.Get(x!.id, MiraType.ROBOT)
+        const assembly = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
+            x => MirabufCachingService.get(x!.id, MiraType.ROBOT)
         )
         const parser = new MirabufParser(assembly!)
 
-        const mechanism = physSystem.CreateMechanismFromParser(parser)
+        const mechanism = physSystem.createMechanismFromParser(parser)
 
         expect(mechanism).toBeDefined()
         expect(mechanism.controllable).toBe(true)
@@ -303,13 +303,13 @@ describe("Mirabuf Mechanism Creation", () => {
     })
 
     test("Body Loading (Mutli-Joint Robot)", async () => {
-        const assembly = await MirabufCachingService.CacheRemote(
+        const assembly = await MirabufCachingService.cacheRemote(
             "/api/mira/private/Multi-Joint_Wheels_v0.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
+        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
         const parser = new MirabufParser(assembly!)
 
-        const mechanism = physSystem.CreateMechanismFromParser(parser)
+        const mechanism = physSystem.createMechanismFromParser(parser)
 
         expect(mechanism).toBeDefined()
         expect(mechanism.controllable).toBe(true)
