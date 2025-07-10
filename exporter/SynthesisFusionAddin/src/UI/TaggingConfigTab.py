@@ -7,6 +7,7 @@ from src.UI.CreateCommandInputsHelper import createTableInput, createTextBoxInpu
 
 logger = getLogger()
 
+
 class TaggingConfigTab:
     # stores the types of tags available for selection
     tagTypes = ["Softbody", "Rigid", "Chain", "Spring", "Rope"]
@@ -114,9 +115,7 @@ class TaggingConfigTab:
         bodyName = commandInputs.addTextBoxCommandInput(f"bodyName_{row}", "Body Name", "", 1, True)
         bodyName.formattedText = f"<p style='font-size:11px'>{body.name}</p>"
 
-        componentName = commandInputs.addTextBoxCommandInput(
-            f"componentName_{row}", "Component Name", "", 1, True
-        )
+        componentName = commandInputs.addTextBoxCommandInput(f"componentName_{row}", "Component Name", "", 1, True)
         componentName.formattedText = f"<p style='font-size:11px'>{body.parentComponent.name}</p>"
 
         tagType = commandInputs.addTextBoxCommandInput(f"tagType_{row}", "Tag Type", "", 1, True)
