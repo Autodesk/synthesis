@@ -1,9 +1,10 @@
 import adsk.core
 import adsk.fusion
 
-from src.Logging import logFailure
+from src.Logging import logFailure, getLogger
 from src.UI.CreateCommandInputsHelper import createTableInput, createTextBoxInput
 
+logger = getLogger()
 
 class TaggingConfigTab:
     # stores the types of tags available for selection
@@ -35,7 +36,7 @@ class TaggingConfigTab:
         bodySelection.addSelectionFilter("SolidBodies")
         bodySelection.addSelectionFilter("SurfaceBodies")
 
-        self.taggingListTable = createTableInput("tagListTable", "Tag List", taggingConfigTabInputs, 6, "1:1")
+        self.taggingListTable = createTableInput("tagListTable", "Tag List", taggingConfigTabInputs, 6, "1:1:1")
         self.taggingListTable.addCommandInput(
             createTextBoxInput("headerBodyName", "Body", taggingConfigTabInputs, "Body Name", background="#d9d9d9"),
             0,
@@ -51,8 +52,6 @@ class TaggingConfigTab:
         self.taggingListTable.addCommandInput(
             createTextBoxInput("headerTagType", "Type", taggingConfigTabInputs, "Tag Type", background="#d9d9d9"), 0, 2
         )
-        self.taggingListTable.getInputAtPosition(0, 0).parentCommand.isSelectable = False
-        self.taggingListTable.getInputAtPosition(0, 1).parentCommand.isSelectable = False
 
         addTagInputButton = taggingConfigTabInputs.addBoolValueInput("tagAddButton", "Add", False)
         removeTagInputButton = taggingConfigTabInputs.addBoolValueInput("tagRemoveButton", "Remove", False)
@@ -102,17 +101,17 @@ class TaggingConfigTab:
             tagBodySelection.setSelectionLimits(0, 1)
 
     def addTag(self, body: adsk.fusion.BRepBody, tag: str) -> None:
-        commandInputs = self.taggingConfigTab.commandInputs
+        commandInputs = self.taggingListTable.commandInputs
         row = self.taggingListTable.rowCount
         bodyName = commandInputs.addTextBoxCommandInput(f"bodyName_{row}", "Body Name", body.name, 1, True)
-        comonentName = commandInputs.addTextBoxCommandInput(
+        componentName = commandInputs.addTextBoxCommandInput(
             f"componentName_{row}", "Component Name", body.parentComponent.name, 1, True
         )
         tagType = commandInputs.addTextBoxCommandInput(f"tagType_{row}", "Tag Type", tag, 1, True)
 
         row = self.taggingListTable.rowCount
         self.taggingListTable.addCommandInput(bodyName, row, 0)
-        self.taggingListTable.addCommandInput(comonentName, row, 1)
+        self.taggingListTable.addCommandInput(componentName, row, 1)
         self.taggingListTable.addCommandInput(tagType, row, 2)
 
         self.tagMap[body.entityToken] = tag
