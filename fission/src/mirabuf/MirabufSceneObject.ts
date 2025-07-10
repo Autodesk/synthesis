@@ -11,6 +11,7 @@ import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import {
     Alliance,
+    Station,
     EjectorPreferences,
     FieldPreferences,
     IntakePreferences,
