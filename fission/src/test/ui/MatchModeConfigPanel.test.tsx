@@ -1,4 +1,4 @@
-import { fireEvent, getByText, render, waitFor, act } from "@testing-library/react"
+import { fireEvent, getByText, render, act } from "@testing-library/react"
 import { assert, afterEach, beforeEach, describe, test, vi } from "vitest"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { PanelControlProvider } from "@/ui/PanelContext"
@@ -69,21 +69,8 @@ describe("MatchModeConfigPanel", () => {
         return 0
     }
 
-    async function waitForInitialLoad(container: HTMLElement): Promise<number> {
-        // Wait for the component to load the initial configs from the public directory
-        // This should show something like "4 Match Modes" instead of "0 Match Modes"
-        return waitFor(
-            () => {
-                const count = getMatchModeCount(container)
-                if (count > 0) return count
-                throw new Error("Still waiting for initial configs to load")
-            },
-            { timeout: 5000 }
-        )
-    }
-
     async function testUploadMatchModeConfig(json: unknown, validJSON: boolean) {
-        const initialCount = await waitForInitialLoad(container)
+        const initialCount = getMatchModeCount(container)
 
         const testJsonString = JSON.stringify(json)
         const testFile = new File([testJsonString], "test.json", { type: "application/json" })

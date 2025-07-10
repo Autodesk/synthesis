@@ -14,6 +14,7 @@ import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAM
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Button from "@/ui/components/Button"
+import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs"
 
 export interface MatchModeConfig {
     id: string // Required
@@ -24,7 +25,7 @@ export interface MatchModeConfig {
     endgameTime: number // Optional, defaults to 20
 }
 
-function MatchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
+function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
     if (MatchMode.getInstance().isMatchEnabled()) {
         globalAddToast?.(
             "error",
@@ -80,18 +81,9 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
 
     useEffect(() => {
-        const loadAllJsonFiles = async () => {
+        const loadConfigs = () => {
             try {
-                const indexRes = await fetch("match-mode-config/index.json")
-                const fileNames: string[] = await indexRes.json()
-
-                const defaultConfigs = await Promise.all(
-                    fileNames.map(async fileName => {
-                        const res = await fetch(`match-mode-config/${fileName}`)
-                        const config = await res.json()
-                        return { ...config, isDefault: true }
-                    })
-                )
+                const defaultConfigs = DefaultMatchModeConfigs.defaultMatchModeConfigCopies
                 const localConfigs = JSON.parse(window.localStorage.getItem("match-mode-configs") || "[]")
 
                 const combinedConfigs = [...defaultConfigs, ...localConfigs]
@@ -99,7 +91,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
                 setMatchModeConfigs(uniqueConfigsById)
             } catch (err) {
-                console.error("Error loading JSON files:", err)
+                console.error("Error loading match mode configs:", err)
                 globalAddToast?.(
                     "error",
                     "Error Loading Match Mode Configs",
@@ -108,7 +100,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }
         }
 
-        loadAllJsonFiles()
+        loadConfigs()
     }, [])
 
     const matchModeConfigElements = useMemo(
@@ -120,7 +112,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
                         primaryOnClick={() => {
-                            MatchConfigSelected(config, openModal)
+                            matchConfigSelected(config, openModal)
                             closePanel("match-mode-config")
                         }}
                         secondaryOnClick={
@@ -166,18 +158,18 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
         const configObj = config as Record<string, unknown>
 
-        const props: { id: string; expected_type: string; required: boolean }[] = [
-            { id: "id", expected_type: "string", required: true },
-            { id: "name", expected_type: "string", required: true },
-            { id: "autonomousTime", expected_type: "number", required: false },
-            { id: "teleopTime", expected_type: "number", required: false },
-            { id: "endgameTime", expected_type: "number", required: false },
+        const props: { id: string; expectedType: string; required: boolean }[] = [
+            { id: "id", expectedType: "string", required: true },
+            { id: "name", expectedType: "string", required: true },
+            { id: "autonomousTime", expectedType: "number", required: false },
+            { id: "teleopTime", expectedType: "number", required: false },
+            { id: "endgameTime", expectedType: "number", required: false },
         ]
 
-        const typeError = (id: string, expected_type?: string) => {
-            const error_message = expected_type ? `must be a ${expected_type}` : "is required"
-            console.error(`Match mode config validation failed: the '${id}' field ${error_message}`)
-            globalAddToast?.("error", "Invalid Match Mode Config", `The '${id}' field ${error_message}`)
+        const typeError = (id: string, expectedType?: string) => {
+            const errorMessage = expectedType ? `must be a ${expectedType}` : "is required"
+            console.error(`Match mode config validation failed: the '${id}' field ${errorMessage}`)
+            globalAddToast?.("error", "Invalid Match Mode Config", `The '${id}' field ${errorMessage}`)
         }
 
         for (const prop of props) {
@@ -186,15 +178,15 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     typeError(prop.id)
                     valid = false
                 }
-            } else if (typeof configObj[prop.id] != prop.expected_type) {
+            } else if (typeof configObj[prop.id] != prop.expectedType) {
                 if (prop.required) {
-                    typeError(prop.id, prop.expected_type)
+                    typeError(prop.id, prop.expectedType)
                     valid = false
                 } else {
                     globalAddToast?.(
                         "warning",
                         "Invalid Match Mode Config",
-                        `The '${prop.id}' field must be a ${prop.expected_type}, ignoring ${prop.id} field`
+                        `The '${prop.id}' field must be a ${prop.expectedType}, ignoring ${prop.id} field`
                     )
                 }
             }
