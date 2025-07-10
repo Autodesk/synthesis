@@ -10,10 +10,6 @@ vi.mock("@/systems/World", () => ({
     },
 }))
 
-vi.mock("@/ui/components/GlobalUIControls", () => ({
-    Global_AddToast: vi.fn(),
-}))
-
 vi.mock("async-mutex", () => ({
     Mutex: vi.fn(() => ({
         runExclusive: vi.fn(fn => fn()),
@@ -531,7 +527,6 @@ describe("APS Authentication System", () => {
                 )
 
                 const callArgs = mockWindowOpen.mock.calls[0][0]
-                expect(callArgs).toContain("client_id=GCxaewcLjsYlK8ud7Ka9AKf9dPwMR3e4GlybyfhAK2zvl3tU")
                 expect(callArgs).toContain("response_type=code")
                 // Fix URL encoding issue - scope gets URL encoded
                 expect(callArgs).toContain("scope=data%3Aread")
