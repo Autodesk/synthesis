@@ -1,7 +1,11 @@
+import { ReactElement, useEffect, useRef, useState } from "react"
 import React, { ReactElement, useEffect, useRef, useState } from "react"
 import { alpha, styled } from "@mui/system"
 import { Button, Menu, MenuItem, Tooltip } from "@mui/material"
 import { colorNameToVar } from "../ThemeContext"
+import { Button, Menu, MenuItem, Tooltip } from "@mui/material"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 /** The clickable button for a dropdown that shows the selected item and opens the menu. Custom styling over the MUI material button.*/
 const CustomButton = styled(Button)({
@@ -84,7 +88,7 @@ interface DropdownProps<T extends string> {
  *
  * @returns {JSX.Element} The rendered Dropdown component.
  */
-function Dropdown<T extends string>({ options, onSelect, defaultValue, label }: DropdownProps<T>): ReactElement {
+const Dropdown = <T extends string>({ options, onSelect, defaultValue, label }: DropdownProps<T>): ReactElement => {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [selectedValue, setSelectedValue] = useState<string>(defaultValue || "")
     const buttonRef = useRef<HTMLButtonElement>(null)
@@ -104,6 +108,7 @@ function Dropdown<T extends string>({ options, onSelect, defaultValue, label }: 
     /** Handles closing the dropdown menu. */
     const handleClose = () => {
         setAnchorEl(null)
+        SoundPlayer.dropdownSoundEffects().onMouseDown?.()
     }
 
     /** Handles the selection of a dropdown option. */
@@ -131,6 +136,7 @@ function Dropdown<T extends string>({ options, onSelect, defaultValue, label }: 
                 <div>
                     <CustomButton
                         onClick={handleClick}
+                        {...SoundPlayer.dropdownSoundEffects()}
                         ref={buttonRef}
                         className={`transform transition-transform hover:scale-[1.012] active:scale-[1.024]`}
                     >

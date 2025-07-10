@@ -3,23 +3,26 @@ import { useCallback, useEffect, useMemo, useState, useRef } from "react"
 import SelectButton from "@/components/SelectButton"
 import World from "@/systems/World"
 import Slider from "@/ui/components/Slider"
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import {
-    Array_ThreeMatrix4,
-    JoltMat44_ThreeMatrix4,
-    ReactRgbaColor_ThreeColor,
-    ThreeMatrix4_Array,
+    convertArrayToThreeMatrix4,
+    convertJoltMat44ToThreeMatrix4,
+    convertReactRgbaColorToThreeColor,
+    convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/ThemeContext"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import Button from "@/ui/components/Button"
 import { Spacer } from "@/ui/components/StyledComponents"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import { Box } from "@mui/material"
+import { Switch } from "@mui/base/Switch"
+import Label, { LabelSize } from "@/ui/components/Label"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -52,7 +55,9 @@ function save(
     zoneSize: number,
     gizmo: GizmoSceneObject,
     selectedRobot: MirabufSceneObject,
-    selectedNode?: RigidNodeId
+    selectedNode?: RigidNodeId,
+    showZoneAlways?: boolean,
+    maxPieces?: number
 ) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
@@ -70,12 +75,19 @@ function save(
     gizmo.obj.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(1, 1, 1))
-    const robotTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+    const robotTransformation = convertJoltMat44ToThreeMatrix4(
+        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+    )
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
-    selectedRobot.intakePreferences.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
+    selectedRobot.intakePreferences.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
     selectedRobot.intakePreferences.parentNode = selectedNode
     selectedRobot.intakePreferences.zoneDiameter = zoneSize
+    if (showZoneAlways !== undefined) {
+        selectedRobot.intakePreferences.showZoneAlways = showZoneAlways
+    }
+
+    selectedRobot.intakePreferences.maxPieces = maxPieces!
 
     PreferencesSystem.savePreferences()
 }
@@ -92,21 +104,23 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(undefined)
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
+    const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
+    const [maxPieces, setMaxPieces] = useState<number>(selectedRobot.intakePreferences?.maxPieces || 1)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode)
-            selectedRobot.UpdateIntakeSensor()
+            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces)
+            selectedRobot.updateIntakeSensor()
         }
-    }, [selectedRobot, selectedNode, zoneSize])
+    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -119,10 +133,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [zoneSize])
 
     const placeholderMesh = useMemo(() => {
-        return new THREE.Mesh(
-            new THREE.SphereGeometry(0.5),
-            World.SceneRenderer.CreateToonMaterial(ReactRgbaColor_ThreeColor(theme.HighlightHover.color))
+        const material = World.sceneRenderer.createToonMaterial(
+            convertReactRgbaColorToThreeColor(theme.HighlightHover.color)
         )
+        material.transparent = true
+        material.opacity = 0.6
+        return new THREE.Mesh(new THREE.SphereGeometry(0.5), material)
     }, [theme])
 
     const gizmoComponent = useMemo(() => {
@@ -131,7 +147,9 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
-                const deltaTransformation = Array_ThreeMatrix4(selectedRobot.intakePreferences!.deltaTransformation)
+                const deltaTransformation = convertArrayToThreeMatrix4(
+                    selectedRobot.intakePreferences!.deltaTransformation
+                )
 
                 let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
                     selectedRobot.intakePreferences!.parentNode ?? selectedRobot.rootNodeId
@@ -142,12 +160,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }
 
                 /** W = L x R. See save() for math details */
-                const robotTransformation = JoltMat44_ThreeMatrix4(
-                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                const robotTransformation = convertJoltMat44ToThreeMatrix4(
+                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
                 const gizmoTransformation = deltaTransformation.premultiply(robotTransformation)
 
-                gizmo.SetTransform(gizmoTransformation)
+                gizmo.setTransform(gizmoTransformation)
             }
 
             return (
@@ -173,18 +191,31 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
         if (selectedRobot?.intakePreferences) {
             setZoneSize(selectedRobot.intakePreferences.zoneDiameter)
             setSelectedNode(selectedRobot.intakePreferences.parentNode)
+            setMaxPieces(selectedRobot.intakePreferences.maxPieces)
+            setShowZoneAlways(selectedRobot.intakePreferences.showZoneAlways ?? false)
         } else {
             setSelectedNode(undefined)
+            setShowZoneAlways(false)
         }
     }, [selectedRobot])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
+
+        // Hide the visual indicator when entering configuration mode
+        if (selectedRobot) {
+            selectedRobot.setIntakeVisualIndicatorVisible(false)
+        }
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+
+            // Show the visual indicator when exiting configuration mode
+            if (selectedRobot) {
+                selectedRobot.setIntakeVisualIndicatorVisible(true)
+            }
         }
-    }, [])
+    }, [selectedRobot])
 
     const trySetSelectedNode = useCallback(
         (body: Jolt.BodyID) => {
@@ -192,7 +223,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 return false
             }
 
-            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || !assoc.sceneObject || assoc.sceneObject != selectedRobot) {
                 return false
             }
@@ -224,20 +255,89 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 }}
                 step={0.01}
             />
+
+            {/* Slider for adjusting max pieces the robot can intake */}
+            <Slider
+                min={1}
+                max={10}
+                step={1}
+                value={maxPieces ?? 1}
+                label="Max Pieces"
+                onChange={(_, v) => setMaxPieces(v as number)}
+            />
+
+            {/* Checkbox for showing intake zone indicator at all times */}
+            <Box
+                display="flex"
+                flexDirection={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+                textAlign={"center"}
+            >
+                <Label size={LabelSize.SMALL} className="mr-12 whitespace-nowrap">
+                    Show intake zone indicator always
+                </Label>
+                <Switch
+                    checked={showZoneAlways}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                        setShowZoneAlways(e.target.checked)
+                    }}
+                    slotProps={{
+                        root: {
+                            className: `
+                                group relative inline-block 
+                                w-[24px] h-[24px] m-2.5 
+                                cursor-pointer transform transition-transform 
+                                hover:scale-[1.03] active:scale-[1.06]
+                            `,
+                        },
+                        input: {
+                            className: `
+                                cursor-inherit absolute 
+                                w-full h-full top-0 left-0 
+                                opacity-0 z-10 border-none
+                            `,
+                        },
+                        track: ownerState => {
+                            const baseClasses = `
+                                absolute block w-full h-full 
+                                transition rounded-full 
+                                border border-solid outline-none 
+                                border-interactive-element-right 
+                                dark:border-interactive-element-right 
+                                group-[.base--focusVisible]:shadow-outline-switch 
+                                transform transition-transform 
+                                group-hover:scale-[1.03] group-active:scale-[1.06]
+                            `
+                            const backgroundClasses = ownerState.checked
+                                ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right"
+                                : "bg-background-secondary"
+
+                            return {
+                                className: `${baseClasses} ${backgroundClasses}`,
+                            }
+                        },
+                        thumb: {
+                            className: "display-none",
+                        },
+                    }}
+                />
+            </Box>
             {gizmoComponent}
             {Spacer(10)}
             <Button
                 value="Reset"
                 onClick={() => {
                     if (gizmoRef.current) {
-                        const robotTransformation = JoltMat44_ThreeMatrix4(
-                            World.PhysicsSystem.GetBody(selectedRobot.GetRootNodeId()!).GetWorldTransform()
+                        const robotTransformation = convertJoltMat44ToThreeMatrix4(
+                            World.physicsSystem.getBody(selectedRobot.getRootNodeId()!).GetWorldTransform()
                         )
                         gizmoRef.current.obj.position.setFromMatrixPosition(robotTransformation)
                         gizmoRef.current.obj.rotation.setFromRotationMatrix(robotTransformation)
                     }
                     setZoneSize(0.5)
                     setSelectedNode(selectedRobot?.rootNodeId)
+                    setMaxPieces(selectedRobot.intakePreferences?.maxPieces ?? 1)
                 }}
             />
         </>

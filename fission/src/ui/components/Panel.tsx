@@ -1,5 +1,6 @@
 import React, { ReactNode } from "react"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 export type OpenLocation =
     | "top-left"
@@ -172,6 +173,7 @@ const Panel: React.FC<PanelProps> = ({
                                     closePanel(panelId)
                                     if (!cancelBlocked && onCancel) onCancel()
                                 }}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
@@ -186,6 +188,7 @@ const Panel: React.FC<PanelProps> = ({
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
                                 }}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     middleBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
@@ -201,6 +204,7 @@ const Panel: React.FC<PanelProps> = ({
                                     closePanel(panelId)
                                     if (!acceptBlocked && onAccept) onAccept()
                                 }}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90

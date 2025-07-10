@@ -1,5 +1,6 @@
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager, { InputScheme, InputSchemeAvailability } from "@/systems/input/InputSchemeManager"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { LabelSize } from "@/ui/components/Label"
@@ -7,21 +8,27 @@ import {
     AddButtonInteractiveColor,
     DeleteButton,
     EditButton,
+    DeleteButton,
+    EditButton,
     PositiveButton,
     SectionDivider,
+    SectionLabel,
+    SelectButton,
     SectionLabel,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
+import React, { useReducer } from "react"
 import { useEffect, useReducer, useState } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import Dropdown from "@/components/Dropdown.tsx"
 
-function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
+const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex, onSelect, onEdit, onCreateNew }) => {
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
@@ -54,9 +61,13 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                     {/** Select button */}
                     <div style={{ filter: isAvailable ? "" : "brightness(60%)" }}>
                         <PositiveButton
-                            value={SynthesisIcons.SelectLarge}
+                            value={SynthesisIcons.SELECT_LARGE}
                             onClick={() => {
                                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                // TODO: if touch controls, then ensure that they are enabled.
+                                if (scheme.usesTouchControls) {
+                                    new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
+                                }
                                 onSelect?.()
                                 update()
                             }}
@@ -71,13 +82,13 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                         onEdit?.()
                     })}
 
-                    {/** Delete button (only if the scheme is customized) */}
-                    {scheme.customized ? (
-                        DeleteButton(() => {
-                            // Fetch current custom schemes
-                            InputSchemeManager.saveSchemes()
-                            InputSchemeManager.resetDefaultSchemes()
-                            const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+                                {/** Delete button (only if the scheme is customized) */}
+                                {scheme.customized ? (
+                                    DeleteButton(() => {
+                                        // Fetch current custom schemes
+                                        InputSchemeManager.saveSchemes()
+                                        InputSchemeManager.resetDefaultSchemes()
+                                        const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
                             // Find and remove this input scheme
                             const index = schemes.indexOf(scheme)
@@ -115,7 +126,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                     }}
                 />
                 <SectionDivider />
-                <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${availableSchemes?.available.length}/${(availableSchemes?.available.length ?? 0) + (availableSchemes?.with_conflict.length ?? 0)} Input Schemes`}
                 </SectionLabel>
                 <SectionDivider />

@@ -1,19 +1,19 @@
 import React, { ReactNode } from "react"
 
 export enum LabelSize {
-    Small,
-    Medium,
-    Large,
+    SMALL,
+    MEDIUM,
+    LARGE,
     XL,
 }
 
 const labelSizeToClassName = (size?: LabelSize) => {
     switch (size) {
-        case LabelSize.Small:
+        case LabelSize.SMALL:
             return "text-sm"
-        case LabelSize.Medium:
+        case LabelSize.MEDIUM:
             return "text-xl"
-        case LabelSize.Large:
+        case LabelSize.LARGE:
             return "text-2xl"
         case LabelSize.XL:
             return "text-4xl"

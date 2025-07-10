@@ -5,12 +5,13 @@ import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { MouseEvent, useEffect, useMemo, useReducer, useState } from "react"
+import { MouseEvent, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Button from "@/ui/components/Button"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -25,6 +26,11 @@ import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
+import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -40,6 +46,8 @@ interface ConfigurationSelectionProps {
     configurationType: ConfigurationType
     onAssemblySelected: (assembly: MirabufSceneObject | undefined) => void
     selectedAssembly?: MirabufSceneObject
+    onStageDelete: (opt: SelectMenuOption) => void
+    pendingDeletes: number[]
 }
 
 function makeSelectionOption(configurationType: ConfigurationType, assembly: MirabufSceneObject) {
@@ -53,52 +61,42 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
     configurationType,
     onAssemblySelected,
     selectedAssembly,
+    onStageDelete,
+    pendingDeletes,
 }) => {
     // Update is used when a robot or field is deleted to update the select menu
     const [u, update] = useReducer(x => !x, false)
     const { openPanel } = usePanelControlContext()
 
     const robots = useMemo(() => {
-        const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
-            if (x instanceof MirabufSceneObject) {
-                return x.miraType === MiraType.ROBOT
-            }
-            return false
-        }) as MirabufSceneObject[]
-
-        return assemblies
+        return [...World.sceneRenderer.sceneObjects.values()]
+            .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
+            .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u])
+    }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
-        const assemblies = [...World.SceneRenderer.sceneObjects.values()].filter(x => {
-            if (x instanceof MirabufSceneObject) {
-                return x.miraType === MiraType.FIELD
-            }
-            return false
-        }) as MirabufSceneObject[]
-
-        return assemblies
+        return [...World.sceneRenderer.sceneObjects.values()]
+            .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
+            .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u])
+    }, [u, pendingDeletes])
 
     const options = useMemo(() => {
-        return (configurationType == ConfigurationType.ROBOT ? robots : fields).map(assembly =>
-            makeSelectionOption(configurationType, assembly)
-        )
-    }, [configurationType, fields, robots])
+        const list = configurationType == ConfigurationType.ROBOT ? robots : fields
+        return list
+            .filter((assembly): assembly is MirabufSceneObject => assembly != null)
+            .map(assembly => makeSelectionOption(configurationType, assembly))
+    }, [configurationType, robots, fields])
 
     /** Robot or field select menu */
     return (
         <SelectMenu
             options={options}
-            onOptionSelected={val => {
-                onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)
-            }}
+            onOptionSelected={val => onAssemblySelected((val as AssemblySelectionOption)?.assemblyObject)}
             defaultHeaderText={`Select a ${configurationType == ConfigurationType.ROBOT ? "Robot" : "Field"}`}
             onDelete={val => {
-                World.SceneRenderer.RemoveSceneObject((val as AssemblySelectionOption).assemblyObject.id)
-                // onAssemblySelected(undefined)
+                onStageDelete(val)
                 update()
             }}
             onAddClicked={() => {
@@ -171,6 +169,14 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
                 "Set which joints follow each other. For example, the second stage of an elevator could follow the first, moving in unison with it."
             ),
         ],
+        [
+            ConfigMode.ALLIANCE,
+            new ConfigModeSelectionOption(
+                "Alliance",
+                ConfigMode.ALLIANCE,
+                "Set the robot's alliance color for matches. (red or blue)"
+            ),
+        ],
     ])
 
     switch (assembly.brain?.brainType) {
@@ -208,6 +214,14 @@ const fieldModes: Map<ConfigMode, ConfigModeSelectionOption> = new Map<ConfigMod
             "Scoring Zones",
             ConfigMode.SCORING_ZONES,
             "Define and manage zones on the field where robots can earn points during simulation."
+        ),
+    ],
+    [
+        ConfigMode.PROTECTED_ZONES,
+        new ConfigModeSelectionOption(
+            "Protected Zones",
+            ConfigMode.PROTECTED_ZONES,
+            "Define and manage protected zones on the field where robots can not enter."
         ),
     ],
 ])
@@ -290,6 +304,14 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         }
+        case ConfigMode.PROTECTED_ZONES: {
+            const zones = assembly.fieldPreferences?.protectedZones ?? []
+            if (zones == undefined) {
+                console.error("Field does not contain protected zone preferences!")
+                return <Label>ERROR: Field does not contain protected zone configuration!</Label>
+            }
+            return <ConfigureProtectedZonesInterface selectedField={assembly} initialZones={zones} />
+        }
         case ConfigMode.MOVE: {
             return (
                 <TransformGizmoControl
@@ -309,6 +331,9 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
         case ConfigMode.BRAIN: {
             return <BrainSelectionInterface selectedAssembly={assembly} />
         }
+        case ConfigMode.ALLIANCE: {
+            return <AllianceSelectionInterface selectedAssembly={assembly} />
+        }
         case ConfigMode.DRIVETRAIN: {
             return <DrivetrainSelectionInterface selectedAssembly={assembly} />
         }
@@ -318,16 +343,37 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
 }
 
 const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
+    const originalRobotPrefs = useRef<RobotPreferences | null>(null)
+    const originalFieldPrefs = useRef<FieldPreferences | null>(null)
+    const originalMotorPrefs = useRef<MotorPreferences | null>(null)
+    const originalInputSchemes = useRef<InputScheme[] | null>(null)
+
     const { openPanel, closePanel } = usePanelControlContext()
     const [configurationType, setConfigurationType] = useState<ConfigurationType>(getConfigurationType())
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
+    const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
     useEffect(() => {
+        const allSchemes = PreferencesSystem.getGlobalPreference("InputSchemes") || []
+        originalInputSchemes.current = structuredClone(allSchemes)
+
         const settings = popConfigurePanelSettings()
         if (settings) {
             setSelectedAssembly(settings.selectedAssembly)
-            if (settings.selectedAssembly) setConfigMode(settings.configMode)
+            if (settings.selectedAssembly) {
+                setConfigMode(settings.configMode)
+
+                const name = settings.selectedAssembly.assemblyName
+
+                const robotPrefs = PreferencesSystem.getRobotPreferences(name)
+                const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
+                const motorPrefs = PreferencesSystem.getMotorPreferences(name)
+
+                if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
+                if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
+                if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
+            }
         }
 
         closePanel("choose-scheme")
@@ -337,17 +383,53 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             name={"Configure Assets"}
-            icon={SynthesisIcons.Wrench}
+            icon={SynthesisIcons.WRENCH}
             panelId={panelId}
-            cancelEnabled={false}
+            acceptEnabled={true}
+            cancelEnabled={true}
             openLocation="right"
             onAccept={() => {
+                pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
+                setPendingDeletes([])
+
+                InputSchemeManager.saveSchemes()
+
+                originalRobotPrefs.current = null
+                originalFieldPrefs.current = null
+                originalMotorPrefs.current = null
+                originalInputSchemes.current = null
+
                 // Save the current panel state
                 setSelectedConfigurationType(configurationType)
-
                 new ConfigurationSavedEvent()
             }}
-            acceptName="Close"
+            onCancel={() => {
+                setPendingDeletes([])
+
+                if (selectedAssembly) {
+                    const name = selectedAssembly.assemblyName
+                    if (originalRobotPrefs.current)
+                        PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
+                    if (originalFieldPrefs.current)
+                        PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
+                    if (originalMotorPrefs.current)
+                        PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
+                    selectedAssembly.getPreferences()
+                }
+
+                if (originalInputSchemes.current) {
+                    PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
+                    PreferencesSystem.savePreferences()
+                    InputSchemeManager.resetDefaultSchemes()
+                }
+
+                originalRobotPrefs.current = null
+                originalFieldPrefs.current = null
+                originalMotorPrefs.current = null
+                originalInputSchemes.current = null
+            }}
+            acceptName="Save"
+            cancelName="Cancel"
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh]">
                 {/** Toggle button group for the robot, field, and input buttons */}
@@ -363,6 +445,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         new ConfigurationSavedEvent()
                         setConfigMode(undefined)
                     }}
+                    {...SoundPlayer.buttonSoundEffects()}
                     sx={{
                         alignSelf: "center",
                     }}
@@ -386,6 +469,11 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                 setSelectedAssembly(a)
                             }}
                             selectedAssembly={selectedAssembly}
+                            onStageDelete={opt => {
+                                const id = (opt as AssemblySelectionOption).assemblyObject.id
+                                setPendingDeletes(prev => [...prev, id])
+                            }}
+                            pendingDeletes={pendingDeletes}
                         />
                         {/** Nested select menu to pick a configuration mode */}
                         {selectedAssembly != undefined && (

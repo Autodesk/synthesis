@@ -1,5 +1,5 @@
-import { useModalControlContext } from "@/ui/ModalContext"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { useToastContext } from "@/ui/ToastContext"
 import { useEffect } from "react"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
@@ -13,7 +13,7 @@ import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
  *
  * @returns Global UI Component
  */
-function GlobalUIComponent() {
+const GlobalUIComponent: React.FC = () => {
     const { openModal } = useModalControlContext()
     const { openPanel } = usePanelControlContext()
     const { addToast } = useToastContext()

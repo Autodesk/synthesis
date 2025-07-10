@@ -1,4 +1,4 @@
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import Stimulus, { StimulusID } from "./Stimulus"
 import World from "@/systems/World"
 import { mirabuf } from "@/proto/mirabuf"
@@ -24,19 +24,19 @@ class ChassisStimulus extends Stimulus {
     public constructor(id: StimulusID, bodyId: Jolt.BodyID, info?: mirabuf.IInfo) {
         super(id, info)
 
-        this._body = World.PhysicsSystem.GetBody(bodyId)
+        this._body = World.physicsSystem.getBody(bodyId)
         this._mass = this._body.GetShape().GetMassProperties().mMass
     }
 
-    public Update(_: number): void {}
+    public update(_: number): void {}
 
     public getSupplierType(): NoraTypes {
-        return NoraTypes.Number3
+        return NoraTypes.NUMBER3
     }
     public getSupplierValue(): NoraNumber3 {
         throw new Error("Method not implemented.")
     }
-    public DisplayName(): string {
+    public displayName(): string {
         return "Chassis [Accel|Gyro]"
     }
 }
