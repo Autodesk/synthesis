@@ -1,6 +1,6 @@
 import SimulationSystem from "./simulation/SimulationSystem"
 import { SoundPlayer } from "./sound/SoundPlayer"
-import EndgameSonar from "@/assets/sound-files/EndgameSonar.wav"
+import beep from "@/assets/sound-files/beep.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
@@ -73,7 +73,7 @@ class MatchMode {
     }
 
     endgameStart() {
-        SoundPlayer.play(EndgameSonar)
+        SoundPlayer.play(beep)
         this._endgame = true
     }
 
