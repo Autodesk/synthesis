@@ -251,7 +251,10 @@ class PhysicsSystem extends WorldSystem {
             mass ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
             mass ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD
         )
-        if (mass) creationSettings.mMassPropertiesOverride.mMass = mass
+        if (mass) {
+            creationSettings.mOverrideMassProperties = JOLT.EOverrideMassProperties_CalculateInertia
+            creationSettings.mMassPropertiesOverride.mMass = mass
+        }
 
         const body = this._joltBodyInterface.CreateBody(creationSettings)
         JOLT.destroy(pos)
@@ -286,7 +289,10 @@ class PhysicsSystem extends WorldSystem {
             mass ? JOLT.EMotionType_Dynamic : JOLT.EMotionType_Static,
             mass ? LAYER_GENERAL_DYNAMIC : LAYER_FIELD
         )
-        if (mass) creationSettings.mMassPropertiesOverride.mMass = mass
+        if (mass) {
+            creationSettings.mOverrideMassProperties = JOLT.EOverrideMassProperties_CalculateInertia
+            creationSettings.mMassPropertiesOverride.mMass = mass
+        }
 
         const body = this._joltBodyInterface.CreateBody(creationSettings)
         JOLT.destroy(pos)
@@ -1223,8 +1229,10 @@ class PhysicsSystem extends WorldSystem {
 
     public destroyBodyIds(...bodies: Jolt.BodyID[]) {
         bodies.forEach(x => {
-            this._joltBodyInterface.RemoveBody(x)
-            this._joltBodyInterface.DestroyBody(x)
+            if (this.isBodyAdded(x)) {
+                this._joltBodyInterface.RemoveBody(x)
+                this._joltBodyInterface.DestroyBody(x)
+            }
         })
     }
 
@@ -1300,6 +1308,7 @@ class PhysicsSystem extends WorldSystem {
             JOLT.EMotionType_Dynamic,
             LAYER_GHOST
         )
+        creationSettings.mOverrideMassProperties = JOLT.EOverrideMassProperties_CalculateInertia
         creationSettings.mMassPropertiesOverride.mMass = 0.01
 
         const body = this._joltBodyInterface.CreateBody(creationSettings)
