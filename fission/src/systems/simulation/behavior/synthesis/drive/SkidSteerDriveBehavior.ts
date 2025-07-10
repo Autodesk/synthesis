@@ -1,17 +1,17 @@
 import WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
 import Behavior from "@/systems/simulation/behavior/Behavior.ts"
-import { clampValues } from "@/util/Utility.ts"
+import { clamp } from "@/util/Utility.ts"
 import InputSystem from "@/systems/input/InputSystem.ts"
 
 class SkidSteerDriveBehavior extends Behavior {
-    private readonly leftWheels: WheelDriver[]
-    private readonly rightWheels: WheelDriver[]
+    private readonly _leftWheels: WheelDriver[]
+    private readonly _rightWheels: WheelDriver[]
     private readonly _brainIndex: number
-    private readonly isArcade: boolean
+    private readonly _isArcade: boolean
 
     public get wheels(): WheelDriver[] {
-        return this.leftWheels.concat(this.rightWheels)
+        return this._leftWheels.concat(this._rightWheels)
     }
 
     public constructor(
@@ -24,36 +24,36 @@ class SkidSteerDriveBehavior extends Behavior {
     ) {
         super(leftWheels.concat(rightWheels), leftStimuli.concat(rightStimuli))
 
-        this.leftWheels = leftWheels
-        this.rightWheels = rightWheels
+        this._leftWheels = leftWheels
+        this._rightWheels = rightWheels
         this._brainIndex = brainIndex
-        this.isArcade = isArcade
+        this._isArcade = isArcade
     }
 
     // Sets the drivetrains target linear and rotational velocity
-    protected DriveSpeeds(leftInput: number, rightInput: number) {
-        const leftDirection = clampValues(-1, leftInput, 1)
-        const rightDirection = clampValues(-1, rightInput, 1)
+    protected driveSpeeds(leftInput: number, rightInput: number) {
+        const leftDirection = clamp(leftInput, -1, 1)
+        const rightDirection = clamp(rightInput, -1, 1)
 
-        this.leftWheels.forEach(wheel => (wheel.accelerationDirection = leftDirection))
-        this.rightWheels.forEach(wheel => (wheel.accelerationDirection = rightDirection))
+        this._leftWheels.forEach(wheel => (wheel.accelerationDirection = leftDirection))
+        this._rightWheels.forEach(wheel => (wheel.accelerationDirection = rightDirection))
     }
 
     private arcadeUpdate() {
         const driveInput = InputSystem.getInput("arcadeDrive", this._brainIndex)
         const turnInput = InputSystem.getInput("arcadeTurn", this._brainIndex)
 
-        this.DriveSpeeds(driveInput + turnInput, driveInput - turnInput)
+        this.driveSpeeds(driveInput + turnInput, driveInput - turnInput)
     }
     private tankUpdate() {
-        this.DriveSpeeds(
+        this.driveSpeeds(
             InputSystem.getInput("tankLeft", this._brainIndex),
             InputSystem.getInput("tankRight", this._brainIndex)
         )
     }
 
-    public Update(_: number): void {
-        if (this.isArcade) {
+    public update(_: number): void {
+        if (this._isArcade) {
             this.arcadeUpdate()
         } else {
             this.tankUpdate()

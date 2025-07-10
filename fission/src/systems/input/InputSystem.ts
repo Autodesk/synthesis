@@ -3,6 +3,7 @@ import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
 import MatchMode, { MatchModeType } from "@/systems/MatchMode"
+import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 
 export type ModifierState = {
     alt: boolean
@@ -12,14 +13,26 @@ export type ModifierState = {
 }
 export const EMPTY_MODIFIER_STATE: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
 
+export type InputName =
+    | "arcadeDrive"
+    | "arcadeTurn"
+    | "tankLeft"
+    | "tankRight"
+    | "swerveX"
+    | "swerveZ"
+    | "swerveYaw"
+    | "intake"
+    | "eject"
+    | `joint ${number}`
+
 const LOG_GAMEPAD_EVENTS = false
 
 /** Represents any user input */
 abstract class Input {
-    public inputName: string
+    public inputName: InputName
 
     /** @param {string} inputName - The name given to this input to identify it's function. */
-    protected constructor(inputName: string) {
+    protected constructor(inputName: InputName) {
         this.inputName = inputName
     }
 
@@ -31,7 +44,7 @@ abstract class Input {
 
 /** Represents any user input that is a single true/false button. */
 class ButtonInput extends Input {
-    public keyCode: string
+    public keyCode: KeyCode
     public keyModifiers: ModifierState
 
     public gamepadButton: number
@@ -44,7 +57,7 @@ class ButtonInput extends Input {
      * @param {number} [gamepadButton] -  The gamepad button for this input if a gamepad is used.
      * @param {ModifierState} [keyModifiers] -  The key modifier state for the keyboard input.
      */
-    public constructor(inputName: string, keyCode?: string, gamepadButton?: number, keyModifiers?: ModifierState) {
+    public constructor(inputName: InputName, keyCode?: KeyCode, gamepadButton?: number, keyModifiers?: ModifierState) {
         super(inputName)
         this.keyCode = keyCode ?? ""
         this.keyModifiers = keyModifiers ?? EMPTY_MODIFIER_STATE
@@ -77,9 +90,9 @@ class ButtonInput extends Input {
 
 /** Represents any user input that is an axis between -1 and 1. Can be a gamepad axis, two gamepad buttons, or two keyboard buttons. */
 class AxisInput extends Input {
-    public posKeyCode: string
+    public posKeyCode: KeyCode
     public posKeyModifiers: ModifierState
-    public negKeyCode: string
+    public negKeyCode: KeyCode
     public negKeyModifiers: ModifierState
 
     public gamepadAxisNumber: number
@@ -104,9 +117,9 @@ class AxisInput extends Input {
      * @param {ModifierState} [negKeyModifiers] - The key modifier state for the negative keyboard input.
      */
     public constructor(
-        inputName: string,
-        posKeyCode?: string,
-        negKeyCode?: string,
+        inputName: InputName,
+        posKeyCode?: KeyCode,
+        negKeyCode?: KeyCode,
         gamepadAxisNumber?: number,
         joystickInverted?: boolean,
         useGamepadButtons?: boolean,
@@ -179,7 +192,7 @@ class InputSystem extends WorldSystem {
     public static currentModifierState: ModifierState
 
     /** The keys currently being pressed. */
-    private static _keysPressed: { [key: string]: boolean } = {}
+    private static _keysPressed: Partial<Record<KeyCode, boolean>> = {}
 
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
@@ -259,17 +272,17 @@ class InputSystem extends WorldSystem {
 
     /** Called when any key is first pressed */
     private handleKeyDown(event: KeyboardEvent) {
-        InputSystem._keysPressed[event.code] = true
+        InputSystem._keysPressed[event.code as KeyCode] = true
     }
 
     /* Called when any key is released */
     private handleKeyUp(event: KeyboardEvent) {
-        InputSystem._keysPressed[event.code] = false
+        InputSystem._keysPressed[event.code as KeyCode] = false
     }
 
     /** Clears all stored key data when the user leaves the page. */
     private clearKeyData() {
-        for (const keyCode in InputSystem._keysPressed) delete InputSystem._keysPressed[keyCode]
+        for (const keyCode in InputSystem._keysPressed) delete InputSystem._keysPressed[keyCode as KeyCode]
     }
 
     /* Called once when a gamepad is first connected */
@@ -301,11 +314,11 @@ class InputSystem extends WorldSystem {
      * @param {ModifierState} modifiers - The target modifier state. Assumed to be no modifiers if undefined.
      * @returns {boolean} True if the key is pressed or false otherwise.
      */
-    public static isKeyPressed(key: string, modifiers?: ModifierState): boolean {
+    public static isKeyPressed(key: KeyCode, modifiers?: ModifierState): boolean {
         if (modifiers != null && !InputSystem.compareModifiers(InputSystem.currentModifierState, modifiers))
             return false
 
-        return !!InputSystem._keysPressed[key]
+        return Boolean(InputSystem._keysPressed[key])
     }
 
     /**
@@ -313,7 +326,7 @@ class InputSystem extends WorldSystem {
      * @param {number} brainIndex The robot brain index for this input. Used to map to a control scheme.
      * @returns {number} A number between -1 and 1 based on the current state of the input.
      */
-    public static getInput(inputName: string, brainIndex: number): number {
+    public static getInput(inputName: InputName, brainIndex: number): number {
         const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input

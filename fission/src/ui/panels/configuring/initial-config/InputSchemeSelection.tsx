@@ -13,7 +13,7 @@ import {
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
-import { useEffect, useReducer, useState } from "react"
+import React, { ReactElement, useEffect, useReducer, useState } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
@@ -30,7 +30,8 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
     useEffect(() => {
         setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
     }, [robotDriveType])
-    function SchemeSelector(scheme: InputScheme, isAvailable: boolean) {
+
+    const SchemeSelector = (scheme: InputScheme, isAvailable: boolean): ReactElement => {
         return (
             <Box
                 component={"div"}

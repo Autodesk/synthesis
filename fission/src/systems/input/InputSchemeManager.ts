@@ -10,8 +10,8 @@ export type InputScheme = {
     descriptiveName: string
     customized: boolean
     usesGamepad: boolean
-    driveType: DriveType
     usesTouchControls: boolean
+    supportedDrivetrains: DriveType[]
     inputs: Input[]
 }
 export type InputSchemeAvailability = { with_conflict: InputScheme[]; available: InputScheme[] }
@@ -103,7 +103,7 @@ class InputSchemeManager {
     }
 
     /** Creates an array of every input scheme that is not currently in use by a robot */
-    private static get availableInputSchemes(): InputSchemeAvailability {
+    private static get _availableInputSchemes(): InputSchemeAvailability {
         const allSchemes = this.allInputSchemes
 
         // Remove schemes that have conflicts
@@ -130,10 +130,12 @@ class InputSchemeManager {
 
     /** Creates an array of every input scheme that is not currently in use by a robot */
     public static availableInputSchemesByType(driveType?: DriveType): InputSchemeAvailability {
-        const allSchemes = this.availableInputSchemes
-        allSchemes.available = allSchemes.available.filter(scheme => driveType == null || scheme.driveType == driveType)
+        const allSchemes = this._availableInputSchemes
+        allSchemes.available = allSchemes.available.filter(
+            scheme => driveType == null || scheme.supportedDrivetrains.includes(driveType)
+        )
         allSchemes.with_conflict = allSchemes.with_conflict.filter(
-            scheme => driveType == null || scheme.driveType == driveType
+            scheme => driveType == null || scheme.supportedDrivetrains.includes(driveType)
         )
         return allSchemes
     }
