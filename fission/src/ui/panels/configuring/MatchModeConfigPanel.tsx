@@ -111,25 +111,30 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const matchModeConfigElements = useMemo(
         () =>
-            matchModeConfigs.map(config =>
-                ItemCard({
-                    id: config.id,
-                    name: config.name || config.id || "Unnamed Match Mode",
-                    primaryOnClick: () => {
-                        MatchConfigSelected(config, openModal)
-                        closePanel("match-mode-config")
-                    },
-                    secondaryOnClick: () => {
-                        // Delete the config from the local storage
-                        setMatchModeConfigs(prev => prev.filter(c => c.id !== config.id))
-                        window.localStorage.setItem(
-                            "match-mode-configs",
-                            JSON.stringify(matchModeConfigs.filter(c => c.id !== config.id))
-                        )
-                        matchModeConfigs.filter(c => c.id !== config.id)
-                    },
-                })
-            ),
+            matchModeConfigs.map(config => {
+                return (
+                    <ItemCard
+                        key={config.id}
+                        id={config.id}
+                        name={config.name || config.id || "Unnamed Match Mode"}
+                        primaryOnClick={() => {
+                            MatchConfigSelected(config, openModal)
+                            closePanel("match-mode-config")
+                        }}
+                        secondaryOnClick={() => {
+                            // Delete the config from the local storage
+                            const updatedConfigs = matchModeConfigs.filter(c => c.id !== config.id)
+                            setMatchModeConfigs(updatedConfigs)
+                            window.localStorage.setItem("match-mode-configs", JSON.stringify(updatedConfigs))
+                            Global_AddToast?.(
+                                "info",
+                                "Match Mode Config Deleted",
+                                `Successfully deleted "${config.name}"`
+                            )
+                        }}
+                    />
+                )
+            }),
         [matchModeConfigs, openModal, closePanel]
     )
 

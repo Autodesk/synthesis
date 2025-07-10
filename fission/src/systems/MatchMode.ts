@@ -71,7 +71,7 @@ class MatchMode {
     teleopModeStart(openModal: (modalName: string) => void) {
         // TODO play the teleop start sound
         this.matchModeType = MatchModeType.Teleop
-        this.startTimer(this.teleopTime, () => this.matchEnded(openModal)) // 2 minutes and 15 seconds
+        this.startTimer(this.teleopTime, () => this.matchEnded(openModal))
     }
 
     endgameStart() {
