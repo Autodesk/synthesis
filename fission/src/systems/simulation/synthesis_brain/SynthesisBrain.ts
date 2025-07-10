@@ -126,7 +126,7 @@ class SynthesisBrain extends Brain {
     }
 
     private configureSwerveDriveBehavior(): void {
-        globalAddToast?.("error", "Swerve not supported", "check back soon")
+        globalAddToast("error", "Swerve not supported", "check back soon")
     }
     /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */
     private configureSkidSteerDriveBehavior(isArcade: boolean) {
