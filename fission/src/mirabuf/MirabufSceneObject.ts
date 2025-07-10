@@ -34,6 +34,8 @@ import {
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+
 const DEBUG_BODIES = false
 
 interface RnDebugMeshes {
@@ -63,7 +65,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _mirabufInstance: MirabufInstance
     private _mechanism: Mechanism
     private _brain: Brain | undefined
-
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
 
@@ -207,7 +208,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this.miraType == MiraType.ROBOT) {
             World.SimulationSystem.RegisterMechanism(this._mechanism)
             const simLayer = World.SimulationSystem.GetSimulationLayer(this._mechanism)!
-            this._brain = new SynthesisBrain(this, this._assemblyName)
+            this._brain = new SynthesisBrain(this, this._assemblyName, DriveType.ARCADE) //fixme
             simLayer.SetBrain(this._brain)
         }
 

@@ -10,19 +10,21 @@ import {
     ConfigurationType,
     setSelectedConfigurationType,
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
+import Dropdown from "@/components/Dropdown.tsx"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
 const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openPanel } = usePanelControlContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
-
+    const [type, setType] = useState<DriveType>(DriveType.ARCADE)
     return (
         <Modal
             name="New Input Scheme"
             icon={SynthesisIcons.AddLarge}
             modalId={modalId}
             onAccept={() => {
-                const scheme = DefaultInputs.newBlankScheme
+                const scheme = DefaultInputs.newBlankScheme(type)
                 scheme.schemeName = name
 
                 InputSchemeManager.addCustomScheme(scheme)
@@ -35,6 +37,12 @@ const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             cancelEnabled={false}
         >
             <Input label="Name" placeholder="" defaultValue={name} onInput={setName} />
+            <Dropdown
+                label="Drive Type"
+                options={[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE]}
+                defaultValue={type}
+                onSelect={setType}
+            />
         </Modal>
     )
 }

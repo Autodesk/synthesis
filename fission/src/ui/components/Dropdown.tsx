@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from "react"
+import React, { ReactElement, useEffect, useRef, useState } from "react"
 import { alpha, styled } from "@mui/system"
-import { Menu, MenuItem, Button, Tooltip } from "@mui/material"
+import { Button, Menu, MenuItem, Tooltip } from "@mui/material"
 import { colorNameToVar } from "../ThemeContext"
 
 /** The clickable button for a dropdown that shows the selected item and opens the menu. Custom styling over the MUI material button.*/
@@ -65,10 +65,10 @@ const CustomMenu = styled(Menu)({
     },
 })
 
-interface DropdownProps {
-    options: string[]
-    onSelect: (value: string) => void
-    defaultValue?: string
+interface DropdownProps<T extends string> {
+    options: T[]
+    onSelect: (value: T) => void
+    defaultValue?: T
     label?: string
     className?: string
 }
@@ -84,7 +84,7 @@ interface DropdownProps {
  *
  * @returns {JSX.Element} The rendered Dropdown component.
  */
-const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, label }) => {
+function Dropdown<T extends string>({ options, onSelect, defaultValue, label }: DropdownProps<T>): ReactElement {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
     const [selectedValue, setSelectedValue] = useState<string>(defaultValue || "")
     const buttonRef = useRef<HTMLButtonElement>(null)
@@ -107,7 +107,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, onSelect, defaultValue, la
     }
 
     /** Handles the selection of a dropdown option. */
-    const handleSelect = (value: string) => {
+    const handleSelect = (value: T) => {
         setSelectedValue(value)
         onSelect(value)
         handleClose()

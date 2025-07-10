@@ -5,7 +5,7 @@ import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useEffect, useMemo, useReducer, useState, MouseEvent } from "react"
+import { MouseEvent, useEffect, useMemo, useReducer, useState } from "react"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import InputSystem from "@/systems/input/InputSystem"
@@ -24,6 +24,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
+import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -133,6 +134,10 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
         [
             ConfigMode.MOVE,
             new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of robot relative to field."),
+        ],
+        [
+            ConfigMode.DRIVETRAIN,
+            new ConfigModeSelectionOption("Drivetrain", ConfigMode.DRIVETRAIN, "Sets the drivetrain type ."),
         ],
         [
             ConfigMode.INTAKE,
@@ -303,6 +308,9 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
         }
         case ConfigMode.BRAIN: {
             return <BrainSelectionInterface selectedAssembly={assembly} />
+        }
+        case ConfigMode.DRIVETRAIN: {
+            return <DrivetrainSelectionInterface selectedAssembly={assembly} />
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)

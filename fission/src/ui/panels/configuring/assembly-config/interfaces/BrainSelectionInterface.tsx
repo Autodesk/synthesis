@@ -11,7 +11,6 @@ type BrainSelectionInterfaceProps = {
 
 export default function BrainSelectionInterface({ selectedAssembly }: BrainSelectionInterfaceProps) {
     const [robotBrainType, setRobotBrainType] = useState<BrainType | undefined>(selectedAssembly.brain?.brainType)
-
     return (
         <>
             <ToggleButtonGroup

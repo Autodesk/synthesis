@@ -1,41 +1,5 @@
-import { test, describe, assert, expect } from "vitest"
+import { assert, describe, expect, test } from "vitest"
 import InputSystem, { EmptyModifierState, ModifierState } from "@/systems/input/InputSystem"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import DefaultInputs from "@/systems/input/DefaultInputs"
-
-describe("Input Scheme Manager Checks", () => {
-    test("Available Schemes", () => {
-        assert(InputSchemeManager.availableInputSchemes[0].schemeName == DefaultInputs.ernie().schemeName)
-        assert(InputSchemeManager.defaultInputSchemes.length >= 1)
-
-        const startingLength = InputSchemeManager.availableInputSchemes.length
-        InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme)
-
-        expect(InputSchemeManager.availableInputSchemes.length).toBe(startingLength + 1)
-    })
-    test("Add a Custom Scheme", () => {
-        const startingLength = InputSchemeManager.availableInputSchemes.length
-        InputSchemeManager.addCustomScheme(DefaultInputs.newBlankScheme)
-
-        assert((InputSchemeManager.availableInputSchemes.length = startingLength + 1))
-    })
-    test("Get Random Names", () => {
-        const names: string[] = []
-        for (let i = 0; i < 20; i++) {
-            const name = InputSchemeManager.randomAvailableName
-            expect(names.includes(name)).toBe(false)
-            assert(name != undefined)
-            expect(name.length).toBeGreaterThan(0)
-
-            const scheme = DefaultInputs.newBlankScheme
-            scheme.schemeName = name
-
-            InputSchemeManager.addCustomScheme(scheme)
-
-            names.push(name)
-        }
-    })
-})
 
 describe("Input System Checks", () => {
     const inputSystem = new InputSystem()

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import InputSystem from "@/systems/input/InputSystem"
@@ -32,7 +32,7 @@ class SchemeSelectionOption extends SelectMenuOption {
 
     constructor(scheme: InputScheme) {
         const robotName = findSchemeRobotName(scheme)
-        const schemeName = `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`
+        const schemeName = `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName} | ${scheme.driveType}`
         super(schemeName, schemeName, robotName ? `Bound to: ${robotName}` : undefined)
         this.scheme = scheme
     }
