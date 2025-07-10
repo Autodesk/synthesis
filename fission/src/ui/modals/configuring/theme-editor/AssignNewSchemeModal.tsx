@@ -20,7 +20,7 @@ const AssignNewSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="New Input Scheme"
-            icon={SynthesisIcons.Xmark}
+            icon={SynthesisIcons.XMARK}
             modalId={modalId}
             onAccept={() => {
                 const scheme = InputSystem.brainIndexSchemeMap.get(SynthesisBrain.brainIndexMap.size - 1)

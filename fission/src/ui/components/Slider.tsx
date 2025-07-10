@@ -46,8 +46,8 @@ const Slider: React.FC<SliderProps> = ({
     return (
         <>
             <div className="flex flex-row justify-between w-full">
-                {tooltipText ? LabelWithTooltip(label, tooltipText) : <Label size={LabelSize.Small}>{label}</Label>}
-                <Label size={LabelSize.Small}>
+                {tooltipText ? LabelWithTooltip(label, tooltipText) : <Label size={LabelSize.SMALL}>{label}</Label>}
+                <Label size={LabelSize.SMALL}>
                     {format.prefix + value.toLocaleString(locale, format) + format.suffix}
                 </Label>
             </div>

@@ -5,10 +5,10 @@ import MirabufCachingService, { MiraType } from "../mirabuf/MirabufLoader"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {
-        const spikeMira = await MirabufCachingService.CacheRemote(
+        const spikeMira = await MirabufCachingService.cacheRemote(
             "/api/mira/robots/Dozer_v9.mira",
             MiraType.ROBOT
-        ).then(x => MirabufCachingService.Get(x!.id, MiraType.ROBOT))
+        ).then(x => MirabufCachingService.get(x!.id, MiraType.ROBOT))
 
         const t = new MirabufParser(spikeMira!)
         const rn = [...t.rigidNodes.values()]
@@ -17,10 +17,10 @@ describe("Mirabuf Parser Tests", () => {
     })
 
     test("Generate Rigid Nodes (FRC Field 2018_v13.mira)", async () => {
-        const field = await MirabufCachingService.CacheRemote(
+        const field = await MirabufCachingService.cacheRemote(
             "/api/mira/Fields/FRC Field 2018_v13.mira",
             MiraType.FIELD
-        ).then(x => MirabufCachingService.Get(x!.id, MiraType.FIELD))
+        ).then(x => MirabufCachingService.get(x!.id, MiraType.FIELD))
         const t = new MirabufParser(field!)
 
         expect(filterNonPhysicsNodes([...t.rigidNodes.values()], field!).length).toBe(34)

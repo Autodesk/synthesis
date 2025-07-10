@@ -1,8 +1,8 @@
 import React, { ReactNode } from "react"
 
 export enum StackDirection {
-    Horizontal,
-    Vertical,
+    HORIZONTAL,
+    VERTICAL,
 }
 
 type StackProps = {
@@ -15,7 +15,7 @@ type StackProps = {
 }
 
 const Stack: React.FC<StackProps> = ({ className, children, direction, spacing, justify, align }) => {
-    const directionClassName = direction == StackDirection.Horizontal ? "flex-row" : "flex-col"
+    const directionClassName = direction == StackDirection.HORIZONTAL ? "flex-row" : "flex-col"
     if (!justify) justify = "between"
     if (!align) align = "center"
     if (spacing == null) spacing = 10

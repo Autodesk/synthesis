@@ -50,7 +50,7 @@ const Checkbox: React.FC<CheckboxProps> = ({
             {hideLabel ? null : tooltipText ? (
                 LabelWithTooltip(label, tooltipText)
             ) : (
-                <Label size={LabelSize.Small} className={`mr-12 ${className} whitespace-nowrap`}>
+                <Label size={LabelSize.SMALL} className={`mr-12 ${className} whitespace-nowrap`}>
                     {label}
                 </Label>
             )}

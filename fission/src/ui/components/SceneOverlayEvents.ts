@@ -41,7 +41,7 @@ export class SceneOverlayTag {
     }
 
     /** Removing the tag */
-    public Dispose() {
+    public dispose() {
         new SceneOverlayTagEvent(SceneOverlayTagEventKey.REMOVE, this)
     }
 }
@@ -58,11 +58,11 @@ export class SceneOverlayTagEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static Listen(eventKey: SceneOverlayTagEventKey, func: (e: Event) => void) {
+    public static listen(eventKey: SceneOverlayTagEventKey, func: (e: Event) => void) {
         window.addEventListener(eventKey, func)
     }
 
-    public static RemoveListener(eventKey: SceneOverlayTagEventKey, func: (e: Event) => void) {
+    public static removeListener(eventKey: SceneOverlayTagEventKey, func: (e: Event) => void) {
         window.removeEventListener(eventKey, func)
     }
 }
@@ -75,11 +75,11 @@ export class SceneOverlayEvent extends Event {
         window.dispatchEvent(this)
     }
 
-    public static Listen(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
+    public static listen(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
         window.addEventListener(eventKey, func)
     }
 
-    public static RemoveListener(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
+    public static removeListener(eventKey: SceneOverlayEventKey, func: (e: Event) => void) {
         window.removeEventListener(eventKey, func)
     }
 }
