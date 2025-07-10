@@ -20,7 +20,7 @@ describe("Mirabuf Parser Tests", () => {
         expect(jointValidation.isValid).toBe(true)
         expect(jointValidation.jointCount).toBe(6)
         expect(jointValidation.wheelJoints).toBe(6)
-        expect(jointValidation.allJoints).toContain(mirabuf.joint.JointMotion.REVOLUTE) // Wheels are revoluete joints
+        expect(jointValidation.allJoints).toContain(mirabuf.joint.JointMotion.REVOLUTE) // Wheels are revolute joints
         expect(jointValidation.allJoints).not.toContain(mirabuf.joint.JointMotion.SLIDER) // Dozer has no slider joints
     })
 
