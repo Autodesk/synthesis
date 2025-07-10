@@ -144,6 +144,90 @@ class AxisInput extends Input {
         this.posGamepadButton = posGamepadButton ?? -1
         this.negGamepadButton = negGamepadButton ?? -1
     }
+    public static unbound(inputName: InputName) {
+        return new AxisInput(inputName)
+    }
+    public static onGamepadJoystick(inputName: InputName, gamepadAxisNumber: number, joystickInverted: boolean) {
+        return new AxisInput(
+            inputName,
+            undefined,
+            undefined,
+            gamepadAxisNumber,
+            joystickInverted,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+        )
+    }
+    public static onGamepadButtons(inputName: InputName, posGamepadButton: number, negGamepadButton: number) {
+        return new AxisInput(
+            inputName,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            true,
+            posGamepadButton,
+            negGamepadButton,
+            undefined,
+            undefined,
+            undefined
+        )
+    }
+    public static onKeyboard(
+        inputName: InputName,
+        posKeyCode: KeyCode,
+        negKeyCode: KeyCode,
+        posKeyModifiers?: ModifierState,
+        negKeyModifiers?: ModifierState
+    ) {
+        return new AxisInput(
+            inputName,
+            posKeyCode,
+            negKeyCode,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            posKeyModifiers,
+            negKeyModifiers
+        )
+    }
+    public static onKeyboardSingleKey(inputName: InputName, key: KeyCode, negKeyModifiers?: ModifierState) {
+        return new AxisInput(
+            inputName,
+            key,
+            key,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            negKeyModifiers
+        )
+    }
+    public static onTouchControl(inputName: InputName, touchControlAxis: TouchControlsAxes) {
+        return new AxisInput(
+            inputName,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            touchControlAxis,
+            undefined,
+            undefined
+        )
+    }
 
     /**
      * @param useGamepad Looks at the gamepad if true and the keyboard if false.

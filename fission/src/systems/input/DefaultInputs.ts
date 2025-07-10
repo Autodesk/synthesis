@@ -1,7 +1,7 @@
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import { InputScheme } from "./InputSchemeManager"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import { AxisInput, ButtonInput, EMPTY_MODIFIER_STATE } from "./InputSystem"
+import { AxisInput, ButtonInput } from "./InputSystem"
 
 type InputSupplier = () => InputScheme
 /** The purpose of this class is to store any defaults related to the input system. */
@@ -15,224 +15,104 @@ class DefaultInputs {
             usesTouchControls: false,
             supportedDrivetrains: [DriveType.ARCADE, DriveType.SWERVE],
             inputs: [
-                new AxisInput("arcadeDrive", "KeyW", "KeyS"),
-                new AxisInput("arcadeTurn", "KeyD", "KeyA"),
-                new AxisInput("swerveZ", "KeyW", "KeyS"),
-                new AxisInput("swerveX", "KeyD", "KeyA"),
-                new AxisInput("swerveYaw", "ArrowRight", "ArrowLeft"),
+                AxisInput.onKeyboard("arcadeDrive", "KeyW", "KeyS"),
+                AxisInput.onKeyboard("arcadeTurn", "KeyD", "KeyA"),
+                AxisInput.onKeyboard("swerveZ", "KeyW", "KeyS"),
+                AxisInput.onKeyboard("swerveX", "KeyD", "KeyA"),
+                AxisInput.onKeyboard("swerveYaw", "ArrowRight", "ArrowLeft"),
 
                 new ButtonInput("intake", "KeyE"),
                 new ButtonInput("eject", "KeyQ"),
 
-                new AxisInput(
-                    "joint 1",
-                    "Digit1",
-                    "Digit1",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 2",
-                    "Digit2",
-                    "Digit2",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 3",
-                    "Digit3",
-                    "Digit3",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 4",
-                    "Digit4",
-                    "Digit4",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 5",
-                    "Digit5",
-                    "Digit5",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput("joint 6"),
-                new AxisInput("joint 7"),
-                new AxisInput("joint 8"),
-                new AxisInput("joint 9"),
-                new AxisInput("joint 10"),
+                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.unbound("joint 6"),
+                AxisInput.unbound("joint 7"),
+                AxisInput.unbound("joint 8"),
+                AxisInput.unbound("joint 9"),
+                AxisInput.unbound("joint 10"),
             ],
         }
     }
 
     static ernietank: InputSupplier = () => {
         return {
-            schemeName: "Bert",
+            schemeName: "Ernie",
             descriptiveName: "WSIK",
             customized: false,
             usesGamepad: false,
             usesTouchControls: false,
             supportedDrivetrains: [DriveType.TANK],
             inputs: [
-                new AxisInput("tankLeft", "KeyW", "KeyS"),
-                new AxisInput("tankRight", "KeyI", "KeyK"),
+                AxisInput.onKeyboard("tankLeft", "KeyW", "KeyS"),
+                AxisInput.onKeyboard("tankRight", "KeyI", "KeyK"),
 
                 new ButtonInput("intake", "KeyE"),
                 new ButtonInput("eject", "KeyQ"),
 
-                new AxisInput(
-                    "joint 1",
-                    "Digit1",
-                    "Digit1",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 2",
-                    "Digit2",
-                    "Digit2",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 3",
-                    "Digit3",
-                    "Digit3",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 4",
-                    "Digit4",
-                    "Digit4",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 5",
-                    "Digit5",
-                    "Digit5",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: false,
-                        alt: false,
-                        shift: true,
-                        meta: false,
-                    }
-                ),
-                new AxisInput("joint 6"),
-                new AxisInput("joint 7"),
-                new AxisInput("joint 8"),
-                new AxisInput("joint 9"),
-                new AxisInput("joint 10"),
+                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", {
+                    ctrl: false,
+                    alt: false,
+                    shift: true,
+                    meta: false,
+                }),
+                AxisInput.unbound("joint 6"),
+                AxisInput.unbound("joint 7"),
+                AxisInput.unbound("joint 8"),
+                AxisInput.unbound("joint 9"),
+                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -246,107 +126,47 @@ class DefaultInputs {
             usesTouchControls: false,
             supportedDrivetrains: [DriveType.ARCADE],
             inputs: [
-                new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown"),
-                new AxisInput("arcadeTurn", "ArrowRight", "ArrowLeft"),
+                AxisInput.onKeyboard("arcadeDrive", "ArrowUp", "ArrowDown"),
+                AxisInput.onKeyboard("arcadeTurn", "ArrowRight", "ArrowLeft"),
 
                 new ButtonInput("intake", "Semicolon"),
                 new ButtonInput("eject", "KeyL"),
 
-                new AxisInput(
-                    "joint 1",
-                    "Slash",
-                    "Slash",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: true,
-                        alt: false,
-                        shift: false,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 2",
-                    "Period",
-                    "Period",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: true,
-                        alt: false,
-                        shift: false,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 3",
-                    "Comma",
-                    "Comma",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: true,
-                        alt: false,
-                        shift: false,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 4",
-                    "KeyM",
-                    "KeyM",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: true,
-                        alt: false,
-                        shift: false,
-                        meta: false,
-                    }
-                ),
-                new AxisInput(
-                    "joint 5",
-                    "KeyN",
-                    "KeyN",
-                    -1,
-                    false,
-                    false,
-                    -1,
-                    -1,
-                    TouchControlsAxes.NONE,
-                    EMPTY_MODIFIER_STATE,
-                    {
-                        ctrl: true,
-                        alt: false,
-                        shift: false,
-                        meta: false,
-                    }
-                ),
-                new AxisInput("joint 6"),
-                new AxisInput("joint 7"),
-                new AxisInput("joint 8"),
-                new AxisInput("joint 9"),
-                new AxisInput("joint 10"),
+                AxisInput.onKeyboardSingleKey("joint 1", "Slash", {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 2", "Period", {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 3", "Comma", {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 4", "KeyM", {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                AxisInput.onKeyboardSingleKey("joint 5", "KeyN", {
+                    ctrl: true,
+                    alt: false,
+                    shift: false,
+                    meta: false,
+                }),
+                AxisInput.unbound("joint 6"),
+                AxisInput.unbound("joint 7"),
+                AxisInput.unbound("joint 8"),
+                AxisInput.unbound("joint 9"),
+                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -357,25 +177,30 @@ class DefaultInputs {
             descriptiveName: "Full Controller",
             customized: false,
             usesGamepad: true,
-            supportedDrivetrains: [DriveType.ARCADE],
+            supportedDrivetrains: [DriveType.ARCADE, DriveType.SWERVE, DriveType.ARCADE],
             usesTouchControls: false,
             inputs: [
-                new AxisInput("arcadeDrive", "", "", 1, true),
-                new AxisInput("arcadeTurn", "", "", 2, false),
+                AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
+                AxisInput.onGamepadJoystick("arcadeTurn", 2, false),
+                AxisInput.onGamepadJoystick("swerveZ", 1, true), // TODO: test inversion with actual controller
+                AxisInput.onGamepadJoystick("swerveX", 0, false),
+                AxisInput.onGamepadJoystick("swerveYaw", 2, false),
+                AxisInput.onGamepadJoystick("tankLeft", 1, true),
+                AxisInput.onGamepadJoystick("tankRight", 3, true),
 
                 new ButtonInput("intake", "", 4),
                 new ButtonInput("eject", "", 5),
 
-                new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
-                new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
-                new AxisInput("joint 3", "", "", -1, false, true, 15, 14),
-                new AxisInput("joint 4", "", "", -1, false, true, 12, 13),
-                new AxisInput("joint 5"),
-                new AxisInput("joint 6"),
-                new AxisInput("joint 7"),
-                new AxisInput("joint 8"),
-                new AxisInput("joint 9"),
-                new AxisInput("joint 10"),
+                AxisInput.onGamepadButtons("joint 1", 3, 0),
+                AxisInput.onGamepadButtons("joint 2", 1, 2),
+                AxisInput.onGamepadButtons("joint 3", 15, 14),
+                AxisInput.onGamepadButtons("joint 4", 12, 13),
+                AxisInput.unbound("joint 5"),
+                AxisInput.unbound("joint 6"),
+                AxisInput.unbound("joint 7"),
+                AxisInput.unbound("joint 8"),
+                AxisInput.unbound("joint 9"),
+                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -390,22 +215,22 @@ class DefaultInputs {
             usesTouchControls: false,
             supportedDrivetrains: [DriveType.ARCADE],
             inputs: [
-                new AxisInput("arcadeDrive", "", "", 1, true),
-                new AxisInput("arcadeTurn", "", "", 0, false),
+                AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
+                AxisInput.onGamepadJoystick("arcadeTurn", 0, false),
 
                 new ButtonInput("intake", "", 4),
                 new ButtonInput("eject", "", 5),
 
-                new AxisInput("joint 2", "", "", -1, false, true, 15, 14),
-                new AxisInput("joint 1", "", "", -1, false, true, 12, 13),
-                new AxisInput("joint 3"),
-                new AxisInput("joint 4"),
-                new AxisInput("joint 5"),
-                new AxisInput("joint 6"),
-                new AxisInput("joint 7"),
-                new AxisInput("joint 8"),
-                new AxisInput("joint 9"),
-                new AxisInput("joint 10"),
+                AxisInput.onGamepadButtons("joint 1", 12, 13),
+                AxisInput.onGamepadButtons("joint 2", 15, 14),
+                AxisInput.unbound("joint 3"),
+                AxisInput.unbound("joint 4"),
+                AxisInput.unbound("joint 5"),
+                AxisInput.unbound("joint 6"),
+                AxisInput.unbound("joint 7"),
+                AxisInput.unbound("joint 8"),
+                AxisInput.unbound("joint 9"),
+                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -419,22 +244,22 @@ class DefaultInputs {
             supportedDrivetrains: [DriveType.ARCADE],
             usesTouchControls: false,
             inputs: [
-                new AxisInput("arcadeDrive", "", "", 3, true),
-                new AxisInput("arcadeTurn", "", "", 2, false),
+                AxisInput.onGamepadJoystick("arcadeDrive", 3, true),
+                AxisInput.onGamepadJoystick("arcadeTurn", 2, false),
 
                 new ButtonInput("intake", "", 4),
                 new ButtonInput("eject", "", 5),
 
-                new AxisInput("joint 1", "", "", -1, false, true, 3, 0),
-                new AxisInput("joint 2", "", "", -1, false, true, 1, 2),
-                new AxisInput("joint 3"),
-                new AxisInput("joint 4"),
-                new AxisInput("joint 5"),
-                new AxisInput("joint 6"),
-                new AxisInput("joint 7"),
-                new AxisInput("joint 8"),
-                new AxisInput("joint 9"),
-                new AxisInput("joint 10"),
+                AxisInput.onGamepadButtons("joint 1", 3, 0),
+                AxisInput.onGamepadButtons("joint 2", 1, 2),
+                AxisInput.unbound("joint 3"),
+                AxisInput.unbound("joint 4"),
+                AxisInput.unbound("joint 5"),
+                AxisInput.unbound("joint 6"),
+                AxisInput.unbound("joint 7"),
+                AxisInput.unbound("joint 8"),
+                AxisInput.unbound("joint 9"),
+                AxisInput.unbound("joint 10"),
             ],
         }
     }
@@ -446,30 +271,15 @@ class DefaultInputs {
             customized: false,
             usesGamepad: false,
             usesTouchControls: true,
-            supportedDrivetrains: [DriveType.ARCADE],
+            supportedDrivetrains: [DriveType.ARCADE, DriveType.ARCADE, DriveType.SWERVE],
             inputs: [
-                new AxisInput(
-                    "arcadeDrive",
-                    "",
-                    "",
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    TouchControlsAxes.LEFT_Y
-                ),
-                new AxisInput(
-                    "arcadeTurn",
-                    "",
-                    "",
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    undefined,
-                    TouchControlsAxes.RIGHT_X
-                ),
+                AxisInput.onTouchControl("arcadeDrive", TouchControlsAxes.LEFT_Y),
+                AxisInput.onTouchControl("arcadeTurn", TouchControlsAxes.RIGHT_X),
+                AxisInput.onTouchControl("tankLeft", TouchControlsAxes.LEFT_Y),
+                AxisInput.onTouchControl("tankRight", TouchControlsAxes.RIGHT_Y),
+                AxisInput.onTouchControl("swerveX", TouchControlsAxes.LEFT_X),
+                AxisInput.onTouchControl("swerveZ", TouchControlsAxes.LEFT_Y),
+                AxisInput.onTouchControl("swerveYaw", TouchControlsAxes.RIGHT_Y),
             ],
         }
     }
@@ -492,13 +302,17 @@ class DefaultInputs {
         let driveInputs: AxisInput[]
         switch (drivetype) {
             case DriveType.ARCADE:
-                driveInputs = [new AxisInput("arcadeDrive"), new AxisInput("arcadeTurn")]
+                driveInputs = [AxisInput.unbound("arcadeDrive"), AxisInput.unbound("arcadeTurn")]
                 break
             case DriveType.TANK:
-                driveInputs = [new AxisInput("tankLeft"), new AxisInput("tankRight")]
+                driveInputs = [AxisInput.unbound("tankLeft"), AxisInput.unbound("tankRight")]
                 break
             case DriveType.SWERVE:
-                driveInputs = [new AxisInput("swerveX"), new AxisInput("swerveZ"), new AxisInput("swerveYaw")]
+                driveInputs = [
+                    AxisInput.unbound("swerveX"),
+                    AxisInput.unbound("swerveZ"),
+                    AxisInput.unbound("swerveYaw"),
+                ]
                 break
         }
         return {
@@ -514,16 +328,16 @@ class DefaultInputs {
                 new ButtonInput("intake"),
                 new ButtonInput("eject"),
 
-                new AxisInput("joint 1"),
-                new AxisInput("joint 2"),
-                new AxisInput("joint 3"),
-                new AxisInput("joint 4"),
-                new AxisInput("joint 5"),
-                new AxisInput("joint 6"),
-                new AxisInput("joint 7"),
-                new AxisInput("joint 8"),
-                new AxisInput("joint 9"),
-                new AxisInput("joint 10"),
+                AxisInput.unbound("joint 1"),
+                AxisInput.unbound("joint 2"),
+                AxisInput.unbound("joint 3"),
+                AxisInput.unbound("joint 4"),
+                AxisInput.unbound("joint 5"),
+                AxisInput.unbound("joint 6"),
+                AxisInput.unbound("joint 7"),
+                AxisInput.unbound("joint 8"),
+                AxisInput.unbound("joint 9"),
+                AxisInput.unbound("joint 10"),
             ],
         }
     }
