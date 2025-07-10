@@ -2,6 +2,7 @@ import adsk.core
 import adsk.fusion
 
 from src.Logging import logFailure, getLogger
+from src.UI import IconPaths
 from src.UI.CreateCommandInputsHelper import createTableInput, createTextBoxInput
 
 logger = getLogger()
@@ -36,21 +37,24 @@ class TaggingConfigTab:
         bodySelection.addSelectionFilter("SolidBodies")
         bodySelection.addSelectionFilter("SurfaceBodies")
 
-        self.taggingListTable = createTableInput("tagListTable", "Tag List", taggingConfigTabInputs, 6, "1:1:1")
+        self.taggingListTable = createTableInput("tagListTable", "Tag List", taggingConfigTabInputs, 6, "1:4:4:4")
+        self.taggingListTable.addCommandInput(
+            createTextBoxInput("headerIcon", "", taggingConfigTabInputs, "", bold=False), 0, 0
+        )
         self.taggingListTable.addCommandInput(
             createTextBoxInput("headerBodyName", "Body", taggingConfigTabInputs, "Body Name", background="#d9d9d9"),
             0,
-            0,
+            1,
         )
         self.taggingListTable.addCommandInput(
             createTextBoxInput(
                 "headerComponentName", "Component", taggingConfigTabInputs, "Component Name", background="#d9d9d9"
             ),
             0,
-            1,
+            2,
         )
         self.taggingListTable.addCommandInput(
-            createTextBoxInput("headerTagType", "Type", taggingConfigTabInputs, "Tag Type", background="#d9d9d9"), 0, 2
+            createTextBoxInput("headerTagType", "Type", taggingConfigTabInputs, "Tag Type", background="#d9d9d9"), 0, 3
         )
 
         addTagInputButton = taggingConfigTabInputs.addBoolValueInput("tagAddButton", "Add", False)
@@ -103,16 +107,25 @@ class TaggingConfigTab:
     def addTag(self, body: adsk.fusion.BRepBody, tag: str) -> None:
         commandInputs = self.taggingListTable.commandInputs
         row = self.taggingListTable.rowCount
-        bodyName = commandInputs.addTextBoxCommandInput(f"bodyName_{row}", "Body Name", body.name, 1, True)
-        componentName = commandInputs.addTextBoxCommandInput(
-            f"componentName_{row}", "Component Name", body.parentComponent.name, 1, True
-        )
-        tagType = commandInputs.addTextBoxCommandInput(f"tagType_{row}", "Tag Type", tag, 1, True)
 
-        row = self.taggingListTable.rowCount
-        self.taggingListTable.addCommandInput(bodyName, row, 0)
-        self.taggingListTable.addCommandInput(componentName, row, 1)
-        self.taggingListTable.addCommandInput(tagType, row, 2)
+        icon = commandInputs.addImageCommandInput(f"tag_icon_{row}", "Ball", IconPaths.tagIcons["blank"])
+        icon.tooltip = "Tag"
+
+        bodyName = commandInputs.addTextBoxCommandInput(f"bodyName_{row}", "Body Name", "", 1, True)
+        bodyName.formattedText = f"<p style='font-size:11px'>{body.name}</p>"
+
+        componentName = commandInputs.addTextBoxCommandInput(
+            f"componentName_{row}", "Component Name", "", 1, True
+        )
+        componentName.formattedText = f"<p style='font-size:11px'>{body.parentComponent.name}</p>"
+
+        tagType = commandInputs.addTextBoxCommandInput(f"tagType_{row}", "Tag Type", "", 1, True)
+        tagType.formattedText = f"<p style='font-size:11px'>{tag}</p>"
+
+        self.taggingListTable.addCommandInput(icon, row, 0)
+        self.taggingListTable.addCommandInput(bodyName, row, 1)
+        self.taggingListTable.addCommandInput(componentName, row, 2)
+        self.taggingListTable.addCommandInput(tagType, row, 3)
 
         self.tagMap[body.entityToken] = tag
         self.tagList.append(body.entityToken)
