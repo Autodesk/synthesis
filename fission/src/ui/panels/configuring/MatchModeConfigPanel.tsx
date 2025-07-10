@@ -10,7 +10,7 @@ import {
 import { LabelSize } from "@/components/Label"
 import { Box } from "@mui/material"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import MatchMode from "@/systems/MatchMode"
+import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAME_TIME } from "@/systems/MatchMode"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Button from "@/ui/components/Button"
@@ -209,9 +209,10 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             id: configObj.id as string,
             name: configObj.name as string,
             isDefault: false, // User-uploaded configs are not default configs
-            autonomousTime: typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : 15,
-            teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : 135,
-            endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : 20,
+            autonomousTime:
+                typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : DEFAULT_AUTONOMOUS_TIME,
+            teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : DEFAULT_TELEOP_TIME,
+            endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : DEFAULT_ENDGAME_TIME,
         }
 
         return normalizedConfig
