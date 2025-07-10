@@ -18,6 +18,7 @@ import Button from "@/ui/components/Button"
 export interface MatchModeConfig {
     id: string // Required
     name: string // Required
+    isDefault: boolean // Track if this is a default config (auto-filled)
     autonomousTime: number // Optional, defaults to 15
     teleopTime: number // Optional, defaults to 135
     endgameTime: number // Optional, defaults to 20
@@ -65,7 +66,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={secondaryOnClick} />
+                {secondaryOnClick && <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={secondaryOnClick} />}
                 <PositiveButton value={SynthesisIcons.SelectLarge} onClick={primaryOnClick} />
             </Box>
         </Box>
@@ -87,7 +88,8 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 const defaultConfigs = await Promise.all(
                     fileNames.map(async fileName => {
                         const res = await fetch(`match-mode-config/${fileName}`)
-                        return res.json()
+                        const config = await res.json()
+                        return { ...config, isDefault: true }
                     })
                 )
                 const localConfigs = JSON.parse(window.localStorage.getItem("match-mode-configs") || "[]")
@@ -121,17 +123,23 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             MatchConfigSelected(config, openModal)
                             closePanel("match-mode-config")
                         }}
-                        secondaryOnClick={() => {
-                            // Delete the config from the local storage
-                            const updatedConfigs = matchModeConfigs.filter(c => c.id !== config.id)
-                            setMatchModeConfigs(updatedConfigs)
-                            window.localStorage.setItem("match-mode-configs", JSON.stringify(updatedConfigs))
-                            Global_AddToast?.(
-                                "info",
-                                "Match Mode Config Deleted",
-                                `Successfully deleted "${config.name}"`
-                            )
-                        }}
+                        secondaryOnClick={
+                            !config.isDefault
+                                ? () => {
+                                      // Delete the config from the local storage
+                                      const updatedConfigs = matchModeConfigs.filter(c => c.id !== config.id)
+                                      setMatchModeConfigs(updatedConfigs)
+                                      // Only save custom configs to local storage
+                                      const customConfigs = updatedConfigs.filter(c => !c.isDefault)
+                                      window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
+                                      Global_AddToast?.(
+                                          "info",
+                                          "Match Mode Config Deleted",
+                                          `Successfully deleted "${config.name}"`
+                                      )
+                                  }
+                                : undefined
+                        }
                     />
                 )
             }),
@@ -146,9 +154,17 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }
 
-    // eslint-disable-next-line
-    const validateMatchModeConfig = (config: any): config is MatchModeConfig => {
+    const validateAndNormalizeMatchModeConfig = (config: unknown): MatchModeConfig | null => {
         let valid = true
+
+        // Type guard to check if config is an object
+        if (typeof config !== "object" || config === null) {
+            console.error("Match mode config validation failed: config must be an object")
+            Global_AddToast?.("error", "Invalid Match Mode Config", "Configuration must be an object")
+            return null
+        }
+
+        const configObj = config as Record<string, unknown>
 
         const props: { id: string; expected_type: string; required: boolean }[] = [
             { id: "id", expected_type: "string", required: true },
@@ -165,12 +181,12 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         for (const prop of props) {
-            if (config[prop.id] == undefined) {
+            if (configObj[prop.id] == undefined) {
                 if (prop.required) {
                     typeError(prop.id)
                     valid = false
                 }
-            } else if (typeof config[prop.id] != prop.expected_type) {
+            } else if (typeof configObj[prop.id] != prop.expected_type) {
                 if (prop.required) {
                     typeError(prop.id, prop.expected_type)
                     valid = false
@@ -184,7 +200,21 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }
         }
 
-        return valid
+        if (!valid) {
+            return null
+        }
+
+        // If validation passes, normalize the config with defaults for missing fields
+        const normalizedConfig: MatchModeConfig = {
+            id: configObj.id as string,
+            name: configObj.name as string,
+            isDefault: false, // User-uploaded configs are not default configs
+            autonomousTime: typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : 15,
+            teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : 135,
+            endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : 20,
+        }
+
+        return normalizedConfig
     }
 
     const handleFileUpload = async (file: File) => {
@@ -199,8 +229,9 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             const fileContent = await file.text()
             const parsedConfig = JSON.parse(fileContent) // ?? {}
 
-            // Validate structure
-            if (!validateMatchModeConfig(parsedConfig)) {
+            // Validate structure and normalize config
+            const normalizedConfig = validateAndNormalizeMatchModeConfig(parsedConfig)
+            if (!normalizedConfig) {
                 Global_AddToast?.(
                     "error",
                     "Invalid Match Mode Config",
@@ -210,9 +241,9 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }
 
             // Ensures that the config id is unique
-            if (matchModeConfigs.find(config => config.id === parsedConfig.id)) {
+            if (matchModeConfigs.find(config => config.id === normalizedConfig.id)) {
                 console.error(
-                    `Match mode config validation failed: A config with id '${parsedConfig.id}' already exists`
+                    `Match mode config validation failed: A config with id '${normalizedConfig.id}' already exists`
                 )
                 Global_AddToast?.(
                     "error",
@@ -222,17 +253,10 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 return
             }
 
-            // If validation passes, normalize the config with defaults for missing fields
-            const normalizedConfig: MatchModeConfig = {
-                id: parsedConfig.id,
-                name: parsedConfig.name,
-                autonomousTime: typeof parsedConfig.autonomousTime === "number" ? parsedConfig.autonomousTime : 15,
-                teleopTime: typeof parsedConfig.teleopTime === "number" ? parsedConfig.teleopTime : 135,
-                endgameTime: typeof parsedConfig.endgameTime === "number" ? parsedConfig.endgameTime : 20,
-            }
-
             setMatchModeConfigs(prev => [...prev, normalizedConfig])
-            window.localStorage.setItem("match-mode-configs", JSON.stringify([...matchModeConfigs, normalizedConfig]))
+            // Only save custom configs to local storage
+            const customConfigs = [...matchModeConfigs.filter(c => !c.isDefault), normalizedConfig]
+            window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
 
             Global_AddToast?.("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
         } catch (error) {

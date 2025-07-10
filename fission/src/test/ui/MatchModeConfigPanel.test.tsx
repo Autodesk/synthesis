@@ -226,4 +226,17 @@ describe("MatchModeConfigPanel", () => {
         await testUploadMatchModeConfig(validJson, true) // Valid config should be uploaded
         await testUploadMatchModeConfig(jsonWithSameId, false) // Has the same id as the first config, should not be uploaded
     })
+
+    test("Upload Valid MatchModeConfig - isDefault is true", async () => {
+        const validJson = {
+            id: "test",
+            name: "Valid MatchModeConfig",
+            isDefault: true,
+            autonomousTime: 10,
+            teleopTime: 20,
+            endgameTime: 15,
+        }
+
+        await testUploadMatchModeConfig(validJson, true)
+    })
 })
