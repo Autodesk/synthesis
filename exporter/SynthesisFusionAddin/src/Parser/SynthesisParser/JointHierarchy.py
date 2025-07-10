@@ -243,7 +243,10 @@ class JointParser:
         # dynamic joint node for grounded components and static components
         populate_node_result = self._populateNode(self.grounded, None, None, is_ground=True)
         if populate_node_result.is_err():  # We need the value to proceed
-            raise RuntimeWarning(populate_node_result.unwrap_err()[0])
+            message = populate_node_result.unwrap_err()[0]
+            gm.ui.messageBox(message)
+            ___: Err[None] = Err(message, ErrorSeverity.Fatal) 
+            raise RuntimeError()
 
         rootNode = populate_node_result.unwrap()
         self.groundSimNode = SimulationNode(rootNode, None, grounded=True)
@@ -257,7 +260,10 @@ class JointParser:
         for key, value in self.dynamicJoints.items():
             populate_axis_result = self._populateAxis(key, value)
             if populate_axis_result.is_err():
-                raise RuntimeError(populate_axis_result.unwrap_err()[0])
+                message = populate_axis_result.unwrap_err()[0]
+                gm.ui.messageBox(message)
+                ___: Err[None] = Err(message, ErrorSeverity.Fatal) 
+                raise RuntimeError()
 
         __ = self._linkAllAxis()
 
