@@ -1,6 +1,5 @@
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager, { InputScheme, InputSchemeAvailability } from "@/systems/input/InputSchemeManager"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { LabelSize } from "@/ui/components/Label"
@@ -8,18 +7,13 @@ import {
     AddButtonInteractiveColor,
     DeleteButton,
     EditButton,
-    DeleteButton,
-    EditButton,
     PositiveButton,
     SectionDivider,
-    SectionLabel,
-    SelectButton,
     SectionLabel,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
-import React, { useReducer } from "react"
-import { useEffect, useReducer, useState } from "react"
+import React, { ReactElement, useEffect, useReducer, useState } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
@@ -37,7 +31,8 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
     useEffect(() => {
         setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
     }, [robotDriveType])
-    function SchemeSelector(scheme: InputScheme, isAvailable: boolean) {
+
+    const SchemeSelector = (scheme: InputScheme, isAvailable: boolean): ReactElement => {
         return (
             <Box
                 component={"div"}
@@ -82,13 +77,13 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                         onEdit?.()
                     })}
 
-                                {/** Delete button (only if the scheme is customized) */}
-                                {scheme.customized ? (
-                                    DeleteButton(() => {
-                                        // Fetch current custom schemes
-                                        InputSchemeManager.saveSchemes()
-                                        InputSchemeManager.resetDefaultSchemes()
-                                        const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+                    {/** Delete button (only if the scheme is customized) */}
+                    {scheme.customized ? (
+                        DeleteButton(() => {
+                            // Fetch current custom schemes
+                            InputSchemeManager.saveSchemes()
+                            InputSchemeManager.resetDefaultSchemes()
+                            const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
                             // Find and remove this input scheme
                             const index = schemes.indexOf(scheme)

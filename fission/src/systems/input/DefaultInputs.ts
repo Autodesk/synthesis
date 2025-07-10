@@ -13,10 +13,13 @@ class DefaultInputs {
             customized: false,
             usesGamepad: false,
             usesTouchControls: false,
-            driveType: DriveType.ARCADE,
+            supportedDrivetrains: [DriveType.ARCADE, DriveType.SWERVE],
             inputs: [
                 new AxisInput("arcadeDrive", "KeyW", "KeyS"),
                 new AxisInput("arcadeTurn", "KeyD", "KeyA"),
+                new AxisInput("swerveZ", "KeyW", "KeyS"),
+                new AxisInput("swerveX", "KeyD", "KeyA"),
+                new AxisInput("swerveYaw", "ArrowRight", "ArrowLeft"),
 
                 new ButtonInput("intake", "KeyE"),
                 new ButtonInput("eject", "KeyQ"),
@@ -126,7 +129,8 @@ class DefaultInputs {
             descriptiveName: "WSIK",
             customized: false,
             usesGamepad: false,
-            driveType: DriveType.TANK,
+            usesTouchControls: false,
+            supportedDrivetrains: [DriveType.TANK],
             inputs: [
                 new AxisInput("tankLeft", "KeyW", "KeyS"),
                 new AxisInput("tankRight", "KeyI", "KeyK"),
@@ -134,36 +138,96 @@ class DefaultInputs {
                 new ButtonInput("intake", "KeyE"),
                 new ButtonInput("eject", "KeyQ"),
 
-                new AxisInput("joint 1", "Digit1", "Digit1", -1, false, false, -1, -1, EmptyModifierState, {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                new AxisInput("joint 2", "Digit2", "Digit2", -1, false, false, -1, -1, EmptyModifierState, {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                new AxisInput("joint 3", "Digit3", "Digit3", -1, false, false, -1, -1, EmptyModifierState, {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                new AxisInput("joint 4", "Digit4", "Digit4", -1, false, false, -1, -1, EmptyModifierState, {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                new AxisInput("joint 5", "Digit5", "Digit5", -1, false, false, -1, -1, EmptyModifierState, {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
+                new AxisInput(
+                    "joint 1",
+                    "Digit1",
+                    "Digit1",
+                    -1,
+                    false,
+                    false,
+                    -1,
+                    -1,
+                    TouchControlsAxes.NONE,
+                    EMPTY_MODIFIER_STATE,
+                    {
+                        ctrl: false,
+                        alt: false,
+                        shift: true,
+                        meta: false,
+                    }
+                ),
+                new AxisInput(
+                    "joint 2",
+                    "Digit2",
+                    "Digit2",
+                    -1,
+                    false,
+                    false,
+                    -1,
+                    -1,
+                    TouchControlsAxes.NONE,
+                    EMPTY_MODIFIER_STATE,
+                    {
+                        ctrl: false,
+                        alt: false,
+                        shift: true,
+                        meta: false,
+                    }
+                ),
+                new AxisInput(
+                    "joint 3",
+                    "Digit3",
+                    "Digit3",
+                    -1,
+                    false,
+                    false,
+                    -1,
+                    -1,
+                    TouchControlsAxes.NONE,
+                    EMPTY_MODIFIER_STATE,
+                    {
+                        ctrl: false,
+                        alt: false,
+                        shift: true,
+                        meta: false,
+                    }
+                ),
+                new AxisInput(
+                    "joint 4",
+                    "Digit4",
+                    "Digit4",
+                    -1,
+                    false,
+                    false,
+                    -1,
+                    -1,
+                    TouchControlsAxes.NONE,
+                    EMPTY_MODIFIER_STATE,
+                    {
+                        ctrl: false,
+                        alt: false,
+                        shift: true,
+                        meta: false,
+                    }
+                ),
+                new AxisInput(
+                    "joint 5",
+                    "Digit5",
+                    "Digit5",
+                    -1,
+                    false,
+                    false,
+                    -1,
+                    -1,
+                    TouchControlsAxes.NONE,
+                    EMPTY_MODIFIER_STATE,
+                    {
+                        ctrl: false,
+                        alt: false,
+                        shift: true,
+                        meta: false,
+                    }
+                ),
                 new AxisInput("joint 6"),
                 new AxisInput("joint 7"),
                 new AxisInput("joint 8"),
@@ -180,7 +244,7 @@ class DefaultInputs {
             customized: false,
             usesGamepad: false,
             usesTouchControls: false,
-            driveType: DriveType.ARCADE,
+            supportedDrivetrains: [DriveType.ARCADE],
             inputs: [
                 new AxisInput("arcadeDrive", "ArrowUp", "ArrowDown"),
                 new AxisInput("arcadeTurn", "ArrowRight", "ArrowLeft"),
@@ -293,7 +357,7 @@ class DefaultInputs {
             descriptiveName: "Full Controller",
             customized: false,
             usesGamepad: true,
-            driveType: DriveType.ARCADE,
+            supportedDrivetrains: [DriveType.ARCADE],
             usesTouchControls: false,
             inputs: [
                 new AxisInput("arcadeDrive", "", "", 1, true),
@@ -324,7 +388,7 @@ class DefaultInputs {
             customized: false,
             usesGamepad: true,
             usesTouchControls: false,
-            driveType: DriveType.ARCADE,
+            supportedDrivetrains: [DriveType.ARCADE],
             inputs: [
                 new AxisInput("arcadeDrive", "", "", 1, true),
                 new AxisInput("arcadeTurn", "", "", 0, false),
@@ -352,7 +416,7 @@ class DefaultInputs {
             descriptiveName: "Right Stick",
             customized: false,
             usesGamepad: true,
-            driveType: DriveType.ARCADE,
+            supportedDrivetrains: [DriveType.ARCADE],
             usesTouchControls: false,
             inputs: [
                 new AxisInput("arcadeDrive", "", "", 3, true),
@@ -375,13 +439,14 @@ class DefaultInputs {
         }
     }
 
-    public static brandon = () => {
+    public static brandon: InputSupplier = () => {
         return {
             schemeName: "Brandon",
             descriptiveName: "Touch Controls",
             customized: false,
             usesGamepad: false,
             usesTouchControls: true,
+            supportedDrivetrains: [DriveType.ARCADE],
             inputs: [
                 new AxisInput(
                     "arcadeDrive",
@@ -442,7 +507,7 @@ class DefaultInputs {
             customized: true,
             usesGamepad: false,
             usesTouchControls: false,
-            driveType: drivetype,
+            supportedDrivetrains: [drivetype],
             inputs: [
                 ...driveInputs,
 

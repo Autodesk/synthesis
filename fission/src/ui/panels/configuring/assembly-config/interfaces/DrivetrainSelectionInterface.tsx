@@ -3,7 +3,11 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Dropdown from "@/components/Dropdown.tsx"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
-export default function DrivetrainSelectionInterface({ selectedAssembly }: { selectedAssembly: MirabufSceneObject }) {
+interface DrivetrainSelectionProps {
+    selectedAssembly: MirabufSceneObject
+}
+
+const DrivetrainSelectionInterface: React.FC<DrivetrainSelectionProps> = ({ selectedAssembly }) => {
     return (
         <>
             <Dropdown // TODO: disable/hide when wpilib brain selected
@@ -20,3 +24,5 @@ export default function DrivetrainSelectionInterface({ selectedAssembly }: { sel
         </>
     )
 }
+
+export default DrivetrainSelectionInterface
