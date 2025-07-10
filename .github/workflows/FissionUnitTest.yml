@@ -51,17 +51,7 @@ jobs:
             ~/.cache/ms-playwright/
           key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
 
-      - name: Check cache contents
-        id: check-cache
-        run: |
-          if [ -z "$(ls -A ~/.cache/ms-playwright/)" ]; then
-            echo "VALID_CACHE=false" >> $GITHUB_ENV
-          else
-            echo "VALID_CACHE=true" >> $GITHUB_ENV
-          fi
-
       - name: Download playwright if not cached
-        if: steps.cache-browsers.outputs.cache-hit != 'true' || env.VALID_CACHE != 'true'
         run: |
           cd fission
           npx playwright install --with-deps
