@@ -153,7 +153,7 @@ def refreshAuthToken() -> None:
 def loadUserInfo() -> Result[APSUserInfo]:
     global APS_AUTH
     if not APS_AUTH:
-        return None
+        return Err("Aps Authentication is undefined", ErrorSeverity.Fatal)
     global APS_USER_INFO
     req = urllib.request.Request("https://api.userprofile.autodesk.com/userinfo")
     req.add_header(key="Authorization", val=APS_AUTH.access_token)
@@ -179,6 +179,7 @@ def loadUserInfo() -> Result[APSUserInfo]:
     except urllib.request.HTTPError as e:
         removeAuth()
         return Err(f"User Info Error:\n{e.code} - {e.reason}\nPlease sign in again", ErrorSeverity.Fatal)
+
 
 def getUserInfo() -> Result[APSUserInfo]:
     if APS_USER_INFO is not None:
@@ -303,7 +304,6 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
     upload_file_result = upload_file(signed_url, file_contents)
     if upload_file_result.is_fatal():
         return upload_file_result
-    upload_file_result = upload_file_result.unwrap()
 
     """
     Finish Upload and Initialize File Version
@@ -311,7 +311,7 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
     complete_upload_result = complete_upload(auth, upload_key, object_key, bucket_key)
     if complete_upload_result.is_fatal():
         return complete_upload_result
-    
+
     if file_id != "":
         update_file_result = update_file_version(
             auth, project_id, created_folder_id, lineage_id, file_id, file_name, file_contents, file_version, object_id
@@ -548,7 +548,9 @@ def create_storage_location(auth: str, project_id: str, folder_id: str, file_nam
         f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/storage", json=data, headers=headers
     )
     if not storage_location_res.ok:
-        return Err(f"UPLOAD ERROR: {storage_location_res.text} (Failed to create storage location)", ErrorSeverity.Fatal)
+        return Err(
+            f"UPLOAD ERROR: {storage_location_res.text} (Failed to create storage location)", ErrorSeverity.Fatal
+        )
     storage_location_json: dict[str, Any] = storage_location_res.json()
     object_id: str = storage_location_json["data"]["id"]
     return Ok(object_id)
@@ -580,7 +582,7 @@ def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> Result[t
         headers=headers,
     )
     if not signed_url_res.ok:
-        return Err(f"Failed to get signed URL:\nUPLOAD ERROR: {signed_url_res.text}", ErrorSeverity.Fatal) 
+        return Err(f"Failed to get signed URL:\nUPLOAD ERROR: {signed_url_res.text}", ErrorSeverity.Fatal)
     signed_url_json: dict[str, str] = signed_url_res.json()
     return Ok((signed_url_json["uploadKey"], signed_url_json["urls"][0]))
 
@@ -633,7 +635,8 @@ def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str
     )
     if not completed_res.ok:
         return Err(
-            f"Failed to complete upload\n UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}", ErrorSeverity.Fatal
+            f"Failed to complete upload\n UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}",
+            ErrorSeverity.Fatal,
         )
     return Ok("")
 

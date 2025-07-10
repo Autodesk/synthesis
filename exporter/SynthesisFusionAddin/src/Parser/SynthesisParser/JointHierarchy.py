@@ -222,7 +222,7 @@ class JointParser:
         if self.grounded is None:
             message = "These is no grounded component in this assembly, aborting kinematic export."
             gm.ui.messageBox(message)
-            ___: Err[None] = Err(message, ErrorSeverity.Fatal) 
+            _____: Err[None] = Err(message, ErrorSeverity.Fatal)
             raise RuntimeError()
 
         self.currentTraversal: dict[str, DynamicOccurrenceNode | bool] = dict()
@@ -245,7 +245,7 @@ class JointParser:
         if populate_node_result.is_err():  # We need the value to proceed
             message = populate_node_result.unwrap_err()[0]
             gm.ui.messageBox(message)
-            ___: Err[None] = Err(message, ErrorSeverity.Fatal) 
+            ____: Err[None] = Err(message, ErrorSeverity.Fatal)
             raise RuntimeError()
 
         rootNode = populate_node_result.unwrap()
@@ -262,7 +262,7 @@ class JointParser:
             if populate_axis_result.is_err():
                 message = populate_axis_result.unwrap_err()[0]
                 gm.ui.messageBox(message)
-                ___: Err[None] = Err(message, ErrorSeverity.Fatal) 
+                ___: Err[None] = Err(message, ErrorSeverity.Fatal)
                 raise RuntimeError()
 
         __ = self._linkAllAxis()
