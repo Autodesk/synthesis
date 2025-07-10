@@ -11,6 +11,7 @@ import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import {
     Alliance,
+    Station,
     EjectorPreferences,
     FieldPreferences,
     IntakePreferences,
@@ -41,7 +42,6 @@ import {
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 
 const DEBUG_BODIES = false
