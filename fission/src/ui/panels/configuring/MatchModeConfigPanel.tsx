@@ -11,7 +11,7 @@ import { LabelSize } from "@/components/Label"
 import { Box } from "@mui/material"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import MatchMode from "@/systems/MatchMode"
-import { Global_AddToast } from "@/ui/components/GlobalUIControls"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Button from "@/ui/components/Button"
 
@@ -26,7 +26,7 @@ export interface MatchModeConfig {
 
 function MatchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
     if (MatchMode.getInstance().isMatchEnabled()) {
-        Global_AddToast?.(
+        globalAddToast?.(
             "error",
             "Match Mode Already Running",
             "You can't modify the match mode ruleset while a match is running"
@@ -66,8 +66,8 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                {secondaryOnClick && <NegativeButton value={SynthesisIcons.DeleteLarge} onClick={secondaryOnClick} />}
-                <PositiveButton value={SynthesisIcons.SelectLarge} onClick={primaryOnClick} />
+                {secondaryOnClick && <NegativeButton value={SynthesisIcons.DELETE_LARGE} onClick={secondaryOnClick} />}
+                <PositiveButton value={SynthesisIcons.SELECT_LARGE} onClick={primaryOnClick} />
             </Box>
         </Box>
     )
@@ -100,7 +100,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 setMatchModeConfigs(uniqueConfigsById)
             } catch (err) {
                 console.error("Error loading JSON files:", err)
-                Global_AddToast?.(
+                globalAddToast?.(
                     "error",
                     "Error Loading Match Mode Configs",
                     "Please check the console for more details"
@@ -132,7 +132,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                       // Only save custom configs to local storage
                                       const customConfigs = updatedConfigs.filter(c => !c.isDefault)
                                       window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
-                                      Global_AddToast?.(
+                                      globalAddToast?.(
                                           "info",
                                           "Match Mode Config Deleted",
                                           `Successfully deleted "${config.name}"`
@@ -160,7 +160,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         // Type guard to check if config is an object
         if (typeof config !== "object" || config === null) {
             console.error("Match mode config validation failed: config must be an object")
-            Global_AddToast?.("error", "Invalid Match Mode Config", "Configuration must be an object")
+            globalAddToast?.("error", "Invalid Match Mode Config", "Configuration must be an object")
             return null
         }
 
@@ -177,7 +177,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const typeError = (id: string, expected_type?: string) => {
             const error_message = expected_type ? `must be a ${expected_type}` : "is required"
             console.error(`Match mode config validation failed: the '${id}' field ${error_message}`)
-            Global_AddToast?.("error", "Invalid Match Mode Config", `The '${id}' field ${error_message}`)
+            globalAddToast?.("error", "Invalid Match Mode Config", `The '${id}' field ${error_message}`)
         }
 
         for (const prop of props) {
@@ -191,7 +191,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     typeError(prop.id, prop.expected_type)
                     valid = false
                 } else {
-                    Global_AddToast?.(
+                    globalAddToast?.(
                         "warning",
                         "Invalid Match Mode Config",
                         `The '${prop.id}' field must be a ${prop.expected_type}, ignoring ${prop.id} field`
@@ -220,7 +220,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const handleFileUpload = async (file: File) => {
         // Check if it's a JSON file
         if (!file.name.toLowerCase().endsWith(".json")) {
-            Global_AddToast?.("error", "Invalid File Type", "Please select a JSON file")
+            globalAddToast?.("error", "Invalid File Type", "Please select a JSON file")
             return
         }
 
@@ -232,7 +232,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             // Validate structure and normalize config
             const normalizedConfig = validateAndNormalizeMatchModeConfig(parsedConfig)
             if (!normalizedConfig) {
-                Global_AddToast?.(
+                globalAddToast?.(
                     "error",
                     "Invalid Match Mode Config",
                     "The JSON file does not match the required MatchModeConfig structure"
@@ -245,7 +245,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 console.error(
                     `Match mode config validation failed: A config with id '${normalizedConfig.id}' already exists`
                 )
-                Global_AddToast?.(
+                globalAddToast?.(
                     "error",
                     "Match Mode Config Already Exists",
                     "There is already a match mode config with this ID"
@@ -258,9 +258,9 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             const customConfigs = [...matchModeConfigs.filter(c => !c.isDefault), normalizedConfig]
             window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
 
-            Global_AddToast?.("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
+            globalAddToast?.("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
         } catch (error) {
-            Global_AddToast?.("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
+            globalAddToast?.("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
         }
     }
 
@@ -275,7 +275,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             name={"Match Mode Config"}
-            icon={SynthesisIcons.Import}
+            icon={SynthesisIcons.IMPORT}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Back"
@@ -284,7 +284,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 closePanel("match-mode-config")
             }}
         >
-            <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+            <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                 {matchModeConfigs.length} Match Mode{matchModeConfigs.length === 1 ? "" : "s"}
             </SectionLabel>
             <SectionDivider />
