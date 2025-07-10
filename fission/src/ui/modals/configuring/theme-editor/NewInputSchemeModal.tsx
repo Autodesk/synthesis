@@ -4,7 +4,7 @@ import Modal, { ModalPropsImpl } from "@/components/Modal"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import { usePanelControlContext } from "@/ui/PanelContext"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import {
     ConfigurationType,
@@ -21,7 +21,7 @@ const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="New Input Scheme"
-            icon={SynthesisIcons.AddLarge}
+            icon={SynthesisIcons.ADD_LARGE}
             modalId={modalId}
             onAccept={() => {
                 const scheme = DefaultInputs.newBlankScheme(type)

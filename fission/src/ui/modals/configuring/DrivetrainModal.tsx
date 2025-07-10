@@ -34,14 +34,14 @@ const DrivetrainModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Change Drivetrain"
-            icon={SynthesisIcons.Car}
+            icon={SynthesisIcons.CAR}
             modalId={modalId}
             onAccept={() => showTooltip("controls", controls[drivetrain])}
         >
             <Dropdown
                 label="Type"
                 options={["None", "Tank", "Arcade", "Swerve"] as DrivetrainType[]}
-                onSelect={(selected: string) => setDrivetrain(selected as DrivetrainType)}
+                onSelect={selected => setDrivetrain(selected)}
             />
         </Modal>
     )

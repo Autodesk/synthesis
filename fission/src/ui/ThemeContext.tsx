@@ -1,78 +1,7 @@
-import React, { ReactNode, createContext, useContext, useState } from "react"
-import { RgbaColor } from "react-colorful"
+import React, { ReactNode, useState } from "react"
 import { addGlobalFunc } from "@/util/dom"
-
-export const defaultThemeName = "Default"
-export type ColorName =
-    | "InteractiveElementSolid"
-    | "InteractiveElementLeft"
-    | "InteractiveElementRight"
-    | "Background"
-    | "BackgroundSecondary"
-    | "InteractiveBackground"
-    | "BackgroundHUD"
-    | "InteractiveHover"
-    | "InteractiveSelect"
-    | "MainText"
-    | "Scrollbar"
-    | "AcceptButton"
-    | "CancelButton"
-    | "InteractiveElementText"
-    | "Icon"
-    | "MainHUDIcon"
-    | "MainHUDCloseIcon"
-    | "HighlightHover"
-    | "HighlightSelect"
-    | "SkyboxTop"
-    | "SkyboxBottom"
-    | "FloorGrid"
-    | "AcceptCancelButtonText"
-    | "MatchRedAlliance"
-    | "MatchBlueAlliance"
-    | "ToastInfo"
-    | "ToastWarning"
-    | "ToastError"
-
-export const colorNameToTailwind = (colorName: ColorName) => {
-    return (
-        "bg" +
-        colorName
-            .replace(/([A-Z]+)/g, "-$1")
-            .replace(/(?<=[A-Z])([A-Z])(?![A-Z]|$)/g, "-$1")
-            .toLowerCase()
-    )
-}
-export const colorNameToProp = (colorName: ColorName) => {
-    return (
-        "-" +
-        colorName
-            .replace(/([A-Z]+)/g, "-$1")
-            .replace(/(?<=[A-Z])([A-Z])(?![A-Z]|$)/g, "-$1")
-            .toLowerCase()
-    )
-}
-
-export const colorNameToVar = (colorName: ColorName) => {
-    return `var(${colorNameToProp(colorName)})`
-}
-
-export type Theme = {
-    [name in ColorName]: { color: RgbaColor; above: (ColorName | string)[] }
-}
-export type Themes = { [name: string]: Theme }
-
-type ThemeContextType = {
-    themes: Themes
-    initialThemeName: string
-    defaultTheme: Theme
-    currentTheme: string
-    setTheme: (themeName: string) => void
-    updateColor: (themeName: string, colorName: ColorName, rgbaColor: RgbaColor) => void
-    createTheme: (themeName: string) => void
-    deleteTheme: (themeName: string) => void
-    deleteAllThemes: () => void
-    applyTheme: (themeName: string) => void
-}
+import { RgbaColor } from "react-colorful"
+import { ColorName, Themes, Theme, ThemeContext, defaultThemeName, colorNameToProp } from "./helpers/UseThemeHelpers"
 
 type ThemeProviderProps = {
     themes: Themes
@@ -80,8 +9,6 @@ type ThemeProviderProps = {
     initialThemeName: string
     children: ReactNode
 }
-
-const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialThemeName, themes, defaultTheme, children }) => {
     const [currentTheme, setCurrentTheme] = useState<string>(initialThemeName)
@@ -185,12 +112,4 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ initialThemeName, 
             {children}
         </ThemeContext.Provider>
     )
-}
-
-export const useTheme = () => {
-    const context = useContext(ThemeContext)
-    if (!context) {
-        throw new Error("useTheme must be used within a ThemeProvider!")
-    }
-    return context
 }

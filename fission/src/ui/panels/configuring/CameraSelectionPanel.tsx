@@ -3,14 +3,15 @@ import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import { AiOutlineCamera } from "react-icons/ai"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
 }
 
-function OrbitSettings({ controls }: OrbitSettingsProps) {
+const OrbitSettings: React.FC<OrbitSettingsProps> = ({ controls }) => {
     const [locked, setLocked] = useState<boolean>(controls.locked)
 
     useEffect(() => {
@@ -22,13 +23,13 @@ function OrbitSettings({ controls }: OrbitSettingsProps) {
 
 const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
-        World.SceneRenderer.currentCameraControls.controlsType
+        World.sceneRenderer.currentCameraControls.controlsType
     )
 
     const setCameraControls = useCallback((t: CameraControlsType) => {
         switch (t) {
             case "Orbit":
-                World.SceneRenderer.SetCameraControls(t)
+                World.sceneRenderer.setCameraControls(t)
                 setCameraControlType(t)
                 break
             default:
@@ -58,11 +59,12 @@ const CameraSelectionPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
                     setCameraControls(v)
                 }}
+                {...SoundPlayer.buttonSoundEffects()}
             >
                 <ToggleButton value={"Orbit"}>Orbit</ToggleButton>
             </ToggleButtonGroup>
             {cameraControlType == "Orbit" ? (
-                <OrbitSettings controls={World.SceneRenderer.currentCameraControls as CustomOrbitControls} />
+                <OrbitSettings controls={World.sceneRenderer.currentCameraControls as CustomOrbitControls} />
             ) : (
                 <></>
             )}

@@ -1,24 +1,21 @@
 import Panel, { PanelPropsImpl } from "../components/Panel"
 import Button from "../components/Button"
 import World from "@/systems/World"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { ToastType } from "../ToastContext"
-import { Random } from "@/util/Random"
+import { random } from "@/util/Random"
 import MirabufCachingService, {
     backUpFields as hashedMiraFields,
     backUpRobots as hashedMiraRobots,
     MiraType,
 } from "@/mirabuf/MirabufLoader"
 import { Box, styled } from "@mui/material"
-import { usePanelControlContext } from "../PanelContext"
+import { usePanelControlContext } from "../helpers/UsePanelManager"
 import APS from "@/aps/APS"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import JOLT from "@/util/loading/JoltSyncLoader"
 import Label from "../components/Label"
-import { colorNameToVar } from "../ThemeContext"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import { SynthesisIcons } from "../components/StyledComponents"
-import { Global_AddToast } from "../components/GlobalUIControls"
-import { JoltRVec3_JoltVec3 } from "@/util/TypeConversions"
+import { globalAddToast } from "../components/GlobalUIControls"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -26,32 +23,13 @@ const LabelStyled = styled(Label)({
     marginTop: "0.5rem",
 })
 
-async function TestGodMode() {
-    const robot: MirabufSceneObject = [...World.SceneRenderer.sceneObjects.entries()]
-        .filter(x => {
-            const y = x[1] instanceof MirabufSceneObject
-            return y
-        })
-        .map(x => x[1])[0] as MirabufSceneObject
-    const rootNodeId = robot.GetRootNodeId()
-    if (rootNodeId == undefined) {
-        console.error("Robot root node not found for god mode")
-        return
+function toggleDragMode() {
+    const dragSystem = World.dragModeSystem
+    if (dragSystem) {
+        dragSystem.enabled = !dragSystem.enabled
+        const status = dragSystem.enabled ? "enabled" : "disabled"
+        globalAddToast?.("info", "Drag Mode", `Drag mode has been ${status}`)
     }
-    const robotPosition = World.PhysicsSystem.GetBody(rootNodeId).GetPosition()
-    const [ghostBody, _ghostConstraint] = World.PhysicsSystem.CreateGodModeBody(
-        rootNodeId,
-        JoltRVec3_JoltVec3(robotPosition)
-    )
-
-    // Move ghostBody to demonstrate godMode movement
-    await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(
-        ghostBody.GetID(),
-        new JOLT.RVec3(robotPosition.GetX(), robotPosition.GetY() + 2, robotPosition.GetZ())
-    )
-    await new Promise(f => setTimeout(f, 1000))
-    World.PhysicsSystem.SetBodyPosition(ghostBody.GetID(), new JOLT.RVec3(2, 2, 2))
 }
 
 const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
@@ -61,7 +39,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="center"
             name={"Debug Tools"}
-            icon={SynthesisIcons.BugLarge}
+            icon={SynthesisIcons.BUG_LARGE}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"
@@ -84,8 +62,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <Button
                         value={"Toasts"}
                         onClick={() => {
-                            const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
-                            Global_AddToast?.(type, type, "This is a test toast to test the toast system")
+                            const type: ToastType = ["info", "warning", "error"][Math.floor(random() * 3)] as ToastType
+                            globalAddToast?.(type, type, "This is a test toast to test the toast system")
                         }}
                         className="w-full"
                     />
@@ -96,7 +74,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         }}
                         className="w-full"
                     />
-                    <Button value={"Test God Mode"} onClick={TestGodMode} className="w-full" />
+                    <Button value={"Toggle Drag Mode"} onClick={toggleDragMode} className="w-full" />
                     <Button
                         value={"Clear Preferences"}
                         onClick={() => PreferencesSystem.clearPreferences()}
@@ -126,8 +104,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <Button
                         value={"Print Mira Maps"}
                         onClick={() => {
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
+                            console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
+                            console.log(MirabufCachingService.getCacheMap(MiraType.FIELD))
                             console.log(hashedMiraRobots)
                             console.log(hashedMiraFields)
                         }}
@@ -135,7 +113,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     />
                     <Button
                         value={"Clear Mira Cache"}
-                        onClick={() => MirabufCachingService.RemoveAll()}
+                        onClick={() => MirabufCachingService.removeAll()}
                         className="w-full"
                     />
 

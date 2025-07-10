@@ -3,7 +3,7 @@ import Label, { LabelSize } from "@/components/Label"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Stack, { StackDirection } from "@/components/Stack"
 import Button from "@/components/Button"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Checkbox from "@/components/Checkbox"
 import { SynthesisIcons } from "../components/StyledComponents"
 
@@ -14,12 +14,12 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
     return (
         <Panel
             name={"MultiBot"}
-            icon={SynthesisIcons.People}
+            icon={SynthesisIcons.PEOPLE}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
         >
-            <Label size={LabelSize.Medium}>MultiBot</Label>
+            <Label size={LabelSize.MEDIUM}>MultiBot</Label>
             <form>
                 <fieldset>
                     {robots.map((name: string, i: number) => (
@@ -34,7 +34,7 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     ))}
                 </fieldset>
             </form>
-            <Stack direction={StackDirection.Horizontal}>
+            <Stack direction={StackDirection.HORIZONTAL}>
                 <Button value="Add" onClick={() => openModal("robots")} />
                 <Button value="Remove" onClick={() => setRobots(robots.filter(r => r !== robots[selected]))} />
             </Stack>

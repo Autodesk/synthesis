@@ -21,7 +21,7 @@ import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import Dropdown from "@/components/Dropdown.tsx"
 
-function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
+const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex, onSelect, onEdit, onCreateNew }) => {
     const [_, update] = useReducer(x => !x, false)
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
@@ -54,7 +54,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                     {/** Select button */}
                     <div style={{ filter: isAvailable ? "" : "brightness(60%)" }}>
                         <PositiveButton
-                            value={SynthesisIcons.SelectLarge}
+                            value={SynthesisIcons.SELECT_LARGE}
                             onClick={() => {
                                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
                                 onSelect?.()
@@ -77,7 +77,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                             // Fetch current custom schemes
                             InputSchemeManager.saveSchemes()
                             InputSchemeManager.resetDefaultSchemes()
-                            const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+                            const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
                             // Find and remove this input scheme
                             const index = schemes.indexOf(scheme)

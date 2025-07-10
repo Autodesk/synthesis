@@ -7,6 +7,13 @@ export function getFontSize(element: Element): number {
     return Number(str.substring(0, str.length - 2))
 }
 
-export function clampValues(low: number, value: number, high: number): number {
-    return Math.max(low, Math.min(value, high))
+export function clamp(num: number, min: number, max: number): number {
+    return Math.min(Math.max(num, min), max)
+}
+
+export function findListDifference<T>(previousList: T[], currentList: T[]): { added: T[]; removed: T[] } {
+    const added = currentList.filter(item => !previousList.includes(item))
+    const removed = previousList.filter(item => !currentList.includes(item))
+
+    return { added, removed }
 }

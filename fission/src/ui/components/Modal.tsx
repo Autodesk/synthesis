@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react"
 import { ClickAwayListener } from "@mui/base/ClickAwayListener"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 export type ModalPropsImpl = {
     modalId: string
@@ -13,6 +14,7 @@ type ModalProps = {
     onCancel?: () => void
     onMiddle?: () => void
     onAccept?: () => void
+    onClickAway?: () => void
     cancelName?: string
     middleName?: string
     acceptName?: string
@@ -22,6 +24,7 @@ type ModalProps = {
     cancelBlocked?: boolean
     middleBlocked?: boolean
     acceptBlocked?: boolean
+    allowClickAway?: boolean
     children?: ReactNode
     className?: string
     contentClassName?: string
@@ -35,6 +38,7 @@ const Modal: React.FC<ModalProps> = ({
     onCancel,
     onMiddle,
     onAccept,
+    onClickAway,
     cancelName,
     middleName,
     acceptName,
@@ -44,6 +48,8 @@ const Modal: React.FC<ModalProps> = ({
     cancelBlocked = false,
     middleBlocked = false,
     acceptBlocked = false,
+    allowClickAway = true,
+
     className,
     contentClassName,
 }) => {
@@ -52,7 +58,15 @@ const Modal: React.FC<ModalProps> = ({
     const iconEl: ReactNode = typeof icon === "string" ? <img src={icon} className="w-6" alt="Icon" /> : icon
 
     return (
-        <ClickAwayListener onClickAway={_ => closeModal()} key={modalId}>
+        <ClickAwayListener
+            onClickAway={_ => {
+                if (allowClickAway) {
+                    closeModal()
+                    onClickAway?.()
+                }
+            }}
+            key={modalId}
+        >
             <div
                 id={modalId}
                 key={modalId}
@@ -95,6 +109,7 @@ const Modal: React.FC<ModalProps> = ({
                                     closeModal()
                                     if (!cancelBlocked && onCancel) onCancel()
                                 }}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     cancelBlocked ? "bg-interactive-background" : "bg-cancel-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90
@@ -109,6 +124,7 @@ const Modal: React.FC<ModalProps> = ({
                                 onClick={() => {
                                     if (!middleBlocked && onMiddle) onMiddle()
                                 }}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     middleBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90 
@@ -124,6 +140,7 @@ const Modal: React.FC<ModalProps> = ({
                                     closeModal()
                                     if (!acceptBlocked && onAccept) onAccept()
                                 }}
+                                {...SoundPlayer.buttonSoundEffects()}
                                 className={`${
                                     acceptBlocked ? "bg-interactive-background" : "bg-accept-button"
                                 } rounded-md cursor-pointer px-4 py-1 font-bold duration-100 hover:brightness-90

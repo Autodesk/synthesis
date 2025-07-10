@@ -1,9 +1,9 @@
-import Jolt from "@barclah/jolt-physics"
+import Jolt from "@azaleacolburn/jolt-physics"
 import Driver, { DriverControlMode, DriverID } from "./Driver"
-import { GetLastDeltaT } from "@/systems/physics/PhysicsSystem"
+import { getLastDeltaT } from "@/systems/physics/PhysicsSystem"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { mirabuf } from "@/proto/mirabuf"
-import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { NoraNumber, NoraTypes } from "../Nora"
 
 const MAX_FORCE_WITHOUT_GRAV = 500
@@ -11,7 +11,7 @@ const MAX_FORCE_WITHOUT_GRAV = 500
 class SliderDriver extends Driver {
     private _constraint: Jolt.SliderConstraint
 
-    private _controlMode: DriverControlMode = DriverControlMode.Velocity
+    private _controlMode: DriverControlMode = DriverControlMode.VELOCITY
     private _targetPosition: number = 0.0
     private _maxForceWithGrav: number = 0.0
     public accelerationDirection: number = 0.0
@@ -22,8 +22,6 @@ class SliderDriver extends Driver {
     }
 
     private _prevPos: number = 0.0
-
-    private _gravityChange?: (event: PreferenceEvent) => void
 
     public get targetPosition(): number {
         return this._targetPosition
@@ -51,10 +49,10 @@ class SliderDriver extends Driver {
     public set controlMode(mode: DriverControlMode) {
         this._controlMode = mode
         switch (mode) {
-            case DriverControlMode.Velocity:
+            case DriverControlMode.VELOCITY:
                 this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
                 break
-            case DriverControlMode.Position:
+            case DriverControlMode.POSITION:
                 this._constraint.SetMotorState(JOLT.EMotorState_Position)
                 break
             default:
@@ -71,7 +69,7 @@ class SliderDriver extends Driver {
 
         const motorSettings = this._constraint.GetMotorSettings()
         const springSettings = motorSettings.mSpringSettings
-        springSettings.mFrequency = 20 * (1.0 / GetLastDeltaT())
+        springSettings.mFrequency = 20 * (1.0 / getLastDeltaT())
         springSettings.mDamping = 0.999
         motorSettings.mSpringSettings = springSettings
 
@@ -82,28 +80,24 @@ class SliderDriver extends Driver {
         }
 
         this._constraint.SetMotorState(JOLT.EMotorState_Velocity)
-        this.controlMode = DriverControlMode.Velocity
+        this.controlMode = DriverControlMode.VELOCITY
 
-        this._gravityChange = (event: PreferenceEvent) => {
-            if (event.prefName == "SubsystemGravity") {
-                const motorSettings = this._constraint.GetMotorSettings()
-                if (event.prefValue) {
-                    motorSettings.set_mMaxForceLimit(this._maxForceWithGrav)
-                    motorSettings.set_mMinForceLimit(-this._maxForceWithGrav)
-                } else {
-                    motorSettings.set_mMaxForceLimit(MAX_FORCE_WITHOUT_GRAV)
-                    motorSettings.set_mMinForceLimit(-MAX_FORCE_WITHOUT_GRAV)
-                }
+        PreferencesSystem.addPreferenceEventListener("SubsystemGravity", event => {
+            const motorSettings = this._constraint.GetMotorSettings()
+            if (event.prefValue) {
+                motorSettings.set_mMaxForceLimit(this._maxForceWithGrav)
+                motorSettings.set_mMinForceLimit(-this._maxForceWithGrav)
+            } else {
+                motorSettings.set_mMaxForceLimit(MAX_FORCE_WITHOUT_GRAV)
+                motorSettings.set_mMinForceLimit(-MAX_FORCE_WITHOUT_GRAV)
             }
-        }
-
-        PreferencesSystem.addEventListener(this._gravityChange)
+        })
     }
 
-    public Update(_: number): void {
-        if (this._controlMode == DriverControlMode.Velocity) {
+    public update(_: number): void {
+        if (this._controlMode == DriverControlMode.VELOCITY) {
             this._constraint.SetTargetVelocity(this.accelerationDirection * this.maxVelocity)
-        } else if (this._controlMode == DriverControlMode.Position) {
+        } else if (this._controlMode == DriverControlMode.POSITION) {
             let pos = this._targetPosition
 
             if (pos - this._prevPos < -this.maxVelocity) pos = this._prevPos - this.maxVelocity
@@ -114,12 +108,12 @@ class SliderDriver extends Driver {
     }
 
     public getReceiverType(): NoraTypes {
-        return NoraTypes.Number
+        return NoraTypes.NUMBER
     }
     public setReceiverValue(val: NoraNumber): void {
         this.accelerationDirection = val
     }
-    public DisplayName(): string {
+    public displayName(): string {
         return `${this.info?.name ?? "-"} [Slider]`
     }
 }

@@ -1,7 +1,7 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/ModalContext"
-import { useTheme } from "@/ui/ThemeContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const DeleteAllThemesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -11,7 +11,7 @@ const DeleteAllThemesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Delete All Themes?"
-            icon={SynthesisIcons.Xmark}
+            icon={SynthesisIcons.XMARK}
             modalId={modalId}
             onAccept={() => {
                 deleteAllThemes()

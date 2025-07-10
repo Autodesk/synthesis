@@ -1,4 +1,4 @@
-import { Random } from "@/util/Random"
+import { random } from "@/util/Random"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import DefaultInputs from "./DefaultInputs"
 import InputSystem, { AxisInput, ButtonInput, Input } from "./InputSystem"
@@ -11,6 +11,7 @@ export type InputScheme = {
     customized: boolean
     usesGamepad: boolean
     driveType: DriveType
+    usesTouchControls: boolean
     inputs: Input[]
 }
 export type InputSchemeAvailability = { with_conflict: InputScheme[]; available: InputScheme[] }
@@ -24,7 +25,7 @@ class InputSchemeManager {
         if (this._customSchemes) return this._customSchemes
 
         // Load schemes from preferences and parse into objects
-        this._customSchemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+        this._customSchemes = PreferencesSystem.getGlobalPreference("InputSchemes")
         this._customSchemes.forEach(scheme => this.parseScheme(scheme))
 
         return this._customSchemes
@@ -62,6 +63,7 @@ class InputSchemeManager {
                     rawAxis.useGamepadButtons,
                     rawAxis.posGamepadButton,
                     rawAxis.negGamepadButton,
+                    rawAxis.touchControlAxis,
                     rawAxis.posKeyModifiers,
                     rawAxis.negKeyModifiers
                 )
@@ -146,7 +148,7 @@ class InputSchemeManager {
         const usedNames = this.allInputSchemes.map(s => s.schemeName)
 
         const randomName = () => {
-            const index = Math.floor(Random() * DefaultInputs.NAMES.length)
+            const index = Math.floor(random() * DefaultInputs.NAMES.length)
             return DefaultInputs.NAMES[index]
         }
 

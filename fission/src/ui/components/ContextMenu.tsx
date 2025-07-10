@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import { useEffect, useState } from "react"
 import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
-import { colorNameToVar } from "../ThemeContext"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import Button, { ButtonSize } from "./Button"
 import Label, { LabelSize } from "./Label"
 import { SectionDivider } from "./StyledComponents"
@@ -11,7 +11,7 @@ interface ContextMenuStateData {
     location: [number, number]
 }
 
-function ContextMenu() {
+const ContextMenu: React.FC = () => {
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
     useEffect(() => {
@@ -19,9 +19,9 @@ function ContextMenu() {
             setState({ data: e.data, location: [e.mousePosition[0], e.mousePosition[1]] })
         }
 
-        ContextSupplierEvent.Listen(func)
+        ContextSupplierEvent.listen(func)
         return () => {
-            ContextSupplierEvent.RemoveListener(func)
+            ContextSupplierEvent.removeListener(func)
         }
     }, [])
 
@@ -68,7 +68,7 @@ function ContextMenu() {
                         flexDirection: "column",
                     }}
                 >
-                    <Label key={"context-title"} size={LabelSize.Small}>
+                    <Label key={"context-title"} size={LabelSize.SMALL}>
                         {state.data.title}
                     </Label>
                     <SectionDivider />
@@ -76,7 +76,7 @@ function ContextMenu() {
                 {state.data.items.map(x => (
                     <Button
                         key={x.name}
-                        size={ButtonSize.Small}
+                        size={ButtonSize.SMALL}
                         className={"w-full text-sm"}
                         value={x.name}
                         onClick={() => {

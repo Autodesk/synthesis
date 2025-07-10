@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/ModalContext"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
 import Checkbox from "@/components/Checkbox"
@@ -25,10 +25,10 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     let simLayer
     let brain: WPILibBrain
 
-    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
     if (miraObjs.length > 0) {
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-        simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         drivers = simLayer?.drivers ?? []
         brain = simLayer?.brain as WPILibBrain
     }
@@ -42,7 +42,7 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Create Device"
-            icon={SynthesisIcons.Add}
+            icon={SynthesisIcons.ADD}
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {
@@ -54,9 +54,9 @@ const RCConfigPWMGroupModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 openModal("roborio")
             }}
         >
-            <Label size={LabelSize.Small}>Name</Label>
+            <Label size={LabelSize.SMALL}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
-            <Stack direction={StackDirection.Horizontal} className="w-full min-w-full">
+            <Stack direction={StackDirection.HORIZONTAL} className="w-full min-w-full">
                 <Container className="w-max">
                     <Label>Ports</Label>
                     <ScrollView className="h-full px-2">

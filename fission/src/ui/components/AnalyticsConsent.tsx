@@ -1,7 +1,7 @@
 import { Box } from "@mui/material"
 import Label, { LabelSize } from "./Label"
 import Button from "./Button"
-import { colorNameToVar } from "../ThemeContext"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import { AiOutlineClose } from "react-icons/ai"
 
 interface AnalyticsConsentProps {
@@ -9,7 +9,7 @@ interface AnalyticsConsentProps {
     onConsent: () => void
 }
 
-function AnalyticsConsent({ onConsent, onClose }: AnalyticsConsentProps) {
+const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose }) => {
     return (
         <Box
             component="div"
@@ -26,7 +26,7 @@ function AnalyticsConsent({ onConsent, onClose }: AnalyticsConsentProps) {
                 gap: "0.5rem",
             }}
         >
-            <Label size={LabelSize.Small}>
+            <Label size={LabelSize.SMALL}>
                 Synthesis uses cookies to improve the performance and quality of our app. Do you consent to the usage of
                 cookies for tracking analytics data?
             </Label>
