@@ -89,15 +89,25 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => clearInterval(interval)
     }, [editor])
 
-    // Load value when key changes
+    // Load value when key changes or when field scoring zones change
     useEffect(() => {
-        if (editor && selectedKey) {
+        if (editor && selectedKey === "devtool:scoring_zones") {
+            const field = getCurrentFieldObj()
+            const zones = field?.fieldPreferences?.scoringZones ?? []
+            const devtoolValue = editor.getUserData("devtool:scoring_zones")
+            if (JSON.stringify(devtoolValue) !== JSON.stringify(zones)) {
+                editor.setUserData("devtool:scoring_zones", zones)
+                setJsonValue(JSON.stringify(zones, null, 2))
+            } else {
+                setJsonValue(devtoolValue ? JSON.stringify(devtoolValue, null, 2) : "")
+            }
+            setError("")
+        } else if (editor && selectedKey) {
             const val = editor.getUserData(selectedKey)
-            // console.log(val ? JSON.stringify(val, null, 2) : "")
             setJsonValue(val ? JSON.stringify(val, null, 2) : "")
             setError("")
         }
-    }, [selectedKey, editor])
+    }, [selectedKey, editor, fieldLoaded])
 
     const handleSave = () => {
         if (!editor || !selectedKey) return
