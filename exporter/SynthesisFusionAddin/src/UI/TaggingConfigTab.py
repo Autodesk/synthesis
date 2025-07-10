@@ -96,8 +96,6 @@ class TaggingConfigTab:
             tagBodySelection.clearSelection()
             tagBodySelection.setSelectionLimits(0)
             tagBodySelection.isEnabled = tagBodySelection.isVisible = False
-            for listItem in self.tagTypeDropdown.listItems:
-                listItem.isSelected = False
 
         else:
             tagBodySelection.isVisible = tagBodySelection.isEnabled = True
