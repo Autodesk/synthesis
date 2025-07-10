@@ -5,9 +5,9 @@
 
 import { ToastType } from "@/ui/ToastContext"
 
-export let globalAddToast: ((type: ToastType, title: string, description: string) => void) | undefined = undefined
-export let globalOpenPanel: ((panelId: string) => void) | undefined = undefined
-export let globalOpenModal: ((modalId: string) => void) | undefined = undefined
+export let globalAddToast: (type: ToastType, title: string, description: string) => void = () => {}
+export let globalOpenPanel: (panelId: string) => void = () => {}
+export let globalOpenModal: (modalId: string) => void = () => {}
 
 export function setAddToast(func: typeof globalAddToast) {
     globalAddToast = func
