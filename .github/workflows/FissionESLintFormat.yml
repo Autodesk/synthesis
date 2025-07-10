@@ -21,7 +21,7 @@ jobs:
     - name: Cache Node Dependencies
       uses: actions/cache@v3
       with:
-        key: "${{runner.os}}-npm-fission-${{hashFiles('package.json')}}"
+        key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
         path: 'fission/node_modules'
         restore-keys: |
           ${{runner.os}}-npm-fission-
