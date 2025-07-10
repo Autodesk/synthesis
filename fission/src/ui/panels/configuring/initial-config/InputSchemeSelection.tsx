@@ -33,6 +33,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
     }, [robotDriveType])
 
     const SchemeSelector = (scheme: InputScheme, isAvailable: boolean): ReactElement => {
+        if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
         return (
             <Box
                 component={"div"}
