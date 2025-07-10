@@ -7,7 +7,7 @@ const ChooseSingleplayerModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Choose Mode"
-            icon={SynthesisIcons.Gear}
+            icon={SynthesisIcons.GEAR}
             modalId={modalId}
             cancelEnabled={false}
             acceptEnabled={false}

@@ -3,16 +3,16 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import {
-    ReactFlow,
-    Node as FlowNode,
-    Edge as FlowEdge,
-    useNodesState,
-    useEdgesState,
-    NodeProps,
     Connection,
+    Edge as FlowEdge,
     FinalConnectionState,
-    useReactFlow,
+    Node as FlowNode,
+    NodeProps,
+    ReactFlow,
     ReactFlowProvider,
+    useEdgesState,
+    useNodesState,
+    useReactFlow,
 } from "@xyflow/react"
 import {
     ConfigState,
@@ -22,6 +22,7 @@ import {
     NODE_ID_SIM_IN,
     NODE_ID_SIM_OUT,
     SimConfig,
+    SimConfigData,
 } from "./SimConfigShared"
 import Label, { LabelSize } from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
@@ -30,8 +31,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
 import Button from "@/ui/components/Button"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { Global_AddToast } from "@/ui/components/GlobalUIControls"
-import { SimConfigData } from "./SimConfigShared"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import FlowControls from "./FlowControls"
 import WiringNode from "./WiringNode"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
@@ -78,7 +78,7 @@ function generateGraph(
                 title = "Robot IO"
                 onEdit = () => setConfigState("robotIO")
                 onRefresh = () => {
-                    SimConfig.RefreshRobotIO(simConfig)
+                    SimConfig.refreshRobotIO(simConfig)
                     refreshGraph()
                 }
                 break
@@ -92,7 +92,7 @@ function generateGraph(
                 break
             default:
                 onDelete = () => {
-                    if (SimConfig.RemoveNode(simConfig, v.id)) refreshGraph()
+                    if (SimConfig.removeNode(simConfig, v.id)) refreshGraph()
                 }
                 break
         }
@@ -143,7 +143,7 @@ function generateGraph(
     return [[...nodes.values()], edges]
 }
 
-function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+const SimIOComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
     Object.entries(simConfig.handles).forEach(([_k, v]) => {
@@ -155,7 +155,7 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 
     return (
         <div className="flex flex-col w-full gap-4">
-            <Label className="text-center" size={LabelSize.Medium}>
+            <Label className="text-center" size={LabelSize.MEDIUM}>
                 Configure the Simulation's IO Modules
             </Label>
             <div
@@ -201,7 +201,7 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+const RobotIOComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig }) => {
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
@@ -223,16 +223,16 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
             )
 
             switch (v.originType) {
-                case SimType.CANMotor:
+                case SimType.CAN_MOTOR:
                     canMotors.push(checkbox)
                     break
                 case SimType.PWM:
                     pwmDevices.push(checkbox)
                     break
-                case SimType.CANEncoder:
+                case SimType.CAN_ENCODER:
                     canEncoders.push(checkbox)
                     break
-                case SimType.Accel:
+                case SimType.ACCELEROMETER:
                     accelerometers.push(checkbox)
                     break
             }
@@ -243,7 +243,7 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 
     return (
         <div className="flex flex-col w-full gap-4">
-            <Label className="text-center" size={LabelSize.Medium}>
+            <Label className="text-center" size={LabelSize.MEDIUM}>
                 Configure your Robot's IO Module
             </Label>
             <div
@@ -256,12 +256,12 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                 <div className="flex flex-col justify-center grow">
                     <Label className="text-center">Input</Label>
                     <ScrollView className="h-full px-2">
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             CAN Encoders
                         </SectionLabel>
                         <SectionDivider />
                         {canEncoders}
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             Accelerometers
                         </SectionLabel>
                         <SectionDivider />
@@ -271,12 +271,12 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                 <div className="flex flex-col justify-center grow">
                     <Label className="text-center">Output</Label>
                     <ScrollView className="h-full px-2">
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             CAN Motors
                         </SectionLabel>
                         <SectionDivider />
                         {canMotors}
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             PWM Devices
                         </SectionLabel>
                         <SectionDivider />
@@ -289,7 +289,7 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
+const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simConfig, reset }) => {
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])
@@ -304,7 +304,7 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
 
     const onEdgeDoubleClick = useCallback(
         (_: React.MouseEvent, edge: FlowEdge) => {
-            if (SimConfig.DeleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
+            if (SimConfig.deleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
                 refreshGraph()
             }
         },
@@ -327,7 +327,7 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
         (connection: Connection) => {
             const sourceId = connection.sourceHandle
             const targetId = connection.targetHandle
-            if (SimConfig.MakeConnection(simConfig, sourceId!, targetId!)) {
+            if (SimConfig.makeConnection(simConfig, sourceId!, targetId!)) {
                 refreshGraph()
             }
         },
@@ -347,7 +347,7 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
                 return
             }
 
-            const newHandleId = (handleInfo.isSource ? SimConfig.AddDeconstructorNode : SimConfig.AddConstructorNode)(
+            const newHandleId = (handleInfo.isSource ? SimConfig.addDeconstructorNode : SimConfig.addConstructorNode)(
                 simConfig,
                 handleInfo.noraType,
                 screenToFlowPosition({ x: clientX, y: clientY })
@@ -356,8 +356,8 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
 
             if (
                 handleInfo.isSource
-                    ? SimConfig.MakeConnection(simConfig, handleInfo.id, newHandleId)
-                    : SimConfig.MakeConnection(simConfig, newHandleId, handleInfo.id)
+                    ? SimConfig.makeConnection(simConfig, handleInfo.id, newHandleId)
+                    : SimConfig.makeConnection(simConfig, newHandleId, handleInfo.id)
             )
                 refreshGraph()
         },
@@ -365,7 +365,7 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
     )
 
     const onCreateJunction = useCallback(() => {
-        SimConfig.AddJunctionNode(simConfig)
+        SimConfig.addJunctionNode(simConfig)
         refreshGraph()
     }, [refreshGraph, simConfig])
 
@@ -390,18 +390,18 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
     )
 }
 
-function WiringPanel({ panelId }: PanelPropsImpl) {
+const WiringPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [configState, setConfigState] = useState<ConfigState>("wiring")
     const { closePanel } = usePanelControlContext()
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
-        const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+        const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
         if (miraObjs.length > 0) {
             return miraObjs[0][1] as MirabufSceneObject
         } else {
             // TEMPORARY: Will be moved to config panel to ensure selected assembly
-            Global_AddToast?.("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
+            globalAddToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
             closePanel(panelId)
         }
     }, [closePanel, panelId])
@@ -413,33 +413,33 @@ function WiringPanel({ panelId }: PanelPropsImpl) {
         if (existingConfig) {
             setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
         } else {
-            setSimConfig(SimConfig.Default(selectedAssembly))
+            setSimConfig(SimConfig.default(selectedAssembly))
         }
     }, [selectedAssembly])
 
     const save = useCallback(() => {
         if (simConfig && selectedAssembly) {
-            const flows = SimConfig.Compile(simConfig, selectedAssembly)
+            const flows = SimConfig.compile(simConfig, selectedAssembly)
             if (!flows) {
                 console.error("Compilation Failed")
                 return
             }
             console.debug(`${flows.length} Flows Successfully Compiled!`)
 
-            selectedAssembly.UpdateSimConfig(simConfig)
+            selectedAssembly.updateSimConfig(simConfig)
         }
     }, [selectedAssembly, simConfig])
 
     const reset = useCallback(() => {
         if (selectedAssembly) {
-            setSimConfig(SimConfig.Default(selectedAssembly))
+            setSimConfig(SimConfig.default(selectedAssembly))
         }
     }, [selectedAssembly])
 
     return (
         <Panel
             name="Wiring Panel"
-            icon={SynthesisIcons.SteeringWheel}
+            icon={SynthesisIcons.STEERING_WHEEL}
             panelId={panelId}
             openLocation={"center"}
             full

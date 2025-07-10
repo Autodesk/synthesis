@@ -64,7 +64,7 @@ class WheelDriver extends Driver {
         this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
     }
 
-    public Update(_: number): void {
+    public update(_: number): void {
         const vel = this._targetVelocity()
         this._wheel.SetAngularVelocity(vel)
         this._prevVel = vel
@@ -75,12 +75,12 @@ class WheelDriver extends Driver {
     }
 
     public getReceiverType(): NoraTypes {
-        return NoraTypes.Number
+        return NoraTypes.NUMBER
     }
     public setReceiverValue(val: NoraNumber): void {
         this.accelerationDirection = val
     }
-    public DisplayName(): string {
+    public displayName(): string {
         return `${this.info?.name ?? "-"} [Wheel]`
     }
 }
