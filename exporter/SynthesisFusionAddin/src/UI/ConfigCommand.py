@@ -121,10 +121,13 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 jointConfigTab.addWheel(fusionJoints[0], wheel)
 
         getAuth()
-        user_info = getUserInfo()
-        apsSettings = INPUTS_ROOT.addTabCommandInput(
-            "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-        )
+        user_info_result = getUserInfo()
+        if user_info_result.is_err():
+            user_name = "Not Signed In"
+        else:
+            user_name = user_info_result.unwrap().given_name
+
+        apsSettings = INPUTS_ROOT.addTabCommandInput("aps_settings", f"APS Settings ({user_name})")
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 
 
@@ -138,7 +141,7 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
 
         fullName = design.rootComponent.name
         versionMatch = re.search(r"v\d+", fullName)
-        docName = (fullName[: versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
+        docName = (fullName[versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
         docVersion = versionMatch.group() if versionMatch else "v0"
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
