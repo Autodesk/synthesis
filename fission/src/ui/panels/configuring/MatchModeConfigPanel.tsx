@@ -27,7 +27,7 @@ export interface MatchModeConfig {
 
 function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
     if (MatchMode.getInstance().isMatchEnabled()) {
-        globalAddToast?.(
+        globalAddToast(
             "error",
             "Match Mode Already Running",
             "You can't modify the match mode ruleset while a match is running"
@@ -92,11 +92,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 setMatchModeConfigs(uniqueConfigsById)
             } catch (err) {
                 console.error("Error loading match mode configs:", err)
-                globalAddToast?.(
-                    "error",
-                    "Error Loading Match Mode Configs",
-                    "Please check the console for more details"
-                )
+                globalAddToast("error", "Error Loading Match Mode Configs", "Please check the console for more details")
             }
         }
 
@@ -124,7 +120,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                       // Only save custom configs to local storage
                                       const customConfigs = updatedConfigs.filter(c => !c.isDefault)
                                       window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
-                                      globalAddToast?.(
+                                      globalAddToast(
                                           "info",
                                           "Match Mode Config Deleted",
                                           `Successfully deleted "${config.name}"`
@@ -152,7 +148,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         // Type guard to check if config is an object
         if (typeof config !== "object" || config === null) {
             console.error("Match mode config validation failed: config must be an object")
-            globalAddToast?.("error", "Invalid Match Mode Config", "Configuration must be an object")
+            globalAddToast("error", "Invalid Match Mode Config", "Configuration must be an object")
             return null
         }
 
@@ -169,7 +165,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const typeError = (id: string, expectedType?: string) => {
             const errorMessage = expectedType ? `must be a ${expectedType}` : "is required"
             console.error(`Match mode config validation failed: the '${id}' field ${errorMessage}`)
-            globalAddToast?.("error", "Invalid Match Mode Config", `The '${id}' field ${errorMessage}`)
+            globalAddToast("error", "Invalid Match Mode Config", `The '${id}' field ${errorMessage}`)
         }
 
         for (const prop of props) {
@@ -183,7 +179,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     typeError(prop.id, prop.expectedType)
                     valid = false
                 } else {
-                    globalAddToast?.(
+                    globalAddToast(
                         "warning",
                         "Invalid Match Mode Config",
                         `The '${prop.id}' field must be a ${prop.expectedType}, ignoring ${prop.id} field`
@@ -213,7 +209,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const handleFileUpload = async (file: File) => {
         // Check if it's a JSON file
         if (!file.name.toLowerCase().endsWith(".json")) {
-            globalAddToast?.("error", "Invalid File Type", "Please select a JSON file")
+            globalAddToast("error", "Invalid File Type", "Please select a JSON file")
             return
         }
 
@@ -225,7 +221,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             // Validate structure and normalize config
             const normalizedConfig = validateAndNormalizeMatchModeConfig(parsedConfig)
             if (!normalizedConfig) {
-                globalAddToast?.(
+                globalAddToast(
                     "error",
                     "Invalid Match Mode Config",
                     "The JSON file does not match the required MatchModeConfig structure"
@@ -238,7 +234,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 console.error(
                     `Match mode config validation failed: A config with id '${normalizedConfig.id}' already exists`
                 )
-                globalAddToast?.(
+                globalAddToast(
                     "error",
                     "Match Mode Config Already Exists",
                     "There is already a match mode config with this ID"
@@ -251,9 +247,9 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             const customConfigs = [...matchModeConfigs.filter(c => !c.isDefault), normalizedConfig]
             window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
 
-            globalAddToast?.("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
+            globalAddToast("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
         } catch (error) {
-            globalAddToast?.("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
+            globalAddToast("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
         }
     }
 
