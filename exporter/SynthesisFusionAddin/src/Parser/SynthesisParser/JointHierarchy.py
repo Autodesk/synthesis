@@ -4,11 +4,10 @@ from typing import Any, Iterator, cast
 
 import adsk.core
 import adsk.fusion
-from google.protobuf.message import Error
 
 from src import gm
 from src.ErrorHandling import Err, ErrorSeverity, Ok, Result, handle_err_top
-from src.Logging import getLogger, logFailure
+from src.Logging import getLogger
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import guid_component, guid_occurrence
@@ -192,7 +191,6 @@ class JointParser:
     grounded: adsk.fusion.Occurrence
 
     # NOTE This function cannot under the value-based error handling system, since it's an  __init__ function
-    @logFailure
     def __init__(self, design: adsk.fusion.Design) -> None:
         """Create hierarchy with just joint assembly
         - Assembly
@@ -222,8 +220,10 @@ class JointParser:
         self.grounded = searchForGrounded(design.rootComponent)
 
         if self.grounded is None:
-            gm.ui.messageBox("There is not currently a Grounded Component in the assembly, stopping kinematic export.")
-            raise RuntimeWarning("There is no grounded component")
+            message = "These is no grounded component in this assembly, aborting kinematic export."
+            gm.ui.messageBox(message)
+            ___: Err[None] = Err(message, ErrorSeverity.Fatal) 
+            raise RuntimeError()
 
         self.currentTraversal: dict[str, DynamicOccurrenceNode | bool] = dict()
         self.groundedConnections: list[adsk.fusion.Occurrence] = []

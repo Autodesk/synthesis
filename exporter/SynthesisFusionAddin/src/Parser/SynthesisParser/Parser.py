@@ -6,7 +6,7 @@ import adsk.fusion
 
 from src import gm
 from src.APS.APS import getAuth, upload_mirabuf
-from src.ErrorHandling import ErrorSeverity, Result
+from src.ErrorHandling import Err, ErrorSeverity, Result
 from src.Logging import getLogger, logFailure, timed
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser import (
@@ -33,7 +33,6 @@ class Parser:
         """
         self.exporterOptions = options
 
-    @logFailure(messageBox=True)
     @timed
     def export(self) -> None:
         app = adsk.core.Application.get()
@@ -182,12 +181,18 @@ class Parser:
             logger.debug("Uploading file to APS")
             project = app.data.activeProject
             if not project.isValid:
-                raise RuntimeError("Project is invalid")
+                app.userInterface.messageBox(f"Project is invalid")
+                return
             project_id = project.id
             folder_id = project.rootFolder.id
             file_name = f"{self.exporterOptions.fileLocation}.mira"
-            if upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString()) is None:
-                raise RuntimeError("Could not upload to APS")
+
+            # Can't use decorator because it returns a value
+            upload_result = upload_mirabuf(project_id, folder_id, file_name, assembly_out.SerializeToString())
+            if upload_result.is_err():
+                message = upload_result.unwrap_err()[0]
+                app.userInterface.messageBox(f"Fatal Error Encountered: {message}")
+                return
         else:
             assert self.exporterOptions.exportLocation == ExportLocation.DOWNLOAD
             # check if entire path exists and create if not since gzip doesn't do that.
