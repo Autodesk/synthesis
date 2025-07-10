@@ -24,16 +24,28 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: 24
+
+    - name: Cache Node Dependencies
+      uses: actions/cache@v3
+      with:
+        key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/package-lock.json')}}"
+        path: 'exporter/SynthesisFusionAddin/web/node_modules'
+        restore-keys: |
+          ${{runner.os}}-npm-fusion-
+          ${{runner.os}}-npm
+
     - name: Install Dependencies
       run: |
         cd exporter/SynthesisFusionAddin/web
         npm ci
+
     - name: Linter
       id: linter-validation
       if: ${{ always() }}
       run: |
         cd exporter/SynthesisFusionAddin/web
         npm run lint && echo "ESLint Validation Passed" || (echo "ESLint Validation Failed" && exit 1)
+
     - name: Prettier
       id: prettier-validation
       if: ${{ always() }}
@@ -50,11 +62,22 @@ jobs:
       - name: JavaScript Setup
         uses: actions/setup-node@v4
         with:
-          node-version: 24.2.0
+          node-version: 24
+
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/package-lock.json')}}"
+          path: 'exporter/SynthesisFusionAddin/web/node_modules'
+          restore-keys: |
+            ${{runner.os}}-npm-fusion-
+            ${{runner.os}}-npm
+
       - name: Install Dependencies
         run: |
           cd exporter/SynthesisFusionAddin/web
           npm ci
+
       - name: Build
         id: build
         if: ${{ always() }}
