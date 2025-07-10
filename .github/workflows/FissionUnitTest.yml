@@ -38,14 +38,6 @@ jobs:
         id: playwright-version
         run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
 
-      - name: Cache downloaded browsers
-        id: cache-browsers
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
-
       - name: Install Dependencies
         run: |
           cd fission
@@ -57,6 +49,14 @@ jobs:
           cd fission
           npx playwright install --with-deps
           npx playwright install-deps
+
+      - name: Cache downloaded browsers
+        id: cache-browsers
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/ms-playwright/
+          key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
 
       - name: Unit Tests
         id: unit-tests
