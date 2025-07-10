@@ -7,6 +7,10 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Button, { ButtonSize } from "../components/Button"
+import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { globalAddToast } from "../components/GlobalUIControls"
+import { LabelWithTooltip } from "../components/StyledComponents"
 
 const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
@@ -18,6 +22,23 @@ function getCurrentFieldObj() {
         }
     }
     return undefined
+}
+
+// Helper: type guard for ScoringZonePreferences[]
+function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferences[] {
+    if (!Array.isArray(val)) return false
+    return val.every(
+        z =>
+            typeof z === "object" &&
+            z !== null &&
+            typeof z.name === "string" &&
+            (z.alliance === "red" || z.alliance === "blue") &&
+            (typeof z.parentNode === "string" || z.parentNode === undefined) &&
+            typeof z.points === "number" &&
+            typeof z.destroyGamepiece === "boolean" &&
+            typeof z.persistentPoints === "boolean" &&
+            Array.isArray(z.deltaTransformation)
+    )
 }
 
 const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
@@ -85,6 +106,25 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             editor.setUserData(selectedKey, parsed)
             setError("")
             setKeys(editor.getAllDevtoolKeys())
+
+            if (selectedKey === "devtool:scoring_zones") {
+                const field = getCurrentFieldObj()
+                if (!field) {
+                    globalAddToast?.("error", "Devtool Error", "No field loaded to apply scoring zones.")
+                    return
+                }
+                if (!isScoringZonePreferencesArray(parsed)) {
+                    globalAddToast?.("error", "Devtool Error", "Value must be an array of scoring zone objects.")
+                    return
+                }
+                if (!field.fieldPreferences) {
+                    globalAddToast?.("error", "Devtool Error", "Field preferences not available.")
+                    return
+                }
+                field.fieldPreferences.scoringZones = parsed
+                PreferencesSystem.savePreferences?.() 
+                field.updateScoringZones()
+            }
         } catch (e) {
             setError("Invalid JSON")
         }
@@ -172,7 +212,14 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             {selectedKey ? (
                                 <>
                                     {/* strip off the prefix here */}
-                                    <div className="font-bold text-sm mb-2">{selectedKey.replace(/^devtool:/, "")}</div>
+                                    {selectedKey === "devtool:scoring_zones"
+                                        ? LabelWithTooltip(
+                                              "scoring_zones",
+                                              `Example:\n[\n  {\n    \"name\": \"Red Zone\",\n    \"alliance\": \"red\",\n    \"parentNode\": \"root\",\n    \"points\": 5,\n    \"destroyGamepiece\": false,\n    \"persistentPoints\": true,\n    \"deltaTransformation\": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]`,
+                                              undefined
+                                          )
+                                        : <div className="font-bold text-sm mb-2">{selectedKey.replace(/^devtool:/, "")}</div>
+                                    }
                                     <textarea
                                         className={`
                             w-full h-48 font-mono text-sm
