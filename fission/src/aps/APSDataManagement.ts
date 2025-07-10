@@ -140,9 +140,9 @@ export async function getHubs(): Promise<Hub[] | undefined> {
         console.log(auth)
         console.log(APS.userInfo)
         if (e instanceof APSDataError) {
-            globalAddToast?.("error", e.title, e.detail)
+            globalAddToast("error", e.title, e.detail)
         } else if (e instanceof Error) {
-            globalAddToast?.("error", "Failed to get hubs.", e.message)
+            globalAddToast("error", "Failed to get hubs.", e.message)
         }
         return undefined
     }
@@ -179,7 +179,7 @@ export async function getProjects(hub: Hub): Promise<Project[] | undefined> {
     } catch (e) {
         console.error("Failed to get hubs")
         if (e instanceof Error) {
-            globalAddToast?.("error", "Failed to get hubs.", e.message)
+            globalAddToast("error", "Failed to get hubs.", e.message)
         }
         return undefined
     }
@@ -224,7 +224,7 @@ export async function getFolderData(project: Project, folder: Folder): Promise<D
     } catch (e) {
         console.error("Failed to get folder data")
         if (e instanceof Error) {
-            globalAddToast?.("error", "Failed to get folder data.", e.message)
+            globalAddToast("error", "Failed to get folder data.", e.message)
         }
         return undefined
     }
@@ -250,7 +250,7 @@ export async function searchFolder(project: Project, folder: Folder, filters?: F
         },
     })
     if (!res.ok) {
-        globalAddToast?.("error", "Error getting cloud files.", "Please sign in again.")
+        globalAddToast("error", "Error getting cloud files.", "Please sign in again.")
         return []
     }
     const json = await res.json()

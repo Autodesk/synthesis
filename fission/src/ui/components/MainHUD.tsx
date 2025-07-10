@@ -150,6 +150,11 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.GEAR}
                         onClick={() => openModal("settings")}
                     />
+                    <MainHUDButton
+                        value={"Developer Tool"}
+                        icon={SynthesisIcons.CODE_SQUARE}
+                        onClick={() => openPanel("developer")}
+                    />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
                         value={"View"}
@@ -194,7 +199,7 @@ const MainHUD: React.FC = () => {
                     larger={true}
                     onClick={() => {
                         MatchMode.getInstance().isMatchEnabled()
-                            ? globalAddToast?.(
+                            ? globalAddToast(
                                   "error",
                                   "Match Mode Already Running",
                                   "You can't start match mode if its already running"

@@ -536,7 +536,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel?.("import-mirabuf")
+                    globalOpenPanel("import-mirabuf")
                 },
             })
         }
