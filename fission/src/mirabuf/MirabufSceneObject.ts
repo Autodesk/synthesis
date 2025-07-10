@@ -10,11 +10,12 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import {
+    Alliance,
     EjectorPreferences,
     FieldPreferences,
     IntakePreferences,
-    ScoringZonePreferences,
     ProtectedZonePreferences,
+    ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { MiraType } from "./MirabufLoader"
@@ -533,7 +534,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const now = Date.now()
             if (now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS) {
                 console.log(`Configure an ejectable first.`)
-                globalAddToast?.("info", "Configure Ejectable", "Configure an ejectable first.")
+                globalAddToast("info", "Configure Ejectable", "Configure an ejectable first.")
                 this._lastEjectableToastTime = now
             }
 
@@ -719,7 +720,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                         configMode: ConfigMode.MOVE,
                         selectedAssembly: this,
                     })
-                    globalOpenPanel?.("configure")
+                    globalOpenPanel("configure")
                 },
             },
             {
@@ -732,7 +733,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                         configMode: undefined,
                         selectedAssembly: this,
                     })
-                    globalOpenPanel?.("configure")
+                    globalOpenPanel("configure")
                 },
             }
         )
@@ -741,7 +742,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             data.items.push({
                 name: "Auto Testing",
                 func: () => {
-                    globalOpenPanel?.("auto-test")
+                    globalOpenPanel("auto-test")
                 },
             })
         }

@@ -20,7 +20,7 @@ const DragModeIndicator: React.FC = () => {
 
     const handleClick = () => {
         window.dispatchEvent(new CustomEvent("disableDragMode"))
-        globalAddToast?.("info", "Drag Mode", "Drag mode has been disabled")
+        globalAddToast("info", "Drag Mode", "Drag mode has been disabled")
     }
 
     return enabled ? (
