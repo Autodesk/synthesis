@@ -24,23 +24,6 @@ Object.defineProperty(window, "open", {
     configurable: true,
 })
 
-// Mock localStorage with proper implementation
-const mockLocalStorage = {
-    getItem: vi.fn(),
-    setItem: vi.fn(),
-    removeItem: vi.fn(),
-    clear: vi.fn(),
-    length: 0,
-    key: vi.fn(),
-}
-
-// Override both window.localStorage and global localStorage
-Object.defineProperty(window, "localStorage", {
-    value: mockLocalStorage,
-    writable: true,
-    configurable: true,
-})
-
 // Mock fetch with proper typing
 const mockFetch = vi.fn()
 globalThis.fetch = mockFetch as typeof fetch
@@ -92,14 +75,15 @@ describe("APS Authentication System", () => {
     }
 
     beforeEach(() => {
+        // Clear localStorage and reset mocks
+        localStorage.clear()
         vi.clearAllMocks()
-        mockLocalStorage.getItem.mockReturnValue(null)
-        mockLocalStorage.setItem.mockClear()
-        mockLocalStorage.removeItem.mockClear()
+
+        // Reset APS state
         APS.resetNumApsCalls()
-        // Reset any auth state
         APS.authCode = undefined
 
+        // Mock console methods
         console.log = vi.fn()
         console.error = vi.fn()
         console.warn = vi.fn()
@@ -159,17 +143,6 @@ describe("APS Authentication System", () => {
                 })
             )
 
-            // Set up localStorage to return the auth data after it's set
-            mockLocalStorage.setItem.mockImplementation((key, value) => {
-                if (key === "aps_auth") {
-                    mockLocalStorage.getItem.mockImplementation(getKey => {
-                        if (getKey === "aps_auth") return value
-                        if (getKey === "aps_user_info") return JSON.stringify(mockUserInfo)
-                        return null
-                    })
-                }
-            })
-
             await APS.convertAuthToken(authCode)
 
             // 4. Verify user is now authenticated
@@ -177,21 +150,19 @@ describe("APS Authentication System", () => {
             expect(APS.userInfo).toEqual(mockUserInfo)
 
             // Verify auth data was stored
-            expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-                "aps_auth",
-                expect.stringContaining("fresh_access_token")
-            )
+            const storedAuth = localStorage.getItem("aps_auth")
+            expect(storedAuth).toBeTruthy()
+            expect(storedAuth).toContain("fresh_access_token")
 
             // Verify user info was stored
-            expect(mockLocalStorage.setItem).toHaveBeenCalledWith(
-                "aps_user_info",
-                JSON.stringify({
-                    name: mockUserInfo.name,
-                    givenName: mockUserInfo.givenName,
-                    picture: mockUserInfo.picture,
-                    email: mockUserInfo.email,
-                })
-            )
+            const storedUserInfo = localStorage.getItem("aps_user_info")
+            expect(storedUserInfo).toBeTruthy()
+            expect(JSON.parse(storedUserInfo!)).toEqual({
+                name: mockUserInfo.name,
+                givenName: mockUserInfo.givenName,
+                picture: mockUserInfo.picture,
+                email: mockUserInfo.email,
+            })
 
             // === SCENARIO 2: User makes authenticated requests ===
 
@@ -203,18 +174,16 @@ describe("APS Authentication System", () => {
             // === SCENARIO 3: Token expires and gets refreshed ===
 
             // 6. Simulate token expiration
-            mockLocalStorage.getItem.mockImplementation(key => {
-                if (key === "aps_auth") {
-                    return JSON.stringify({
-                        access_token: "expired_token",
-                        refresh_token: "fresh_refresh_token",
-                        expires_in: 3600,
-                        expires_at: mockNow - 1000, // Expired 1 second ago
-                        token_type: 1,
-                    })
-                }
-                return null
-            })
+            localStorage.setItem(
+                "aps_auth",
+                JSON.stringify({
+                    access_token: "expired_token",
+                    refresh_token: "fresh_refresh_token",
+                    expires_in: 3600,
+                    expires_at: mockNow - 1000, // Expired 1 second ago
+                    token_type: 1,
+                })
+            )
 
             // Mock successful token refresh
             mockFetch.mockResolvedValueOnce(
@@ -253,18 +222,16 @@ describe("APS Authentication System", () => {
             // === SCENARIO 4: User logs out ===
 
             // 7. User logs out
-            mockLocalStorage.getItem.mockImplementation(key => {
-                if (key === "aps_auth") {
-                    return JSON.stringify({
-                        access_token: "current_token",
-                        refresh_token: "current_refresh_token",
-                        expires_in: 3600,
-                        expires_at: mockNow + 3600000,
-                        token_type: 1,
-                    })
-                }
-                return null
-            })
+            localStorage.setItem(
+                "aps_auth",
+                JSON.stringify({
+                    access_token: "current_token",
+                    refresh_token: "current_refresh_token",
+                    expires_in: 3600,
+                    expires_at: mockNow + 3600000,
+                    token_type: 1,
+                })
+            )
 
             // Mock successful token revocation
             mockFetch.mockResolvedValueOnce(createMockResponse({}))
@@ -282,10 +249,9 @@ describe("APS Authentication System", () => {
             )
 
             // Should have cleared auth data
-            expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("aps_auth")
+            expect(localStorage.getItem("aps_auth")).toBeNull()
 
             // 8. Verify user is logged out
-            mockLocalStorage.getItem.mockReturnValue(null)
             expect(await APS.isSignedIn()).toBe(false)
         })
 
@@ -351,7 +317,8 @@ describe("APS Authentication System", () => {
             // === SCENARIO: Token refresh fails, user needs to re-authenticate ===
 
             // 1. Set up expired token
-            mockLocalStorage.getItem.mockReturnValue(
+            localStorage.setItem(
+                "aps_auth",
                 JSON.stringify({
                     access_token: "expired_token",
                     refresh_token: "invalid_refresh_token",
@@ -389,21 +356,17 @@ describe("APS Authentication System", () => {
             // === SCENARIO: User returns to app with existing valid session ===
 
             // 1. Simulate existing valid session in localStorage
-            mockLocalStorage.getItem.mockImplementation(key => {
-                if (key === "aps_auth") {
-                    return JSON.stringify({
-                        access_token: "existing_token",
-                        refresh_token: "existing_refresh_token",
-                        expires_in: 3600,
-                        expires_at: mockNow + 1800000, // Expires in 30 minutes
-                        token_type: 1,
-                    })
-                }
-                if (key === "aps_user_info") {
-                    return JSON.stringify(mockUserInfo)
-                }
-                return null
-            })
+            localStorage.setItem(
+                "aps_auth",
+                JSON.stringify({
+                    access_token: "existing_token",
+                    refresh_token: "existing_refresh_token",
+                    expires_in: 3600,
+                    expires_at: mockNow + 1800000, // Expires in 30 minutes
+                    token_type: 1,
+                })
+            )
+            localStorage.setItem("aps_user_info", JSON.stringify(mockUserInfo))
 
             // 2. User should be immediately signed in
             expect(await APS.isSignedIn()).toBe(true)
@@ -436,17 +399,6 @@ describe("APS Authentication System", () => {
                         email: mockUserInfo.email,
                     })
                 )
-
-            // Set up localStorage to return the auth data after it's set
-            mockLocalStorage.setItem.mockImplementation((key, value) => {
-                if (key === "aps_auth") {
-                    mockLocalStorage.getItem.mockImplementation(getKey => {
-                        if (getKey === "aps_auth") return value
-                        if (getKey === "aps_user_info") return JSON.stringify(mockUserInfo)
-                        return null
-                    })
-                }
-            })
 
             // 3. Perform authentication flow
             await APS.requestAuthCode()
@@ -488,21 +440,20 @@ describe("APS Authentication System", () => {
 
         describe("Core Authentication Methods", () => {
             test("getAuth returns undefined when no auth data", async () => {
-                mockLocalStorage.getItem.mockReturnValue(null)
                 const result = await APS.getAuth()
                 expect(result).toBeUndefined()
             })
 
             test("getAuth returns auth data when valid and not expired", async () => {
                 const validAuth = { ...mockAuth, expires_at: mockNow + 1000000 }
-                mockLocalStorage.getItem.mockReturnValue(JSON.stringify(validAuth))
+                localStorage.setItem("aps_auth", JSON.stringify(validAuth))
 
                 const result = await APS.getAuth()
                 expect(result).toEqual(validAuth)
             })
 
             test("logout calls revoke token and clears auth data", async () => {
-                mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockAuth))
+                localStorage.setItem("aps_auth", JSON.stringify(mockAuth))
                 mockFetch.mockResolvedValueOnce(createMockResponse({}))
 
                 await APS.logout()
@@ -513,7 +464,8 @@ describe("APS Authentication System", () => {
                         method: "POST",
                     })
                 )
-                expect(mockLocalStorage.removeItem).toHaveBeenCalledWith("aps_auth")
+                // Verify auth data was cleared
+                expect(localStorage.getItem("aps_auth")).toBeNull()
             })
 
             test("requestAuthCode generates correct authorization URL", async () => {
@@ -560,16 +512,6 @@ describe("APS Authentication System", () => {
                         email: mockUserInfo.email,
                     })
                 )
-
-                // Set up localStorage mock to return auth data
-                mockLocalStorage.setItem.mockImplementation((key, value) => {
-                    if (key === "aps_auth") {
-                        mockLocalStorage.getItem.mockImplementation(getKey => {
-                            if (getKey === "aps_auth") return value
-                            return null
-                        })
-                    }
-                })
 
                 await APS.convertAuthToken("test_auth_code")
 
@@ -630,17 +572,16 @@ describe("APS Authentication System", () => {
 
     describe("Authentication state", () => {
         test("isSignedIn returns false when no auth data", async () => {
-            mockLocalStorage.getItem.mockReturnValue(null)
             expect(await APS.isSignedIn()).toBe(false)
         })
 
         test("isSignedIn returns true when valid auth data exists", async () => {
-            mockLocalStorage.getItem.mockReturnValue(JSON.stringify(mockAuth))
+            localStorage.setItem("aps_auth", JSON.stringify(mockAuth))
             expect(await APS.isSignedIn()).toBe(true)
         })
 
         test("handles corrupted auth data gracefully", async () => {
-            mockLocalStorage.getItem.mockReturnValue("invalid json")
+            localStorage.setItem("aps_auth", "invalid json")
             expect(await APS.isSignedIn()).toBe(false)
         })
     })
