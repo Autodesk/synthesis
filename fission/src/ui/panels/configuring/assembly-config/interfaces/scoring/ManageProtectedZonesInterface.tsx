@@ -18,7 +18,7 @@ const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: Mirabuf
     if (fieldPrefs) fieldPrefs.protectedZones = zones
 
     PreferencesSystem.savePreferences()
-    field.UpdateProtectedZones()
+    field.updateProtectedZones()
 }
 
 type ProtectedZoneRowProps = {
@@ -31,11 +31,11 @@ type ProtectedZoneRowProps = {
 const ProtectedZoneRow: React.FC<ProtectedZoneRowProps> = ({ zone, save, deleteZone, selectZone }) => {
     return (
         <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-            <Stack direction={StackDirection.Horizontal} spacing={8} justify="start">
+            <Stack direction={StackDirection.HORIZONTAL} spacing={8} justify="start">
                 <div className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`} />
-                <Stack direction={StackDirection.Vertical} spacing={4} justify={"center"} className="w-max">
-                    <Label size={LabelSize.Small}>{zone.name}</Label>
-                    <Label size={LabelSize.Small}>
+                <Stack direction={StackDirection.VERTICAL} spacing={4} justify={"center"} className="w-max">
+                    <Label size={LabelSize.SMALL}>{zone.name}</Label>
+                    <Label size={LabelSize.SMALL}>
                         {zone.penaltyPoints} {zone.penaltyPoints == 1 ? "penalty point" : "penalty points"}
                     </Label>
                 </Stack>
@@ -75,20 +75,20 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
     }, [zones, selectedField])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
     useEffect(() => {
         saveZones(zones, selectedField)
 
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [selectedField, zones])
 

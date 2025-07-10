@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/naming-convention */
+
 import * as j from "@azaleacolburn/jolt-physics/wasm-compat"
 
 let JOLT: typeof j.default | undefined = undefined

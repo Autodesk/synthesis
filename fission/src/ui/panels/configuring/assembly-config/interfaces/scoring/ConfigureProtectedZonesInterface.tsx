@@ -16,7 +16,7 @@ const protectedZones = (zones: ProtectedZonePreferences[] | undefined, field: Mi
     if (fieldPrefs) fieldPrefs.protectedZones = zones
 
     PreferencesSystem.savePreferences()
-    field.UpdateProtectedZones()
+    field.updateProtectedZones()
 }
 
 interface ConfigureZonesProps {
@@ -42,7 +42,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
 
                         {/** Back arrow button when an option is selected */}
                         <ButtonIcon
-                            value={SynthesisIcons.LeftArrowLarge}
+                            value={SynthesisIcons.LEFT_ARROW_LARGE}
                             onClick={() => {
                                 new ConfigurationSavedEvent()
                                 setSelectedZone(undefined)
@@ -53,7 +53,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                         {/** Label with either the header text, or the name of the selected option if an option is selected */}
                         <Box alignSelf={"center"} display="flex">
                             <Box width="8px" />
-                            <SectionLabel size={LabelSize.Small} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            <SectionLabel size={LabelSize.SMALL} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 {`Configuring Zone`}
                             </SectionLabel>
                         </Box>

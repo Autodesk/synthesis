@@ -31,7 +31,7 @@ const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Camera View"}
-            icon={SynthesisIcons.MagnifyingGlass}
+            icon={SynthesisIcons.MAGNIFYING_GLASS}
             modalId={modalId}
             onAccept={() => showTooltip("controls", controls[view])}
         >

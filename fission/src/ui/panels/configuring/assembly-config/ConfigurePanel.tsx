@@ -26,7 +26,6 @@ import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -69,14 +68,14 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
     const { openPanel } = usePanelControlContext()
 
     const robots = useMemo(() => {
-        return [...World.SceneRenderer.sceneObjects.values()]
+        return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
             .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
-        return [...World.SceneRenderer.sceneObjects.values()]
+        return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
             .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -376,13 +375,13 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             name={"Configure Assets"}
-            icon={SynthesisIcons.Wrench}
+            icon={SynthesisIcons.WRENCH}
             panelId={panelId}
             acceptEnabled={true}
             cancelEnabled={true}
             openLocation="right"
             onAccept={() => {
-                pendingDeletes.forEach(id => World.SceneRenderer.RemoveSceneObject(id))
+                pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
                 setPendingDeletes([])
 
                 InputSchemeManager.saveSchemes()
@@ -438,7 +437,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         new ConfigurationSavedEvent()
                         setConfigMode(undefined)
                     }}
-                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                    {...SoundPlayer.buttonSoundEffects()}
                     sx={{
                         alignSelf: "center",
                     }}
