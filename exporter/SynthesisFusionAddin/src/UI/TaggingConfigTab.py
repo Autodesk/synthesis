@@ -42,7 +42,14 @@ class TaggingConfigTab:
             0,
         )
         self.taggingListTable.addCommandInput(
-            createTextBoxInput("headerTagType", "Type", taggingConfigTabInputs, "Tag Type", background="#d9d9d9"), 0, 1
+            createTextBoxInput(
+                "headerComponentName", "Component", taggingConfigTabInputs, "Component Name", background="#d9d9d9"
+            ),
+            0,
+            1,
+        )
+        self.taggingListTable.addCommandInput(
+            createTextBoxInput("headerTagType", "Type", taggingConfigTabInputs, "Tag Type", background="#d9d9d9"), 0, 2
         )
         self.taggingListTable.getInputAtPosition(0, 0).parentCommand.isSelectable = False
         self.taggingListTable.getInputAtPosition(0, 1).parentCommand.isSelectable = False
@@ -100,11 +107,15 @@ class TaggingConfigTab:
         commandInputs = self.taggingConfigTab.commandInputs
         row = self.taggingListTable.rowCount
         bodyName = commandInputs.addTextBoxCommandInput(f"bodyName_{row}", "Body Name", body.name, 1, True)
+        comonentName = commandInputs.addTextBoxCommandInput(
+            f"componentName_{row}", "Component Name", body.parentComponent.name, 1, True
+        )
         tagType = commandInputs.addTextBoxCommandInput(f"tagType_{row}", "Tag Type", tag, 1, True)
 
         row = self.taggingListTable.rowCount
         self.taggingListTable.addCommandInput(bodyName, row, 0)
-        self.taggingListTable.addCommandInput(tagType, row, 1)
+        self.taggingListTable.addCommandInput(comonentName, row, 1)
+        self.taggingListTable.addCommandInput(tagType, row, 2)
 
         self.tagMap[body.entityToken] = tag
         self.tagList.append(body.entityToken)
@@ -123,7 +134,7 @@ class TaggingConfigTab:
             if self.taggingListTable.selectedRow == -1:
                 app = adsk.core.Application.get()
                 ui = app.userInterface
-                ui.messageBox("No tags to remove.")
+                ui.messageBox("Please first select a tag to remove.")
                 return
 
             selectedRow = self.taggingListTable.selectedRow
