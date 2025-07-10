@@ -38,13 +38,16 @@ jobs:
         id: playwright-version
         run: echo "PLAYWRIGHT_VERSION=$(node -e "console.log(require('./package-lock.json').dependencies['@playwright/test'].version)")" >> $GITHUB_ENV
 
-      - name: Cache downloaded browsers
-        id: cache-browsers
-        uses: actions/cache@v3
-        with:
-          path: |
-            ~/.cache/ms-playwright/
-          key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
+      # Transition GH-1205:
+      # Avoiding the cache step for now as it was causing issues.
+      # Should revisit this later as this is a major speedup that we lost.
+      # - name: Cache downloaded browsers
+      #   id: cache-browsers
+      #   uses: actions/cache@v3
+      #   with:
+      #     path: |
+      #       ~/.cache/ms-playwright/
+      #     key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
 
       - name: Install Dependencies
         run: |
@@ -52,7 +55,7 @@ jobs:
           npm install
 
       - name: Download playwright if not cached
-        if: steps.cache-browsers.outputs.cache-hit != 'true'
+        # if: steps.cache-browsers.outputs.cache-hit != 'true'
         run: |
           cd fission
           npx playwright install --with-deps
