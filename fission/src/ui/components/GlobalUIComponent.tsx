@@ -22,7 +22,7 @@ const GlobalUIComponent: React.FC = () => {
         setOpenModal(openModal)
 
         return () => {
-            setOpenModal(undefined)
+            setOpenModal(() => {})
         }
     }, [openModal])
 
@@ -30,7 +30,7 @@ const GlobalUIComponent: React.FC = () => {
         setOpenPanel(openPanel)
 
         return () => {
-            setOpenPanel(undefined)
+            setOpenPanel(() => {})
         }
     }, [openPanel])
 
@@ -38,7 +38,7 @@ const GlobalUIComponent: React.FC = () => {
         setAddToast(addToast)
 
         return () => {
-            setAddToast(undefined)
+            setAddToast(() => {})
         }
     }, [addToast])
 
