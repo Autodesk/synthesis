@@ -242,6 +242,35 @@ class MirabufCachingService {
     }
 
     /**
+     * Caches and gets local Mirabuf file with cache info
+     *
+     * @param {ArrayBuffer} buffer ArrayBuffer of Mirabuf file.
+     * @param {MiraType} miraType Type of Mirabuf Assembly.
+     *
+     * @returns {Promise<{assembly: mirabuf.Assembly, cacheInfo: MirabufCacheInfo} | undefined>} Promise with the result of the promise. Assembly and cache info of the mirabuf file if successful, undefined if not.
+     */
+    public static async cacheAndGetLocalWithInfo(
+        buffer: ArrayBuffer,
+        miraType: MiraType
+    ): Promise<{assembly: mirabuf.Assembly, cacheInfo: MirabufCacheInfo} | undefined> {
+        const key = await this.hashBuffer(buffer)
+        const map = MirabufCachingService.getCacheMap(miraType)
+        const target = map[key]
+        const assembly = this.assemblyFromBuffer(buffer)
+
+        if (!target) {
+            const cacheInfo = await MirabufCachingService.storeInCache(key, buffer, miraType, assembly.info?.name ?? undefined)
+            if (cacheInfo) {
+                return { assembly, cacheInfo }
+            }
+        } else {
+            return { assembly, cacheInfo: target }
+        }
+
+        return undefined
+    }
+
+    /**
      * Caches and gets local Mirabuf file
      *
      * @param {ArrayBuffer} buffer ArrayBuffer of Mirabuf file.
@@ -367,6 +396,55 @@ class MirabufCachingService {
 
         backUpRobots = {}
         backUpFields = {}
+    }
+
+    /**
+     * Persists devtool changes back to the cache by re-encoding the assembly
+     * 
+     * @param {MirabufCacheID} id ID of the cached mirabuf file
+     * @param {MiraType} miraType Type of Mirabuf Assembly
+     * @param {mirabuf.Assembly} assembly The updated assembly with devtool changes
+     * 
+     * @returns {Promise<boolean>} Promise with the result. True if successful, false if not.
+     */
+    public static async persistDevtoolChanges(
+        id: MirabufCacheID, 
+        miraType: MiraType, 
+        assembly: mirabuf.Assembly
+    ): Promise<boolean> {
+        try {
+            // Re-encode the assembly with devtool changes
+            const updatedBuffer = mirabuf.Assembly.encode(assembly).finish()
+            
+            // Update the cached buffer
+            const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+            if (cache[id]) {
+                cache[id].buffer = updatedBuffer
+            }
+
+            // Update OPFS if available
+            if (canOPFS) {
+                const fileHandle = await (
+                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                ).getFileHandle(id, { create: false })
+                const writable = await fileHandle.createWritable()
+                await writable.write(updatedBuffer)
+                await writable.close()
+            }
+
+            World.analyticsSystem?.event("Devtool Cache Persist", {
+                key: id,
+                type: miraType == MiraType.ROBOT ? "robot" : "field",
+                assemblyName: assembly.info?.name ?? "unknown",
+                fileSize: updatedBuffer.byteLength,
+            })
+
+            return true
+        } catch (e) {
+            console.error("Failed to persist devtool changes", e)
+            World.analyticsSystem?.exception("Failed to persist devtool changes to cache")
+            return false
+        }
     }
 
     // Optional name for when assembly is being decoded anyway like in CacheAndGetLocal()

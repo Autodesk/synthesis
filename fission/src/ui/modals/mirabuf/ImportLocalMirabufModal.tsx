@@ -53,8 +53,13 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
 
                     const hashBuffer = await selectedFile.arrayBuffer()
                     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-                    await MirabufCachingService.cacheAndGetLocal(hashBuffer, miraType)
-                        .then(x => createMirabuf(x!))
+                    await MirabufCachingService.cacheAndGetLocalWithInfo(hashBuffer, miraType)
+                        .then(result => {
+                            if (result) {
+                                return createMirabuf(result.assembly, undefined, result.cacheInfo.id)
+                            }
+                            return undefined
+                        })
                         .then(x => {
                             if (x) {
                                 World.sceneRenderer.registerSceneObject(x)

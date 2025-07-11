@@ -100,7 +100,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                createMirabuf(assembly).then(x => {
+                createMirabuf(assembly, progressHandle, info.id).then(x => {
                     if (x) {
                         World.sceneRenderer.registerSceneObject(x)
                         progressHandle.done()
