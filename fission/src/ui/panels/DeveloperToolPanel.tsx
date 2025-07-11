@@ -128,11 +128,19 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             if (success) {
                                 globalAddToast?.("info", "Devtool Saved", "Changes have been persisted to cache.")
                             } else {
-                                globalAddToast?.("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+                                globalAddToast?.(
+                                    "warning",
+                                    "Devtool Warning",
+                                    "Changes saved but failed to persist to cache."
+                                )
                             }
                         })
                         .catch(() => {
-                            globalAddToast?.("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+                            globalAddToast?.(
+                                "warning",
+                                "Devtool Warning",
+                                "Changes saved but failed to persist to cache."
+                            )
                         })
                 }
             }
@@ -152,7 +160,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     return
                 }
                 field.fieldPreferences.scoringZones = parsed
-                PreferencesSystem.savePreferences?.() 
+                PreferencesSystem.savePreferences?.()
                 field.updateScoringZones()
             }
         } catch (e) {
@@ -242,14 +250,17 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             {selectedKey ? (
                                 <>
                                     {/* strip off the prefix here */}
-                                    {selectedKey === "devtool:scoring_zones"
-                                        ? LabelWithTooltip(
-                                              "scoring_zones",
-                                              `Add and cache scoring zones. \n Example:\n[\n  {\n    \"name\": \"Red Zone\",\n    \"alliance\": \"red\",\n    \"parentNode\": \"root\",\n    \"points\": 5,\n    \"destroyGamepiece\": false,\n    \"persistentPoints\": true,\n    \"deltaTransformation\": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]`,
-                                              undefined
-                                          )
-                                        : <div className="font-bold text-sm mb-2">{selectedKey.replace(/^devtool:/, "")}</div>
-                                    }
+                                    {selectedKey === "devtool:scoring_zones" ? (
+                                        LabelWithTooltip(
+                                            "scoring_zones",
+                                            `Add and cache scoring zones. \n Example:\n[\n  {\n    \"name\": \"Red Zone\",\n    \"alliance\": \"red\",\n    \"parentNode\": \"root\",\n    \"points\": 5,\n    \"destroyGamepiece\": false,\n    \"persistentPoints\": true,\n    \"deltaTransformation\": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]`,
+                                            undefined
+                                        )
+                                    ) : (
+                                        <div className="font-bold text-sm mb-2">
+                                            {selectedKey.replace(/^devtool:/, "")}
+                                        </div>
+                                    )}
                                     <textarea
                                         className={`
                             w-full h-48 font-mono text-sm

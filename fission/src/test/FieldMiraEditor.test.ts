@@ -14,7 +14,7 @@ const scoringZonePayload = [
         points: 5,
         destroyGamepiece: false,
         persistentPoints: true,
-        deltaTransformation: [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+        deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
     },
 ]
 
@@ -117,7 +117,7 @@ describe("Caching tests", () => {
         const parts = mockParts()
         const editor = new FieldMiraEditor(parts)
         editor.setUserData("devtool:scoring_zones", scoringZonePayload)
-        
+
         const encoded = mirabuf.Parts.encode(parts).finish()
         const decoded = mirabuf.Parts.decode(encoded)
         const roundTripEditor = new FieldMiraEditor(decoded)

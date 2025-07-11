@@ -252,14 +252,19 @@ class MirabufCachingService {
     public static async cacheAndGetLocalWithInfo(
         buffer: ArrayBuffer,
         miraType: MiraType
-    ): Promise<{assembly: mirabuf.Assembly, cacheInfo: MirabufCacheInfo} | undefined> {
+    ): Promise<{ assembly: mirabuf.Assembly; cacheInfo: MirabufCacheInfo } | undefined> {
         const key = await this.hashBuffer(buffer)
         const map = MirabufCachingService.getCacheMap(miraType)
         const target = map[key]
         const assembly = this.assemblyFromBuffer(buffer)
 
         if (!target) {
-            const cacheInfo = await MirabufCachingService.storeInCache(key, buffer, miraType, assembly.info?.name ?? undefined)
+            const cacheInfo = await MirabufCachingService.storeInCache(
+                key,
+                buffer,
+                miraType,
+                assembly.info?.name ?? undefined
+            )
             if (cacheInfo) {
                 return { assembly, cacheInfo }
             }
@@ -400,22 +405,22 @@ class MirabufCachingService {
 
     /**
      * Persists devtool changes back to the cache by re-encoding the assembly
-     * 
+     *
      * @param {MirabufCacheID} id ID of the cached mirabuf file
      * @param {MiraType} miraType Type of Mirabuf Assembly
      * @param {mirabuf.Assembly} assembly The updated assembly with devtool changes
-     * 
+     *
      * @returns {Promise<boolean>} Promise with the result. True if successful, false if not.
      */
     public static async persistDevtoolChanges(
-        id: MirabufCacheID, 
-        miraType: MiraType, 
+        id: MirabufCacheID,
+        miraType: MiraType,
         assembly: mirabuf.Assembly
     ): Promise<boolean> {
         try {
             // Re-encode the assembly with devtool changes
             const updatedBuffer = mirabuf.Assembly.encode(assembly).finish()
-            
+
             // Update the cached buffer
             const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
             if (cache[id]) {

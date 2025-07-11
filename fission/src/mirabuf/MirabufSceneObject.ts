@@ -178,7 +178,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._cacheId
     }
 
-    public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle, cacheId?: string) {
+    public constructor(
+        mirabufInstance: MirabufInstance,
+        assemblyName: string,
+        progressHandle?: ProgressHandle,
+        cacheId?: string
+    ) {
         super()
 
         this._mirabufInstance = mirabufInstance
