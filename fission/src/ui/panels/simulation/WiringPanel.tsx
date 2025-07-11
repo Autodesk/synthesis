@@ -3,16 +3,16 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
 import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import {
-    ReactFlow,
-    Node as FlowNode,
-    Edge as FlowEdge,
-    useNodesState,
-    useEdgesState,
-    NodeProps,
     Connection,
+    Edge as FlowEdge,
     FinalConnectionState,
-    useReactFlow,
+    Node as FlowNode,
+    NodeProps,
+    ReactFlow,
     ReactFlowProvider,
+    useEdgesState,
+    useNodesState,
+    useReactFlow,
 } from "@xyflow/react"
 import {
     ConfigState,
@@ -22,6 +22,7 @@ import {
     NODE_ID_SIM_IN,
     NODE_ID_SIM_OUT,
     SimConfig,
+    SimConfigData,
 } from "./SimConfigShared"
 import Label, { LabelSize } from "@/ui/components/Label"
 import ScrollView from "@/ui/components/ScrollView"
@@ -31,7 +32,6 @@ import World from "@/systems/World"
 import Button from "@/ui/components/Button"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import { SimConfigData } from "./SimConfigShared"
 import FlowControls from "./FlowControls"
 import WiringNode from "./WiringNode"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
@@ -401,7 +401,7 @@ const WiringPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             return miraObjs[0][1] as MirabufSceneObject
         } else {
             // TEMPORARY: Will be moved to config panel to ensure selected assembly
-            globalAddToast?.("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
+            globalAddToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
             closePanel(panelId)
         }
     }, [closePanel, panelId])
