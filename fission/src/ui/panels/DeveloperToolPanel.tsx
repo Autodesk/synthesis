@@ -176,6 +176,43 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         setSelectedKey(undefined)
         setJsonValue("")
         setError("")
+
+        // Persist removal to cache
+        const field = getCurrentFieldObj()
+        if (field) {
+            const assembly = field.mirabufInstance.parser.assembly
+            const cacheId = field.cacheId
+            if (cacheId) {
+                MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+                    .then(success => {
+                        if (success) {
+                            globalAddToast?.("info", "Devtool Removed", "Removal has been persisted to cache.")
+                        } else {
+                            globalAddToast?.(
+                                "warning",
+                                "Devtool Warning",
+                                "Removal saved but failed to persist to cache."
+                            )
+                        }
+                    })
+                    .catch(() => {
+                        globalAddToast?.(
+                            "warning",
+                            "Devtool Warning",
+                            "Removal saved but failed to persist to cache."
+                        )
+                    })
+            }
+        }
+
+        if (selectedKey === "devtool:scoring_zones") {
+            const field = getCurrentFieldObj()
+            if (field && field.fieldPreferences) {
+                field.fieldPreferences.scoringZones = []
+                PreferencesSystem.savePreferences?.()
+                field.updateScoringZones()
+            }
+        }
     }
 
     const handleAdd = (key: DevtoolKey) => {
