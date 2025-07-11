@@ -40,6 +40,7 @@ def reload() -> None:
     importlib.reload(TaggingConfigTab)
 
     importlib.reload(Parser)
+    Parser.reload()
 
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):

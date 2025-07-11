@@ -126,8 +126,9 @@ class TaggingConfigTab:
         self.taggingListTable.addCommandInput(componentName, row, 2)
         self.taggingListTable.addCommandInput(tagType, row, 3)
 
-        self.tagMap[body.entityToken] = tag
-        self.tagList.append(body.entityToken)
+        key_body = body.nativeObject or body
+        self.tagMap[key_body.entityToken] = tag
+        self.tagList.append(key_body.entityToken)
 
     @logFailure
     def handleInputChanged(
@@ -150,8 +151,9 @@ class TaggingConfigTab:
             if selectedRow == 0:
                 return
 
+            token_to_remove = self.tagList[selectedRow - 1]
             self.taggingListTable.deleteRow(selectedRow)
-            self.tagMap.pop(self.tagList[selectedRow - 1])
+            self.tagMap.pop(token_to_remove)
             self.tagList.pop(selectedRow - 1)
 
         elif commandInput.id == "tagCancelButton":

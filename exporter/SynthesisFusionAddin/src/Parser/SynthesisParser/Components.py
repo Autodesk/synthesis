@@ -16,7 +16,6 @@ from src.Types import ExportMode
 
 # TODO: Impelement Material overrides
 
-
 def _MapAllComponents(
     design: adsk.fusion.Design,
     options: ExporterOptions,
@@ -54,7 +53,7 @@ def _MapAllComponents(
                 part_body.part = comp_ref
 
                 if body.entityToken in options.tags:
-                    part_body.user_data.data["tag"] = options.tags[body.entityToken]
+                    partsData.user_data.data[f"tag_{body.entityToken}"] = options.tags[body.entityToken]
 
                 if isinstance(body, adsk.fusion.BRepBody):
                     _ParseBRep(body, options, part_body.triangle_mesh)
