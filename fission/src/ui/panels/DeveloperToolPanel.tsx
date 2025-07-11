@@ -11,6 +11,7 @@ import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { globalAddToast } from "../components/GlobalUIControls"
 import { LabelWithTooltip } from "../components/StyledComponents"
+import { mirabuf } from "@/proto/mirabuf"
 
 const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
@@ -183,6 +184,47 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         setError("")
     }
 
+    const handleExport = () => {
+        const field = getCurrentFieldObj()
+        if (!field) {
+            globalAddToast?.("error", "Export Error", "No field loaded to export.")
+            return
+        }
+        const assembly = field?.mirabufInstance.parser.assembly
+        if (!assembly) {
+            globalAddToast?.("error", "Export Error", "No assembly found for field.")
+            return
+        }
+        try {
+            const encoded = mirabuf.Assembly.encode(assembly).finish()
+            const blob = new Blob([encoded], { type: "application/octet-stream" })
+            const url = URL.createObjectURL(blob)
+            
+            // Check if assembly has devtool data to determine filename
+            let name = assembly.info?.name ?? "field"
+            if (assembly.data?.parts?.userData?.data) {
+                const devtoolKeys = Object.keys(assembly.data.parts.userData.data).filter(k => k.startsWith("devtool:"))
+                if (devtoolKeys.length > 0) {
+                    name = `edited-${name}`
+                }
+            }
+            const filename = `${name}.mira`
+
+            const a = document.createElement("a")
+            a.href = url
+            a.download = filename
+            document.body.appendChild(a)
+            a.click()
+            setTimeout(() => {
+                document.body.removeChild(a)
+                URL.revokeObjectURL(url)
+            }, 0)
+            globalAddToast?.("info", "Exported", `Exported field as ${filename}`)
+        } catch (e) {
+            globalAddToast?.("error", "Export Error", "Failed to export field.")
+        }
+    }
+
     const handleAccept = () => closePanel(panelId)
     const handleCancel = () => closePanel(panelId)
 
@@ -279,6 +321,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     <div className="mt-3 flex gap-2">
                                         <Button onClick={handleSave} size={buttonSize} value="Save" />
                                         <Button onClick={handleRemove} size={buttonSize} value="Remove" />
+                                        <Button onClick={handleExport} size={buttonSize} value="Export" />
                                     </div>
                                 </>
                             ) : (

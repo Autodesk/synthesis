@@ -258,17 +258,31 @@ class MirabufCachingService {
         const target = map[key]
         const assembly = this.assemblyFromBuffer(buffer)
 
+        // Check if assembly has devtool data and update name accordingly
+        let displayName = assembly.info?.name ?? undefined
+        if (assembly.data?.parts?.userData?.data) {
+            const devtoolKeys = Object.keys(assembly.data.parts.userData.data).filter(k => k.startsWith("devtool:"))
+            if (devtoolKeys.length > 0) {
+                displayName = displayName ? `Edited ${displayName}` : "Edited Field"
+            }
+        }
+
         if (!target) {
             const cacheInfo = await MirabufCachingService.storeInCache(
                 key,
                 buffer,
                 miraType,
-                assembly.info?.name ?? undefined
+                displayName
             )
             if (cacheInfo) {
                 return { assembly, cacheInfo }
             }
         } else {
+            // Update existing cache info with new name if it has devtool data
+            if (displayName && displayName !== target.name) {
+                await MirabufCachingService.cacheInfo(key, miraType, displayName)
+                target.name = displayName
+            }
             return { assembly, cacheInfo: target }
         }
 
@@ -292,8 +306,17 @@ class MirabufCachingService {
         const target = map[key]
         const assembly = this.assemblyFromBuffer(buffer)
 
+        // Check if assembly has devtool data and update name accordingly
+        let displayName = assembly.info?.name ?? undefined
+        if (assembly.data?.parts?.userData?.data) {
+            const devtoolKeys = Object.keys(assembly.data.parts.userData.data).filter(k => k.startsWith("devtool:"))
+            if (devtoolKeys.length > 0) {
+                displayName = displayName ? `Edited ${displayName}` : "Edited Field"
+            }
+        }
+
         if (!target) {
-            await MirabufCachingService.storeInCache(key, buffer, miraType, assembly.info?.name ?? undefined)
+            await MirabufCachingService.storeInCache(key, buffer, miraType, displayName)
         }
 
         return assembly

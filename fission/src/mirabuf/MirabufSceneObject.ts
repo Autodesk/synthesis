@@ -42,6 +42,7 @@ import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { Alliance } from "@/systems/preferences/PreferenceTypes"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
+import FieldMiraEditor from "./FieldMiraEditor"
 
 const DEBUG_BODIES = false
 
@@ -658,6 +659,21 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
+
+        // For fields, sync devtool data with field preferences
+        if (this.miraType === MiraType.FIELD) {
+            const parts = this._mirabufInstance.parser.assembly.data?.parts
+            if (parts) {
+                const editor = new FieldMiraEditor(parts)
+                const devtoolScoringZones = editor.getUserData("devtool:scoring_zones")
+
+                if (devtoolScoringZones && Array.isArray(devtoolScoringZones)) {
+                    this._fieldPreferences.scoringZones = devtoolScoringZones
+                    PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
+                    PreferencesSystem.savePreferences()
+                }
+            }
+        }
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {
