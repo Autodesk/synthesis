@@ -118,6 +118,7 @@ class MatchMode {
         this._initialTime = 0
         this._timeLeft = 0
         new UpdateTimeLeft(this._timeLeft).dispatch()
+        SimulationSystem.resetScores()
     }
 
     isMatchEnabled(): boolean {
