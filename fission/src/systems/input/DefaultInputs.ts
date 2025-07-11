@@ -23,8 +23,8 @@ class DefaultInputs {
             inputs: [
                 AxisInput.onKeyboard("arcadeDrive", "KeyW", "KeyS"),
                 AxisInput.onKeyboard("arcadeTurn", "KeyD", "KeyA"),
-                AxisInput.onKeyboard("swerveZ", "KeyW", "KeyS"),
-                AxisInput.onKeyboard("swerveX", "KeyD", "KeyA"),
+                AxisInput.onKeyboard("swerveForward", "KeyW", "KeyS"),
+                AxisInput.onKeyboard("swerveStrafe", "KeyD", "KeyA"),
                 AxisInput.onKeyboard("swerveYaw", "ArrowRight", "ArrowLeft"),
 
                 ButtonInput.onKeyboard("intake", "KeyE"),
@@ -125,8 +125,8 @@ class DefaultInputs {
             inputs: [
                 AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
                 AxisInput.onGamepadJoystick("arcadeTurn", 2, false),
-                AxisInput.onGamepadJoystick("swerveZ", 1, true), // TODO: test inversion with actual controller
-                AxisInput.onGamepadJoystick("swerveX", 0, false),
+                AxisInput.onGamepadJoystick("swerveForward", 1, true), // TODO: test inversion with actual controller
+                AxisInput.onGamepadJoystick("swerveStrafe", 0, false),
                 AxisInput.onGamepadJoystick("swerveYaw", 2, false),
                 AxisInput.onGamepadJoystick("tankLeft", 1, true),
                 AxisInput.onGamepadJoystick("tankRight", 3, true),
@@ -220,8 +220,8 @@ class DefaultInputs {
                 AxisInput.onTouchControl("arcadeTurn", TouchControlsAxes.RIGHT_X),
                 AxisInput.onTouchControl("tankLeft", TouchControlsAxes.LEFT_Y),
                 AxisInput.onTouchControl("tankRight", TouchControlsAxes.RIGHT_Y),
-                AxisInput.onTouchControl("swerveX", TouchControlsAxes.LEFT_X),
-                AxisInput.onTouchControl("swerveZ", TouchControlsAxes.LEFT_Y),
+                AxisInput.onTouchControl("swerveStrafe", TouchControlsAxes.LEFT_X),
+                AxisInput.onTouchControl("swerveForward", TouchControlsAxes.LEFT_Y),
                 AxisInput.onTouchControl("swerveYaw", TouchControlsAxes.RIGHT_Y),
             ],
         }
@@ -252,8 +252,8 @@ class DefaultInputs {
                 break
             case DriveType.SWERVE:
                 driveInputs = [
-                    AxisInput.unbound("swerveX"),
-                    AxisInput.unbound("swerveZ"),
+                    AxisInput.unbound("swerveStrafe"),
+                    AxisInput.unbound("swerveForward"),
                     AxisInput.unbound("swerveYaw"),
                 ]
                 break

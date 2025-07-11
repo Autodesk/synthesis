@@ -59,6 +59,17 @@ class HingeDriver extends Driver {
         }
     }
 
+    public get worldAnchor(): Jolt.RVec3 {
+        return this._constraint.GetBody1().GetCenterOfMassTransform().MulVec3(this._constraint.GetLocalSpacePoint1())
+    }
+
+    public get worldAxis(): Jolt.RVec3 {
+        return this._constraint
+            .GetBody1()
+            .GetCenterOfMassTransform()
+            .MulVec3(this._constraint.GetLocalSpaceHingeAxis1())
+    }
+
     public constructor(id: DriverID, constraint: Jolt.HingeConstraint, maxVelocity: number, info?: mirabuf.IInfo) {
         super(id, info)
 

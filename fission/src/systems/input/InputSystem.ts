@@ -19,9 +19,10 @@ export type InputName =
     | "arcadeTurn"
     | "tankLeft"
     | "tankRight"
-    | "swerveX"
-    | "swerveZ"
+    | "swerveStrafe"
+    | "swerveForward"
     | "swerveYaw"
+    | "swerveResetFieldForward"
     | "intake"
     | "eject"
     | `joint ${number}`
@@ -31,8 +32,8 @@ const inputDriveTypeAssociations: Partial<Record<InputName, DriveType>> = {
     arcadeTurn: DriveType.ARCADE,
     tankLeft: DriveType.TANK,
     tankRight: DriveType.TANK,
-    swerveX: DriveType.SWERVE,
-    swerveZ: DriveType.SWERVE,
+    swerveStrafe: DriveType.SWERVE,
+    swerveForward: DriveType.SWERVE,
     swerveYaw: DriveType.SWERVE,
 }
 

@@ -21,7 +21,7 @@ import EjectorDriver from "../driver/EjectorDriver"
 import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
 import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
-import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import SwerveDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SwerveDriveBehavior.ts"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -73,7 +73,7 @@ class SynthesisBrain extends Brain {
                     this.configureSkidSteerDriveBehavior(false)
                     break
                 case DriveType.SWERVE:
-                    this.configureSwerveDriveBehavior()
+                    this.configureSwerveDrivetrain(this.isSwerve().hinges)
                     break
             }
             this.configureArmBehaviors()
@@ -125,8 +125,124 @@ class SynthesisBrain extends Brain {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
 
-    private configureSwerveDriveBehavior(): void {
-        globalAddToast("error", "Swerve not supported", "check back soon")
+    private static distance = (a: Jolt.Vec3, b: Jolt.Vec3) => {
+        const dx = a.GetX() - b.GetX()
+        const dy = a.GetY() - b.GetY()
+        const dz = a.GetZ() - b.GetZ()
+
+        return Math.sqrt(dx * dx + dy * dy + dz * dz)
+    }
+
+    /** Creates, configures, and pushes a swerve behavior */
+    private configureSwerveDrivetrain(hingeDrivers: HingeDriver[]) {
+        const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
+            driver => driver instanceof WheelDriver
+        ) as WheelDriver[]
+        const wheelStimuli: WheelRotationStimulus[] = this._simLayer.stimuli.filter(
+            stimulus => stimulus instanceof WheelRotationStimulus
+        ) as WheelRotationStimulus[]
+
+        const hingeStimuli: HingeStimulus[] = this._simLayer.stimuli.filter(
+            stimulus => stimulus instanceof HingeStimulus
+        ) as HingeStimulus[]
+
+        // We have to store a copy of the hinge and wheel positions because if not, they will all reference the same values for some reason
+        const hingePositionMap: Map<HingeDriver, Jolt.Vec3> = new Map()
+        const wheelPositionMap: Map<WheelDriver, Jolt.Vec3> = new Map()
+
+        // Pairs of a hinge and a wheel that are part of the same swerve module
+        const pairedDrivers: Map<WheelDriver, HingeDriver> = new Map()
+
+        hingeDrivers.forEach(h => {
+            // TODO: is body 2 the correct choice for every robot? May have to check to see which one is giving different values for
+            // each hinge (the one that's not the drivetrain)
+            const hingePos = h.constraint.GetConstraintToBody2Matrix().GetTranslation()
+            const hingePosCopy = new JOLT.Vec3(hingePos.GetX(), hingePos.GetY(), hingePos.GetZ())
+
+            hingePositionMap.set(h, hingePosCopy)
+        })
+
+        wheelDrivers.forEach(w => {
+            const wheelPos = w.constraint
+                .GetWheelWorldTransform(0, new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(0, 1, 0))
+                .GetTranslation()
+
+            const wheelPosCopy = new JOLT.Vec3(wheelPos.GetX(), wheelPos.GetY(), wheelPos.GetZ())
+            wheelPositionMap.set(w, wheelPosCopy)
+        })
+
+        // For each wheel, find the closest hinge and pair them in the pairedDrivers map
+        wheelDrivers.forEach(w => {
+            let minDist: number = Infinity
+            let closestHinge: HingeDriver
+
+            hingeDrivers.forEach(h => {
+                const a = wheelPositionMap.get(w)!
+                const b = hingePositionMap.get(h)!
+
+                const dist = SynthesisBrain.distance(b, a)
+                if (dist < minDist) {
+                    minDist = dist
+                    closestHinge = h
+                }
+            })
+            pairedDrivers.set(w, closestHinge!)
+        })
+
+        // Sorted so that paired wheels and drivers will be at the same index
+        const sortedWheels: WheelDriver[] = []
+        const sortedHinges: HingeDriver[] = []
+
+        for (const [key, value] of pairedDrivers) {
+            sortedWheels.push(key)
+            sortedHinges.push(value)
+        }
+        this._behaviors.push(
+            new SwerveDriveBehavior(
+                sortedWheels,
+                sortedHinges,
+                wheelStimuli,
+                hingeStimuli,
+                this._brainIndex,
+                this._assemblyName
+            )
+        )
+    }
+
+    /** Detects if a robot is swerve, and if so returns the relevant hinges. */
+    private isSwerve: () => { inSwerve: boolean; hinges: HingeDriver[] } = () => {
+        // All hinges
+        const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
+            driver => driver instanceof HingeDriver
+        ) as HingeDriver[]
+
+        // All wheels
+        const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
+            driver => driver instanceof WheelDriver
+        ) as WheelDriver[]
+
+        const dotProducts: { hinge: HingeDriver; dot: number }[] = []
+
+        hingeDrivers.forEach(h => {
+            // Translation of the first body attached to the joint
+            const translation1 = h.constraint.GetConstraintToBody1Matrix().GetTranslation()
+            const translation1Copy = new JOLT.Vec3(translation1.GetX(), translation1.GetY(), translation1.GetZ())
+
+            // Translation of the second body attached to the joint
+            const translation2 = h.constraint.GetConstraintToBody2Matrix().GetTranslation()
+            const translation2Copy = new JOLT.Vec3(translation2.GetX(), translation2.GetY(), translation2.GetZ())
+
+            // The normalized vector from body 1 to body 2
+            const normal = translation1Copy.Sub(translation2Copy).Normalized()
+
+            // The dot product between the normal and an up vector
+            dotProducts.push({ hinge: h, dot: normal.Dot(new JOLT.Vec3(0, 1, 0)) })
+        })
+
+        // Keep all hinge drivers whose dot product with the drivetrain is less than 0.35.
+        // (I'm not sure how stable this test will be, but it's worked for everything I've tried so far)
+        const swerveHinges: HingeDriver[] = dotProducts.filter(entry => entry.dot < 0.35).map(val => val.hinge)
+        return { inSwerve: swerveHinges.length == wheelDrivers.length, hinges: swerveHinges }
     }
     /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */
     private configureSkidSteerDriveBehavior(isArcade: boolean) {
