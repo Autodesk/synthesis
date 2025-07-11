@@ -6,6 +6,18 @@ function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }
 }
 
+const scoringZonePayload = [
+    {
+        name: "Red Zone",
+        alliance: "red",
+        parentNode: "root",
+        points: 5,
+        destroyGamepiece: false,
+        persistentPoints: true,
+        deltaTransformation: [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1],
+    },
+]
+
 describe("Basic Field Mira Editor Tests", () => {
     test("writes and reads devtool data", () => {
         const parts = mockParts()
@@ -73,5 +85,42 @@ describe("Basic Field Mira Editor Tests", () => {
         editor.setUserData("devtool:drop", { b: 2 })
         editor.removeUserData("devtool:drop")
         expect(editor.getAllDevtoolKeys()).toEqual(["devtool:keep"])
+    })
+})
+
+describe("Devtool Scoring Zones Caching Tests", () => {
+    test("add scoring zones and read back", () => {
+        const parts = mockParts()
+        const editor = new FieldMiraEditor(parts)
+        editor.setUserData("devtool:scoring_zones", scoringZonePayload)
+        expect(editor.getUserData("devtool:scoring_zones")).toEqual(scoringZonePayload)
+        expect(editor.getAllDevtoolKeys()).toContain("devtool:scoring_zones")
+    })
+
+    test("overwrite and remove scoring zones", () => {
+        const parts = mockParts()
+        const editor = new FieldMiraEditor(parts)
+        editor.setUserData("devtool:scoring_zones", scoringZonePayload)
+
+        const newPayload = [{ ...scoringZonePayload[0], name: "Blue Zone", alliance: "blue" }]
+        editor.setUserData("devtool:scoring_zones", newPayload)
+        expect(editor.getUserData("devtool:scoring_zones")).toEqual(newPayload)
+
+        editor.removeUserData("devtool:scoring_zones")
+        expect(editor.getUserData("devtool:scoring_zones")).toBeUndefined()
+        expect(editor.getAllDevtoolKeys()).not.toContain("devtool:scoring_zones")
+    })
+})
+
+describe("Caching tests", () => {
+    test("cache round-trip preserves devtool scoring zones", () => {
+        const parts = mockParts()
+        const editor = new FieldMiraEditor(parts)
+        editor.setUserData("devtool:scoring_zones", scoringZonePayload)
+        
+        const encoded = mirabuf.Parts.encode(parts).finish()
+        const decoded = mirabuf.Parts.decode(encoded)
+        const roundTripEditor = new FieldMiraEditor(decoded)
+        expect(roundTripEditor.getUserData("devtool:scoring_zones")).toEqual(scoringZonePayload)
     })
 })
