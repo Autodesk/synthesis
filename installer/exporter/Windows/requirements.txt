@@ -1,1 +1,2 @@
 pyinstaller
+setuptools>=70.0.0
