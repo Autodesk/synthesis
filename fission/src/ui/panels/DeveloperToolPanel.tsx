@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from "react"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Button, { ButtonSize } from "../components/Button"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
@@ -117,6 +117,26 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             setError("")
             setKeys(editor.getAllDevtoolKeys())
 
+            // Persist changes to cache
+            const field = getCurrentFieldObj()
+            if (field) {
+                const assembly = field.mirabufInstance.parser.assembly
+                const cacheId = field.cacheId // add to MirabufSceneObject
+                if (cacheId) {
+                    MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+                        .then(success => {
+                            if (success) {
+                                globalAddToast?.("info", "Devtool Saved", "Changes have been persisted to cache.")
+                            } else {
+                                globalAddToast?.("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+                            }
+                        })
+                        .catch(() => {
+                            globalAddToast?.("warning", "Devtool Warning", "Changes saved but failed to persist to cache.")
+                        })
+                }
+            }
+
             if (selectedKey === "devtool:scoring_zones") {
                 const field = getCurrentFieldObj()
                 if (!field) {
@@ -225,7 +245,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     {selectedKey === "devtool:scoring_zones"
                                         ? LabelWithTooltip(
                                               "scoring_zones",
-                                              `Example:\n[\n  {\n    \"name\": \"Red Zone\",\n    \"alliance\": \"red\",\n    \"parentNode\": \"root\",\n    \"points\": 5,\n    \"destroyGamepiece\": false,\n    \"persistentPoints\": true,\n    \"deltaTransformation\": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]`,
+                                              `Add and cache scoring zones. \n Example:\n[\n  {\n    \"name\": \"Red Zone\",\n    \"alliance\": \"red\",\n    \"parentNode\": \"root\",\n    \"points\": 5,\n    \"destroyGamepiece\": false,\n    \"persistentPoints\": true,\n    \"deltaTransformation\": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]`,
                                               undefined
                                           )
                                         : <div className="font-bold text-sm mb-2">{selectedKey.replace(/^devtool:/, "")}</div>
