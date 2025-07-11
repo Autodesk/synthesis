@@ -84,9 +84,10 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <LabelStyled>Autodesk Platform Services</LabelStyled>
                     <Button
                         value={"Refresh APS Token"}
-                        onClick={async () =>
-                            (await APS.isSignedIn()) && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
-                        }
+                        onClick={async () => {
+                            const auth = await APS.getAuth()
+                            auth && APS.refreshAuthToken(auth.refresh_token, true)
+                        }}
                         className="w-full"
                     />
                     <Button
