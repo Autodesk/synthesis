@@ -28,7 +28,7 @@ function toggleDragMode() {
     if (dragSystem) {
         dragSystem.enabled = !dragSystem.enabled
         const status = dragSystem.enabled ? "enabled" : "disabled"
-        globalAddToast?.("info", "Drag Mode", `Drag mode has been ${status}`)
+        globalAddToast("info", "Drag Mode", `Drag mode has been ${status}`)
     }
 }
 
@@ -63,7 +63,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         value={"Toasts"}
                         onClick={() => {
                             const type: ToastType = ["info", "warning", "error"][Math.floor(random() * 3)] as ToastType
-                            globalAddToast?.(type, type, "This is a test toast to test the toast system")
+                            globalAddToast(type, type, "This is a test toast to test the toast system")
                         }}
                         className="w-full"
                     />
