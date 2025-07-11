@@ -268,12 +268,7 @@ class MirabufCachingService {
         }
 
         if (!target) {
-            const cacheInfo = await MirabufCachingService.storeInCache(
-                key,
-                buffer,
-                miraType,
-                displayName
-            )
+            const cacheInfo = await MirabufCachingService.storeInCache(key, buffer, miraType, displayName)
             if (cacheInfo) {
                 return { assembly, cacheInfo }
             }

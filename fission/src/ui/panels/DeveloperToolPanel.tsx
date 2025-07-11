@@ -196,11 +196,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         }
                     })
                     .catch(() => {
-                        globalAddToast?.(
-                            "warning",
-                            "Devtool Warning",
-                            "Removal saved but failed to persist to cache."
-                        )
+                        globalAddToast?.("warning", "Devtool Warning", "Removal saved but failed to persist to cache.")
                     })
             }
         }
@@ -236,7 +232,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             const encoded = mirabuf.Assembly.encode(assembly).finish()
             const blob = new Blob([encoded], { type: "application/octet-stream" })
             const url = URL.createObjectURL(blob)
-            
+
             // Check if assembly has devtool data to determine filename
             let name = assembly.info?.name ?? "field"
             if (assembly.data?.parts?.userData?.data) {
@@ -332,7 +328,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     {selectedKey === "devtool:scoring_zones" ? (
                                         LabelWithTooltip(
                                             "scoring_zones",
-                                            `Add and cache scoring zones. \n Example:\n[\n  {\n    \"name\": \"Red Zone\",\n    \"alliance\": \"red\",\n    \"parentNode\": \"root\",\n    \"points\": 5,\n    \"destroyGamepiece\": false,\n    \"persistentPoints\": true,\n    \"deltaTransformation\": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]`,
+                                            'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "persistentPoints": true,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]',
                                             undefined
                                         )
                                     ) : (
