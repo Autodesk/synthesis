@@ -4,13 +4,14 @@ import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
 import MatchMode, { MatchModeType } from "@/systems/MatchMode"
 import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
-export type ModifierState = {
+export type ModifierState = Readonly<{
     alt: boolean
     ctrl: boolean
     shift: boolean
     meta: boolean
-}
+}>
 export const EMPTY_MODIFIER_STATE: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
 
 export type InputName =
@@ -25,13 +26,25 @@ export type InputName =
     | "eject"
     | `joint ${number}`
 
+const inputDriveTypeAssociations: Partial<Record<InputName, DriveType>> = {
+    arcadeDrive: DriveType.ARCADE,
+    arcadeTurn: DriveType.ARCADE,
+    tankLeft: DriveType.TANK,
+    tankRight: DriveType.TANK,
+    swerveX: DriveType.SWERVE,
+    swerveZ: DriveType.SWERVE,
+    swerveYaw: DriveType.SWERVE,
+}
+
+export type KeyDescriptor = (string & { __: "" }) | null // prevent strings from being assigned without explicit casting
+
 const LOG_GAMEPAD_EVENTS = false
 
 /** Represents any user input */
 abstract class Input {
     public inputName: InputName
 
-    /** @param {string} inputName - The name given to this input to identify it's function. */
+    /** @param {string} inputName - The name given to this input to identify its purpose. */
     protected constructor(inputName: InputName) {
         this.inputName = inputName
     }
@@ -39,7 +52,40 @@ abstract class Input {
     // Returns the current value of the input. Range depends on input type
     abstract getValue(useGamepad: boolean, useTouchControls: boolean): number
 
-    abstract get keysUsed(): string[]
+    abstract get keysUsed(): KeyDescriptor[]
+
+    protected describeKey(id: KeyCode, modifiers?: ModifierState): KeyDescriptor {
+        if (id == "") {
+            return null
+        }
+        if (!modifiers) {
+            return id as KeyDescriptor
+        }
+        for (const key in modifiers) {
+            if (modifiers[key as keyof ModifierState]) {
+                id += `_${key}`
+            }
+        }
+        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_${id}` as KeyDescriptor
+    }
+    protected describeGamepadBtn(button: number): KeyDescriptor {
+        if (button == -1) {
+            return null
+        }
+        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadBtn${button}` as KeyDescriptor
+    }
+    protected describeGamepadAxis(axis: number): KeyDescriptor {
+        if (axis == -1) {
+            return null
+        }
+        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadAxis${axis}` as KeyDescriptor
+    }
+    protected describeTouchAxis(axis: TouchControlsAxes): KeyDescriptor {
+        if (axis == TouchControlsAxes.NONE) {
+            return null
+        }
+        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_touchAxis${axis.valueOf()}` as KeyDescriptor
+    }
 }
 
 /** Represents any user input that is a single true/false button. */
@@ -83,8 +129,18 @@ class ButtonInput extends Input {
         return InputSystem.isKeyPressed(this.keyCode, this.keyModifiers) ? 1 : 0
     }
 
-    get keysUsed() {
-        return [this.keyCode]
+    get keysUsed(): KeyDescriptor[] {
+        return [this.describeKey(this.keyCode, this.keyModifiers), this.describeGamepadBtn(this.gamepadButton)]
+    }
+
+    static onGamepad(inputName: InputName, gamepadButton: number) {
+        return new ButtonInput(inputName, undefined, gamepadButton, undefined)
+    }
+    static onKeyboard(inputName: InputName, keyCode: KeyCode, keyModifiers?: ModifierState) {
+        return new ButtonInput(inputName, keyCode, undefined, keyModifiers)
+    }
+    static unbound(inputName: InputName) {
+        return new ButtonInput(inputName, undefined, undefined, undefined)
     }
 }
 
@@ -263,8 +319,15 @@ class AxisInput extends Input {
         )
     }
 
-    get keysUsed() {
-        return [this.posKeyCode, this.negKeyCode]
+    get keysUsed(): KeyDescriptor[] {
+        return [
+            this.describeKey(this.posKeyCode, this.posKeyModifiers),
+            this.describeKey(this.negKeyCode, this.negKeyModifiers),
+            this.describeGamepadBtn(this.posGamepadButton),
+            this.describeGamepadBtn(this.negGamepadButton),
+            this.describeGamepadAxis(this.gamepadAxisNumber),
+            this.describeTouchAxis(this.touchControlAxis),
+        ]
     }
 }
 

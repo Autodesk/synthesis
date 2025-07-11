@@ -1,5 +1,9 @@
 import DefaultInputs from "@/systems/input/DefaultInputs"
-import InputSchemeManager, { InputScheme, InputSchemeAvailability } from "@/systems/input/InputSchemeManager"
+import InputSchemeManager, {
+    InputScheme,
+    InputSchemeAvailability,
+    InputSchemeUseType,
+} from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { LabelSize } from "@/ui/components/Label"
@@ -26,7 +30,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
     const [robotDriveType, setRobotDriveType] = useState<DriveType>(
         SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType ?? DriveType.ARCADE
     )
-    const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability>()
+    const [availableSchemes, setAvailableSchemes] = useState<InputSchemeAvailability[]>()
     useEffect(() => {
         setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
     }, [robotDriveType])
@@ -117,19 +121,23 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                     }}
                 />
                 <SectionDivider />
-                <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                    {`${availableSchemes?.available.length}/${(availableSchemes?.available.length ?? 0) + (availableSchemes?.with_conflict.length ?? 0)} Input Schemes`}
+                <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    {`${availableSchemes?.length} Input Schemes`}
                 </SectionLabel>
                 <SectionDivider />
 
                 {/** Creates list items with buttons */}
-                {availableSchemes?.available.map(scheme => {
-                    return SchemeSelector(scheme, true)
-                })}
+                {availableSchemes
+                    ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
+                    .map(scheme => {
+                        return SchemeSelector(scheme.scheme, true)
+                    })}
                 <SectionDivider />
-                {availableSchemes?.with_conflict.map(scheme => {
-                    return SchemeSelector(scheme, false)
-                })}
+                {availableSchemes
+                    ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
+                    .map(scheme => {
+                        return SchemeSelector(scheme.scheme, false)
+                    })}
             </>
             {/** New scheme with a randomly assigned name button */}
             {AddButtonInteractiveColor(() => {

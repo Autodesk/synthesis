@@ -4,6 +4,7 @@ import InputSystem, {
     ButtonInput,
     EMPTY_MODIFIER_STATE,
     InputName,
+    KeyDescriptor,
     ModifierState,
 } from "@/systems/input/InputSystem"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
@@ -266,5 +267,29 @@ describe("Gamepad Input Check", () => {
 
         vi.spyOn(InputSystem, "isGamepadButtonPressed").mockReturnValue(true)
         expect(InputSystem.getInput("joint 4", 42)).toBe(1)
+    })
+})
+
+describe("Default Input Scheme Checks", () => {
+    test("Default schemes unique names", () => {
+        const defaults = DefaultInputs.defaultInputCopies
+        const names = defaults.map(scheme => scheme.schemeName)
+        names.forEach(name => {
+            expect.soft(names.filter(other => other == name).length, `Only one schema named ${name}`).toBe(1)
+        })
+    })
+    test("Default schemes internally conflict-free", () => {
+        DefaultInputs.defaultInputCopies.forEach(scheme => {
+            const usedKeys = new Map<KeyDescriptor, number>()
+            scheme.inputs.forEach(input => {
+                input.keysUsed.forEach(key => {
+                    if (key == null) return
+                    usedKeys.set(key, (usedKeys.get(key) ?? 0) + 1)
+                })
+                usedKeys.forEach((count, key) => {
+                    expect.soft(count, `key ${key} used only once in scheme ${scheme.schemeName}`).toBe(1)
+                })
+            })
+        })
     })
 })

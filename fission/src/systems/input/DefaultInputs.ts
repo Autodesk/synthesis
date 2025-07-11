@@ -1,12 +1,18 @@
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import { InputScheme } from "./InputSchemeManager"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import { AxisInput, ButtonInput } from "./InputSystem"
+import { AxisInput, ButtonInput, ModifierState } from "./InputSystem"
 
 type InputSupplier = () => InputScheme
 /** The purpose of this class is to store any defaults related to the input system. */
 class DefaultInputs {
     static ernie: InputSupplier = () => {
+        const negativeModifierKeys: ModifierState = {
+            ctrl: false,
+            alt: false,
+            shift: true,
+            meta: false,
+        }
         return {
             schemeName: "Ernie",
             descriptiveName: "WASD",
@@ -21,39 +27,14 @@ class DefaultInputs {
                 AxisInput.onKeyboard("swerveX", "KeyD", "KeyA"),
                 AxisInput.onKeyboard("swerveYaw", "ArrowRight", "ArrowLeft"),
 
-                new ButtonInput("intake", "KeyE"),
-                new ButtonInput("eject", "KeyQ"),
+                ButtonInput.onKeyboard("intake", "KeyE"),
+                ButtonInput.onKeyboard("eject", "KeyQ"),
 
-                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
+                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", negativeModifierKeys),
                 AxisInput.unbound("joint 6"),
                 AxisInput.unbound("joint 7"),
                 AxisInput.unbound("joint 8"),
@@ -63,9 +44,15 @@ class DefaultInputs {
         }
     }
 
-    static ernietank: InputSupplier = () => {
+    static bert: InputSupplier = () => {
+        const negativeModifierKeys: ModifierState = {
+            ctrl: false,
+            alt: false,
+            shift: true,
+            meta: false,
+        }
         return {
-            schemeName: "Ernie",
+            schemeName: "Bert",
             descriptiveName: "WSIK",
             customized: false,
             usesGamepad: false,
@@ -75,39 +62,14 @@ class DefaultInputs {
                 AxisInput.onKeyboard("tankLeft", "KeyW", "KeyS"),
                 AxisInput.onKeyboard("tankRight", "KeyI", "KeyK"),
 
-                new ButtonInput("intake", "KeyE"),
-                new ButtonInput("eject", "KeyQ"),
+                ButtonInput.onKeyboard("intake", "KeyE"),
+                ButtonInput.onKeyboard("eject", "KeyQ"),
 
-                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", {
-                    ctrl: false,
-                    alt: false,
-                    shift: true,
-                    meta: false,
-                }),
+                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", negativeModifierKeys),
                 AxisInput.unbound("joint 6"),
                 AxisInput.unbound("joint 7"),
                 AxisInput.unbound("joint 8"),
@@ -118,6 +80,12 @@ class DefaultInputs {
     }
 
     public static luna: InputSupplier = () => {
+        const negativeModifierKeys: ModifierState = {
+            ctrl: true,
+            alt: false,
+            shift: false,
+            meta: false,
+        }
         return {
             schemeName: "Luna",
             descriptiveName: "Arrow Keys",
@@ -129,39 +97,14 @@ class DefaultInputs {
                 AxisInput.onKeyboard("arcadeDrive", "ArrowUp", "ArrowDown"),
                 AxisInput.onKeyboard("arcadeTurn", "ArrowRight", "ArrowLeft"),
 
-                new ButtonInput("intake", "Semicolon"),
-                new ButtonInput("eject", "KeyL"),
+                ButtonInput.onKeyboard("intake", "Semicolon"),
+                ButtonInput.onKeyboard("eject", "KeyL"),
 
-                AxisInput.onKeyboardSingleKey("joint 1", "Slash", {
-                    ctrl: true,
-                    alt: false,
-                    shift: false,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 2", "Period", {
-                    ctrl: true,
-                    alt: false,
-                    shift: false,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 3", "Comma", {
-                    ctrl: true,
-                    alt: false,
-                    shift: false,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 4", "KeyM", {
-                    ctrl: true,
-                    alt: false,
-                    shift: false,
-                    meta: false,
-                }),
-                AxisInput.onKeyboardSingleKey("joint 5", "KeyN", {
-                    ctrl: true,
-                    alt: false,
-                    shift: false,
-                    meta: false,
-                }),
+                AxisInput.onKeyboardSingleKey("joint 1", "Slash", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 2", "Period", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 3", "Comma", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 4", "KeyM", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 5", "KeyN", negativeModifierKeys),
                 AxisInput.unbound("joint 6"),
                 AxisInput.unbound("joint 7"),
                 AxisInput.unbound("joint 8"),
@@ -177,7 +120,7 @@ class DefaultInputs {
             descriptiveName: "Full Controller",
             customized: false,
             usesGamepad: true,
-            supportedDrivetrains: [DriveType.ARCADE, DriveType.SWERVE, DriveType.ARCADE],
+            supportedDrivetrains: [DriveType.ARCADE, DriveType.SWERVE, DriveType.TANK],
             usesTouchControls: false,
             inputs: [
                 AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
@@ -188,8 +131,8 @@ class DefaultInputs {
                 AxisInput.onGamepadJoystick("tankLeft", 1, true),
                 AxisInput.onGamepadJoystick("tankRight", 3, true),
 
-                new ButtonInput("intake", "", 4),
-                new ButtonInput("eject", "", 5),
+                ButtonInput.onGamepad("intake", 4),
+                ButtonInput.onGamepad("eject", 5),
 
                 AxisInput.onGamepadButtons("joint 1", 3, 0),
                 AxisInput.onGamepadButtons("joint 2", 1, 2),
@@ -218,8 +161,8 @@ class DefaultInputs {
                 AxisInput.onGamepadJoystick("arcadeDrive", 1, true),
                 AxisInput.onGamepadJoystick("arcadeTurn", 0, false),
 
-                new ButtonInput("intake", "", 4),
-                new ButtonInput("eject", "", 5),
+                ButtonInput.onGamepad("intake", 4),
+                ButtonInput.onGamepad("eject", 5),
 
                 AxisInput.onGamepadButtons("joint 1", 12, 13),
                 AxisInput.onGamepadButtons("joint 2", 15, 14),
@@ -247,8 +190,8 @@ class DefaultInputs {
                 AxisInput.onGamepadJoystick("arcadeDrive", 3, true),
                 AxisInput.onGamepadJoystick("arcadeTurn", 2, false),
 
-                new ButtonInput("intake", "", 4),
-                new ButtonInput("eject", "", 5),
+                ButtonInput.onGamepad("intake", 4),
+                ButtonInput.onGamepad("eject", 5),
 
                 AxisInput.onGamepadButtons("joint 1", 3, 0),
                 AxisInput.onGamepadButtons("joint 2", 1, 2),
@@ -271,7 +214,7 @@ class DefaultInputs {
             customized: false,
             usesGamepad: false,
             usesTouchControls: true,
-            supportedDrivetrains: [DriveType.ARCADE, DriveType.ARCADE, DriveType.SWERVE],
+            supportedDrivetrains: [DriveType.ARCADE, DriveType.TANK, DriveType.SWERVE],
             inputs: [
                 AxisInput.onTouchControl("arcadeDrive", TouchControlsAxes.LEFT_Y),
                 AxisInput.onTouchControl("arcadeTurn", TouchControlsAxes.RIGHT_X),
@@ -288,7 +231,7 @@ class DefaultInputs {
     public static get defaultInputCopies(): InputScheme[] {
         return [
             DefaultInputs.ernie(),
-            DefaultInputs.ernietank(),
+            DefaultInputs.bert(),
             DefaultInputs.luna(),
             DefaultInputs.jax(),
             DefaultInputs.hunter(),
@@ -325,8 +268,8 @@ class DefaultInputs {
             inputs: [
                 ...driveInputs,
 
-                new ButtonInput("intake"),
-                new ButtonInput("eject"),
+                ButtonInput.unbound("intake"),
+                ButtonInput.unbound("eject"),
 
                 AxisInput.unbound("joint 1"),
                 AxisInput.unbound("joint 2"),
