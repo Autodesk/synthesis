@@ -1,15 +1,16 @@
 import { describe, expect, test } from "vitest"
 import FieldMiraEditor from "../mirabuf/FieldMiraEditor"
 import { mirabuf } from "../proto/mirabuf"
+import { ScoringZonePreferences, Alliance } from "@/systems/preferences/PreferenceTypes"
 
 function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }
 }
 
-const scoringZonePayload = [
+const scoringZonePayload: ScoringZonePreferences[] = [
     {
         name: "Red Zone",
-        alliance: "red",
+        alliance: "red" as Alliance,
         parentNode: "root",
         points: 5,
         destroyGamepiece: false,
@@ -24,11 +25,15 @@ describe("Basic Field Mira Editor Tests", () => {
         const editor = new FieldMiraEditor(parts)
 
         const key = "devtool:scoring_zones"
-        const payload = [
+        const payload: ScoringZonePreferences[] = [
             {
-                id: "zone-A",
-                pose: { position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0, w: 1 } },
-                size: { x: 1, y: 1, z: 1 },
+                name: "Test Zone",
+                alliance: "blue" as Alliance,
+                parentNode: "root",
+                points: 10,
+                destroyGamepiece: false,
+                persistentPoints: false,
+                deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
             },
         ]
 
@@ -102,7 +107,7 @@ describe("Devtool Scoring Zones Caching Tests", () => {
         const editor = new FieldMiraEditor(parts)
         editor.setUserData("devtool:scoring_zones", scoringZonePayload)
 
-        const newPayload = [{ ...scoringZonePayload[0], name: "Blue Zone", alliance: "blue" }]
+        const newPayload: ScoringZonePreferences[] = [{ ...scoringZonePayload[0], name: "Blue Zone", alliance: "blue" as Alliance }]
         editor.setUserData("devtool:scoring_zones", newPayload)
         expect(editor.getUserData("devtool:scoring_zones")).toEqual(newPayload)
 
