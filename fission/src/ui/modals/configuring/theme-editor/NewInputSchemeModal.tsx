@@ -19,7 +19,7 @@ const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="New Input Scheme"
-            icon={SynthesisIcons.AddLarge}
+            icon={SynthesisIcons.ADD_LARGE}
             modalId={modalId}
             onAccept={() => {
                 const scheme = DefaultInputs.newBlankScheme

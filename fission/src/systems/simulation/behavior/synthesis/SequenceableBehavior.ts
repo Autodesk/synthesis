@@ -29,7 +29,7 @@ abstract class SequenceableBehavior extends Behavior {
 
     abstract applyInput: (velocity: number) => void
 
-    public Update(_: number): void {
+    public update(_: number): void {
         const inputName = "joint " + (this._sequentialConfig?.parentJointIndex ?? this._jointIndex)
         const inverted = this._sequentialConfig?.inverted ?? false
 

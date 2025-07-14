@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import InputSystem, {
     AxisInput,
     ButtonInput,
-    EmptyModifierState,
+    EMPTY_MODIFIER_STATE,
     Input,
     ModifierState,
 } from "@/systems/input/InputSystem"
@@ -97,7 +97,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
     const [chosenTouchControlsAxis, setChosenTouchControlsAxis] = useState<number>(-1)
     const [chosenKey, setChosenKey] = useState<string>("")
-    const [modifierState, setModifierState] = useState<ModifierState>(EmptyModifierState)
+    const [modifierState, setModifierState] = useState<ModifierState>(EMPTY_MODIFIER_STATE)
     const [chosenButton, setChosenButton] = useState<number>(-1)
     const [useGamepadButtons, setUseGamepadButtons] = useState<boolean>(
         input instanceof AxisInput ? input.useGamepadButtons : false
@@ -156,7 +156,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     <Label>{toTitleCase(input.inputName)}</Label>
 
                     <Box display="flex" gap="10px" alignItems={"center"}>
-                        {SynthesisIcons.Add}
+                        {SynthesisIcons.ADD}
                         {/* Positive key */}
                         <Button
                             key={"pos" + input.inputName}
@@ -170,7 +170,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             }}
                         />
                         {Spacer()}
-                        {SynthesisIcons.Minus}
+                        {SynthesisIcons.MINUS}
                         {/* Negative key */}
                         <Button
                             key={"neg" + input.inputName}
@@ -272,7 +272,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
                     <Box display="flex" gap="10px" alignItems={"center"}>
                         {/* Positive gamepad button */}
-                        {SynthesisIcons.Add}
+                        {SynthesisIcons.ADD}
                         <Button
                             key={"pos" + input.inputName}
                             value={
@@ -288,7 +288,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         />
                         {Spacer()}
                         {/* // Negative gamepad button */}
-                        {SynthesisIcons.Minus}
+                        {SynthesisIcons.MINUS}
                         <Button
                             key={"neg" + input.inputName}
                             value={
@@ -443,7 +443,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
             setChosenKey("")
             setSelectedInput("")
-            setModifierState(EmptyModifierState)
+            setModifierState(EMPTY_MODIFIER_STATE)
             onInputChanged()
         }
         // Assign gamepad button inputs when a button is pressed
@@ -504,6 +504,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
     return (
         <Box
             onKeyUp={e => {
+                e.preventDefault()
                 if (selectedInput != "") setChosenKey(selectedInput ? e.code : "")
                 setModifierState({
                     ctrl: e.ctrlKey,

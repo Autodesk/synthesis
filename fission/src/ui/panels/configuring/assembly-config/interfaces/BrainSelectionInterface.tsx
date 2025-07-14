@@ -3,14 +3,14 @@ import { BrainType } from "@/systems/simulation/Brain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { useState } from "react"
+import React, { useState } from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 type BrainSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
 }
 
-export default function BrainSelectionInterface({ selectedAssembly }: BrainSelectionInterfaceProps) {
+const BrainSelectionInterface: React.FC<BrainSelectionInterfaceProps> = ({ selectedAssembly }) => {
     const [robotBrainType, setRobotBrainType] = useState<BrainType | undefined>(selectedAssembly.brain?.brainType)
 
     return (
@@ -45,3 +45,5 @@ export default function BrainSelectionInterface({ selectedAssembly }: BrainSelec
         </>
     )
 }
+
+export default BrainSelectionInterface

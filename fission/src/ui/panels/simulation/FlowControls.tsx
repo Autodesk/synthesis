@@ -1,10 +1,10 @@
 import { Panel as FlowPanel, useReactFlow } from "@xyflow/react"
-import { PropsWithChildren } from "react"
+import React, { PropsWithChildren } from "react"
 import { FlowControlsProps } from "./SimConfigShared"
 import { MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
 import { FaPlus } from "react-icons/fa6"
 
-function FlowControlButton({ onClick, children }: PropsWithChildren<{ onClick?: () => void }>) {
+const FlowControlButton: React.FC<PropsWithChildren<{ onClick?: () => void }>> = ({ onClick, children }) => {
     return (
         <button
             className="border-[0.0625rem] border-interactive-element-solid bg-background p-1 w-8 h-8 flex flex-col justify-center items-center"
@@ -15,7 +15,7 @@ function FlowControlButton({ onClick, children }: PropsWithChildren<{ onClick?: 
     )
 }
 
-function FlowControls({ onCreateJunction }: FlowControlsProps) {
+const FlowControls: React.FC<FlowControlsProps> = ({ onCreateJunction }) => {
     const { zoomIn, zoomOut, fitView } = useReactFlow()
 
     return (

@@ -3,13 +3,13 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Button from "@/ui/components/Button"
 import Checkbox from "@/ui/components/Checkbox"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { useState } from "react"
+import React, { useState } from "react"
 
 type SimulationInterfaceProps = {
     selectedAssembly: MirabufSceneObject
 }
 
-export default function SimulationInterface({ selectedAssembly }: SimulationInterfaceProps) {
+const SimulationInterface: React.FC<SimulationInterfaceProps> = ({ selectedAssembly }) => {
     const { openPanel } = usePanelControlContext()
     const [autoReconnect, setAutoReconnect] = useState<boolean>(
         PreferencesSystem.getGlobalPreference("SimAutoReconnect")
@@ -43,3 +43,5 @@ export default function SimulationInterface({ selectedAssembly }: SimulationInte
         </>
     )
 }
+
+export default SimulationInterface
