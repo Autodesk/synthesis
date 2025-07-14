@@ -42,6 +42,7 @@ logger = getLogger()
 INPUTS_ROOT: adsk.core.CommandInputs
 PALETTE_ID = "synthesis_configure"
 USE_NEW_UI = True
+USE_OLD_UI = False # allow both independently for testing
 
 
 def reload() -> None:
@@ -68,7 +69,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
     def notify(self, args: adsk.core.CommandCreatedEventArgs) -> None:
         cmd = args.command
         gm.ui.activeSelections.clear()
-        if not USE_NEW_UI:
+        if USE_OLD_UI:
             global INPUTS_ROOT
             INPUTS_ROOT = cmd.commandInputs
 
@@ -153,7 +154,8 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
             )
             apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
-        else:
+
+        if USE_NEW_UI:
             palettes = gm.ui.palettes
             global exporterPalette
             exporterPalette = palettes.itemById(PALETTE_ID)
@@ -185,7 +187,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
 class PaletteCloseHandler(PersistentEventHandler, adsk.core.UserInterfaceGeneralEventHandler):
     @logFailure
-    def notify(self) -> None:
+    def notify(self, e) -> None:
         if exporterPalette:
             exporterPalette.deleteMe()
 
@@ -225,10 +227,22 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
                         except Exception as e:
                             logger.error(e)
 
+            tagData = []
+            if len(exporterOptions.tags):
+                for token, tag in exporterOptions.tags.items():
+                    fusionBody = design.findEntityByToken(token)
+
+                    if len(fusionBody):
+                        body = adsk.fusion.BRepBody.cast(fusionBody[0])
+                        try:
+                            tagData.append(buildTaggedObject(body))
+                        except Exception as e:
+                            logger.error(e)
             html_args.returnData = json.dumps(
                 {
                     "gamepieceData": gamepieceData,
                     "jointData": jointData,
+                    "tagData": tagData,
                     "options": exporterOptions.writeToJson(),
                     "calculatedMass": convertMassUnitsTo(designMassCalculation()),
                 }
@@ -248,7 +262,8 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
                 joint = adsk.fusion.Joint.cast(selection.entity)
                 html_args.returnData = json.dumps(buildJoint(joint))
             except Exception as e:
-                html_args.returnData = ""
+                html_args.returnData = json.dumps({"_err":e.__repr__()})
+                logger.error(e)
             gm.ui.activeSelections.clear()
         elif html_args.action == "selectGamepiece":
             try:
@@ -256,8 +271,20 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
                 gamepiece = adsk.fusion.Occurrence.cast(selection.entity)
                 html_args.returnData = json.dumps(buildGamepiece(gamepiece))
             except Exception as e:
-                html_args.returnData = ""
+                html_args.returnData = json.dumps({"_err":e.__repr__()})
+                logger.error(e)
             gm.ui.activeSelections.clear()
+        elif html_args.action == "selectBody":
+
+            try:
+                selection = gm.app.userInterface.selectEntity("Select Body", "SolidBodies,SurfaceBodies")
+                logger.info(selection)
+                body = adsk.fusion.BRepBody.cast(selection.entity)
+                html_args.returnData = json.dumps(buildTaggedObject(body))
+            except Exception as e:
+                html_args.returnData = json.dumps({"_err":e.__repr__()})
+                logger.error(e)
+
         elif html_args.action == "cancelSelection":
             gm.ui.terminateActiveCommand()
             html_args.returnData = "{}"
@@ -270,6 +297,14 @@ def buildJoint(joint: adsk.fusion.Joint) -> dict[str, Any]:
         "name": joint.name,
         "entityToken": joint.entityToken,
         "jointType": joint.jointMotion.jointType,
+    }
+
+def buildTaggedObject(body: adsk.fusion.BRepBody) -> dict[str, Any]:
+    key_body = body.nativeObject or body
+    return {
+        "name": key_body.name,
+        "componentName": key_body.parentComponent.name,
+        "entityToken": key_body.entityToken,
     }
 
 
@@ -296,6 +331,8 @@ def buildGamepiece(gamepiece: adsk.fusion.Occurrence) -> dict[str, Any]:
 
 @logFailure(messageBox=True)
 def export(exporterOptions: moduleExporterOptions.ExporterOptions) -> None:
+    logger.info("NEWUI")
+    logger.info(exporterOptions)
     design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
     fullName = design.rootComponent.name
     versionMatch = re.search(r"v\d+", fullName)
@@ -378,6 +415,9 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             frictionOverrideCoeff=generalConfigTab.frictionOverrideCoeff,
             openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
+        logger.info("OLDUI")
+        logger.info(exporterOptions)
+
         Parser.Parser(exporterOptions).export()
         exporterOptions.writeToDesign()
         jointConfigTab.reset()

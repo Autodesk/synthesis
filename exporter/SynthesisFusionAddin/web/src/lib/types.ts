@@ -1,3 +1,5 @@
+import type { Material } from "../ui/MaterialTaggingTab.tsx"
+
 export type GeneralConfig = ExporterConfig & { calculatedRobotWeight: number }
 
 export function DefaultExporterConfig(): GeneralConfig {
@@ -7,6 +9,7 @@ export function DefaultExporterConfig(): GeneralConfig {
         gamepieces: [],
         joints: [],
         wheels: [],
+        tags: {},
 
         materials: 0,
         exportMode: ExportMode.ROBOT,
@@ -176,6 +179,7 @@ export interface ExporterConfig {
     exportMode: ExportMode
     wheels: ExporterWheel[]
     joints: ExporterJoint[]
+    tags:Record<string, Material>
     gamepieces: ExporterGamepiece[]
     robotWeight: number
     autoCalcRobotWeight: boolean
@@ -200,6 +204,7 @@ interface ExporterJoint {
     force: number
     isWheel: boolean
 }
+
 
 interface ExporterGamepiece {
     occurrenceToken: string

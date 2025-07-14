@@ -108,7 +108,7 @@ def encodeNestedObjects(obj: Any) -> Any:
 def makeObjectFromJson(objType: type[Any] | str | Any, data: Any) -> Any:
     if isinstance(objType, EnumType):
         return objType(data)
-    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
+    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES) or get_origin(objType) is dict:
         return data
     elif get_origin(objType) is list:
         return [makeObjectFromJson(get_args(objType)[0], item) for item in data]

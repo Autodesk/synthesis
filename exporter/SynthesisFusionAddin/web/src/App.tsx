@@ -21,9 +21,10 @@ import { Global_SetAlert } from "./lib/GlobalUtils.tsx"
 import DownloadIcon from "@mui/icons-material/Download"
 import { current } from "immer"
 import { theme } from "./lib/theme.ts"
-import { RestartAlt, Settings, SportsFootball } from "@mui/icons-material"
+import { RestartAlt, Settings, SportsFootball, Texture } from "@mui/icons-material"
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import SaveIcon from "@mui/icons-material/Save"
+import MaterialTaggingTab, { type TaggedBody } from "./ui/MaterialTaggingTab.tsx"
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
@@ -40,6 +41,7 @@ function App() {
     const [generalConfig, updateGeneralConfig] = useImmer(DefaultExporterConfig())
     const [joints, updateJoints] = useImmer<Joint[]>([])
     const [gamepieces, updateGamepieces] = useImmer<Gamepiece[]>([])
+    const [taggedBodies, updateTaggedBodies] = useImmer<TaggedBody[]>([])
     const updateConfigItem = <K extends keyof GeneralConfig>(k: K, v: GeneralConfig[K]) => {
         updateGeneralConfig(config => {
             config[k] = v
@@ -114,6 +116,22 @@ function App() {
                         .filter(e => e != null)
                     return res
                 })
+
+                updateTaggedBodies(() => {
+                    const res: TaggedBody[] = Object.entries(data.options.tags)
+                        .map(([key, value]) => {
+                            const fusionBody = data.tagData.find(b => b.entityToken == key)
+                            if (fusionBody == undefined) {
+                                return null // No longer in the assembly
+                            }
+                            return {
+                                ...fusionBody,
+                                material: value,
+                            }
+                        })
+                        .filter(e => e != null)
+                    return res
+                })
             })
             .catch((e: unknown) => {
                 console.error(e)
@@ -149,6 +167,7 @@ function App() {
                         signalType: joint.signalType,
                         wheelType: joint.wheelType,
                     }))
+                cfg.tags = Object.fromEntries(taggedBodies.map(b => ([b.entityToken,b.material])))
                 resolve(current(cfg))
             })
         })
@@ -177,6 +196,12 @@ function App() {
                             disabled={generalConfig.exportMode == ExportMode.ROBOT}
                         />
 
+                        <Tab
+                            icon={<Texture />}
+                            iconPosition={"start"}
+                            label="Materials"
+                        />
+
                         {/*<Tab label="APS" />*/}
                     </Tabs>
                 </Box>
@@ -195,6 +220,10 @@ function App() {
                     updateConfigItem={updateConfigItem}
                 />
             </TabPanel>
+            <TabPanel value={activeTab} index={3}>
+                <MaterialTaggingTab tags={taggedBodies} updateTags={updateTaggedBodies} />
+            </TabPanel>
+
 
             <Box
                 position="sticky"
