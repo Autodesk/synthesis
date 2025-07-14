@@ -13,13 +13,19 @@ class DesignCheckTab:
 
     @logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs) -> None:
-        self.designCheckTab = args.command.commandInputs.addTabCommandInput("designCheckTab", "Design Check")
+        self.designCheckTab = args.command.commandInputs.addTabCommandInput("designCheckTab", "Design Rule Check")
         designCheckTabInputs = self.designCheckTab.children
 
         # add a height thing (maximum 106 cm)
-        logger.info(f"{self.fusion_design_height}")
+        self.designCheckTab.children.addTextBoxCommandInput(
+            "designHeightText", "Design Height", f"{self.fusion_design_height:.2f} cm", 1, True
+        )
 
         # get the robot perimeter
+        self.designCheckTab.children.addTextBoxCommandInput(
+            "designPerimeterText", "Design Perimeter", f"{self.fusion_design_perimeter:.2f} cm", 1, True 
+        )
+
         logger.info(f"{self.fusion_design_perimeter}")
 
     @property
