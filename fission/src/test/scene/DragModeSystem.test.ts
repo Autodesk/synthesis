@@ -79,7 +79,8 @@ describe("DragModeSystem Integration Tests", () => {
     beforeEach(() => {
         // Create real physics system
         physicsSystem = new PhysicsSystem()
-        ;(World as WorldWithPhysicsSystem).physicsSystem = physicsSystem
+        const mockWorld = World as unknown as WorldWithPhysicsSystem
+        mockWorld.physicsSystem = physicsSystem
 
         // Create real drag mode system
         dragModeSystem = new DragModeSystem()
@@ -93,7 +94,8 @@ describe("DragModeSystem Integration Tests", () => {
     afterEach(() => {
         dragModeSystem.destroy()
         physicsSystem.destroy()
-        ;(World as WorldWithPhysicsSystem).physicsSystem = null as unknown as PhysicsSystem
+        const mockWorld = World as unknown as WorldWithPhysicsSystem
+        mockWorld.physicsSystem = null as unknown as PhysicsSystem
     })
 
     describe("Basic Functionality", () => {
