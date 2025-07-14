@@ -8,9 +8,16 @@ import HingeStimulus from "../../../stimulus/HingeStimulus.ts"
 import Stimulus from "../../../stimulus/Stimulus.ts"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import World from "@/systems/World.ts"
-import { threeQuaternionToString, threeVector3ToString } from "@/util/debug/DebugPrint.ts"
+import { joltVec3ToString, threeQuaternionToString, threeVector3ToString } from "@/util/debug/DebugPrint.ts"
 import * as THREE from "three"
-import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions.ts"
+import { Mesh } from "three"
+import {
+    convertJoltQuatToThreeQuaternion,
+    convertJoltVec3ToThreeVector3,
+    convertThreeVector3ToJoltVec3,
+} from "@/util/TypeConversions.ts"
+import Jolt from "@azaleacolburn/jolt-physics"
+import JOLT from "@/util/loading/JoltSyncLoader.ts"
 
 class SwerveDriveBehavior extends Behavior {
     private _wheels: WheelDriver[]
@@ -40,10 +47,13 @@ class SwerveDriveBehavior extends Behavior {
         this._assemblyName = assemblyName
 
         hinges.forEach(h => {
-            // h.constraint.SetLimits(-Infinity, Infinity)
-            h.constraint.SetLimits(0, 0)
+            h.constraint.SetLimits(-Infinity, Infinity)
+            // h.constraint.SetLimits(0, 0)
             h.controlMode = DriverControlMode.POSITION
         })
+        // this._wheels.forEach(w => {
+        //     // w.setLateralFriction(0)
+        // })
     }
 
     /** @returns true if the difference between a and b is within acceptanceDelta */
@@ -127,8 +137,20 @@ class SwerveDriveBehavior extends Behavior {
 
         const robotForward: THREE.Vector3 = new THREE.Vector3(0, 0, 1).applyQuaternion(robotRotation)
         const robotRight: THREE.Vector3 = new THREE.Vector3(1, 0, 0).applyQuaternion(robotRotation)
+        this._debugVector(
+            "forward",
+            0xff0000,
+            robotForward,
+            World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition()
+        )
+        this._debugVector(
+            "right",
+            0x00ff00,
+            robotRight,
+            World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition()
+        )
         const robotUp: THREE.Vector3 = new THREE.Vector3(0, 1, 0).applyQuaternion(robotRotation)
-
+        this._debugVector("up", 0xffff00, robotUp, World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition())
         if (InputSystem.getInput("swerveResetFieldForward", this._brainIndex)) this._fieldForward = robotForward
 
         const headingVector: THREE.Vector3 = robotForward
@@ -145,7 +167,17 @@ class SwerveDriveBehavior extends Behavior {
 
         // Are the inputs basically zero
         if (forward == 0.0 && turn == 0.0 && strafe == 0.0) {
-            this._wheels.forEach(w => (w.accelerationDirection = 0.0))
+            this._wheels.forEach(w => {
+                w.accelerationDirection = 0
+                // w.getWheel().SetAngularVelocity(0)
+            })
+            this._wheels.forEach(w => console.log(w.getWheel().GetAngularVelocity()))
+            this._debugVector(
+                "linearVelocity",
+                0x00ffff,
+                new THREE.Vector3(),
+                World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition()
+            )
             return
         } else {
             console.debug("==================")
@@ -169,6 +201,13 @@ class SwerveDriveBehavior extends Behavior {
         console.debug(`Lin Vel: ${threeVector3ToString(chassisVelocity)}`)
         console.debug(`Ang Vel: ${threeVector3ToString(chassisAngularVelocity)}`)
         console.debug(`Chassis Angle: ${chassisAngle.toFixed(2)}`)
+
+        this._debugVector(
+            "linearVelocity",
+            0x00ffff,
+            chassisVelocity,
+            World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition()
+        )
 
         // Normalize velocity so its between 1 and 0. Should only max out at like 1 sqrt(2), but still
         if (chassisVelocity.length() > 1) chassisVelocity.normalize()
@@ -215,17 +254,31 @@ class SwerveDriveBehavior extends Behavior {
         for (let i = 0; i < this._wheels.length; i++) {
             console.debug(`Velocity [${i}]: ${threeVector3ToString(velocities[i])}`)
 
-            // const speed: number = velocities[i].length()
+            const speed: number = velocities[i].length()
             const yComponent: number = robotForward.dot(velocities[i])
             const xComponent: number = robotRight.dot(velocities[i])
-            const angle: number = Math.atan2(xComponent, yComponent) * (180.0 / Math.PI)
+            const angle: number = Math.atan2(xComponent, yComponent)
 
-            console.debug(`Speed [${i}]: ${xComponent.toFixed(3)}, ${yComponent.toFixed(3)}`)
+            console.debug(`Speed [${i}]: ${speed} (${xComponent.toFixed(3)}, ${yComponent.toFixed(3)})`)
             console.debug(`Angle [${i}]: ${angle.toFixed(3)}`)
+            console.debug(`Forward [${i}]: ${joltVec3ToString(this._wheels[i].getWheel().GetSettings().mWheelForward)}`)
 
             //console.log(angle)
             this._hinges[i].targetAngle = angle
-            // this._wheels[i].accelerationDirection = speed
+            this._wheels[i]
+                .getWheel()
+                .GetSettings()
+                .set_mWheelForward(convertThreeVector3ToJoltVec3(velocities[i].clone().normalize()))
+            const wheelVector = convertJoltVec3ToThreeVector3(this._wheels[i].getWheel().GetSettings().mWheelForward)
+            this._debugVector(
+                "wheel" + i,
+                0x0000ff,
+                wheelVector,
+                this._wheels[i].constraint
+                    .GetWheelWorldTransform(0, new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(0, 1, 0))
+                    .GetTranslation()
+            )
+            this._wheels[i].accelerationDirection = speed
         }
     }
 
@@ -239,6 +292,33 @@ class SwerveDriveBehavior extends Behavior {
             strafeInput * this._strafeSpeed,
             turnInput * this._turnSpeed
         )
+    }
+
+    private _lines: Record<string, Mesh[]> = {}
+
+    private _debugVector(id: string, color: THREE.ColorRepresentation, vec: THREE.Vector3, origin: Jolt.RVec3): void {
+        const base = convertJoltVec3ToThreeVector3(origin)
+        if (this._lines[id] == undefined) {
+            const material = new THREE.MeshBasicMaterial({
+                color: color,
+                transparent: true,
+                opacity: 0.1,
+                wireframe: true,
+            })
+            material.depthTest = false
+            this._lines[id] = []
+            for (let i = 0; i < 10; i++) {
+                const line = new THREE.Mesh(new THREE.SphereGeometry(0.005), material)
+                World.sceneRenderer.scene.add(line)
+                this._lines[id].push(line)
+            }
+        }
+        const vec2 = vec.clone().setLength(0.01)
+        let outVector = new THREE.Vector3().copy(base)
+        for (let i = 0; i < 10; i++) {
+            outVector = outVector.add(vec2)
+            this._lines[id][i].position.copy(outVector)
+        }
     }
 }
 

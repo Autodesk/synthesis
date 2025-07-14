@@ -6,9 +6,9 @@ import {
     convertMirabufVector3ToJoltRVec3,
     convertMirabufVector3ToJoltVec3,
     convertThreeMatrix4ToJoltMat44,
+    convertThreeToJoltQuat,
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
-    convertThreeToJoltQuat,
 } from "../../util/TypeConversions"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import Jolt from "@azaleacolburn/jolt-physics"
@@ -18,12 +18,12 @@ import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly }
 import WorldSystem from "../WorldSystem"
 import Mechanism from "./Mechanism"
 import {
-    OnContactAddedEvent,
     CurrentContactData,
+    OnContactAddedEvent,
     OnContactPersistedEvent,
     OnContactRemovedEvent,
-    OnContactValidateEvent,
     OnContactValidateData,
+    OnContactValidateEvent,
     PhysicsEvent,
 } from "./ContactEvents"
 import PreferencesSystem from "../preferences/PreferencesSystem"
@@ -76,9 +76,9 @@ const DEFAULT_FRICTION = 0.7
 // Transition GH-1152, AARD-1885:
 // Temporary workaround to reduce visible levitation of robots by minimizing suspension.
 // Setting these values to 0 causes physics issues (e.g., ground collisionn problems).
-// Some robots still float slightly, assuming this is due to different export conditions.
-const SUSPENSION_MIN_FACTOR = 0.0001
-const SUSPENSION_MAX_FACTOR = 0.0001
+// Some robots still float slightly, assuming this is dwue to different export conditions.
+const SUSPENSION_MIN_FACTOR = 1
+const SUSPENSION_MAX_FACTOR = 1
 
 const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 

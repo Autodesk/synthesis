@@ -5,7 +5,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { useCallback, useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "../assembly-config/ConfigurationType"
 import { setSelectedScheme } from "../assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelection from "./InputSchemeSelection"
@@ -58,7 +58,9 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).available[0]
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).sort(
+                (a, b) => b.status - a.status
+            )[0].scheme
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
             setSelectedScheme(scheme)

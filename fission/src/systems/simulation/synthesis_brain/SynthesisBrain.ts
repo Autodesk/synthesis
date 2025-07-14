@@ -276,7 +276,7 @@ class SynthesisBrain extends Brain {
             const rightVector = new JOLT.RVec3(1, 0, 0)
 
             const dotProduct = rightVector.Dot(wheelPos.SubRVec3(robotCOM))
-
+            console.log(i, dotProduct)
             if (dotProduct < 0) {
                 rightWheels.push(wheelDrivers[i])
                 rightStimuli.push(wheelStimuli[i])

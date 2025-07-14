@@ -26,7 +26,7 @@ class WheelDriver extends Driver {
         if (vel - this._prevVel < -this._maxAcceleration) vel = this._prevVel - this._maxAcceleration
         if (vel - this._prevVel > this._maxAcceleration) vel = this._prevVel + this._maxAcceleration
 
-        return vel
+        return Math.round(vel * 1000) / 1000
     }
 
     public get maxForce(): number {
@@ -62,6 +62,18 @@ class WheelDriver extends Driver {
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
         this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION)
         this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
+    }
+
+    public setLateralFriction(friction: number) {
+        this._wheel.set_mCombinedLateralFriction(friction)
+        // this._wheel.set_mCombinedLongitudinalFriction(friction)
+    }
+
+    public setSteeringAngle(angle: number) {
+        this._wheel.SetSteerAngle(angle)
+    }
+    public getWheel() {
+        return this._wheel
     }
 
     public update(_: number): void {
