@@ -4,10 +4,10 @@ import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
 
 export enum LabelPlacement {
-    Left,
-    Right,
-    Top,
-    Bottom,
+    LEFT,
+    RIGHT,
+    TOP,
+    BOTTOM,
 }
 
 type LabeledButtonProps = {
@@ -31,17 +31,17 @@ const LabeledButton: React.FC<LabeledButtonProps> = ({
 }) => {
     const buttonComponent = <Button key={"button"} value={value} onClick={onClick} className={buttonClassName} />
     const labelComponent = (
-        <Label key={"label"} size={labelSize || LabelSize.Small} className={labelClassName}>
+        <Label key={"label"} size={labelSize || LabelSize.SMALL} className={labelClassName}>
             {label}
         </Label>
     )
 
-    const labelBefore = placement == LabelPlacement.Left || placement == LabelPlacement.Top
-    const isHorizontal = placement == LabelPlacement.Left || placement == LabelPlacement.Right
+    const labelBefore = placement == LabelPlacement.LEFT || placement == LabelPlacement.TOP
+    const isHorizontal = placement == LabelPlacement.LEFT || placement == LabelPlacement.RIGHT
 
     return (
         <Stack
-            direction={isHorizontal ? StackDirection.Horizontal : StackDirection.Vertical}
+            direction={isHorizontal ? StackDirection.HORIZONTAL : StackDirection.VERTICAL}
             justify={"between"}
             className="items-center"
         >

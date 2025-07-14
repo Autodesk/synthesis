@@ -4,13 +4,13 @@ import { SimCANEncoder, SimGyro, SimAccel, SimDIO, SimAI } from "./WPILibBrain"
 import Mechanism from "@/systems/physics/Mechanism"
 import Jolt from "@azaleacolburn/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { JoltQuat_ThreeQuaternion, JoltVec3_ThreeVector3 } from "@/util/TypeConversions"
+import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
 
 export abstract class SimInput {
     constructor(protected _device: string) {}
 
-    public abstract Update(deltaT: number): void
+    public abstract update(deltaT: number): void
 
     public get device(): string {
         return this._device
@@ -25,9 +25,9 @@ export class SimEncoderInput extends SimInput {
         this._stimulus = stimulus
     }
 
-    public Update(_deltaT: number) {
-        SimCANEncoder.SetPosition(this._device, this._stimulus.positionValue)
-        SimCANEncoder.SetVelocity(this._device, this._stimulus.velocityValue)
+    public update(_deltaT: number) {
+        SimCANEncoder.setPosition(this._device, this._stimulus.positionValue)
+        SimCANEncoder.setVelocity(this._device, this._stimulus.velocityValue)
     }
 }
 
@@ -36,35 +36,35 @@ export class SimGyroInput extends SimInput {
     private _joltID?: Jolt.BodyID
     private _joltBody?: Jolt.Body
 
-    private static AXIS_X: Jolt.Vec3 = new JOLT.Vec3(1, 0, 0)
-    private static AXIS_Y: Jolt.Vec3 = new JOLT.Vec3(0, 1, 0)
-    private static AXIS_Z: Jolt.Vec3 = new JOLT.Vec3(0, 0, 1)
+    private static readonly AXIS_X: Jolt.Vec3 = new JOLT.Vec3(1, 0, 0)
+    private static readonly AXIS_Y: Jolt.Vec3 = new JOLT.Vec3(0, 1, 0)
+    private static readonly AXIS_Z: Jolt.Vec3 = new JOLT.Vec3(0, 0, 1)
 
     constructor(device: string, robot: Mechanism) {
         super(device)
         this._robot = robot
         this._joltID = this._robot.nodeToBody.get(this._robot.rootBody)
 
-        if (this._joltID) this._joltBody = World.PhysicsSystem.GetBody(this._joltID)
+        if (this._joltID) this._joltBody = World.physicsSystem.getBody(this._joltID)
     }
 
-    private GetAxis(axis: Jolt.Vec3): number {
+    private getAxis(axis: Jolt.Vec3): number {
         return ((this._joltBody?.GetRotation().GetRotationAngle(axis) ?? 0) * 180) / Math.PI
     }
 
-    private GetX(): number {
-        return this.GetAxis(SimGyroInput.AXIS_X)
+    private getX(): number {
+        return this.getAxis(SimGyroInput.AXIS_X)
     }
 
-    private GetY(): number {
-        return this.GetAxis(SimGyroInput.AXIS_Y)
+    private getY(): number {
+        return this.getAxis(SimGyroInput.AXIS_Y)
     }
 
-    private GetZ(): number {
-        return this.GetAxis(SimGyroInput.AXIS_Z)
+    private getZ(): number {
+        return this.getAxis(SimGyroInput.AXIS_Z)
     }
 
-    private GetAxisVelocity(axis: "x" | "y" | "z"): number {
+    private getAxisVelocity(axis: "x" | "y" | "z"): number {
         const axes = this._joltBody?.GetAngularVelocity()
         if (!axes) return 0
 
@@ -78,17 +78,17 @@ export class SimGyroInput extends SimInput {
         }
     }
 
-    public Update(_deltaT: number) {
-        const x = this.GetX()
-        const y = this.GetY()
-        const z = this.GetZ()
+    public update(_deltaT: number) {
+        const x = this.getX()
+        const y = this.getY()
+        const z = this.getZ()
 
-        SimGyro.SetAngleX(this._device, x)
-        SimGyro.SetAngleY(this._device, y)
-        SimGyro.SetAngleZ(this._device, z)
-        SimGyro.SetRateX(this._device, this.GetAxisVelocity("x"))
-        SimGyro.SetRateY(this._device, this.GetAxisVelocity("y"))
-        SimGyro.SetRateZ(this._device, this.GetAxisVelocity("z"))
+        SimGyro.setAngleX(this._device, x)
+        SimGyro.setAngleY(this._device, y)
+        SimGyro.setAngleZ(this._device, z)
+        SimGyro.setRateX(this._device, this.getAxisVelocity("x"))
+        SimGyro.setRateY(this._device, this.getAxisVelocity("y"))
+        SimGyro.setRateZ(this._device, this.getAxisVelocity("z"))
     }
 }
 
@@ -104,21 +104,21 @@ export class SimAccelInput extends SimInput {
         this._prevVel = new THREE.Vector3(0, 0, 0)
     }
 
-    public Update(deltaT: number) {
+    public update(deltaT: number) {
         if (!this._joltID) return
-        const body = World.PhysicsSystem.GetBody(this._joltID)
+        const body = World.physicsSystem.getBody(this._joltID)
 
-        const rot = JoltQuat_ThreeQuaternion(body.GetRotation())
+        const rot = convertJoltQuatToThreeQuaternion(body.GetRotation())
         const mat = new THREE.Matrix4().makeRotationFromQuaternion(rot).transpose()
-        const newVel = JoltVec3_ThreeVector3(body.GetLinearVelocity()).applyMatrix4(mat)
+        const newVel = convertJoltVec3ToThreeVector3(body.GetLinearVelocity()).applyMatrix4(mat)
 
         const x = (newVel.x - this._prevVel.x) / deltaT
         const y = (newVel.y - this._prevVel.y) / deltaT
         const z = (newVel.y - this._prevVel.y) / deltaT
 
-        SimAccel.SetX(this._device, x)
-        SimAccel.SetY(this._device, y)
-        SimAccel.SetZ(this._device, z)
+        SimAccel.setX(this._device, x)
+        SimAccel.setY(this._device, y)
+        SimAccel.setZ(this._device, z)
 
         this._prevVel = newVel
     }
@@ -138,16 +138,16 @@ export class SimDigitalInput extends SimInput {
         this._valueSupplier = valueSupplier
     }
 
-    private SetValue(value: boolean) {
-        SimDIO.SetValue(this._device, value)
+    private setValue(value: boolean) {
+        SimDIO.setValue(this._device, value)
     }
 
-    public GetValue(): boolean {
-        return SimDIO.GetValue(this._device)
+    public getValue(): boolean {
+        return SimDIO.getValue(this._device)
     }
 
-    public Update(_deltaT: number) {
-        if (this._valueSupplier) this.SetValue(this._valueSupplier())
+    public update(_deltaT: number) {
+        if (this._valueSupplier) this.setValue(this._valueSupplier())
     }
 }
 
@@ -159,7 +159,7 @@ export class SimAnalogInput extends SimInput {
         this._valueSupplier = valueSupplier
     }
 
-    public Update(_deltaT: number) {
-        SimAI.SetValue(this._device, this._valueSupplier())
+    public update(_deltaT: number) {
+        SimAI.setValue(this._device, this._valueSupplier())
     }
 }

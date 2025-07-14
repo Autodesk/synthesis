@@ -66,9 +66,8 @@ def mapAllComponents(
 
                 part_body.part = comp_ref
 
-                fill_info_result = fill_info(part_body, body)
-                if fill_info_result.is_err():
-                    return fill_info_result
+                if body.entityToken in options.tags:
+                    partsData.user_data.data[f"tag_{body.entityToken}"] = options.tags[body.entityToken]
 
                 if isinstance(body, adsk.fusion.BRepBody):
                     parse_result = parseBRep(body, options, part_body.triangle_mesh)

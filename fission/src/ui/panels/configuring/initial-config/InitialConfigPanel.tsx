@@ -30,10 +30,10 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 
@@ -50,10 +50,10 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
             targetAssembly.alliance = alliance
-            SimulationSystem.AddPerRobotScore(targetAssembly, 0) // Initialize score for the robot
+            SimulationSystem.addPerRobotScore(targetAssembly, 0) // Initialize score for the robot
 
             setSelectedConfigurationType(ConfigurationType.ROBOT)
-            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+            const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
@@ -71,14 +71,14 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) {
-            World.SceneRenderer.RemoveSceneObject(targetAssembly.id)
+            World.sceneRenderer.removeSceneObject(targetAssembly.id)
         }
 
         closePanel(panelId)
     }, [closePanel, panelId, targetAssembly])
 
     const brainIndex = useMemo(() => {
-        return SynthesisBrain.GetBrainIndex(targetAssembly)
+        return SynthesisBrain.getBrainIndex(targetAssembly)
     }, [targetAssembly])
 
     return (
@@ -90,7 +90,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             acceptEnabled={true}
             acceptName="Finish"
             onAccept={() => closeFinish()}
-            icon={SynthesisIcons.Gamepad}
+            icon={SynthesisIcons.GAMEPAD}
             cancelEnabled={true}
             cancelName="Remove"
             onCancel={() => closeDelete()}

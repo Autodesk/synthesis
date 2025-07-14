@@ -11,7 +11,7 @@ const DeleteAllThemesModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Delete All Themes?"
-            icon={SynthesisIcons.Xmark}
+            icon={SynthesisIcons.XMARK}
             modalId={modalId}
             onAccept={() => {
                 deleteAllThemes()

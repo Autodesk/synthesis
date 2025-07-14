@@ -7,7 +7,7 @@ import { SimAO, SimCAN, SimDIO, SimPWM, SimType } from "./WPILibBrain"
 export abstract class SimOutput {
     constructor(protected _name: string) {}
 
-    public abstract Update(deltaT: number): void
+    public abstract update(deltaT: number): void
 
     public get name(): string {
         return this._name
@@ -26,7 +26,7 @@ export abstract class SimOutputGroup extends SimOutput {
         this.type = type
     }
 
-    public abstract Update(deltaT: number): void
+    public abstract update(deltaT: number): void
 }
 
 export class PWMOutputGroup extends SimOutputGroup {
@@ -34,10 +34,10 @@ export class PWMOutputGroup extends SimOutputGroup {
         super(name, ports, drivers, SimType.PWM)
     }
 
-    public Update(_deltaT: number) {
+    public update(deltaT: number) {
         const average =
             this.ports.reduce((sum, port) => {
-                const speed = SimPWM.GetSpeed(`${port}`) ?? 0
+                const speed = SimPWM.getSpeed(`${port}`) ?? 0
                 return sum + speed
             }, 0) / this.ports.length
 
@@ -47,20 +47,20 @@ export class PWMOutputGroup extends SimOutputGroup {
             } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
                 d.accelerationDirection = average
             }
-            d.Update(_deltaT)
+            d.update(deltaT)
         })
     }
 }
 
 export class CANOutputGroup extends SimOutputGroup {
     public constructor(name: string, ports: number[], drivers: Driver[]) {
-        super(name, ports, drivers, SimType.CANMotor)
+        super(name, ports, drivers, SimType.CAN_MOTOR)
     }
 
-    public Update(deltaT: number): void {
+    public update(deltaT: number): void {
         const average =
             this.ports.reduce((sum, port) => {
-                const device = SimCAN.GetDeviceWithID(port, SimType.CANMotor)
+                const device = SimCAN.getDeviceWithID(port, SimType.CAN_MOTOR)
                 return sum + ((device?.get("<percentOutput") as number | undefined) ?? 0)
             }, 0) / this.ports.length
 
@@ -70,7 +70,7 @@ export class CANOutputGroup extends SimOutputGroup {
             } else if (d instanceof HingeDriver || d instanceof SliderDriver) {
                 d.accelerationDirection = average
             }
-            d.Update(deltaT)
+            d.update(deltaT)
         })
     }
 }
@@ -85,15 +85,15 @@ export class SimDigitalOutput extends SimOutput {
         super(name)
     }
 
-    public SetValue(value: boolean) {
-        SimDIO.SetValue(this._name, value)
+    public setValue(value: boolean) {
+        SimDIO.setValue(this._name, value)
     }
 
-    public GetValue(): boolean {
-        return SimDIO.GetValue(this._name)
+    public getValue(): boolean {
+        return SimDIO.getValue(this._name)
     }
 
-    public Update(_deltaT: number) {}
+    public update(_deltaT: number) {}
 }
 
 export class SimAnalogOutput extends SimOutput {
@@ -101,9 +101,9 @@ export class SimAnalogOutput extends SimOutput {
         super(name)
     }
 
-    public GetVoltage(): number {
-        return SimAO.GetVoltage(this._name)
+    public getVoltage(): number {
+        return SimAO.getVoltage(this._name)
     }
 
-    public Update(_deltaT: number) {}
+    public update(_deltaT: number) {}
 }
