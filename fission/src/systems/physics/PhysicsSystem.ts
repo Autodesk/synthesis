@@ -1441,10 +1441,11 @@ function SetupCollisionFiltering(settings: Jolt.JoltSettings) {
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
     console.log(`${mira.info?.name}: ${nodes.map(n => n.id)}`)
 
+    const instances = mira.data?.parts?.partInstances
     return nodes.filter(x => {
         console.log(`parts: ${[...x.parts.entries()].map(n => n[0])}`)
         for (const part of x.parts) {
-            const inst = mira.data!.parts!.partInstances![part] ?? mira.data?.parts?.partInstances![mira.info?.GUID!]
+            const inst = instances![part] ?? instances![mira.info?.GUID ?? ""]
             if (!inst) {
                 console.error("no part inst ")
                 return false

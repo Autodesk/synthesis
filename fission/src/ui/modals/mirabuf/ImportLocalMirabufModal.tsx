@@ -59,8 +59,8 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 const { mainSceneObject, gamePieces } = x
 
                                 World.SceneRenderer.RegisterSceneObject(mainSceneObject)
-                                gamePieces?.forEach(piece => {
-                                    World.SceneRenderer.RegisterSceneObject(piece)
+                                gamePieces?.forEach(({ sceneObject, cacheInfo: _ }) => {
+                                    World.SceneRenderer.RegisterSceneObject(sceneObject)
                                 })
                             }
                         })

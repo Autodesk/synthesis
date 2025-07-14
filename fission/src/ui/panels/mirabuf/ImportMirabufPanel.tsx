@@ -109,18 +109,21 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                 CreateMirabuf(assembly).then(x => {
                     if (x) {
                         const { mainSceneObject, gamePieces } = x
-
                         World.SceneRenderer.RegisterSceneObject(mainSceneObject)
-                        gamePieces?.forEach(piece => {
-                            // We have to cache the game pieces while they're in scope
-                            // TODO: Use specific cache key
-                            MirabufCachingService.CacheInfo(info.cacheKey, type, piece.assemblyName ?? undefined)
-                            World.SceneRenderer.RegisterSceneObject(piece)
+
+                        // TODO Figure out what to do with cacheInfo
+                        gamePieces?.forEach(({ sceneObject, cacheInfo: _ }) => {
+                            World.SceneRenderer.RegisterSceneObject(sceneObject)
                         })
                         progressHandle.Done()
 
-                        // TODO Disable for fields/game pieces
-                        if (gamePieces == undefined || gamePieces.length < 0) Global_OpenPanel?.("initial-config")
+                        // Disables config for fields/game pieces but not for independent game pieces
+                        if (
+                            gamePieces == undefined ||
+                            gamePieces.length < 0 ||
+                            mainSceneObject.miraType === MiraType.FIELD
+                        )
+                            Global_OpenPanel?.("initial-config")
                     } else {
                         progressHandle.Fail()
                     }

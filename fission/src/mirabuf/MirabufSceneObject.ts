@@ -17,7 +17,7 @@ import {
     ProtectedZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { MiraType } from "./MirabufLoader"
+import MirabufCachingService, { MirabufCacheInfo, MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import Brain from "@/systems/simulation/Brain"
@@ -811,7 +811,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 export async function CreateMirabuf(
     assembly: mirabuf.Assembly,
     progressHandle?: ProgressHandle
-): Promise<{ mainSceneObject: MirabufSceneObject; gamePieces?: MirabufSceneObject[] } | null | undefined> {
+): Promise<
+    | {
+          mainSceneObject: MirabufSceneObject
+          gamePieces?: { sceneObject: MirabufSceneObject; cacheInfo: MirabufCacheInfo }[]
+      }
+    | undefined
+> {
     const parser = new MirabufParser(assembly, false, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.Unimportable) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
@@ -819,13 +825,43 @@ export async function CreateMirabuf(
     }
 
     const mainSceneObject = new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle)
-    const gamePieces = parser.gamePieces?.map(
-        parser => new MirabufSceneObject(new MirabufInstance(parser), parser.assembly.info!.name!)
+    if (parser.gamePieces == undefined || parser.gamePieces.length === 0)
+        return {
+            mainSceneObject,
+        }
+
+    const gamePieces = await Promise.all(
+        parser.gamePieces
+            .map(async parser => {
+                // Cache the game pieces before exporting the scene objects
+                const serialized = JSON.stringify(parser.assembly)
+                const encoder = new TextEncoder()
+                const buffer = encoder.encode(serialized).buffer
+
+                const cacheInfo = await MirabufCachingService.CacheLocal(buffer, MiraType.PIECE)
+                if (!cacheInfo) return
+
+                if (!cacheInfo.name)
+                    await MirabufCachingService.CacheInfo(
+                        cacheInfo.cacheKey,
+                        MiraType.PIECE,
+                        assembly.info?.name ?? undefined
+                    )
+
+                return {
+                    sceneObject: new MirabufSceneObject(new MirabufInstance(parser), parser.assembly.info!.name!),
+                    cacheInfo,
+                }
+            })
+            // This might not be valid because of async stuff
+            .filter(
+                (n): n is Promise<{ sceneObject: MirabufSceneObject; cacheInfo: MirabufCacheInfo }> => n != undefined
+            )
     )
 
     return {
         mainSceneObject,
-        gamePieces,
+        gamePieces: gamePieces,
     }
 }
 
