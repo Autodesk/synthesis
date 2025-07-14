@@ -79,8 +79,9 @@ class APS {
      * Returns whether the user is signed in
      * @returns {boolean} Whether the user is signed in
      */
-    static isSignedIn(): boolean {
-        return !!this.getAuth()
+    static async isSignedIn(): Promise<boolean> {
+        const auth = await this.getAuth()
+        return !!auth
     }
 
     /**
