@@ -504,6 +504,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
     return (
         <Box
             onKeyUp={e => {
+                e.preventDefault()
                 if (selectedInput != "") setChosenKey(selectedInput ? e.code : "")
                 setModifierState({
                     ctrl: e.ctrlKey,
