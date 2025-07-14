@@ -33,7 +33,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const save = () => {
         SoundPlayer.changeVolume()
         PreferencesSystem.savePreferences()
-        globalAddToast?.("info", "Settings Saved", "")
+        globalAddToast("info", "Settings Saved", "")
     }
     return (
         <Modal

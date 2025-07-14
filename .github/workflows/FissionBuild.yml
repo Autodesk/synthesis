@@ -11,11 +11,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
       - name: JavaScript Setup
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v4
         with:
           node-version: 20
+
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
+          path: 'fission/node_modules'
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
 
       - name: Install Dependencies
         run: |
