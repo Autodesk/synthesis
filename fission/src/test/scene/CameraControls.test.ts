@@ -2,7 +2,6 @@ import { expect, test, vi, beforeEach, describe } from "vitest"
 import { CustomOrbitControls } from "@/systems/scene/CameraControls"
 import * as THREE from "three"
 import ScreenInteractionHandler from "@/systems/scene/ScreenInteractionHandler"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 // Mock dependencies
 vi.mock("@/systems/preferences/PreferencesSystem", () => ({
