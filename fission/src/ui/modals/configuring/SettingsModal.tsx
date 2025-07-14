@@ -45,7 +45,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 PreferencesSystem.revertPreferences()
                 SoundPlayer.changeVolume()
             }}
-            disableClickAway={true}
+            allowClickAway={false}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
                 <Box alignSelf={"center"}>
