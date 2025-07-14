@@ -199,7 +199,7 @@ const MainHUD: React.FC = () => {
                     larger={true}
                     onClick={() => {
                         MatchMode.getInstance().isMatchEnabled()
-                            ? globalAddToast?.(
+                            ? globalAddToast(
                                   "error",
                                   "Match Mode Already Running",
                                   "You can't start match mode if its already running"
