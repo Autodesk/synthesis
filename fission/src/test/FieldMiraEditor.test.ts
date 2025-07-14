@@ -107,7 +107,9 @@ describe("Devtool Scoring Zones Caching Tests", () => {
         const editor = new FieldMiraEditor(parts)
         editor.setUserData("devtool:scoring_zones", scoringZonePayload)
 
-        const newPayload: ScoringZonePreferences[] = [{ ...scoringZonePayload[0], name: "Blue Zone", alliance: "blue" as Alliance }]
+        const newPayload: ScoringZonePreferences[] = [
+            { ...scoringZonePayload[0], name: "Blue Zone", alliance: "blue" as Alliance },
+        ]
         editor.setUserData("devtool:scoring_zones", newPayload)
         expect(editor.getUserData("devtool:scoring_zones")).toEqual(newPayload)
 

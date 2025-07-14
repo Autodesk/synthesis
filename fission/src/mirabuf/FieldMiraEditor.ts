@@ -3,15 +3,15 @@ import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 
 interface DevtoolMiraData {
     "devtool:scoring_zones": ScoringZonePreferences[]
-    "devtool:camera_locations": []
-    "devtool:spawn_points": []
-    "devtool:a": []
-    "devtool:b": []
-    "devtool:test": []
-    "devtool:keep": []
-    "devtool:drop": []
-    "devtool:bad": []
-    "devtool:foo": []
+    "devtool:camera_locations": unknown
+    "devtool:spawn_points": unknown
+    "devtool:a": unknown
+    "devtool:b": unknown
+    "devtool:test": unknown
+    "devtool:keep": unknown
+    "devtool:drop": unknown
+    "devtool:bad": unknown
+    "devtool:foo": unknown
     // additional devtool keys to be added in future
 }
 
