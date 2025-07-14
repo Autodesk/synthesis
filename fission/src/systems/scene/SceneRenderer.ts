@@ -379,6 +379,10 @@ class SceneRenderer extends WorldSystem {
             this._gizmosOnMirabuf.delete(obj.parentObjectId!)
         }
 
+        if (obj instanceof MirabufSceneObject && obj.miraType == MiraType.FIELD) {
+            this.RemoveAllGamePieces()
+        }
+
         if (this._sceneObjects.delete(id)) {
             obj!.Dispose()
         }
