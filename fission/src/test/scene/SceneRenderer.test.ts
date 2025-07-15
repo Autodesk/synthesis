@@ -19,6 +19,30 @@ interface MockVec3 {
     GetZ(): number
 }
 
+// Mock WebGL Renderer to prevent WebGL context creation in CI environments
+vi.mock("three", async () => {
+    const actual = await vi.importActual<typeof import("three")>("three")
+    return {
+        ...actual,
+        WebGLRenderer: vi.fn().mockImplementation(() => ({
+            domElement: document.createElement("canvas"),
+            setSize: vi.fn(),
+            setClearColor: vi.fn(),
+            setPixelRatio: vi.fn(),
+            render: vi.fn(),
+            dispose: vi.fn(),
+            shadowMap: {
+                enabled: true,
+                type: actual.PCFSoftShadowMap,
+            },
+            capabilities: {
+                maxTextureSize: 4096,
+            },
+            getSize: vi.fn().mockReturnValue(new actual.Vector2(1920, 1080)),
+        })),
+    }
+})
+
 // Mock dependencies
 vi.mock("@/systems/World", () => ({
     default: {
@@ -117,10 +141,17 @@ vi.mock("postprocessing", () => ({
     EffectComposer: vi.fn().mockImplementation(() => ({
         addPass: vi.fn(),
         render: vi.fn(),
+        dispose: vi.fn(),
     })),
-    EffectPass: vi.fn(),
-    RenderPass: vi.fn(),
-    SMAAEffect: vi.fn(),
+    EffectPass: vi.fn().mockImplementation(() => ({
+        dispose: vi.fn(),
+    })),
+    RenderPass: vi.fn().mockImplementation(() => ({
+        dispose: vi.fn(),
+    })),
+    SMAAEffect: vi.fn().mockImplementation(() => ({
+        dispose: vi.fn(),
+    })),
     EdgeDetectionMode: {
         COLOR: "COLOR",
     },
