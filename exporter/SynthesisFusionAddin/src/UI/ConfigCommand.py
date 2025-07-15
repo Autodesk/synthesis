@@ -193,7 +193,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
 
-        Parser.Parser(exporterOptions).export()
+        try:
+            Parser.Parser(exporterOptions).export()
+        except:
+            pass
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
