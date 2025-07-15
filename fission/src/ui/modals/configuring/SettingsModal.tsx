@@ -33,7 +33,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const save = () => {
         SoundPlayer.changeVolume()
         PreferencesSystem.savePreferences()
-        globalAddToast?.("info", "Settings Saved", "")
+        globalAddToast("info", "Settings Saved", "")
     }
     return (
         <Modal
@@ -41,11 +41,11 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             icon={SynthesisIcons.GEAR_LARGE}
             modalId={modalId}
             onAccept={save}
-            onClickAway={save}
             onCancel={() => {
                 PreferencesSystem.revertPreferences()
                 SoundPlayer.changeVolume()
             }}
+            allowClickAway={false}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
                 <Box alignSelf={"center"}>

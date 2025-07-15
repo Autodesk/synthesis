@@ -140,7 +140,7 @@ class MirabufCachingService {
 
             if (cached) return cached
 
-            globalAddToast?.("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
+            globalAddToast("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
 
             // fallback: return raw buffer wrapped in MirabufCacheInfo
             return {
