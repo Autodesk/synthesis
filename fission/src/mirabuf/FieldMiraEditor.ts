@@ -1,7 +1,8 @@
 import { mirabuf } from "../proto/mirabuf"
+import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 
 interface DevtoolMiraData {
-    "devtool:scoring_zones": unknown
+    "devtool:scoring_zones": ScoringZonePreferences[]
     "devtool:camera_locations": unknown
     "devtool:spawn_points": unknown
     "devtool:a": unknown
