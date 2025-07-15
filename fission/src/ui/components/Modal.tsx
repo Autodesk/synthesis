@@ -1,15 +1,20 @@
-import type React from "react"
-import { type ReactNode, useContext } from "react"
-import { Button, Card, Modal as MUIModal, CardContent, CardActions } from "@mui/material"
-import { UIContext, CloseType } from "../UIProvider"
-import type { Modal as ModalType } from "../UIProvider"
+import { Button, Card, CardActions, CardContent, Modal as MUIModal } from "@mui/material"
+import React, { useContext } from "react"
+import type { Modal as ModalType, Panel as PanelType } from "../UIProvider"
+import { CloseType, UIContext } from "../UIProvider"
+
+export type ModalImplProps = Partial<{
+    modal: ModalType
+    parent: PanelType | ModalType
+}>
 
 interface ModalProps {
-    children?: React.FC
-    modal?: ModalType
+    children?: React.FC<ModalImplProps>
+    modal: ModalType
+    parent?: ModalType | PanelType
 }
 
-export const Modal: React.FC<ModalProps> = ({ children, modal }) => {
+export const Modal: React.FC<ModalProps> = ({ children, modal, parent }) => {
     const { closeModal } = useContext(UIContext)
     return (
         <MUIModal open={modal !== undefined} onClose={closeModal}>
@@ -24,7 +29,9 @@ export const Modal: React.FC<ModalProps> = ({ children, modal }) => {
                 }}
             >
                 <CardContent>
-                    <div className="modal-contents">{children?.({ modal })}</div>
+                    {React.Children.map(children, child => {
+                        if (React.isValidElement(child)) return React.cloneElement(child, { modal, parent })
+                    })}
                 </CardContent>
                 <CardActions>
                     <Button onClick={() => closeModal(CloseType.Cancel)} variant="outlined" color="error">
