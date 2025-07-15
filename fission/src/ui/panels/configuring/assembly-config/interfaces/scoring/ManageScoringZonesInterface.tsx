@@ -1,12 +1,12 @@
-import { Box, Stack, Typography } from "@mui/material"
+import { Stack, Typography } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
-import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -15,7 +15,7 @@ const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSc
     if (fieldPrefs) fieldPrefs.scoringZones = zones
 
     PreferencesSystem.savePreferences()
-    field.UpdateScoringZones()
+    field.updateScoringZones()
 }
 
 type ScoringZoneRowProps = {
@@ -112,7 +112,7 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
             ) : (
                 <Typography>No scoring zones</Typography>
             )}
-            {AddButtonInteractiveColor(() => {
+            {AddButton(() => {
                 if (zones === undefined) return
 
                 const newZone: ScoringZonePreferences = {

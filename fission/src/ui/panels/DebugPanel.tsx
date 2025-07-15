@@ -44,8 +44,8 @@ const DebugPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
                 <Typography variant="h5">Generic</Typography>
                 <Button
                     onClick={() => {
-                        const type = (["info", "warning", "error"] as const)[Math.floor(random() * 3)]
-                        globalAddToast<typeof type>(type, "This is a test toast to test the toast system")
+                        const toastType = (["info", "warning", "error"] as const)[Math.floor(random() * 3)]
+                        globalAddToast<typeof toastType>(toastType, "This is a test toast to test the toast system")
                     }}
                     className="w-full"
                 >

@@ -1,4 +1,4 @@
-import { Box, Button, Divider, styled, IconButton, Tooltip, type ButtonProps, Stack, Typography } from "@mui/material"
+import { Box, Button, Divider, styled, IconButton, Tooltip, type ButtonProps, IconButtonProps, Stack, Typography } from "@mui/material"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { HiDownload } from "react-icons/hi"
 import { AiOutlineInfoCircle } from "react-icons/ai"
@@ -86,40 +86,44 @@ export const Spacer = (heightPx?: number, widthPx?: number) => {
     return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
 }
 
-export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick }) => {
-    return <Button value={value} onClick={onClick} color="success" />
+export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick }) => {
+    return <Button onClick={onClick} color="success">{children}</Button>
+}
+
+export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClick }) => {
+    return <IconButton onClick={onClick} color="success">{children}</IconButton>
 }
 
 export const DownloadButton = (onClick: () => void) => {
-    return <PositiveButton startIcon={SynthesisIcons.DELETE_LARGE} onClick={onClick} />
+    return <PositiveIconButton onClick={onClick}>{SynthesisIcons.DELETE_LARGE}</PositiveIconButton>
 }
 
 export const AddButton = (onClick: () => void) => {
-    return <PositiveButton startIcon={SynthesisIcons.DELETE_LARGE} onClick={onClick} />
+    return <PositiveIconButton onClick={onClick}>{SynthesisIcons.ADD_LARGE}</PositiveIconButton>
 }
 
 export const SelectButton = (onClick: () => void) => {
-    return <PositiveButton startIcon={SynthesisIcons.SELECT_LARGE} onClick={onClick} />
+    return <PositiveIconButton onClick={onClick}>{SynthesisIcons.SELECT_LARGE}</PositiveIconButton>
 }
 
 export const EditButton = (onClick: () => void) => {
-    return <PositiveButton startIcon={SynthesisIcons.EDIT_LARGE} onClick={onClick} />
+    return <PositiveIconButton onClick={onClick}>{SynthesisIcons.EDIT_LARGE}</PositiveIconButton>
 }
 
-export const NegativeButton: React.FC<ButtonProps> = ({ value, onClick, id }) => {
-    return <Button value={value} onClick={onClick} id={id} color="error" />
+export const NegativeButton: React.FC<ButtonProps> = ({ children, onClick, id }) => {
+    return <Button onClick={onClick} id={id} color="error">{children}</Button>
+}
+
+export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClick }) => {
+    return <IconButton onClick={onClick} color="error">{children}</IconButton>
 }
 
 export const DeleteButton = (onClick: () => void, id?: string) => {
-    return <NegativeButton startIcon={SynthesisIcons.DELETE_LARGE} onClick={onClick} id={id} />
+    return <NegativeIconButton onClick={onClick} id={id}>{SynthesisIcons.DELETE_LARGE}</NegativeIconButton>
 }
 
 export const RefreshButton = (onClick: () => void) => {
-    return <Button startIcon={SynthesisIcons.REFRESH_LARGE} onClick={onClick} />
-}
-
-export const AddButtonInteractiveColor = (onClick: () => void, id?: string) => {
-    return <Button startIcon={SynthesisIcons.ADD_LARGE} onClick={onClick} id={id} />
+    return <IconButton onClick={onClick}>{SynthesisIcons.REFRESH_LARGE}</IconButton>
 }
 
 export const CustomTooltip = (text: string) => {

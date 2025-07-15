@@ -4,7 +4,7 @@ import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { AddButtonInteractiveColor, DeleteButton, EditButton, SelectButton } from "@/ui/components/StyledComponents"
+import { AddButton, DeleteButton, EditButton, SelectButton } from "@/ui/components/StyledComponents"
 import { StateContext } from "@/ui/StateProvider"
 
 interface InputSchemeSelectionProps {
@@ -22,14 +22,14 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
     return (
         <>
             {/** A scroll view with buttons to select default and custom input schemes */}
-            <Typography variant="h3">{`${InputSchemeManager.availableInputSchemes.length} Input Schemes`}</Typography>
+            <Typography variant="h4">{`${InputSchemeManager.availableInputSchemes.length} Input Schemes`}</Typography>
             <Divider />
             {InputSchemeManager.availableInputSchemes.map(scheme => (
-                <Stack justifyContent="space-between" alignItems="center" gap="1rem" key={scheme.schemeName}>
+                <Stack direction="row" justifyContent="space-between" alignItems="center" gap="1rem" key={scheme.schemeName}>
                     <Typography variant="h5">
                         {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
                     </Typography>
-                    <Stack direction="row-reverse" gap="0.25rem" justifyContent="center" alignItems="center">
+                    <Stack direction="row-reverse" gap="0.25rem">
                         {SelectButton(() => {
                             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
                             onSelect?.()
@@ -60,7 +60,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                     </Stack>
                 </Stack>
             ))}
-            {AddButtonInteractiveColor(() => {
+            {AddButton(() => {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, DefaultInputs.newBlankScheme)
                 onCreateNew?.()
             })}

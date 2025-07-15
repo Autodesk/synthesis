@@ -1,19 +1,14 @@
-import React, { useEffect, useState } from "react";
-
 import {
-	Box,
-	styled,
-	alpha,
 	Button,
+	Divider,
 	Stack,
 	Typography,
-	Divider,
-	IconButton,
 } from "@mui/material";
+import type React from "react";
+import { useEffect, useState } from "react";
 import {
-	AddButtonInteractiveColor,
+	AddButton,
 	CustomTooltip,
-	DeleteButton,
 	Spacer,
 	SynthesisIcons,
 } from "./StyledComponents";
@@ -232,8 +227,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
 						</>
 					)}
 					{/** Add button */}
-					{onAddClicked &&
-						AddButtonInteractiveColor(onAddClicked, "select-menu-add-button")}
+					{onAddClicked && AddButton(onAddClicked)}
 				</>
 			)}
 		</>

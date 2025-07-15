@@ -1,12 +1,12 @@
-import { Box, Stack, Typography } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
-import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 
 const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -107,7 +107,7 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
             ) : (
                 <Typography>No protected zones</Typography>
             )}
-            {AddButtonInteractiveColor(() => {
+            {AddButton(() => {
                 if (zones === undefined) return
 
                 const newZone: ProtectedZonePreferences = {

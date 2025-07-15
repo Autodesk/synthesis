@@ -1,5 +1,5 @@
 import { useSnackbar } from "notistack";
-import type { EnqueueSnackbar } from "notistack";
+import type { EnqueueSnackbar, VariantType } from "notistack";
 import { createContext, useCallback, useState } from "react";
 import type React from "react";
 import type { ReactElement, ReactNode } from "react";
@@ -61,6 +61,7 @@ export type OpenPanelFn = (
 ) => string;
 export type CloseModalFn = (closeType: CloseType) => void;
 export type ClosePanelFn = (id: string, closeType: CloseType) => void;
+export type AddToastFn = (variant: VariantType, title: string) => void;
 
 export type UIContextProps = {
 	modal?: Modal;
@@ -69,7 +70,7 @@ export type UIContextProps = {
 	openPanel: OpenPanelFn;
 	closeModal: CloseModalFn;
 	closePanel: ClosePanelFn;
-	enqueueSnackbar: EnqueueSnackbar;
+	addToast: AddToastFn;
 };
 
 export const UIContext = createContext<UIContextProps>({
@@ -78,7 +79,7 @@ export const UIContext = createContext<UIContextProps>({
 	openPanel: (_content, _parent, _position = "center", _props = {}) => "",
 	closeModal: () => {},
 	closePanel: (_id) => {},
-	enqueueSnackbar: (_msg) => "",
+	addToast: (_variant, _msg) => "",
 });
 
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
@@ -152,6 +153,10 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 		});
 	}, []);
 
+    const addToast = useCallback((variant: VariantType, title: string) => {
+        enqueueSnackbar(title, { variant })
+    }, [])
+
 	return (
 		<UIContext.Provider
 			value={{
@@ -161,7 +166,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 				openPanel,
 				closeModal,
 				closePanel,
-				enqueueSnackbar,
+				addToast,
 			}}
 		>
 			{children}

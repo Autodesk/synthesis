@@ -62,12 +62,12 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-    const { openModal, openPanel, enqueueSnackbar } = useContext(UIContext)
+    const { openModal, openPanel, addToast } = useContext(UIContext)
     const [isOpen, setIsOpen] = useState(false)
 
     const touchCompatibility = matchMedia("(hover: none)").matches
 
-    setAddToast(enqueueSnackbar)
+    setAddToast(addToast)
     setOpenPanel(openPanel)
     setOpenModal(openModal)
 

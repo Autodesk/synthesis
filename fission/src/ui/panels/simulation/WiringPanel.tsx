@@ -352,7 +352,7 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
 
 const WiringPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
     const [configState, setConfigState] = useState<ConfigState>("wiring")
-    const { closePanel, enqueueSnackbar } = useContext(UIContext)
+    const { closePanel, addToast } = useContext(UIContext)
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
@@ -360,7 +360,7 @@ const WiringPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
         if (miraObjs.length > 0) {
             return miraObjs[0][1] as MirabufSceneObject
         }
-        enqueueSnackbar<"warning">("Missing Robot\nMust have at least one robot spawned for selection.")
+        addToast("warning", "Missing Robot\nMust have at least one robot spawned for selection.")
         // closePanel(panel!.id, CloseType.Cancel)
     }, [])
 

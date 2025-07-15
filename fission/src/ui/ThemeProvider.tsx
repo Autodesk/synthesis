@@ -24,6 +24,13 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                 palette: {
                     mode,
                 },
+                components: {
+                    MuiButton: {
+                        defaultProps: {
+                            variant: "contained"
+                        }
+                    }
+                }
             }),
         [mode]
     )

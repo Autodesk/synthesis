@@ -1,4 +1,12 @@
-import { Box, Button, Divider, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import {
+	Box,
+	Button,
+	Divider,
+	Stack,
+	ToggleButton,
+	ToggleButtonGroup,
+	Typography,
+} from "@mui/material";
 import type React from "react";
 import {
 	type ReactNode,
@@ -36,6 +44,7 @@ import {
 import type { PanelImplProps } from "@/ui/components/Panel";
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData";
 import {
+    AddButton,
 	DeleteButton,
 	PositiveButton,
 	RefreshButton,
@@ -67,6 +76,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
 			justifyContent={"space-between"}
 			alignItems={"center"}
 			gap={"1rem"}
+			direction="row"
 		>
 			<Typography className="text-wrap break-all">
 				{name.replace(/.mira$/, "")}
@@ -78,9 +88,7 @@ const ItemCard: React.FC<ItemCardProps> = ({
 				justifyContent={"center"}
 				alignItems={"center"}
 			>
-				<PositiveButton onClick={primaryOnClick}>
-					{primaryButtonNode}
-				</PositiveButton>
+                {AddButton(primaryOnClick)}
 				{secondaryOnClick && DeleteButton(secondaryOnClick)}
 			</Stack>
 		</Stack>
@@ -152,7 +160,7 @@ function spawnCachedMira(
 }
 
 const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
-	const { enqueueSnackbar, closePanel, openModal } = useContext(UIContext);
+	const { addToast, closePanel, openModal } = useContext(UIContext);
 	const { unconfirmedImport, configurationType, setConfigurationType } =
 		useContext(StateContext);
 
@@ -217,8 +225,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 			return;
 		}
 		// TODO: validate behaviour
-        if (parent)
-            closePanel(parent.id, CloseType.Cancel);
+		if (parent) closePanel(parent.id, CloseType.Cancel);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
@@ -502,7 +509,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 			{viewType === MiraType.ROBOT ? (
 				<>
 					<Typography
-                        variant="h3"
+						variant="h4"
 						className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
 					>
 						{cachedRobotElements
@@ -515,7 +522,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 			) : (
 				<>
 					<Typography
-                        variant="h3"
+						variant="h4"
 						className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
 					>
 						{cachedFieldElements
@@ -527,30 +534,30 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 				</>
 			)}
 			<Stack
-                direction="row"
+				direction="row"
 				key={`remote-label-container`}
 				gap={"0.25rem"}
 				justifyContent={"center"}
 				alignItems={"center"}
 			>
 				<Typography
-                    variant="h3"
+					variant="h4"
 					className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
 				>
 					{hubElements
 						? `${hubElements.length} Remote Asset${hubElements.length === 1 ? "" : "s"}`
 						: filesStatus.message}
 				</Typography>
-				{hubElements && filesStatus.isDone && (
-					RefreshButton(() => requestMirabufFiles())
-				)}
+				{hubElements &&
+					filesStatus.isDone &&
+					RefreshButton(() => requestMirabufFiles())}
 			</Stack>
 			<Divider />
 			{hubElements}
 			{viewType === MiraType.ROBOT ? (
 				<>
 					<Typography
-                        variant="h3"
+						variant="h4"
 						className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
 					>
 						{remoteRobotElements
@@ -560,16 +567,15 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 					<Divider />
 					{remoteRobotElements}
 					<Stack justifyContent="center" mt={1}>
-						<PositiveButton
-							value="Download All"
-							onClick={downloadAllRemoteRobots}
-						/>
+						<PositiveButton onClick={downloadAllRemoteRobots}>
+							Download All
+						</PositiveButton>
 					</Stack>
 				</>
 			) : (
 				<>
 					<Typography
-                        variant="h3"
+						variant="h4"
 						className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
 					>
 						{remoteFieldElements
@@ -579,19 +585,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 					<Divider />
 					{remoteFieldElements}
 					<Stack justifyContent="center" mt={1}>
-						<PositiveButton
-							value="Download All"
-							onClick={downloadAllRemoteFields}
-						/>
+						<PositiveButton onClick={downloadAllRemoteFields}>
+							Download All
+						</PositiveButton>
 					</Stack>
 				</>
 			)}
 			<Box alignSelf={"center"}>
-                {/* TODO: modals */}
-				<Button
-					value="Import from File"
-					onClick={() => /*openModal("import-local-mirabuf")*/ undefined}
-				/>
+				{/* TODO: modals */}
+				<Button onClick={() => /*openModal("import-local-mirabuf")*/ undefined}>
+					Import from File
+				</Button>
 			</Box>
 		</Stack>
 	);
