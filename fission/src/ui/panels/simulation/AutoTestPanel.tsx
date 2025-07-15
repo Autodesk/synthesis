@@ -12,7 +12,11 @@ import World from "@/systems/World"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { UIContext } from "@/ui/UIProvider"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltMat44ToThreeMatrix4, convertThreeQuaternionToJoltQuat, convertThreeVector3ToJoltRVec3 } from "@/util/TypeConversions"
+import {
+    convertJoltMat44ToThreeMatrix4,
+    convertThreeQuaternionToJoltQuat,
+    convertThreeVector3ToJoltRVec3,
+} from "@/util/TypeConversions"
 
 type StagingProps = {
     state: "Staging"
