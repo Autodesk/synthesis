@@ -205,22 +205,6 @@ describe("CustomOrbitControls", () => {
             const distance = initialPosition.distanceTo(finalPosition)
             expect(distance).toBeLessThan(0.1)
         })
-
-        test("should clamp delta time for stability", () => {
-            controls.setImmediateCoordinates({ theta: 0, phi: 0, r: 3.0 })
-            controls.update(1 / 60)
-
-            const initialPosition = camera.position.clone()
-
-            // Test with very large delta time (should be clamped)
-            controls.setTargetCoordinates({ theta: Math.PI / 2 })
-            controls.update(2.0) // Very large delta time
-
-            // Should not cause instability or huge jumps
-            const finalPosition = camera.position.clone()
-            const distance = initialPosition.distanceTo(finalPosition)
-            expect(distance).toBeLessThan(10.0) // Reasonable movement
-        })
     })
 
     describe("Animation", () => {

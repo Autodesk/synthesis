@@ -4,6 +4,7 @@ import PhysicsSystem from "@/systems/physics/PhysicsSystem"
 import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { PRIMARY_MOUSE_INTERACTION, InteractionType } from "@/systems/scene/ScreenInteractionHandler"
+import World from "@/systems/World"
 
 // Mock World to provide minimal required interface
 vi.mock("@/systems/World", () => ({
@@ -64,8 +65,6 @@ vi.mock("@/systems/World", () => ({
         },
     },
 }))
-
-import World from "@/systems/World"
 
 // Type for World with writable physicsSystem
 type WorldWithPhysicsSystem = typeof World & {
@@ -138,7 +137,6 @@ describe("DragModeSystem Integration Tests", () => {
         test("should handle disable drag mode event", () => {
             dragModeSystem.enabled = true
 
-            // Simulate the event
             window.dispatchEvent(new CustomEvent("disableDragMode"))
 
             expect(dragModeSystem.enabled).toBe(false)
@@ -161,7 +159,6 @@ describe("DragModeSystem Integration Tests", () => {
         test("should stop dragging on destroy", () => {
             dragModeSystem.enabled = true
 
-            // Verify we had enabled state before
             expect(dragModeSystem.enabled).toBe(true)
 
             dragModeSystem.destroy()
