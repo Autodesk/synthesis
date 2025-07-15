@@ -87,10 +87,10 @@ function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
         canOPFS
             ? MirabufCachingService.GetCacheMap(miraType)
             : miraType == MiraType.ROBOT
-              ? backUpRobots
-              : miraType == MiraType.FIELD
-                ? backUpFields
-                : backUpPieces
+                ? backUpRobots
+                : miraType == MiraType.FIELD
+                    ? backUpFields
+                    : backUpPieces
     )
 }
 
@@ -447,7 +447,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     },
                 })
             )
-    }, [manifest?.fields, cachedPieces, selectRemote])
+    }, [manifest?.pieces, cachedPieces, selectRemote])
 
     function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
         // eslint-disable-next-line react-hooks/rules-of-hooks
