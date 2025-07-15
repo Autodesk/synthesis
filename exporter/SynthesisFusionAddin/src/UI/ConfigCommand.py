@@ -151,9 +151,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         exporterOptions = ExporterOptions().readFromDesign() or ExporterOptions()
 
-        fullName = design.rootComponent.name
+        fullName: str = design.rootComponent.name
         versionMatch = re.search(r"v\d+", fullName)
-        docName = (fullName[versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
+        strippedName = fullName[0 : versionMatch.start()].strip()
+        docName = (strippedName if versionMatch else fullName).replace(" ", "_")
         docVersion = versionMatch.group() if versionMatch else "v0"
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
