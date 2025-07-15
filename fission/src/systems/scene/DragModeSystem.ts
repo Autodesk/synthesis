@@ -577,22 +577,8 @@ class DragModeSystem extends WorldSystem {
                 DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
                     (InputSystem.isKeyPressed("ArrowUp") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowDown") ? 1 : 0))
             )
-
             body.AddTorque(yawRotation)
             body.AddTorque(pitchRotation)
-
-            // Reduce angular damping since we want the natural rotation from the applied force
-            const angularVel = body.GetAngularVelocity()
-            const angularDampingStrength = Math.min(
-                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_DAMPING_BASE,
-                DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_DAMPING_MAX
-            )
-            const angularDampingTorque = new JOLT.Vec3(
-                -angularVel.GetX() * angularDampingStrength,
-                -angularVel.GetY() * angularDampingStrength,
-                -angularVel.GetZ() * angularDampingStrength
-            )
-            body.AddTorque(angularDampingTorque)
         } else {
             // When close to target, apply braking forces and gravity compensation
             const currentVel = body.GetLinearVelocity()
@@ -612,21 +598,9 @@ class DragModeSystem extends WorldSystem {
                 const gravityCompensationY = mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE
                 brakingForce.SetY(brakingForce.GetY() + gravityCompensationY)
             }
-
             body.AddForce(brakingForce)
-
-            const angularVel = body.GetAngularVelocity()
-            const angularBrakingStrength = Math.min(
-                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_BRAKING_BASE,
-                DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_BRAKING_MAX
-            )
-            const angularBrakingTorque = new JOLT.Vec3(
-                -angularVel.GetX() * angularBrakingStrength,
-                -angularVel.GetY() * angularBrakingStrength,
-                -angularVel.GetZ() * angularBrakingStrength
-            )
-            body.AddTorque(angularBrakingTorque)
         }
+        body.SetAngularVelocity(new JOLT.Vec3())
     }
 
     private handleWheelDuringDrag(event: WheelEvent): void {
