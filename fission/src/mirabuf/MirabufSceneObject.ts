@@ -541,7 +541,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public SetEjectable(bodyId?: Jolt.BodyID): boolean {
         // 1) still require you’ve configured an ejector
         if (!this._ejectorPreferences?.parentNode || !bodyId) {
-            console.log(`Configure an ejectable first.`)
+            console.log(`Configure an ejector first.`)
             return false
         }
 

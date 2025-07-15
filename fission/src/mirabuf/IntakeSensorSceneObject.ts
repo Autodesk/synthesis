@@ -2,6 +2,7 @@ import SceneObject from "@/systems/scene/SceneObject"
 import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
@@ -128,7 +129,9 @@ class IntakeSensorSceneObject extends SceneObject {
 
     private IntakeCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
-        if (associate?.isGamePiece) {
+        World.SceneRenderer.sceneObjects
+        const onGPLayer = World.PhysicsSystem.GetBody(gpID).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        if (associate?.isGamePiece || onGPLayer) {
             associate.robotLastInContactWith = this._parentAssembly
             this._parentAssembly.SetEjectable(gpID)
         }

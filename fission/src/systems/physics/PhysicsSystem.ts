@@ -38,7 +38,7 @@ export const PAUSE_REF_ASSEMBLY_MOVE = "assembly-move"
  * Layers used for determining enabled/disabled collisions.
  */
 const LAYER_FIELD = 0 // Used for grounded rigid node of a field as well as any rigid nodes jointed to it.
-const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
+export const LAYER_GENERAL_DYNAMIC = 1 // Used for game pieces or any general dynamic objects that can collide with anything and everything.
 const RobotLayers: number[] = [
     // Reserved layers for robots. Robot layers have no collision with themselves but have collision with everything else.
     2,
