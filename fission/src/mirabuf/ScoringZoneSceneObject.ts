@@ -16,6 +16,7 @@ import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DeltaFieldTransforms_PhysicalProp } from "@/util/threejs/MeshCreation"
 import { findListDifference } from "@/util/Utility"
+import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex
@@ -225,7 +226,8 @@ class ScoringZoneSceneObject extends SceneObject {
 
     private ZoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.PhysicsSystem.GetBodyAssociation(gpID)
-        if (associate?.isGamePiece && this._prefs) {
+        const inGPLayer = World.PhysicsSystem.GetBody(gpID).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        if ((associate?.isGamePiece || inGPLayer) && this._prefs) {
             // If persistent, Update() will handle points
             if (this._prefs.persistentPoints) {
                 this._gpContacted.push(gpID)
