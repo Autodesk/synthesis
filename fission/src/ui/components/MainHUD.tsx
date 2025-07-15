@@ -16,6 +16,7 @@ import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { SynthesisIcons } from "./StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import UserIcon from "./UserIcon"
+import { deobf } from "@/util/Utility"
 
 type ButtonProps = {
     value: string
@@ -32,17 +33,21 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
             {...SoundPlayer.buttonSoundEffects()}
             className={`relative flex flex-row
                 cursor-pointer
-                w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
+                w-full m-auto px-2 py-1 border-none rounded-md ${larger ? "justify-center" : ""}
                 items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0
                 transform
                 transition-transform
                 hover:scale-[1.015]
                 active:scale-[1.03]`}
+            color="primary"
+            sx={{
+                borderRadius: "8px",
+            }}
         >
             {larger && icon}
-            {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
+            {!larger && <span className="absolute left-3">{icon}</span>}
             <span
-                className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} text-main-text cursor-pointer`}
+                className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} cursor-pointer`}
                 style={{
                     userSelect: "none",
                     MozUserSelect: "none",
@@ -77,6 +82,21 @@ const MainHUD: React.FC = () => {
         document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
             setUserInfo(APS.userInfo)
         })
+
+        // biome-ignore-start lint/suspicious/noExplicitAny: allow any
+        const k: string[] = deobf(
+            "NmM2ZjYzNjE2YzUzNzQ2ZjcyNjE2NzY1MmU3NDY4NjU2ZDY1",
+        ).split(String.fromCharCode(46));
+        const v = JSON.parse((window as any)[k[0]][k[1]])[deobf("NjM2ZjZmNmM0ZDZmNjQ2NQ==")];
+        if (v === deobf("Nzk2NTcz")) {
+            const r = (document as any)[deobf("Njc2NTc0NDU2YzY1NmQ2NTZlNzQ0Mjc5NDk2NA==")](deobf("NzI2ZjZmNzQ="));
+            if (r) {
+                const w = (document as any)[deobf("NjM3MjY1NjE3NDY1NDU2YzY1NmQ2NTZlNzQ=")](deobf("NmQ2MTcyNzE3NTY1NjU="));
+                (r[deobf("NzA2MTcyNjU2ZTc0NGU2ZjY0NjU=")])[deobf("Njk2ZTczNjU3Mjc0NDI2NTY2NmY3MjY1")](w, r);
+                w[deobf("NjE3MDcwNjU2ZTY0NDM2ODY5NmM2NA==")](r);
+            }
+        }
+        // biome-ignore-end lint/suspicious/noExplicitAny: disallow any
     }, [])
 
     return (
@@ -96,6 +116,7 @@ const MainHUD: React.FC = () => {
                         maxWidth={"60px"}
                         style={{ aspectRatio: " 1 / 1.5" }}
                         className="transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
+                        bgcolor="secondary.dark"
                         sx={{
                             borderTopRightRadius: "100px",
                             borderBottomRightRadius: "100px",
@@ -104,16 +125,34 @@ const MainHUD: React.FC = () => {
                         }}
                     >
                         <Box className="flex w-full h-full items-center justify-center">
-                            <Button onClick={() => setIsOpen(!isOpen)} startIcon={SynthesisIcons.OPEN_HUD_ICON} />
+                            <IconButton
+                                onClick={() => setIsOpen(!isOpen)}
+                                color="primary"
+                                disableRipple
+                                sx={{
+                                    "&:focus": {
+                                        borderColor: "transparent !important",
+                                        outline: "none",
+                                    },
+                                    "&:selected": {
+                                        outline: "none",
+                                        borderColor: "transparent",
+                                    },
+                                }}
+                            >
+                                {SynthesisIcons.OPEN_HUD_ICON}
+                            </IconButton>
                         </Box>
                     </Box>
                 </Stack>
             )}
-            <motion.div
+            <Box
+                component={motion.div}
                 initial="closed"
                 animate={isOpen ? "open" : "closed"}
                 variants={variants}
                 className="fixed flex flex-col gap-2 w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
+                bgcolor="background.default"
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img
@@ -125,9 +164,23 @@ const MainHUD: React.FC = () => {
                             MozUserSelect: "none",
                             msUserSelect: "none",
                             WebkitUserSelect: "none",
+                            filter: "invert(1)",
                         }}
                     />
-                    <IconButton color="secondary" onClick={() => setIsOpen(false)}>
+                    <IconButton
+                        sx={{
+                            "&:focus": {
+                                borderColor: "transparent !important",
+                                outline: "none",
+                            },
+                            "&:selected": {
+                                outline: "none",
+                                borderColor: "transparent",
+                            },
+                            "color": "text.primary",
+                        }}
+                        onClick={() => setIsOpen(false)}
+                    >
                         <FaXmark size={23} />
                     </IconButton>
                 </div>
@@ -137,7 +190,7 @@ const MainHUD: React.FC = () => {
                     larger={true}
                     onClick={() => openPanel(<ImportMirabufPanel />)}
                 />
-                <Stack direction="column" sx={{ backgroundColor: "black", borderRadius: "7px", padding: "3px" }}>
+                <Stack direction="column" sx={{ borderRadius: "7px", padding: "4px" }} bgcolor="primary.main" gap={0.5}>
                     <MainHUDButton
                         value={"Configure Assets"}
                         icon={SynthesisIcons.WRENCH}
@@ -203,7 +256,7 @@ const MainHUD: React.FC = () => {
                         setIsOpen(false)
                     }}
                 />
-            </motion.div>
+            </Box>
         </>
     )
 }

@@ -9,6 +9,7 @@ import World from "@/systems/World"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { Modal } from "./components/Modal"
+import { ThemeEditorPanel } from "./panels/ThemeEditorPanel"
 
 export type UIRendererProps = object // TODO: add actual props or delete
 
@@ -31,7 +32,7 @@ export const UIRenderer: React.FC<UIRendererProps> = () => {
             `opening test panel ${openPanel(<ConfigurePanel />, undefined, "top-right", {
                 onClose: () => console.log("closed test panel"),
                 onAccept: () => addToast("success", "ACCEPTED!"),
-                onCancel: () => addToast("success", "CANCELED!"),
+                onCancel: () => addToast("warning", "CANCELED!"),
             })}`
         )
     }, [])

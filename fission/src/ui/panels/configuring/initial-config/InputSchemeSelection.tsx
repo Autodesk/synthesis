@@ -1,10 +1,10 @@
-import { Divider, Stack, Typography } from "@mui/material"
+import { Button, Divider, Stack, Typography } from "@mui/material"
 import { useContext, useReducer } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { AddButton, DeleteButton, EditButton, SelectButton } from "@/ui/components/StyledComponents"
+import { AddButton, DeleteButton, EditButton, SelectButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { StateContext } from "@/ui/StateProvider"
 
 interface InputSchemeSelectionProps {
@@ -66,10 +66,16 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                     </Stack>
                 </Stack>
             ))}
-            {AddButton(() => {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, DefaultInputs.newBlankScheme)
-                onCreateNew?.()
-            })}
+            <Button
+                color="success"
+                variant="outlined"
+                onClick={() => {
+                    InputSystem.brainIndexSchemeMap.set(brainIndex, DefaultInputs.newBlankScheme)
+                    onCreateNew?.()
+                }}
+            >
+                {SynthesisIcons.ADD_LARGE}
+            </Button>
         </>
     )
 }
