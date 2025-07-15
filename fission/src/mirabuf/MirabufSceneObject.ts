@@ -44,6 +44,8 @@ import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import FieldMiraEditor from "./FieldMiraEditor"
 
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+
 const DEBUG_BODIES = false
 
 interface RnDebugMeshes {
