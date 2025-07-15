@@ -134,7 +134,6 @@ class InputSchemeManager {
                 result[scheme.schemeName] = { scheme, status: InputSchemeUseType.AVAILABLE }
             }
         })
-        console.log(result)
         return Object.values(result)
     }
 
