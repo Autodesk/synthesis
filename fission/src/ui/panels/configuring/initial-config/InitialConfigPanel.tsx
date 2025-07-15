@@ -1,5 +1,5 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSchemeManager, { InputSchemeUseType } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -58,7 +58,10 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemes[0]
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).filter(
+                scheme => scheme.status == InputSchemeUseType.AVAILABLE
+            )[0]?.scheme
+
             InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
 
             setSelectedScheme(scheme)

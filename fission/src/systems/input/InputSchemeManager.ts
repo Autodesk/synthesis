@@ -1,7 +1,9 @@
 import { random } from "@/util/Random"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import DefaultInputs from "./DefaultInputs"
-import InputSystem, { AxisInput, ButtonInput, Input } from "./InputSystem"
+import InputSystem, { AxisInput, ButtonInput, Input, KeyDescriptor } from "./InputSystem"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 
 export type InputScheme = {
     schemeName: string
@@ -9,8 +11,17 @@ export type InputScheme = {
     customized: boolean
     usesGamepad: boolean
     usesTouchControls: boolean
+    supportedDrivetrains: DriveType[]
     inputs: Input[]
 }
+
+export enum InputSchemeUseType {
+    IN_USE, // bound to a robot
+    CONFLICT, // has keys overlapping with a bound scheme
+    AVAILABLE, // no overlap and not bound
+}
+
+export type InputSchemeAvailability = { scheme: InputScheme; status: InputSchemeUseType }
 
 class InputSchemeManager {
     // References to the current custom schemes to avoid parsing every time they are requested
@@ -99,17 +110,52 @@ class InputSchemeManager {
     }
 
     /** Creates an array of every input scheme that is not currently in use by a robot */
-    public static get availableInputSchemes(): InputScheme[] {
+    private static get _availableInputSchemes(): InputSchemeAvailability[] {
         const allSchemes = this.allInputSchemes
 
-        // Remove schemes that are in use
-        const schemesInUse = Array.from(InputSystem.brainIndexSchemeMap.values())
-        return allSchemes.filter(scheme => !schemesInUse.includes(scheme))
+        // Remove schemes that have conflicts
+        const usedKeyMap = new Set<KeyDescriptor>()
+        const result: Record<string, InputSchemeAvailability> = {}
+        for (const scheme of InputSystem.brainIndexSchemeMap.values()) {
+            result[scheme.schemeName] = { scheme, status: InputSchemeUseType.IN_USE }
+            scheme?.inputs?.forEach(input => {
+                input.keysUsed.forEach(key => {
+                    if (key != null) {
+                        usedKeyMap.add(key)
+                    }
+                })
+            })
+        }
+
+        allSchemes.forEach(scheme => {
+            if (scheme.inputs.some(input => input.keysUsed.some(k => usedKeyMap.has(k)))) {
+                result[scheme.schemeName] ??= { scheme, status: InputSchemeUseType.CONFLICT }
+            } else {
+                result[scheme.schemeName] = { scheme, status: InputSchemeUseType.AVAILABLE }
+            }
+        })
+        console.log(result)
+        return Object.values(result)
+    }
+
+    /** Creates an array of every input scheme that is not currently in use by a robot */
+    public static availableInputSchemesByType(driveType?: DriveType): InputSchemeAvailability[] {
+        const allSchemes = this._availableInputSchemes
+        if (driveType == null) {
+            return allSchemes
+        }
+        return allSchemes.filter(entry => entry.scheme.supportedDrivetrains.includes(driveType))
+    }
+
+    /** Creates an array of every input scheme that is not currently in use by a robot */
+    public static availableInputSchemesByBrain(brainIndex: number): InputSchemeAvailability[] {
+        const driveType = SynthesisBrain.brainIndexMap.get(brainIndex)?.driveType
+        return this.availableInputSchemesByType(driveType)
     }
 
     /** @returns a random available robot name */
     public static get randomAvailableName(): string {
-        const usedNames = this.availableInputSchemes.map(s => s.schemeName)
+        const usedNames = this.allInputSchemes.map(s => s.schemeName)
 
         const randomName = () => {
             const index = Math.floor(random() * DefaultInputs.NAMES.length)
