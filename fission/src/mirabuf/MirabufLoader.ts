@@ -239,6 +239,7 @@ class MirabufCachingService {
                     : miraType == MiraType.FIELD
                       ? backUpFields[id].buffer
                       : backUpPieces[id].buffer
+
             const _name = map[key].name
             const _thumbnailStorageID = map[key].thumbnailStorageID
             const info: MirabufCacheInfo = {
@@ -412,11 +413,11 @@ class MirabufCachingService {
         backUpPieces = {}
     }
 
-    // Optional name for when assembly is being decoded anyway like in CacheAndGetLocal()
     private static async StoreInCache(
         key: string,
         miraBuff: ArrayBuffer,
         miraType?: MiraType,
+        // Optional name for when assembly is being decoded anyway like in CacheAndGetLocal()
         name?: string
     ): Promise<MirabufCacheInfo | undefined> {
         try {

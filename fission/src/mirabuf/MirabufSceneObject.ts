@@ -830,13 +830,14 @@ export async function CreateMirabuf(
             mainSceneObject,
         }
 
-    const gamePieces = await Promise.all(
-        parser.gamePieces
-            .map(async parser => {
+    const gamePieces = (
+        await Promise.all(
+            parser.gamePieces.map(async parser => {
                 // Cache the game pieces before exporting the scene objects
-                const serialized = JSON.stringify(parser.assembly)
-                const encoder = new TextEncoder()
-                const buffer = encoder.encode(serialized).buffer
+                console.log(`Game Piece: ${parser.assembly.info!.name}`)
+                const writer = mirabuf.Assembly.encode(parser.assembly)
+                let buffer = new Uint8Array(writer.len)
+                writer.bytes(buffer)
 
                 const cacheInfo = await MirabufCachingService.CacheLocal(buffer, MiraType.PIECE)
                 if (!cacheInfo) return
@@ -845,7 +846,7 @@ export async function CreateMirabuf(
                     await MirabufCachingService.CacheInfo(
                         cacheInfo.cacheKey,
                         MiraType.PIECE,
-                        assembly.info?.name ?? undefined
+                        parser.assembly.info?.name ?? undefined
                     )
 
                 return {
@@ -853,15 +854,12 @@ export async function CreateMirabuf(
                     cacheInfo,
                 }
             })
-            // This might not be valid because of async stuff
-            .filter(
-                (n): n is Promise<{ sceneObject: MirabufSceneObject; cacheInfo: MirabufCacheInfo }> => n != undefined
-            )
-    )
+        )
+    ).filter(n => n != undefined)
 
     return {
         mainSceneObject,
-        gamePieces: gamePieces,
+        gamePieces,
     }
 }
 
