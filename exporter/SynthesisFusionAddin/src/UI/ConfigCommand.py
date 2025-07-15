@@ -153,8 +153,11 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
 
         fullName: str = design.rootComponent.name
         versionMatch = re.search(r"v\d+", fullName)
-        strippedName = fullName[0 : versionMatch.start()].strip()
-        docName = (strippedName if versionMatch else fullName).replace(" ", "_")
+        if versionMatch:
+            strippedName: str = fullName[0 : versionMatch.start()].strip()
+        else:
+            strippedName = fullName
+        docName = strippedName.replace(" ", "_")
         docVersion = versionMatch.group() if versionMatch else "v0"
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
