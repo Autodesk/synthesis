@@ -834,10 +834,7 @@ export async function CreateMirabuf(
         await Promise.all(
             parser.gamePieces.map(async parser => {
                 // Cache the game pieces before exporting the scene objects
-                console.log(`Game Piece: ${parser.assembly.info!.name}`)
-                const writer = mirabuf.Assembly.encode(parser.assembly)
-                let buffer = new Uint8Array(writer.len)
-                writer.bytes(buffer)
+                const buffer = mirabuf.Assembly.encode(parser.assembly).finish()
 
                 const cacheInfo = await MirabufCachingService.CacheLocal(buffer, MiraType.PIECE)
                 if (!cacheInfo) return

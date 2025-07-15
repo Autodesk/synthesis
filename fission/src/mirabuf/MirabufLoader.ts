@@ -300,40 +300,40 @@ class MirabufCachingService {
      * @returns {Promise<mirabufAssembly | undefined>} Promise with the result of the promise. Assembly of the mirabuf file if successful, undefined if not.
      */
     public static async Get(id: MirabufCacheID, miraType: MiraType): Promise<mirabuf.Assembly | undefined> {
+        const cache =
+            miraType == MiraType.ROBOT ? backUpRobots : miraType == MiraType.FIELD ? backUpFields : backUpPieces
+
         try {
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
-            const cache =
-                miraType == MiraType.ROBOT ? backUpRobots : miraType == MiraType.FIELD ? backUpFields : backUpPieces
-            const buff =
-                cache[id]?.buffer ??
-                (await (async () => {
-                    const fileHandle = canOPFS
-                        ? await (
-                              miraType == MiraType.ROBOT
-                                  ? robotFolderHandle
-                                  : miraType == MiraType.FIELD
-                                    ? fieldFolderHandle
-                                    : pieceFolderHandle
-                          ).getFileHandle(id, {
-                              create: false,
-                          })
-                        : undefined
-                    return fileHandle ? await fileHandle.getFile().then(x => x.arrayBuffer()) : undefined
-                })())
+            const getOPFSBuffer = async () => {
+                const dirHandle =
+                    miraType == MiraType.ROBOT
+                        ? robotFolderHandle
+                        : miraType == MiraType.FIELD
+                          ? fieldFolderHandle
+                          : pieceFolderHandle
+                if (!canOPFS) return
 
-            // If we have buffer, get assembly
-            if (buff) {
-                const assembly = this.AssemblyFromBuffer(buff)
-                World.AnalyticsSystem?.Event("Cache Get", {
-                    key: id,
-                    type: miraType == MiraType.ROBOT ? "robot" : miraType == MiraType.FIELD ? "field" : "piece",
-                    assemblyName: assembly.info!.name!,
-                    fileSize: buff.byteLength,
+                const fileHandle = await dirHandle.getFileHandle(id, {
+                    create: false,
                 })
-                return assembly
-            } else {
-                console.error(`Failed to find arrayBuffer for id: ${id}`)
+                return await fileHandle.getFile().then(x => x.arrayBuffer())
             }
+
+            const buff = cache[id]?.buffer ?? (await getOPFSBuffer())
+            if (!buff) {
+                console.error(`Failed to find arrayBuffer for id: ${id}`)
+                return undefined
+            }
+
+            const assembly = this.AssemblyFromBuffer(buff)
+            World.AnalyticsSystem?.Event("Cache Get", {
+                key: id,
+                type: miraType == MiraType.ROBOT ? "robot" : miraType == MiraType.FIELD ? "field" : "piece",
+                assemblyName: assembly.info!.name!,
+                fileSize: buff.byteLength,
+            })
+            return assembly
         } catch (e) {
             console.error(`Failed to find file\n${e}`)
             return undefined
