@@ -1,11 +1,11 @@
+import { randomColor } from "@/util/Random"
 import { ThemeContext } from "../ThemeProvider"
 import { Box, Switch, Button, Stack, TextField, Typography } from "@mui/material"
 import type React from "react"
 import { useContext, useState } from "react"
+import { GiDiceEightFacesEight, GiPerspectiveDiceSix, GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 
-interface ThemeEditorProps {}
-
-export const ThemeEditorPanel: React.FC<ThemeEditorProps> = ({}) => {
+export const ThemeEditorPanel: React.FC = () => {
     const { mode, toggleColorMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =
         useContext(ThemeContext)
 
@@ -14,7 +14,7 @@ export const ThemeEditorPanel: React.FC<ThemeEditorProps> = ({}) => {
 
     return (
         <Stack gap={4}>
-            <Typography variant="h3">Theme Editor</Typography>
+            <Typography variant="h4">Theme Editor</Typography>
             <Stack direction="row" gap={2}>
                 <TextField
                     label="Primary Color"
@@ -52,11 +52,19 @@ export const ThemeEditorPanel: React.FC<ThemeEditorProps> = ({}) => {
                 />
             </Stack>
             <Button
+                startIcon={<GiPerspectiveDiceSixFacesOne />}
+                onClick={() => {
+                    setTempPrimary(randomColor())
+                    setTempSecondary(randomColor())
+                }}
+            >
+                Randomize
+            </Button>
+            <Button
                 onClick={() => {
                     setPrimaryColor(tempPrimary)
                     setSecondaryColor(tempSecondary)
                 }}
-                variant="contained"
             >
                 Apply
             </Button>

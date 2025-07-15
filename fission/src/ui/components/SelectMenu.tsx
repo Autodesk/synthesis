@@ -48,6 +48,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
             <Button
                 fullWidth={true}
                 color="secondary"
+                variant="outlined"
                 onClick={() => {
                     onSelected(value)
                 }}
@@ -165,30 +166,36 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
             {selectedOption === undefined && (
                 <>
                     {/** List of options */}
-                    {options.length > 0 ? (
-                        options.map((option, i) => {
-                            return (
-                                <OptionCard
-                                    value={option}
-                                    index={i}
-                                    onSelected={val => {
-                                        setSelectedOption(val)
-                                        onOptionSelected(val)
-                                    }}
-                                    key={option.name + i}
-                                    onDelete={onDelete ? () => onDelete(option) : undefined}
-                                    includeDelete={deleteCondition === undefined || deleteCondition(option)}
-                                />
-                            )
-                        })
-                    ) : (
-                        <>
-                            {/** No options available text */}
-                            <Typography variant="h5">{noOptionsText ?? "No options available!"}</Typography>
-                        </>
-                    )}
-                    {/** Add button */}
-                    {onAddClicked && AddButton(onAddClicked)}
+                    <Stack gap={2}>
+                        {options.length > 0 ? (
+                            options.map((option, i) => {
+                                return (
+                                    <OptionCard
+                                        value={option}
+                                        index={i}
+                                        onSelected={val => {
+                                            setSelectedOption(val)
+                                            onOptionSelected(val)
+                                        }}
+                                        key={option.name + i}
+                                        onDelete={onDelete ? () => onDelete(option) : undefined}
+                                        includeDelete={deleteCondition === undefined || deleteCondition(option)}
+                                    />
+                                )
+                            })
+                        ) : (
+                            <>
+                                {/** No options available text */}
+                                <Typography variant="h5">{noOptionsText ?? "No options available!"}</Typography>
+                            </>
+                        )}
+                        {/** Add button */}
+                        {onAddClicked && (
+                            <Button variant="outlined" color="success" onClick={onAddClicked}>
+                                {SynthesisIcons.ADD_LARGE}
+                            </Button>
+                        )}
+                    </Stack>
                 </>
             )}
         </>
