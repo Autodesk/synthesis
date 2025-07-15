@@ -7,7 +7,7 @@ import json
 import os
 import platform
 from dataclasses import dataclass, field, fields
-from typing import Any, List
+from typing import Any
 
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
@@ -40,7 +40,7 @@ class ExporterOptions:
     version: str | None = field(default=None)
     materials: int = field(default=0)
     exportMode: ExportMode = field(default=ExportMode.ROBOT)
-    wheels: List[Wheel] = field(default_factory=list)
+    wheels: list[Wheel] = field(default_factory=list)
     joints: list[Joint] = field(default_factory=list)
     gamepieces: list[Gamepiece] = field(default_factory=list)
     tags: dict[str, str] = field(default_factory=dict)
