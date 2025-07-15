@@ -1,6 +1,5 @@
 import { Button, Card, CardActions, CardContent } from "@mui/material"
-import React from "react"
-import { useContext } from "react"
+import React, { useContext } from "react"
 import Draggable from "react-draggable"
 import {
     CloseType,
@@ -18,7 +17,7 @@ export type PanelImplProps = Partial<{
 interface PanelProps {
     children?: React.FC<PanelImplProps>
     panel: PanelType
-    parent?: PanelType
+    parent?: PanelType | ModalType
 }
 
 // TODO: I don't like this

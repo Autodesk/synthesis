@@ -1,5 +1,5 @@
 import { useSnackbar } from "notistack"
-import type { EnqueueSnackbar, VariantType } from "notistack"
+import type { VariantType } from "notistack"
 import { createContext, useCallback, useState } from "react"
 import type React from "react"
 import type { ReactElement, ReactNode } from "react"
@@ -88,17 +88,17 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const openModal: OpenModalFn = useCallback(
         (content: ReactElement, parent?: UIScreen, props: UIScreenProps = {}) => {
             const id = uuidv4()
-            const modal = {
+            const newModal = {
                 id,
                 parent,
                 content,
                 props,
             } as Modal
             modal?.props.onClose?.(CloseType.Overwrite)
-            setModal(modal)
+            setModal(newModal)
             return id
         },
-        []
+        [modal]
     )
 
     const openPanel: OpenPanelFn = useCallback(
@@ -114,10 +114,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             setPanels([...panels, panel])
             return id
         },
-        []
+        [panels]
     )
 
     const closeCallbacks = (elem: Panel | Modal, closeType: CloseType) => {
+        console.log(elem)
         elem.props.onClose?.(closeType)
         switch (closeType) {
             case CloseType.Accept:
@@ -134,7 +135,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const closeModal = useCallback((closeType: CloseType) => {
         if (modal) closeCallbacks(modal, closeType)
         setModal(undefined)
-    }, [])
+    }, [modal])
 
     const closePanel = useCallback((id: string, closeType: CloseType) => {
         setPanels(p => {
@@ -142,7 +143,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             if (panel) closeCallbacks(panel, closeType)
             return p.filter((pnl: Panel) => pnl.id !== id)
         })
-    }, [])
+    }, [panels])
 
     const addToast = useCallback((variant: VariantType, title: string) => {
         enqueueSnackbar(title, { variant })
