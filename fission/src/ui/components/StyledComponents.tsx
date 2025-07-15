@@ -129,7 +129,7 @@ export const CustomTooltip = (text: string) => {
                 size="small"
                 disableRipple
                 sx={{
-                    "color": "#ffffff77",
+                    // "color": "#ffffff77",
                     "&:hover": {
                         borderStyle: "solid",
                         borderColor: "grey",

@@ -1,8 +1,9 @@
 import * as THREE from "three"
-import { mirabuf } from "../proto/mirabuf"
-import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
-import { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
+import type { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
+import type { mirabuf } from "../proto/mirabuf"
+import type MirabufParser from "./MirabufParser.ts"
+import { ParseErrorSeverity } from "./MirabufParser.ts"
 
 type MirabufPartInstanceGUID = string
 

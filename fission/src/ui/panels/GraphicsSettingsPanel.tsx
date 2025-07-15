@@ -45,7 +45,7 @@ const GraphicsSettingsPanel: React.FC<GraphicsSettingsPanelProps> = ({ panel }) 
                         valueLabelFormat={(val, _idx) => val.toFixed(2)}
                         onChange={(_, value: number | number[]) => {
                             setLightIntensity(value as number)
-                            World.SceneRenderer.setLightIntensity(value as number)
+                            World.sceneRenderer.setLightIntensity(value as number)
                         }}
                         step={0.25}
                     />
@@ -58,7 +58,7 @@ const GraphicsSettingsPanel: React.FC<GraphicsSettingsPanelProps> = ({ panel }) 
                         defaultChecked={fancyShadows}
                         onChange={(_, checked) => {
                             setFancyShadows(checked)
-                            World.SceneRenderer.ChangeLighting(checked)
+                            World.sceneRenderer.ChangeLighting(checked)
                         }}
                     />
                 }
@@ -74,7 +74,7 @@ const GraphicsSettingsPanel: React.FC<GraphicsSettingsPanelProps> = ({ panel }) 
                                 value={maxFar}
                                 onChange={(_, value: number | number[]) => {
                                     setMaxFar(value as number)
-                                    World.SceneRenderer.changeCSMSettings({
+                                    World.sceneRenderer.changeCSMSettings({
                                         maxFar: value as number,
 
                                         lightIntensity,
@@ -97,7 +97,7 @@ const GraphicsSettingsPanel: React.FC<GraphicsSettingsPanelProps> = ({ panel }) 
                                 value={cascades}
                                 onChange={(_, value: number | number[]) => {
                                     setCascades(value as number)
-                                    World.SceneRenderer.changeCSMSettings({
+                                    World.sceneRenderer.changeCSMSettings({
                                         cascades: value as number,
 
                                         maxFar,
@@ -116,11 +116,11 @@ const GraphicsSettingsPanel: React.FC<GraphicsSettingsPanelProps> = ({ panel }) 
                         control={
                             <Slider
                                 min={MIN_SHADOW_MAP_SIZE}
-                                max={World.SceneRenderer.renderer.capabilities.maxTextureSize}
+                                max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
                                 value={shadowMapSize}
                                 onChange={(_, value: number | number[]) => {
                                     setShadowMapSize(value as number)
-                                    World.SceneRenderer.changeCSMSettings({
+                                    World.sceneRenderer.changeCSMSettings({
                                         shadowMapSize: value as number,
 
                                         maxFar,
@@ -142,7 +142,7 @@ const GraphicsSettingsPanel: React.FC<GraphicsSettingsPanelProps> = ({ panel }) 
                                 setLightIntensity(5)
                                 setCascades(4)
 
-                                World.SceneRenderer.changeCSMSettings({
+                                World.sceneRenderer.changeCSMSettings({
                                     shadowMapSize,
                                     maxFar,
                                     lightIntensity,

@@ -356,7 +356,7 @@ const WiringPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
-        const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+        const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
         if (miraObjs.length > 0) {
             return miraObjs[0][1] as MirabufSceneObject
         }
@@ -384,7 +384,7 @@ const WiringPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
             }
             console.debug(`${flows.length} Flows Successfully Compiled!`)
 
-            selectedAssembly.UpdateSimConfig(simConfig)
+            selectedAssembly.updateSimConfig(simConfig)
         }
     }, [selectedAssembly, simConfig])
 

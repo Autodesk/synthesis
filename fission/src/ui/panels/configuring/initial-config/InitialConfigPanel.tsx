@@ -25,10 +25,10 @@ const InitialConfigPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 
@@ -41,7 +41,7 @@ const InitialConfigPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             setConfigurationType("ROBOTS")
-            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+            const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
             if (brainIndex === undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
@@ -58,13 +58,13 @@ const InitialConfigPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
     }, [closePanel, panel, targetAssembly])
 
     const closeDelete = useCallback(() => {
-        if (targetAssembly) World.SceneRenderer.RemoveSceneObject(targetAssembly.id)
+        if (targetAssembly) World.sceneRenderer.removeSceneObject(targetAssembly.id)
 
         if (panel) closePanel(panel.id, CloseType.Cancel)
     }, [closePanel, panel, targetAssembly])
 
     const brainIndex = useMemo(() => {
-        return SynthesisBrain.GetBrainIndex(targetAssembly)
+        return SynthesisBrain.getBrainIndex(targetAssembly)
     }, [targetAssembly])
 
     return (

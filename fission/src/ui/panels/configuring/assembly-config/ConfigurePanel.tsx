@@ -13,7 +13,7 @@ import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { StateContext } from "@/ui/StateProvider"
-import { UIContext, type UIScreen } from "@/ui/UIProvider"
+import { CloseType, UIContext, type UIScreen } from "@/ui/UIProvider"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
@@ -171,7 +171,7 @@ const ConfigurePanel: React.FC<PanelImplProps> = ({ panel, parent, props }) => {
         // TODO:
         if (panel) {
             panel.props.onAccept = () => {
-                pendingDeletes.forEach(id => World.SceneRenderer.RemoveSceneObject(id))
+                pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
                 setPendingDeletes([])
 
                 InputSchemeManager.saveSchemes()

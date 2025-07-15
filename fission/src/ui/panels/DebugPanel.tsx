@@ -9,19 +9,19 @@ import MirabufCachingService, {
 } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
-import { Random } from "@/util/Random"
-import { Global_AddToast } from "../components/GlobalUIControls"
+import { random } from "@/util/Random"
+import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
 import { UIContext } from "../UIProvider"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
 
 function ToggleDragMode() {
-    const dragSystem = World.DragModeSystem
+    const dragSystem = World.dragModeSystem
     if (dragSystem) {
         dragSystem.enabled = !dragSystem.enabled
         const status = dragSystem.enabled ? "enabled" : "disabled"
-        Global_AddToast?.<"info">("Drag Mode", `Drag mode has been ${status}`)
+        globalAddToast<"info">("Drag Mode", `Drag mode has been ${status}`)
     }
 }
 
@@ -44,8 +44,8 @@ const DebugPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
                 <Typography variant="h5">Generic</Typography>
                 <Button
                     onClick={() => {
-                        const type = (["info", "warning", "error"] as const)[Math.floor(Random() * 3)]
-                        Global_AddToast?.<typeof type>(type, "This is a test toast to test the toast system")
+                        const type = (["info", "warning", "error"] as const)[Math.floor(random() * 3)]
+                        globalAddToast<typeof type>(type, "This is a test toast to test the toast system")
                     }}
                     className="w-full"
                 >
@@ -83,8 +83,8 @@ const DebugPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
                 <Typography variant="h5">Caching Services</Typography>
                 <Button
                     onClick={() => {
-                        console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
-                        console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
+                        console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
+                        console.log(MirabufCachingService.getCacheMap(MiraType.FIELD))
                         console.log(hashedMiraRobots)
                         console.log(hashedMiraFields)
                     }}
@@ -92,7 +92,7 @@ const DebugPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
                 >
                     Print Mira Maps
                 </Button>
-                <Button onClick={() => MirabufCachingService.RemoveAll()} className="w-full">
+                <Button onClick={() => MirabufCachingService.removeAll()} className="w-full">
                     Clear Mira Cache
                 </Button>
 

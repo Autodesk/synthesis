@@ -1,45 +1,41 @@
-import { Modal } from "@/components/Modal"
+
 import { Panel } from "@/components/Panel"
 import { useContext, useEffect } from "react"
 import type React from "react"
 import { ThemeContext } from "./ThemeProvider"
 import { UIContext } from "./UIProvider"
-import AutoTestPanel from "./panels/AutoTestPanel"
-import ScoreboardPanel from "./panels/ScoreboardPanel"
-import PokerPanel from "./panels/PokerPanel"
-import ChooseSchemePanel from "./panels/configuring/ChooseSchemePanel"
-import WiringPanel from "./panels/simulation/WiringPanel"
 import ConfigurePanel from "./panels/configuring/assembly-config/ConfigurePanel"
 import MirabufCachingService, { MirabufCacheInfo, MiraType } from "@/mirabuf/MirabufLoader"
 import World from "@/systems/World"
-import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { Modal } from "./components/Modal"
 
 export type UIRendererProps = object // TODO: add actual props or delete
 
 async function spawnCachedMira(info: MirabufCacheInfo, type: MiraType) {
     // If spawning a field, then remove all other fields
     if (type === MiraType.FIELD) {
-        World.SceneRenderer.RemoveAllFields()
+        World.sceneRenderer.removeAllFields()
     }
 
-    World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    await MirabufCachingService.Get(info.id, type)
+    World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
+    await MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                CreateMirabuf(assembly).then(x => {
+                createMirabuf(assembly).then(x => {
                     if (x) {
-                        World.SceneRenderer.RegisterSceneObject(x)
+                        World.sceneRenderer.registerSceneObject(x)
                     }
                 })
 
-                if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
+                if (!info.name) MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
             } else {
                 console.error("Failed to spawn robot")
             }
         })
         .finally(() => {
-            setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
         })
 }
 
@@ -49,12 +45,16 @@ export const UIRenderer: React.FC<UIRendererProps> = () => {
     const { mode, toggleColorMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =
         useContext(ThemeContext)
 
+    // useEffect(() => {
+    //     openModal(<MainMenuModal />)
+    // }, [])
+
     // TODO: figure this out
 
     // TODO: remove default panel
     // biome-ignore lint/correctness/useExhaustiveDependencies: adding deps will trigger a refresh loop
     useEffect(() => {
-        MirabufCachingService.CacheRemote(
+        MirabufCachingService.cacheRemote(
             "https://synthesis.autodesk.com/api/mira/robots/Dozer_v9.mira",
             MiraType.ROBOT
         ).then(cacheInfo => {

@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Stack, ToggleButton, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Box, Button, Divider, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import type React from "react";
 import {
 	type ReactNode,
@@ -11,11 +11,11 @@ import {
 } from "react";
 import {
 	type Data,
-	GetMirabufFiles,
-	HasMirabufFiles,
+	getMirabufFiles,
+	hasMirabufFiles,
 	MirabufFilesStatusUpdateEvent,
 	MirabufFilesUpdateEvent,
-	RequestMirabufFiles,
+	requestMirabufFiles,
 } from "@/aps/APSDataManagement";
 import MirabufCachingService, {
 	backUpFields,
@@ -25,13 +25,13 @@ import MirabufCachingService, {
 	type MirabufRemoteInfo,
 	MiraType,
 } from "@/mirabuf/MirabufLoader";
-import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject";
+import { createMirabuf } from "@/mirabuf/MirabufSceneObject";
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem";
 import { SoundPlayer } from "@/systems/sound/SoundPlayer";
 import World from "@/systems/World";
 import {
-	Global_AddToast,
-	Global_OpenPanel,
+	globalAddToast,
+	globalOpenPanel,
 } from "@/ui/components/GlobalUIControls";
 import type { PanelImplProps } from "@/ui/components/Panel";
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData";
@@ -95,7 +95,7 @@ export type MiraManifest = {
 function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
 	return Object.values(
 		canOPFS
-			? MirabufCachingService.GetCacheMap(miraType)
+			? MirabufCachingService.getCacheMap(miraType)
 			: miraType === MiraType.ROBOT
 				? backUpRobots
 				: backUpFields,
@@ -109,43 +109,43 @@ function spawnCachedMira(
 ) {
 	// If spawning a field, then remove all other fields
 	if (type === MiraType.FIELD) {
-		World.SceneRenderer.RemoveAllFields();
+		World.sceneRenderer.removeAllFields();
 	}
 
 	if (!progressHandle) {
 		progressHandle = new ProgressHandle(info.name ?? info.cacheKey);
 	}
 
-	World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_SPAWNING);
-	MirabufCachingService.Get(info.id, type)
+	World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING);
+	MirabufCachingService.get(info.id, type)
 		.then((assembly) => {
 			if (assembly) {
-				CreateMirabuf(assembly).then((x) => {
+				createMirabuf(assembly).then((x) => {
 					if (x) {
-						World.SceneRenderer.RegisterSceneObject(x);
-						progressHandle.Done();
+						World.sceneRenderer.registerSceneObject(x);
+						progressHandle.done();
 
-						Global_OpenPanel?.(<InitialConfigPanel />);
+						globalOpenPanel(<InitialConfigPanel />);
 					} else {
-						progressHandle.Fail();
+						progressHandle.fail();
 					}
 				});
 
 				if (!info.name)
-					MirabufCachingService.CacheInfo(
+					MirabufCachingService.cacheInfo(
 						info.cacheKey,
 						type,
 						assembly.info?.name ?? undefined,
 					);
 			} else {
-				progressHandle.Fail();
+				progressHandle.fail();
 				console.error("Failed to spawn robot");
 			}
 		})
-		.catch(() => progressHandle.Fail())
+		.catch(() => progressHandle.fail())
 		.finally(() => {
 			setTimeout(
-				() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING),
+				() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING),
 				500,
 			);
 		});
@@ -200,17 +200,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 	});
 
 	useEffect(() => {
-		if (!HasMirabufFiles()) {
-			RequestMirabufFiles();
+		if (!hasMirabufFiles()) {
+			requestMirabufFiles();
 		} else {
-			setFiles(GetMirabufFiles());
+			setFiles(getMirabufFiles());
 		}
 	}, []);
 
 	useLayoutEffect(() => {
 		if (unconfirmedImport) {
 			closePanel(panel!.id, CloseType.Cancel);
-			Global_AddToast?.(
+			globalAddToast(
 				"warning",
 				"You're already importing a model!\nConfirm that one before importing another.",
 			);
@@ -229,7 +229,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 			fetch(`/api/mira/manifest.json`)
 				.then((x) => x.json())
 				.then((x) => {
-					const map = MirabufCachingService.GetCacheMap(MiraType.ROBOT);
+					const map = MirabufCachingService.getCacheMap(MiraType.ROBOT);
 					const robots: MirabufRemoteInfo[] = [];
 					for (const src of x.robots) {
 						if (typeof src === "string") {
@@ -280,17 +280,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 	const selectRemote = useCallback(
 		(info: MirabufRemoteInfo, type: MiraType) => {
 			const status = new ProgressHandle(info.displayName);
-			status.Update("Downloading from Synthesis...", 0.05);
+			status.update("Downloading from Synthesis...", 0.05);
 
-			MirabufCachingService.CacheRemote(info.src, type)
+			MirabufCachingService.cacheRemote(info.src, type)
 				.then((cacheInfo) => {
 					if (cacheInfo) {
 						spawnCachedMira(cacheInfo, type, status);
 					} else {
-						status.Fail("Failed to cache");
+						status.fail("Failed to cache");
 					}
 				})
-				.catch(() => status.Fail());
+				.catch(() => status.fail());
 
 			if (panel) closePanel(panel.id, CloseType.Cancel);
 		},
@@ -301,17 +301,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 	const cacheRemoteOnly = useCallback(
 		(info: MirabufRemoteInfo, type: MiraType) => {
 			const status = new ProgressHandle(info.displayName);
-			status.Update("Downloading from Synthesis...", 0.05);
+			status.update("Downloading from Synthesis...", 0.05);
 
-			MirabufCachingService.CacheRemote(info.src, type)
+			MirabufCachingService.cacheRemote(info.src, type)
 				.then((cacheInfo) => {
 					if (cacheInfo) {
-						status.Done();
+						status.done();
 					} else {
-						status.Fail("Failed to cache");
+						status.fail("Failed to cache");
 					}
 				})
-				.catch(() => status.Fail());
+				.catch(() => status.fail());
 		},
 		[],
 	);
@@ -319,17 +319,17 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 	const selectAPS = useCallback(
 		(data: Data, type: MiraType) => {
 			const status = new ProgressHandle(data.attributes.displayName ?? data.id);
-			status.Update("Downloading from APS...", 0.05);
+			status.update("Downloading from APS...", 0.05);
 
-			MirabufCachingService.CacheAPS(data, type)
+			MirabufCachingService.cacheAPS(data, type)
 				.then((cacheInfo) => {
 					if (cacheInfo) {
 						spawnCachedMira(cacheInfo, type, status);
 					} else {
-						status.Fail("Failed to cache");
+						status.fail("Failed to cache");
 					}
 				})
-				.catch(() => status.Fail());
+				.catch(() => status.fail());
 
 			if (panel) closePanel(panel.id, CloseType.Cancel);
 		},
@@ -345,14 +345,14 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 					ItemCard({
 						name: info.name || info.cacheKey || "Unnamed Robot",
 						id: info.id,
-						primaryButtonNode: SynthesisIcons.AddLarge,
+						primaryButtonNode: SynthesisIcons.ADD_LARGE,
 						primaryOnClick: () => {
 							console.log(`Selecting cached robot: ${info.cacheKey}`);
 							selectCache(info, MiraType.ROBOT);
 						},
 						secondaryOnClick: () => {
 							console.log(`Deleting cache of: ${info.cacheKey}`);
-							MirabufCachingService.Remove(
+							MirabufCachingService.remove(
 								info.cacheKey,
 								info.id,
 								MiraType.ROBOT,
@@ -374,14 +374,14 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 					ItemCard({
 						name: info.name || info.cacheKey || "Unnamed Field",
 						id: info.id,
-						primaryButtonNode: SynthesisIcons.AddLarge,
+						primaryButtonNode: SynthesisIcons.ADD_LARGE,
 						primaryOnClick: () => {
 							console.log(`Selecting cached field: ${info.cacheKey}`);
 							selectCache(info, MiraType.FIELD);
 						},
 						secondaryOnClick: () => {
 							console.log(`Deleting cache of: ${info.cacheKey}`);
-							MirabufCachingService.Remove(
+							MirabufCachingService.remove(
 								info.cacheKey,
 								info.id,
 								MiraType.FIELD,
@@ -405,7 +405,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 				ItemCard({
 					name: path.displayName,
 					id: path.src,
-					primaryButtonNode: SynthesisIcons.DownloadLarge,
+					primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
 					primaryOnClick: () => {
 						console.log(`Selecting remote: ${path}`);
 						selectRemote(path, MiraType.ROBOT);
@@ -425,7 +425,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 				ItemCard({
 					name: path.displayName,
 					id: path.src,
-					primaryButtonNode: SynthesisIcons.DownloadLarge,
+					primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
 					primaryOnClick: () => {
 						console.log(`Selecting remote: ${path}`);
 						selectRemote(path, MiraType.FIELD);
@@ -466,7 +466,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 					ItemCard({
 						name: `${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber !== undefined ? ` (v${file.attributes.versionNumber})` : ""}`,
 						id: file.id,
-						primaryButtonNode: SynthesisIcons.DownloadLarge,
+						primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
 						primaryOnClick: () => {
 							console.debug(file.raw);
 							selectAPS(file, viewType);
@@ -542,7 +542,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
 						: filesStatus.message}
 				</Typography>
 				{hubElements && filesStatus.isDone && (
-					RefreshButton(() => RequestMirabufFiles())
+					RefreshButton(() => requestMirabufFiles())
 				)}
 			</Stack>
 			<Divider />

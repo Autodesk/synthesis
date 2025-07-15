@@ -30,19 +30,19 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { CustomOrbitControls } from "@/systems/scene/CameraControls"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-// import {
-//     ConfigMode,
-//     setNextConfigurePanelSettings,
-// } from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
-import { Global_OpenPanel } from "@/ui/components/GlobalUIControls"
-// import {
-//     ConfigurationType,
-//     setSelectedConfigurationType,
-// } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
-// import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import {
+    ConfigurationType,
+    ConfigMode,
+    ConfigurePanelSettings,
+} from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import FieldMiraEditor from "./FieldMiraEditor"
+import React from "react"
+import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 
 const DEBUG_BODIES = false
 
@@ -53,7 +53,7 @@ interface RnDebugMeshes {
 
 /**
  * The goal with the spotlight assembly is to provide a contextual target assembly
- * the user would like to modifiy. Generally this will be which even assembly was
+ * the user would like to modify. Generally this will be which even assembly was
  * last spawned in, however, systems (such as the configuration UI) can elect
  * assemblies to be in the spotlight when moving from interface to interface.
  */
@@ -68,6 +68,38 @@ export function getSpotlightAssembly(): MirabufSceneObject | undefined {
     return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
 }
 
+/**
+ * Interface for UI actions that can be registered with MirabufSceneObject
+ */
+interface UIActionHandlers {
+    openMovePanel?: (assembly: MirabufSceneObject) => void
+    openConfigurePanel?: (assembly: MirabufSceneObject) => void
+    openAutoTestPanel?: () => void
+}
+
+/**
+ * Global registry for UI action handlers
+ * This allows React components to register handlers with MirabufSceneObject
+ */
+class UIActionRegistry {
+    private static handlers: UIActionHandlers = {}
+
+    public static registerHandlers(handlers: UIActionHandlers): void {
+        this.handlers = { ...this.handlers, ...handlers }
+    }
+
+    public static getHandlers(): UIActionHandlers {
+        return this.handlers
+    }
+
+    public static clearHandlers(): void {
+        this.handlers = {}
+    }
+}
+
+// Export the registry so UI components can use it
+export { UIActionRegistry }
+
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _assemblyName: string
     private _mirabufInstance: MirabufInstance
@@ -80,7 +112,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _intakePreferences: IntakePreferences | undefined
     private _ejectorPreferences: EjectorPreferences | undefined
-    // private _simConfigData: SimConfigData | undefined
+    private _simConfigData: SimConfigData | undefined
 
     private _fieldPreferences: FieldPreferences | undefined
 
@@ -133,9 +165,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._ejectorPreferences
     }
 
-    // get simConfigData() {
-    //     return this._simConfigData
-    // }
+    get simConfigData() {
+        return this._simConfigData
+    }
 
     get fieldPreferences() {
         return this._fieldPreferences
@@ -523,7 +555,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const now = Date.now()
             if (now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS) {
                 console.log(`Configure an ejectable first.`)
-                globalAddToast("info", "Configure Ejectable", "Configure an ejectable first.")
+                globalAddToast<"info">("Configure Ejectable", "Configure an ejectable first.")
                 this._lastEjectableToastTime = now
             }
 
@@ -655,7 +687,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
                 this._intakePreferences.showZoneAlways = false
             }
             this._ejectorPreferences = robotPrefs.ejector
-            // this._simConfigData = robotPrefs.simConfig
+            this._simConfigData = robotPrefs.simConfig
         }
 
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
@@ -679,7 +711,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public updateSimConfig(config: SimConfigData | undefined) {
         const robotPrefs = PreferencesSystem.getRobotPreferences(this.assemblyName)
         if (robotPrefs) {
-            // this._simConfigData = robotPrefs.simConfig = config
+            this._simConfigData = robotPrefs.simConfig = config
             PreferencesSystem.setRobotPreferences(this.assemblyName, robotPrefs)
             PreferencesSystem.savePreferences()
             ;(this._brain as WPILibBrain)?.loadSimConfig?.()
@@ -716,31 +748,29 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             items: [],
         }
 
+        const uiHandlers = UIActionRegistry.getHandlers()
+
         data.items.push(
             {
                 name: "Move",
                 func: () => {
-                    setSelectedConfigurationType(
-                        this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
-                    )
-                    setNextConfigurePanelSettings({
-                        configMode: ConfigMode.MOVE,
-                        selectedAssembly: this,
-                    })
-                    globalOpenPanel("configure")
+                    if (uiHandlers.openMovePanel) {
+                        uiHandlers.openMovePanel(this)
+                    } else {
+                        // Fallback to basic panel opening
+                        globalOpenPanel(React.createElement(ConfigurePanel))
+                    }
                 },
             },
             {
                 name: "Configure",
                 func: () => {
-                    setSelectedConfigurationType(
-                        this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
-                    )
-                    setNextConfigurePanelSettings({
-                        configMode: undefined,
-                        selectedAssembly: this,
-                    })
-                    globalOpenPanel("configure")
+                    if (uiHandlers.openConfigurePanel) {
+                        uiHandlers.openConfigurePanel(this)
+                    } else {
+                        // Fallback to basic panel opening
+                        globalOpenPanel(React.createElement(ConfigurePanel))
+                    }
                 },
             }
         )
@@ -749,7 +779,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             data.items.push({
                 name: "Auto Testing",
                 func: () => {
-                    globalOpenPanel("auto-test")
+                    if (uiHandlers.openAutoTestPanel) {
+                        uiHandlers.openAutoTestPanel()
+                    } else {
+                        // Fallback to basic panel opening
+                        globalOpenPanel(React.createElement(AutoTestPanel))
+                    }
                 },
             })
         }

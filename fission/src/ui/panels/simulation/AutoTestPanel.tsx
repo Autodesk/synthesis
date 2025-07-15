@@ -5,7 +5,6 @@ import type React from "react"
 import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { type AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
@@ -13,7 +12,7 @@ import World from "@/systems/World"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { UIContext } from "@/ui/UIProvider"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { JoltMat44_ThreeMatrix4, ThreeQuaternion_JoltQuat, ThreeVector3_JoltRVec3 } from "@/util/TypeConversions"
+import { convertJoltMat44ToThreeMatrix4, convertThreeQuaternionToJoltQuat, convertThreeVector3ToJoltRVec3 } from "@/util/TypeConversions"
 
 type StagingProps = {
     state: "Staging"
@@ -126,18 +125,18 @@ export const RedAllianceToggleButton = styled(ToggleButton)({
 
 function captureBodies(): BodyCapture[] {
     const captures: BodyCapture[] = []
-    World.SceneRenderer.sceneObjects.forEach(sceneObj => {
+    World.sceneRenderer.sceneObjects.forEach(sceneObj => {
         if (sceneObj instanceof MirabufSceneObject) {
             sceneObj.mechanism.nodeToBody.forEach(bodyId => {
-                const body = World.PhysicsSystem.GetBody(bodyId)
+                const body = World.physicsSystem.getBody(bodyId)
                 const transform = body.GetWorldTransform()
                 const translation = new THREE.Vector3(0, 0, 0)
                 const rotation = new THREE.Quaternion(0, 0, 0, 1)
-                JoltMat44_ThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
+                convertJoltMat44ToThreeMatrix4(transform).decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
                 captures.push({
                     id: bodyId,
-                    pos: ThreeVector3_JoltRVec3(translation),
-                    rot: ThreeQuaternion_JoltQuat(rotation),
+                    pos: convertThreeVector3ToJoltRVec3(translation),
+                    rot: convertThreeQuaternionToJoltQuat(rotation),
                 })
             })
         }
@@ -148,14 +147,14 @@ function captureBodies(): BodyCapture[] {
 function resetBodies(captures: BodyCapture[]) {
     const zero = new JOLT.Vec3(0, 0, 0)
     captures.forEach(x => {
-        World.PhysicsSystem.SetBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
+        World.physicsSystem.setBodyPositionRotationAndVelocity(x.id, x.pos, x.rot, zero, zero)
     })
     JOLT.destroy(zero)
 }
 
 function End({ assembly, setStaging, captures }: EndProps) {
     useEffect(() => {
-        SimDriverStation.SetMode(RobotSimMode.Disabled)
+        SimDriverStation.setMode(RobotSimMode.DISABLED)
     }, [])
 
     const reset = useCallback(() => {
@@ -174,13 +173,13 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
     const [remaining, setRemaining] = useState<number>(countdown)
 
     useEffect(() => {
-        World.PhysicsSystem.ReleasePause(AUTO_TEST_PAUSE_REF)
-        SimDriverStation.SetMode(RobotSimMode.Auto)
+        World.physicsSystem.releasePause(AUTO_TEST_PAUSE_REF)
+        SimDriverStation.setMode(RobotSimMode.AUTO)
     }, [])
 
     const end = useCallback(() => {
-        SimDriverStation.SetMode(RobotSimMode.Disabled)
-        World.PhysicsSystem.HoldPause(AUTO_TEST_PAUSE_REF)
+        SimDriverStation.setMode(RobotSimMode.DISABLED)
+        World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
         setEnd?.({ assembly: assembly, captures: captures, state: "End" })
     }, [assembly, captures, setEnd])
 
@@ -225,8 +224,8 @@ function Staging({ assembly, setPlaying }: StagingProps) {
     const [gameData, setGameData] = useState<string>("")
 
     const next = useCallback(() => {
-        SimDriverStation.SetGameData(gameData)
-        SimDriverStation.SetStation(station)
+        SimDriverStation.setGameData(gameData)
+        SimDriverStation.setStation(station)
 
         const captures = captureBodies()
         setPlaying?.({ assembly, captures, countdown, state: "Playing" })
@@ -240,7 +239,7 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                     value={countdown}
                     exclusive
                     onChange={(_, v) => setCountdown(v)}
-                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                    {...SoundPlayer.buttonSoundEffects()}
                     className="self-center"
                 >
                     <ToggleButton value={5}>5</ToggleButton>
@@ -259,7 +258,7 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                     value={station}
                     exclusive
                     onChange={(_, v) => setStation(v)}
-                    onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                    {...SoundPlayer.buttonSoundEffects()}
                     className="self-center"
                 >
                     <RedAllianceToggleButton value="red1">1</RedAllianceToggleButton>
@@ -295,21 +294,21 @@ const AutoTestPanel: React.FC = () => {
 
     const assembly = useMemo(
         () =>
-            [...World.SceneRenderer.sceneObjects.values()].find(
+            [...World.sceneRenderer.sceneObjects.values()].find(
                 x => (x as MirabufSceneObject).brain?.brainType === "wpilib"
             ) as MirabufSceneObject,
         []
     )
 
     useEffect(() => {
-        SimDriverStation.SetMode(RobotSimMode.Disabled)
+        SimDriverStation.setMode(RobotSimMode.DISABLED)
         return () => {
-            SimDriverStation.SetMode(RobotSimMode.Disabled)
+            SimDriverStation.setMode(RobotSimMode.DISABLED)
         }
     }, [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(AUTO_TEST_PAUSE_REF)
+        World.physicsSystem.holdPause(AUTO_TEST_PAUSE_REF)
 
         setActiveProps({
             state: "Staging",
@@ -318,7 +317,7 @@ const AutoTestPanel: React.FC = () => {
         })
 
         return () => {
-            World.PhysicsSystem.ReleasePause(AUTO_TEST_PAUSE_REF)
+            World.physicsSystem.releasePause(AUTO_TEST_PAUSE_REF)
         }
     }, [assembly])
 

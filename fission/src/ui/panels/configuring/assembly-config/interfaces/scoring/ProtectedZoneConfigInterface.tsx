@@ -12,8 +12,8 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { Array_ThreeMatrix4, JoltMat44_ThreeMatrix4, ThreeMatrix4_Array } from "@/util/TypeConversions"
-import { DeltaFieldTransforms_PhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
+import { convertArrayToThreeMatrix4, convertJoltMat44ToThreeMatrix4, convertThreeMatrix4ToArray } from "@/util/TypeConversions"
+import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import { Button, Checkbox, FormControlLabel, Input, Stack, TextField } from "@mui/material"
 
@@ -73,10 +73,10 @@ function save(
     scale.z = Math.abs(scale.z)
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
-    const fieldTransformation = JoltMat44_ThreeMatrix4(World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform())
+    const fieldTransformation = convertJoltMat44ToThreeMatrix4(World.physicsSystem.getBody(nodeBodyId).GetWorldTransform())
     const deltaTransformation = gizmoTransformation.premultiply(fieldTransformation.invert())
 
-    zone.deltaTransformation = ThreeMatrix4_Array(deltaTransformation)
+    zone.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
     zone.name = name
     zone.alliance = alliance
     zone.parentNode = selectedNode
@@ -139,10 +139,10 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
 
     /** Holds a pause for the duration of the interface component */
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [])
 
@@ -169,7 +169,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
-                const deltaTransformation = Array_ThreeMatrix4(selectedZone.deltaTransformation)
+                const deltaTransformation = convertArrayToThreeMatrix4(selectedZone.deltaTransformation)
 
                 let nodeBodyId = selectedField.mechanism.nodeToBody.get(
                     selectedZone.parentNode ?? selectedField.rootNodeId
@@ -180,15 +180,15 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 }
 
                 /** W = L x R. See save() for math details */
-                const fieldTransformation = JoltMat44_ThreeMatrix4(
-                    World.PhysicsSystem.GetBody(nodeBodyId).GetWorldTransform()
+                const fieldTransformation = convertJoltMat44ToThreeMatrix4(
+                    World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
-                const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
+                const props = deltaFieldTransformsVisualProperties(deltaTransformation, fieldTransformation)
 
                 gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
                 gizmo.obj.rotation.setFromQuaternion(props.rotation)
                 gizmo.obj.scale.set(props.scale.x, props.scale.y, props.scale.z)
-                selectedField.RemoveProtectedZoneObject(selectedZone) // avoid rendering twice
+                selectedField.removeProtectedZoneObject(selectedZone) // avoid rendering twice
             }
 
             return (
@@ -214,7 +214,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 return false
             }
 
-            const assoc = World.PhysicsSystem.GetBodyAssociation(body) as RigidNodeAssociate
+            const assoc = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate
             if (!assoc || assoc?.sceneObject !== selectedField) {
                 return false
             }

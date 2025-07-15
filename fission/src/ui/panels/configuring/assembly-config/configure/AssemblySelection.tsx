@@ -47,13 +47,13 @@ const AssemblySelection: React.FC<AssemblySelectionProps> = ({
     const { openPanel, closePanel } = useContext(UIContext)
 
     const robots = useMemo(() => {
-        return [...World.SceneRenderer.sceneObjects.values()]
+        return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
             .filter(x => !pendingDeletes.includes(x.id))
     }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
-        return [...World.SceneRenderer.sceneObjects.values()]
+        return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
             .filter(x => !pendingDeletes.includes(x.id))
     }, [u, pendingDeletes])
@@ -75,7 +75,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps> = ({
                 update()
             }}
             onAddClicked={() => {
-                openPanel(<ImportMirabufPanel />, panel)
+                openPanel(<ImportMirabufPanel />, undefined)
                 closePanel(panel.id, CloseType.Overwrite)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}

@@ -41,7 +41,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
         (vel: number, force: number) => {
             if (driver instanceof WheelDriver) {
                 const wheelDrivers = robot?.mechanism
-                    ? World.SimulationSystem.GetSimulationLayer(robot.mechanism)?.drivers.filter(
+                    ? World.simulationSystem.getSimulationLayer(robot.mechanism)?.drivers.filter(
                           x => x instanceof WheelDriver
                       )
                     : undefined

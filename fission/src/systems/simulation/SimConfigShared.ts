@@ -23,15 +23,15 @@ import {
     receiverTypeMap,
     supplierTypeMap,
 } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { Random } from "@/util/Random"
+import { random } from "@/util/Random"
 import type { XYPosition } from "@xyflow/react"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
-    [NoraTypes.Number]: "#5f60ff",
-    [NoraTypes.Number2]: "#2bc275",
-    [NoraTypes.Number3]: "#ffc21a",
-    [NoraTypes.Unknown]: "#bebebe",
+    [NoraTypes.NUMBER]: "#5f60ff",
+    [NoraTypes.NUMBER2]: "#2bc275",
+    [NoraTypes.NUMBER3]: "#ffc21a",
+    [NoraTypes.UNKNOWN]: "#bebebe",
 }
 
 let id = 0
@@ -40,7 +40,7 @@ export function genId(): number {
 }
 
 export function genRandomId(): string {
-    return Math.floor(Random() * Number.MAX_SAFE_INTEGER).toString()
+    return Math.floor(random() * Number.MAX_SAFE_INTEGER).toString()
 }
 
 const savedToGenMap = new Map<string, string>()
@@ -96,22 +96,22 @@ export type FlowControlsProps = {
 }
 
 export function getDriverSignals(assembly: MirabufSceneObject): Driver[] {
-    const simLayer = World.SimulationSystem.GetSimulationLayer(assembly.mechanism)
+    const simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)
     return simLayer?.drivers ?? []
 }
 
 export function getStimulusSignals(assembly: MirabufSceneObject): Stimulus[] {
-    const simLayer = World.SimulationSystem.GetSimulationLayer(assembly.mechanism)
+    const simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)
     return simLayer?.stimuli ?? []
 }
 
 export function getCANMotors(): [string, Map<string, number | boolean | string>][] {
-    const cans = getSimMap()?.get(SimType.CANMotor) ?? new Map<string, Map<string, number>>()
+    const cans = getSimMap()?.get(SimType.CAN_MOTOR) ?? new Map<string, Map<string, number>>()
     return [...cans.entries()].filter(([_, data]) => data.get("<init")).reverse()
 }
 
 export function getCANEncoder(): [string, Map<string, string | boolean | number>][] {
-    return [...(getSimMap()?.get(SimType.CANEncoder)?.entries() ?? [])]
+    return [...(getSimMap()?.get(SimType.CAN_ENCODER)?.entries() ?? [])]
 }
 
 export function getPWMDevices(): [string, Map<string, string | boolean | number>][] {
@@ -123,7 +123,7 @@ export function getPWMDevices(): [string, Map<string, string | boolean | number>
 }
 
 export function getAccelDevices(): [string, Map<string, string | boolean | number>][] {
-    return [...(getSimMap()?.get(SimType.Accel)?.entries() ?? [])]
+    return [...(getSimMap()?.get(SimType.ACCELEROMETER)?.entries() ?? [])]
 }
 
 export function getDIODevices(): [string, Map<string, string | boolean | number>][] {
@@ -223,7 +223,7 @@ export class SimConfig {
                     originType: x.id.type,
                     originId: x.idStr,
 
-                    displayName: x.DisplayName(),
+                    displayName: x.displayName(),
                     enabled: true,
 
                     many: hasNoraAverageFunc(x.getReceiverType()),
@@ -242,7 +242,7 @@ export class SimConfig {
                     originType: x.id.type,
                     originId: x.idStr,
 
-                    displayName: x.DisplayName(),
+                    displayName: x.displayName(),
                     enabled: true,
 
                     many: hasNoraAverageFunc(x.getSupplierType()),
@@ -282,8 +282,8 @@ export class SimConfig {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                noraType: supplierTypeMap[SimType.CANMotor]!,
-                originType: SimType.CANMotor,
+                noraType: supplierTypeMap[SimType.CAN_MOTOR]!,
+                originType: SimType.CAN_MOTOR,
                 originId: id,
 
                 displayName: displayNameCAN(id),
@@ -299,14 +299,14 @@ export class SimConfig {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                noraType: receiverTypeMap[SimType.CANEncoder]!,
-                originType: SimType.CANEncoder,
+                noraType: receiverTypeMap[SimType.CAN_ENCODER]!,
+                originType: SimType.CAN_ENCODER,
                 originId: id,
 
                 displayName: displayNameCAN(id),
                 enabled: true,
 
-                many: hasNoraAverageFunc(receiverTypeMap[SimType.CANEncoder]!),
+                many: hasNoraAverageFunc(receiverTypeMap[SimType.CAN_ENCODER]!),
                 isSource: false,
             }
             this.AddHandle(config, handle)
@@ -333,14 +333,14 @@ export class SimConfig {
             const handle: HandleInfo = {
                 id: "",
                 nodeId: NODE_ID_ROBOT_IO,
-                noraType: receiverTypeMap[SimType.Accel]!,
-                originType: SimType.Accel,
+                noraType: receiverTypeMap[SimType.ACCELEROMETER]!,
+                originType: SimType.ACCELEROMETER,
                 originId: id,
 
                 displayName: displayNameAccel(id),
                 enabled: data.get("<init") === true,
 
-                many: hasNoraAverageFunc(receiverTypeMap[SimType.Accel]!),
+                many: hasNoraAverageFunc(receiverTypeMap[SimType.ACCELEROMETER]!),
                 isSource: false,
             }
             this.AddHandle(config, handle)
@@ -416,7 +416,7 @@ export class SimConfig {
         const node: NodeInfo = {
             id: nodeId,
             type: WiringNode.name,
-            position: { x: 300 + Random() * 100, y: -100 + Random() * 50 },
+            position: { x: 300 + random() * 100, y: -100 + random() * 50 },
             funcType: FuncType.Junction,
             targets: [],
             sources: [],
@@ -426,8 +426,8 @@ export class SimConfig {
         const targetHandle: HandleInfo = {
             id: "",
             nodeId: nodeId,
-            noraType: NoraTypes.Number,
-            originType: SimType.SimDevice,
+            noraType: NoraTypes.NUMBER,
+            originType: SimType.SIM_DEVICE,
             originId: nodeId,
 
             displayName: "In",
@@ -442,8 +442,8 @@ export class SimConfig {
         const sourceHandle: HandleInfo = {
             id: "",
             nodeId: nodeId,
-            noraType: NoraTypes.Number,
-            originType: SimType.SimDevice,
+            noraType: NoraTypes.NUMBER,
+            originType: SimType.SIM_DEVICE,
             originId: nodeId,
 
             displayName: "Out",
@@ -483,7 +483,7 @@ export class SimConfig {
             id: "",
             nodeId: nodeId,
             noraType: targetNoraType,
-            originType: SimType.SimDevice,
+            originType: SimType.SIM_DEVICE,
             originId: `target_${nodeId}`,
 
             displayName: "In",
@@ -500,7 +500,7 @@ export class SimConfig {
                 id: "",
                 nodeId: nodeId,
                 noraType: sourceType,
-                originType: SimType.SimDevice,
+                originType: SimType.SIM_DEVICE,
                 originId: `source_${i}_${nodeId}`,
 
                 displayName: `Out ${i + 1}`,
@@ -542,7 +542,7 @@ export class SimConfig {
             id: "",
             nodeId: nodeId,
             noraType: sourceNoraType,
-            originType: SimType.SimDevice,
+            originType: SimType.SIM_DEVICE,
             originId: `source_${nodeId}`,
 
             displayName: "Out",
@@ -559,7 +559,7 @@ export class SimConfig {
                 id: "",
                 nodeId: nodeId,
                 noraType: targetType,
-                originType: SimType.SimDevice,
+                originType: SimType.SIM_DEVICE,
                 originId: `target_${i}_${nodeId}`,
 
                 displayName: `In ${i + 1}`,
@@ -638,7 +638,7 @@ export class SimConfig {
     }
 
     public static Compile(config: SimConfigData, assembly: MirabufSceneObject): SimFlow[] | undefined {
-        const simLayer = World.SimulationSystem.GetSimulationLayer(assembly.mechanism)
+        const simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)
         if (!simLayer) {
             console.error("No sim layer found")
             return undefined
@@ -683,17 +683,17 @@ export class SimConfig {
         let receiver: SimReceiver | undefined = undefined
         if (targetHandle.nodeId === NODE_ID_ROBOT_IO) {
             switch (targetHandle.originType) {
-                case SimType.CANEncoder: {
-                    receiver = SimCANEncoder.GenReceiver(targetHandle.originId)
+                case SimType.CAN_ENCODER: {
+                    receiver = SimCANEncoder.genReceiver(targetHandle.originId)
                     break
                 }
-                case SimType.Accel: {
-                    receiver = SimAccel.GenReceiver(targetHandle.originId)
+                case SimType.ACCELEROMETER: {
+                    receiver = SimAccel.genReceiver(targetHandle.originId)
                     break
                 }
             }
         } else if (targetHandle.nodeId === NODE_ID_SIM_IN) {
-            receiver = simLayer.GetDriver(targetHandle.originId)
+            receiver = simLayer.getDriver(targetHandle.originId)
         } else {
             receiver = {
                 getReceiverType: () => targetHandle.noraType,
@@ -718,12 +718,12 @@ export class SimConfig {
                 case NODE_ID_ROBOT_IO: {
                     // Get supplier from robot output
                     switch (sourceHandle.originType) {
-                        case SimType.CANMotor: {
-                            suppliers.push(SimCANMotor.GenSupplier(sourceHandle.originId))
+                        case SimType.CAN_MOTOR: {
+                            suppliers.push(SimCANMotor.genSupplier(sourceHandle.originId))
                             break
                         }
                         case SimType.PWM: {
-                            suppliers.push(SimPWM.GenSupplier(sourceHandle.originId))
+                            suppliers.push(SimPWM.genSupplier(sourceHandle.originId))
                             break
                         }
                     }
@@ -731,7 +731,7 @@ export class SimConfig {
                 }
                 case NODE_ID_SIM_OUT: {
                     // Get supplier from simulation output
-                    const stim: SimSupplier | undefined = simLayer.GetStimuli(sourceHandle.originId)
+                    const stim: SimSupplier | undefined = simLayer.getStimuli(sourceHandle.originId)
                     if (stim) suppliers.push(stim)
                     break
                 }

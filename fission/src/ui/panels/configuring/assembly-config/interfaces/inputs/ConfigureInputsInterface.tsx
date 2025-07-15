@@ -8,6 +8,7 @@ import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { StateContext } from "@/ui/StateProvider"
 
 /** If a scheme is assigned to a robot, find the name of that robot */
 const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
@@ -31,8 +32,9 @@ class SchemeSelectionOption extends SelectMenuOption {
 
 const ConfigureInputsInterface: React.FC = () => {
     const { openModal } = useContext(UIContext)
+    const { selectedScheme: currentSelectedScheme } = useContext(StateContext)
 
-    const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(getSelectedScheme())
+    const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(currentSelectedScheme)
     const [schemes, setSchemes] = useState<InputScheme[]>(InputSchemeManager.allInputSchemes)
 
     const saveEvent = useCallback(() => {

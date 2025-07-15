@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import InputSystem, {
     AxisInput,
     ButtonInput,
-    EmptyModifierState,
+    EMPTY_MODIFIER_STATE,
     type Input,
     type ModifierState,
 } from "@/systems/input/InputSystem"
@@ -94,7 +94,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
     const [chosenTouchControlsAxis, setChosenTouchControlsAxis] = useState<number>(-1)
     const [chosenKey, setChosenKey] = useState<string>("")
-    const [modifierState, setModifierState] = useState<ModifierState>(EmptyModifierState)
+    const [modifierState, setModifierState] = useState<ModifierState>(EMPTY_MODIFIER_STATE)
     const [chosenButton, setChosenButton] = useState<number>(-1)
     const [useGamepadButtons, setUseGamepadButtons] = useState<boolean>(
         input instanceof AxisInput ? input.useGamepadButtons : false

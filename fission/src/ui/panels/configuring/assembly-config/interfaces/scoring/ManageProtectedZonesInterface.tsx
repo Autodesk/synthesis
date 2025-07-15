@@ -15,7 +15,7 @@ const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: Mirabuf
     if (fieldPrefs) fieldPrefs.protectedZones = zones
 
     PreferencesSystem.savePreferences()
-    field.UpdateProtectedZones()
+    field.updateProtectedZones()
 }
 
 type ProtectedZoneRowProps = {
@@ -75,10 +75,10 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
     useEffect(() => {
         saveZones(zones, selectedField)
 
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [selectedField, zones])
 

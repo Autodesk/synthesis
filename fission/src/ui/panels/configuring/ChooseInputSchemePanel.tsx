@@ -11,7 +11,6 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { AddButtonInteractiveColor, DeleteButton, EditButton, SelectButton } from "@/ui/components/StyledComponents"
 import { StateContext } from "@/ui/StateProvider"
 import { CloseType, type Panel, UIContext } from "../../UIProvider"
-import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurationType"
 import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
 
@@ -21,7 +20,7 @@ interface ChooseSchemePanelProps {
 
 const ChooseInputSchemePanel: React.FC<ChooseSchemePanelProps> = ({ panel }) => {
     const { openModal, openPanel, closePanel } = useContext(UIContext)
-    const { setSelectedScheme } = useContext(StateContext)
+    const { setSelectedScheme, setConfigurationType } = useContext(StateContext)
 
     const targetAssembly = useMemo(() => {
         const assembly = getSpotlightAssembly()
@@ -35,14 +34,14 @@ const ChooseInputSchemePanel: React.FC<ChooseSchemePanelProps> = ({ panel }) => 
         if (targetAssembly) return
 
         return () => {
-            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+            const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
             if (brainIndex === undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
             const scheme = InputSchemeManager.availableInputSchemes[0]
 
-            setSelectedConfigurationType(ConfigurationType.INPUTS)
+            setConfigurationType("INPUTS")
             // TODO:
             setSelectedScheme(scheme)
         }
@@ -50,7 +49,7 @@ const ChooseInputSchemePanel: React.FC<ChooseSchemePanelProps> = ({ panel }) => 
     }, [])
 
     const brainIndex = useMemo(() => {
-        return SynthesisBrain.GetBrainIndex(targetAssembly)
+        return SynthesisBrain.getBrainIndex(targetAssembly)
     }, [targetAssembly])
 
     return (

@@ -1,26 +1,41 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useState } from "react";
 
-import { Box, styled, alpha, Button, Stack, Typography, Divider } from "@mui/material"
-import { AddButtonInteractiveColor, CustomTooltip, DeleteButton, Spacer, SynthesisIcons } from "./StyledComponents"
+import {
+	Box,
+	styled,
+	alpha,
+	Button,
+	Stack,
+	Typography,
+	Divider,
+	IconButton,
+} from "@mui/material";
+import {
+	AddButtonInteractiveColor,
+	CustomTooltip,
+	DeleteButton,
+	Spacer,
+	SynthesisIcons,
+} from "./StyledComponents";
 
 /** Extend this to make a type that contains custom data */
 export class SelectMenuOption {
-    id: string
-    name: string
-    tooltipText?: string
-    constructor(id: string, name: string, tooltipText?: string) {
-        this.id = id
-        this.name = name
-        this.tooltipText = tooltipText
-    }
+	id: string;
+	name: string;
+	tooltipText?: string;
+	constructor(id: string, name: string, tooltipText?: string) {
+		this.id = id;
+		this.name = name;
+		this.tooltipText = tooltipText;
+	}
 }
 
 interface OptionCardProps {
-    value: SelectMenuOption
-    index: number
-    onSelected: (val: SelectMenuOption) => void
-    onDelete?: () => void
-    includeDelete: boolean
+	value: SelectMenuOption;
+	index: number;
+	onSelected: (val: SelectMenuOption) => void;
+	onDelete?: () => void;
+	includeDelete: boolean;
 }
 
 /**
@@ -34,52 +49,79 @@ interface OptionCardProps {
  *
  * @returns {JSX.Element} The rendered OptionCard component.
  */
-const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDelete, includeDelete }) => {
-    return (
-        <Stack textAlign="center" key={value.name} minHeight="30px" overflow="hidden" position="relative">
-            {/* Box containing the label */}
-            <Stack position="absolute" alignSelf="center" width="100%">
-                <Typography key={value.name + index} variant="h5" className="text-left mt-[4pt] mb-[2pt] mx-[5%]">
-                    {value.name}
-                </Typography>
-            </Stack>
+const OptionCard: React.FC<OptionCardProps> = ({
+	value,
+	index,
+	onSelected,
+	onDelete,
+	includeDelete,
+}) => {
+	return (
+		<Stack
+			direction="row"
+			textAlign="center"
+			key={value.name}
+			minHeight="30px"
+			overflow="hidden"
+			position="relative"
+		>
+			{/* Box containing the label */}
+			<Button
+				fullWidth={true}
+				color="secondary"
+				onClick={() => {
+					onSelected(value);
+				}}
+				className={value.name}
+				sx={{
+					borderColor: "#888888",
+					textTransform: "none",
+					justifyContent: "flex-start",
+				}}
+				id={`select-button-${value.name}`}
+			>
+				<Typography
+					key={value.name + index}
+					variant="h5"
+					className="text-left mt-[4pt] mb-[2pt] mx-[5%]"
+				>
+					{value.name}
+				</Typography>
+			</Button>
 
-            {/* Button used for selecting a parent (shows up as an outline) */}
-            <Button
-                fullWidth={true}
-                onClick={() => {
-                    onSelected(value)
-                }}
-                className={value.name}
-                sx={{ borderColor: "#888888" }}
-                id={`select-button-${value.name}`}
-            />
-            {value.tooltipText && CustomTooltip(value.tooltipText)}
-            {/** Delete button only if onDelete is defined */}
-            {onDelete && includeDelete && (
-                <>
-                    {Spacer(0, 10)}
-                    {DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")}
-                </>
-            )}
-        </Stack>
-    )
-}
+			{/* Button used for selecting a parent (shows up as an outline) */}
+			{value.tooltipText && CustomTooltip(value.tooltipText)}
+			{/** Delete button only if onDelete is defined */}
+			{onDelete && includeDelete && (
+				<>
+					{Spacer(0, 10)}
+					{/*DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")&*/}
+					<Button
+						color="error"
+						onClick={onDelete !== undefined ? onDelete : () => {}}
+					>
+						{SynthesisIcons.DELETE_LARGE}
+					</Button>
+				</>
+			)}
+		</Stack>
+	);
+};
 
 interface SelectMenuProps {
-    options: SelectMenuOption[]
-    onOptionSelected: (val: SelectMenuOption | undefined) => void
+	options: SelectMenuOption[];
+	onOptionSelected: (val: SelectMenuOption | undefined) => void;
 
-    // Function to return a default value
-    defaultSelectedOption?: SelectMenuOption | undefined
-    defaultHeaderText: string
-    noOptionsText?: string
-    indentation?: number
-    onDelete?: (val: SelectMenuOption) => void | undefined
+	// Function to return a default value
+	defaultSelectedOption?: SelectMenuOption | undefined;
+	defaultHeaderText: string;
+	noOptionsText?: string;
+	indentation?: number;
+	onDelete?: (val: SelectMenuOption) => void | undefined;
 
-    // If false, this menu option will not have a delete button
-    deleteCondition?: (val: SelectMenuOption) => boolean
-    onAddClicked?: () => void
+	// If false, this menu option will not have a delete button
+	deleteCondition?: (val: SelectMenuOption) => boolean;
+	onAddClicked?: () => void;
 }
 
 /**
@@ -98,90 +140,104 @@ interface SelectMenuProps {
  * @returns {JSX.Element} The rendered SelectMenu component.
  */
 const SelectMenu: React.FC<SelectMenuProps> = ({
-    options,
-    onOptionSelected,
-    defaultSelectedOption,
-    defaultHeaderText,
-    noOptionsText,
-    indentation,
-    onDelete,
-    deleteCondition,
-    onAddClicked,
+	options,
+	onOptionSelected,
+	defaultSelectedOption,
+	defaultHeaderText,
+	noOptionsText,
+	indentation,
+	onDelete,
+	deleteCondition,
+	onAddClicked,
 }) => {
-    const [selectedOption, setSelectedOption] = useState<SelectMenuOption | undefined>(defaultSelectedOption)
+	const [selectedOption, setSelectedOption] = useState<
+		SelectMenuOption | undefined
+	>(defaultSelectedOption);
 
-    // I have no idea why, but this would actually update state to default selection.
-    useEffect(() => {
-        setSelectedOption(defaultSelectedOption)
-    }, [defaultSelectedOption])
+	// I have no idea why, but this would actually update state to default selection.
+	useEffect(() => {
+		setSelectedOption(defaultSelectedOption);
+	}, [defaultSelectedOption]);
 
-    // If the selected option no longer exists as an option, deselect it
-    useEffect(() => {
-        if (selectedOption && !options.some(o => o.id === selectedOption.id)) {
-            setSelectedOption(undefined)
-            onOptionSelected(undefined)
-        }
-    }, [options, onOptionSelected, selectedOption])
+	// If the selected option no longer exists as an option, deselect it
+	useEffect(() => {
+		if (selectedOption && !options.some((o) => o.id === selectedOption.id)) {
+			setSelectedOption(undefined);
+			onOptionSelected(undefined);
+		}
+	}, [options, onOptionSelected, selectedOption]);
 
-    return (
-        <>
-            {/** Box containing the menu header */}
-            <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
-                <Box width={`${20 * (indentation ?? 0)}px`} />
+	return (
+		<>
+			{/** Box containing the menu header */}
+			<Stack
+				direction="row"
+				textAlign={"center"}
+				minHeight={"30px"}
+				key="selected-item"
+			>
+				{/** Back arrow button when an option is selected */}
+				{selectedOption !== undefined && (
+					<Button
+						startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
+						onClick={() => {
+							setSelectedOption(undefined);
+							onOptionSelected(undefined);
+						}}
+						id="select-menu-back-button"
+					/>
+				)}
 
-                {/** Back arrow button when an option is selected */}
-                {selectedOption !== undefined && (
-                    <Button
-                        startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
-                        onClick={() => {
-                            setSelectedOption(undefined)
-                            onOptionSelected(undefined)
-                        }}
-                        id="select-menu-back-button"
-                    />
-                )}
+				{/** Label with either the header text, or the name of the selected option if an option is selected */}
+				<Stack alignSelf={"center"}>
+					<Typography
+						variant="h5"
+						className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
+					>
+						{selectedOption !== undefined
+							? selectedOption.name
+							: defaultHeaderText}
+					</Typography>
+				</Stack>
+			</Stack>
+			<Divider />
 
-                {/** Label with either the header text, or the name of the selected option if an option is selected */}
-                <Stack alignSelf={"center"}>
-                    <Box width="8px" />
-                    <Typography variant="h5" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
-                    </Typography>
-                </Stack>
-            </Stack>
-            <Divider />
+			{selectedOption === undefined && (
+				<>
+					{/** List of options */}
+					{options.length > 0 ? (
+						options.map((option, i) => {
+							return (
+								<OptionCard
+									value={option}
+									index={i}
+									onSelected={(val) => {
+										setSelectedOption(val);
+										onOptionSelected(val);
+									}}
+									key={option.name + i}
+									onDelete={onDelete ? () => onDelete(option) : undefined}
+									includeDelete={
+										deleteCondition === undefined || deleteCondition(option)
+									}
+								/>
+							);
+						})
+					) : (
+						<>
+							{/** No options available text */}
+							<Typography variant="h5">
+								{noOptionsText ?? "No options available!"}
+							</Typography>
+						</>
+					)}
+					{/** Add button */}
+					{onAddClicked &&
+						AddButtonInteractiveColor(onAddClicked, "select-menu-add-button")}
+				</>
+			)}
+		</>
+	);
+};
 
-            {selectedOption === undefined && (
-                <>
-                    {/** List of options */}
-                    {options.length > 0 ? (
-                        options.map((option, i) => {
-                            return (
-                                <OptionCard
-                                    value={option}
-                                    index={i}
-                                    onSelected={val => {
-                                        setSelectedOption(val)
-                                        onOptionSelected(val)
-                                    }}
-                                    key={option.name + i}
-                                    onDelete={onDelete ? () => onDelete(option) : undefined}
-                                    includeDelete={deleteCondition === undefined || deleteCondition(option)}
-                                />
-                            )
-                        })
-                    ) : (
-                        <>
-                            {/** No options available text */}
-                            <Typography variant="h5">{noOptionsText ?? "No options available!"}</Typography>
-                        </>
-                    )}
-                    {/** Add button */}
-                    {onAddClicked && AddButtonInteractiveColor(onAddClicked, "select-menu-add-button")}
-                </>
-            )}
-        </>
-    )
-}
-
-export default SelectMenu
+export default SelectMenu;

@@ -80,10 +80,10 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
     useEffect(() => {
         saveZones(zones, selectedField)
 
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_CONFIG)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_CONFIG)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_CONFIG)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_CONFIG)
         }
     }, [selectedField, zones])
 

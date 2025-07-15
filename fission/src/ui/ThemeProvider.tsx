@@ -17,25 +17,20 @@ export const ThemeContext = createContext({
 })
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
-    const [mode, setMode] = useState<PaletteMode>("light")
-    const [primaryColor, setPrimaryColor] = useState("#1976d2")
-    const [secondaryColor, setSecondaryColor] = useState("#dc004e")
-
+    const [mode, setMode] = useState<PaletteMode>("dark")
     const theme = useMemo(
         () =>
             createTheme({
                 palette: {
                     mode,
-                    primary: {
-                        main: primaryColor,
-                    },
-                    secondary: {
-                        main: secondaryColor,
-                    },
                 },
             }),
-        [mode, primaryColor, secondaryColor]
+        [mode]
     )
+
+    const [primaryColor, setPrimaryColor] = useState(theme.palette.primary.dark)
+    const [secondaryColor, setSecondaryColor] = useState(theme.palette.secondary.dark)
+
 
     const themeContextValue = useMemo(
         () => ({
