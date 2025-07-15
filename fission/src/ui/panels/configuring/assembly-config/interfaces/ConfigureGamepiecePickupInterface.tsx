@@ -72,7 +72,9 @@ function save(
     gizmo.obj.matrixWorld.decompose(translation, rotation, new THREE.Vector3(1, 1, 1))
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, new THREE.Vector3(1, 1, 1))
-    const robotTransformation = convertJoltMat44ToThreeMatrix4(World.physicsSystem.getBody(nodeBodyId).GetWorldTransform())
+    const robotTransformation = convertJoltMat44ToThreeMatrix4(
+        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+    )
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
     selectedRobot.intakePreferences.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
@@ -138,7 +140,9 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
-                const deltaTransformation = convertArrayToThreeMatrix4(selectedRobot.intakePreferences!.deltaTransformation)
+                const deltaTransformation = convertArrayToThreeMatrix4(
+                    selectedRobot.intakePreferences!.deltaTransformation
+                )
 
                 let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
                     selectedRobot.intakePreferences!.parentNode ?? selectedRobot.rootNodeId

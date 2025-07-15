@@ -1,34 +1,39 @@
-import { Box, Button, Divider, styled, IconButton, Tooltip, type ButtonProps, IconButtonProps, Stack, Typography } from "@mui/material"
-import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
-import { HiDownload } from "react-icons/hi"
-import { AiOutlineInfoCircle } from "react-icons/ai"
-import { BiRefresh } from "react-icons/bi"
-import { AiFillWarning } from "react-icons/ai"
-import { BsCodeSquare } from "react-icons/bs"
-import { GiSteeringWheel } from "react-icons/gi"
-import { AiOutlineDoubleRight } from "react-icons/ai"
-import { GrConnect } from "react-icons/gr"
 import InfoIcon from "@mui/icons-material/Info"
-
 import {
+    Box,
+    Button,
+    type ButtonProps,
+    IconButton,
+    type IconButtonProps,
+    Stack,
+    Tooltip,
+    Typography,
+} from "@mui/material"
+import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
+import { BiRefresh } from "react-icons/bi"
+import { BsCodeSquare } from "react-icons/bs"
+import {
+    FaAngleRight,
+    FaArrowLeft,
+    FaBasketball,
+    FaBug,
+    FaCar,
+    FaChessBoard,
+    FaFileImport,
+    FaGamepad,
     FaGear,
     FaMagnifyingGlass,
-    FaPlus,
-    FaGamepad,
-    FaBasketball,
-    FaFileImport,
-    FaWrench,
-    FaScrewdriverWrench,
-    FaQuestion,
-    FaXmark,
-    FaChessBoard,
-    FaCar,
-    FaArrowLeft,
     FaMinus,
-    FaBug,
-    FaAngleRight,
+    FaPlus,
+    FaQuestion,
+    FaScrewdriverWrench,
+    FaWrench,
+    FaXmark,
 } from "react-icons/fa6"
-// import { colorNameToVar } from "../ThemeContext"
+import { GiSteeringWheel } from "react-icons/gi"
+import { GrConnect } from "react-icons/gr"
+import { HiDownload } from "react-icons/hi"
+import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
@@ -86,44 +91,84 @@ export const Spacer = (heightPx?: number, widthPx?: number) => {
     return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
 }
 
-export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick }) => {
-    return <Button onClick={onClick} color="success">{children}</Button>
+export const PositiveButton: React.FC<ButtonProps> = ({ children, onClick, ...props }) => {
+    return (
+        <Button onClick={onClick} {...props} color="success">
+            {children}
+        </Button>
+    )
 }
 
-export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClick }) => {
-    return <IconButton onClick={onClick} color="success">{children}</IconButton>
+export const PositiveIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => {
+    return (
+        <IconButton onClick={onClick} {...props} color="success">
+            {children}
+        </IconButton>
+    )
 }
 
-export const DownloadButton = (onClick: () => void) => {
-    return <PositiveIconButton onClick={onClick}>{SynthesisIcons.DELETE_LARGE}</PositiveIconButton>
+export const DownloadButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.DELETE_LARGE}
+        </PositiveIconButton>
+    )
 }
 
-export const AddButton = (onClick: () => void) => {
-    return <PositiveIconButton onClick={onClick}>{SynthesisIcons.ADD_LARGE}</PositiveIconButton>
+export const AddButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.ADD_LARGE}
+        </PositiveIconButton>
+    )
 }
 
-export const SelectButton = (onClick: () => void) => {
-    return <PositiveIconButton onClick={onClick}>{SynthesisIcons.SELECT_LARGE}</PositiveIconButton>
+export const SelectButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.SELECT_LARGE}
+        </PositiveIconButton>
+    )
 }
 
-export const EditButton = (onClick: () => void) => {
-    return <PositiveIconButton onClick={onClick}>{SynthesisIcons.EDIT_LARGE}</PositiveIconButton>
+export const EditButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <PositiveIconButton onClick={onClick} {...props}>
+            {SynthesisIcons.EDIT_LARGE}
+        </PositiveIconButton>
+    )
 }
 
-export const NegativeButton: React.FC<ButtonProps> = ({ children, onClick, id }) => {
-    return <Button onClick={onClick} id={id} color="error">{children}</Button>
+export const NegativeButton: React.FC<ButtonProps> = ({ children, onClick, id, ...props }) => {
+    return (
+        <Button onClick={onClick} {...props} id={id} color="error">
+            {children}
+        </Button>
+    )
 }
 
-export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClick }) => {
-    return <IconButton onClick={onClick} color="error">{children}</IconButton>
+export const NegativeIconButton: React.FC<IconButtonProps> = ({ children, onClick, ...props }) => {
+    return (
+        <IconButton onClick={onClick} {...props} color="error">
+            {children}
+        </IconButton>
+    )
 }
 
-export const DeleteButton = (onClick: () => void, id?: string) => {
-    return <NegativeIconButton onClick={onClick} id={id}>{SynthesisIcons.DELETE_LARGE}</NegativeIconButton>
+export const DeleteButton = (onClick: () => void, id?: string, props: IconButtonProps = {}) => {
+    return (
+        <NegativeIconButton onClick={onClick} id={id} {...props}>
+            {SynthesisIcons.DELETE_LARGE}
+        </NegativeIconButton>
+    )
 }
 
-export const RefreshButton = (onClick: () => void) => {
-    return <IconButton onClick={onClick}>{SynthesisIcons.REFRESH_LARGE}</IconButton>
+export const RefreshButton = (onClick: () => void, props: IconButtonProps = {}) => {
+    return (
+        <IconButton onClick={onClick} {...props}>
+            {SynthesisIcons.REFRESH_LARGE}
+        </IconButton>
+    )
 }
 
 export const CustomTooltip = (text: string) => {

@@ -66,7 +66,9 @@ function save(
     }
 
     const gizmoTransformation = gizmo.obj.matrixWorld
-    const robotTransformation = convertJoltMat44ToThreeMatrix4(World.physicsSystem.getBody(nodeBodyId).GetWorldTransform())
+    const robotTransformation = convertJoltMat44ToThreeMatrix4(
+        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+    )
     const deltaTransformation = gizmoTransformation.premultiply(robotTransformation.invert())
 
     selectedRobot.ejectorPreferences.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)
@@ -112,7 +114,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
         return new THREE.Mesh(
             new THREE.ConeGeometry(0.1, 0.4, 4).rotateX(Math.PI / 2.0).translate(0, 0, 0.2),
             // TODO: dynamic color
-            World.sceneRenderer.createToonMaterial(convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 }))
+            World.sceneRenderer.createToonMaterial(
+                convertReactRgbaColorToThreeColor({ r: 255, g: 255, b: 255, a: 255 })
+            )
         )
     }, [])
 
@@ -122,7 +126,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                 const material = (gizmo.obj as THREE.Mesh).material as THREE.Material
                 material.depthTest = false
 
-                const deltaTransformation = convertArrayToThreeMatrix4(selectedRobot.ejectorPreferences!.deltaTransformation)
+                const deltaTransformation = convertArrayToThreeMatrix4(
+                    selectedRobot.ejectorPreferences!.deltaTransformation
+                )
 
                 let nodeBodyId = selectedRobot.mechanism.nodeToBody.get(
                     selectedRobot.ejectorPreferences!.parentNode ?? selectedRobot.rootNodeId

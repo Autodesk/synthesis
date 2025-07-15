@@ -11,7 +11,11 @@ import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
 import SelectButton from "@/ui/components/SelectButton"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { convertArrayToThreeMatrix4, convertJoltMat44ToThreeMatrix4, convertThreeMatrix4ToArray } from "@/util/TypeConversions"
+import {
+    convertArrayToThreeMatrix4,
+    convertJoltMat44ToThreeMatrix4,
+    convertThreeMatrix4ToArray,
+} from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material"
@@ -74,7 +78,9 @@ function save(
     scale.z = Math.abs(scale.z)
 
     const gizmoTransformation = new THREE.Matrix4().compose(translation, rotation, scale)
-    const fieldTransformation = convertJoltMat44ToThreeMatrix4(World.physicsSystem.getBody(nodeBodyId).GetWorldTransform())
+    const fieldTransformation = convertJoltMat44ToThreeMatrix4(
+        World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
+    )
     const deltaTransformation = gizmoTransformation.premultiply(fieldTransformation.invert())
 
     zone.deltaTransformation = convertThreeMatrix4ToArray(deltaTransformation)

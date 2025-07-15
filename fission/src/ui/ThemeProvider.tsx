@@ -27,17 +27,16 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
                 components: {
                     MuiButton: {
                         defaultProps: {
-                            variant: "contained"
-                        }
-                    }
-                }
+                            variant: "contained",
+                        },
+                    },
+                },
             }),
         [mode]
     )
 
     const [primaryColor, setPrimaryColor] = useState(theme.palette.primary.dark)
     const [secondaryColor, setSecondaryColor] = useState(theme.palette.secondary.dark)
-
 
     const themeContextValue = useMemo(
         () => ({

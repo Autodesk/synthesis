@@ -25,7 +25,13 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
             <Typography variant="h4">{`${InputSchemeManager.availableInputSchemes.length} Input Schemes`}</Typography>
             <Divider />
             {InputSchemeManager.availableInputSchemes.map(scheme => (
-                <Stack direction="row" justifyContent="space-between" alignItems="center" gap="1rem" key={scheme.schemeName}>
+                <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap="1rem"
+                    key={scheme.schemeName}
+                >
                     <Typography variant="h5">
                         {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
                     </Typography>

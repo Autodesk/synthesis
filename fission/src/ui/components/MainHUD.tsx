@@ -1,4 +1,4 @@
-import { Box, Button } from "@mui/material"
+import { Box, Button, IconButton, Stack } from "@mui/material"
 import { motion } from "framer-motion"
 import type React from "react"
 import { useContext, useEffect, useState } from "react"
@@ -32,7 +32,7 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
             {...SoundPlayer.buttonSoundEffects()}
             className={`relative flex flex-row
                 cursor-pointer
-                bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
+                w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
                 items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0
                 transform
                 transition-transform
@@ -82,8 +82,8 @@ const MainHUD: React.FC = () => {
     return (
         <>
             {!isOpen && (
-                <Box
-                    display="flex"
+                <Stack
+                    direction="row"
                     alignItems={"center"}
                     height="100%"
                     position={"absolute"}
@@ -95,7 +95,7 @@ const MainHUD: React.FC = () => {
                         minWidth={"50px"}
                         maxWidth={"60px"}
                         style={{ aspectRatio: " 1 / 1.5" }}
-                        className="bg-gradient-to-b from-interactive-element-right to-interactive-element-left transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
+                        className="transform transition-transform hover:scale-[1.02] active:scale-[1.04]"
                         sx={{
                             borderTopRightRadius: "100px",
                             borderBottomRightRadius: "100px",
@@ -107,16 +107,17 @@ const MainHUD: React.FC = () => {
                             <Button onClick={() => setIsOpen(!isOpen)} startIcon={SynthesisIcons.OPEN_HUD_ICON} />
                         </Box>
                     </Box>
-                </Box>
+                </Stack>
             )}
             <motion.div
                 initial="closed"
                 animate={isOpen ? "open" : "closed"}
                 variants={variants}
-                className="fixed flex flex-col gap-2 bg-gradient-to-b from-interactive-element-right to-interactive-element-left w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
+                className="fixed flex flex-col gap-2 w-min p-4 rounded-3xl ml-4 top-1/2 -translate-y-1/2"
             >
                 <div className="flex flex-row gap-2 w-60 h-10">
                     <img
+                        alt="Autodesk"
                         src={logo}
                         className="w-[80%] h-[100%] object-contain"
                         style={{
@@ -126,10 +127,9 @@ const MainHUD: React.FC = () => {
                             WebkitUserSelect: "none",
                         }}
                     />
-                    <Button
-                        startIcon={<FaXmark color="bg-icon" size={23} className="text-main-hud-close-icon" />}
-                        onClick={() => setIsOpen(false)}
-                    />
+                    <IconButton color="secondary" onClick={() => setIsOpen(false)}>
+                        <FaXmark size={23} />
+                    </IconButton>
                 </div>
                 <MainHUDButton
                     value={"Spawn Asset"}
@@ -137,11 +137,7 @@ const MainHUD: React.FC = () => {
                     larger={true}
                     onClick={() => openPanel(<ImportMirabufPanel />)}
                 />
-                <Box
-                    display="flex"
-                    flexDirection={"column"}
-                    sx={{ backgroundColor: "black", borderRadius: "7px", padding: "3px" }}
-                >
+                <Stack direction="column" sx={{ backgroundColor: "black", borderRadius: "7px", padding: "3px" }}>
                     <MainHUDButton
                         value={"Configure Assets"}
                         icon={SynthesisIcons.WRENCH}
@@ -177,7 +173,7 @@ const MainHUD: React.FC = () => {
                             onClick={() => new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)}
                         />
                     )}
-                </Box>
+                </Stack>
                 {userInfo ? (
                     <MainHUDButton
                         value={`Hi, ${userInfo.givenName}`}
