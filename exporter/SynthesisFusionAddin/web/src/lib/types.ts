@@ -179,7 +179,7 @@ export interface ExporterConfig {
     exportMode: ExportMode
     wheels: ExporterWheel[]
     joints: ExporterJoint[]
-    tags:Record<string, Material>
+    tags: Record<string, Material>
     gamepieces: ExporterGamepiece[]
     robotWeight: number
     autoCalcRobotWeight: boolean
@@ -204,7 +204,6 @@ interface ExporterJoint {
     force: number
     isWheel: boolean
 }
-
 
 interface ExporterGamepiece {
     occurrenceToken: string

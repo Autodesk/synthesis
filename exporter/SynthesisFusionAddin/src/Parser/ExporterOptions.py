@@ -11,6 +11,7 @@ from typing import Any, List
 
 import adsk.core
 from adsk.fusion import CalculationAccuracy, TriangleMeshQualityOptions
+
 from src import INTERNAL_ID
 from src.Logging import getLogger, logFailure, timed
 from src.Types import (

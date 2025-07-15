@@ -167,7 +167,7 @@ function App() {
                         signalType: joint.signalType,
                         wheelType: joint.wheelType,
                     }))
-                cfg.tags = Object.fromEntries(taggedBodies.map(b => ([b.entityToken,b.material])))
+                cfg.tags = Object.fromEntries(taggedBodies.map(b => [b.entityToken, b.material]))
                 resolve(current(cfg))
             })
         })
@@ -196,11 +196,7 @@ function App() {
                             disabled={generalConfig.exportMode == ExportMode.ROBOT}
                         />
 
-                        <Tab
-                            icon={<Texture />}
-                            iconPosition={"start"}
-                            label="Materials"
-                        />
+                        <Tab icon={<Texture />} iconPosition={"start"} label="Materials" />
 
                         {/*<Tab label="APS" />*/}
                     </Tabs>
@@ -223,7 +219,6 @@ function App() {
             <TabPanel value={activeTab} index={3}>
                 <MaterialTaggingTab tags={taggedBodies} updateTags={updateTaggedBodies} />
             </TabPanel>
-
 
             <Box
                 position="sticky"

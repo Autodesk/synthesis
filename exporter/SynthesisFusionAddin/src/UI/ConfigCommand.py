@@ -21,12 +21,10 @@ import src.UI.JointConfigTab as JointConfigTab
 import src.UI.TaggingConfigTab as TaggingConfigTab
 from src import APP_WEBSITE_URL, gm
 from src.APS.APS import getAuth, getUserInfo
-from src.Logging import logFailure
-from src.Parser.ExporterOptions import ExporterOptions
-from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.Logging import getLogger, logFailure
+from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Utilities import guid_occurrence
-from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation
+from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
 from src.UI.Handlers import PersistentEventHandler
 from src.Util import convertMassUnitsTo, designMassCalculation
@@ -42,7 +40,7 @@ logger = getLogger()
 INPUTS_ROOT: adsk.core.CommandInputs
 PALETTE_ID = "synthesis_configure"
 USE_NEW_UI = True
-USE_OLD_UI = False # allow both independently for testing
+USE_OLD_UI = False  # allow both independently for testing
 
 
 def reload() -> None:
@@ -55,8 +53,6 @@ def reload() -> None:
     importlib.reload(moduleExporterOptions)
     importlib.reload(Parser)
     Parser.reload()
-
-
 
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
@@ -187,7 +183,7 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
 
 class PaletteCloseHandler(PersistentEventHandler, adsk.core.UserInterfaceGeneralEventHandler):
     @logFailure
-    def notify(self, e) -> None:
+    def notify(self, e: Any) -> None:
         if exporterPalette:
             exporterPalette.deleteMe()
 
@@ -262,7 +258,7 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
                 joint = adsk.fusion.Joint.cast(selection.entity)
                 html_args.returnData = json.dumps(buildJoint(joint))
             except Exception as e:
-                html_args.returnData = json.dumps({"_err":e.__repr__()})
+                html_args.returnData = json.dumps({"_err": e.__repr__()})
                 logger.error(e)
             gm.ui.activeSelections.clear()
         elif html_args.action == "selectGamepiece":
@@ -271,7 +267,7 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
                 gamepiece = adsk.fusion.Occurrence.cast(selection.entity)
                 html_args.returnData = json.dumps(buildGamepiece(gamepiece))
             except Exception as e:
-                html_args.returnData = json.dumps({"_err":e.__repr__()})
+                html_args.returnData = json.dumps({"_err": e.__repr__()})
                 logger.error(e)
             gm.ui.activeSelections.clear()
         elif html_args.action == "selectBody":
@@ -282,7 +278,7 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
                 body = adsk.fusion.BRepBody.cast(selection.entity)
                 html_args.returnData = json.dumps(buildTaggedObject(body))
             except Exception as e:
-                html_args.returnData = json.dumps({"_err":e.__repr__()})
+                html_args.returnData = json.dumps({"_err": e.__repr__()})
                 logger.error(e)
 
         elif html_args.action == "cancelSelection":
@@ -298,6 +294,7 @@ def buildJoint(joint: adsk.fusion.Joint) -> dict[str, Any]:
         "entityToken": joint.entityToken,
         "jointType": joint.jointMotion.jointType,
     }
+
 
 def buildTaggedObject(body: adsk.fusion.BRepBody) -> dict[str, Any]:
     key_body = body.nativeObject or body
