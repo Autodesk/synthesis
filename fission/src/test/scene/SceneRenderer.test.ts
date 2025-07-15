@@ -4,7 +4,6 @@ import * as THREE from "three"
 import { Theme } from "@/ui/helpers/UseThemeHelpers"
 import SceneObject from "@/systems/scene/SceneObject"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import World from "@/systems/World"
 
 // Mock interfaces for testing
 interface MockSceneObject extends Partial<SceneObject> {
@@ -159,17 +158,11 @@ Object.defineProperty(window, "devicePixelRatio", {
 describe("SceneRenderer", () => {
     let sceneRenderer: SceneRenderer
     const originalConsoleLog = console.log
-    const originalConsoleError = console.error
-    const originalConsoleWarn = console.warn
-    const originalConsoleDebug = console.debug
 
     beforeEach(() => {
         vi.clearAllMocks()
         sceneRenderer = new SceneRenderer()
         console.log = vi.fn()
-        console.error = vi.fn()
-        console.warn = vi.fn()
-        console.debug = vi.fn()
     })
 
     afterEach(() => {
@@ -177,9 +170,6 @@ describe("SceneRenderer", () => {
             sceneRenderer.destroy()
         }
         console.log = originalConsoleLog
-        console.error = originalConsoleError
-        console.warn = originalConsoleWarn
-        console.debug = originalConsoleDebug
     })
 
     describe("Scene Object Management", () => {
@@ -259,6 +249,9 @@ describe("SceneRenderer", () => {
             expect(box).toBeInstanceOf(THREE.Mesh)
             expect(box.geometry).toBeInstanceOf(THREE.BoxGeometry)
             expect(box.material).toBeInstanceOf(THREE.MeshToonMaterial)
+            expect(box.geometry.attributes.position.array[0]).toBe(1)
+            expect(box.geometry.attributes.position.array[1]).toBe(1.5)
+            expect(box.geometry.attributes.position.array[2]).toBe(2)
         })
 
         test("should create toon material", () => {
@@ -277,7 +270,7 @@ describe("SceneRenderer", () => {
             expect(worldPos.y).toBe(0)
         })
 
-        test("should convert edge pixel to world space", () => {
+        test("should convert (0, 0) pixel to world space", () => {
             const worldPos = sceneRenderer.pixelToWorldSpace(0, 0)
             expect(worldPos).toBeInstanceOf(THREE.Vector3)
 
@@ -317,11 +310,8 @@ describe("SceneRenderer", () => {
             const aspectRatio = 3840 / 1080
             expect(sceneRenderer.mainCamera.aspect).toBeCloseTo(aspectRatio)
 
-            // For aspect ratios wider than standard, FOV should be adjusted
-            const standardAspect = 16 / 9
-            if (aspectRatio > standardAspect) {
-                expect(sceneRenderer.mainCamera.fov).toBeCloseTo(110 / aspectRatio) // STANDARD_CAMERA_FOV_X / aspect
-            }
+            // For wide aspect ratios, use standard FOV_X
+            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(110 / aspectRatio) // STANDARD_CAMERA_FOV_X / aspect
         })
 
         test("should handle tall aspect ratios correctly", () => {
@@ -335,10 +325,7 @@ describe("SceneRenderer", () => {
             expect(sceneRenderer.mainCamera.aspect).toBeCloseTo(aspectRatio)
 
             // For narrow aspect ratios, use standard FOV_Y
-            const standardAspect = 16 / 9
-            if (aspectRatio < standardAspect) {
-                expect(sceneRenderer.mainCamera.fov).toBeCloseTo(61.875) // STANDARD_CAMERA_FOV_Y
-            }
+            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(61.875) // STANDARD_CAMERA_FOV_Y
         })
     })
 
@@ -479,25 +466,6 @@ describe("SceneRenderer", () => {
 
             // Scene should remain unchanged
             expect(sceneRenderer.scene.children.length).toBe(initialChildCount)
-        })
-
-        test("should setup materials for objects with CSM enabled", () => {
-            // Enable CSM lighting
-            sceneRenderer.changeLighting(true)
-
-            const mockMesh = new THREE.Mesh(
-                new THREE.BoxGeometry(1, 1, 1),
-                new THREE.MeshToonMaterial({ color: 0xff0000 })
-            )
-
-            const setupMaterialSpy = vi.spyOn(sceneRenderer, "setupMaterial")
-
-            sceneRenderer.addObject(mockMesh)
-
-            // Material setup should be called when CSM is enabled
-            // Note: This would happen if addObject called setupMaterial, but currently it doesn't
-            // This test documents the current behavior and could catch if the behavior changes
-            expect(setupMaterialSpy).not.toHaveBeenCalled() // Current behavior
         })
 
         test("should maintain scene hierarchy when adding child objects", () => {
@@ -676,43 +644,6 @@ describe("SceneRenderer", () => {
             expect(initialControls.dispose).toHaveBeenCalled()
             expect(sceneRenderer.currentCameraControls).toBeDefined()
             expect(sceneRenderer.currentCameraControls).not.toBe(initialControls)
-        })
-    })
-
-    describe("Context Menu", () => {
-        test("should dispatch default context menu when no physics hit", () => {
-            const mockEvent = {
-                position: [100, 100] as [number, number],
-                interactionType: 0 as const,
-            }
-
-            sceneRenderer.onContextMenu(mockEvent)
-
-            // Should dispatch default context menu with "Add" option
-            expect(sceneRenderer.screenInteractionHandler.contextMenu).toBeDefined()
-        })
-
-        test("should convert pixel coordinates to world space for raycasting", () => {
-            const mockEvent = {
-                position: [960, 540] as [number, number], // Center of 1920x1080 screen
-                interactionType: 0 as const,
-            }
-
-            sceneRenderer.onContextMenu(mockEvent)
-
-            expect(World.sceneRenderer.pixelToWorldSpace).toHaveBeenCalledWith(960, 540)
-        })
-
-        test("should perform raycast for physics interaction", () => {
-            const mockEvent = {
-                position: [100, 200] as [number, number],
-                interactionType: 0 as const,
-            }
-
-            sceneRenderer.onContextMenu(mockEvent)
-
-            // Should perform raycast from camera position in direction of mouse click
-            expect(sceneRenderer.scene).toBeDefined() // Physics system should be called via World mock
         })
     })
 

@@ -115,7 +115,7 @@ describe("ScreenInteractionHandler", () => {
             })
         })
 
-        test("handles mouse movement after threshold", () => {
+        test("handles mouse movement", () => {
             const mockPointerDown = {
                 pointerType: "mouse",
                 button: PRIMARY_MOUSE_INTERACTION,
@@ -138,7 +138,6 @@ describe("ScreenInteractionHandler", () => {
             const pointerDownHandler = getEventHandler("pointerdown")
             pointerDownHandler(mockPointerDown)
 
-            // Move significantly to exceed threshold
             const pointerMoveHandler = getEventHandler("pointermove")
             pointerMoveHandler(mockPointerMove)
 
@@ -249,7 +248,7 @@ describe("ScreenInteractionHandler", () => {
             })
         })
 
-        test("calculates pinch separation correctly", () => {
+        test("calculates pinch separation and position correctly", () => {
             const mockFirstTouch = {
                 pointerType: "touch",
                 pointerId: 1,
@@ -275,34 +274,9 @@ describe("ScreenInteractionHandler", () => {
 
             // Distance between (0,0) and (300,400) should be 500
             expect(handler.pinchSeparation).toBe(500)
-        })
 
-        test("calculates pinch position correctly", () => {
-            const mockFirstTouch = {
-                pointerType: "touch",
-                pointerId: 1,
-                clientX: 100,
-                clientY: 200,
-                width: 20,
-                height: 20,
-            } as PointerEvent
-
-            const mockSecondTouch = {
-                pointerType: "touch",
-                pointerId: 2,
-                clientX: 300,
-                clientY: 400,
-                width: 20,
-                height: 20,
-            } as PointerEvent
-
-            const pointerDownHandler = getEventHandler("pointerdown")
-
-            pointerDownHandler(mockFirstTouch)
-            pointerDownHandler(mockSecondTouch)
-
-            // Midpoint between (100,200) and (300,400) should be (200,300)
-            expect(handler.pinchPosition).toEqual([200, 300])
+            // Midpoint between (0,0) and (300,400) should be (150,200)
+            expect(handler.pinchPosition).toEqual([150, 200])
         })
     })
 
