@@ -23,10 +23,14 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import { Box } from "@mui/material"
 import { Switch } from "@mui/base/Switch"
 import Label, { LabelSize } from "@/ui/components/Label"
+import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
 const MAX_ZONE_SIZE = 1.0
+const MIN_ANIMATION_DURATION = 0.1
+const MAX_ANIMATION_DURATION = 2.0
+const ANIMATION_DURATION_STEP = 0.05
 
 /**
  * Saves ejector configuration to selected robot.
@@ -106,6 +110,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
     const [maxPieces, setMaxPieces] = useState<number>(selectedRobot.intakePreferences?.maxPieces || 1)
+    const [animationDuration, setAnimationDuration] = useState<number>(EjectableSceneObject.getAnimationDuration())
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
@@ -248,12 +253,22 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 min={MIN_ZONE_SIZE}
                 max={MAX_ZONE_SIZE}
                 value={zoneSize}
-                label="Zone Size"
-                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                onChange={(_, vel: number | number[]) => {
-                    setZoneSize(vel as number)
-                }}
+                onChange={(_, v) => setZoneSize(typeof v === "number" ? v : v[0])}
                 step={0.01}
+                label="Intake Zone Diameter (m)"
+            />
+            <Slider
+                min={MIN_ANIMATION_DURATION}
+                max={MAX_ANIMATION_DURATION}
+                value={animationDuration}
+                onChange={(_, v) => {
+                    const val = typeof v === "number" ? v : v[0]
+                    setAnimationDuration(val)
+                    EjectableSceneObject.setAnimationDuration(val)
+                }}
+                step={ANIMATION_DURATION_STEP}
+                label="Intake Animation Duration (s)"
+                format={{ maximumFractionDigits: 2 }}
             />
 
             {/* Slider for adjusting max pieces the robot can intake */}
