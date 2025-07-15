@@ -3,9 +3,9 @@ import { Button as BaseButton } from "@mui/base/Button"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 export enum ButtonSize {
-    Small,
-    Medium,
-    Large,
+    SMALL,
+    MEDIUM,
+    LARGE,
     XL,
 }
 
@@ -32,17 +32,17 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
     let sizeClassNames = sizeOverrideClass
 
-    if (!size) size = ButtonSize.Medium as ButtonSize
+    if (!size) size = ButtonSize.MEDIUM as ButtonSize
 
     if (!sizeClassNames) {
         switch (size) {
-            case ButtonSize.Small:
+            case ButtonSize.SMALL:
                 sizeClassNames = "w-fit h-fit px-4 py-1"
                 break
-            case ButtonSize.Medium:
+            case ButtonSize.MEDIUM:
                 sizeClassNames = "w-fit h-fit px-6 py-1.5"
                 break
-            case ButtonSize.Large:
+            case ButtonSize.LARGE:
                 sizeClassNames = "w-fit h-fit px-8 py-2"
                 break
             case ButtonSize.XL:

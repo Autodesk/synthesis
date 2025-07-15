@@ -5,11 +5,12 @@ import Label, { LabelSize } from "@/components/Label"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import World from "@/systems/World"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -38,7 +39,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Import From File"}
-            icon={SynthesisIcons.Import}
+            icon={SynthesisIcons.IMPORT}
             modalId={modalId}
             acceptEnabled={selectedFile !== undefined && miraType !== undefined}
             onCancel={() => openPanel("import-mirabuf")}
@@ -51,21 +52,28 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     ])
 
                     const hashBuffer = await selectedFile.arrayBuffer()
-                    World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-                    await MirabufCachingService.CacheAndGetLocal(hashBuffer, miraType)
-                        .then(x => CreateMirabuf(x!))
+                    World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
+                    await MirabufCachingService.cacheAndGetLocalWithInfo(hashBuffer, miraType)
+                        .then(x => {
+                            if (x) {
+                                return createMirabuf(x.assembly, x.cacheInfo.id)
+                            }
+                            return undefined
+                        })
                         .then(x => {
                             if (x) {
                                 const { mainSceneObject, gamePieces } = x
 
-                                World.SceneRenderer.RegisterSceneObject(mainSceneObject)
+                                World.sceneRenderer.registerSceneObject(mainSceneObject)
                                 gamePieces?.forEach(({ sceneObject, cacheInfo: _ }) => {
-                                    World.SceneRenderer.RegisterSceneObject(sceneObject)
+                                    World.sceneRenderer.registerSceneObject(sceneObject)
                                 })
+
+                                globalOpenPanel("initial-config")
                             }
                         })
                         .finally(() =>
-                            setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+                            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
                         )
                 }
             }}
@@ -85,11 +93,11 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     <ToggleButton value={MiraType.ROBOT}>Robot</ToggleButton>
                     <ToggleButton value={MiraType.FIELD}>Field</ToggleButton>
                 </ToggleButtonGroup>
-                <Button value="Upload File" size={ButtonSize.Large} onClick={uploadClicked} />
+                <Button value="Upload File" size={ButtonSize.LARGE} onClick={uploadClicked} />
                 {selectedFile && (
                     <Label
                         className="text-center"
-                        size={LabelSize.Medium}
+                        size={LabelSize.MEDIUM}
                     >{`Selected File: ${selectedFile.name}`}</Label>
                 )}
             </div>

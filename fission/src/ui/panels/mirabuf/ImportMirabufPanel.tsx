@@ -2,11 +2,11 @@ import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, use
 import { LabelSize } from "@/components/Label"
 import {
     Data,
-    GetMirabufFiles,
-    HasMirabufFiles,
+    getMirabufFiles,
+    hasMirabufFiles,
     MirabufFilesStatusUpdateEvent,
     MirabufFilesUpdateEvent,
-    RequestMirabufFiles,
+    requestMirabufFiles,
 } from "@/aps/APSDataManagement"
 import MirabufCachingService, {
     backUpFields,
@@ -19,7 +19,7 @@ import MirabufCachingService, {
 } from "@/mirabuf/MirabufLoader"
 import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
-import { CreateMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
@@ -36,7 +36,7 @@ import {
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import Button from "@/ui/components/Button"
-import { Global_AddToast, Global_OpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
@@ -82,40 +82,40 @@ export type MiraManifest = {
     pieces: MirabufRemoteInfo[]
 }
 
-function GetCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
+function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
     return Object.values(
         canOPFS
-            ? MirabufCachingService.GetCacheMap(miraType)
+            ? MirabufCachingService.getCacheMap(miraType)
             : miraType == MiraType.ROBOT
-                ? backUpRobots
-                : miraType == MiraType.FIELD
-                    ? backUpFields
-                    : backUpPieces
+              ? backUpRobots
+              : miraType == MiraType.FIELD
+                ? backUpFields
+                : backUpPieces
     )
 }
 
-function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     if (type == MiraType.FIELD) {
-        World.SceneRenderer.RemoveAllFields()
-        World.SceneRenderer.RemoveAllGamePieces()
+        World.sceneRenderer.removeAllFields()
+        World.sceneRenderer.removeAllGamePieces()
     }
 
     progressHandle ??= new ProgressHandle(info.name ?? info.cacheKey)
 
-    World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_SPAWNING)
-    MirabufCachingService.Get(info.id, type)
+    World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
+    MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                CreateMirabuf(assembly).then(x => {
+                createMirabuf(assembly, info.id, progressHandle).then(x => {
                     if (x) {
                         const { mainSceneObject, gamePieces } = x
-                        World.SceneRenderer.RegisterSceneObject(mainSceneObject)
+                        World.sceneRenderer.registerSceneObject(mainSceneObject)
 
                         // TODO Figure out what to do with cacheInfo
                         gamePieces?.forEach(({ sceneObject, cacheInfo: _ }) => {
-                            World.SceneRenderer.RegisterSceneObject(sceneObject)
+                            World.sceneRenderer.registerSceneObject(sceneObject)
                         })
-                        progressHandle.Done()
+                        progressHandle.done()
 
                         // Disables config for fields/game pieces but not for independent game pieces
                         if (
@@ -123,21 +123,21 @@ function SpawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                             gamePieces.length < 0 ||
                             mainSceneObject.miraType === MiraType.FIELD
                         )
-                            Global_OpenPanel?.("initial-config")
+                            globalOpenPanel("initial-config")
                     } else {
-                        progressHandle.Fail()
+                        progressHandle.fail()
                     }
                 })
 
-                if (!info.name) MirabufCachingService.CacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
+                if (!info.name) MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
             } else {
-                progressHandle.Fail()
+                progressHandle.fail()
                 console.error("Failed to spawn assembly")
             }
         })
-        .catch(() => progressHandle.Fail())
+        .catch(() => progressHandle.fail())
         .finally(() => {
-            setTimeout(() => World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
+            setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500)
         })
 }
 
@@ -146,9 +146,9 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
 
-    const [cachedRobots, setCachedRobots] = useState(GetCacheInfo(MiraType.ROBOT))
-    const [cachedFields, setCachedFields] = useState(GetCacheInfo(MiraType.FIELD))
-    const [cachedPieces, setCachedPieces] = useState(GetCacheInfo(MiraType.PIECE))
+    const [cachedRobots, setCachedRobots] = useState(getCacheInfo(MiraType.ROBOT))
+    const [cachedFields, setCachedFields] = useState(getCacheInfo(MiraType.FIELD))
+    const [cachedPieces, setCachedPieces] = useState(getCacheInfo(MiraType.PIECE))
 
     const [manifest, setManifest] = useState<MiraManifest | undefined>()
     const [viewType, setViewType] = useState<MiraType>(MiraType.ROBOT)
@@ -175,21 +175,17 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     })
 
     useEffect(() => {
-        if (!HasMirabufFiles()) {
-            RequestMirabufFiles()
+        if (!hasMirabufFiles()) {
+            requestMirabufFiles()
         } else {
-            setFiles(GetMirabufFiles())
+            setFiles(getMirabufFiles())
         }
     }, [])
 
     useLayoutEffect(() => {
         if (mirabufPanelState.hasUnconfirmedImport) {
             closePanel("import-mirabuf")
-            Global_AddToast?.(
-                "warning",
-                "You're already importing a model!",
-                "Confirm that one before importing another."
-            )
+            globalAddToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
             return
         }
         closePanel("configure")
@@ -203,7 +199,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             fetch(`/api/mira/manifest.json`)
                 .then(x => x.json())
                 .then(x => {
-                    const map = MirabufCachingService.GetCacheMap(MiraType.ROBOT)
+                    const map = MirabufCachingService.getCacheMap(MiraType.ROBOT)
                     const robots: MirabufRemoteInfo[] = []
                     for (const src of x["robots"]) {
                         if (typeof src == "string") {
@@ -245,7 +241,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Select a mirabuf assembly from the cache.
     const selectCache = useCallback(
         (info: MirabufCacheInfo, type: MiraType) => {
-            SpawnCachedMira(info, type)
+            spawnCachedMira(info, type)
 
             showTooltip("controls", [
                 { control: "WASD", description: "Drive" },
@@ -262,17 +258,17 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const selectRemote = useCallback(
         (info: MirabufRemoteInfo, type: MiraType) => {
             const status = new ProgressHandle(info.displayName)
-            status.Update("Downloading from Synthesis...", 0.05)
+            status.update("Downloading from Synthesis...", 0.05)
 
-            MirabufCachingService.CacheRemote(info.src, type)
+            MirabufCachingService.cacheRemote(info.src, type)
                 .then(cacheInfo => {
                     if (cacheInfo) {
-                        SpawnCachedMira(cacheInfo, type, status)
+                        spawnCachedMira(cacheInfo, type, status)
                     } else {
-                        status.Fail("Failed to cache")
+                        status.fail("Failed to cache")
                     }
                 })
-                .catch(() => status.Fail())
+                .catch(() => status.fail())
 
             closePanel(panelId)
         },
@@ -282,33 +278,33 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     // Cache a selected remote mirabuf assembly, without load.
     const cacheRemoteOnly = useCallback((info: MirabufRemoteInfo, type: MiraType) => {
         const status = new ProgressHandle(info.displayName)
-        status.Update("Downloading from Synthesis...", 0.05)
+        status.update("Downloading from Synthesis...", 0.05)
 
-        MirabufCachingService.CacheRemote(info.src, type)
+        MirabufCachingService.cacheRemote(info.src, type)
             .then(cacheInfo => {
                 if (cacheInfo) {
-                    status.Done()
+                    status.done()
                 } else {
-                    status.Fail("Failed to cache")
+                    status.fail("Failed to cache")
                 }
             })
-            .catch(() => status.Fail())
+            .catch(() => status.fail())
     }, [])
 
     const selectAPS = useCallback(
         (data: Data, type: MiraType) => {
             const status = new ProgressHandle(data.attributes.displayName ?? data.id)
-            status.Update("Downloading from APS...", 0.05)
+            status.update("Downloading from APS...", 0.05)
 
-            MirabufCachingService.CacheAPS(data, type)
+            MirabufCachingService.cacheAPS(data, type)
                 .then(cacheInfo => {
                     if (cacheInfo) {
-                        SpawnCachedMira(cacheInfo, type, status)
+                        spawnCachedMira(cacheInfo, type, status)
                     } else {
-                        status.Fail("Failed to cache")
+                        status.fail("Failed to cache")
                     }
                 })
-                .catch(() => status.Fail())
+                .catch(() => status.fail())
 
             closePanel(panelId)
         },
@@ -324,16 +320,16 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     ItemCard({
                         name: info.name || info.cacheKey || "Unnamed Robot",
                         id: info.id,
-                        primaryButtonNode: SynthesisIcons.AddLarge,
+                        primaryButtonNode: SynthesisIcons.ADD_LARGE,
                         primaryOnClick: () => {
                             console.log(`Selecting cached robot: ${info.cacheKey}`)
                             selectCache(info, MiraType.ROBOT)
                         },
                         secondaryOnClick: () => {
                             console.log(`Deleting cache of: ${info.cacheKey}`)
-                            MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.ROBOT)
+                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.ROBOT)
 
-                            setCachedRobots(GetCacheInfo(MiraType.ROBOT))
+                            setCachedRobots(getCacheInfo(MiraType.ROBOT))
                         },
                     })
                 ),
@@ -349,16 +345,16 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     ItemCard({
                         name: info.name || info.cacheKey || "Unnamed Field",
                         id: info.id,
-                        primaryButtonNode: SynthesisIcons.AddLarge,
+                        primaryButtonNode: SynthesisIcons.ADD_LARGE,
                         primaryOnClick: () => {
                             console.log(`Selecting cached field: ${info.cacheKey}`)
                             selectCache(info, MiraType.FIELD)
                         },
                         secondaryOnClick: () => {
                             console.log(`Deleting cache of: ${info.cacheKey}`)
-                            MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.FIELD)
+                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.FIELD)
 
-                            setCachedFields(GetCacheInfo(MiraType.FIELD))
+                            setCachedFields(getCacheInfo(MiraType.FIELD))
                         },
                     })
                 ),
@@ -373,16 +369,16 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     ItemCard({
                         name: info.name || info.cacheKey || "Unnamed Piece",
                         id: info.id,
-                        primaryButtonNode: SynthesisIcons.AddLarge,
+                        primaryButtonNode: SynthesisIcons.ADD_LARGE,
                         primaryOnClick: () => {
                             console.log(`Selecting cached game pieces: ${info.cacheKey}`)
                             selectCache(info, MiraType.PIECE)
                         },
                         secondaryOnClick: () => {
                             console.log(`Deleting cache of: ${info.cacheKey}`)
-                            MirabufCachingService.Remove(info.cacheKey, info.id, MiraType.PIECE)
+                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.PIECE)
 
-                            setCachedPieces(GetCacheInfo(MiraType.PIECE))
+                            setCachedPieces(getCacheInfo(MiraType.PIECE))
                         },
                     })
                 ),
@@ -400,7 +396,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: path.displayName,
                     id: path.src,
-                    primaryButtonNode: SynthesisIcons.DownloadLarge,
+                    primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                     primaryOnClick: () => {
                         console.log(`Selecting remote: ${path}`)
                         selectRemote(path, MiraType.ROBOT)
@@ -420,7 +416,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: path.displayName,
                     id: path.src,
-                    primaryButtonNode: SynthesisIcons.DownloadLarge,
+                    primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                     primaryOnClick: () => {
                         console.log(`Selecting remote: ${path}`)
                         selectRemote(path, MiraType.FIELD)
@@ -440,7 +436,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 ItemCard({
                     name: path.displayName,
                     id: path.src,
-                    primaryButtonNode: SynthesisIcons.DownloadLarge,
+                    primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                     primaryOnClick: () => {
                         console.log(`Selecting remote: ${path}`)
                         selectRemote(path, MiraType.PIECE)
@@ -461,6 +457,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .forEach(path => cacheRemoteOnly(path, miraType))
 
             closePanel(panelId)
+            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [manifest, cached, cacheRemoteOnly, closePanel, panelId])
     }
 
@@ -477,7 +474,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     ItemCard({
                         name: `${file.attributes.displayName!.replace(".mira", "")}${file.attributes.versionNumber != undefined ? ` (v${file.attributes.versionNumber})` : ""}`,
                         id: file.id,
-                        primaryButtonNode: SynthesisIcons.DownloadLarge,
+                        primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                         primaryOnClick: () => {
                             console.debug(file.raw)
                             selectAPS(file, viewType)
@@ -493,7 +490,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             name={"Spawn Asset"}
-            icon={SynthesisIcons.AddLarge}
+            icon={SynthesisIcons.ADD_LARGE}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Back"
@@ -519,7 +516,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 </ToggleButtonGroup>
                 {viewType == MiraType.ROBOT ? (
                     <>
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedRobotElements
                                 ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length == 1 ? "" : "s"}`
                                 : "Loading Saved Robots"}
@@ -529,7 +526,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     </>
                 ) : viewType == MiraType.FIELD ? (
                     <>
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedFieldElements
                                 ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
                                 : "Loading Saved Fields"}
@@ -539,7 +536,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     </>
                 ) : (
                     <>
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedGamePieces
                                 ? `${cachedGamePieces.length} Saved Game Piece${cachedGamePieces.length == 1 ? "" : "s"}`
                                 : "Loading Saved Game Pieces"}
@@ -557,18 +554,18 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     justifyContent={"center"}
                     alignItems={"center"}
                 >
-                    <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {hubElements
                             ? `${hubElements.length} Remote Asset${hubElements.length == 1 ? "" : "s"}`
                             : filesStatus.message}
                     </SectionLabel>
-                    {hubElements && filesStatus.isDone ? RefreshButton(() => RequestMirabufFiles()) : <></>}
+                    {hubElements && filesStatus.isDone ? RefreshButton(() => requestMirabufFiles()) : <></>}
                 </Box>
                 <SectionDivider />
                 {hubElements}
                 {viewType == MiraType.ROBOT ? (
                     <>
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteRobotElements
                                 ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length == 1 ? "" : "s"}`
                                 : "Loading Default Robots"}
@@ -581,7 +578,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     </>
                 ) : viewType == MiraType.FIELD ? (
                     <>
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteFieldElements
                                 ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length == 1 ? "" : "s"}`
                                 : "Loading Default Fields"}
@@ -594,7 +591,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     </>
                 ) : (
                     <>
-                        <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                        <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteGamePieces
                                 ? `${remoteGamePieces.length} Default Game Piece${remoteGamePieces.length == 1 ? "" : "s"}`
                                 : "Loading Default Game Pieces"}

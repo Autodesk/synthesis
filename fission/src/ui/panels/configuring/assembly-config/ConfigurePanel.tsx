@@ -68,21 +68,21 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
     const { openPanel } = usePanelControlContext()
 
     const robots = useMemo(() => {
-        return [...World.SceneRenderer.sceneObjects.values()]
+        return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
             .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u, pendingDeletes])
 
     const fields = useMemo(() => {
-        return [...World.SceneRenderer.sceneObjects.values()]
+        return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
             .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [u, pendingDeletes])
 
     const gamePieces = useMemo(() => {
-        return [...World.SceneRenderer.sceneObjects.values()]
+        return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.PIECE)
             .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -400,13 +400,13 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     return (
         <Panel
             name={"Configure Assets"}
-            icon={SynthesisIcons.Wrench}
+            icon={SynthesisIcons.WRENCH}
             panelId={panelId}
             acceptEnabled={true}
             cancelEnabled={true}
             openLocation="right"
             onAccept={() => {
-                pendingDeletes.forEach(id => World.SceneRenderer.RemoveSceneObject(id))
+                pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
                 setPendingDeletes([])
 
                 InputSchemeManager.saveSchemes()
