@@ -16,7 +16,7 @@ import {
     TextField,
 } from "@mui/material"
 import DeleteIcon from "@mui/icons-material/Delete"
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import { type FusionJoint, selectJoint } from "../lib/joints"
 import { type Joint, JointParentType, JointType, SignalType, WheelType } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
@@ -27,17 +27,20 @@ import { createJoint, jointInfo, signalInfo } from "../lib/joints"
 interface JointsConfigTabProps {
     joints: Joint[]
     updateJoints: (cb: (joints: Joint[]) => void) => void
+    selection:{
+        isSelecting:boolean
+        setIsSelecting:(value: boolean) => void
+    }
     // updateJoint: <K extends keyof Joint>(index: number, key: K, value: Joint[K]) => void
     // removeJoint: (index: number) => void
 }
-function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
+function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProps) {
     function updateJoint<K extends keyof Joint>(index: number, key: K, value: Joint[K]) {
         updateJoints(joints => {
             joints[index][key] = value
         })
     }
 
-    const [selectingJoint, setSelectingJoint] = useState(false)
     const jointCancelCallback = useRef<(() => void) | undefined>(undefined)
     return (
         <>
@@ -205,11 +208,11 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                     variant="contained"
                     color="secondary"
                     sx={{ px: "20px" }}
-                    loading={selectingJoint}
+                    loading={selection.isSelecting}
                     loadingIndicator={"Selecting..."}
                     title={"Select a joint in Fusion"}
                     onClick={async () => {
-                        setSelectingJoint(true)
+                        selection.setIsSelecting(true)
                         // const data = await initiateSelection("Select joint")
 
                         const data: FusionJoint | undefined = await new Promise(resolve => {
@@ -223,7 +226,7 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                                 .catch(console.error)
                         })
 
-                        setSelectingJoint(false)
+                        selection.setIsSelecting(false)
                         if (data == null) return
                         if (joints.some(joint => joint.id == data.entityToken)) {
                             Global_SetAlert("warning", "Joint already selected")

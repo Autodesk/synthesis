@@ -14,7 +14,7 @@ import {
 } from "@mui/material"
 import DeleteIcon from "@mui/icons-material/Delete"
 
-import { useRef, useState } from "react"
+import { useRef } from "react"
 import { type FusionBody, selectBody } from "../lib"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 
@@ -26,16 +26,17 @@ export type TaggedBody = FusionBody & {
 interface MaterialTaggingTabProps {
     tags: TaggedBody[]
     updateTags: (cb: (tags: TaggedBody[]) => void) => void
-    // updateJoint: <K extends keyof Joint>(index: number, key: K, value: Joint[K]) => void
-    // removeJoint: (index: number) => void
+    selection:{
+        isSelecting:boolean
+        setIsSelecting:(value: boolean) => void
+    }
 }
-function MaterialTaggingTab({ tags, updateTags }: MaterialTaggingTabProps) {
+function MaterialTaggingTab({ tags, updateTags,selection }: MaterialTaggingTabProps) {
     function updateTag<K extends keyof TaggedBody>(index: number, key: K, value: TaggedBody[K]) {
         updateTags(items => {
             items[index][key] = value
         })
     }
-    const [selectingActive, setSelectingActive] = useState(false)
     const selectionCancelCallback = useRef<(() => void) | undefined>(undefined)
     return (
         <>
@@ -104,10 +105,11 @@ function MaterialTaggingTab({ tags, updateTags }: MaterialTaggingTabProps) {
                 <Button
                     variant="contained"
                     color="secondary"
-                    loading={selectingActive}
+                    loading={selection.isSelecting}
+                    sx={{ px: "20px" }}
                     loadingIndicator={"Selecting..."}
                     onClick={async () => {
-                        setSelectingActive(true)
+                        selection.setIsSelecting(true)
                         // const data = await initiateSelection("Select joint")
 
                         const data: FusionBody | undefined = await new Promise(async resolve => {
@@ -117,7 +119,7 @@ function MaterialTaggingTab({ tags, updateTags }: MaterialTaggingTabProps) {
                             resolve(await selectBody())
                         })
 
-                        setSelectingActive(false)
+                        selection.setIsSelecting(false)
                         if (data == null) return
                         if (tags.some(tag => tag.entityToken == data.entityToken)) {
                             console.warn("attempted to add existing element")

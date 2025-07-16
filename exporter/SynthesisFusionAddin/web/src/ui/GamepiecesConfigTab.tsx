@@ -20,8 +20,7 @@ import {
 } from "@mui/material"
 import DeleteIcon from "@mui/icons-material/Delete"
 
-import { useRef, useState } from "react"
-import { type FusionGamepiece, selectGamepiece } from "../lib"
+import { selectGamepiece } from "../lib"
 import { type Gamepiece, type GeneralConfig } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 import BalanceIcon from "@mui/icons-material/Balance"
@@ -31,19 +30,18 @@ interface GamepiecesConfigTabProps {
     updateGamepieces: (cb: (gamepieces: Gamepiece[]) => void) => void
     config: GeneralConfig
     updateConfigItem: <K extends keyof GeneralConfig>(key: K, value: GeneralConfig[K]) => void
-    // updateJoint: <K extends keyof Joint>(index: number, key: K, value: Joint[K]) => void
-    // removeJoint: (index: number) => void
+    selection:{
+        isSelecting:boolean
+        setIsSelecting:(value: boolean) => void
+    }
 }
 
-function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfigItem }: GamepiecesConfigTabProps) {
+function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfigItem , selection}: GamepiecesConfigTabProps) {
     function updateItem<K extends keyof Gamepiece>(index: number, key: K, value: Gamepiece[K]) {
         updateGamepieces(items => {
             items[index][key] = value
         })
     }
-
-    const [selectingActive, setSelectingActive] = useState(false)
-    const selectionCancelCallback = useRef<(() => void) | undefined>(undefined)
     return (
         <>
             <List component={Paper}>
@@ -174,20 +172,16 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                 <Button
                     variant="contained"
                     color="secondary"
-                    loading={selectingActive}
+                    loading={selection.isSelecting}
+                    sx={{ px: "20px" }}
                     loadingIndicator={"Selecting..."}
                     onClick={async () => {
-                        setSelectingActive(true)
+                        selection.setIsSelecting(true)
                         // const data = await initiateSelection("Select joint")
 
-                        const data: FusionGamepiece[] | undefined = await new Promise(async resolve => {
-                            selectionCancelCallback.current = () => {
-                                resolve(undefined)
-                            }
-                            resolve(await selectGamepiece())
-                        })
+                        const data = await selectGamepiece()
 
-                        setSelectingActive(false)
+                        selection.setIsSelecting(false)
                         if (data == null) return
                         const allDuplicates = data.every(newgamepiece => {
                             if (gamepieces.some(gamepiece => gamepiece.entityIDs.includes(newgamepiece.entityIDs[0]))) {
@@ -214,15 +208,6 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                     }}>
                     Add Gamepiece
                 </Button>
-                {/*<Button*/}
-                {/*    disabled={!selectingActive}*/}
-                {/*    onClick={() => {*/}
-                {/*        selectionCancelCallback.current?.()*/}
-                {/*    }}*/}
-                {/*    color="warning"*/}
-                {/*    variant="contained">*/}
-                {/*    Cancel*/}
-                {/*</Button>*/}
             </Box>
         </>
     )

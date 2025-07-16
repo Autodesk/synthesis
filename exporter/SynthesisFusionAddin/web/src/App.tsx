@@ -2,7 +2,18 @@ import { useEffect, useState } from "react"
 
 import "./App.css"
 import { sendData, sendDataAndToast } from "./lib"
-import { AppBar, Box, Button, Container, Tab, Tabs, ThemeProvider } from "@mui/material"
+import {
+    AppBar,
+    Backdrop,
+    Box,
+    Button,
+    CircularProgress,
+    Container,
+    Stack,
+    Tab,
+    Tabs,
+    ThemeProvider,
+} from "@mui/material"
 import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
 import JointsConfigTab from "./ui/JointsConfigTab.tsx"
 import { useImmer } from "use-immer"
@@ -25,7 +36,7 @@ import { RestartAlt, Settings, SportsFootball, Texture } from "@mui/icons-materi
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import SaveIcon from "@mui/icons-material/Save"
 import MaterialTaggingTab, { type TaggedBody } from "./ui/MaterialTaggingTab.tsx"
-import {createJoint} from "./lib/joints.ts";
+import { createJoint } from "./lib/joints.ts"
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
@@ -43,11 +54,13 @@ function App() {
     const [joints, updateJoints] = useImmer<Joint[]>([])
     const [gamepieces, updateGamepieces] = useImmer<Gamepiece[]>([])
     const [taggedBodies, updateTaggedBodies] = useImmer<TaggedBody[]>([])
+    const [isSelecting, setIsSelecting] = useState(false)
     const updateConfigItem = <K extends keyof GeneralConfig>(k: K, v: GeneralConfig[K]) => {
         updateGeneralConfig(config => {
             config[k] = v
         })
     }
+
     function loadConfigFromFusion() {
         if (typeof window.adsk === "undefined") {
             requestAnimationFrame(loadConfigFromFusion)
@@ -72,7 +85,7 @@ function App() {
                 })
                 updateJoints(() => {
                     if (data.options.joints.length == 0) {
-                        return data.jointData.map((fusionJoint) => createJoint(fusionJoint))
+                        return data.jointData.map(fusionJoint => createJoint(fusionJoint))
                     }
                     const res: Joint[] = data.options.joints
                         .map(joint => {
@@ -177,6 +190,17 @@ function App() {
         })
     return (
         <ThemeProvider theme={theme}>
+            <Backdrop
+                sx={theme => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1, backdropFilter:"blur(0px)"})}
+                open={isSelecting}
+                onClick={() => {
+                    Global_SetAlert("info", "Click on an element in the Fusion assembly, or press escape in the main Fusion window")
+                }}>
+                <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} gap={"1rem"}>
+                    <Box sx={(theme) => ({paddingX: "0.5rem", paddingY: "0.4rem", borderRadius:"0.5rem", backgroundColor: theme.palette.grey.A700, boxShadow:theme.shadows[5]})}>Click on an element in the Fusion assembly</Box>
+                    <CircularProgress color="inherit" />
+                </Stack>
+            </Backdrop>
             <GlobalAlert />
             <AppBar position={"sticky"}>
                 <Box>
@@ -210,7 +234,11 @@ function App() {
                 <GeneralConfigTab config={generalConfig} updateConfigItem={updateConfigItem} />
             </TabPanel>
             <TabPanel value={activeTab} index={1}>
-                <JointsConfigTab joints={joints} updateJoints={updateJoints} />
+                <JointsConfigTab
+                    joints={joints}
+                    updateJoints={updateJoints}
+                    selection={{ isSelecting, setIsSelecting }}
+                />
             </TabPanel>
             <TabPanel value={activeTab} index={2}>
                 <GamepiecesConfigTab
@@ -218,20 +246,26 @@ function App() {
                     updateGamepieces={updateGamepieces}
                     config={generalConfig}
                     updateConfigItem={updateConfigItem}
+                    selection={{ isSelecting, setIsSelecting }}
                 />
             </TabPanel>
             <TabPanel value={activeTab} index={3}>
-                <MaterialTaggingTab tags={taggedBodies} updateTags={updateTaggedBodies} />
+                <MaterialTaggingTab
+                    tags={taggedBodies}
+                    updateTags={updateTaggedBodies}
+                    selection={{ isSelecting, setIsSelecting }}
+                />
             </TabPanel>
-
-            <Box
-                position="sticky"
-                bottom={0}
-                bgcolor={"white"}
-                padding={"0.5rem"}
-                display={"flex"}
-                flexDirection={"row"}
-                gap={"0.5rem"}>
+            <Container
+                sx={{
+                    position: "sticky",
+                    bgcolor: "white",
+                    display: "flex",
+                    flexDirection: "row",
+                    gap: "0.5rem",
+                    paddingY: "0.5rem",
+                    bottom: 0,
+                }}>
                 <Button
                     variant="contained"
                     color="error"
@@ -263,7 +297,7 @@ function App() {
                     startIcon={<SaveIcon />}>
                     Save
                 </Button>
-            </Box>
+            </Container>
         </ThemeProvider>
     )
 }
