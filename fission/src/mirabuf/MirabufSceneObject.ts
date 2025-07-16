@@ -619,6 +619,23 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     /**
+     * Gets the maximum dimensions (length, width, height) of the mirabuf object.
+     *
+     * @returns An object containing the width (x), height (y), and depth (z) dimensions.
+     */
+    public getDimensions(): { width: number; height: number; depth: number } {
+        const boundingBox = this.computeBoundingBox()
+        const size = new THREE.Vector3()
+        boundingBox.getSize(size)
+
+        return {
+            width: size.x,
+            height: size.y,
+            depth: size.z,
+        }
+    }
+
+    /**
      * Once a gizmo is created and attached to this mirabuf object, this will be executed to align the gizmo correctly.
      *
      * @param gizmo Gizmo attached to the mirabuf object

@@ -7,6 +7,7 @@ import InputSystem from "./input/InputSystem"
 import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
 import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
+import RobotDimensionTracker from "./RobotDimensionTracker"
 
 class World {
     private static _isAlive: boolean = false
@@ -117,6 +118,8 @@ class World {
 
         World._analyticsSystem?.update(this._currentDeltaT)
         World._performanceMonitorSystem?.update(this._currentDeltaT)
+
+        RobotDimensionTracker.update(this._currentDeltaT, World._sceneRenderer)
     }
 
     public static get currentDeltaT(): number {
