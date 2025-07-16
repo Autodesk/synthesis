@@ -11,7 +11,9 @@ const mockSceneRenderer = {
 
 vi.mock("@/systems/World", () => ({
     default: {
-        get sceneRenderer() { return mockSceneRenderer },
+        get sceneRenderer() {
+            return mockSceneRenderer
+        },
     },
 }))
 
@@ -99,7 +101,7 @@ describe("MirabufInstance", () => {
         expect(scene.children.length).toBeGreaterThan(0)
         instance.dispose(scene)
         expect(scene.children.length).toBe(0)
-        expect(instance.batches.length).toBe(0) 
+        expect(instance.batches.length).toBe(0)
         expect(instance.meshes.size).toBe(0)
         expect(instance.materials.size).toBe(0)
     })

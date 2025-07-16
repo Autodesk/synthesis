@@ -27,8 +27,12 @@ const mockSceneRenderer = {
 
 vi.mock("@/systems/World", () => ({
     default: {
-        get physicsSystem() { return mockPhysicsSystem },
-        get sceneRenderer() { return mockSceneRenderer },
+        get physicsSystem() {
+            return mockPhysicsSystem
+        },
+        get sceneRenderer() {
+            return mockSceneRenderer
+        },
     },
 }))
 

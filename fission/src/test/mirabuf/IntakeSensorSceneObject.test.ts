@@ -27,8 +27,12 @@ const mockSceneRenderer = {
 
 vi.mock("@/systems/World", () => ({
     default: {
-        get physicsSystem() { return mockPhysicsSystem },
-        get sceneRenderer() { return mockSceneRenderer },
+        get physicsSystem() {
+            return mockPhysicsSystem
+        },
+        get sceneRenderer() {
+            return mockSceneRenderer
+        },
     },
 }))
 
@@ -60,7 +64,7 @@ describe("IntakeSensorSceneObject", () => {
             intakePreferences: { parentNode: "node1", deltaTransformation: [1, 2, 3, 4], zoneDiameter: 10 },
             mechanism: { nodeToBody: new Map([["node1", mockBodyId]]) },
             rootNodeId: "root",
-            intakeActive: true, 
+            intakeActive: true,
             setEjectable: vi.fn(),
         } as unknown as MirabufSceneObject
         const instance = new IntakeSensorSceneObject(parent)

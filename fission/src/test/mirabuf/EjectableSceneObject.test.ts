@@ -26,8 +26,12 @@ const mockSceneRenderer = {
 
 vi.mock("@/systems/World", () => ({
     default: {
-        get physicsSystem() { return mockPhysicsSystem },
-        get sceneRenderer() { return mockSceneRenderer },
+        get physicsSystem() {
+            return mockPhysicsSystem
+        },
+        get sceneRenderer() {
+            return mockSceneRenderer
+        },
     },
 }))
 
@@ -59,7 +63,7 @@ describe("EjectableSceneObject", () => {
             ejectorPreferences: { parentNode: "node1", deltaTransformation: [1, 2, 3, 4], ejectorVelocity: 5 },
             mechanism: { nodeToBody: new Map([["node1", mockBodyId]]) },
             rootNodeId: "root",
-        } as unknown as MirabufSceneObject 
+        } as unknown as MirabufSceneObject
         const gamePieceBody = {} as unknown as Jolt.BodyID
         const instance = new EjectableSceneObject(parent, gamePieceBody)
         instance.setup()
