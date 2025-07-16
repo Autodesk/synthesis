@@ -1,5 +1,6 @@
-import { type ExporterConfig, JointType } from "./types.ts"
+import { type ExporterConfig } from "./types.ts"
 import { Global_SetAlert } from "./GlobalUtils.tsx"
+import type { FusionJoint } from "./joints.ts"
 
 declare global {
     interface Window {
@@ -88,28 +89,6 @@ export async function sendDataAndToast<A extends keyof Messages>(
         Global_SetAlert("info", sucessMsg)
     }
     return resp
-}
-
-export interface FusionJoint {
-    entityToken: string
-    name: string
-    jointType: JointType
-}
-export async function selectJoint(): Promise<FusionJoint | undefined> {
-    if (import.meta.env.DEV && typeof window.adsk == "undefined") {
-        return new Promise<FusionJoint>(resolve => {
-            setTimeout(() => {
-                const jointType = Math.round(1 + Math.random())
-                const token = Math.random().toString(36).substring(2, 15)
-                resolve({
-                    entityToken: token,
-                    name: (jointType == 1 ? "Revolute" : "Slider") + " " + token.substring(0, 2).toUpperCase(),
-                    jointType: jointType,
-                })
-            }, 2000)
-        })
-    }
-    return await sendData("selectJoint", {})
 }
 
 export interface FusionGamepiece {

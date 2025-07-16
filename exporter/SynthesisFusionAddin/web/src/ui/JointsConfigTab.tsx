@@ -16,34 +16,13 @@ import {
     TextField,
 } from "@mui/material"
 import DeleteIcon from "@mui/icons-material/Delete"
-import revoluteIcon from "../../../src/Resources/JointIcons/JointRev/32x32.png"
-import sliderIcon from "../../../src/Resources/JointIcons/JointSlider/32x32.png"
 import { useRef, useState } from "react"
-import { type FusionJoint, selectJoint } from "../lib"
+import { type FusionJoint, selectJoint } from "../lib/joints"
 import { type Joint, JointParentType, JointType, SignalType, WheelType } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
+import { createJoint, jointInfo, signalInfo } from "../lib/joints"
 
-const jointInfo: Partial<Record<JointType, { icon: string; name: string; speedUnits: string; defaultSpeed: number }>> =
-    {
-        [JointType.RevoluteJointType]: {
-            icon: revoluteIcon,
-            name: "Revolute",
-            defaultSpeed: 3.14159,
-            speedUnits: "rad/s",
-        },
-        [JointType.SliderJointType]: {
-            icon: sliderIcon,
-            name: "Slider",
-            defaultSpeed: 100,
-            speedUnits: "cm/s",
-        },
-    }
 
-const signalInfo: Record<SignalType, { bg: string; outline: string; fg: string }> = {
-    [SignalType.PWM]: { bg: "#ffa779", outline: "#ff894a", fg: "#ce5d21" },
-    [SignalType.CAN]: { bg: "#79ff84", outline: "#77ff4a", fg: "#00bb19" },
-    [SignalType.PASSIVE]: { bg: "#cbcbcb", outline: "#8d8d8d", fg: "#5d5d5d" },
-}
 
 interface JointsConfigTabProps {
     joints: Joint[]
@@ -251,17 +230,7 @@ function JointsConfigTab({ joints, updateJoints }: JointsConfigTabProps) {
                             return
                         }
                         updateJoints(draft => {
-                            draft.push({
-                                id: data.entityToken,
-                                name: data.name,
-                                type: data.jointType,
-                                parentNode: JointParentType.ROOT,
-                                signalType: SignalType.PWM,
-                                speed: jointInfo[data.jointType]?.defaultSpeed ?? 0,
-                                force: 0.05,
-                                isWheel: false,
-                                wheelType: WheelType.STANDARD,
-                            })
+                            draft.push(createJoint(data))
                         })
                     }}>
                     Add Joint

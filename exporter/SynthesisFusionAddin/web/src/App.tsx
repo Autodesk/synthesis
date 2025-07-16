@@ -25,6 +25,7 @@ import { RestartAlt, Settings, SportsFootball, Texture } from "@mui/icons-materi
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import SaveIcon from "@mui/icons-material/Save"
 import MaterialTaggingTab, { type TaggedBody } from "./ui/MaterialTaggingTab.tsx"
+import {createJoint} from "./lib/joints.ts";
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
@@ -70,6 +71,9 @@ function App() {
                     config.robotWeight = config.autoCalcRobotWeight ? data.calculatedMass : config.robotWeight
                 })
                 updateJoints(() => {
+                    if (data.options.joints.length == 0) {
+                        return data.jointData.map((fusionJoint) => createJoint(fusionJoint))
+                    }
                     const res: Joint[] = data.options.joints
                         .map(joint => {
                             const wheel = joint.isWheel
@@ -81,7 +85,6 @@ function App() {
                             }
                             return {
                                 id: joint.jointToken,
-
                                 parentNode: joint.parent,
                                 force: joint.force,
                                 isWheel: joint.isWheel,
@@ -142,6 +145,7 @@ function App() {
     useEffect(() => {
         loadConfigFromFusion()
     }, [])
+
     const getFinalizedConfig = () =>
         new Promise<ExporterConfig>(resolve => {
             updateGeneralConfig(cfg => {
