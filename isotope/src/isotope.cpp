@@ -1,32 +1,21 @@
-#include <Core/CoreAll.h>
-#include <Fusion/FusionAll.h>
+#include <Core/Application/Application.h>
+#include <Core/UserInterface/UserInterface.h>
+#include <Core/Memory.h>
 
-using namespace adsk;
+#include "context.h"
 
-core::Ptr<core::Application> app;
-core::Ptr<core::UserInterface> ui;
+GlobalContext gctx;
 
 extern "C" XI_EXPORT bool run(const char* context) {
-    app = core::Application::get();
-    if (!app) {
+    if (!gctx.configure()) {
         return false;
     }
 
-    ui = app->userInterface();
-    if (!ui) {
-        return false;
-    }
-
-    ui->messageBox("Hello from Isotope!");
+    gctx.ui->messageBox("Hello from Isotope! lets go");
     return true;
 }
 
 extern "C" XI_EXPORT bool stop() {
-    if (ui) {
-        ui->messageBox("Goodbye from Isotope!");
-    }
-
-    app = nullptr;
-    ui = nullptr;
+    gctx.ui->messageBox("Stopping Isotope... Who yae");
     return true;
 }
