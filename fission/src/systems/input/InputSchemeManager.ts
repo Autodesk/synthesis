@@ -96,13 +96,7 @@ class InputSchemeManager {
 
         // Add default schemes if they have not been customized
         this.defaultInputSchemes.forEach(defaultScheme => {
-            if (
-                allSchemes.some(s => {
-                    return s.schemeName === defaultScheme.schemeName
-                })
-            )
-                return
-
+            if (allSchemes.some(s => s.schemeName === defaultScheme.schemeName)) return
             allSchemes.push(defaultScheme)
         })
 
@@ -119,11 +113,7 @@ class InputSchemeManager {
         for (const scheme of InputSystem.brainIndexSchemeMap.values()) {
             result[scheme.schemeName] = { scheme, status: InputSchemeUseType.IN_USE }
             scheme?.inputs?.forEach(input => {
-                input.keysUsed.forEach(key => {
-                    if (key != null) {
-                        usedKeyMap.add(key)
-                    }
-                })
+                input.keysUsed.filter(key => key != null).forEach(key => usedKeyMap.add(key))
             })
         }
 

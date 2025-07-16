@@ -36,13 +36,14 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            // prioritizes less conflicting schemas, but will assign ones that conflict rather than give no controls
-            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).sort(
-                (a, b) => b.status - a.status
-            )[0].scheme
+            // Find first available scheme
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).find(
+                scheme => scheme.status == InputSchemeUseType.AVAILABLE
+            )?.scheme
 
-            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
-
+            if (scheme) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            }
             setSelectedConfigurationType(ConfigurationType.INPUTS)
             setSelectedScheme(scheme)
         }
