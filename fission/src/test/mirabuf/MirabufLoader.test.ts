@@ -3,7 +3,9 @@ import MirabufLoader, { MiraType, backUpRobots } from "../../mirabuf/MirabufLoad
 
 vi.mock("@/systems/World", () => ({
     default: {
-        get analyticsSystem() { return { event: vi.fn(), exception: vi.fn() } },
+        get analyticsSystem() {
+            return { event: vi.fn(), exception: vi.fn() }
+        },
     },
 }))
 
@@ -121,7 +123,7 @@ describe("MirabufLoader", () => {
 
         expect(result).toBe(true)
 
-        const updatedMap = JSON.parse(localStorageMock["Robots"]) 
+        const updatedMap = JSON.parse(localStorageMock["Robots"])
         expect(updatedMap[key].name).toBe(name)
         expect(updatedMap[key].thumbnailStorageID).toBe(thumbnailStorageID)
         expect(updatedMap[key].id).toBe(id)
