@@ -31,6 +31,7 @@ describe("MirabufLoader", () => {
     let localStorageMock: Record<string, string>
     let fetchMock: MockedFunction<typeof fetch>
     let originalDigest: typeof crypto.subtle.digest
+    let unhandledRejectionHandler: ((event: PromiseRejectionEvent) => void) | undefined
 
     beforeEach(() => {
         localStorageMock = {}
@@ -63,10 +64,47 @@ describe("MirabufLoader", () => {
             return new Uint8Array(32).buffer
         }) as typeof crypto.subtle.digest
 
+        // Mock OPFS APIs (use Object.defineProperty to avoid read-only errors)
+        if (typeof navigator !== "undefined") {
+            if (!navigator.storage) {
+                Object.defineProperty(navigator, "storage", {
+                    value: {},
+                    configurable: true,
+                })
+            }
+            Object.defineProperty(navigator.storage, "getDirectory", {
+                value: vi.fn(async () => ({
+                    getDirectoryHandle: vi.fn(async () => ({
+                        name: "Robots",
+                        getFileHandle: vi.fn(async () => ({
+                            createWritable: vi.fn(async () => ({
+                                write: vi.fn(),
+                                close: vi.fn(),
+                            })),
+                            getFile: vi.fn(async () => new Blob()),
+                            name: "0",
+                        })),
+                        keys: vi.fn(async function* () {}),
+                        removeEntry: vi.fn(),
+                        entries: vi.fn(),
+                    })),
+                })),
+                configurable: true,
+            })
+        }
+
         console.log = vi.fn()
         console.error = vi.fn()
         console.warn = vi.fn()
         console.debug = vi.fn()
+
+        // Suppress unhandled NotFoundError rejections
+        unhandledRejectionHandler = (event: PromiseRejectionEvent) => {
+            if (event.reason && event.reason.name === "NotFoundError") {
+                event.preventDefault()
+            }
+        }
+        window.addEventListener("unhandledrejection", unhandledRejectionHandler)
     })
 
     afterEach(() => {
@@ -80,6 +118,10 @@ describe("MirabufLoader", () => {
         console.error = originalConsoleError
         console.warn = originalConsoleWarn
         console.debug = originalConsoleDebug
+
+        if (unhandledRejectionHandler) {
+            window.removeEventListener("unhandledrejection", unhandledRejectionHandler)
+        }
     })
 
     test("GetCacheMap initializes and retrieves cache", () => {
