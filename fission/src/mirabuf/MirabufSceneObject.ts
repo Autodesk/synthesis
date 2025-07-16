@@ -156,11 +156,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get miraType(): MiraType {
-        return this._mirabufInstance.parser.assembly.dynamic
-            ? this._mirabufInstance.parser.isGamePiece || this.cacheId
-                ? MiraType.PIECE
-                : MiraType.ROBOT
-            : MiraType.FIELD
+        return this._miraType
     }
 
     public get rootNodeId(): string {
