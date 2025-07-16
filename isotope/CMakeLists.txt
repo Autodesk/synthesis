@@ -1,0 +1,47 @@
+cmake_minimum_required(VERSION 3.23)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+project(isotope LANGUAGES CXX)
+
+if(NOT APPLE)
+    message(FATAL_ERROR "This project is only supported on macOS.")
+endif()
+
+set(USER_APP_DATA_DIR "$ENV{HOME}/Library/Application Support")
+set(USER_APP_DATA_RELATIVE_PATH "Autodesk/Autodesk Fusion 360/API")
+set(FUSION_API_DIR "${USER_APP_DATA_DIR}/${USER_APP_DATA_RELATIVE_PATH}")
+set(FUSION_API_INCLUDE_DIR "${FUSION_API_DIR}/CPP/include")
+set(FUSION_API_LIBRARY_DIR "${FUSION_API_DIR}/CPP/lib")
+set(FUSION_API_VERSION_FILE "${FUSION_API_DIR}/version.txt")
+
+set(FUSION_API_ADDINS_DIR "${FUSION_API_DIR}/Addins")
+set(PROJECT_INSTALL_DIR "${FUSION_API_ADDINS_DIR}/${PROJECT_NAME}")
+
+file(READ ${FUSION_API_VERSION_FILE} FUSION_API_VERSION)
+message(STATUS "Fusion 360 API Version: ${FUSION_API_VERSION}")
+
+set(FUSION_API_TARGET "fusion360")
+set(FUSION_API_NAMESPACE "autodesk")
+set(FUSION_API_LIBRARY_TARGETS "core" "fusion")
+
+foreach(target IN LISTS FUSION_API_LIBRARY_TARGETS)
+    set(libpath "${FUSION_API_LIBRARY_DIR}/${target}${CMAKE_SHARED_LIBRARY_SUFFIX}")
+    add_library(${target} SHARED IMPORTED)
+    set_target_properties(${target} PROPERTIES IMPORTED_LOCATION ${libpath})
+endforeach()
+
+add_library(${FUSION_API_TARGET} INTERFACE)
+add_library(${FUSION_API_NAMESPACE}::${FUSION_API_TARGET} ALIAS ${FUSION_API_TARGET})
+target_include_directories(${FUSION_API_TARGET} INTERFACE ${FUSION_API_INCLUDE_DIR})
+target_link_libraries(${FUSION_API_TARGET} INTERFACE ${FUSION_API_LIBRARY_TARGETS})
+
+file(GLOB SOURCES "${CMAKE_CURRENT_LIST_DIR}/src/*.cpp")
+add_library(${PROJECT_NAME} SHARED ${SOURCES})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES PREFIX "")
+target_link_libraries(${PROJECT_NAME} PRIVATE ${FUSION_API_NAMESPACE}::${FUSION_API_TARGET})
+target_include_directories(${PROJECT_NAME} PRIVATE "${CMAKE_CURRENT_LIST_DIR}/inc")
+
+install(TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_INSTALL_DIR})
+install(FILES "${CMAKE_CURRENT_LIST_DIR}/isotope.manifest" DESTINATION ${PROJECT_INSTALL_DIR})
