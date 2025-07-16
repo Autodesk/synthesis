@@ -13,7 +13,7 @@ type InputProps = {
 const NumberInput: React.FC<InputProps> = ({ placeholder, defaultValue, label, onInput }) => {
     return (
         <>
-            {label && <Label size={LabelSize.Small}>{label}</Label>}
+            {label && <Label size={LabelSize.SMALL}>{label}</Label>}
             <BaseNumberInput
                 defaultValue={defaultValue}
                 placeholder={placeholder}

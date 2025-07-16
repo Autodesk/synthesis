@@ -10,7 +10,9 @@ export type ModifierState = {
     shift: boolean
     meta: boolean
 }
-export const EmptyModifierState: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
+export const EMPTY_MODIFIER_STATE: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
+
+const LOG_GAMEPAD_EVENTS = false
 
 /** Represents any user input */
 abstract class Input {
@@ -43,7 +45,7 @@ class ButtonInput extends Input {
     public constructor(inputName: string, keyCode?: string, gamepadButton?: number, keyModifiers?: ModifierState) {
         super(inputName)
         this.keyCode = keyCode ?? ""
-        this.keyModifiers = keyModifiers ?? EmptyModifierState
+        this.keyModifiers = keyModifiers ?? EMPTY_MODIFIER_STATE
         this.gamepadButton = gamepadButton ?? -1
     }
 
@@ -53,7 +55,7 @@ class ButtonInput extends Input {
      */
     getValue(useGamepad: boolean): number {
         const matchModeType = MatchMode.getInstance().getMatchModeType()
-        if (matchModeType === MatchModeType.MatchEnded || matchModeType === MatchModeType.Autonomous) {
+        if (matchModeType === MatchModeType.MATCH_ENDED || matchModeType === MatchModeType.AUTONOMOUS) {
             return 0
         }
 
@@ -111,9 +113,9 @@ class AxisInput extends Input {
         super(inputName)
 
         this.posKeyCode = posKeyCode ?? ""
-        this.posKeyModifiers = posKeyModifiers ?? EmptyModifierState
+        this.posKeyModifiers = posKeyModifiers ?? EMPTY_MODIFIER_STATE
         this.negKeyCode = negKeyCode ?? ""
-        this.negKeyModifiers = negKeyModifiers ?? EmptyModifierState
+        this.negKeyModifiers = negKeyModifiers ?? EMPTY_MODIFIER_STATE
 
         this.gamepadAxisNumber = gamepadAxisNumber ?? -1
         this.touchControlAxis = touchControlAxis ?? TouchControlsAxes.NONE
@@ -131,7 +133,7 @@ class AxisInput extends Input {
      */
     getValue(useGamepad: boolean, useTouchControls: boolean): number {
         const matchModeType = MatchMode.getInstance().getMatchModeType()
-        if (matchModeType === MatchModeType.MatchEnded || matchModeType === MatchModeType.Autonomous) {
+        if (matchModeType === MatchModeType.MATCH_ENDED || matchModeType === MatchModeType.AUTONOMOUS) {
             return 0
         }
 
@@ -172,8 +174,8 @@ class InputSystem extends WorldSystem {
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
 
-    private static leftJoystick: Joystick
-    private static rightJoystick: Joystick
+    private static _leftJoystick: Joystick
+    private static _rightJoystick: Joystick
 
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
@@ -195,11 +197,11 @@ class InputSystem extends WorldSystem {
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
 
         window.addEventListener("touchcontrolsloaded", () => {
-            InputSystem.leftJoystick = new Joystick(
+            InputSystem._leftJoystick = new Joystick(
                 document.getElementById("joystick-base-left")!,
                 document.getElementById("joystick-stick-left")!
             )
-            InputSystem.rightJoystick = new Joystick(
+            InputSystem._rightJoystick = new Joystick(
                 document.getElementById("joystick-base-right")!,
                 document.getElementById("joystick-stick-right")!
             )
@@ -222,7 +224,7 @@ class InputSystem extends WorldSystem {
         )
     }
 
-    public Update(_: number): void {
+    public update(_: number): void {
         // Fetch current gamepad information
         if (InputSystem._gpIndex == null) InputSystem.gamepad = null
         else InputSystem.gamepad = navigator.getGamepads()[InputSystem._gpIndex]
@@ -238,7 +240,7 @@ class InputSystem extends WorldSystem {
         }
     }
 
-    public Destroy(): void {
+    public destroy(): void {
         document.removeEventListener("keydown", this.handleKeyDown)
         document.removeEventListener("keyup", this.handleKeyUp)
         window.removeEventListener("gamepadconnected", this.gamepadConnected)
@@ -262,20 +264,24 @@ class InputSystem extends WorldSystem {
 
     /* Called once when a gamepad is first connected */
     private gamepadConnected(event: GamepadEvent) {
-        console.log(
-            "Gamepad connected at index %d: %s. %d buttons, %d axes.",
-            event.gamepad.index,
-            event.gamepad.id,
-            event.gamepad.buttons.length,
-            event.gamepad.axes.length
-        )
+        if (LOG_GAMEPAD_EVENTS) {
+            console.log(
+                "Gamepad connected at index %d: %s. %d buttons, %d axes.",
+                event.gamepad.index,
+                event.gamepad.id,
+                event.gamepad.buttons.length,
+                event.gamepad.axes.length
+            )
+        }
 
         InputSystem._gpIndex = event.gamepad.index
     }
 
     /* Called once when a gamepad is first disconnected */
     private gamepadDisconnected(event: GamepadEvent) {
-        console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
+        if (LOG_GAMEPAD_EVENTS) {
+            console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
+        }
 
         InputSystem._gpIndex = null
     }
@@ -358,10 +364,10 @@ class InputSystem extends WorldSystem {
     public static getTouchControlsAxis(axisType: TouchControlsAxes): number {
         let value: number
 
-        if (axisType === TouchControlsAxes.LEFT_Y) value = -InputSystem.leftJoystick.y
-        else if (axisType === TouchControlsAxes.RIGHT_X) value = InputSystem.rightJoystick.x
-        else if (axisType === TouchControlsAxes.RIGHT_Y) value = -InputSystem.rightJoystick.y
-        else value = InputSystem.leftJoystick.x
+        if (axisType === TouchControlsAxes.LEFT_Y) value = -InputSystem._leftJoystick.y
+        else if (axisType === TouchControlsAxes.RIGHT_X) value = InputSystem._rightJoystick.x
+        else if (axisType === TouchControlsAxes.RIGHT_Y) value = -InputSystem._rightJoystick.y
+        else value = InputSystem._leftJoystick.x
 
         return value!
     }

@@ -17,25 +17,25 @@ const MatchModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Field and Robot Selection"
-            icon={SynthesisIcons.Gear}
+            icon={SynthesisIcons.GEAR}
             modalId={modalId}
             acceptName="Load"
             cancelEnabled={false}
             onAccept={() => {}}
         >
-            <Label size={LabelSize.Large}>Select Red Robots</Label>
+            <Label size={LabelSize.LARGE}>Select Red Robots</Label>
             {Array(robotsPerAlliance)
                 .fill(0)
                 .map(() => (
                     <Dropdown options={robots} onSelect={() => {}} />
                 ))}
-            <Label size={LabelSize.Large}>Select Blue Robots</Label>
+            <Label size={LabelSize.LARGE}>Select Blue Robots</Label>
             {Array(robotsPerAlliance)
                 .fill(0)
                 .map(() => (
                     <Dropdown options={robots} onSelect={() => {}} />
                 ))}
-            <Label size={LabelSize.Large}>Select Field</Label>
+            <Label size={LabelSize.LARGE}>Select Field</Label>
             <Dropdown options={fields} onSelect={() => {}} />
         </Modal>
     )

@@ -13,7 +13,7 @@ const NewThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="New Theme"
-            icon={SynthesisIcons.Add}
+            icon={SynthesisIcons.ADD}
             modalId={modalId}
             acceptBlocked={!themeName}
             onAccept={() => {

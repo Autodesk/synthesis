@@ -16,7 +16,7 @@ const APSManagementModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 APS.logout()
             }}
         >
-            <Stack direction={StackDirection.Vertical} spacing={10}></Stack>
+            <Stack direction={StackDirection.VERTICAL} spacing={10}></Stack>
         </Modal>
     )
 }

@@ -16,9 +16,11 @@ import World from "../World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EjectorDriver from "./driver/EjectorDriver"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 
 class SimulationSystem extends WorldSystem {
     private _simMechanisms: Map<Mechanism, SimulationLayer>
+    public static perRobotScore: Map<MirabufSceneObject, number> = new Map()
 
     public static redScore = 0
     public static blueScore = 0
@@ -29,39 +31,63 @@ class SimulationSystem extends WorldSystem {
         this._simMechanisms = new Map()
     }
 
-    public RegisterMechanism(mechanism: Mechanism) {
+    public registerMechanism(mechanism: Mechanism) {
         if (this._simMechanisms.has(mechanism)) return
 
         this._simMechanisms.set(mechanism, new SimulationLayer(mechanism))
     }
 
-    public GetSimulationLayer(mechanism: Mechanism): SimulationLayer | undefined {
+    public getSimulationLayer(mechanism: Mechanism): SimulationLayer | undefined {
         return this._simMechanisms.get(mechanism)
     }
 
-    public Update(deltaT: number): void {
-        this._simMechanisms.forEach(simLayer => simLayer.Update(deltaT))
+    public update(deltaT: number): void {
+        this._simMechanisms.forEach(simLayer => simLayer.update(deltaT))
     }
 
-    public Destroy(): void {
-        this._simMechanisms.forEach(simLayer => simLayer.SetBrain(undefined))
+    public destroy(): void {
+        this._simMechanisms.forEach(simLayer => simLayer.setBrain(undefined))
         this._simMechanisms.clear()
     }
 
-    public UnregisterMechanism(mech: Mechanism): boolean {
+    public unregisterMechanism(mech: Mechanism): boolean {
         const layer = this._simMechanisms.get(mech)
         if (this._simMechanisms.delete(mech)) {
-            layer?.SetBrain(undefined)
+            layer?.setBrain(undefined)
             return true
         } else {
             return false
         }
     }
 
-    public static ResetScores(): void {
+    public static resetScores(): void {
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
-        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).Dispatch()
+        this.perRobotScore = new Map()
+        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).dispatch()
+    }
+
+    public static addPerRobotScore(robot: MirabufSceneObject, scoreToAdd: number): void {
+        const currentRobotScore = this.perRobotScore.get(robot) ?? 0
+        this.perRobotScore.set(robot, currentRobotScore + scoreToAdd)
+    }
+
+    public static robotPenalty(robot: MirabufSceneObject, penaltyPoints: number, penaltyInfo: string): void {
+        // Display a toast showing that a penalty was committed
+        globalAddToast(
+            "warning",
+            "PENALTY COMMITTED",
+            `Robot ${robot.nameTag?.text()} (${robot.assemblyName}), Committed Penalty: ${penaltyInfo}`
+        )
+        // Update match score
+        if (robot.alliance == "red") {
+            SimulationSystem.blueScore += penaltyPoints
+        } else {
+            SimulationSystem.redScore += penaltyPoints
+        }
+        new OnScoreChangedEvent(SimulationSystem.redScore, SimulationSystem.blueScore).dispatch()
+        // Update per robot score
+        this.addPerRobotScore(robot, -penaltyPoints)
     }
 }
 
@@ -85,7 +111,7 @@ class SimulationLayer {
     constructor(mechanism: Mechanism) {
         this._mechanism = mechanism
 
-        const assembly = [...World.SceneRenderer.sceneObjects.values()].find(
+        const assembly = [...World.sceneRenderer.sceneObjects.values()].find(
             x => (x as MirabufSceneObject).mechanism == mechanism
         ) as MirabufSceneObject
 
@@ -115,18 +141,18 @@ class SimulationLayer {
         })
 
         const chassisStim = new ChassisStimulus(
-            { type: StimulusType.Stim_ChassisAccel, guid: "CHASSIS_GUID" },
+            { type: StimulusType.STIM_CHASSIS_ACCEL, guid: "CHASSIS_GUID" },
             mechanism.nodeToBody.get(mechanism.rootBody)!,
             { GUID: "CHASSIS_GUID", name: "Chassis" }
         )
         this._stimuli.set(JSON.stringify(chassisStim.id), chassisStim)
 
         if (assembly) {
-            const intakeDriv = new IntakeDriver({ type: DriverType.Driv_Intake, guid: "INTAKE_GUID" }, assembly, {
+            const intakeDriv = new IntakeDriver({ type: DriverType.INTAKE, guid: "INTAKE_GUID" }, assembly, {
                 GUID: "INTAKE_GUID",
                 name: "Intake",
             })
-            const ejectorDriv = new EjectorDriver({ type: DriverType.Driv_Ejector, guid: "EJECTOR_GUID" }, assembly, {
+            const ejectorDriv = new EjectorDriver({ type: DriverType.EJECTOR, guid: "EJECTOR_GUID" }, assembly, {
                 GUID: "EJECTOR_GUID",
                 name: "Ejector",
             })
@@ -137,25 +163,25 @@ class SimulationLayer {
         }
     }
 
-    public Update(deltaT: number) {
-        this._brain?.Update(deltaT)
-        this._drivers.forEach(x => x.Update(deltaT))
-        this._stimuli.forEach(x => x.Update(deltaT))
+    public update(deltaT: number) {
+        this._brain?.update(deltaT)
+        this._drivers.forEach(x => x.update(deltaT))
+        this._stimuli.forEach(x => x.update(deltaT))
     }
 
-    public SetBrain<T extends Brain>(brain: T | undefined) {
-        if (this._brain) this._brain.Disable()
+    public setBrain<T extends Brain>(brain: T | undefined) {
+        if (this._brain) this._brain.disable()
 
         this._brain = brain
 
-        if (this._brain) this._brain.Enable()
+        if (this._brain) this._brain.enable()
     }
 
-    public GetStimuli(id: string) {
+    public getStimuli(id: string) {
         return this._stimuli.get(id)
     }
 
-    public GetDriver(id: string) {
+    public getDriver(id: string) {
         return this._drivers.get(id)
     }
 }

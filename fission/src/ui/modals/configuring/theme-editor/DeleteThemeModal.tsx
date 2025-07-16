@@ -12,7 +12,7 @@ const DeleteThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={`Delete ${currentTheme}?`}
-            icon={SynthesisIcons.Xmark}
+            icon={SynthesisIcons.XMARK}
             modalId={modalId}
             onAccept={() => {
                 deleteTheme(currentTheme)
