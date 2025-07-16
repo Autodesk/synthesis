@@ -4,38 +4,37 @@ import type MirabufInstance from "../../mirabuf/MirabufInstance"
 import type Mechanism from "@/systems/physics/Mechanism"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { createBodyMock } from "../mocks/jolt"
-import World from "@/systems/World"
 import IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
 
-function mockBodyId() {
-    return { GetIndex: () => 0, GetIndexAndSequenceNumber: () => 0 }
+const mockPhysicsSystem = {
+    createMechanismFromParser: vi.fn(() => mockMechanism()),
+    setBodyAssociation: vi.fn(),
+    getBody: vi.fn(() => createBodyMock() as unknown),
+    enablePhysicsForBody: vi.fn(),
+    disablePhysicsForBody: vi.fn(),
+    removeBodyAssociation: vi.fn(),
+    destroyMechanism: vi.fn(),
+}
+const mockSceneRenderer = {
+    sceneObjects: new Map(),
+    scene: { add: vi.fn(), remove: vi.fn() },
+    registerSceneObject: vi.fn(),
+    removeSceneObject: vi.fn(),
+    createSphere: vi.fn(() => ({ material: {}, geometry: {}, position: {}, rotation: {} })),
+    currentCameraControls: { focusProvider: undefined, controlsType: "Orbit", locked: false },
+    worldToPixelSpace: vi.fn(() => [0, 0]),
+}
+const mockSimulationSystem = {
+    registerMechanism: vi.fn(),
+    getSimulationLayer: vi.fn(() => ({ setBrain: vi.fn() })),
+    unregisterMechanism: vi.fn(),
 }
 
 vi.mock("@/systems/World", () => ({
     default: {
-        PhysicsSystem: {
-            CreateMechanismFromParser: vi.fn(() => mockMechanism()),
-            SetBodyAssociation: vi.fn(),
-            GetBody: vi.fn(() => createBodyMock() as unknown),
-            EnablePhysicsForBody: vi.fn(),
-            DisablePhysicsForBody: vi.fn(),
-            RemoveBodyAssociation: vi.fn(),
-            DestroyMechanism: vi.fn(),
-        },
-        SceneRenderer: {
-            sceneObjects: new Map(),
-            scene: { add: vi.fn(), remove: vi.fn() },
-            RegisterSceneObject: vi.fn(),
-            RemoveSceneObject: vi.fn(),
-            CreateSphere: vi.fn(() => ({ material: {}, geometry: {}, position: {}, rotation: {} })),
-            currentCameraControls: { focusProvider: undefined, controlsType: "Orbit", locked: false },
-            WorldToPixelSpace: vi.fn(() => [0, 0]),
-        },
-        SimulationSystem: {
-            RegisterMechanism: vi.fn(),
-            GetSimulationLayer: vi.fn(() => ({ SetBrain: vi.fn() })),
-            UnregisterMechanism: vi.fn(),
-        },
+        get physicsSystem() { return mockPhysicsSystem },
+        get sceneRenderer() { return mockSceneRenderer },
+        get simulationSystem() { return mockSimulationSystem },
     },
 }))
 
@@ -55,7 +54,7 @@ vi.mock("@/systems/preferences/PreferencesSystem", () => ({
 }))
 
 vi.mock("@/ui/components/SceneOverlayEvents", () => ({
-    SceneOverlayTag: vi.fn(() => ({ Dispose: vi.fn() })),
+    SceneOverlayTag: vi.fn(() => ({ dispose: vi.fn() })),
 }))
 
 vi.mock("@/systems/simulation/synthesis_brain/SynthesisBrain", () => ({
@@ -74,12 +73,16 @@ function mockMechanism(): Mechanism {
         stepListeners: [],
         controllable: true,
         ghostBodies: [],
-        layerReserve: { Release: vi.fn() },
-        GetBodyByNodeId: vi.fn(() => mockBodyId()),
-        AddConstraint: vi.fn(),
-        AddStepListener: vi.fn(),
-        DisablePhysics: vi.fn(),
+        layerReserve: { release: vi.fn() },
+        getBodyByNodeId: vi.fn(() => mockBodyId()),
+        addConstraint: vi.fn(),
+        addStepListener: vi.fn(),
+        disablePhysics: vi.fn(),
     } as unknown as Mechanism
+}
+
+function mockBodyId() {
+    return { GetIndex: () => 0, GetIndexAndSequenceNumber: () => 0 }
 }
 
 function mockMirabufInstance(): MirabufInstance {
@@ -92,8 +95,8 @@ function mockMirabufInstance(): MirabufInstance {
             ]),
             globalTransforms: new Map(),
         },
-        AddToScene: vi.fn(),
-        Dispose: vi.fn(),
+        addToScene: vi.fn(),
+        dispose: vi.fn(),
         meshes: new Map(),
         batches: [],
         materials: new Map(),
@@ -101,7 +104,6 @@ function mockMirabufInstance(): MirabufInstance {
 }
 
 function setPrivate<T>(obj: T, key: string, value: unknown) {
-    // eslint-disable-next-line no-extra-semi
     ;(obj as Record<string, unknown>)[key] = value
 }
 
@@ -136,14 +138,14 @@ describe("MirabufSceneObject", () => {
     })
 
     test("Setup calls AddToScene, SetBodyAssociation, RegisterMechanism, and sets brain", () => {
-        instance.Setup()
-        expect(mirabufInstance.AddToScene).toHaveBeenCalled()
+        instance.setup()
+        expect(mirabufInstance.addToScene).toHaveBeenCalled()
         expect(instance.brain).toBeDefined()
     })
 
     test("Update calls UpdateMeshTransforms and UpdateBatches", () => {
-        const spy = vi.spyOn(instance, "UpdateMeshTransforms")
-        instance.Update()
+        const spy = vi.spyOn(instance, "updateMeshTransforms")
+        instance.update()
         expect(spy).toHaveBeenCalled()
     })
 
@@ -151,9 +153,9 @@ describe("MirabufSceneObject", () => {
         setPrivate(instance, "_ejectables", [{ id: 1, gamePieceBodyId: mockBodyId() }])
         setPrivate(instance, "_scoringZones", [{ id: 2 }])
         setPrivate(instance, "_intakeSensor", { id: 3 } as unknown as IntakeSensorSceneObject)
-        instance.Dispose()
-        expect(World.SceneRenderer.RemoveSceneObject).toHaveBeenCalled()
-        expect(World.PhysicsSystem.DestroyMechanism).toHaveBeenCalled()
+        instance.dispose()
+        expect(mockSceneRenderer.removeSceneObject).toHaveBeenCalled()
+        expect(mockPhysicsSystem.destroyMechanism).toHaveBeenCalled()
     })
 
     test("activeEjectables returns correct body IDs", () => {
@@ -166,7 +168,7 @@ describe("MirabufSceneObject", () => {
 
     test("SetEjectable returns false if not configured or max reached", () => {
         const bodyId = mockBodyId()
-        expect(instance.SetEjectable(undefined)).toBe(false)
+        expect(instance.setEjectable(undefined)).toBe(false)
         setPrivate(instance, "_ejectorPreferences", {
             parentNode: "n",
             deltaTransformation: [1],
@@ -180,7 +182,7 @@ describe("MirabufSceneObject", () => {
             showZoneAlways: false,
             maxPieces: 0,
         })
-        expect(instance.SetEjectable(bodyId)).toBe(false)
+        expect(instance.setEjectable(bodyId)).toBe(false)
     })
 
     test("SetEjectable returns true and registers ejectable if valid", () => {
@@ -200,7 +202,7 @@ describe("MirabufSceneObject", () => {
         setPrivate(instance, "_ejectables", [])
         const bodyId = mockBodyId()
         bodyId.GetIndexAndSequenceNumber = () => 123
-        const result = instance.SetEjectable(bodyId)
+        const result = instance.setEjectable(bodyId)
         expect(result).toBe(true)
     })
 })

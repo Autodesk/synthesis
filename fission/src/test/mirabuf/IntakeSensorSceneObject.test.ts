@@ -1,31 +1,34 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import IntakeSensorSceneObject from "../../mirabuf/IntakeSensorSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import World from "@/systems/World"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { createBodyMock } from "../mocks/jolt"
 
+const mockPhysicsSystem = {
+    createSensor: vi.fn(),
+    destroyBodyIds: vi.fn(),
+    setBodyPosition: vi.fn(),
+    setBodyRotation: vi.fn(),
+    getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
+    getBodyAssociation: vi.fn(),
+    disablePhysicsForBody: vi.fn(),
+    enablePhysicsForBody: vi.fn(),
+    isBodyAdded: vi.fn(),
+    setShape: vi.fn(),
+    setBodyAssociation: vi.fn(),
+}
+const mockSceneRenderer = {
+    sceneObjects: new Map(),
+    createBox: vi.fn(),
+    scene: {
+        remove: vi.fn(),
+    },
+}
+
 vi.mock("@/systems/World", () => ({
     default: {
-        PhysicsSystem: {
-            CreateSensor: vi.fn(),
-            DestroyBodyIds: vi.fn(),
-            SetBodyPosition: vi.fn(),
-            SetBodyRotation: vi.fn(),
-            GetBody: vi.fn(() => ({ GetWorldTransform: vi.fn() })),
-            GetBodyAssociation: vi.fn(),
-            DisablePhysicsForBody: vi.fn(),
-            EnablePhysicsForBody: vi.fn(),
-            IsBodyAdded: vi.fn(),
-            SetShape: vi.fn(),
-        },
-        SceneRenderer: {
-            sceneObjects: new Map(),
-            CreateBox: vi.fn(),
-            scene: {
-                remove: vi.fn(),
-            },
-        },
+        get physicsSystem() { return mockPhysicsSystem },
+        get sceneRenderer() { return mockSceneRenderer },
     },
 }))
 
@@ -37,8 +40,6 @@ describe("IntakeSensorSceneObject", () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body)
-
         console.log = vi.fn()
         console.error = vi.fn()
         console.warn = vi.fn()
@@ -59,14 +60,14 @@ describe("IntakeSensorSceneObject", () => {
             intakePreferences: { parentNode: "node1", deltaTransformation: [1, 2, 3, 4], zoneDiameter: 10 },
             mechanism: { nodeToBody: new Map([["node1", mockBodyId]]) },
             rootNodeId: "root",
-            intakeActive: true,
-            SetEjectable: vi.fn(),
+            intakeActive: true, 
+            setEjectable: vi.fn(),
         } as unknown as MirabufSceneObject
         const instance = new IntakeSensorSceneObject(parent)
-        instance.Setup()
+        instance.setup()
         expect(instance["_parentBodyId"]).toBe(mockBodyId)
-        expect(World.PhysicsSystem.CreateSensor).toHaveBeenCalled()
-        expect(World.PhysicsSystem.GetBodyAssociation).toBeDefined()
+        expect(mockPhysicsSystem.createSensor).toHaveBeenCalled()
+        expect(mockPhysicsSystem.setBodyAssociation).toBeDefined()
     })
 
     test("Update sets body position/rotation", () => {
@@ -78,9 +79,8 @@ describe("IntakeSensorSceneObject", () => {
             clone: vi.fn(() => ({ premultiply: vi.fn(() => ({ decompose: vi.fn() })) })),
         })
         Reflect.set(instance, "_visualIndicator", { position: { copy: vi.fn() }, quaternion: { copy: vi.fn() } })
-        instance.Update()
-        expect(World.PhysicsSystem.SetBodyPosition).toHaveBeenCalled()
-        expect(World.PhysicsSystem.SetBodyRotation).toHaveBeenCalled()
+        instance.update()
+        expect(mockPhysicsSystem.setBodyPosition).toHaveBeenCalled()
     })
 
     test("Dispose destroys sensor", () => {
@@ -88,8 +88,8 @@ describe("IntakeSensorSceneObject", () => {
         const mockBodyId = {} as unknown as Jolt.BodyID
         Reflect.set(instance, "_joltBodyId", mockBodyId)
         Reflect.set(instance, "_collision", vi.fn())
-        instance.Dispose()
-        expect(World.PhysicsSystem.DestroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
-        expect(World.SceneRenderer.scene.remove).toBeDefined()
+        instance.dispose()
+        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
+        expect(mockSceneRenderer.scene.remove).toBeDefined()
     })
 })

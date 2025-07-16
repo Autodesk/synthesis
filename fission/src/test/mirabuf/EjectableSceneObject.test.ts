@@ -2,30 +2,32 @@ import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import EjectableSceneObject from "../../mirabuf/EjectableSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
-import World from "@/systems/World"
 import { createVec3Mock, createBodyMock } from "../mocks/jolt"
+
+const mockPhysicsSystem = {
+    createSensor: vi.fn(),
+    destroyBodyIds: vi.fn(),
+    setBodyPosition: vi.fn(),
+    setBodyRotation: vi.fn(),
+    getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
+    getBodyAssociation: vi.fn(),
+    disablePhysicsForBody: vi.fn(),
+    enablePhysicsForBody: vi.fn(),
+    isBodyAdded: vi.fn(),
+    setShape: vi.fn(),
+}
+const mockSceneRenderer = {
+    sceneObjects: new Map(),
+    createBox: vi.fn(),
+    scene: {
+        remove: vi.fn(),
+    },
+}
 
 vi.mock("@/systems/World", () => ({
     default: {
-        PhysicsSystem: {
-            CreateSensor: vi.fn(),
-            DestroyBodyIds: vi.fn(),
-            SetBodyPosition: vi.fn(),
-            SetBodyRotation: vi.fn(),
-            GetBody: vi.fn(() => ({ GetWorldTransform: vi.fn() })),
-            GetBodyAssociation: vi.fn(),
-            DisablePhysicsForBody: vi.fn(),
-            EnablePhysicsForBody: vi.fn(),
-            IsBodyAdded: vi.fn(),
-            SetShape: vi.fn(),
-        },
-        SceneRenderer: {
-            sceneObjects: new Map(),
-            CreateBox: vi.fn(),
-            scene: {
-                remove: vi.fn(),
-            },
-        },
+        get physicsSystem() { return mockPhysicsSystem },
+        get sceneRenderer() { return mockSceneRenderer },
     },
 }))
 
@@ -37,30 +39,6 @@ describe("EjectableSceneObject", () => {
 
     beforeEach(() => {
         vi.clearAllMocks()
-        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body)
-        vi.stubGlobal("World", {
-            ...World,
-            PhysicsSystem: {
-                CreateSensor: vi.fn(),
-                DestroyBodyIds: vi.fn(),
-                SetBodyPosition: vi.fn(),
-                SetBodyRotation: vi.fn(),
-                GetBody: vi.fn(() => ({ GetWorldTransform: vi.fn() })),
-                GetBodyAssociation: vi.fn(),
-                DisablePhysicsForBody: vi.fn(),
-                EnablePhysicsForBody: vi.fn(),
-                IsBodyAdded: vi.fn(),
-                SetShape: vi.fn(),
-            },
-            SceneRenderer: {
-                sceneObjects: new Map(),
-                CreateBox: vi.fn(),
-                scene: {
-                    remove: vi.fn(),
-                },
-            },
-        })
-
         console.log = vi.fn()
         console.error = vi.fn()
         console.warn = vi.fn()
@@ -81,12 +59,12 @@ describe("EjectableSceneObject", () => {
             ejectorPreferences: { parentNode: "node1", deltaTransformation: [1, 2, 3, 4], ejectorVelocity: 5 },
             mechanism: { nodeToBody: new Map([["node1", mockBodyId]]) },
             rootNodeId: "root",
-        } as unknown as MirabufSceneObject
+        } as unknown as MirabufSceneObject 
         const gamePieceBody = {} as unknown as Jolt.BodyID
         const instance = new EjectableSceneObject(parent, gamePieceBody)
-        instance.Setup()
+        instance.setup()
         expect(instance["_parentBodyId"]).toBe(mockBodyId)
-        expect(World.PhysicsSystem.DisablePhysicsForBody).toHaveBeenCalledWith(gamePieceBody)
+        expect(mockPhysicsSystem.disablePhysicsForBody).toHaveBeenCalledWith(gamePieceBody)
     })
 
     test("Eject sets velocities and enables physics", () => {
@@ -94,7 +72,7 @@ describe("EjectableSceneObject", () => {
         Reflect.set(instance, "_parentBodyId", {} as unknown as Jolt.BodyID)
         Reflect.set(instance, "_ejectVelocity", 1)
         Reflect.set(instance, "_gamePieceBodyId", {} as unknown as Jolt.BodyID)
-        World.PhysicsSystem.IsBodyAdded = vi.fn(() => true)
+        mockPhysicsSystem.isBodyAdded = vi.fn(() => true)
         const quatMock = {
             GetX: vi.fn(() => 0),
             GetY: vi.fn(() => 0),
@@ -123,14 +101,14 @@ describe("EjectableSceneObject", () => {
             SetAngularVelocity: vi.fn(),
             GetAngularVelocity: vi.fn(() => createVec3Mock()),
         } as unknown as Jolt.Body
-        World.PhysicsSystem.GetBody = vi.fn(() => bodyMock)
-        expect(() => instance.Eject()).not.toThrow()
+        mockPhysicsSystem.getBody = vi.fn(() => bodyMock)
+        expect(() => instance.eject()).not.toThrow()
     })
 
     test("Dispose enables physics for game piece", () => {
         const instance = new EjectableSceneObject({} as unknown as MirabufSceneObject, {} as unknown as Jolt.BodyID)
         Reflect.set(instance, "_gamePieceBodyId", {} as unknown as Jolt.BodyID)
-        instance.Dispose()
-        expect(World.PhysicsSystem.EnablePhysicsForBody).toHaveBeenCalledWith(Reflect.get(instance, "_gamePieceBodyId"))
+        instance.dispose()
+        expect(mockPhysicsSystem.enablePhysicsForBody).toHaveBeenCalledWith(Reflect.get(instance, "_gamePieceBodyId"))
     })
 })
