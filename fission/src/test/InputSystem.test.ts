@@ -282,10 +282,9 @@ describe("Default Input Scheme Checks", () => {
         DefaultInputs.defaultInputCopies.forEach(scheme => {
             const usedKeys = new Map<KeyDescriptor, number>()
             scheme.inputs.forEach(input => {
-                input.keysUsed.forEach(key => {
-                    if (key == null) return
-                    usedKeys.set(key, (usedKeys.get(key) ?? 0) + 1)
-                })
+                input.keysUsed
+                    .filter(key => key != null)
+                    .forEach(key => usedKeys.set(key, (usedKeys.get(key) ?? 0) + 1))
                 usedKeys.forEach((count, key) => {
                     expect.soft(count, `key ${key} used only once in scheme ${scheme.schemeName}`).toBe(1)
                 })
