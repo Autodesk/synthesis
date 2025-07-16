@@ -1,32 +1,34 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import ScoringZoneSceneObject, { OnScoreChangedEvent } from "../../mirabuf/ScoringZoneSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import World from "@/systems/World"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { createBodyMock } from "../mocks/jolt"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
+
+const mockPhysicsSystem = {
+    createSensor: vi.fn(),
+    destroyBodyIds: vi.fn(),
+    setBodyPosition: vi.fn(),
+    setBodyRotation: vi.fn(),
+    getBody: vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body),
+    getBodyAssociation: vi.fn(),
+    disablePhysicsForBody: vi.fn(),
+    enablePhysicsForBody: vi.fn(),
+    isBodyAdded: vi.fn(),
+    setShape: vi.fn(),
+}
+const mockSceneRenderer = {
+    sceneObjects: new Map(),
+    createBox: vi.fn(),
+    scene: {
+        remove: vi.fn(),
+    },
+}
 
 vi.mock("@/systems/World", () => ({
     default: {
-        PhysicsSystem: {
-            CreateSensor: vi.fn(),
-            DestroyBodyIds: vi.fn(),
-            SetBodyPosition: vi.fn(),
-            SetBodyRotation: vi.fn(),
-            GetBody: vi.fn(() => ({ GetWorldTransform: vi.fn() })),
-            GetBodyAssociation: vi.fn(),
-            DisablePhysicsForBody: vi.fn(),
-            EnablePhysicsForBody: vi.fn(),
-            IsBodyAdded: vi.fn(),
-            SetShape: vi.fn(),
-        },
-        SceneRenderer: {
-            sceneObjects: new Map(),
-            CreateBox: vi.fn(),
-            scene: {
-                remove: vi.fn(),
-            },
-        },
+        get physicsSystem() { return mockPhysicsSystem },
+        get sceneRenderer() { return mockSceneRenderer },
     },
 }))
 
@@ -37,30 +39,6 @@ describe("ScoringZoneSceneObject", () => {
         vi.clearAllMocks()
         SimulationSystem.redScore = 0
         SimulationSystem.blueScore = 0
-        World.PhysicsSystem.GetBody = vi.fn((_bodyId: Jolt.BodyID) => createBodyMock() as unknown as Jolt.Body)
-        vi.stubGlobal("World", {
-            ...World,
-            PhysicsSystem: {
-                CreateSensor: vi.fn(),
-                DestroyBodyIds: vi.fn(),
-                SetBodyPosition: vi.fn(),
-                SetBodyRotation: vi.fn(),
-                GetBody: vi.fn(() => ({ GetWorldTransform: vi.fn() })),
-                GetBodyAssociation: vi.fn(),
-                DisablePhysicsForBody: vi.fn(),
-                EnablePhysicsForBody: vi.fn(),
-                IsBodyAdded: vi.fn(),
-                SetShape: vi.fn(),
-            },
-            SceneRenderer: {
-                sceneObjects: new Map(),
-                CreateBox: vi.fn(),
-                scene: {
-                    remove: vi.fn(),
-                },
-            },
-        })
-
         console.log = vi.fn()
     })
 
@@ -87,18 +65,18 @@ describe("ScoringZoneSceneObject", () => {
             rootNodeId: "root",
         } as unknown as MirabufSceneObject
         const instance = new ScoringZoneSceneObject(parent, 0)
-        instance.Setup()
+        instance.setup()
         expect(instance["_parentBodyId"]).toBe(mockBodyId)
-        expect(World.PhysicsSystem.CreateSensor).toHaveBeenCalled()
+        expect(mockPhysicsSystem.createSensor).toHaveBeenCalled()
     })
 
     test("ZoneCollision updates score", () => {
         const instance = new ScoringZoneSceneObject({} as unknown as MirabufSceneObject, 0)
         Reflect.set(instance, "_prefs", { persistentPoints: false, alliance: "red", points: 10 })
         const gamePieceBody = {} as unknown as Jolt.BodyID
-        World.PhysicsSystem.GetBodyAssociation = vi.fn(() => ({ isGamePiece: true, associatedBody: 0 }))
-        const dispatchSpy = vi.spyOn(OnScoreChangedEvent.prototype, "Dispatch")
-        instance["ZoneCollision"](gamePieceBody)
+        mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ isGamePiece: true, associatedBody: 0 }))
+        const dispatchSpy = vi.spyOn(OnScoreChangedEvent.prototype, "dispatch")
+        instance["zoneCollision"](gamePieceBody)
         expect(SimulationSystem.redScore).toBe(10)
         expect(dispatchSpy).toHaveBeenCalled()
     })
@@ -109,10 +87,10 @@ describe("ScoringZoneSceneObject", () => {
         Reflect.set(instance, "_joltBodyId", mockBodyId)
         const mockMesh = { geometry: { dispose: vi.fn() }, material: { dispose: vi.fn() } }
         Reflect.set(instance, "_mesh", mockMesh)
-        instance.Dispose()
-        expect(World.PhysicsSystem.DestroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
+        instance.dispose()
+        expect(mockPhysicsSystem.destroyBodyIds).toHaveBeenCalledWith(Reflect.get(instance, "_joltBodyId"))
         expect(mockMesh.geometry.dispose).toHaveBeenCalled()
         expect(mockMesh.material.dispose).toHaveBeenCalled()
-        expect(World.SceneRenderer.scene.remove).toHaveBeenCalledWith(mockMesh)
+        expect(mockSceneRenderer.scene.remove).toHaveBeenCalledWith(mockMesh)
     })
 })

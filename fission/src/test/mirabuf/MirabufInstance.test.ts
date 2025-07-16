@@ -4,12 +4,14 @@ import MirabufInstance from "../../mirabuf/MirabufInstance"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { ParseErrorSeverity } from "../../mirabuf/MirabufParser"
 
-vi.mock("@/systems/World.ts", () => ({
+const mockSceneRenderer = {
+    createToonMaterial: vi.fn(() => new THREE.MeshStandardMaterial({ color: 0x123456 })),
+    setupMaterial: vi.fn(),
+}
+
+vi.mock("@/systems/World", () => ({
     default: {
-        SceneRenderer: {
-            CreateToonMaterial: vi.fn(() => new THREE.MeshStandardMaterial({ color: 0x123456 })),
-            SetupMaterial: vi.fn(),
-        },
+        get sceneRenderer() { return mockSceneRenderer },
     },
 }))
 
@@ -79,36 +81,36 @@ describe("MirabufInstance", () => {
     })
 
     test("throws if parser has unimportable errors", () => {
-        const badParser = { ...parser, errors: [[ParseErrorSeverity.Unimportable, "fail"]] } as MirabufParser
+        const badParser = { ...parser, errors: [[ParseErrorSeverity.UNIMPORTABLE, "fail"]] } as MirabufParser
         expect(() => new MirabufInstance(badParser)).toThrow()
     })
 
     test("AddToScene adds all batches to scene", () => {
         const instance = new MirabufInstance(parser)
         const addSpy = vi.spyOn(scene, "add")
-        instance.AddToScene(scene)
+        instance.addToScene(scene)
         expect(addSpy).toHaveBeenCalled()
         expect(scene.children.length).toBeGreaterThan(0)
     })
 
     test("Dispose removes all batches and clears materials", () => {
         const instance = new MirabufInstance(parser)
-        instance.AddToScene(scene)
+        instance.addToScene(scene)
         expect(scene.children.length).toBeGreaterThan(0)
-        instance.Dispose(scene)
+        instance.dispose(scene)
         expect(scene.children.length).toBe(0)
-        expect(instance.batches.length).toBe(0)
+        expect(instance.batches.length).toBe(0) 
         expect(instance.meshes.size).toBe(0)
         expect(instance.materials.size).toBe(0)
     })
 
     test("Dispose is idempotent and safe to call multiple times", () => {
         const instance = new MirabufInstance(parser)
-        instance.AddToScene(scene)
+        instance.addToScene(scene)
         expect(() => {
-            instance.Dispose(scene)
-            instance.Dispose(scene)
-            instance.Dispose(scene)
+            instance.dispose(scene)
+            instance.dispose(scene)
+            instance.dispose(scene)
         }).not.toThrow()
         expect(scene.children.length).toBe(0)
         expect(instance.batches.length).toBe(0)
