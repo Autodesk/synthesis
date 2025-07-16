@@ -1,0 +1,90 @@
+import React, { useContext, useEffect, useState } from "react";
+import WPILibBrain, {
+	getSimMap,
+	SimType,
+} from "@/systems/simulation/wpilib_brain/WPILibBrain";
+import World from "@/systems/World";
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
+import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus";
+import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput";
+import RoboRIOModal from "../RoboRIOModal";
+import { MenuItem, Select, TextField, Typography } from "@mui/material";
+import { UIContext } from "@/ui/UIProvider";
+
+const RCConfigEncoderModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
+	const { openModal } = useContext(UIContext);
+	const [_name, setName] = useState<string>("");
+
+	let stimuli: EncoderStimulus[] = [];
+	let simLayer;
+	let brain: WPILibBrain;
+
+	const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(
+		(x) => x[1] instanceof MirabufSceneObject,
+	);
+	if (miraObjs.length > 0) {
+		// TODO: make the object selectable
+		const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism;
+		simLayer = World.simulationSystem.getSimulationLayer(mechanism);
+		stimuli =
+			simLayer?.stimuli.filter((s) => s instanceof EncoderStimulus) ?? [];
+		brain = simLayer?.brain as WPILibBrain;
+	}
+
+	const devices: [string, unknown][] = [
+		...(getSimMap()?.get(SimType.CAN_ENCODER)?.entries() ?? []),
+	]; // ugly
+
+	const stimMap = new Map<string, EncoderStimulus>();
+
+	stimuli.forEach((stim) => {
+		const label = `${stim.constructor.name} ${stim.info?.name && "(" + stim.info!.name + ")"}`;
+		stimMap.set(label, stim);
+	});
+
+	const [selectedDevice, setSelectedDevice] = useState<string>(
+		devices[0] && devices[0][0],
+	);
+	const [selectedStimulus, setSelectedStimulus] = useState<
+		EncoderStimulus | undefined
+	>(stimuli[0]);
+
+	useEffect(() => {
+		modal!.props.onAccept = () => {
+			if (selectedDevice && selectedStimulus)
+				brain.addSimInput(
+					new SimEncoderInput(selectedDevice, selectedStimulus),
+				);
+		};
+		modal!.props.onCancel = () => openModal(<RoboRIOModal />, modal);
+	}, []);
+
+	return (
+		<>
+			<Typography variant="h6">Name</Typography>
+			<TextField
+				placeholder="..."
+				className="w-full"
+				onChange={(e) => setName(e.target.value)}
+			/>
+			<Select
+				label="CAN Encoders"
+				onChange={(e) => setSelectedDevice(e.target.value as string)}
+			>
+				{devices.map((d) => (
+					<MenuItem value={d[0]}>{d[0]}</MenuItem>
+				))}
+			</Select>
+			<Select
+				label="Stimuli"
+				onChange={(e) => setSelectedStimulus(stimMap.get(e.target.value as string))}
+			>
+				{[...stimMap.keys()].map((s) => (
+					<MenuItem value={s}>{s}</MenuItem>
+				))}
+			</Select>
+		</>
+	);
+};
+
+export default RCConfigEncoderModal;
