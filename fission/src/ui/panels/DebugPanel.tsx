@@ -2,7 +2,7 @@ import Panel, { PanelPropsImpl } from "../components/Panel"
 import Button from "../components/Button"
 import World from "@/systems/World"
 import { ToastType } from "../ToastContext"
-import { Random } from "@/util/Random"
+import { random } from "@/util/Random"
 import MirabufCachingService, {
     backUpFields as hashedMiraFields,
     backUpRobots as hashedMiraRobots,
@@ -15,7 +15,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Label from "../components/Label"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import { SynthesisIcons } from "../components/StyledComponents"
-import { Global_AddToast } from "../components/GlobalUIControls"
+import { globalAddToast } from "../components/GlobalUIControls"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,
@@ -23,12 +23,12 @@ const LabelStyled = styled(Label)({
     marginTop: "0.5rem",
 })
 
-function ToggleDragMode() {
-    const dragSystem = World.DragModeSystem
+function toggleDragMode() {
+    const dragSystem = World.dragModeSystem
     if (dragSystem) {
         dragSystem.enabled = !dragSystem.enabled
         const status = dragSystem.enabled ? "enabled" : "disabled"
-        Global_AddToast?.("info", "Drag Mode", `Drag mode has been ${status}`)
+        globalAddToast("info", "Drag Mode", `Drag mode has been ${status}`)
     }
 }
 
@@ -39,7 +39,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="center"
             name={"Debug Tools"}
-            icon={SynthesisIcons.BugLarge}
+            icon={SynthesisIcons.BUG_LARGE}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"
@@ -62,8 +62,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <Button
                         value={"Toasts"}
                         onClick={() => {
-                            const type: ToastType = ["info", "warning", "error"][Math.floor(Random() * 3)] as ToastType
-                            Global_AddToast?.(type, type, "This is a test toast to test the toast system")
+                            const type: ToastType = ["info", "warning", "error"][Math.floor(random() * 3)] as ToastType
+                            globalAddToast(type, type, "This is a test toast to test the toast system")
                         }}
                         className="w-full"
                     />
@@ -74,7 +74,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         }}
                         className="w-full"
                     />
-                    <Button value={"Toggle Drag Mode"} onClick={ToggleDragMode} className="w-full" />
+                    <Button value={"Toggle Drag Mode"} onClick={toggleDragMode} className="w-full" />
                     <Button
                         value={"Clear Preferences"}
                         onClick={() => PreferencesSystem.clearPreferences()}
@@ -84,15 +84,16 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <LabelStyled>Autodesk Platform Services</LabelStyled>
                     <Button
                         value={"Refresh APS Token"}
-                        onClick={async () =>
-                            APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
-                        }
+                        onClick={async () => {
+                            const auth = await APS.getAuth()
+                            auth && APS.refreshAuthToken(auth.refresh_token, true)
+                        }}
                         className="w-full"
                     />
                     <Button
                         value={"Expire APS Token"}
-                        onClick={() => {
-                            if (APS.isSignedIn()) {
+                        onClick={async () => {
+                            if (await APS.isSignedIn()) {
                                 APS.setExpiresAt(Date.now())
                                 APS.getAuthOrLogin()
                             }
@@ -104,8 +105,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <Button
                         value={"Print Mira Maps"}
                         onClick={() => {
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.ROBOT))
-                            console.log(MirabufCachingService.GetCacheMap(MiraType.FIELD))
+                            console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
+                            console.log(MirabufCachingService.getCacheMap(MiraType.FIELD))
                             console.log(hashedMiraRobots)
                             console.log(hashedMiraFields)
                         }}
@@ -113,7 +114,7 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     />
                     <Button
                         value={"Clear Mira Cache"}
-                        onClick={() => MirabufCachingService.RemoveAll()}
+                        onClick={() => MirabufCachingService.removeAll()}
                         className="w-full"
                     />
 

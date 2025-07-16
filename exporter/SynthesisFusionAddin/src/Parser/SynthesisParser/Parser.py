@@ -24,6 +24,16 @@ from src.UI.Camera import captureThumbnail, clearIconCache
 logger = getLogger()
 
 
+def reload() -> None:
+    """Reloads the Parser module"""
+    import importlib
+
+    importlib.reload(Components)
+    importlib.reload(Joints)
+    importlib.reload(Materials)
+    importlib.reload(PDMessage)
+
+
 class Parser:
     def __init__(self, options: ExporterOptions):
         """Creates a new parser with the supplied options

@@ -11,7 +11,7 @@ import SubsystemRowInterface from "./SubsystemRowInterface"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
-import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import { defaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
 
 class ConfigModeSelectionOption extends SelectMenuOption {
@@ -54,12 +54,12 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
             PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
-                .map(b => DefaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
+                .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
         [selectedRobot.assemblyName, selectedRobot.brain]
     )
 
     const drivers = useMemo(() => {
-        return World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers
+        return World.simulationSystem.getSimulationLayer(selectedRobot.mechanism)?.drivers
     }, [selectedRobot])
 
     const getSubsystemOptions = () => {

@@ -3,6 +3,7 @@ import { Box } from "@mui/system"
 import { useEffect, useReducer, useState } from "react"
 import { ProgressHandle, ProgressHandleStatus, ProgressEvent } from "./ProgressNotificationData"
 import { easeOutQuad } from "@/util/EasingFunctions"
+import React from "react"
 
 interface ProgressData {
     lastValue: number
@@ -21,7 +22,7 @@ interface NotificationProps {
     handle: ProgressHandle
 }
 
-function Interp(elapse: number, progressData: ProgressData) {
+function useInterp(elapse: number, progressData: ProgressData): number {
     const [value, setValue] = useState<number>(0)
 
     useEffect(() => {
@@ -47,14 +48,14 @@ function Interp(elapse: number, progressData: ProgressData) {
     return value
 }
 
-function ProgressNotification({ handle }: NotificationProps) {
+const ProgressNotification: React.FC<NotificationProps> = ({ handle }) => {
     const [progressData, setProgressData] = useState<ProgressData>({
         lastValue: 0,
         currentValue: 0,
         lastUpdate: Date.now(),
     })
 
-    const interpProgress = Interp(500, progressData)
+    const interpProgress = useInterp(500, progressData)
 
     useEffect(() => {
         setProgressData({ lastValue: progressData.currentValue, currentValue: handle.progress, lastUpdate: Date.now() })
@@ -93,9 +94,9 @@ function ProgressNotification({ handle }: NotificationProps) {
                 component={"div"}
                 sx={{
                     backgroundColor:
-                        handle.status == ProgressHandleStatus.inProgress
+                        handle.status == ProgressHandleStatus.IN_PROGRESS
                             ? "#ffc21a" // Autodesk Gold
-                            : handle.status == ProgressHandleStatus.Done
+                            : handle.status == ProgressHandleStatus.DONE
                               ? "#2bc275" // Autodesk Plant
                               : "#d74e26", // Autodesk Clay
                     bottom: "0pt",
@@ -108,7 +109,7 @@ function ProgressNotification({ handle }: NotificationProps) {
     )
 }
 
-function ProgressNotifications() {
+const ProgressNotifications: React.FC = () => {
     const [progressElements, updateProgressElements] = useReducer(() => {
         return handleMap.size > 0
             ? [...handleMap.entries()].map(([_, handle]) => (
@@ -127,9 +128,9 @@ function ProgressNotifications() {
             updateProgressElements()
         }
 
-        ProgressEvent.AddListener(onHandleUpdate)
+        ProgressEvent.addListener(onHandleUpdate)
         return () => {
-            ProgressEvent.RemoveListener(onHandleUpdate)
+            ProgressEvent.removeListener(onHandleUpdate)
         }
     }, [updateProgressElements])
 
