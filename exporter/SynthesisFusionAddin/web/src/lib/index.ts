@@ -25,7 +25,7 @@ interface InitResponse {
 
 interface Messages {
     selectJoint: [Empty, FusionJoint]
-    selectGamepiece: [Empty, FusionGamepiece]
+    selectGamepiece: [Empty, FusionGamepiece[]]
     selectBody: [Empty, FusionBody]
     export: [ExporterConfig, Empty]
     save: [ExporterConfig, Empty]
@@ -118,21 +118,23 @@ export interface FusionGamepiece {
     mass: number
     entityIDs: string[]
 }
-export async function selectGamepiece(): Promise<FusionGamepiece | undefined> {
+export async function selectGamepiece(): Promise<FusionGamepiece[] | undefined> {
     if (import.meta.env.DEV && typeof window.adsk == "undefined") {
-        return new Promise<FusionGamepiece>(resolve => {
+        return new Promise<FusionGamepiece[]>(resolve => {
             setTimeout(() => {
                 const token = Math.random().toString(36).substring(2, 15)
-                resolve({
-                    occurrenceToken: token + "_" + Math.random().toString(36).substring(2, 15),
-                    name: "Component " + token.substring(0, 2).toUpperCase(),
-                    mass: Math.round(Math.random() * 100) / 10,
-                    entityIDs: [
-                        token,
-                        Math.random().toString(36).substring(2, 15),
-                        Math.random().toString(36).substring(2, 15),
-                    ],
-                })
+                resolve([
+                    {
+                        occurrenceToken: token + "_" + Math.random().toString(36).substring(2, 15),
+                        name: "Component " + token.substring(0, 2).toUpperCase(),
+                        mass: Math.round(Math.random() * 100) / 10,
+                        entityIDs: [
+                            token,
+                            Math.random().toString(36).substring(2, 15),
+                            Math.random().toString(36).substring(2, 15),
+                        ],
+                    },
+                ])
             }, 2000)
         })
     }

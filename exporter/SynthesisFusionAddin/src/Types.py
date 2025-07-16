@@ -113,7 +113,7 @@ def makeObjectFromJson(objType: type[Any] | str | Any, data: Any) -> Any:
     elif get_origin(objType) is list:
         return [makeObjectFromJson(get_args(objType)[0], item) for item in data]
     obj = objType()
-    assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
+    assert is_dataclass(obj) and isinstance(data, dict), f"Found unsupported type to decode. {objType} {data}"
     for field in fields(obj):
         if field.name in data:
             setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))

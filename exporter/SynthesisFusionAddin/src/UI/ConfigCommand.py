@@ -264,8 +264,14 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
         elif html_args.action == "selectGamepiece":
             try:
                 selection = gm.app.userInterface.selectEntity("Select Gamepieces", "Occurrences")
-                gamepiece = adsk.fusion.Occurrence.cast(selection.entity)
-                html_args.returnData = json.dumps(buildGamepiece(gamepiece))
+                rootComponent = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct).rootComponent
+                entity = adsk.fusion.Occurrence.cast(selection.entity)
+                occurrenceList: adsk.fusion.OccurrenceList = rootComponent.allOccurrencesByComponent(entity.component)
+                gamepieces = []
+                for i in range(occurrenceList.count):
+                    occurrence = occurrenceList.item(i)
+                    gamepieces.append(buildGamepiece(occurrence))
+                html_args.returnData = json.dumps(gamepieces)
             except Exception as e:
                 html_args.returnData = json.dumps({"_err": e.__repr__()})
                 logger.error(e)
@@ -315,7 +321,8 @@ def buildGamepiece(gamepiece: adsk.fusion.Occurrence) -> dict[str, Any]:
     }
 
     def addChildOccurrences(childOccurrences: adsk.fusion.OccurrenceList) -> None:
-        for occ in childOccurrences:
+        for i in range(childOccurrences.count):
+            occ=childOccurrences.item(i)
             response["entityIDs"].append(occ.entityToken)
 
             if occ.childOccurrences:
@@ -488,3 +495,4 @@ class MyCommandDestroyHandler(PersistentEventHandler, adsk.core.CommandEventHand
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         for group in design.rootComponent.customGraphicsGroups:
             group.deleteMe()
+

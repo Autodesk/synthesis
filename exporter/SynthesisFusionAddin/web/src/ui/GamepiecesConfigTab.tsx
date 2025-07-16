@@ -34,6 +34,7 @@ interface GamepiecesConfigTabProps {
     // updateJoint: <K extends keyof Joint>(index: number, key: K, value: Joint[K]) => void
     // removeJoint: (index: number) => void
 }
+
 function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfigItem }: GamepiecesConfigTabProps) {
     function updateItem<K extends keyof Gamepiece>(index: number, key: K, value: Gamepiece[K]) {
         updateGamepieces(items => {
@@ -179,7 +180,7 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                         setSelectingActive(true)
                         // const data = await initiateSelection("Select joint")
 
-                        const data: FusionGamepiece | undefined = await new Promise(async resolve => {
+                        const data: FusionGamepiece[] | undefined = await new Promise(async resolve => {
                             selectionCancelCallback.current = () => {
                                 resolve(undefined)
                             }
@@ -188,18 +189,26 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
 
                         setSelectingActive(false)
                         if (data == null) return
-                        if (gamepieces.some(gamepiece => gamepiece.entityIDs.includes(data.entityIDs[0]))) {
-                            console.warn("attempted to add existing element")
-                            Global_SetAlert("warning", "Component already added")
+                        const allDuplicates = data.every(newgamepiece => {
+                            if (gamepieces.some(gamepiece => gamepiece.entityIDs.includes(newgamepiece.entityIDs[0]))) {
+                                console.warn("attempted to add existing element")
+                                Global_SetAlert("warning", "Component already added")
+                                return true
+                            }
+                            return false
+                        })
+                        if (allDuplicates) {
                             return
                         }
                         updateGamepieces(draft => {
-                            const roundedMass = Math.round(data.mass * 100) / 100
-                            draft.push({
-                                ...data,
-                                userDefinedMass: roundedMass,
-                                calculatedMass: roundedMass,
-                                friction: 0.5,
+                            data.forEach(gamepiece => {
+                                const roundedMass = Math.round(gamepiece.mass * 100) / 100
+                                draft.push({
+                                    ...gamepiece,
+                                    userDefinedMass: roundedMass,
+                                    calculatedMass: roundedMass,
+                                    friction: 0.5,
+                                })
                             })
                         })
                     }}>
