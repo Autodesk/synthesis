@@ -104,6 +104,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _collision?: (event: OnContactAddedEvent) => void
     private _cacheId?: string
 
+    private _miraType: MiraType = MiraType.ROBOT // Placeholder
+
     public get intakeActive() {
         return this._intakeActive
     }
@@ -155,7 +157,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public get miraType(): MiraType {
         return this._mirabufInstance.parser.assembly.dynamic
-            ? this._mirabufInstance.parser.isGamePiece
+            ? this._mirabufInstance.parser.isGamePiece || this.cacheId
                 ? MiraType.PIECE
                 : MiraType.ROBOT
             : MiraType.FIELD
@@ -198,6 +200,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._mirabufInstance = mirabufInstance
         this._assemblyName = assemblyName
         this._cacheId = cacheId
+        this._miraType = this._mirabufInstance.parser.assembly.dynamic
+            ? // Game pieces imported with a field
+              this._mirabufInstance.parser.isGamePiece ||
+              // Game pieces imported independently
+              MirabufCachingService.getCacheMap(MiraType.PIECE)[cacheId] != undefined
+                ? MiraType.PIECE
+                : MiraType.ROBOT
+            : MiraType.FIELD
 
         progressHandle?.update("Creating mechanism...", 0.9)
 
@@ -295,7 +305,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         this.updateBatches()
 
-        if (this.miraType === MiraType.PIECE) {
+        // Only for game piece imported with a field
+        if (this._mirabufInstance.parser.isGamePiece) {
             const jBodyId = this.mechanism.getBodyByNodeId(this.mechanism.rootBody)
             if (!jBodyId) {
                 console.warn(

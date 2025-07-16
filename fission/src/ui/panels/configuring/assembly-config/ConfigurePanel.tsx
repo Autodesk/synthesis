@@ -93,8 +93,8 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
             configurationType == ConfigurationType.ROBOT
                 ? robots
                 : configurationType == ConfigurationType.FIELD
-                  ? fields
-                  : gamePieces
+                    ? fields
+                    : gamePieces
         return list
             .filter((assembly): assembly is MirabufSceneObject => assembly != null)
             .map(assembly => makeSelectionOption(configurationType, assembly))
@@ -262,8 +262,8 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({
                 configurationType == ConfigurationType.ROBOT
                     ? [...robotModes.values()]
                     : configurationType == ConfigurationType.FIELD
-                      ? [...fieldModes.values()]
-                      : [...gamePieceModes.values()]
+                        ? [...fieldModes.values()]
+                        : [...gamePieceModes.values()]
             }
             onOptionSelected={val => {
                 onModeSelected((val as ConfigModeSelectionOption)?.configMode)
@@ -476,7 +476,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     <ChangeInputsInterface />
                 ) : (
                     <>
-                        {/** Select menu to pick a robot or field */}
+                        {/** Select menu to pick a robot, field, or game piece */}
                         <AssemblySelection
                             configurationType={configurationType}
                             onAssemblySelected={a => {
