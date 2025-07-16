@@ -4,10 +4,7 @@ import { Box, Button, Checkbox, FormControlLabel, Slider, Stack, Typography } fr
 import type React from "react"
 import { useState } from "react"
 import type { Panel } from "../UIProvider"
-
-interface GraphicsSettingsPanelProps {
-    panel: Panel
-}
+import { PanelImplProps } from "../components/Panel"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -20,7 +17,7 @@ const MAX_CASCADES = 8
 
 const MIN_SHADOW_MAP_SIZE = 1024
 
-const GraphicsSettingsPanel: React.FC<GraphicsSettingsPanelProps> = ({ panel }) => {
+const GraphicsSettingsPanel: React.FC<PanelImplProps> = ({ panel }) => {
     const [reload, setReload] = useState<boolean>(false)
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
@@ -58,7 +55,7 @@ const GraphicsSettingsPanel: React.FC<GraphicsSettingsPanelProps> = ({ panel }) 
                         defaultChecked={fancyShadows}
                         onChange={(_, checked) => {
                             setFancyShadows(checked)
-                            World.sceneRenderer.ChangeLighting(checked)
+                            World.sceneRenderer.changeLighting(checked)
                         }}
                     />
                 }

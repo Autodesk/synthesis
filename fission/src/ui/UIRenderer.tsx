@@ -15,6 +15,8 @@ import { Modal } from "./components/Modal";
 import { ThemeEditorPanel } from "./panels/ThemeEditorPanel";
 import APSManagementModal from "./modals/APSManagementModal";
 import ViewModal from "./modals/ViewModal";
+import ImportLocalMirabufModal from "./modals/mirabuf/ImportLocalMirabufModal";
+import SettingsModal from "./modals/configuring/SettingsModal";
 
 export type UIRendererProps = object; // TODO: add actual props or delete
 
@@ -49,7 +51,7 @@ export const UIRenderer: React.FC<UIRendererProps> = () => {
 		// )
 		console.log(
 			`opening test modal ${openModal(
-				<ViewModal />,
+				<SettingsModal />,
 				undefined,
 				{
 					onClose: () => console.log("closed test modal"),
@@ -59,6 +61,7 @@ export const UIRenderer: React.FC<UIRendererProps> = () => {
 			)}`,
 		);
 	}, []);
+
 	return (
 		<>
 			<div
