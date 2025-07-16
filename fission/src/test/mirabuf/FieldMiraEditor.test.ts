@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest"
-import FieldMiraEditor from "../mirabuf/FieldMiraEditor"
-import { mirabuf } from "../proto/mirabuf"
+import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
+import { mirabuf } from "../../proto/mirabuf"
 import { ScoringZonePreferences, Alliance } from "@/systems/preferences/PreferenceTypes"
 
 function mockParts(): mirabuf.IParts {
