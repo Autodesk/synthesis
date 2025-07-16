@@ -140,9 +140,11 @@ class MirabufParser {
         this._rigidNodes.forEach(rn => {
             rn.mass = [...rn.parts]
                 .map(part => assembly.data?.parts?.partInstances?.[part])
-                .filter(inst => inst?.partDefinitionReference)
                 .reduce<number>((acc, inst) => {
-                    const def = assembly.data?.parts?.partDefinitions?.[inst?.partDefinitionReference as string]
+                    // The if statement satisfies the type guard while the filter function doesn't
+                    if (inst?.partDefinitionReference == undefined) return acc
+
+                    const def = assembly.data?.parts?.partDefinitions?.[inst?.partDefinitionReference]
                     return acc + (def?.massOverride ?? def?.physicalData?.mass ?? 0)
                 }, 0)
         })
@@ -193,10 +195,10 @@ class MirabufParser {
             .map(inst => {
                 const instNode = this.binarySearchDesignTreePrune(inst.info!.GUID!)
                 if (instNode == null) {
-                    this.NewError(ParseErrorSeverity.UNIMPORTABLE, "Failed to find game piece in Design Tree")
+                    this.NewError(ParseErrorSeverity.LIKELY_ISSUES, "Failed to find game piece in Design Tree")
                     return
                 }
-                // Trick to capture and delete references to gamePiece, potentially unnecessary
+                // Trick to capture and delete references to gamePiece
                 // Removing this yields a null function runtime error
                 const gpRn = this.newRigidNode(GAMEPIECE_SUFFIX)
                 gpRn.isGamePiece = true
@@ -211,9 +213,9 @@ class MirabufParser {
                     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partInstances?.[key])
 
                 // Delete partDefinitions
-                Object.entries(this._assembly.data?.parts?.partDefinitions ?? {})
-                    .filter(([_key, subInst]) => inst === subInst)
-                    .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
+                // Object.entries(this._assembly.data?.parts?.partDefinitions ?? {})
+                //     .filter(([_key, subInst]) => inst === subInst)
+                //     .forEach(([key, _subInst]) => delete this._assembly.data?.parts?.partDefinitions?.[key])
 
                 return this.convertPartInstanceToAssembly(inst, instNode)
             })
@@ -277,6 +279,7 @@ class MirabufParser {
             },
         })
 
+        console.log(`Assembly being converted: ${inst.info?.name}`)
         const gamePieceAssembly = new mirabuf.Assembly({
             info: inst.info,
             data: {
@@ -489,15 +492,7 @@ class MirabufParser {
             node = node.children![i + (iValue < targetValue ? 1 : 0)]
         }
 
-        if (node?.value === target) {
-            const index = parent?.children?.indexOf(node)
-            if (index != -1 && index != null) {
-                // parent?.children?.splice(index)
-            }
-            return node
-        }
-
-        return null
+        return node?.value === target ? node : null
     }
 
     private generateTreeValues() {
