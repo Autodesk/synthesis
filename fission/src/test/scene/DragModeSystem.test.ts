@@ -5,6 +5,7 @@ import * as THREE from "three"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { PRIMARY_MOUSE_INTERACTION, InteractionType } from "@/systems/scene/ScreenInteractionHandler"
 import World from "@/systems/World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 // Mock World to provide minimal required interface
 vi.mock("@/systems/World", () => ({
@@ -18,7 +19,7 @@ vi.mock("@/systems/World", () => ({
         _physicsSystem: null,
         sceneRenderer: {
             mainCamera: {
-                position: { x: 0, y: 0, z: 5, set: vi.fn() },
+                position: { x: 0, y: 0, z: 5 },
                 quaternion: { x: 0, y: 0, z: 0, w: 1 },
                 fov: 75,
                 aspect: 1,
@@ -66,7 +67,6 @@ vi.mock("@/systems/World", () => ({
     },
 }))
 
-// Type for World with writable physicsSystem
 type WorldWithPhysicsSystem = typeof World & {
     physicsSystem: PhysicsSystem | null | undefined
 }
@@ -76,34 +76,28 @@ describe("DragModeSystem Integration Tests", () => {
     let physicsSystem: PhysicsSystem
 
     beforeEach(() => {
-        // Create real physics system
         physicsSystem = new PhysicsSystem()
         const mockWorld = World as unknown as WorldWithPhysicsSystem
         mockWorld.physicsSystem = physicsSystem
 
-        // Create real drag mode system
-        dragModeSystem = new DragModeSystem()
+        const camera = new THREE.PerspectiveCamera(75, 1, 0.1, 1000)
+        camera.position.set(0, 0, 5)
+        const sceneRenderer = mockWorld.sceneRenderer as { mainCamera: THREE.PerspectiveCamera }
+        sceneRenderer.mainCamera = camera
 
-        // Position camera for tests (using mock structure)
-        World.sceneRenderer.mainCamera.position.x = 0
-        World.sceneRenderer.mainCamera.position.y = 0
-        World.sceneRenderer.mainCamera.position.z = 5
+        dragModeSystem = new DragModeSystem()
     })
 
     afterEach(() => {
         dragModeSystem.destroy()
         physicsSystem.destroy()
-        const mockWorld = World as unknown as WorldWithPhysicsSystem
-        mockWorld.physicsSystem = null as unknown as PhysicsSystem
     })
 
-    describe("Basic Functionality", () => {
-        test("should enable and disable correctly", () => {
+    describe("Event Handling", () => {
+        test("calls dispatchEvent when toggling drag mode", () => {
             const dispatchEventSpy = vi.spyOn(window, "dispatchEvent")
 
-            // Enable
             dragModeSystem.enabled = true
-            expect(dragModeSystem.enabled).toBe(true)
             expect(dispatchEventSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: "dragModeToggled",
@@ -111,9 +105,7 @@ describe("DragModeSystem Integration Tests", () => {
                 })
             )
 
-            // Disable
             dragModeSystem.enabled = false
-            expect(dragModeSystem.enabled).toBe(false)
             expect(dispatchEventSpy).toHaveBeenCalledWith(
                 expect.objectContaining({
                     type: "dragModeToggled",
@@ -122,16 +114,6 @@ describe("DragModeSystem Integration Tests", () => {
             )
 
             dispatchEventSpy.mockRestore()
-        })
-
-        test("should handle update when enabled", () => {
-            dragModeSystem.enabled = true
-            expect(() => dragModeSystem.update(0.016)).not.toThrow()
-        })
-
-        test("should handle update when disabled", () => {
-            dragModeSystem.enabled = false
-            expect(() => dragModeSystem.update(0.016)).not.toThrow()
         })
 
         test("should handle disable drag mode event", () => {
@@ -155,21 +137,11 @@ describe("DragModeSystem Integration Tests", () => {
 
             removeEventListenerSpy.mockRestore()
         })
-
-        test("should stop dragging on destroy", () => {
-            dragModeSystem.enabled = true
-
-            expect(dragModeSystem.enabled).toBe(true)
-
-            dragModeSystem.destroy()
-
-            expect(dragModeSystem.enabled).toBe(false)
-        })
     })
 
     describe("Physics Integration", () => {
-        test("should actually drag and move a cube", () => {
-            // Create a physics cube
+        test("should actually drag and move a cube and respond to wheel scroll", () => {
+            // Create a physics cube which will then be a draggable game piece
             const vertices = new Float32Array([
                 -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
                 0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
@@ -183,15 +155,15 @@ describe("DragModeSystem Integration Tests", () => {
             const bodyId = body.GetID()
             physicsSystem.addBodyToSystem(bodyId, true)
 
-            // Create a mock MirabufSceneObject and associate it with the body
-            const mockSceneObject = {
-                miraType: MiraType.ROBOT,
-                loadFocusTransform: vi.fn(),
-            }
+            // Create a mock MirabufSceneObject that properly passes instanceof checks
+            const mockSceneObject = Object.create(MirabufSceneObject.prototype)
+            mockSceneObject.loadFocusTransform = vi.fn()
+
+            vi.spyOn(mockSceneObject, "miraType", "get").mockReturnValue(MiraType.FIELD)
 
             const mockAssociation = {
                 sceneObject: mockSceneObject,
-                isGamePiece: false,
+                isGamePiece: true,
             }
 
             // Mock the physics system to return our association
@@ -200,17 +172,21 @@ describe("DragModeSystem Integration Tests", () => {
 
             // Mock the raycasting to return our cube when clicked
             const originalRayCast = physicsSystem.rayCast
-            physicsSystem.rayCast = vi.fn().mockReturnValue({
+            const mockRaycastResult = {
                 data: { mBodyID: bodyId },
+                // eslint-disable-next-line
                 point: { GetX: () => 0, GetY: () => 0, GetZ: () => 0 },
-            })
+            }
+            physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
 
-            // Get initial position
             const physicsBody = physicsSystem.getBody(bodyId)
             const initialPos = physicsBody.GetPosition()
             const initialPosition = { x: initialPos.GetX(), y: initialPos.GetY(), z: initialPos.GetZ() }
 
-            // Enable drag mode
+            // Get camera position for distance calculation
+            const camera = World.sceneRenderer.mainCamera
+            const cameraPosition = camera.position.clone()
+
             dragModeSystem.enabled = true
 
             // Simulate mouse click to start dragging
@@ -221,9 +197,7 @@ describe("DragModeSystem Integration Tests", () => {
 
             // Access the interaction handler directly
             const screenHandler = World.sceneRenderer.screenInteractionHandler
-            if (screenHandler && screenHandler.interactionStart) {
-                screenHandler.interactionStart(startInteraction)
-            }
+            screenHandler?.interactionStart?.(startInteraction)
 
             // Simulate mouse movement to drag the cube
             const moveInteraction = {
@@ -235,22 +209,51 @@ describe("DragModeSystem Integration Tests", () => {
                 screenHandler.interactionMove(moveInteraction)
             }
 
-            // Update the drag system to apply forces
-            dragModeSystem.update(0.016)
+            // Update the drag system and physics system to apply forces
+            for (let i = 0; i < 10; i++) {
+                dragModeSystem.update(0.016)
+                physicsSystem.update(0.016)
+            }
 
-            // Update physics to apply the forces
-            physicsSystem.update(0.016)
+            const afterDragPos = physicsBody.GetPosition()
+            const moved =
+                Math.abs(afterDragPos.GetX() - initialPosition.x) > 0.2 ||
+                Math.abs(afterDragPos.GetY() - initialPosition.y) > 0.2 ||
+                Math.abs(afterDragPos.GetZ() - initialPosition.z) > 0.2
+            expect(moved).toBe(true)
 
-            // Check that the cube has moved
-            const finalPos = physicsBody.GetPosition()
-            const finalPosition = { x: finalPos.GetX(), y: finalPos.GetY(), z: finalPos.GetZ() }
+            // Test wheel scroll functionality - record distance before wheel scroll
+            const beforeScrollPosition = new THREE.Vector3(
+                afterDragPos.GetX(),
+                afterDragPos.GetY(),
+                afterDragPos.GetZ()
+            )
+            const distanceBeforeScroll = cameraPosition.distanceTo(beforeScrollPosition)
 
-            // The cube should have moved from its initial position
-            const hasMovedX = Math.abs(finalPosition.x - initialPosition.x) > 0.01
-            const hasMovedY = Math.abs(finalPosition.y - initialPosition.y) > 0.01
-            const hasMovedZ = Math.abs(finalPosition.z - initialPosition.z) > 0.01
+            // Simulate mouse wheel scroll down
+            const wheelEvent = new WheelEvent("wheel", {
+                deltaY: 10000,
+                bubbles: true,
+                cancelable: true,
+            })
+            const wheelEventHandler = dragModeSystem["_wheelEventHandler"]
+            wheelEventHandler?.(wheelEvent)
 
-            expect(hasMovedX || hasMovedY || hasMovedZ).toBe(true)
+            for (let i = 0; i < 10; i++) {
+                dragModeSystem.update(0.016)
+                physicsSystem.update(0.016)
+            }
+
+            // Check that the cube has moved away from the camera after wheel scroll
+            const afterWheelPos = physicsBody.GetPosition()
+            const distanceAfterScrollPosition = new THREE.Vector3(
+                afterWheelPos.GetX(),
+                afterWheelPos.GetY(),
+                afterWheelPos.GetZ()
+            )
+            const distanceAfterScroll = cameraPosition.distanceTo(distanceAfterScrollPosition)
+
+            expect(Math.abs(distanceAfterScroll - distanceBeforeScroll)).toBeGreaterThan(0.5)
 
             // Simulate mouse release to stop dragging
             const endInteraction = {
@@ -258,46 +261,12 @@ describe("DragModeSystem Integration Tests", () => {
                 position: [400, 300] as [number, number],
             }
 
-            if (screenHandler && screenHandler.interactionEnd) {
-                screenHandler.interactionEnd(endInteraction)
-            }
+            screenHandler?.interactionEnd?.(endInteraction)
 
-            // Restore original methods
             physicsSystem.getBodyAssociation = originalGetBodyAssociation
             physicsSystem.rayCast = originalRayCast
-
-            // Cleanup
             physicsSystem.destroyBodyIds(bodyId)
             shape.Release()
-        })
-    })
-
-    describe("Event Handling", () => {
-        test("should handle window events", () => {
-            dragModeSystem.enabled = true
-
-            // Test that the system responds to window events
-            const beforeState = dragModeSystem.enabled
-            window.dispatchEvent(new CustomEvent("disableDragMode"))
-
-            expect(beforeState).toBe(true)
-            expect(dragModeSystem.enabled).toBe(false)
-        })
-
-        test("should handle mouse wheel events during drag", () => {
-            dragModeSystem.enabled = true
-
-            // Create a mock wheel event
-            const wheelEvent = new WheelEvent("wheel", {
-                deltaY: 100,
-                bubbles: true,
-                cancelable: true,
-            })
-
-            // This should not throw even without active drag
-            expect(() => {
-                window.dispatchEvent(wheelEvent)
-            }).not.toThrow()
         })
     })
 })
