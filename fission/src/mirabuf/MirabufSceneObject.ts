@@ -354,7 +354,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
         this._debugBodies?.clear()
         this._physicsLayerReserve?.release()
-        this._centerOfMassIndicator?.geometry?.dispose()
+        if (this._centerOfMassIndicator) {
+            World.sceneRenderer.scene.remove(this._centerOfMassIndicator)
+            this._centerOfMassIndicator = undefined
+        }
+
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
         }
