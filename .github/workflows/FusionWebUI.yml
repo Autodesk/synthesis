@@ -44,7 +44,7 @@ jobs:
       run: |
         cd exporter/SynthesisFusionAddin/web
         npx biome --version
-        npx biome ci --reporter=github
+        npx biome ci --reporter=github --error-on-warnings
 
   runBuildScript:
     name: Build
