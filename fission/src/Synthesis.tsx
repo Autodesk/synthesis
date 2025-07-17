@@ -71,6 +71,7 @@ import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import TouchControls from "./ui/components/TouchControls.tsx"
 import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import MainMenuModal from "@/modals/MainMenuModal"
+import MatchModeConfigPanel from "./ui/panels/configuring/MatchModeConfigPanel.tsx"
 import DeveloperToolPanel from "./ui/panels/DeveloperToolPanel.tsx"
 
 const Synthesis: React.FC = () => {
@@ -248,6 +249,7 @@ const initialPanels: ReactElement[] = [
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
+    <MatchModeConfigPanel key="match-mode-config" panelId="match-mode-config" />,
     <PokerPanel key="poker" panelId="poker" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
