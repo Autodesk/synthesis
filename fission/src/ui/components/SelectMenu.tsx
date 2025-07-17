@@ -1,4 +1,4 @@
-import { Button, Divider, Stack, Typography } from "@mui/material"
+import { Button, Divider, IconButton, Stack, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { AddButton, CustomTooltip, Spacer, SynthesisIcons } from "./StyledComponents"
@@ -144,14 +144,13 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
             <Stack direction="row" textAlign={"center"} minHeight={"30px"} key="selected-item">
                 {/** Back arrow button when an option is selected */}
                 {selectedOption !== undefined && (
-                    <Button
-                        startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
+                    <IconButton
                         onClick={() => {
                             setSelectedOption(undefined)
                             onOptionSelected(undefined)
                         }}
                         id="select-menu-back-button"
-                    />
+                    >{SynthesisIcons.LEFT_ARROW_LARGE}</IconButton>
                 )}
 
                 {/** Label with either the header text, or the name of the selected option if an option is selected */}

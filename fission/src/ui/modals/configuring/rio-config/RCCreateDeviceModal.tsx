@@ -13,7 +13,7 @@ import RCConfigPWMGroupModal from "./RCConfigPWMGroupModal";
 
 type DeviceType = "PWM" | "CAN" | "Encoder";
 
-const RCCreateDeviceModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
+const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
 	const { openModal } = useContext(UIContext);
 	const [type, setType] = useState<DeviceType>("PWM");
 
@@ -57,7 +57,7 @@ const RCCreateDeviceModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
 			}}
 		>
 			{["PWM", "CAN", "Encoder"].map((t) => (
-				<MenuItem value={t}>{t}</MenuItem>
+				<MenuItem key={t} value={t}>{t}</MenuItem>
 			))}
 		</Select>
 	);

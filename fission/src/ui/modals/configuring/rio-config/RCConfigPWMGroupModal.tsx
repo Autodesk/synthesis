@@ -14,7 +14,7 @@ import RoboRIOModal from "../RoboRIOModal";
 import { Checkbox, FormControlLabel, Stack, TextField, Typography } from "@mui/material";
 import { Box } from "@mui/system";
 
-const RCConfigPWMGroupModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
+const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
 	const { openModal } = useContext(UIContext);
 	const [name, setName] = useState<string>("");
 	const [checkedPorts, setCheckedPorts] = useState<number[]>([]);

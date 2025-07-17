@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material"
+import { Box, Stack, Typography } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import {
     type SceneOverlayTag,
@@ -19,10 +19,6 @@ const SceneOverlay: React.FC = () => {
 
     /* State to determine if the ViewCube should be shown */
     const [showViewCube, setShowViewCube] = useState(PreferencesSystem.getGlobalPreference("ShowViewCube"))
-
-    /* Check if the main menu modal is active */
-    // TODO:
-    const isMainMenuOpen = false
 
     /* h1 text for each tagMap tag */
     const [components, updateComponents] = useReducer(() => {
@@ -97,9 +93,8 @@ const SceneOverlay: React.FC = () => {
 
     /* Render the overlay as a box that spans the entire screen and does not intercept any user interaction */
     return (
-        <Box
-            component="div"
-            display="flex"
+        <Stack
+            direction="row"
             sx={{
                 position: "fixed",
                 left: "0pt",
@@ -110,8 +105,8 @@ const SceneOverlay: React.FC = () => {
                 pointerEvents: "none",
             }}
         >
-            {components ?? <></>}
-        </Box>
+            {components}
+        </Stack>
     )
 }
 

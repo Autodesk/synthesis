@@ -5,11 +5,10 @@ import { HiUser } from "react-icons/hi"
 import APS from "@/aps/APS"
 import type { ModalImplProps } from "@/ui/components/Modal"
 
-const APSManagementModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
+const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
     const [userInfo, _] = useState(APS.userInfo)
     useEffect(() => {
         modal!.props.onAccept = () => {
-            console.log("LOGGING OUT")
             APS.logout()
         }
     }, [])

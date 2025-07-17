@@ -5,7 +5,6 @@ import GizmoSceneObject from "./GizmoSceneObject"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
-import { Theme } from "@/ui/helpers/UseThemeHelpers"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
@@ -22,6 +21,8 @@ import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuDa
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import autodeskLogo from "@/assets/autodesk_symbol.png"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import React from "react"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
@@ -461,18 +462,19 @@ class SceneRenderer extends WorldSystem {
     }
 
     /**
+     * TODO: remove
      * Updates the skybox colors based on the current theme
 
      * @param currentTheme: current theme from ThemeContext.useTheme()
      */
-    public updateSkyboxColors(currentTheme: Theme) {
-        if (!this._skybox) return
-        if (this._skybox.material instanceof THREE.ShaderMaterial) {
-            this._skybox.material.uniforms.rColor.value = currentTheme["Background"]["color"]["r"]
-            this._skybox.material.uniforms.gColor.value = currentTheme["Background"]["color"]["g"]
-            this._skybox.material.uniforms.bColor.value = currentTheme["Background"]["color"]["b"]
-        }
-    }
+    // public updateSkyboxColors(currentTheme: Theme) {
+    //     if (!this._skybox) return
+    //     if (this._skybox.material instanceof THREE.ShaderMaterial) {
+    //         this._skybox.material.uniforms.rColor.value = currentTheme["Background"]["color"]["r"]
+    //         this._skybox.material.uniforms.gColor.value = currentTheme["Background"]["color"]["g"]
+    //         this._skybox.material.uniforms.bColor.value = currentTheme["Background"]["color"]["b"]
+    //     }
+    // }
 
     /** returns whether any gizmos are being currently dragged */
     public isAnyGizmoDragging(): boolean {
@@ -538,7 +540,7 @@ class SceneRenderer extends WorldSystem {
             miraSupplierData.items.push({
                 name: "Add",
                 func: () => {
-                    globalOpenPanel("import-mirabuf")
+                    globalOpenPanel(React.createElement(ImportMirabufPanel))
                 },
             })
         }

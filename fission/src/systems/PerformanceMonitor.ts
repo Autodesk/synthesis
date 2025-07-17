@@ -2,6 +2,8 @@ import WorldSystem from "@/systems/WorldSystem.ts"
 import { globalAddToast, globalOpenPanel } from "@/components/GlobalUIControls.ts"
 import World from "@/systems/World.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
+import GraphicsSettingsPanel from "@/ui/panels/GraphicsSettingsPanel"
+import React from "react"
 
 export class PerformanceMonitoringSystem extends WorldSystem {
     isCritical: boolean = false
@@ -29,7 +31,7 @@ export class PerformanceMonitoringSystem extends WorldSystem {
                 if (this.isCritical) {
                     PreferencesSystem.resetGraphicsPreferences()
                     World.sceneRenderer.changeCSMSettings(PreferencesSystem.getGraphicsPreferences())
-                    globalOpenPanel("graphics-settings")
+                    globalOpenPanel(React.createElement(GraphicsSettingsPanel))
                     globalAddToast("warning", "Performance Issues Detected", "Reverting to simple graphics")
                 }
             }

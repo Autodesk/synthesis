@@ -5,13 +5,13 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { CloseType, type Panel, UIContext } from "@/ui/UIProvider"
+import { CloseType, UIContext } from "@/ui/UIProvider"
 import type { ConfigurationType } from "../ConfigurePanel"
 
 interface AssemblySelectionProps {
-    panel: Panel
     configurationType: ConfigurationType
     onAssemblySelected: (assembly?: MirabufSceneObject) => void
     selectedAssembly?: MirabufSceneObject
@@ -35,7 +35,7 @@ function makeSelectionOption(configurationType: ConfigurationType, assembly: Mir
     )
 }
 
-const AssemblySelection: React.FC<AssemblySelectionProps> = ({
+const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void>> = ({
     panel,
     configurationType,
     onAssemblySelected,

@@ -1,8 +1,7 @@
 import { fireEvent, getByText, render, act } from "@testing-library/react"
 import { assert, afterEach, beforeEach, describe, test, vi } from "vitest"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { PanelControlProvider } from "@/ui/PanelContext"
-import { ModalControlProvider } from "@/ui/ModalContext"
+import { UIProvider } from "@/ui/UIProvider"
 
 describe("MatchModeConfigPanel", () => {
     // Mock console methods to suppress output during tests
@@ -34,25 +33,11 @@ describe("MatchModeConfigPanel", () => {
     })
 
     function createTestContainer() {
-        // Create mock context providers
-        const mockPanelControl = {
-            openPanel: () => {},
-            closePanel: () => {},
-            closeAllPanels: () => {},
-        }
-
-        const mockModalControl = {
-            openModal: () => {},
-            closeModal: () => {},
-            activeModalId: null,
-        }
-
+        // Create mock context provider
         return render(
-            <PanelControlProvider {...mockPanelControl}>
-                <ModalControlProvider {...mockModalControl}>
-                    <MatchModeConfigPanel panelId="test-panel" />
-                </ModalControlProvider>
-            </PanelControlProvider>
+            <UIProvider>
+                <MatchModeConfigPanel />
+            </UIProvider>
         ).container
     }
 

@@ -138,7 +138,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     <Typography>{toTitleCase(input.inputName)}</Typography>
 
                     <Stack direction="row" gap="10px" alignItems={"center"}>
-                        {SynthesisIcons.Add}
+                        {SynthesisIcons.ADD}
                         {/* Positive key */}
                         <Button
                             key={`pos${input.inputName}`}
@@ -151,7 +151,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                                 ? "Press anything"
                                 : transformKeyName(input.posKeyCode, input.posKeyModifiers)}
                         </Button>
-                        {SynthesisIcons.Minus}
+                        {SynthesisIcons.MINUS}
                         {/* Negative key */}
                         <Button
                             key={`neg${input.inputName}`}
@@ -230,7 +230,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
                 <Stack direction="row" gap="10px" alignItems={"center"}>
                     {/* Positive gamepad button */}
-                    {SynthesisIcons.Add}
+                    {SynthesisIcons.ADD}
                     <Button
                         key={`pos${input.inputName}`}
                         value={
@@ -245,7 +245,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         }}
                     />
                     {/* // Negative gamepad button */}
-                    {SynthesisIcons.Minus}
+                    {SynthesisIcons.MINUS}
                     <Button
                         key={`neg${input.inputName}`}
                         value={
@@ -405,7 +405,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
             setChosenKey("")
             setSelectedInput("")
-            setModifierState(EmptyModifierState)
+            setModifierState(EMPTY_MODIFIER_STATE)
             onInputChanged()
         }
         // Assign gamepad button inputs when a button is pressed

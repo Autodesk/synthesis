@@ -4,7 +4,7 @@ import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { PanelImplProps } from "@/ui/components/Panel"
 import { Button, MenuItem, Select, Stack } from "@mui/material"
 
-const DriverStationPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
+const DriverStationPanel: React.FC = () => {
     const [enabled, setEnabled] = useState(false)
 
     return (

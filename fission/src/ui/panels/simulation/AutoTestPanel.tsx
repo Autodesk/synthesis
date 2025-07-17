@@ -325,12 +325,6 @@ const AutoTestPanel: React.FC = () => {
         }
     }, [assembly])
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
-    useEffect(() => {
-        // TODO:
-        // closePanel("configure")
-    }, [])
-
     return (
         <Stack gap={4}>
             {activeProps !== undefined &&

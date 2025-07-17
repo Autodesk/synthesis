@@ -17,6 +17,9 @@ import { SynthesisIcons } from "./StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import UserIcon from "./UserIcon"
 import { deobf } from "@/util/Utility"
+import SettingsModal from "../modals/configuring/SettingsModal"
+import ViewModal from "../modals/ViewModal"
+import APSManagementModal from "../modals/APSManagementModal"
 
 type ButtonProps = {
     value: string
@@ -199,18 +202,19 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"General Settings"}
                         icon={SynthesisIcons.GEAR}
-                        // onClick={() => openModal("settings")}
+                        onClick={() => openModal(<SettingsModal />, undefined, { allowClickAway: false })}
                     />
                     <MainHUDButton
                         value={"Developer Tool"}
                         icon={SynthesisIcons.CODE_SQUARE}
+                        // TODO:
                         // onClick={() => openPanel("developer")}
                     />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
                         value={"View"}
-                        icon={SynthesisIcons.MagnifyingGlass}
-                        onClick={() => openModal("view")}
+                        icon={SynthesisIcons.MAGNIFYING_GLASS}
+                        onClick={() => openModal(<ViewModal />, undefined)}
                     /> */}
                     <MainHUDButton
                         value={"Debug Tools"}
@@ -232,7 +236,7 @@ const MainHUD: React.FC = () => {
                         value={`Hi, ${userInfo.givenName}`}
                         icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
-                        // onClick={() => openModal("aps-management")}
+                        onClick={() => openModal(<APSManagementModal />)}
                     />
                 ) : (
                     <MainHUDButton

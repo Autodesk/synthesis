@@ -14,10 +14,11 @@ import { CloseType, UIContext } from "@/ui/UIProvider"
 import { StateContext } from "@/ui/StateProvider"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
-import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import type { Alliance } from "@/systems/preferences/PreferenceTypes"
+import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
-const InitialConfigPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
-    const { configurationType, setConfigurationType } = useContext(StateContext)
+const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+    const { setConfigurationType } = useContext(StateContext)
     const { openModal, closePanel, openPanel } = useContext(UIContext)
     const { setSelectedScheme } = useContext(StateContext)
     const [alliance, setAlliance] = useState<Alliance>("red")
@@ -37,6 +38,8 @@ const InitialConfigPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
         // if (parent)
         //     closePanel(parent.id, CloseType.Overwrite);
     }, [])
+
+    // TODO: unconfirmed import
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
@@ -96,7 +99,7 @@ const InitialConfigPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
                     brainIndex={brainIndex}
                     onSelect={() => {}}
                     onEdit={() => openPanel(<ConfigurePanel />, panel)}
-                    // onCreateNew={() => openModal("assign-new-scheme")}
+                    onCreateNew={() => openModal(<AssignNewSchemeModal />, panel)}
                 />
             )}
         </Stack>
