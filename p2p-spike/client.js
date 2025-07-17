@@ -50,7 +50,7 @@ startButton.onclick = async () => {
   startButton.disabled = true;
   closeButton.disabled = false;
 
-  await createPeerConnection();
+  createPeerConnection();
   sendChannel = pc.createDataChannel("sendDataChannel");
   sendChannel.onopen = onSendChannelStateChange;
   sendChannel.onmessage = onSendChannelMessageCallback;
@@ -103,7 +103,7 @@ async function handleOffer(offer) {
     console.error("existing peerconnection");
     return;
   }
-  await createPeerConnection();
+  createPeerConnection();
   pc.ondatachannel = receiveChannelCallback;
   await pc.setRemoteDescription(offer);
 
