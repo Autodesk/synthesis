@@ -51,13 +51,13 @@ export enum ConfigMode {
     ALLIANCE,
 }
 
-interface ConfigInterfaceProps {
-    panel: UIScreen
+interface ConfigInterfaceProps<T> {
+    panel: UIScreen<T>
     configMode: ConfigMode
     assembly: MirabufSceneObject
 }
 
-const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ panel, configMode, assembly }) => {
+const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMode, assembly }) => {
     const { openPanel, closePanel } = useContext(UIContext)
 
     switch (configMode) {
@@ -77,6 +77,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ panel, configMode, as
                         onClick={() => {
                             setSpotlightAssembly(assembly)
                             openPanel(<ChooseInputSchemePanel />, panel)
+                            closePanel(panel.id, CloseType.Overwrite);
                         }}
                     >
                         Set Scheme
@@ -126,7 +127,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ panel, configMode, as
     }
 }
 
-const ConfigurePanel: React.FC<PanelImplProps> = ({ panel, parent, props }) => {
+const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel, parent, props }) => {
     const { configurePanelSettings, setConfigurePanelSettings, configurationType, setConfigurationType } =
         useContext(StateContext)
 
@@ -168,7 +169,6 @@ const ConfigurePanel: React.FC<PanelImplProps> = ({ panel, parent, props }) => {
     }, [])
 
     useEffect(() => {
-        // TODO:
         if (panel) {
             panel.props.onAccept = () => {
                 pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))

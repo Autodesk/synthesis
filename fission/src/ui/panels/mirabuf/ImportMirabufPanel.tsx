@@ -35,6 +35,7 @@ import { StateContext } from "@/ui/StateProvider"
 import { CloseType, UIContext } from "@/ui/UIProvider"
 import type TaskStatus from "@/util/TaskStatus"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
+import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 
 interface ItemCardProps {
     id: string
@@ -114,7 +115,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
         })
 }
 
-const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
+const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
     const { addToast, closePanel, openModal } = useContext(UIContext)
     const { unconfirmedImport, configurationType, setConfigurationType } = useContext(StateContext)
 
@@ -206,13 +207,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
     const selectCache = useCallback(
         (info: MirabufCacheInfo, type: MiraType) => {
             spawnCachedMira(info, type)
-
-            // TODO:
-            // showTooltip("controls", [
-            //     { control: "WASD", description: "Drive" },
-            //     { control: "E", description: "Intake" },
-            //     { control: "Q", description: "Dispense" },
-            // ])
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
         },
@@ -490,8 +484,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
                 </>
             )}
             <Box alignSelf={"center"}>
-                {/* TODO: modals */}
-                <Button onClick={() => /*openModal("import-local-mirabuf")*/ undefined}>Import from File</Button>
+                <Button onClick={() => openModal(<ImportLocalMirabufModal />)}>Import from File</Button>
             </Box>
         </Stack>
     )

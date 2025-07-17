@@ -1,15 +1,12 @@
-import { mirabuf } from "@/proto/mirabuf"
-import SceneObject from "../systems/scene/SceneObject"
-import MirabufInstance from "./MirabufInstance"
-import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
-import World from "@/systems/World"
-import Jolt from "@azaleacolburn/jolt-physics"
-import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
+import type Jolt from "@azaleacolburn/jolt-physics"
+import React from "react"
 import * as THREE from "three"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
-import Mechanism from "@/systems/physics/Mechanism"
-import {
+import type { mirabuf } from "@/proto/mirabuf"
+import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
+import type Mechanism from "@/systems/physics/Mechanism"
+import { BodyAssociate, type LayerReserve } from "@/systems/physics/PhysicsSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import type {
     Alliance,
     EjectorPreferences,
     FieldPreferences,
@@ -17,32 +14,30 @@ import {
     ProtectedZonePreferences,
     ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { MiraType } from "./MirabufLoader"
-import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
-import EjectableSceneObject from "./EjectableSceneObject"
-import Brain from "@/systems/simulation/Brain"
-import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
-import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
-import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import type Brain from "@/systems/simulation/Brain"
+import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import {
-    ConfigurationType,
-    ConfigMode,
-    ConfigurePanelSettings,
-} from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
-import FieldMiraEditor from "./FieldMiraEditor"
-import React from "react"
+import World from "@/systems/World"
+import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
+import SceneObject from "../systems/scene/SceneObject"
+import EjectableSceneObject from "./EjectableSceneObject"
+import FieldMiraEditor from "./FieldMiraEditor"
+import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
+import MirabufInstance from "./MirabufInstance"
+import { MiraType } from "./MirabufLoader"
+import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
+import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
+import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 const DEBUG_BODIES = false
 
@@ -81,7 +76,9 @@ interface UIActionHandlers {
  * Global registry for UI action handlers
  * This allows React components to register handlers with MirabufSceneObject
  */
-class UIActionRegistry {
+
+// biome-ignore lint/complexity/noStaticOnlyClass: TODO: fix later
+class  UIActionRegistry {
     private static handlers: UIActionHandlers = {}
 
     public static registerHandlers(handlers: UIActionHandlers): void {
@@ -301,7 +298,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         // Simulation
-        if (this.miraType == MiraType.ROBOT) {
+        if (this.miraType === MiraType.ROBOT) {
             World.simulationSystem.registerMechanism(this._mechanism)
             const simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
             this._brain = new SynthesisBrain(this, this._assemblyName)
@@ -452,7 +449,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const transform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
             this.updateNodeParts(rn, transform)
 
-            if (isNaN(body.GetPosition().GetX())) {
+            if (Number.isNaN(body.GetPosition().GetX())) {
                 const vel = body.GetLinearVelocity()
                 const pos = body.GetPosition()
                 console.warn(
@@ -555,7 +552,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             const now = Date.now()
             if (now - this._lastEjectableToastTime > MirabufSceneObject.EJECTABLE_TOAST_COOLDOWN_MS) {
                 console.log(`Configure an ejectable first.`)
-                globalAddToast<"info">("Configure Ejectable", "Configure an ejectable first.")
+                globalAddToast("info", "Configure Ejectable", "Configure an ejectable first.")
                 this._lastEjectableToastTime = now
             }
 

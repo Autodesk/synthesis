@@ -9,6 +9,7 @@ import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { StateContext } from "@/ui/StateProvider"
+import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
 /** If a scheme is assigned to a robot, find the name of that robot */
 const findSchemeRobotName = (scheme: InputScheme): string | undefined => {
@@ -101,8 +102,7 @@ const ConfigureInputsInterface: React.FC = () => {
                     return val.scheme.customized
                 }}
                 onAddClicked={() => {
-                    // TODO:
-                    // openModal("new-scheme")
+                    openModal(<AssignNewSchemeModal />)
                 }}
             />
             {selectedScheme && <ConfigureSchemeInterface selectedScheme={selectedScheme} />}

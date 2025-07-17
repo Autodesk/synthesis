@@ -1,24 +1,18 @@
-import { Divider, Stack, Typography } from "@mui/material"
+import { Stack, } from "@mui/material"
 import type React from "react"
-import { useContext, useEffect, useMemo, useReducer } from "react"
+import { useContext, useEffect, useMemo } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import DefaultInputs from "@/systems/input/DefaultInputs"
-import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { AddButtonInteractiveColor, DeleteButton, EditButton, SelectButton } from "@/ui/components/StyledComponents"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import { StateContext } from "@/ui/StateProvider"
-import { CloseType, type Panel, UIContext } from "../../UIProvider"
+import { CloseType, UIContext } from "../../UIProvider"
 import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
 
-interface ChooseSchemePanelProps {
-    panel?: Panel
-}
-
-const ChooseInputSchemePanel: React.FC<ChooseSchemePanelProps> = ({ panel }) => {
+const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { openModal, openPanel, closePanel } = useContext(UIContext)
     const { setSelectedScheme, setConfigurationType } = useContext(StateContext)
 

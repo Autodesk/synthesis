@@ -16,7 +16,7 @@ const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSc
     if (fieldPrefs) fieldPrefs.scoringZones = zones
 
     PreferencesSystem.savePreferences()
-    field.UpdateScoringZones()
+    field.updateScoringZones()
 }
 
 interface ConfigureZonesProps {
@@ -42,7 +42,7 @@ const ConfigureScoringZonesInterface: React.FC<ConfigureZonesProps> = ({ selecte
 
                         {/** Back arrow button when an option is selected */}
                         <Button
-                            startIcon={SynthesisIcons.LeftArrowLarge}
+                            startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
                             onClick={() => {
                                 new ConfigurationSavedEvent()
                                 setSelectedZone(undefined)

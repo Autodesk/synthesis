@@ -1,4 +1,4 @@
-import { Button, Checkbox, Grid, Stack, Typography } from "@mui/material"
+import { Button, Checkbox, FormControlLabel, FormControlLabel, Grid, Stack, Typography } from "@mui/material"
 import {
     type Connection,
     type FinalConnectionState,
@@ -28,7 +28,6 @@ import {
 } from "@/systems/simulation/SimConfigShared"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
-import type { PanelImplProps } from "@/ui/components/Panel"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { UIContext } from "../../UIProvider"
@@ -155,28 +154,28 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                     <Typography variant="h6">Output</Typography>
                     {/* TODO: ScrollView? */}
                     {simOut.sort(handleInfoDisplayCompare).map(handle => (
-                        // TODO: label=`${handle.displayName}`
-                        <Checkbox
-                            key={handle.id}
-                            defaultChecked={handle.enabled}
-                            onChange={e => {
-                                handle.enabled = e.target.checked
-                            }}
-                        />
+                        <FormControlLabel label={`${handle.displayName}`} control={
+                            <Checkbox
+                                key={handle.id}
+                                defaultChecked={handle.enabled}
+                                onChange={e => {
+                                    handle.enabled = e.target.checked
+                                }}
+                            />} />
                     ))}
                 </Stack>
                 <Stack>
                     <Typography variant="h6">Input</Typography>
                     {/* TODO: ScrollView? */}
                     {simIn.sort(handleInfoDisplayCompare).map(handle => (
-                        // TODO: label=`${handle.displayName}`
-                        <Checkbox
-                            key={handle.id}
-                            defaultChecked={handle.enabled}
-                            onChange={e => {
-                                handle.enabled = e.target.checked
-                            }}
-                        />
+                        <FormControlLabel label={`${handle.displayName}`} control={
+                            <Checkbox
+                                key={handle.id}
+                                defaultChecked={handle.enabled}
+                                onChange={e => {
+                                    handle.enabled = e.target.checked
+                                }}
+                            />} />
                     ))}
                 </Stack>
             </Grid>
@@ -207,16 +206,16 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
             )
 
             switch (v.originType) {
-                case SimType.CANMotor:
+                case SimType.CAN_MOTOR:
                     canMotors.push(checkbox)
                     break
                 case SimType.PWM:
                     pwmDevices.push(checkbox)
                     break
-                case SimType.CANEncoder:
+                case SimType.CAN_ENCODER:
                     pwmDevices.push(checkbox)
                     break
-                case SimType.Accel:
+                case SimType.ACCELEROMETER:
                     pwmDevices.push(checkbox)
                     break
             }
@@ -345,12 +344,12 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
         >
             {/* <Controls /> */}
             <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo reset={reset ?? (() => {})} />
+            <FlowInfo reset={reset ?? (() => { })} />
         </ReactFlow>
     )
 }
 
-const WiringPanel: React.FC<PanelImplProps> = ({ panel, parent }) => {
+const WiringPanel: React.FC = () => {
     const [configState, setConfigState] = useState<ConfigState>("wiring")
     const { closePanel, addToast } = useContext(UIContext)
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)

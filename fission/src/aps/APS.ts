@@ -1,6 +1,6 @@
+import { Mutex } from "async-mutex"
 import World from "@/systems/World"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import { Mutex } from "async-mutex"
 
 const APS_AUTH_KEY = "aps_auth"
 const APS_USER_INFO_KEY = "aps_user_info"
@@ -32,6 +32,7 @@ export interface APSUserInfo {
     email: string
 }
 
+// biome-ignore lint/complexity/noStaticOnlyClass: TODO: fix later
 class APS {
     static authCode: string | undefined = undefined
     static requestMutex: Mutex = new Mutex()
@@ -206,7 +207,7 @@ class APS {
             } catch (e) {
                 console.error(e)
                 World.analyticsSystem?.exception("APS Login Failure")
-                globalAddToast("error", "Error signing in.", "Please try again.")
+                globalAddToast("error", "Error signing in.\nPlease try again.")
             }
         })
     }
@@ -237,7 +238,7 @@ class APS {
                 const json = await res.json()
                 if (!res.ok) {
                     if (shouldRelog) {
-                        globalAddToast("warning", "Must Re-signin.", json.userMessage)
+                        globalAddToast("warning", `Must Re-signin.\n${json.userMessage}`)
                         this._auth = undefined
                         await this.requestAuthCode()
                         return false
@@ -250,13 +251,13 @@ class APS {
                 if (this._auth) {
                     await this.loadUserInfo(this._auth)
                     if (APS.userInfo) {
-                        globalAddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                        globalAddToast("info", `ADSK Login\nHello, ${APS.userInfo.givenName}`)
                     }
                 }
                 return true
             } catch (e) {
                 World.analyticsSystem?.exception("APS Login Failure")
-                globalAddToast("error", "Error signing in.", "Please try again.")
+                globalAddToast("error", "Error signing in.\nPlease try again.")
                 this._auth = undefined
                 await this.requestAuthCode()
                 return false
@@ -282,7 +283,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Login Failure")
-                globalAddToast("error", "Error signing in.", json.userMessage)
+                globalAddToast("error", `Error signing in.${json.userMessage}`)
                 this._auth = undefined
                 return
             }
@@ -294,7 +295,7 @@ class APS {
             if (auth) {
                 await this.loadUserInfo(auth)
                 if (APS.userInfo) {
-                    globalAddToast("info", "ADSK Login", `Hello, ${APS.userInfo.givenName}`)
+                    globalAddToast("info", `ADSK Login\nHello, ${APS.userInfo.givenName}`)
                 }
             } else {
                 console.error("Couldn't get auth data.")
@@ -307,7 +308,7 @@ class APS {
         if (retryLogin) {
             this._auth = undefined
             World.analyticsSystem?.exception("APS Login Failure")
-            globalAddToast("error", "Error signing in.", "Please try again.")
+            globalAddToast("error", "Error signing in.\nPlease try again.")
         }
     }
 
@@ -328,7 +329,7 @@ class APS {
             const json = await res.json()
             if (!res.ok) {
                 World.analyticsSystem?.exception("APS Failure: User Info")
-                globalAddToast("error", "Error fetching user data.", json.userMessage)
+                globalAddToast("error", `Error fetching user data.\n${json.userMessage}`)
                 this._auth = undefined
                 await this.requestAuthCode()
                 return
@@ -344,7 +345,7 @@ class APS {
         } catch (e) {
             console.error(e)
             World.analyticsSystem?.exception("APS Login Failure: User Info")
-            globalAddToast("error", "Error signing in.", "Please try again.")
+            globalAddToast("error", "Error signing in.\nPlease try again.")
             this._auth = undefined
         }
     }
@@ -360,7 +361,7 @@ class APS {
         } catch (e) {
             console.error(e)
             World.analyticsSystem?.exception("APS Login Failure: Code Challenge")
-            globalAddToast("error", "Error signing in.", "Please try again.")
+            globalAddToast("error", "Error signing in.\nPlease try again.")
         }
     }
 }

@@ -21,7 +21,7 @@ import type { ModalImplProps } from "@/ui/components/Modal";
 import { UIContext } from "@/ui/UIProvider";
 import RoboRIOModal from "../RoboRIOModal";
 
-const RCConfigCANGroupModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
+const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
 	const { openModal } = useContext(UIContext);
 	const [name, setName] = useState<string>("");
 	const [checkedPorts, setCheckedPorts] = useState<number[]>([]);

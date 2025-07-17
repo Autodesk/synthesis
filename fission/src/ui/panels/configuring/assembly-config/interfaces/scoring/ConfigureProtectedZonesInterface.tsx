@@ -16,7 +16,7 @@ const protectedZones = (zones: ProtectedZonePreferences[] | undefined, field: Mi
     if (fieldPrefs) fieldPrefs.protectedZones = zones
 
     PreferencesSystem.savePreferences()
-    field.UpdateProtectedZones()
+    field.updateProtectedZones()
 }
 
 interface ConfigureZonesProps {
@@ -42,7 +42,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
 
                         {/** Back arrow button when an option is selected */}
                         <Button
-                            startIcon={SynthesisIcons.LeftArrowLarge}
+                            startIcon={SynthesisIcons.LEFT_ARROW_LARGE}
                             onClick={() => {
                                 new ConfigurationSavedEvent()
                                 setSelectedZone(undefined)

@@ -113,7 +113,7 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                     // colorOverrideClass={hasChild ? "bg-background hover:brightness-100" : undefined}
                 >
                     {lookingForParent === behavior || behavior.parentJointIndex !== undefined
-                        ? SynthesisIcons.XmarkLarge
+                        ? SynthesisIcons.XMARK_LARGE
                         : "follow"}
                 </Button>
             </Stack>

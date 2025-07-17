@@ -42,7 +42,9 @@ const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }
     color: winnerColor,
 }))
 
-const MatchResultsModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
+const MatchResultsModal: React.FC<ModalImplProps<void>> = () => {
+    const { closeModal } = useContext(UIContext)
+
     const { message, color } = getMatchWinner()
 
     const entries: Entry[] = [
@@ -51,10 +53,6 @@ const MatchResultsModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
     ]
 
     const { redRobotScores: redRobotScores, blueRobotScores: blueRobotScores } = getPerRobotScores()
-
-    const { closeModal } = useContext(UIContext)
-    // TODO: disallow clickaway
-    // TODO: hide buttons
 
     return (
         <>

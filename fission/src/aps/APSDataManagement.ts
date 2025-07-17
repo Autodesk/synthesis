@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import APS from "./APS"
-import TaskStatus from "@/util/TaskStatus"
+
 import { Mutex } from "async-mutex"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import type TaskStatus from "@/util/TaskStatus"
+import APS from "./APS"
 
 export const FOLDER_DATA_TYPE = "folders"
 export const ITEM_DATA_TYPE = "items"

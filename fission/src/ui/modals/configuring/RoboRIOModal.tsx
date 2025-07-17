@@ -3,8 +3,9 @@ import type React from "react";
 import { useContext } from "react";
 import type { ModalImplProps } from "@/ui/components/Modal";
 import { UIContext } from "@/ui/UIProvider";
+import RCCreateDeviceModal from "./rio-config/RCCreateDeviceModal";
 
-const RoboRIOModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
+const RoboRIOModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
 	const { openModal } = useContext(UIContext);
 	return (
 		<FormControlLabel
@@ -12,7 +13,7 @@ const RoboRIOModal: React.FC<ModalImplProps> = ({ modal, parent }) => {
 			control={
 				<Button
 					value="Create Device"
-					onClick={() => /* TODO: openModal("create-device") */ undefined}
+					onClick={() => openModal(<RCCreateDeviceModal />)}
 				/>
 			}
 		/>
