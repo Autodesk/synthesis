@@ -42,6 +42,7 @@ import {
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
+import FieldMiraEditor from "./FieldMiraEditor"
 
 const DEBUG_BODIES = false
 
@@ -90,7 +91,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _nameTag: SceneOverlayTag | undefined
     private _centerOfMassIndicator: THREE.Mesh | undefined
-    private _centerOfMassListenerUnsubscribe: (() => void) | undefined
     private _intakeActive = false
     private _ejectorActive = false
 
@@ -98,6 +98,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private static readonly EJECTABLE_TOAST_COOLDOWN_MS = 500
 
     private _collision?: (event: OnContactAddedEvent) => void
+    private _cacheId?: string
 
     public get intakeActive() {
         return this._intakeActive
@@ -145,7 +146,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public get activeEjectables(): Jolt.BodyID[] {
-        return this._ejectables.map(e => e.gamePieceBodyId!)
+        return this._ejectables.map(e => e.gamePieceBodyId!).filter(x => x !== undefined)
     }
 
     public get miraType(): MiraType {
@@ -174,11 +175,21 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._alliance = alliance
     }
 
-    public constructor(mirabufInstance: MirabufInstance, assemblyName: string, progressHandle?: ProgressHandle) {
+    public get cacheId() {
+        return this._cacheId
+    }
+
+    public constructor(
+        mirabufInstance: MirabufInstance,
+        assemblyName: string,
+        progressHandle?: ProgressHandle,
+        cacheId?: string
+    ) {
         super()
 
         this._mirabufInstance = mirabufInstance
         this._assemblyName = assemblyName
+        this._cacheId = cacheId
 
         progressHandle?.update("Creating mechanism...", 0.9)
 
@@ -221,18 +232,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             })
             material.depthTest = false
             this._centerOfMassIndicator = new THREE.Mesh(new THREE.SphereGeometry(0.02), material)
-            this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
-
+            this._centerOfMassIndicator.visible = false
             World.sceneRenderer.scene.add(this._centerOfMassIndicator)
-
-            this._centerOfMassListenerUnsubscribe = PreferencesSystem.addPreferenceEventListener(
-                "ShowCenterOfMassIndicators",
-                e => {
-                    if (this._centerOfMassIndicator) {
-                        this._centerOfMassIndicator.visible = e.prefValue
-                    }
-                }
-            )
         }
     }
 
@@ -353,12 +354,13 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
         this._debugBodies?.clear()
         this._physicsLayerReserve?.release()
-        this._centerOfMassIndicator?.geometry?.dispose()
+        if (this._centerOfMassIndicator) {
+            World.sceneRenderer.scene.remove(this._centerOfMassIndicator)
+            this._centerOfMassIndicator = undefined
+        }
+
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
-        }
-        if (this._centerOfMassListenerUnsubscribe) {
-            this._centerOfMassListenerUnsubscribe()
         }
     }
 
@@ -453,6 +455,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         if (this._centerOfMassIndicator) {
             const netCoM = totalMass > 0 ? weightedCOM.Div(totalMass) : weightedCOM
             this._centerOfMassIndicator.position.set(netCoM.GetX(), netCoM.GetY(), netCoM.GetZ())
+            this._centerOfMassIndicator.visible = PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")
         }
     }
 
@@ -660,6 +663,21 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         this._fieldPreferences = PreferencesSystem.getFieldPreferences(this.assemblyName)
+
+        // For fields, sync devtool data with field preferences
+        if (this.miraType === MiraType.FIELD) {
+            const parts = this._mirabufInstance.parser.assembly.data?.parts
+            if (parts) {
+                const editor = new FieldMiraEditor(parts)
+                const devtoolScoringZones = editor.getUserData("devtool:scoring_zones")
+
+                if (devtoolScoringZones && Array.isArray(devtoolScoringZones)) {
+                    this._fieldPreferences.scoringZones = devtoolScoringZones
+                    PreferencesSystem.setFieldPreferences(this.assemblyName, this._fieldPreferences)
+                    PreferencesSystem.savePreferences()
+                }
+            }
+        }
     }
 
     public updateSimConfig(config: SimConfigData | undefined) {
@@ -792,7 +810,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
 export async function createMirabuf(
     assembly: mirabuf.Assembly,
-    progressHandle?: ProgressHandle
+    progressHandle?: ProgressHandle,
+    cacheId?: string
 ): Promise<MirabufSceneObject | null | undefined> {
     const parser = new MirabufParser(assembly, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
@@ -800,7 +819,7 @@ export async function createMirabuf(
         return
     }
 
-    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle)
+    return new MirabufSceneObject(new MirabufInstance(parser), assembly.info!.name!, progressHandle, cacheId)
 }
 
 /**
