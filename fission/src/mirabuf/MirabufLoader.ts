@@ -52,7 +52,7 @@ export const canOPFS = await (async () => {
             console.log(`No access to OPFS`)
             return false
         }
-    } catch (e) {
+    } catch (_e) {
         console.log(`No access to OPFS`)
 
         // Copy-pasted from RemoveAll()
@@ -447,8 +447,9 @@ class MirabufCachingService {
 
             // Update OPFS if available
             if (canOPFS) {
-                const fileHandle = await (
-                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : fieldFolderHandle
                 ).getFileHandle(id, { create: false })
                 const writable = await fileHandle.createWritable()
                 await writable.write(updatedBuffer)
@@ -505,8 +506,9 @@ class MirabufCachingService {
             // Store buffer
             if (canOPFS) {
                 // Store in OPFS
-                const fileHandle = await (
-                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : fieldFolderHandle
                 ).getFileHandle(backupID, { create: true })
                 const writable = await fileHandle.createWritable()
                 await writable.write(miraBuff)

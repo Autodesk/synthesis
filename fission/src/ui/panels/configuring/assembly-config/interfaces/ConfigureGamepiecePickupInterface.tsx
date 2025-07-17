@@ -185,7 +185,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             return <></>
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedRobot?.intakePreferences, placeholderMesh])
+    }, [
+        selectedRobot?.intakePreferences,
+        placeholderMesh,
+        selectedRobot.mechanism.nodeToBody.get,
+        selectedRobot.rootNodeId,
+    ])
 
     useEffect(() => {
         if (selectedRobot?.intakePreferences) {

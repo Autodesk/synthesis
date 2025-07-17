@@ -481,7 +481,7 @@ export class Graph {
 const GraphComp: React.FC<{ graph: Graph }> = ({ graph }) => {
     const svgRef = useRef<SVGSVGElement | null>(null)
 
-    const [renderHook, forceRenderer] = useReducer(x => !x, false)
+    const [_renderHook, forceRenderer] = useReducer(x => !x, false)
 
     useEffect(() => {
         const anim = () => {
@@ -518,7 +518,7 @@ const GraphComp: React.FC<{ graph: Graph }> = ({ graph }) => {
             <></>
         )
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [renderHook, graph])
+    }, [graph])
 
     return (
         <svg ref={svgRef} className="flex grow w-full">

@@ -171,7 +171,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
         closePanel("configure")
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [closePanel])
 
     // Get Default Mirabuf Data, Load into manifest.
     useEffect(() => {
@@ -303,7 +303,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         },
                     })
                 ),
-        [cachedRobots, selectCache, setCachedRobots]
+        [cachedRobots, selectCache]
     )
 
     // Generate Item cards for cached fields.
@@ -328,7 +328,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         },
                     })
                 ),
-        [cachedFields, selectCache, setCachedFields]
+        [cachedFields, selectCache]
     )
 
     // Generate Item cards for remote robots.
@@ -372,7 +372,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [manifest?.fields, cachedFields, selectRemote])
 
     function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
+        // biome-ignore lint/correctness/useHookAtTopLevel: This is fine
         return useCallback(() => {
             const miraType: MiraType | undefined = cached[0]?.miraType
             const property = miraType === MiraType.ROBOT ? "robots" : "fields"
@@ -384,7 +384,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
             closePanel(panelId)
             // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [manifest, cached, cacheRemoteOnly, closePanel, panelId])
+        }, [cached, panelId])
     }
 
     const downloadAllRemoteRobots = downloadAllRemote(cachedRobots)

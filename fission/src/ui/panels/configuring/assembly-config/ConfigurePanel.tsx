@@ -64,7 +64,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
     pendingDeletes,
 }) => {
     // Update is used when a robot or field is deleted to update the select menu
-    const [u, update] = useReducer(x => !x, false)
+    const [_u, update] = useReducer(x => !x, false)
     const { openPanel } = usePanelControlContext()
 
     const robots = useMemo(() => {
@@ -72,14 +72,14 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
             .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u, pendingDeletes])
+    }, [pendingDeletes])
 
     const fields = useMemo(() => {
         return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
             .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u, pendingDeletes])
+    }, [pendingDeletes])
 
     const options = useMemo(() => {
         const list = configurationType == ConfigurationType.ROBOT ? robots : fields
@@ -370,7 +370,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
         closePanel("choose-scheme")
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [closePanel])
 
     return (
         <Panel
