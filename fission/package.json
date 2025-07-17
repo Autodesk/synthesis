@@ -19,7 +19,7 @@
     "style": "bun run fmt && bun run lint",
     "style:fix": "bun run fmt:fix && bun run lint:fix",
     "assetpack": "curl -o public/assetpack.zip https://synthesis.autodesk.com/downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/",
-    "playwright:install": "bun x playwright install || npx playwright install"
+    "playwright:install": "bun x playwright install"
   },
   "dependencies": {
     "@azaleacolburn/jolt-physics": "^0.31.2",

@@ -15,11 +15,11 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
       - name: JavaScript Setup
-        uses: actions/setup-node@v4
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
+          node-version: latest
 
-      - name: Cache Node Dependencies
+      - name: Cache Dependencies
         uses: actions/cache@v3
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"

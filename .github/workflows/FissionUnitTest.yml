@@ -3,12 +3,11 @@ name: Fission - Unit Test
 on:
   workflow_dispatch: {}
   push:
-    branches: [ prod, dev ]
+    branches: [prod, dev]
   pull_request:
-    branches: [ prod, dev ]
+    branches: [prod, dev]
 
 jobs:
-
   runUnitTests:
     name: Playwright Unit Tests
     container:
@@ -20,11 +19,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: JavaScript Setup
-        uses: actions/setup-node@v4
+      - name: Bun Runtime Setup
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-
+          bun-version: latest
 
       - name: Cache Synthesis assets
         id: cache-assets
@@ -56,13 +54,13 @@ jobs:
         uses: actions/cache@v3
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
-          path: 'fission/node_modules'
+          path: "fission/node_modules"
           restore-keys: |
             ${{runner.os}}-npm-fission-
             ${{runner.os}}-npm
 
       - name: Install Dependencies
-        run: npm install
+        run: bun install
 
       - name: Run Tests
-        run: HOME=/root npm run test
+        run: HOME=/root bun run test
