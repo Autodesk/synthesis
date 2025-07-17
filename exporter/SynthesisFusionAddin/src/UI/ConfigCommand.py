@@ -322,7 +322,7 @@ def buildGamepiece(gamepiece: adsk.fusion.Occurrence) -> dict[str, Any]:
 
     def addChildOccurrences(childOccurrences: adsk.fusion.OccurrenceList) -> None:
         for i in range(childOccurrences.count):
-            occ=childOccurrences.item(i)
+            occ = childOccurrences.item(i)
             response["entityIDs"].append(occ.entityToken)
 
             if occ.childOccurrences:
@@ -495,4 +495,3 @@ class MyCommandDestroyHandler(PersistentEventHandler, adsk.core.CommandEventHand
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         for group in design.rootComponent.customGraphicsGroups:
             group.deleteMe()
-
