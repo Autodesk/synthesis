@@ -19,6 +19,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+      - name: Update and Install Unzip
+        run: |
+          apt update
+          apt install -y unzip
       - name: Bun Runtime Setup
         uses: oven-sh/setup-bun@v2
         with:
@@ -36,8 +40,6 @@ jobs:
       - name: Download assets if not cached
         if: steps.cache-assets.outputs.cache-hit != 'true'
         run: |
-          apt update
-          apt install -y unzip
           curl -o public/assetpack.zip https://synthesis.autodesk.com/downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
       # Transition GH-1205:
       # Avoiding the cache step for now as it was causing issues.
@@ -50,7 +52,7 @@ jobs:
       #       ~/.cache/ms-playwright/
       #     key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
 
-      - name: Cache Node Dependencies
+      - name: Cache Dependencies
         uses: actions/cache@v3
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
