@@ -83,6 +83,9 @@ export function unzipMira(buff: Uint8Array): Uint8Array {
 }
 
 class MirabufCachingService {
+    // Request deduplication: track ongoing fetch requests to prevent race conditions
+    private static _ongoingRequests = new Map<string, Promise<MirabufCacheInfo | undefined>>()
+
     /**
      * Get the map of mirabuf keys and paired MirabufCacheInfo from local storage
      *
@@ -124,6 +127,27 @@ class MirabufCachingService {
             const target = map[fetchLocation]
             if (target) return target
         }
+
+        // Check if there's already an ongoing request for this URL
+        const requestKey = `${fetchLocation}:${miraType ?? "unknown"}`
+        const ongoingRequest = this._ongoingRequests.get(requestKey)
+        if (ongoingRequest) {
+            return ongoingRequest
+        }
+
+        const requestPromise = this._fetchAndCache(fetchLocation, miraType)
+        this._ongoingRequests.set(requestKey, requestPromise)
+        requestPromise.finally(() => {
+            this._ongoingRequests.delete(requestKey)
+        })
+
+        return requestPromise
+    }
+
+    private static async _fetchAndCache(
+        fetchLocation: string,
+        miraType?: MiraType
+    ): Promise<MirabufCacheInfo | undefined> {
         try {
             // grab file remote
             const resp = await fetch(encodeURI(fetchLocation), import.meta.env.DEV ? { cache: "no-store" } : undefined)
@@ -140,7 +164,7 @@ class MirabufCachingService {
 
             if (cached) return cached
 
-            globalAddToast("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
+            globalAddToast("error", "Cache Fallback", `Unable to cache "${fetchLocation}". Using raw buffer instead.`)
 
             // fallback: return raw buffer wrapped in MirabufCacheInfo
             return {
