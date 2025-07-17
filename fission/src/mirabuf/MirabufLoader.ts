@@ -167,12 +167,18 @@ class MirabufCachingService {
             globalAddToast("error", "Cache Fallback", `Unable to cache "${fetchLocation}". Using raw buffer instead.`)
 
             // fallback: return raw buffer wrapped in MirabufCacheInfo
-            return {
+            const fallbackInfo: MirabufCacheInfo = {
                 id: Date.now().toString(),
                 miraType: miraType ?? (this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
                 cacheKey: fetchLocation,
                 buffer: miraBuff,
             }
+
+            // Store fallback in memory cache so get() can find it later
+            const cache = fallbackInfo.miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+            cache[fallbackInfo.id] = fallbackInfo
+
+            return fallbackInfo
         } catch (e) {
             console.warn("Caching failed", e)
             return undefined
