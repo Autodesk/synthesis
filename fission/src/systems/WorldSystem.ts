@@ -1,5 +1,5 @@
 abstract class WorldSystem {
-    public abstract Update(deltaT: number): void
-    public abstract Destroy(): void
+    public abstract update(deltaT: number): void
+    public abstract destroy(): void
 }
 export default WorldSystem

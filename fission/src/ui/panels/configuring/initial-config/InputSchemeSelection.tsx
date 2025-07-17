@@ -1,23 +1,24 @@
 import DefaultInputs from "@/systems/input/DefaultInputs"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { LabelSize } from "@/ui/components/Label"
 import {
-    EditButton,
-    DeleteButton,
-    SelectButton,
     AddButtonInteractiveColor,
-    SectionLabel,
+    DeleteButton,
+    EditButton,
     SectionDivider,
+    SectionLabel,
+    SelectButton,
 } from "@/ui/components/StyledComponents"
 import { Box } from "@mui/material"
-import { useReducer } from "react"
+import React, { useReducer } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 
-function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
+const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex, onSelect, onEdit, onCreateNew }) => {
     const [_, update] = useReducer(x => !x, false)
 
     return (
@@ -25,13 +26,15 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
             {/** A scroll view with buttons to select default and custom input schemes */}
             <>
                 {/** The label and divider at the top of the scroll view */}
-                <SectionLabel size={LabelSize.Medium} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                <SectionLabel size={LabelSize.MEDIUM} className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${InputSchemeManager.availableInputSchemes.length} Input Schemes`}
                 </SectionLabel>
                 <SectionDivider />
 
                 {/** Creates list items with buttons */}
                 {InputSchemeManager.availableInputSchemes.map(scheme => {
+                    if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
+
                     return (
                         <Box
                             component={"div"}
@@ -55,6 +58,10 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                                 {/** Select button */}
                                 {SelectButton(() => {
                                     InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                    // TODO: if touch controls, then ensure that they are enabled.
+                                    if (scheme.usesTouchControls) {
+                                        new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
+                                    }
                                     onSelect?.()
                                     update()
                                 })}
@@ -73,8 +80,7 @@ function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: Inp
                                         // Fetch current custom schemes
                                         InputSchemeManager.saveSchemes()
                                         InputSchemeManager.resetDefaultSchemes()
-                                        const schemes =
-                                            PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+                                        const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
 
                                         // Find and remove this input scheme
                                         const index = schemes.indexOf(scheme)

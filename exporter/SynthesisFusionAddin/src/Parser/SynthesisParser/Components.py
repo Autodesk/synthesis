@@ -53,6 +53,9 @@ def _MapAllComponents(
                 fill_info(part_body, body)
                 part_body.part = comp_ref
 
+                if body.entityToken in options.tags:
+                    partsData.user_data.data[f"tag_{body.entityToken}"] = options.tags[body.entityToken]
+
                 if isinstance(body, adsk.fusion.BRepBody):
                     _ParseBRep(body, options, part_body.triangle_mesh)
                 else:

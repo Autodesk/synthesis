@@ -7,7 +7,7 @@ import World from "@/systems/World"
 import Slider from "@/ui/components/Slider"
 import { useState } from "react"
 import Dropdown from "@/ui/components/Dropdown"
-import { Global_AddToast } from "@/ui/components/GlobalUIControls"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -87,7 +87,7 @@ const shouldUseFastModeByDefault = (): boolean => {
 
 const applyInitialGraphicsSettings = (): void => {
     // Check if graphics optimization has already been applied
-    const optimizationApplied = PreferencesSystem.getGlobalPreference<boolean>("GraphicsOptimizationApplied")
+    const optimizationApplied = PreferencesSystem.getGlobalPreference("GraphicsOptimizationApplied")
 
     // If optimization hasn't been applied yet and device should use fast mode, apply fast settings
     if (!optimizationApplied && shouldUseFastModeByDefault()) {
@@ -100,18 +100,18 @@ const applyInitialGraphicsSettings = (): void => {
         PreferencesSystem.getGraphicsPreferences().antiAliasing = fastSettings.antiAliasing
 
         // Mark that optimization has been applied
-        PreferencesSystem.setGlobalPreference<boolean>("GraphicsOptimizationApplied", true)
+        PreferencesSystem.setGlobalPreference("GraphicsOptimizationApplied", true)
         PreferencesSystem.savePreferences()
 
         // Show a toast to let user know we optimized for their device
-        Global_AddToast?.(
+        globalAddToast?.(
             "info",
             "Graphics Optimized",
             "We've set your graphics to 'Fast' mode for optimal performance on your device. You can change this in Graphics Settings."
         )
     } else if (!optimizationApplied) {
         // Mark that optimization check has been completed (even if no changes were made)
-        PreferencesSystem.setGlobalPreference<boolean>("GraphicsOptimizationApplied", true)
+        PreferencesSystem.setGlobalPreference("GraphicsOptimizationApplied", true)
         PreferencesSystem.savePreferences()
     }
 }
@@ -200,11 +200,11 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
         setSelectedPreset(preset)
         setDropdownKey(prev => prev + 1)
 
-        World.SceneRenderer.setLightIntensity(settings.lightIntensity)
-        World.SceneRenderer.ChangeLighting(settings.fancyShadows)
+        World.sceneRenderer.setLightIntensity(settings.lightIntensity)
+        World.sceneRenderer.changeLighting(settings.fancyShadows)
 
         if (settings.fancyShadows) {
-            World.SceneRenderer.changeCSMSettings({
+            World.sceneRenderer.changeCSMSettings({
                 lightIntensity: settings.lightIntensity,
                 fancyShadows: settings.fancyShadows,
                 maxFar: settings.maxFar,
@@ -216,7 +216,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
 
         if (previousAntiAliasing !== settings.antiAliasing) {
             setReload(true)
-            Global_AddToast?.(
+            globalAddToast?.(
                 "info",
                 "Refresh Required",
                 "Anti-aliasing has been changed. Please refresh the page to see the effects."
@@ -228,13 +228,13 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
         setAntiAliasing(checked)
         setReload(true)
         updatePresetFromSettings(lightIntensity, fancyShadows, maxFar, cascades, shadowMapSize, checked)
-        Global_AddToast?.("info", "Refresh Required", "Please refresh the page to see the anti-aliasing changes.")
+        globalAddToast?.("info", "Refresh Required", "Please refresh the page to see the anti-aliasing changes.")
     }
 
     return (
         <Panel
             name={"Graphics Settings"}
-            icon={SynthesisIcons.Gear}
+            icon={SynthesisIcons.GEAR}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
@@ -251,12 +251,12 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                 if (reload) window.location.reload()
             }}
             onCancel={() => {
-                World.SceneRenderer.ChangeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+                World.sceneRenderer.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
                 <div className="flex items-center justify-center mt-1 mb-0.5 mx-[5%]">
-                    <SectionLabel size={LabelSize.Medium} className="text-center">
+                    <SectionLabel size={LabelSize.MEDIUM} className="text-center">
                         Graphics Presets
                     </SectionLabel>
                 </div>
@@ -284,7 +284,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     onChange={(_, value: number | number[]) => {
                         const newValue = value as number
                         setLightIntensity(newValue)
-                        World.SceneRenderer.setLightIntensity(newValue)
+                        World.sceneRenderer.setLightIntensity(newValue)
                         updatePresetFromSettings(newValue, fancyShadows, maxFar, cascades, shadowMapSize, antiAliasing)
                     }}
                     step={0.25}
@@ -294,7 +294,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     defaultState={fancyShadows}
                     onClick={checked => {
                         setFancyShadows(checked)
-                        World.SceneRenderer.ChangeLighting(checked)
+                        World.sceneRenderer.changeLighting(checked)
                         updatePresetFromSettings(lightIntensity, checked, maxFar, cascades, shadowMapSize, antiAliasing)
                     }}
                     tooltipText="Cascading shadows implementation"
@@ -309,7 +309,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             onChange={(_, value: number | number[]) => {
                                 const newValue = value as number
                                 setMaxFar(newValue)
-                                World.SceneRenderer.changeCSMSettings({
+                                World.sceneRenderer.changeCSMSettings({
                                     maxFar: newValue,
 
                                     lightIntensity: lightIntensity,
@@ -337,7 +337,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             onChange={(_, value: number | number[]) => {
                                 const newValue = value as number
                                 setCascades(newValue)
-                                World.SceneRenderer.changeCSMSettings({
+                                World.sceneRenderer.changeCSMSettings({
                                     cascades: newValue,
 
                                     maxFar: maxFar,
@@ -359,13 +359,13 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                         />
                         <Slider
                             min={MIN_SHADOW_MAP_SIZE}
-                            max={World.SceneRenderer.renderer.capabilities.maxTextureSize}
+                            max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
                             value={shadowMapSize}
                             label="Shadow Map Size"
                             onChange={(_, value: number | number[]) => {
                                 const newValue = value as number
                                 setShadowMapSize(newValue)
-                                World.SceneRenderer.changeCSMSettings({
+                                World.sceneRenderer.changeCSMSettings({
                                     shadowMapSize: newValue,
                                     maxFar: maxFar,
                                     lightIntensity: lightIntensity,
@@ -389,7 +389,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     <></>
                 )}
                 <div className="flex items-center justify-center mt-1 mb-0.5 mx-[5%]">
-                    <SectionLabel size={LabelSize.Medium} className="text-center">
+                    <SectionLabel size={LabelSize.MEDIUM} className="text-center">
                         Requires Browser Refresh
                     </SectionLabel>
                 </div>

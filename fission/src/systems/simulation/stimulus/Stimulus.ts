@@ -5,9 +5,9 @@ import { NoraType, NoraTypes } from "../Nora"
 import { SimSupplier } from "../wpilib_brain/SimDataFlow"
 
 export enum StimulusType {
-    Stim_ChassisAccel = "Stim_ChassisAccel",
-    Stim_Encoder = "Stim_Encoder",
-    Stim_Unknown = "Stim_Unknown",
+    STIM_CHASSIS_ACCEL = "Stim_ChassisAccel",
+    STIM_ENCODER = "Stim_Encoder",
+    STIM_UNKNOWN = "Stim_Unknown",
 }
 
 export type StimulusID = {
@@ -17,12 +17,12 @@ export type StimulusID = {
 }
 
 export function makeStimulusID(constraint: MechanismConstraint): StimulusID {
-    let stimulusType: StimulusType = StimulusType.Stim_Unknown
+    let stimulusType: StimulusType = StimulusType.STIM_UNKNOWN
     switch (constraint.primaryConstraint.GetSubType()) {
         case JOLT.EConstraintSubType_Hinge:
         case JOLT.EConstraintSubType_Slider:
         case JOLT.EConstraintSubType_Vehicle:
-            stimulusType = StimulusType.Stim_Encoder
+            stimulusType = StimulusType.STIM_ENCODER
             break
     }
 
@@ -42,7 +42,7 @@ abstract class Stimulus implements SimSupplier {
         this._info = info
     }
 
-    public abstract Update(deltaT: number): void
+    public abstract update(deltaT: number): void
 
     public get id() {
         return this._id
@@ -58,7 +58,7 @@ abstract class Stimulus implements SimSupplier {
 
     public abstract getSupplierType(): NoraTypes
     public abstract getSupplierValue(): NoraType
-    public abstract DisplayName(): string
+    public abstract displayName(): string
 }
 
 export default Stimulus

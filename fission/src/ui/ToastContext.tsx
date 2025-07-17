@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useCallback, ReactNode } from "react"
+import React, { createContext, ReactNode, useCallback, useContext, useState } from "react"
 import Toast from "@/components/Toast"
 import { AnimatePresence, motion } from "framer-motion"
 
@@ -6,7 +6,7 @@ export type ToastType = "info" | "warning" | "error"
 
 export type ToastData = {
     id: string
-    type: ToastType
+    toastType: ToastType
     title: string
     description: string
 }
@@ -17,7 +17,7 @@ type ToastContextType = {
     removeToast: (toastId: string) => void
 }
 
-const ToastContext = createContext<ToastContextType | null>(null)
+const ToastContext: React.Context<ToastContextType | null> = createContext<ToastContextType | null>(null)
 
 export const useToastContext = () => {
     const context = useContext(ToastContext)
@@ -28,12 +28,12 @@ export const useToastContext = () => {
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const [toasts, setToasts] = useState<ToastData[]>([])
 
-    const addToast = useCallback((type: ToastType, title: string, description: string) => {
+    const addToast = useCallback((toastType: ToastType, title: string, description: string) => {
         // divide by 10 so that it's harder to have duplicates? could make smaller or remove
         const id = "toast-" + Math.floor(Date.now() / 10).toString()
         const newToast: ToastData = {
             id,
-            type,
+            toastType,
             title,
             description,
         }
@@ -80,7 +80,13 @@ export const ToastContainer: React.FC = () => {
                             key={t.id}
                             className="w-fit"
                         >
-                            <Toast key={t.id} id={t.id} type={t.type} title={t.title} description={t.description} />
+                            <Toast
+                                key={t.id}
+                                id={t.id}
+                                toastType={t.toastType}
+                                title={t.title}
+                                description={t.description}
+                            />
                         </motion.div>
                     ))}
             </AnimatePresence>

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState, useMemo } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import InputSystem from "@/systems/input/InputSystem"
@@ -49,11 +49,11 @@ const ConfigureInputsInterface = () => {
     }, [])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
             setSelectedScheme(undefined)
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -83,7 +83,7 @@ const ConfigureInputsInterface = () => {
                     InputSchemeManager.resetDefaultSchemes()
 
                     // Find the scheme to remove in preferences
-                    const schemes = PreferencesSystem.getGlobalPreference<InputScheme[]>("InputSchemes")
+                    const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
                     const index = schemes.indexOf(val.scheme)
 
                     // If currently bound to a robot, remove the binding
