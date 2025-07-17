@@ -1,0 +1,26 @@
+{
+  "name": "synthesis-client-prediction-spike",
+  "version": "1.0.0",
+  "description": "Client-side prediction with server reconciliation spike for improved input responsiveness",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "client": "npx http-server client -p 8080 -o"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "helmet": "^8.1.0",
+    "uuid": "^9.0.1",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/uuid": "^9.0.7",
+    "@types/ws": "^8.5.10"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
