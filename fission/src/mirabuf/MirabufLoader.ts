@@ -166,7 +166,17 @@ class MirabufCachingService {
 
             const cached = await MirabufCachingService.storeInCache(fetchLocation, miraBuff, miraType)
 
-            if (cached) return cached
+            if (cached) {
+                // Verify that the cached data is actually retrievable
+                const verification = await MirabufCachingService.get(cached.id, cached.miraType)
+                if (verification) {
+                    return cached
+                } else {
+                    console.warn(
+                        `Storage verification failed for "${fetchLocation}" - data not retrievable despite successful cache operation`
+                    )
+                }
+            }
 
             console.warn(`Primary caching failed for "${fetchLocation}", creating emergency fallback`)
             globalAddToast("error", "Cache Fallback", `Unable to cache "${fetchLocation}". Using raw buffer instead.`)
