@@ -86,6 +86,10 @@ class MirabufCachingService {
     // Request deduplication: track ongoing fetch requests to prevent race conditions
     private static _ongoingRequests = new Map<string, Promise<MirabufCacheInfo | undefined>>()
 
+    // Storage operation locks to prevent concurrent storage race conditions
+    private static _storageOperations = new Map<string, Promise<MirabufCacheInfo | undefined>>()
+    private static _idCounter = 0
+
     /**
      * Get the map of mirabuf keys and paired MirabufCacheInfo from local storage
      *
@@ -164,19 +168,41 @@ class MirabufCachingService {
 
             if (cached) return cached
 
+            console.warn(`Primary caching failed for "${fetchLocation}", creating emergency fallback`)
             globalAddToast("error", "Cache Fallback", `Unable to cache "${fetchLocation}". Using raw buffer instead.`)
 
-            // fallback: return raw buffer wrapped in MirabufCacheInfo
+            // Emergency fallback: return raw buffer wrapped in MirabufCacheInfo
+            const fallbackId = `${Date.now()}_${++this._idCounter}_fallback`
+            const resolvedMiraType =
+                miraType ?? (this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD)
+
             const fallbackInfo: MirabufCacheInfo = {
-                id: Date.now().toString(),
-                miraType: miraType ?? (this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
+                id: fallbackId,
+                miraType: resolvedMiraType,
                 cacheKey: fetchLocation,
                 buffer: miraBuff,
             }
 
             // Store fallback in memory cache so get() can find it later
-            const cache = fallbackInfo.miraType == MiraType.ROBOT ? backUpRobots : backUpFields
-            cache[fallbackInfo.id] = fallbackInfo
+            const cache = resolvedMiraType == MiraType.ROBOT ? backUpRobots : backUpFields
+            cache[fallbackId] = fallbackInfo
+
+            // Also try to update localStorage for future reference
+            try {
+                const map: MapCache = this.getCacheMap(resolvedMiraType)
+                map[fetchLocation] = {
+                    id: fallbackId,
+                    miraType: resolvedMiraType,
+                    cacheKey: fetchLocation,
+                    name: `Fallback: ${fetchLocation}`,
+                }
+                window.localStorage.setItem(
+                    resolvedMiraType == MiraType.ROBOT ? robotsDirName : fieldsDirName,
+                    JSON.stringify(map)
+                )
+            } catch (lsError) {
+                console.warn(`Fallback localStorage update failed:`, lsError)
+            }
 
             return fallbackInfo
         } catch (e) {
@@ -356,37 +382,84 @@ class MirabufCachingService {
      * @returns {Promise<mirabufAssembly | undefined>} Promise with the result of the promise. Assembly of the mirabuf file if successful, undefined if not.
      */
     public static async get(id: MirabufCacheID, miraType: MiraType): Promise<mirabuf.Assembly | undefined> {
-        try {
-            // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
-            const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
-            const buff =
-                cache[id]?.buffer ??
-                (await (async () => {
-                    const fileHandle = canOPFS
-                        ? await (miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle).getFileHandle(id, {
-                              create: false,
-                          })
-                        : undefined
-                    return fileHandle ? await fileHandle.getFile().then(x => x.arrayBuffer()) : undefined
-                })())
+        // Retry logic to handle race conditions where storage might still be in progress
+        const maxRetries = 3
+        const retryDelay = 50 // ms
 
-            // If we have buffer, get assembly
-            if (buff) {
-                const assembly = this.assemblyFromBuffer(buff)
-                World.analyticsSystem?.event("Cache Get", {
-                    key: id,
-                    type: miraType == MiraType.ROBOT ? "robot" : "field",
-                    assemblyName: assembly.info!.name!,
-                    fileSize: buff.byteLength,
-                })
-                return assembly
-            } else {
-                console.error(`Failed to find arrayBuffer for id: ${id}`)
+        for (let attempt = 0; attempt < maxRetries; attempt++) {
+            try {
+                const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+                let buff: ArrayBuffer | undefined
+
+                // Try memory cache first (most reliable and fastest)
+                if (cache[id]?.buffer) {
+                    buff = cache[id].buffer
+                } else if (canOPFS) {
+                    // Try OPFS as fallback
+                    try {
+                        const fileHandle = await (
+                            miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                        ).getFileHandle(id, { create: false })
+                        const file = await fileHandle.getFile()
+                        buff = await file.arrayBuffer()
+
+                        // If we found it in OPFS but not in memory, update memory cache for next time
+                        if (buff && !cache[id]?.buffer) {
+                            if (cache[id]) {
+                                cache[id].buffer = buff
+                            } else {
+                                // Create a minimal cache entry if it doesn't exist
+                                cache[id] = {
+                                    id: id,
+                                    miraType: miraType,
+                                    cacheKey: `opfs_recovered_${id}`,
+                                    buffer: buff,
+                                }
+                            }
+                        }
+                    } catch (opfsError) {
+                        console.debug(`OPFS retrieval failed for ${id}:`, opfsError)
+                    }
+                }
+
+                // If we have buffer, return assembly
+                if (buff) {
+                    const assembly = this.assemblyFromBuffer(buff)
+                    World.analyticsSystem?.event("Cache Get", {
+                        key: id,
+                        type: miraType == MiraType.ROBOT ? "robot" : "field",
+                        assemblyName: assembly.info!.name!,
+                        fileSize: buff.byteLength,
+                    })
+                    return assembly
+                }
+
+                // If we didn't find the buffer and this isn't the last attempt, wait and retry
+                if (attempt < maxRetries - 1) {
+                    console.debug(
+                        `Cache miss for ${id}, retrying in ${retryDelay}ms (attempt ${attempt + 1}/${maxRetries})`
+                    )
+                    await new Promise(resolve => setTimeout(resolve, retryDelay))
+                    continue
+                }
+
+                // Last attempt failed
+                console.error(`Failed to find arrayBuffer for id: ${id} after ${maxRetries} attempts`)
+                return undefined
+            } catch (e) {
+                console.error(`Failed to find file for id ${id} (attempt ${attempt + 1}):`, e)
+
+                // If this is the last attempt, give up
+                if (attempt === maxRetries - 1) {
+                    return undefined
+                }
+
+                // Wait before retrying
+                await new Promise(resolve => setTimeout(resolve, retryDelay))
             }
-        } catch (e) {
-            console.error(`Failed to find file\n${e}`)
-            return undefined
         }
+
+        return undefined
     }
 
     /**
@@ -507,23 +580,57 @@ class MirabufCachingService {
         miraType?: MiraType,
         name?: string
     ): Promise<MirabufCacheInfo | undefined> {
+        // Check if there's already an ongoing storage operation for this key
+        const storageKey = `${key}:${miraType ?? "unknown"}`
+        const ongoingStorage = this._storageOperations.get(storageKey)
+        if (ongoingStorage) {
+            return ongoingStorage
+        }
+
+        const storagePromise = this._performStoreInCache(key, miraBuff, miraType, name)
+        this._storageOperations.set(storageKey, storagePromise)
+
+        storagePromise.finally(() => {
+            this._storageOperations.delete(storageKey)
+        })
+
+        return storagePromise
+    }
+
+    private static async _performStoreInCache(
+        key: string,
+        miraBuff: ArrayBuffer,
+        miraType?: MiraType,
+        name?: string
+    ): Promise<MirabufCacheInfo | undefined> {
         try {
-            const backupID = Date.now().toString()
+            // Generate unique ID using timestamp + counter to avoid collisions
+            const backupID = `${Date.now()}_${++this._idCounter}`
+
             if (!miraType) {
                 console.debug("Double loading")
                 miraType = this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD
             }
 
-            // Local cache map
-            const map: MapCache = this.getCacheMap(miraType)
-            const info: MirabufCacheInfo = {
+            // Create the cache info that will be used consistently across all storage locations
+            const cacheInfo: MirabufCacheInfo = {
                 id: backupID,
                 miraType: miraType,
                 cacheKey: key,
                 name: name,
             }
-            map[key] = info
-            window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
+
+            const memoryInfo: MirabufCacheInfo = {
+                id: backupID,
+                miraType: miraType,
+                cacheKey: key,
+                buffer: miraBuff,
+                name: name,
+            }
+
+            // Store in memory cache FIRST (most reliable)
+            const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+            cache[backupID] = memoryInfo
 
             World.analyticsSystem?.event("Cache Store", {
                 name: name ?? "-",
@@ -532,29 +639,33 @@ class MirabufCachingService {
                 fileSize: miraBuff.byteLength,
             })
 
-            // Store buffer
+            // Store in OPFS (can fail silently)
             if (canOPFS) {
-                // Store in OPFS
-                const fileHandle = await (
-                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
-                ).getFileHandle(backupID, { create: true })
-                const writable = await fileHandle.createWritable()
-                await writable.write(miraBuff)
-                await writable.close()
+                try {
+                    const fileHandle = await (
+                        miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                    ).getFileHandle(backupID, { create: true })
+                    const writable = await fileHandle.createWritable()
+                    await writable.write(miraBuff)
+                    await writable.close()
+                } catch (opfsError) {
+                    console.warn(`OPFS storage failed for ${key}, using fallback:`, opfsError)
+                }
             }
 
-            // Store in hash
-            const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
-            const mapInfo: MirabufCacheInfo = {
-                id: backupID,
-                miraType: miraType,
-                cacheKey: key,
-                buffer: miraBuff,
-                name: name,
+            // Update localStorage cache map LAST (after memory cache is secured)
+            try {
+                const map: MapCache = this.getCacheMap(miraType)
+                map[key] = cacheInfo
+                window.localStorage.setItem(
+                    miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName,
+                    JSON.stringify(map)
+                )
+            } catch (lsError) {
+                console.warn(`localStorage update failed for ${key}:`, lsError)
             }
-            cache[backupID] = mapInfo
 
-            return info
+            return cacheInfo
         } catch (e) {
             console.error("Failed to cache mira " + e)
             World.analyticsSystem?.exception("Failed to store in cache")
