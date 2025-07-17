@@ -184,7 +184,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public set station(station: Station | undefined) {
         this._station = station
     }
-  
+
     public get cacheId() {
         return this._cacheId
     }
