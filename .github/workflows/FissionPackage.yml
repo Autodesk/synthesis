@@ -3,62 +3,63 @@ name: Fission - Package
 on:
   workflow_dispatch: {}
   push:
-    branches: [ prod, dev ]
+    branches: [prod, dev]
 
 jobs:
   runUnitTests:
     name: Package
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v4
-    - name: JavaScript Setup
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: JavaScript Setup
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
 
-    - name: Get date
-      id: date # this is used on variable path
-      run: |
-        echo "timestamp=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_OUTPUT
+      - name: Get date
+        id: date # this is used on variable path
+        run: |
+          echo "timestamp=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_OUTPUT
 
-    - name: Cache Node Dependencies
-      uses: actions/cache@v3
-      with:
-        key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
-        path: 'fission/node_modules'
-        restore-keys: |
-          ${{runner.os}}-npm-fission-
-          ${{runner.os}}-npm
+      - name: Cache Node Dependencies
+        uses: actions/cache@v3
+        with:
+          key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
+          path: "fission/node_modules"
+          restore-keys: |
+            ${{runner.os}}-npm-fission-
+            ${{runner.os}}-npm
 
-    - name: Install Dependencies
-      run: |
-        cd fission
-        npm install
+      - name: Install Dependencies
+        run: |
+          cd fission
+          bun install
 
-    - name: Get package info
-      id: info
-      uses: codex-team/action-nodejs-package-info@v1.1
-      with:
-        path: fission/
+      - name: Get package info
+        id: info
+        uses: codex-team/action-nodejs-package-info@v1.1
+        with:
+          path: fission/
 
-    - name: Build
-      id: build
-      run: |
-        cd fission
-        npm run build:prod
-        npm run build:dev
+      - name: Build
+        id: build
+        run: |
+          cd fission
+          bun run build:prod
+          bun run build:dev
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      id: upload-artifact-prod
-      with:
-        name: "${{ steps.info.outputs.name }}@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
-        path: fission/dist/prod/
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        id: upload-artifact-prod
+        with:
+          name: "${{ steps.info.outputs.name }}@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
+          path: fission/dist/prod/
 
-    - name: Upload Artifact
-      uses: actions/upload-artifact@v4
-      id: upload-artifact-dev
-      with:
-        name: "${{ steps.info.outputs.name }}-dev@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
-        path: fission/dist/dev/
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        id: upload-artifact-dev
+        with:
+          name: "${{ steps.info.outputs.name }}-dev@${{ steps.info.outputs.version }}[${{ steps.date.outputs.timestamp }}]"
+          path: fission/dist/dev/
+
