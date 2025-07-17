@@ -1,3 +1,4 @@
+import DeleteIcon from "@mui/icons-material/Delete"
 import {
     Box,
     Button,
@@ -15,37 +16,28 @@ import {
     TableRow,
     TextField,
 } from "@mui/material"
-import DeleteIcon from "@mui/icons-material/Delete"
-import { useRef } from "react"
-import { type FusionJoint, selectJoint } from "../lib/joints"
-import { type Joint, JointParentType, JointType, SignalType, WheelType } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
-import { createJoint, jointInfo, signalInfo } from "../lib/joints"
-
-
+import { createJoint, jointInfo, selectJoint, signalInfo } from "../lib/joints"
+import { type Joint, JointParentType, JointType, SignalType, WheelType } from "../lib/types"
 
 interface JointsConfigTabProps {
     joints: Joint[]
     updateJoints: (cb: (joints: Joint[]) => void) => void
-    selection:{
-        isSelecting:boolean
-        setIsSelecting:(value: boolean) => void
+    selection: {
+        isSelecting: boolean
+        setIsSelecting: (value: boolean) => void
     }
-    // updateJoint: <K extends keyof Joint>(index: number, key: K, value: Joint[K]) => void
-    // removeJoint: (index: number) => void
 }
-function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProps) {
+function JointsConfigTab({ joints, updateJoints, selection }: JointsConfigTabProps) {
     function updateJoint<K extends keyof Joint>(index: number, key: K, value: Joint[K]) {
         updateJoints(joints => {
             joints[index][key] = value
         })
     }
-
-    const jointCancelCallback = useRef<(() => void) | undefined>(undefined)
     return (
         <>
             <h4>
-                {joints.length} Joint{joints.length != 1 ? "s" : ""}
+                {joints.length} Joint{joints.length !== 1 ? "s" : ""}
             </h4>
             <TableContainer component={Paper} elevation={6} sx={{ marginBottom: "10px" }}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -77,8 +69,7 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                     </TableHead>
                     <TableBody>
                         {joints.map((row, i) => (
-                            <TableRow key={row.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
-                                {/*<TableCell>{jointInfo[row.type]?.name}</TableCell>*/}
+                            <TableRow key={row.jointToken} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                                 <TableCell align="center">
                                     <img
                                         src={jointInfo[row.type]?.icon}
@@ -90,11 +81,12 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                                 <TableCell align="center">
                                     <Select
                                         size="small"
-                                        value={row.parentNode}
+                                        value={row.parent}
                                         onChange={e => {
-                                            updateJoint(i, "parentNode", e.target.value)
+                                            updateJoint(i, "parent", e.target.value)
                                         }}
-                                        fullWidth>
+                                        fullWidth
+                                    >
                                         <MenuItem value={JointParentType.ROOT}>Root</MenuItem>
                                         <MenuItem value={JointParentType.END}>End</MenuItem>
                                         {/*{joints.map((joint, j) => {*/}
@@ -115,7 +107,8 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                                             backgroundColor: signalInfo[row.signalType].bg,
                                             outlineColor: signalInfo[row.signalType].outline,
                                             borderColor: signalInfo[row.signalType].outline,
-                                        }}>
+                                        }}
+                                    >
                                         <MenuItem sx={{ color: signalInfo[SignalType.PWM].fg }} value={SignalType.PWM}>
                                             PWM
                                         </MenuItem>
@@ -124,7 +117,8 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                                         </MenuItem>
                                         <MenuItem
                                             sx={{ color: signalInfo[SignalType.PASSIVE].fg }}
-                                            value={SignalType.PASSIVE}>
+                                            value={SignalType.PASSIVE}
+                                        >
                                             Passive
                                         </MenuItem>
                                     </Select>
@@ -173,7 +167,7 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                                 </TableCell>
                                 <TableCell align="center">
                                     <Checkbox
-                                        disabled={row.type != JointType.RevoluteJointType}
+                                        disabled={row.type !== JointType.RevoluteJointType}
                                         checked={row.isWheel}
                                         onChange={(_, v) => {
                                             updateJoint(i, "isWheel", v)
@@ -187,7 +181,8 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                                             updateJoints(joints => {
                                                 joints.splice(i, 1)
                                             })
-                                        }}>
+                                        }}
+                                    >
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
@@ -203,7 +198,8 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                     justifyContent: "left",
                     alignItems: "center",
                     gap: "10px",
-                }}>
+                }}
+            >
                 <Button
                     variant="contained"
                     color="secondary"
@@ -213,29 +209,18 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                     title={"Select a joint in Fusion"}
                     onClick={async () => {
                         selection.setIsSelecting(true)
-                        // const data = await initiateSelection("Select joint")
-
-                        const data: FusionJoint | undefined = await new Promise(resolve => {
-                            jointCancelCallback.current = () => {
-                                resolve(undefined)
-                            }
-                            selectJoint()
-                                .then(v => {
-                                    resolve(v)
-                                })
-                                .catch(console.error)
-                        })
-
+                        const data = await selectJoint()
                         selection.setIsSelecting(false)
                         if (data == null) return
-                        if (joints.some(joint => joint.id == data.entityToken)) {
+                        if (joints.some(joint => joint.jointToken === data.entityToken)) {
                             Global_SetAlert("warning", "Joint already selected")
                             return
                         }
                         updateJoints(draft => {
                             draft.push(createJoint(data))
                         })
-                    }}>
+                    }}
+                >
                     Add Joint
                 </Button>
                 {/*<Button*/}
@@ -250,7 +235,7 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
             </Box>
 
             <h4>
-                {joints.filter(j => j.isWheel).length} Wheel{joints.filter(j => j.isWheel).length != 1 ? "s" : ""}
+                {joints.filter(j => j.isWheel).length} Wheel{joints.filter(j => j.isWheel).length !== 1 ? "s" : ""}
             </h4>
             <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table">
@@ -268,7 +253,10 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                         {joints.map(
                             (joint, i) =>
                                 joint.isWheel && (
-                                    <TableRow key={joint.id} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                                    <TableRow
+                                        key={joint.jointToken}
+                                        sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                                    >
                                         {/*<TableCell>{jointInfo[row.type]?.name}</TableCell>*/}
                                         <TableCell align="center">{joint.name}</TableCell>
                                         <TableCell align="center">
@@ -278,7 +266,8 @@ function JointsConfigTab({ joints, updateJoints,selection }: JointsConfigTabProp
                                                 onChange={e => {
                                                     updateJoint(i, "wheelType", e.target.value)
                                                 }}
-                                                fullWidth>
+                                                fullWidth
+                                            >
                                                 <MenuItem value={WheelType.STANDARD}>Standard</MenuItem>
                                                 <MenuItem value={WheelType.MECANUM}>Mecanum</MenuItem>
                                                 <MenuItem value={WheelType.OMNI}>Omni</MenuItem>

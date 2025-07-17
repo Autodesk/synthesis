@@ -18,13 +18,15 @@ function GlobalAlert() {
             anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
             onClose={() => {
                 setActive(false)
-            }}>
+            }}
+        >
             <Alert
                 onClose={() => {
                     setActive(false)
                 }}
                 severity={severity}
-                variant="filled">
+                variant="filled"
+            >
                 {text}
             </Alert>
         </Snackbar>

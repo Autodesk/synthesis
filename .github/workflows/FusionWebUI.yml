@@ -39,20 +39,13 @@ jobs:
         cd exporter/SynthesisFusionAddin/web
         npm ci
 
-    - name: Linter
-      id: linter-validation
+    - name: Linter & Formatter
       if: ${{ always() }}
       run: |
         cd exporter/SynthesisFusionAddin/web
-        npm run lint && echo "ESLint Validation Passed" || (echo "ESLint Validation Failed" && exit 1)
+        npx biome --version
+        npx biome ci --reporter=github
 
-    - name: Prettier
-      id: prettier-validation
-      if: ${{ always() }}
-      run: |
-        cd exporter/SynthesisFusionAddin/web
-        npx prettier --version
-        npm run prettier && echo "Prettier Validation Passed" || (echo "Prettier Validation Failed" && exit 1)
   runBuildScript:
     name: Build
     runs-on: ubuntu-latest

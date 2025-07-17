@@ -1,7 +1,10 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 
 import "./App.css"
-import { sendData, sendDataAndToast } from "./lib"
+import { RestartAlt, Settings, SportsFootball, Texture } from "@mui/icons-material"
+import DownloadIcon from "@mui/icons-material/Download"
+import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
+import SaveIcon from "@mui/icons-material/Save"
 import {
     AppBar,
     Backdrop,
@@ -14,9 +17,12 @@ import {
     Tabs,
     ThemeProvider,
 } from "@mui/material"
-import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
-import JointsConfigTab from "./ui/JointsConfigTab.tsx"
+import { current } from "immer"
 import { useImmer } from "use-immer"
+import { sendData, sendDataAndToast } from "./lib"
+import { Global_SetAlert } from "./lib/GlobalUtils.tsx"
+import { createJoint } from "./lib/joints.ts"
+import { theme } from "./lib/theme.ts"
 import {
     DefaultExporterConfig,
     type ExporterConfig,
@@ -27,16 +33,10 @@ import {
     WheelType,
 } from "./lib/types.ts"
 import GamepiecesConfigTab from "./ui/GamepiecesConfigTab.tsx"
+import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
 import GlobalAlert from "./ui/GlobalAlert.tsx"
-import { Global_SetAlert } from "./lib/GlobalUtils.tsx"
-import DownloadIcon from "@mui/icons-material/Download"
-import { current } from "immer"
-import { theme } from "./lib/theme.ts"
-import { RestartAlt, Settings, SportsFootball, Texture } from "@mui/icons-material"
-import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
-import SaveIcon from "@mui/icons-material/Save"
+import JointsConfigTab from "./ui/JointsConfigTab.tsx"
 import MaterialTaggingTab, { type TaggedBody } from "./ui/MaterialTaggingTab.tsx"
-import { createJoint } from "./lib/joints.ts"
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
@@ -61,14 +61,14 @@ function App() {
         })
     }
 
-    function loadConfigFromFusion() {
+    const loadConfigFromFusion = useCallback(() => {
         if (typeof window.adsk === "undefined") {
             requestAnimationFrame(loadConfigFromFusion)
             return
         }
         sendData("init", {})
             .then(data => {
-                if (data == undefined) {
+                if (data === undefined) {
                     Global_SetAlert("error", "Could not extract data from fusion")
                     return
                 }
@@ -84,7 +84,7 @@ function App() {
                     config.robotWeight = config.autoCalcRobotWeight ? data.calculatedMass : config.robotWeight
                 })
                 updateJoints(() => {
-                    if (data.options.joints.length == 0) {
+                    if (data.options.joints.length === 0) {
                         return data.jointData.map(fusionJoint => createJoint(fusionJoint))
                     }
                     const res: Joint[] = data.options.joints
@@ -92,17 +92,12 @@ function App() {
                             const wheel = joint.isWheel
                                 ? data.options.wheels.find(wheel => wheel.jointToken === joint.jointToken)
                                 : undefined
-                            const fusionJoint = data.jointData.find(j => j.entityToken == joint.jointToken)
-                            if (fusionJoint == undefined) {
+                            const fusionJoint = data.jointData.find(j => j.entityToken === joint.jointToken)
+                            if (fusionJoint === undefined) {
                                 return null // No longer in the assembly
                             }
                             return {
-                                id: joint.jointToken,
-                                parentNode: joint.parent,
-                                force: joint.force,
-                                isWheel: joint.isWheel,
-                                speed: joint.speed,
-                                signalType: joint.signalType,
+                                ...joint,
                                 wheelType: wheel?.wheelType ?? WheelType.STANDARD,
                                 name: fusionJoint.name,
                                 type: fusionJoint.jointType,
@@ -115,9 +110,9 @@ function App() {
                     const res: Gamepiece[] = data.options.gamepieces
                         .map(gamepiece => {
                             const fusionGamepiece = data.gamepieceData.find(
-                                g => g.occurrenceToken == gamepiece.occurrenceToken
+                                g => g.occurrenceToken === gamepiece.occurrenceToken
                             )
-                            if (fusionGamepiece == undefined) {
+                            if (fusionGamepiece === undefined) {
                                 return null // No longer in the assembly
                             }
                             return {
@@ -136,8 +131,8 @@ function App() {
                 updateTaggedBodies(() => {
                     const res: TaggedBody[] = Object.entries(data.options.tags)
                         .map(([key, value]) => {
-                            const fusionBody = data.tagData.find(b => b.entityToken == key)
-                            if (fusionBody == undefined) {
+                            const fusionBody = data.tagData.find(b => b.entityToken === key)
+                            if (fusionBody === undefined) {
                                 return null // No longer in the assembly
                             }
                             return {
@@ -153,11 +148,11 @@ function App() {
                 console.error(e)
                 Global_SetAlert("error", "Could not load config")
             })
-    }
+    }, [updateGamepieces, updateJoints, updateGeneralConfig, updateTaggedBodies])
 
     useEffect(() => {
         loadConfigFromFusion()
-    }, [])
+    }, [loadConfigFromFusion])
 
     const getFinalizedConfig = () =>
         new Promise<ExporterConfig>(resolve => {
@@ -169,18 +164,11 @@ function App() {
                         : gamepiece.userDefinedMass,
                     friction: gamepiece.friction,
                 }))
-                cfg.joints = joints.map(joint => ({
-                    jointToken: joint.id,
-                    parent: joint.parentNode,
-                    signalType: joint.signalType,
-                    speed: joint.speed,
-                    force: joint.force,
-                    isWheel: joint.isWheel,
-                }))
+                cfg.joints = joints
                 cfg.wheels = joints
                     .filter(joint => joint.isWheel)
                     .map(joint => ({
-                        jointToken: joint.id,
+                        jointToken: joint.jointToken,
                         signalType: joint.signalType,
                         wheelType: joint.wheelType,
                     }))
@@ -191,13 +179,27 @@ function App() {
     return (
         <ThemeProvider theme={theme}>
             <Backdrop
-                sx={theme => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1, backdropFilter:"blur(0px)"})}
+                sx={theme => ({ color: "#fff", zIndex: theme.zIndex.drawer + 1, backdropFilter: "blur(0px)" })}
                 open={isSelecting}
                 onClick={() => {
-                    Global_SetAlert("info", "Click on an element in the Fusion assembly, or press escape in the main Fusion window")
-                }}>
+                    Global_SetAlert(
+                        "info",
+                        "Click on an element in the Fusion assembly, or press escape in the main Fusion window"
+                    )
+                }}
+            >
                 <Stack direction={"column"} alignItems={"center"} justifyContent={"center"} gap={"1rem"}>
-                    <Box sx={(theme) => ({paddingX: "0.5rem", paddingY: "0.4rem", borderRadius:"0.5rem", backgroundColor: theme.palette.grey.A700, boxShadow:theme.shadows[5]})}>Click on an element in the Fusion assembly</Box>
+                    <Box
+                        sx={theme => ({
+                            paddingX: "0.5rem",
+                            paddingY: "0.4rem",
+                            borderRadius: "0.5rem",
+                            backgroundColor: theme.palette.grey.A700,
+                            boxShadow: theme.shadows[5],
+                        })}
+                    >
+                        Click on an element in the Fusion assembly
+                    </Box>
                     <CircularProgress color="inherit" />
                 </Stack>
             </Backdrop>
@@ -209,19 +211,20 @@ function App() {
                         value={activeTab}
                         onChange={(_, v) => {
                             setActiveTab(v as number)
-                        }}>
+                        }}
+                    >
                         <Tab icon={<Settings />} iconPosition={"start"} label="General" />
                         <Tab
                             icon={<PrecisionManufacturingIcon />}
                             iconPosition={"start"}
                             label="Joints"
-                            disabled={generalConfig.exportMode == ExportMode.FIELD}
+                            disabled={generalConfig.exportMode === ExportMode.FIELD}
                         />
                         <Tab
                             icon={<SportsFootball />}
                             iconPosition={"start"}
                             label="Gamepieces"
-                            disabled={generalConfig.exportMode == ExportMode.ROBOT}
+                            disabled={generalConfig.exportMode === ExportMode.ROBOT}
                         />
 
                         <Tab icon={<Texture />} iconPosition={"start"} label="Materials" />
@@ -265,7 +268,8 @@ function App() {
                     gap: "0.5rem",
                     paddingY: "0.5rem",
                     bottom: 0,
-                }}>
+                }}
+            >
                 <Button
                     variant="contained"
                     color="error"
@@ -278,7 +282,8 @@ function App() {
                         loadConfigFromFusion()
                         Global_SetAlert("info", "Configuration reset")
                     }}
-                    startIcon={<RestartAlt />}>
+                    startIcon={<RestartAlt />}
+                >
                     Reset
                 </Button>
                 <Button
@@ -286,7 +291,8 @@ function App() {
                     color="primary"
                     sx={{ flexGrow: 9 }}
                     onClick={async () => sendDataAndToast("export", await getFinalizedConfig(), "Exported!")}
-                    startIcon={<DownloadIcon />}>
+                    startIcon={<DownloadIcon />}
+                >
                     Export
                 </Button>
                 <Button
@@ -294,7 +300,8 @@ function App() {
                     color="secondary"
                     sx={{ flexGrow: 1 }}
                     onClick={async () => sendDataAndToast("save", await getFinalizedConfig(), "Saved!")}
-                    startIcon={<SaveIcon />}>
+                    startIcon={<SaveIcon />}
+                >
                     Save
                 </Button>
             </Container>

@@ -1,3 +1,5 @@
+import BalanceIcon from "@mui/icons-material/Balance"
+import DeleteIcon from "@mui/icons-material/Delete"
 import {
     Box,
     Button,
@@ -18,25 +20,28 @@ import {
     TableRow,
     TextField,
 } from "@mui/material"
-import DeleteIcon from "@mui/icons-material/Delete"
-
 import { selectGamepiece } from "../lib"
-import { type Gamepiece, type GeneralConfig } from "../lib/types"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
-import BalanceIcon from "@mui/icons-material/Balance"
+import type { Gamepiece, GeneralConfig } from "../lib/types"
 
 interface GamepiecesConfigTabProps {
     gamepieces: Gamepiece[]
     updateGamepieces: (cb: (gamepieces: Gamepiece[]) => void) => void
     config: GeneralConfig
     updateConfigItem: <K extends keyof GeneralConfig>(key: K, value: GeneralConfig[K]) => void
-    selection:{
-        isSelecting:boolean
-        setIsSelecting:(value: boolean) => void
+    selection: {
+        isSelecting: boolean
+        setIsSelecting: (value: boolean) => void
     }
 }
 
-function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfigItem , selection}: GamepiecesConfigTabProps) {
+function GamepiecesConfigTab({
+    gamepieces,
+    updateGamepieces,
+    config,
+    updateConfigItem,
+    selection,
+}: GamepiecesConfigTabProps) {
     function updateItem<K extends keyof Gamepiece>(index: number, key: K, value: Gamepiece[K]) {
         updateGamepieces(items => {
             items[index][key] = value
@@ -62,7 +67,7 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                 </ListItem>
             </List>
             <h4>
-                {gamepieces.length} Gamepiece{gamepieces.length == 1 ? "" : "s"}
+                {gamepieces.length} Gamepiece{gamepieces.length === 1 ? "" : "s"}
             </h4>
             <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table" size={"small"}>
@@ -84,7 +89,8 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                         {gamepieces.map((gamepiece, i) => (
                             <TableRow
                                 key={gamepiece.occurrenceToken}
-                                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
+                            >
                                 <TableCell>{gamepiece.name}</TableCell>
                                 <TableCell align="center">
                                     <TextField
@@ -152,7 +158,8 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                                             updateGamepieces(draft => {
                                                 draft.splice(i, 1)
                                             })
-                                        }}>
+                                        }}
+                                    >
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
@@ -168,7 +175,8 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                     justifyContent: "left",
                     alignItems: "center",
                     gap: "10px",
-                }}>
+                }}
+            >
                 <Button
                     variant="contained"
                     color="secondary"
@@ -177,7 +185,6 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                     loadingIndicator={"Selecting..."}
                     onClick={async () => {
                         selection.setIsSelecting(true)
-                        // const data = await initiateSelection("Select joint")
 
                         const data = await selectGamepiece()
 
@@ -205,7 +212,8 @@ function GamepiecesConfigTab({ gamepieces, updateGamepieces, config, updateConfi
                                 })
                             })
                         })
-                    }}>
+                    }}
+                >
                     Add Gamepiece
                 </Button>
             </Box>

@@ -1,5 +1,5 @@
-import { defineConfig, loadEnv } from "vite"
 import react from "@vitejs/plugin-react-swc"
+import { defineConfig, loadEnv } from "vite"
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
@@ -16,7 +16,7 @@ export default defineConfig(({ mode }) => {
                     },
                 },
             },
-            sourcemap: env.NODE_ENV == "dev" ? "inline": false,
+            sourcemap: env.NODE_ENV === "dev" ? "inline" : false,
         },
     }
 })

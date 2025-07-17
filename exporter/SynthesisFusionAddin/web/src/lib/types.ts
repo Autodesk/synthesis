@@ -41,10 +41,10 @@ export interface Gamepiece {
 }
 
 export interface Joint {
-    id: string
+    jointToken: string
     name: string
     type: JointType
-    parentNode: JointParentType
+    parent: JointParentType
     signalType: SignalType
     speed: number
     force: number

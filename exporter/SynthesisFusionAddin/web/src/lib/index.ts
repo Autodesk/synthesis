@@ -1,6 +1,6 @@
-import { type ExporterConfig } from "./types.ts"
 import { Global_SetAlert } from "./GlobalUtils.tsx"
 import type { FusionJoint } from "./joints.ts"
+import type { ExporterConfig } from "./types.ts"
 
 declare global {
     interface Window {
@@ -48,13 +48,13 @@ export async function sendData<A extends keyof Messages>(
 ): Promise<(Messages[A][1] & { _err?: string }) | undefined> {
     console.log({ action, body: JSON.stringify(body) })
     const resp = await window.adsk.fusionSendData(action, JSON.stringify(body))
-    if (resp == "") {
+    if (resp === "") {
         Global_SetAlert("error", "Fusion did not respond. Try restarting the application")
         return undefined
     }
     try {
         const parsed = JSON.parse(resp) as Messages[A][1] & { _err?: string }
-        if (parsed._err != undefined) {
+        if (parsed._err !== undefined) {
             const wasHandled = errorMatchers.some(matcher => {
                 if (parsed._err?.includes(matcher.text)) {
                     matcher.cb()
@@ -83,7 +83,7 @@ export async function sendDataAndToast<A extends keyof Messages>(
 ): Promise<Messages[A][1] | undefined> {
     const resp = await sendData(action, body)
 
-    if (resp == undefined) {
+    if (resp === undefined) {
         Global_SetAlert("error", failureMsg)
     } else {
         Global_SetAlert("info", sucessMsg)
@@ -98,14 +98,14 @@ export interface FusionGamepiece {
     entityIDs: string[]
 }
 export async function selectGamepiece(): Promise<FusionGamepiece[] | undefined> {
-    if (import.meta.env.DEV && typeof window.adsk == "undefined") {
+    if (import.meta.env.DEV && typeof window.adsk === "undefined") {
         return new Promise<FusionGamepiece[]>(resolve => {
             setTimeout(() => {
                 const token = Math.random().toString(36).substring(2, 15)
                 resolve([
                     {
-                        occurrenceToken: token + "_" + Math.random().toString(36).substring(2, 15),
-                        name: "Component " + token.substring(0, 2).toUpperCase(),
+                        occurrenceToken: `${token}_${Math.random().toString(36).substring(2, 15)}`,
+                        name: `Component ${token.substring(0, 2).toUpperCase()}`,
                         mass: Math.round(Math.random() * 100) / 10,
                         entityIDs: [
                             token,
@@ -126,14 +126,14 @@ export interface FusionBody {
     componentName: string
 }
 export async function selectBody(): Promise<FusionBody | undefined> {
-    if (import.meta.env.DEV && typeof window.adsk == "undefined") {
+    if (import.meta.env.DEV && typeof window.adsk === "undefined") {
         return new Promise<FusionBody>(resolve => {
             setTimeout(() => {
                 const token = Math.random().toString(36).substring(2, 15)
                 resolve({
                     entityToken: token,
-                    name: "Body " + token.substring(0, 2).toUpperCase(),
-                    componentName: "Component " + token.substring(2, 3).toUpperCase(),
+                    name: `Body ${token.substring(0, 2).toUpperCase()}`,
+                    componentName: `Component ${token.substring(2, 3).toUpperCase()}`,
                 })
             }, 2000)
         })
@@ -141,7 +141,7 @@ export async function selectBody(): Promise<FusionBody | undefined> {
     return await sendData("selectBody", {})
 }
 window.fusionJavaScriptHandler = {
-    handle: function (action, data) {
+    handle: (action, data) => {
         console.log({ action, data })
         return "OK"
     },

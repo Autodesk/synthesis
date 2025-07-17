@@ -1,7 +1,7 @@
-import { type Joint, JointParentType, JointType, SignalType, WheelType } from "./types.ts"
 import revoluteIcon from "../../../src/Resources/JointIcons/JointRev/32x32.png"
 import sliderIcon from "../../../src/Resources/JointIcons/JointSlider/32x32.png"
 import { sendData } from "./index.ts"
+import { type Joint, JointParentType, JointType, SignalType, WheelType } from "./types.ts"
 
 export const jointInfo: Partial<
     Record<JointType, { icon: string; name: string; speedUnits: string; defaultSpeed: number }>
@@ -9,7 +9,7 @@ export const jointInfo: Partial<
     [JointType.RevoluteJointType]: {
         icon: revoluteIcon,
         name: "Revolute",
-        defaultSpeed: 3.14159,
+        defaultSpeed: Math.PI,
         speedUnits: "rad/s",
     },
     [JointType.SliderJointType]: {
@@ -28,10 +28,10 @@ export const signalInfo: Record<SignalType, { bg: string; outline: string; fg: s
 
 export function createJoint(fusionJoint: FusionJoint): Joint {
     return {
-        id: fusionJoint.entityToken,
+        entityToken: fusionJoint.entityToken,
         name: fusionJoint.name,
         type: fusionJoint.jointType,
-        parentNode: JointParentType.ROOT,
+        parent: JointParentType.ROOT,
         signalType: SignalType.PWM,
         speed: jointInfo[fusionJoint.jointType]?.defaultSpeed ?? 0,
         force: 0.05,
@@ -47,14 +47,14 @@ export interface FusionJoint {
 }
 
 export async function selectJoint(): Promise<FusionJoint | undefined> {
-    if (import.meta.env.DEV && typeof window.adsk == "undefined") {
+    if (import.meta.env.DEV && typeof window.adsk === "undefined") {
         return new Promise<FusionJoint>(resolve => {
             setTimeout(() => {
                 const jointType = Math.round(1 + Math.random())
                 const token = Math.random().toString(36).substring(2, 15)
                 resolve({
                     entityToken: token,
-                    name: (jointType == 1 ? "Revolute" : "Slider") + " " + token.substring(0, 2).toUpperCase(),
+                    name: `${jointType === 1 ? "Revolute" : "Slider"} ${token.substring(0, 2).toUpperCase()}`,
                     jointType: jointType,
                 })
             }, 2000)

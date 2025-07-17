@@ -1,3 +1,4 @@
+import DeleteIcon from "@mui/icons-material/Delete"
 import {
     Box,
     Button,
@@ -12,9 +13,7 @@ import {
     TableHead,
     TableRow,
 } from "@mui/material"
-import DeleteIcon from "@mui/icons-material/Delete"
 
-import { useRef } from "react"
 import { type FusionBody, selectBody } from "../lib"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 
@@ -26,22 +25,21 @@ export type TaggedBody = FusionBody & {
 interface MaterialTaggingTabProps {
     tags: TaggedBody[]
     updateTags: (cb: (tags: TaggedBody[]) => void) => void
-    selection:{
-        isSelecting:boolean
-        setIsSelecting:(value: boolean) => void
+    selection: {
+        isSelecting: boolean
+        setIsSelecting: (value: boolean) => void
     }
 }
-function MaterialTaggingTab({ tags, updateTags,selection }: MaterialTaggingTabProps) {
+function MaterialTaggingTab({ tags, updateTags, selection }: MaterialTaggingTabProps) {
     function updateTag<K extends keyof TaggedBody>(index: number, key: K, value: TaggedBody[K]) {
         updateTags(items => {
             items[index][key] = value
         })
     }
-    const selectionCancelCallback = useRef<(() => void) | undefined>(undefined)
     return (
         <>
             <h4>
-                {tags.length} Tagged Item{tags.length == 1 ? "" : "s"}
+                {tags.length} Tagged Item{tags.length === 1 ? "" : "s"}
             </h4>
             <TableContainer component={Paper} elevation={6}>
                 <Table sx={{ minWidth: 650 }} aria-label="simple table" size={"small"}>
@@ -70,7 +68,8 @@ function MaterialTaggingTab({ tags, updateTags,selection }: MaterialTaggingTabPr
                                         fullWidth
                                         onChange={e => {
                                             updateTag(i, "material", e.target.value)
-                                        }}>
+                                        }}
+                                    >
                                         {MATERIALS.map(material => (
                                             <MenuItem key={material} value={material}>
                                                 {material}
@@ -85,7 +84,8 @@ function MaterialTaggingTab({ tags, updateTags,selection }: MaterialTaggingTabPr
                                             updateTags(draft => {
                                                 draft.splice(i, 1)
                                             })
-                                        }}>
+                                        }}
+                                    >
                                         <DeleteIcon />
                                     </IconButton>
                                 </TableCell>
@@ -101,7 +101,8 @@ function MaterialTaggingTab({ tags, updateTags,selection }: MaterialTaggingTabPr
                     justifyContent: "left",
                     alignItems: "center",
                     gap: "10px",
-                }}>
+                }}
+            >
                 <Button
                     variant="contained"
                     color="secondary"
@@ -110,18 +111,11 @@ function MaterialTaggingTab({ tags, updateTags,selection }: MaterialTaggingTabPr
                     loadingIndicator={"Selecting..."}
                     onClick={async () => {
                         selection.setIsSelecting(true)
-                        // const data = await initiateSelection("Select joint")
-
-                        const data: FusionBody | undefined = await new Promise(async resolve => {
-                            selectionCancelCallback.current = () => {
-                                resolve(undefined)
-                            }
-                            resolve(await selectBody())
-                        })
+                        const data = await selectBody()
 
                         selection.setIsSelecting(false)
                         if (data == null) return
-                        if (tags.some(tag => tag.entityToken == data.entityToken)) {
+                        if (tags.some(tag => tag.entityToken === data.entityToken)) {
                             console.warn("attempted to add existing element")
                             Global_SetAlert("warning", "Component already added")
                             return
@@ -132,7 +126,8 @@ function MaterialTaggingTab({ tags, updateTags,selection }: MaterialTaggingTabPr
                                 material: "Rigid",
                             })
                         })
-                    }}>
+                    }}
+                >
                     Add Body
                 </Button>
             </Box>
