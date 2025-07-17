@@ -128,7 +128,7 @@ describe("MirabufSceneObject", () => {
         vi.clearAllMocks()
         mirabufInstance = mockMirabufInstance()
         progressHandle = undefined
-        instance = new MirabufSceneObject(mirabufInstance, "TestAssembly", progressHandle)
+        instance = new MirabufSceneObject(mirabufInstance, "TestAssembly", "", progressHandle)
 
         console.log = vi.fn()
         console.error = vi.fn()

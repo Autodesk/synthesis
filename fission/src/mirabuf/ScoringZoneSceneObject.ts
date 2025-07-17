@@ -224,7 +224,7 @@ class ScoringZoneSceneObject extends SceneObject {
         if (this._collisionRemoved) OnContactRemovedEvent.removeListener(this._collisionRemoved)
     }
 
-    private zoneCollision(gpID: Jolt.BodyID) {
+    public zoneCollision(gpID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(gpID)
         const inGPLayer = World.physicsSystem.getBody(gpID).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
         if ((associate?.isGamePiece || inGPLayer) && this._prefs) {

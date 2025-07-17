@@ -193,7 +193,7 @@ class MirabufParser {
         const gamePieces = Object.values(this._assembly.data!.parts!.partInstances!)
             .filter(inst => gamepieceDefinitions.has(inst.partDefinitionReference!))
             .map(inst => {
-                const instNode = this.binarySearchDesignTreePrune(inst.info!.GUID!)
+                const instNode = this.binarySearchDesignTree(inst.info!.GUID!)
                 if (instNode == null) {
                     this.NewError(ParseErrorSeverity.LIKELY_ISSUES, "Failed to find game piece in Design Tree")
                     return
@@ -480,15 +480,13 @@ class MirabufParser {
         return Math.floor((h + l) / 2.0)
     }
 
-    private binarySearchDesignTreePrune(target: string): mirabuf.INode | null {
-        let parent = this._designHierarchyRoot
+    private binarySearchDesignTree(target: string): mirabuf.INode | null {
         let node = this._designHierarchyRoot
         const targetValue = this._partTreeValues.get(target)!
 
         while (node?.value != target && node?.children) {
             const i = this.binarySearchIndex(targetValue, node.children!)
             const iValue = this._partTreeValues.get(node.children![i].value!)!
-            parent = node
             node = node.children![i + (iValue < targetValue ? 1 : 0)]
         }
 
