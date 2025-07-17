@@ -3,10 +3,10 @@ import { styled } from "@mui/system"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
 
 export const ToggleButton = styled(ToggleButtonMUI)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": colorNameToVar("MainText"),
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: colorNameToVar("MainText"),
     /*     "transition": "transform 0.2s ease",
     "transform": "scale(1)", */
     "&.Mui-selected": {
@@ -48,10 +48,10 @@ export const ToggleButton = styled(ToggleButtonMUI)({
 })
 
 export const ToggleButtonGroup = styled(ToggleButtonGroupMUI)({
-    "backgroundColor": colorNameToVar("Background"),
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "width": "fit-content",
+    backgroundColor: colorNameToVar("Background"),
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    width: "fit-content",
     "&:focus": {
         borderColor: "transparent",
     },

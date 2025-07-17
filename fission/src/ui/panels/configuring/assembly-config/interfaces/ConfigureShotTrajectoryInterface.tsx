@@ -168,7 +168,12 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             return <></>
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [placeholderMesh, selectedRobot.ejectorPreferences])
+    }, [
+        placeholderMesh,
+        selectedRobot.ejectorPreferences,
+        selectedRobot.mechanism.nodeToBody.get,
+        selectedRobot.rootNodeId,
+    ])
 
     useEffect(() => {
         if (selectedRobot?.ejectorPreferences) {

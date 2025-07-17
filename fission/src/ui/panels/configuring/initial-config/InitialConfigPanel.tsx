@@ -46,7 +46,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             mirabufPanelState.hasUnconfirmedImport = false
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [closePanel])
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {

@@ -44,7 +44,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             setSelectedScheme(scheme)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [closePanel, targetAssembly])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)

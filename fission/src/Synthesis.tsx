@@ -134,7 +134,7 @@ const Synthesis: React.FC = () => {
         }
 
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [openModal])
 
     useEffect(() => {
         let scoreboardExists = false

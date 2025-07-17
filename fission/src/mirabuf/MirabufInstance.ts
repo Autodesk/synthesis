@@ -115,7 +115,7 @@ class MirabufInstance {
         this._mirabufParser = parser
         this._materials = new Map()
         this._meshes = new Map()
-        this._batches = new Array<THREE.BatchedMesh>()
+        this._batches = [] as THREE.BatchedMesh[]
 
         progressHandle?.update("Loading materials...", 0.4)
         this.loadMaterials(materialStyle ?? MaterialStyle.REGULAR)
@@ -195,7 +195,7 @@ class MirabufInstance {
                 const partBodyGuid = this.getPartBodyGuid(definition, body)
                 let bodyInstances = materialBodyMap.get(partBodyGuid)
                 if (!bodyInstances) {
-                    bodyInstances = [body, new Array<mirabuf.IPartInstance>()]
+                    bodyInstances = [body, [] as mirabuf.IPartInstance[]]
                     materialBodyMap.set(partBodyGuid, bodyInstances)
                 }
                 bodyInstances[1].push(instance)
@@ -240,7 +240,7 @@ class MirabufInstance {
 
                     let bodies = this._meshes.get(instance.info!.GUID!)
                     if (!bodies) {
-                        bodies = new Array<[THREE.BatchedMesh, number]>()
+                        bodies = [] as [THREE.BatchedMesh, number][]
                         this._meshes.set(instance.info!.GUID!, bodies)
                     }
 

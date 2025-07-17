@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 export const click = (btn: number, x: number, y: number) => {
     const el = document.elementFromPoint(x, y)
 
@@ -23,10 +22,11 @@ export const mousePosition = (x: number, y: number) => {
     el?.dispatchEvent(event)
 }
 
-// prettier-ignore
+// biome-ignore-start lint/suspicious/noExplicitAny: We need to index a generic object
 export const addGlobalFunc = <T>(name: string, func: (...args: any[]) => T) => {
-    (window as any)[name] = func
+    ;(window as any)[name] = func
 }
+// biome-ignore-end lint/suspicious/noExplicitAny: We need to index a generic object
 
 addGlobalFunc("click", click)
 addGlobalFunc("mousePosition", mousePosition)
