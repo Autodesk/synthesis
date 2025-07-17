@@ -181,6 +181,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._alliance = alliance
     }
 
+    public set station(station: Station | undefined) {
+        this._station = station
+    }
+
     public get cacheId() {
         return this._cacheId
     }
