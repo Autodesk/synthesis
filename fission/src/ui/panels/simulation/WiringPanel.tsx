@@ -1,432 +1,500 @@
-import { Button, Checkbox, FormControlLabel, FormControlLabel, Grid, Stack, Typography } from "@mui/material"
 import {
-    type Connection,
-    type FinalConnectionState,
-    type Edge as FlowEdge,
-    type Node as FlowNode,
-    ReactFlow,
-    ReactFlowProvider,
-    useEdgesState,
-    useNodesState,
-    useReactFlow,
-} from "@xyflow/react"
-import type { NodeProps } from "postcss"
-import type React from "react"
-import { type ComponentType, useCallback, useContext, useEffect, useMemo, useReducer, useState } from "react"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import InputSystem from "@/systems/input/InputSystem"
-import { isNoraDeconstructable } from "@/systems/simulation/Nora"
+	Button,
+	Checkbox,
+	FormControlLabel,
+	Grid,
+	Stack,
+	Typography,
+} from "@mui/material";
 import {
-    type ConfigState,
-    type HandleInfo,
-    handleInfoDisplayCompare,
-    NODE_ID_ROBOT_IO,
-    NODE_ID_SIM_IN,
-    NODE_ID_SIM_OUT,
-    SimConfig,
-    type SimConfigData,
-} from "@/systems/simulation/SimConfigShared"
-import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import World from "@/systems/World"
-import FlowControls from "@/ui/components/simulation/FlowControls"
-import FlowInfo from "@/ui/components/simulation/FlowInfo"
-import { UIContext } from "../../UIProvider"
-import WiringNode from "./WiringNode"
+	type Connection,
+	type FinalConnectionState,
+	type Edge as FlowEdge,
+	type Node as FlowNode,
+	ReactFlow,
+	ReactFlowProvider,
+	useEdgesState,
+	useNodesState,
+	useReactFlow,
+} from "@xyflow/react";
+import type { NodeProps } from "postcss";
+import type React from "react";
+import {
+	type ComponentType,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useReducer,
+	useState,
+} from "react";
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
+import InputSystem from "@/systems/input/InputSystem";
+import { isNoraDeconstructable } from "@/systems/simulation/Nora";
+import {
+	type ConfigState,
+	type HandleInfo,
+	handleInfoDisplayCompare,
+	NODE_ID_ROBOT_IO,
+	NODE_ID_SIM_IN,
+	NODE_ID_SIM_OUT,
+	SimConfig,
+	type SimConfigData,
+} from "@/systems/simulation/SimConfigShared";
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain";
+import World from "@/systems/World";
+import FlowControls from "@/ui/components/simulation/FlowControls";
+import FlowInfo from "@/ui/components/simulation/FlowInfo";
+import { UIContext } from "../../UIProvider";
+import WiringNode from "./WiringNode";
+import ScrollView from "@/ui/components/ScrollView";
 
 type ConfigComponentProps = {
-    setConfigState: (state: ConfigState) => void
-    selectedAssembly: MirabufSceneObject
-    simConfig: SimConfigData
-    reset?: () => void
-}
+	setConfigState: (state: ConfigState) => void;
+	selectedAssembly: MirabufSceneObject;
+	simConfig: SimConfigData;
+	reset?: () => void;
+};
 
 type NodeType = ComponentType<
-    NodeProps & {
-        data: Record<string, unknown>
-        type: string
-    }
->
+	NodeProps & {
+		data: Record<string, unknown>;
+		type: string;
+	}
+>;
 
 const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
-    [k: string]: NodeType
+	[k: string]: NodeType;
 }>((prev, next) => {
-    prev[next.name] = next
-    return prev
-}, {})
+	prev[next.name] = next;
+	return prev;
+}, {});
 
 function generateGraph(
-    simConfig: SimConfigData,
-    refreshGraph: () => void,
-    setConfigState: (state: ConfigState) => void
+	simConfig: SimConfigData,
+	refreshGraph: () => void,
+	setConfigState: (state: ConfigState) => void,
 ): [FlowNode[], FlowEdge[]] {
-    const nodes: Map<string, FlowNode> = new Map()
-    const edges: FlowEdge[] = []
+	const nodes: Map<string, FlowNode> = new Map();
+	const edges: FlowEdge[] = [];
 
-    for (const [_k, v] of Object.entries(simConfig.nodes)) {
-        let onEdit: (() => void) | undefined
-        let onRefresh: (() => void) | undefined
-        let onDelete: (() => void) | undefined
-        let title = ""
+	for (const [_k, v] of Object.entries(simConfig.nodes)) {
+		let onEdit: (() => void) | undefined;
+		let onRefresh: (() => void) | undefined;
+		let onDelete: (() => void) | undefined;
+		let title = "";
 
-        switch (v.id) {
-            case NODE_ID_ROBOT_IO:
-                title = "Robot IO"
-                onEdit = () => setConfigState("robotIO")
-                onRefresh = () => {
-                    SimConfig.RefreshRobotIO(simConfig)
-                    refreshGraph()
-                }
-                break
-            case NODE_ID_SIM_IN:
-                title = "Simulation Input"
-                onEdit = () => setConfigState("simIO")
-                break
-            case NODE_ID_SIM_OUT:
-                title = "Simulation Output"
-                onEdit = () => setConfigState("simIO")
-                break
-            default:
-                onDelete = () => {
-                    if (SimConfig.RemoveNode(simConfig, v.id)) refreshGraph()
-                }
-                break
-        }
+		switch (v.id) {
+			case NODE_ID_ROBOT_IO:
+				title = "Robot IO";
+				onEdit = () => setConfigState("robotIO");
+				onRefresh = () => {
+					SimConfig.RefreshRobotIO(simConfig);
+					refreshGraph();
+				};
+				break;
+			case NODE_ID_SIM_IN:
+				title = "Simulation Input";
+				onEdit = () => setConfigState("simIO");
+				break;
+			case NODE_ID_SIM_OUT:
+				title = "Simulation Output";
+				onEdit = () => setConfigState("simIO");
+				break;
+			default:
+				onDelete = () => {
+					if (SimConfig.RemoveNode(simConfig, v.id)) refreshGraph();
+				};
+				break;
+		}
 
-        nodes.set(v.id, {
-            ...v,
-            data: {
-                title,
-                onEdit,
-                onRefresh,
-                onDelete,
-                simConfig,
-                input: [],
-                output: [],
-                tooltip: v.tooltip,
-            },
-        })
-    }
+		nodes.set(v.id, {
+			...v,
+			data: {
+				title,
+				onEdit,
+				onRefresh,
+				onDelete,
+				simConfig,
+				input: [],
+				output: [],
+				tooltip: v.tooltip,
+			},
+		});
+	}
 
-    for (const [_k, v] of Object.entries(simConfig.handles)) {
-        if (!v.enabled) break
-        const node = nodes.get(v.nodeId)
-        if (!node) {
-            console.warn("Orphaned handle found")
-            break
-        }
-        const list = (v.isSource ? node.data.output : node.data.input) as unknown[]
-        list.push(v)
-    }
+	for (const [_k, v] of Object.entries(simConfig.handles)) {
+		if (!v.enabled) break;
+		const node = nodes.get(v.nodeId);
+		if (!node) {
+			console.warn("Orphaned handle found");
+			break;
+		}
+		const list = (v.isSource ? node.data.output : node.data.input) as unknown[];
+		list.push(v);
+	}
 
-    for (const [k, v] of Object.entries(simConfig.edges)) {
-        const sourceHandle = simConfig.handles[v.sourceId]
-        const targetHandle = simConfig.handles[v.targetId]
+	for (const [k, v] of Object.entries(simConfig.edges)) {
+		const sourceHandle = simConfig.handles[v.sourceId];
+		const targetHandle = simConfig.handles[v.targetId];
 
-        if (sourceHandle?.enabled && targetHandle?.enabled) {
-            edges.push({
-                id: k,
-                source: sourceHandle.nodeId,
-                target: targetHandle.nodeId,
-                sourceHandle: sourceHandle.id,
-                targetHandle: targetHandle.id,
-            })
-        }
-    }
+		if (sourceHandle?.enabled && targetHandle?.enabled) {
+			edges.push({
+				id: k,
+				source: sourceHandle.nodeId,
+				target: targetHandle.nodeId,
+				sourceHandle: sourceHandle.id,
+				targetHandle: targetHandle.id,
+			});
+		}
+	}
 
-    return [[...nodes.values()], edges]
+	return [[...nodes.values()], edges];
 }
 
 function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
-    const simOut: HandleInfo[] = []
-    const simIn: HandleInfo[] = []
-    for (const [_k, v] of Object.entries(simConfig.handles)) {
-        if (v.nodeId === NODE_ID_SIM_OUT || v.nodeId === NODE_ID_SIM_IN) {
-            const list = v.isSource ? simOut : simIn
-            list.push(v)
-        }
-    }
+	const simOut: HandleInfo[] = [];
+	const simIn: HandleInfo[] = [];
+	for (const [_k, v] of Object.entries(simConfig.handles)) {
+		if (v.nodeId === NODE_ID_SIM_OUT || v.nodeId === NODE_ID_SIM_IN) {
+			const list = v.isSource ? simOut : simIn;
+			list.push(v);
+		}
+	}
 
-    return (
-        <Stack gap={4}>
-            <Typography variant="h4">Configure the Simulation's IO Modules</Typography>
-            <Grid>
-                <Stack>
-                    <Typography variant="h6">Output</Typography>
-                    {/* TODO: ScrollView? */}
-                    {simOut.sort(handleInfoDisplayCompare).map(handle => (
-                        <FormControlLabel label={`${handle.displayName}`} control={
-                            <Checkbox
-                                key={handle.id}
-                                defaultChecked={handle.enabled}
-                                onChange={e => {
-                                    handle.enabled = e.target.checked
-                                }}
-                            />} />
-                    ))}
-                </Stack>
-                <Stack>
-                    <Typography variant="h6">Input</Typography>
-                    {/* TODO: ScrollView? */}
-                    {simIn.sort(handleInfoDisplayCompare).map(handle => (
-                        <FormControlLabel label={`${handle.displayName}`} control={
-                            <Checkbox
-                                key={handle.id}
-                                defaultChecked={handle.enabled}
-                                onChange={e => {
-                                    handle.enabled = e.target.checked
-                                }}
-                            />} />
-                    ))}
-                </Stack>
-            </Grid>
-            <Button onClick={() => setConfigState("wiring")}>Back to wiring view</Button>
-        </Stack>
-    )
+	return (
+		<Stack gap={4}>
+			<Typography variant="h4">
+				Configure the Simulation's IO Modules
+			</Typography>
+			<Grid>
+				<Stack>
+					<Typography variant="h6">Output</Typography>
+					<ScrollView>
+						{simOut.sort(handleInfoDisplayCompare).map((handle) => (
+							<FormControlLabel
+								label={`${handle.displayName}`}
+								control={
+									<Checkbox
+										key={handle.id}
+										defaultChecked={handle.enabled}
+										onChange={(e) => {
+											handle.enabled = e.target.checked;
+										}}
+									/>
+								}
+							/>
+						))}
+					</ScrollView>
+				</Stack>
+				<Stack>
+					<Typography variant="h6">Input</Typography>
+					<ScrollView>
+						{simIn.sort(handleInfoDisplayCompare).map((handle) => (
+							<FormControlLabel
+								label={`${handle.displayName}`}
+								control={
+									<Checkbox
+										key={handle.id}
+										defaultChecked={handle.enabled}
+										onChange={(e) => {
+											handle.enabled = e.target.checked;
+										}}
+									/>
+								}
+							/>
+						))}
+					</ScrollView>
+				</Stack>
+			</Grid>
+			<Button onClick={() => setConfigState("wiring")}>
+				Back to wiring view
+			</Button>
+		</Stack>
+	);
 }
 
 function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
-    const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
-        const canEncoders: JSX.Element[] = []
-        const canMotors: JSX.Element[] = []
-        const pwmDevices: JSX.Element[] = []
-        const accelerometers: JSX.Element[] = []
+	const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
+		const canEncoders: JSX.Element[] = [];
+		const canMotors: JSX.Element[] = [];
+		const pwmDevices: JSX.Element[] = [];
+		const accelerometers: JSX.Element[] = [];
 
-        for (const [_k, v] of Object.entries(simConfig.handles)) {
-            if (v.nodeId !== NODE_ID_ROBOT_IO) return
+		for (const [_k, v] of Object.entries(simConfig.handles)) {
+			if (v.nodeId !== NODE_ID_ROBOT_IO) return;
 
-            /* label=`${v.displayName}` */
-            const checkbox = (
-                <Checkbox
-                    key={v.id}
-                    defaultChecked={v.enabled}
-                    onChange={(_, checked) => {
-                        v.enabled = checked
-                    }}
-                />
-            )
+			/* label=`${v.displayName}` */
+			const checkbox = (
+				<Checkbox
+					key={v.id}
+					defaultChecked={v.enabled}
+					onChange={(_, checked) => {
+						v.enabled = checked;
+					}}
+				/>
+			);
 
-            switch (v.originType) {
-                case SimType.CAN_MOTOR:
-                    canMotors.push(checkbox)
-                    break
-                case SimType.PWM:
-                    pwmDevices.push(checkbox)
-                    break
-                case SimType.CAN_ENCODER:
-                    pwmDevices.push(checkbox)
-                    break
-                case SimType.ACCELEROMETER:
-                    pwmDevices.push(checkbox)
-                    break
-            }
-        }
+			switch (v.originType) {
+				case SimType.CAN_MOTOR:
+					canMotors.push(checkbox);
+					break;
+				case SimType.PWM:
+					pwmDevices.push(checkbox);
+					break;
+				case SimType.CAN_ENCODER:
+					pwmDevices.push(checkbox);
+					break;
+				case SimType.ACCELEROMETER:
+					pwmDevices.push(checkbox);
+					break;
+			}
+		}
 
-        return [canEncoders, canMotors, pwmDevices, accelerometers]
-    }, [simConfig])
+		return [canEncoders, canMotors, pwmDevices, accelerometers];
+	}, [simConfig]);
 
-    return (
-        <Stack gap={4}>
-            <Typography variant="h4">Configure your Robot's IO Module</Typography>
-            <Grid>
-                <Stack>
-                    <Typography variant="h6">Input</Typography>
-                    <Typography variant="h4">CAN Encoders</Typography>
-                    {canEncoders}
-                    <Typography variant="h4">Accelerometers</Typography>
-                    {accelerometers}
-                </Stack>
-                <Stack>
-                    <Typography variant="h6">Output</Typography>
-                    <Typography variant="h4">CAN Motors</Typography>
-                    {canMotors}
-                    <Typography variant="h4">PWM Devices</Typography>
-                    {pwmDevices}
-                </Stack>
-            </Grid>
-            <Button onClick={() => setConfigState("wiring")}>Back to wiring view</Button>
-        </Stack>
-    )
+	return (
+		<Stack gap={4}>
+			<Typography variant="h4">Configure your Robot's IO Module</Typography>
+			<Grid>
+				<Stack>
+					<Typography variant="h6">Input</Typography>
+					<ScrollView>
+						<Typography variant="h4">CAN Encoders</Typography>
+						{canEncoders}
+						<Typography variant="h4">Accelerometers</Typography>
+						{accelerometers}
+					</ScrollView>
+				</Stack>
+				<Stack>
+					<Typography variant="h6">Output</Typography>
+					<ScrollView>
+						<Typography variant="h4">CAN Motors</Typography>
+						{canMotors}
+						<Typography variant="h4">PWM Devices</Typography>
+						{pwmDevices}
+					</ScrollView>
+				</Stack>
+			</Grid>
+			<Button onClick={() => setConfigState("wiring")}>
+				Back to wiring view
+			</Button>
+		</Stack>
+	);
 }
 
-function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentProps) {
-    const { screenToFlowPosition } = useReactFlow()
-    const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
-    const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])
-    const [refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
+function WiringComponent({
+	setConfigState,
+	simConfig,
+	reset,
+}: ConfigComponentProps) {
+	const { screenToFlowPosition } = useReactFlow();
+	const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[]);
+	const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[]);
+	const [refreshHook, refreshGraph] = useReducer((x) => !x, false); // Whenever I use reducers, it's always sketch. -Hunter
 
-    // Essentially a callback, but it can use itself
-    useEffect(() => {
-        const [nodes, edges] = generateGraph(simConfig, refreshGraph, setConfigState)
-        setNodes(nodes)
-        setEdges(edges)
-    }, [setConfigState, setEdges, setNodes, simConfig, refreshHook])
+	// Essentially a callback, but it can use itself
+	useEffect(() => {
+		const [nodes, edges] = generateGraph(
+			simConfig,
+			refreshGraph,
+			setConfigState,
+		);
+		setNodes(nodes);
+		setEdges(edges);
+	}, [setConfigState, setEdges, setNodes, simConfig, refreshHook]);
 
-    const onEdgeDoubleClick = useCallback(
-        (_: React.MouseEvent, edge: FlowEdge) => {
-            if (SimConfig.DeleteConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)) {
-                refreshGraph()
-            }
-        },
-        [simConfig]
-    )
+	const onEdgeDoubleClick = useCallback(
+		(_: React.MouseEvent, edge: FlowEdge) => {
+			if (
+				SimConfig.DeleteConnection(
+					simConfig,
+					edge.sourceHandle!,
+					edge.targetHandle!,
+				)
+			) {
+				refreshGraph();
+			}
+		},
+		[simConfig],
+	);
 
-    const onNodeDragStop = useCallback(
-        (_event: React.MouseEvent, node: FlowNode, _nodes: FlowNode[]) => {
-            const nodeInfo = simConfig.nodes[node.id]
-            if (!nodeInfo) {
-                console.warn(`Unregistered Node detected: ${node.id}`)
-                return
-            }
-            nodeInfo.position = node.position
-        },
-        [simConfig]
-    )
+	const onNodeDragStop = useCallback(
+		(_event: React.MouseEvent, node: FlowNode, _nodes: FlowNode[]) => {
+			const nodeInfo = simConfig.nodes[node.id];
+			if (!nodeInfo) {
+				console.warn(`Unregistered Node detected: ${node.id}`);
+				return;
+			}
+			nodeInfo.position = node.position;
+		},
+		[simConfig],
+	);
 
-    const onConnect = useCallback(
-        (connection: Connection) => {
-            const sourceId = connection.sourceHandle
-            const targetId = connection.targetHandle
-            if (SimConfig.MakeConnection(simConfig, sourceId!, targetId!)) {
-                refreshGraph()
-            }
-        },
-        [simConfig]
-    )
+	const onConnect = useCallback(
+		(connection: Connection) => {
+			const sourceId = connection.sourceHandle;
+			const targetId = connection.targetHandle;
+			if (SimConfig.MakeConnection(simConfig, sourceId!, targetId!)) {
+				refreshGraph();
+			}
+		},
+		[simConfig],
+	);
 
-    const onConnectEnd = useCallback(
-        (event: MouseEvent | TouchEvent, state: FinalConnectionState) => {
-            if (state.isValid || state.fromHandle == null) return
+	const onConnectEnd = useCallback(
+		(event: MouseEvent | TouchEvent, state: FinalConnectionState) => {
+			if (state.isValid || state.fromHandle == null) return;
 
-            if (!(InputSystem.isKeyPressed("AltRight") || InputSystem.isKeyPressed("AltLeft"))) return
+			if (
+				!(
+					InputSystem.isKeyPressed("AltRight") ||
+					InputSystem.isKeyPressed("AltLeft")
+				)
+			)
+				return;
 
-            const { clientX, clientY } = "changedTouches" in event ? event.changedTouches[0] : event
+			const { clientX, clientY } =
+				"changedTouches" in event ? event.changedTouches[0] : event;
 
-            const handleInfo = simConfig.handles[state.fromHandle.id!]
-            if (!handleInfo || !isNoraDeconstructable(handleInfo.noraType)) {
-                return
-            }
+			const handleInfo = simConfig.handles[state.fromHandle.id!];
+			if (!handleInfo || !isNoraDeconstructable(handleInfo.noraType)) {
+				return;
+			}
 
-            const newHandleId = (handleInfo.isSource ? SimConfig.AddDeconstructorNode : SimConfig.AddConstructorNode)(
-                simConfig,
-                handleInfo.noraType,
-                screenToFlowPosition({ x: clientX, y: clientY })
-            )
-            if (!newHandleId) return
+			const newHandleId = (
+				handleInfo.isSource
+					? SimConfig.AddDeconstructorNode
+					: SimConfig.AddConstructorNode
+			)(
+				simConfig,
+				handleInfo.noraType,
+				screenToFlowPosition({ x: clientX, y: clientY }),
+			);
+			if (!newHandleId) return;
 
-            if (
-                handleInfo.isSource
-                    ? SimConfig.MakeConnection(simConfig, handleInfo.id, newHandleId)
-                    : SimConfig.MakeConnection(simConfig, newHandleId, handleInfo.id)
-            )
-                refreshGraph()
-        },
-        [screenToFlowPosition, simConfig]
-    )
+			if (
+				handleInfo.isSource
+					? SimConfig.MakeConnection(simConfig, handleInfo.id, newHandleId)
+					: SimConfig.MakeConnection(simConfig, newHandleId, handleInfo.id)
+			)
+				refreshGraph();
+		},
+		[screenToFlowPosition, simConfig],
+	);
 
-    const onCreateJunction = useCallback(() => {
-        SimConfig.AddJunctionNode(simConfig)
-        refreshGraph()
-    }, [refreshGraph, simConfig])
+	const onCreateJunction = useCallback(() => {
+		SimConfig.AddJunctionNode(simConfig);
+		refreshGraph();
+	}, [refreshGraph, simConfig]);
 
-    return (
-        <ReactFlow
-            colorMode="dark"
-            nodes={nodes}
-            edges={edges}
-            onNodeDragStop={onNodeDragStop}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onEdgeDoubleClick={onEdgeDoubleClick}
-            onConnect={onConnect}
-            onConnectEnd={onConnectEnd}
-            nodeTypes={nodeTypes}
-            fitView
-        >
-            {/* <Controls /> */}
-            <FlowControls onCreateJunction={onCreateJunction} />
-            <FlowInfo reset={reset ?? (() => { })} />
-        </ReactFlow>
-    )
+	return (
+		<ReactFlow
+			colorMode="dark"
+			nodes={nodes}
+			edges={edges}
+			onNodeDragStop={onNodeDragStop}
+			onNodesChange={onNodesChange}
+			onEdgesChange={onEdgesChange}
+			onEdgeDoubleClick={onEdgeDoubleClick}
+			onConnect={onConnect}
+			onConnectEnd={onConnectEnd}
+			nodeTypes={nodeTypes}
+			fitView
+		>
+			{/* <Controls /> */}
+			<FlowControls onCreateJunction={onCreateJunction} />
+			<FlowInfo reset={reset ?? (() => {})} />
+		</ReactFlow>
+	);
 }
 
 const WiringPanel: React.FC = () => {
-    const [configState, setConfigState] = useState<ConfigState>("wiring")
-    const { closePanel, addToast } = useContext(UIContext)
-    const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
+	const [configState, setConfigState] = useState<ConfigState>("wiring");
+	const { closePanel, addToast } = useContext(UIContext);
+	const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(
+		undefined,
+	);
 
-    const selectedAssembly = useMemo(() => {
-        const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
-        if (miraObjs.length > 0) {
-            return miraObjs[0][1] as MirabufSceneObject
-        }
-        addToast("warning", "Missing Robot\nMust have at least one robot spawned for selection.")
-        // closePanel(panel!.id, CloseType.Cancel)
-    }, [])
+	const selectedAssembly = useMemo(() => {
+		const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(
+			(x) => x[1] instanceof MirabufSceneObject,
+		);
+		if (miraObjs.length > 0) {
+			return miraObjs[0][1] as MirabufSceneObject;
+		}
+		addToast(
+			"warning",
+			"Missing Robot\nMust have at least one robot spawned for selection.",
+		);
+		// closePanel(panel!.id, CloseType.Cancel)
+	}, []);
 
-    useEffect(() => {
-        if (!selectedAssembly) return
+	useEffect(() => {
+		if (!selectedAssembly) return;
 
-        const existingConfig = selectedAssembly.simConfigData
-        if (existingConfig) {
-            setSimConfig(JSON.parse(JSON.stringify(existingConfig))) // Create copy to not force a save
-        } else {
-            setSimConfig(SimConfig.Default(selectedAssembly))
-        }
-    }, [selectedAssembly])
+		const existingConfig = selectedAssembly.simConfigData;
+		if (existingConfig) {
+			setSimConfig(JSON.parse(JSON.stringify(existingConfig))); // Create copy to not force a save
+		} else {
+			setSimConfig(SimConfig.Default(selectedAssembly));
+		}
+	}, [selectedAssembly]);
 
-    const save = useCallback(() => {
-        if (simConfig && selectedAssembly) {
-            const flows = SimConfig.Compile(simConfig, selectedAssembly)
-            if (!flows) {
-                console.error("Compilation Failed")
-                return
-            }
-            console.debug(`${flows.length} Flows Successfully Compiled!`)
+	const save = useCallback(() => {
+		if (simConfig && selectedAssembly) {
+			const flows = SimConfig.Compile(simConfig, selectedAssembly);
+			if (!flows) {
+				console.error("Compilation Failed");
+				return;
+			}
+			console.debug(`${flows.length} Flows Successfully Compiled!`);
 
-            selectedAssembly.updateSimConfig(simConfig)
-        }
-    }, [selectedAssembly, simConfig])
+			selectedAssembly.updateSimConfig(simConfig);
+		}
+	}, [selectedAssembly, simConfig]);
 
-    const reset = useCallback(() => {
-        if (selectedAssembly) {
-            setSimConfig(SimConfig.Default(selectedAssembly))
-        }
-    }, [selectedAssembly])
+	const reset = useCallback(() => {
+		if (selectedAssembly) {
+			setSimConfig(SimConfig.Default(selectedAssembly));
+		}
+	}, [selectedAssembly]);
 
-    return (
-        <>
-            {selectedAssembly && simConfig ? (
-                <div className="flex grow">
-                    {configState === "wiring" && (
-                        <ReactFlowProvider>
-                            <WiringComponent
-                                reset={reset}
-                                simConfig={simConfig}
-                                selectedAssembly={selectedAssembly}
-                                setConfigState={setConfigState}
-                            />
-                        </ReactFlowProvider>
-                    )}
-                    {configState === "robotIO" && (
-                        <RobotIOComponent
-                            simConfig={simConfig}
-                            selectedAssembly={selectedAssembly}
-                            setConfigState={setConfigState}
-                        />
-                    )}
-                    {configState === "simIO" && (
-                        <SimIOComponent
-                            simConfig={simConfig}
-                            selectedAssembly={selectedAssembly}
-                            setConfigState={setConfigState}
-                        />
-                    )}
-                </div>
-            ) : (
-                "ERRR"
-            )}
-        </>
-    )
-}
+	return (
+		<>
+			{selectedAssembly && simConfig ? (
+				<div className="flex grow">
+					{configState === "wiring" && (
+						<ReactFlowProvider>
+							<WiringComponent
+								reset={reset}
+								simConfig={simConfig}
+								selectedAssembly={selectedAssembly}
+								setConfigState={setConfigState}
+							/>
+						</ReactFlowProvider>
+					)}
+					{configState === "robotIO" && (
+						<RobotIOComponent
+							simConfig={simConfig}
+							selectedAssembly={selectedAssembly}
+							setConfigState={setConfigState}
+						/>
+					)}
+					{configState === "simIO" && (
+						<SimIOComponent
+							simConfig={simConfig}
+							selectedAssembly={selectedAssembly}
+							setConfigState={setConfigState}
+						/>
+					)}
+				</div>
+			) : (
+				"ERRR"
+			)}
+		</>
+	);
+};
 
-export default WiringPanel
+export default WiringPanel;
