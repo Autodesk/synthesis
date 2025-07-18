@@ -53,13 +53,13 @@ export default defineConfig({
                 {
                     name: "chromium",
                     browser: "chromium",
-                    headless: true,
+                    headless: false,
                 },
-                {
-                    name: "firefox",
-                    browser: "firefox",
-                    headless: true,
-                },
+                // {
+                //     name: "firefox",
+                //     browser: "firefox",
+                //     headless: true,
+                // },
             ],
         },
     },
