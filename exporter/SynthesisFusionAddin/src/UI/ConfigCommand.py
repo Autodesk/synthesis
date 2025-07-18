@@ -15,9 +15,10 @@ import src.Parser.SynthesisParser.Parser as Parser
 import src.UI.GamepieceConfigTab as GamepieceConfigTab
 import src.UI.GeneralConfigTab as GeneralConfigTab
 import src.UI.JointConfigTab as JointConfigTab
-from src import APP_WEBSITE_URL, gm
+import src.UI.TaggingConfigTab as TaggingConfigTab
+from src import APP_WEBSITE_URL, Logging, gm
 from src.APS.APS import getAuth, getUserInfo
-from src.Logging import getLogger, logFailure
+from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
@@ -26,10 +27,11 @@ from src.UI.Handlers import PersistentEventHandler
 generalConfigTab: GeneralConfigTab.GeneralConfigTab
 jointConfigTab: JointConfigTab.JointConfigTab
 gamepieceConfigTab: GamepieceConfigTab.GamepieceConfigTab
-
-logger = getLogger()
+taggingConfigTab: TaggingConfigTab.TaggingConfigTab
 
 INPUTS_ROOT: adsk.core.CommandInputs
+
+logger = Logging.getLogger()
 
 
 def reload() -> None:
@@ -37,9 +39,10 @@ def reload() -> None:
     importlib.reload(GeneralConfigTab)
     importlib.reload(GamepieceConfigTab)
     importlib.reload(JointConfigTab)
+    importlib.reload(TaggingConfigTab)
 
     importlib.reload(Parser)
-    logger.info("UI modules reloaded successfully.")
+    Parser.reload()
 
 
 class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
@@ -92,6 +95,10 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
         jointConfigTab = JointConfigTab.JointConfigTab(args)
         generalConfigTab.jointConfigTab = jointConfigTab
 
+        global taggingConfigTab
+        taggingConfigTab = TaggingConfigTab.TaggingConfigTab(args)
+        generalConfigTab.taggingConfigTab = taggingConfigTab
+
         if not exporterOptions.exportMode == ExportMode.FIELD:
             gamepieceConfigTab.isVisible = False
 
@@ -119,11 +126,20 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             if len(fusionJoints):
                 jointConfigTab.addWheel(fusionJoints[0], wheel)
 
+        if len(exporterOptions.tags):
+            for token, tag in exporterOptions.tags.items():
+                fusionBody = design.findEntityByToken(token)
+                if len(fusionBody):
+                    taggingConfigTab.addTag(fusionBody[0], tag)
+
         getAuth()
-        user_info = getUserInfo()
-        apsSettings = INPUTS_ROOT.addTabCommandInput(
-            "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-        )
+        user_info_result = getUserInfo()
+        if user_info_result.is_err():
+            user_name = "Not Signed In"
+        else:
+            user_name = user_info_result.unwrap().given_name
+
+        apsSettings = INPUTS_ROOT.addTabCommandInput("aps_settings", f"APS Settings ({user_name})")
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 
 
@@ -135,9 +151,13 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         exporterOptions = ExporterOptions().readFromDesign() or ExporterOptions()
 
-        fullName = design.rootComponent.name
+        fullName: str = design.rootComponent.name
         versionMatch = re.search(r"v\d+", fullName)
-        docName = (fullName[: versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
+        if versionMatch:
+            strippedName: str = fullName[0 : versionMatch.start()].strip()
+        else:
+            strippedName = fullName
+        docName = strippedName.replace(" ", "_")
         docVersion = versionMatch.group() if versionMatch else "v0"
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
@@ -154,6 +174,7 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
 
         selectedJoints, selectedWheels = jointConfigTab.getSelectedJointsAndWheels()
         selectedGamepieces = gamepieceConfigTab.getGamepieces()
+        selectedTags = taggingConfigTab.getTags()
 
         exporterOptions = ExporterOptions(
             savepath,
@@ -163,6 +184,7 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             joints=selectedJoints,
             wheels=selectedWheels,
             gamepieces=selectedGamepieces,
+            tags=selectedTags,
             robotWeight=generalConfigTab.robotWeight,
             autoCalcRobotWeight=generalConfigTab.autoCalculateWeight,
             autoCalcGamepieceWeight=gamepieceConfigTab.autoCalculateWeight,
@@ -175,7 +197,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
 
-        Parser.Parser(exporterOptions).export()
+        try:
+            Parser.Parser(exporterOptions).export()
+        except:
+            pass
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
@@ -232,6 +257,9 @@ class ConfigureCommandInputChanged(PersistentEventHandler, adsk.core.InputChange
 
         if gamepieceConfigTab.isVisible and gamepieceConfigTab.isActive:
             gamepieceConfigTab.handleInputChanged(args, INPUTS_ROOT)
+
+        if taggingConfigTab.isVisible and taggingConfigTab.isActive:
+            taggingConfigTab.handleInputChanged(args, INPUTS_ROOT)
 
 
 class MyCommandDestroyHandler(PersistentEventHandler, adsk.core.CommandEventHandler):
