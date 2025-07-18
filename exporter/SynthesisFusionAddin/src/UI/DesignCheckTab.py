@@ -4,22 +4,15 @@ import adsk.fusion
 from src import Logging, gm
 from src.UI import IconPaths
 
-import importlib
-
-logger = Logging.getLogger()
-
-
 class DesignCheckTab:
     designCheckTab: adsk.core.TabCommandInput
     designCheckTable: adsk.core.TableCommandInput
 
     MAX_HEIGHT = 106.0  # cm
+    MAX_PERIMETER = 304.0  # cm
 
     @Logging.logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs) -> None:
-        # TODO: Remove
-        importlib.reload(IconPaths)
-
         self.designCheckTab = args.command.commandInputs.addTabCommandInput("designCheckTab", "Design Rule Check")
         designCheckTabInputs = self.designCheckTab.children
 
@@ -51,8 +44,7 @@ class DesignCheckTab:
 
         # Row 2: Design Perimeter
         perimeter = self.fusion_design_perimeter
-        # No rule for perimeter, so it's always valid for now
-        is_perimeter_valid = True
+        is_perimeter_valid = perimeter <= self.MAX_PERIMETER
 
         perimeter_name_input = designCheckTabInputs.addTextBoxCommandInput(
             "designPerimeterText", "Design Perimeter", "Design Perimeter", 1, True
@@ -70,8 +62,6 @@ class DesignCheckTab:
         self.designCheckTable.addCommandInput(perimeter_value_input, 1, 1)
         self.designCheckTable.addCommandInput(perimeter_icon_input, 1, 2)
 
-        logger.info(f"Design Perimeter: {self.fusion_design_perimeter}")
-
     @property
     def isVisible(self) -> bool:
         return self.designCheckTab.isVisible or False
@@ -83,12 +73,6 @@ class DesignCheckTab:
     @property
     def isActive(self) -> bool:
         return self.designCheckTab.isActive or False
-
-    # @Logging.logFailure
-    # def handleInputChanged(
-    #     self, args: adsk.core.InputChangedEventArgs, globalCommandInputs: adsk.core.CommandInputs
-    # ) -> None:
-    #     commandInput = args.input
 
     @property
     def fusion_design_height(self) -> float:

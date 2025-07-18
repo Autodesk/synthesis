@@ -44,8 +44,8 @@ stringIcons = {
 }
 
 designCheckIcons = {
-    "valid": resources + os.path.join("DesignCheckIcons", "valid-preview148x26.png"),
-    "invalid": resources + os.path.join("DesignCheckIcons", "valid-preview148x26.png"),
+    "valid": resources + os.path.join("DesignCheckIcons", "valid-preview93x18.png"),
+    "invalid": resources + os.path.join("DesignCheckIcons", "invalid-preview112x18.png"),
 }
 
 tagIcons = {
