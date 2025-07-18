@@ -75,12 +75,13 @@ const ContextMenu: React.FC = () => {
                     <Button
                         key={x.name}
                         className={"w-full text-sm"}
-                        value={x.name}
                         onClick={() => {
                             setState(undefined)
                             x.func()
                         }}
-                    />
+                    >
+                        {x.name}
+                    </Button>
                 ))}
             </Box>
         </Box>

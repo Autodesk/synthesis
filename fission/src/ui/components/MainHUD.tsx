@@ -127,7 +127,7 @@ const MainHUD: React.FC = () => {
                             borderBottomLeftRadius: "0",
                         }}
                     >
-                        <Box className="flex w-full h-full items-center justify-center">
+                        <Stack className="w-full h-full" alignItems="center" justifyContent="center">
                             <IconButton
                                 onClick={() => setIsOpen(!isOpen)}
                                 color="primary"
@@ -145,7 +145,7 @@ const MainHUD: React.FC = () => {
                             >
                                 {SynthesisIcons.OPEN_HUD_ICON}
                             </IconButton>
-                        </Box>
+                        </Stack>
                     </Box>
                 </Stack>
             )}
