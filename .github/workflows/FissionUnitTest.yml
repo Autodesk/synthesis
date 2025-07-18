@@ -20,20 +20,10 @@ jobs:
         with:
           node-version: 20
 
-      - name: Cache downloaded assets
-        id: cache-assets
-        uses: actions/cache@v3
-        with:
-          path: fission/public/
-          key: ${{ runner.os }}-assets-v1
-          restore-keys: |
-            ${{ runner.os }}-assets-
-
-      - name: Download assets if not cached
-        if: steps.cache-assets.outputs.cache-hit != 'true'
+      - name: Unzip Synthesis Assets
         run: |
           cd fission
-          curl -o public/assetpack.zip https://synthesis.autodesk.com/downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
+          unzip -o public/assetpack.zip -d public/
 
       - name: Get installed Playwright version
         id: playwright-version
