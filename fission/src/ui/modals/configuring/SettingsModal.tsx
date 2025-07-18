@@ -7,7 +7,7 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { Spacer } from "@/ui/components/StyledComponents"
 import GraphicsSettingsPanel from "@/ui/panels/GraphicsSettingsPanel"
-import { CloseType, UIContext } from "@/ui/UIProvider"
+import { CloseType, UIContext, useUIContext } from "@/ui/UIProvider"
 
 const StatefulSlider: React.FC<
     Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & {
@@ -35,7 +35,7 @@ const StatefulSlider: React.FC<
 }
 
 const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
-    const { closeModal, openPanel } = useContext(UIContext)
+    const { closeModal, openPanel } = useUIContext()
     const save = () => {
         SoundPlayer.changeVolume()
         PreferencesSystem.savePreferences()

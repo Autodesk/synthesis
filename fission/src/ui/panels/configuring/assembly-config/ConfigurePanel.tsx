@@ -12,8 +12,8 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { StateContext } from "@/ui/StateProvider"
-import { CloseType, UIContext, type UIScreen } from "@/ui/UIProvider"
+import { StateContext, useStateContext } from "@/ui/StateProvider"
+import { CloseType, UIContext, useUIContext, type UIScreen } from "@/ui/UIProvider"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
@@ -58,7 +58,7 @@ interface ConfigInterfaceProps<T> {
 }
 
 const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMode, assembly }) => {
-    const { openPanel, closePanel } = useContext(UIContext)
+    const { openPanel, closePanel } = useUIContext()
 
     switch (configMode) {
         case ConfigMode.INTAKE:
@@ -129,7 +129,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
 
 const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel, parent, props }) => {
     const { configurePanelSettings, setConfigurePanelSettings, configurationType, setConfigurationType } =
-        useContext(StateContext)
+        useStateContext()
 
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)

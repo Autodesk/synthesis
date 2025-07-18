@@ -20,7 +20,7 @@ import MatchMode, {
 } from "@/systems/MatchMode";
 import { globalAddToast } from "@/ui/components/GlobalUIControls";
 import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs";
-import { CloseType, OpenModalFn, UIContext } from "@/ui/UIProvider";
+import { CloseType, OpenModalFn, UIContext, useUIContext } from "@/ui/UIProvider";
 import { Stack } from "@mui/system";
 
 export interface MatchModeConfig {
@@ -94,7 +94,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({
 	panel,
 	parent,
 }) => {
-	const { closePanel, openModal } = useContext(UIContext);
+	const { closePanel, openModal } = useUIContext()
 
 	const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>(
 		[],

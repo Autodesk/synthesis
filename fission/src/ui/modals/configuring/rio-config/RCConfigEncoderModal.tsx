@@ -1,18 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
-import WPILibBrain, {
+import { MenuItem, Select, TextField, Typography } from "@mui/material";
+import type React from "react";
+import { useEffect, useState } from "react";
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
+import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus";
+import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput";
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain";
+import {
 	getSimMap,
 	SimType,
 } from "@/systems/simulation/wpilib_brain/WPILibBrain";
 import World from "@/systems/World";
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
-import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus";
-import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput";
+import type { ModalImplProps } from "@/ui/components/Modal";
+import { useUIContext } from "@/ui/UIProvider";
 import RoboRIOModal from "../RoboRIOModal";
-import { MenuItem, Select, TextField, Typography } from "@mui/material";
-import { UIContext } from "@/ui/UIProvider";
 
 const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
-	const { openModal } = useContext(UIContext);
+	const { openModal } = useUIContext()
 	const [_name, setName] = useState<string>("");
 
 	let stimuli: EncoderStimulus[] = [];

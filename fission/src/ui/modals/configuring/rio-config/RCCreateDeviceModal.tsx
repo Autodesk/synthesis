@@ -5,7 +5,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain";
 import World from "@/systems/World";
 import type { ModalImplProps } from "@/ui/components/Modal";
-import { UIContext } from "@/ui/UIProvider";
+import { UIContext, useUIContext } from "@/ui/UIProvider";
 import RoboRIOModal from "../RoboRIOModal";
 import RCConfigCANGroupModal from "./RCConfigCANGroupModal";
 import RCConfigEncoderModal from "./RCConfigEncoderModal";
@@ -14,7 +14,7 @@ import RCConfigPWMGroupModal from "./RCConfigPWMGroupModal";
 type DeviceType = "PWM" | "CAN" | "Encoder";
 
 const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
-	const { openModal } = useContext(UIContext);
+	const { openModal } = useUIContext()
 	const [type, setType] = useState<DeviceType>("PWM");
 
 	useEffect(() => {

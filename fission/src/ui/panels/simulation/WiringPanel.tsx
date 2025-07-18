@@ -45,7 +45,7 @@ import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain";
 import World from "@/systems/World";
 import FlowControls from "@/ui/components/simulation/FlowControls";
 import FlowInfo from "@/ui/components/simulation/FlowInfo";
-import { UIContext } from "../../UIProvider";
+import { UIContext, useUIContext } from "../../UIProvider";
 import WiringNode from "./WiringNode";
 import ScrollView from "@/ui/components/ScrollView";
 
@@ -412,7 +412,7 @@ function WiringComponent({
 
 const WiringPanel: React.FC = () => {
 	const [configState, setConfigState] = useState<ConfigState>("wiring");
-	const { closePanel, addToast } = useContext(UIContext);
+	const { closePanel, addToast } = useUIContext()
 	const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(
 		undefined,
 	);

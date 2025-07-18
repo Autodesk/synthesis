@@ -18,7 +18,7 @@ import {
 } from "@/systems/simulation/wpilib_brain/WPILibBrain";
 import World from "@/systems/World";
 import type { ModalImplProps } from "@/ui/components/Modal";
-import { UIContext } from "@/ui/UIProvider";
+import { UIContext, useUIContext } from "@/ui/UIProvider";
 import RoboRIOModal from "../RoboRIOModal";
 import ScrollView from "@/ui/components/ScrollView";
 
@@ -26,7 +26,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({
 	modal,
 	parent,
 }) => {
-	const { openModal } = useContext(UIContext);
+	const { openModal } = useUIContext()
 	const [name, setName] = useState<string>("");
 	const [checkedPorts, setCheckedPorts] = useState<number[]>([]);
 	const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([]);

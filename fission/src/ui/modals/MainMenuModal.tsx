@@ -1,14 +1,13 @@
 import { Button, Stack } from "@mui/material";
 import type React from "react";
-import { useContext } from "react";
 import { globalAddToast } from "@/components/GlobalUIControls.ts";
 import type { ModalImplProps } from "../components/Modal";
-import { CloseType, UIContext } from "../UIProvider";
+import { CloseType, useUIContext } from "../UIProvider";
 
 const MainMenuModal: React.FC<
 	ModalImplProps<void> & { startSingleplayerCallback: () => void }
 > = ({ startSingleplayerCallback }) => {
-	const { closeModal } = useContext(UIContext);
+	const { closeModal } = useUIContext()
 	return (
 		<Stack gap={1}>
 			<Button

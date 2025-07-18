@@ -11,7 +11,7 @@ import type {
 	Modal as ModalType,
 	Panel as PanelType,
 } from "../UIProvider";
-import { CloseType, UIContext } from "../UIProvider";
+import { CloseType, UIContext, useUIContext } from "../UIProvider";
 
 export type ModalImplProps<T> = Partial<{
 	modal: ModalType<T>;
@@ -31,7 +31,7 @@ export const Modal = <T,>({
 	parent,
 	props,
 }: ModalElementProps<T>) => {
-	const { closeModal } = useContext(UIContext);
+	const { closeModal } = useUIContext()
 	return (
 		<MUIModal
 			open={modal !== undefined}

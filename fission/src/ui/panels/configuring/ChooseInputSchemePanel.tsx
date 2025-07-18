@@ -7,14 +7,14 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import { StateContext } from "@/ui/StateProvider"
-import { CloseType, UIContext } from "../../UIProvider"
+import { StateContext, useStateContext } from "@/ui/StateProvider"
+import { CloseType, UIContext, useUIContext } from "../../UIProvider"
 import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { openModal, openPanel, closePanel } = useContext(UIContext)
-    const { setSelectedScheme, setConfigurationType } = useContext(StateContext)
+    const { openModal, openPanel, closePanel } = useUIContext()
+    const { setSelectedScheme, setConfigurationType } = useStateContext()
 
     const targetAssembly = useMemo(() => {
         const assembly = getSpotlightAssembly()

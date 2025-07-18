@@ -5,14 +5,14 @@ import DefaultInputs from "@/systems/input/DefaultInputs";
 import InputSchemeManager from "@/systems/input/InputSchemeManager";
 import type { ModalImplProps } from "@/ui/components/Modal";
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel";
-import { StateContext } from "@/ui/StateProvider";
-import { UIContext } from "@/ui/UIProvider";
+import { StateContext, useStateContext } from "@/ui/StateProvider";
+import { UIContext, useUIContext } from "@/ui/UIProvider";
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({
 	modal,
 }) => {
-	const { openPanel } = useContext(UIContext);
-    const { setSelectedScheme, setConfigurationType } = useContext(StateContext)
+	const { openPanel } = useUIContext()
+    const { setSelectedScheme, setConfigurationType } = useStateContext()
 
 	const [name, setName] = useState<string>(
 		InputSchemeManager.randomAvailableName,

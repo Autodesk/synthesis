@@ -1,5 +1,5 @@
 import type React from "react"
-import { createContext, type ReactNode, useMemo, useState } from "react"
+import { createContext, type ReactNode, useContext, useMemo, useState } from "react"
 import type { InputScheme } from "@/systems/input/InputSchemeManager"
 import { ConfigurationType, ConfigurePanelSettings } from "./panels/configuring/assembly-config/ConfigurePanel"
 
@@ -31,6 +31,8 @@ export const StateContext = createContext<AppState>({
     configurationType: "ROBOTS",
     setConfigurationType: () => {},
 })
+
+export const useStateContext = () => useContext(StateContext)
 
 export const StateProvider: React.FC<StateProviderProps> = ({ children }) => {
     const [unconfirmedImport, setUnconfirmedImport] = useState<boolean>(false)

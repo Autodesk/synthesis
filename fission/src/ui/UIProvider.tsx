@@ -2,7 +2,7 @@ import type { VariantType } from "notistack";
 import { useSnackbar } from "notistack";
 import type React from "react";
 import type { ReactElement, ReactNode } from "react";
-import { createContext, useCallback, useState } from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 export type UIProviderProps = {
@@ -99,6 +99,8 @@ export const UIContext = createContext<UIContextProps>({
 	closePanel: (_id) => {},
 	addToast: (_variant, _msg) => "",
 });
+
+export const useUIContext = () => useContext(UIContext)
 
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 	const [modal, setModal] = useState<Modal<unknown> | undefined>(undefined);

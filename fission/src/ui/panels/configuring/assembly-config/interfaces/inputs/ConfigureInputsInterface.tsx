@@ -3,12 +3,12 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react"
 import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { UIContext } from "@/ui/UIProvider"
+import { UIContext, useUIContext } from "@/ui/UIProvider"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { StateContext } from "@/ui/StateProvider"
+import { StateContext, useStateContext } from "@/ui/StateProvider"
 import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
 /** If a scheme is assigned to a robot, find the name of that robot */
@@ -32,8 +32,8 @@ class SchemeSelectionOption extends SelectMenuOption {
 }
 
 const ConfigureInputsInterface: React.FC = () => {
-    const { openModal } = useContext(UIContext)
-    const { selectedScheme: currentSelectedScheme } = useContext(StateContext)
+    const { openModal } = useUIContext()
+    const { selectedScheme: currentSelectedScheme } = useStateContext()
 
     const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(currentSelectedScheme)
     const [schemes, setSchemes] = useState<InputScheme[]>(InputSchemeManager.allInputSchemes)

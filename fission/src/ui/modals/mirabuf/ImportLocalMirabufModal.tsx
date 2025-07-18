@@ -7,7 +7,7 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { UIContext } from "@/ui/UIProvider"
+import { UIContext, useUIContext } from "@/ui/UIProvider"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 
 const VisuallyHiddenInput = styled("input")({
@@ -24,7 +24,7 @@ const VisuallyHiddenInput = styled("input")({
 
 const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
-    const { openPanel } = useContext(UIContext)
+    const { openPanel } = useUIContext()
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
     const [miraType, setSelectedType] = useState<MiraType | undefined>(MiraType.ROBOT)

@@ -28,6 +28,8 @@ export const ThemeContext = createContext({
 
 export const useThemeContext = () => useContext(ThemeContext)
 
+export const useThemeContext = () => useContext(ThemeContext)
+
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const loadTheme = useCallback(() => {
         const themeObj = localStorage.getItem("theme") ?? "{}"
