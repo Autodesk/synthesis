@@ -20,8 +20,12 @@ import World from "@/systems/World";
 import type { ModalImplProps } from "@/ui/components/Modal";
 import { UIContext } from "@/ui/UIProvider";
 import RoboRIOModal from "../RoboRIOModal";
+import ScrollView from "@/ui/components/ScrollView";
 
-const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
+const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({
+	modal,
+	parent,
+}) => {
 	const { openModal } = useContext(UIContext);
 	const [name, setName] = useState<string>("");
 	const [checkedPorts, setCheckedPorts] = useState<number[]>([]);
@@ -64,7 +68,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }
 
 	return (
 		<>
-			<Typography variant="h7">Name</Typography>
+			<Typography variant="h6">Name</Typography>
 			<TextField
 				placeholder="..."
 				className="w-full"
@@ -73,7 +77,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }
 			<Stack direction="row" className="w-full min-w-full">
 				<Box className="w-max">
 					<Typography>Ports</Typography>
-					<ScrollView className="h-full px-2">
+					<ScrollView>
 						{devices.map(([p, _]) => (
 							<FormControlLabel
 								label={p.toString()}
@@ -98,21 +102,26 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }
 				</Box>
 				<Box className="w-max">
 					<Typography>Signals</Typography>
-					<ScrollView className="h-full px-2">
+					<ScrollView>
 						{drivers.map((driver, idx) => (
-							<Checkbox
-								key={`${driver.constructor.name}-${idx}`}
+							<FormControlLabel
 								label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
-								defaultState={false}
-								onClick={(checked) => {
-									if (checked && !checkedDrivers.includes(driver)) {
-										setCheckedDrivers([...checkedDrivers, driver]);
-									} else if (!checked && checkedDrivers.includes(driver)) {
-										setCheckedDrivers(
-											checkedDrivers.filter((a) => a !== driver),
-										);
-									}
-								}}
+								control={
+									<Checkbox
+										key={`${driver.constructor.name}-${idx}`}
+										defaultChecked={false}
+										onChange={(e) => {
+											const checked = e.target.checked;
+											if (checked && !checkedDrivers.includes(driver)) {
+												setCheckedDrivers([...checkedDrivers, driver]);
+											} else if (!checked && checkedDrivers.includes(driver)) {
+												setCheckedDrivers(
+													checkedDrivers.filter((a) => a !== driver),
+												);
+											}
+										}}
+									/>
+								}
 							/>
 						))}
 					</ScrollView>
