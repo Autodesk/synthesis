@@ -4,6 +4,7 @@ import SceneRenderer from "./scene/SceneRenderer"
 import * as THREE from "three"
 import World from "./World"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
 class RobotDimensionTracker {
     private static readonly IGNORE_ROTATION = true
@@ -48,18 +49,10 @@ class RobotDimensionTracker {
         const rootScale = new THREE.Vector3()
         rootTransform.decompose(rootPosition, rootRotation, rootScale)
 
+        // Create inverse rotation matrix to "undo" the robot's rotation
         const inverseRotation = new THREE.Matrix4().makeRotationFromQuaternion(rootRotation.clone().invert())
 
         const unrotatedBox = new THREE.Box3()
-
-        const assembly = robot.mirabufInstance.parser.assembly
-        const partInstances = assembly.data?.parts?.partInstances
-        const partDefinitions = assembly.data?.parts?.partDefinitions
-
-        if (!partInstances || !partDefinitions) {
-            console.warn("Could not access assembly part data, using fallback method")
-            return robot.getDimensions()
-        }
 
         robot.mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
             const bodyId = robot.mechanism.getBodyByNodeId(rigidNode.id)
@@ -68,35 +61,41 @@ class RobotDimensionTracker {
             const body = World.physicsSystem.getBody(bodyId)
             const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
 
-            rigidNode.parts.forEach(partId => {
-                const partDefinition = partDefinitions[partInstances[partId].partDefinitionReference!]
-                if (!partDefinition.bodies) return
-                const partGlobalTransform = robot.mirabufInstance.parser.globalTransforms.get(partId)
-                if (!partGlobalTransform) return
+            const shape = body.GetShape()
+            const scale = new JOLT.Vec3(1, 1, 1)
+            const triangleContext = new JOLT.ShapeGetTriangles(
+                shape,
+                JOLT.AABox.prototype.sBiggest(),
+                shape.GetCenterOfMass(),
+                JOLT.Quat.prototype.sIdentity(),
+                scale
+            )
 
-                const relativeTransform = partGlobalTransform.clone()
-                const currentPartTransform = relativeTransform.premultiply(bodyTransform)
+            try {
+                const vertices = new Float32Array(
+                    JOLT.HEAP32.buffer,
+                    triangleContext.GetVerticesData(),
+                    triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
+                )
 
-                partDefinition.bodies.forEach(body => {
-                    const mesh = body.triangleMesh?.mesh
-                    if (!mesh?.verts || mesh.verts.length === 0) return
+                for (let i = 0; i < vertices.length; i += 3) {
+                    const vertex = new THREE.Vector3(vertices[i], vertices[i + 1], vertices[i + 2])
 
-                    for (let i = 0; i < mesh.verts.length; i += 3) {
-                        const vertex = new THREE.Vector3(
-                            mesh.verts[i] / 100.0,
-                            mesh.verts[i + 1] / 100.0,
-                            mesh.verts[i + 2] / 100.0
-                        )
+                    vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
 
-                        vertex.applyMatrix4(currentPartTransform)
-
-                        vertex.sub(rootPosition).applyMatrix4(inverseRotation).add(rootPosition)
-
-                        unrotatedBox.expandByPoint(vertex)
-                    }
-                })
-            })
+                    unrotatedBox.expandByPoint(vertex)
+                }
+            } finally {
+                JOLT.destroy(triangleContext)
+                JOLT.destroy(scale)
+            }
         })
+
+        // Fallback if no vertices were processed
+        if (unrotatedBox.isEmpty()) {
+            console.warn("Could not process physics shapes, using regular dimensions")
+            return robot.getDimensions()
+        }
 
         const unrotatedSize = new THREE.Vector3()
         unrotatedBox.getSize(unrotatedSize)
