@@ -1,0 +1,627 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client Prediction Metrics Dashboard</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Courier New", monospace;
+        background: #1e1e1e;
+        color: #d4d4d4;
+        padding: 20px;
+        line-height: 1.6;
+      }
+
+      .dashboard {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+      }
+
+      .panel {
+        background: #2d2d30;
+        border: 1px solid #3e3e42;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+
+      .panel h2 {
+        color: #569cd6;
+        margin-bottom: 15px;
+        font-size: 18px;
+        border-bottom: 2px solid #569cd6;
+        padding-bottom: 5px;
+      }
+
+      .metric-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 15px;
+      }
+
+      .metric-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 12px;
+        background: #252526;
+        border-radius: 4px;
+        border-left: 3px solid #007acc;
+      }
+
+      .metric-label {
+        color: #9cdcfe;
+        font-weight: 500;
+      }
+
+      .metric-value {
+        color: #ce9178;
+        font-weight: bold;
+        font-size: 14px;
+      }
+
+      .metric-value.good {
+        color: #4ec9b0;
+      }
+
+      .metric-value.warning {
+        color: #dcdcaa;
+      }
+
+      .metric-value.error {
+        color: #f44747;
+      }
+
+      .status-indicator {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        margin-right: 8px;
+      }
+
+      .status-connected {
+        background-color: #4ec9b0;
+      }
+
+      .status-disconnected {
+        background-color: #f44747;
+      }
+
+      .status-warning {
+        background-color: #dcdcaa;
+      }
+
+      .chart-container {
+        width: 100%;
+        height: 200px;
+        background: #1e1e1e;
+        border-radius: 4px;
+        padding: 10px;
+        margin-top: 10px;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .chart-title {
+        color: #569cd6;
+        font-size: 12px;
+        margin-bottom: 5px;
+      }
+
+      .full-width {
+        grid-column: 1 / -1;
+      }
+
+      .server-health {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+      }
+
+      .health-indicator {
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        margin-right: 10px;
+      }
+
+      .refresh-controls {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 20px;
+      }
+
+      .btn {
+        padding: 8px 16px;
+        background: #0e639c;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 12px;
+      }
+
+      .btn:hover {
+        background: #1177bb;
+      }
+
+      .btn.secondary {
+        background: #3c3c3c;
+      }
+
+      .btn.secondary:hover {
+        background: #464647;
+      }
+
+      .log-container {
+        max-height: 200px;
+        overflow-y: auto;
+        background: #1e1e1e;
+        border-radius: 4px;
+        padding: 10px;
+        font-family: "Courier New", monospace;
+        font-size: 11px;
+      }
+
+      .log-entry {
+        margin-bottom: 4px;
+        color: #d4d4d4;
+      }
+
+      .log-entry.error {
+        color: #f44747;
+      }
+
+      .log-entry.warning {
+        color: #dcdcaa;
+      }
+
+      .log-entry.info {
+        color: #4ec9b0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="dashboard">
+      <div class="refresh-controls full-width">
+        <button class="btn" onclick="refreshData()">Refresh Now</button>
+        <button class="btn secondary" onclick="toggleAutoRefresh()">
+          <span id="autoRefreshText">Auto Refresh: ON</span>
+        </button>
+        <button class="btn secondary" onclick="clearLogs()">Clear Logs</button>
+        <span style="margin-left: auto; color: #9cdcfe; font-size: 12px">
+          Last Update: <span id="lastUpdate">Never</span>
+        </span>
+      </div>
+
+      <!-- Server Status Panel -->
+      <div class="panel">
+        <h2>Server Status</h2>
+        <div class="server-health">
+          <div
+            class="health-indicator status-connected"
+            id="serverHealthIndicator"
+          ></div>
+          <span id="serverHealthText">Server Online</span>
+        </div>
+        <div class="metric-grid">
+          <div class="metric-item">
+            <span class="metric-label">Uptime</span>
+            <span class="metric-value" id="serverUptime">0:00:00</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Connected Clients</span>
+            <span class="metric-value" id="connectedClients">0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Active Robots</span>
+            <span class="metric-value" id="activeRobots">0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Tick Rate</span>
+            <span class="metric-value" id="tickRate">60/60 Hz</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Network Performance -->
+      <div class="panel">
+        <h2>Network Performance</h2>
+        <div class="metric-grid">
+          <div class="metric-item">
+            <span class="metric-label">Messages/sec</span>
+            <span class="metric-value" id="messagesPerSecond">0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Total Messages</span>
+            <span class="metric-value" id="totalMessages">0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Data Sent (KB/s)</span>
+            <span class="metric-value" id="dataSent">0.0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Data Received (KB/s)</span>
+            <span class="metric-value" id="dataReceived">0.0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Average Latency</span>
+            <span class="metric-value" id="avgLatency">0ms</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Packet Loss</span>
+            <span class="metric-value" id="packetLoss">0%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Prediction System -->
+      <div class="panel">
+        <h2>Prediction System</h2>
+        <div class="metric-grid">
+          <div class="metric-item">
+            <span class="metric-label">Total Corrections</span>
+            <span class="metric-value" id="totalCorrections">0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Avg Divergence</span>
+            <span class="metric-value" id="avgDivergence">0.0px</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Recent Corrections</span>
+            <span class="metric-value" id="recentCorrections">0</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Prediction Accuracy</span>
+            <span class="metric-value" id="predictionAccuracy">100%</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Input Rate</span>
+            <span class="metric-value" id="inputRate">0/s</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Total Inputs</span>
+            <span class="metric-value" id="totalInputs">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Performance -->
+      <div class="panel">
+        <h2>System Performance</h2>
+        <div class="metric-grid">
+          <div class="metric-item">
+            <span class="metric-label">Memory Usage</span>
+            <span class="metric-value" id="memoryUsage">0MB</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Avg Tick Time</span>
+            <span class="metric-value" id="avgTickTime">0.0ms</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Max Tick Time</span>
+            <span class="metric-value" id="maxTickTime">0.0ms</span>
+          </div>
+          <div class="metric-item">
+            <span class="metric-label">Tick Efficiency</span>
+            <span class="metric-value" id="tickEfficiency">100%</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Client Stats -->
+      <div class="panel full-width">
+        <h2>Connected Clients</h2>
+        <div id="clientList" class="metric-grid">
+          <!-- Client entries will be populated here -->
+        </div>
+      </div>
+
+      <!-- Latency Chart -->
+      <div class="panel">
+        <h2>Latency History</h2>
+        <div class="chart-container">
+          <div class="chart-title">Latency over time (ms)</div>
+          <canvas id="latencyChart" width="400" height="150"></canvas>
+        </div>
+      </div>
+
+      <!-- Correction Chart -->
+      <div class="panel">
+        <h2>Prediction Corrections</h2>
+        <div class="chart-container">
+          <div class="chart-title">Corrections per minute</div>
+          <canvas id="correctionChart" width="400" height="150"></canvas>
+        </div>
+      </div>
+
+      <!-- Event Log -->
+      <div class="panel full-width">
+        <h2>Event Log</h2>
+        <div class="log-container" id="eventLog">
+          <!-- Log entries will appear here -->
+        </div>
+      </div>
+    </div>
+
+    <script>
+      let autoRefresh = true;
+      let refreshInterval;
+      let latencyHistory = [];
+      let correctionHistory = [];
+
+      function initDashboard() {
+        refreshData();
+        if (autoRefresh) {
+          refreshInterval = setInterval(refreshData, 1000);
+        }
+        logEvent("Dashboard initialized", "info");
+      }
+
+      async function refreshData() {
+        try {
+          const response = await fetch("/api/metrics");
+          const data = await response.json();
+          updateMetrics(data);
+          document.getElementById("lastUpdate").textContent =
+            new Date().toLocaleTimeString();
+        } catch (error) {
+          logEvent("Failed to fetch metrics: " + error.message, "error");
+          updateServerHealth(false);
+        }
+      }
+
+      function updateMetrics(data) {
+        updateServerHealth(true);
+
+        // Server Status
+        document.getElementById("serverUptime").textContent = formatUptime(
+          data.uptime,
+        );
+        document.getElementById("connectedClients").textContent =
+          data.connectedClients;
+        document.getElementById("activeRobots").textContent = data.activeRobots;
+
+        if (data.tickRate) {
+          const efficiency = data.tickRate.efficiency || 100;
+          document.getElementById("tickRate").textContent =
+            `${data.tickRate.actual}/${data.tickRate.target} Hz`;
+
+          const tickRateEl = document.getElementById("tickRate");
+          tickRateEl.className =
+            "metric-value " +
+            (efficiency >= 95
+              ? "good"
+              : efficiency >= 80
+                ? "warning"
+                : "error");
+        }
+
+        // Network Performance
+        document.getElementById("messagesPerSecond").textContent =
+          data.messagesPerSecond || 0;
+        document.getElementById("totalMessages").textContent =
+          data.totalMessages || 0;
+
+        if (data.networkThroughputKBps) {
+          document.getElementById("dataSent").textContent =
+            data.networkThroughputKBps.sent.toFixed(1);
+          document.getElementById("dataReceived").textContent =
+            data.networkThroughputKBps.received.toFixed(1);
+        }
+
+        // Prediction System
+        if (data.prediction) {
+          document.getElementById("totalCorrections").textContent =
+            data.prediction.totalCorrections;
+          document.getElementById("avgDivergence").textContent =
+            data.prediction.avgDivergence.toFixed(1) + "px";
+          document.getElementById("recentCorrections").textContent =
+            data.prediction.recentCorrections;
+
+          const accuracy = Math.max(
+            0,
+            100 - data.prediction.avgDivergence * 10,
+          );
+          document.getElementById("predictionAccuracy").textContent =
+            accuracy.toFixed(1) + "%";
+        }
+
+        // System Performance
+        if (data.memory) {
+          const memUsage = data.memory.heapUsedMB;
+          document.getElementById("memoryUsage").textContent = memUsage + "MB";
+
+          const memEl = document.getElementById("memoryUsage");
+          memEl.className =
+            "metric-value " +
+            (memUsage < 100 ? "good" : memUsage < 200 ? "warning" : "error");
+        }
+
+        if (data.tickTiming) {
+          document.getElementById("avgTickTime").textContent =
+            data.tickTiming.average.toFixed(1) + "ms";
+          document.getElementById("maxTickTime").textContent =
+            data.tickTiming.maximum.toFixed(1) + "ms";
+        }
+
+        if (data.tickRate && data.tickRate.efficiency) {
+          document.getElementById("tickEfficiency").textContent =
+            data.tickRate.efficiency + "%";
+        }
+
+        // Input Rate
+        if (data.recentActivity) {
+          document.getElementById("inputRate").textContent =
+            data.recentActivity.inputsPerSecond.toFixed(1) + "/s";
+        }
+        document.getElementById("totalInputs").textContent =
+          data.totalInputs || 0;
+
+        // Update client list
+        updateClientList(data.clientStats || []);
+
+        // Update charts
+        updateCharts(data);
+      }
+
+      function updateServerHealth(online) {
+        const indicator = document.getElementById("serverHealthIndicator");
+        const text = document.getElementById("serverHealthText");
+
+        if (online) {
+          indicator.className = "health-indicator status-connected";
+          text.textContent = "Server Online";
+        } else {
+          indicator.className = "health-indicator status-disconnected";
+          text.textContent = "Server Offline";
+        }
+      }
+
+      function updateClientList(clients) {
+        const container = document.getElementById("clientList");
+        container.innerHTML = "";
+
+        clients.forEach((client) => {
+          const clientEl = document.createElement("div");
+          clientEl.className = "metric-item";
+
+          const statusClass = client.connected ? "good" : "error";
+          const latency = client.latency ? client.latency.current : 0;
+
+          clientEl.innerHTML = `
+                        <span class="metric-label">Client ${client.id.slice(-6)}</span>
+                        <span class="metric-value ${statusClass}">
+                            ${latency}ms | ${client.inputRate.toFixed(1)}/s
+                        </span>
+                    `;
+          container.appendChild(clientEl);
+        });
+      }
+
+      function updateCharts(data) {
+        // Update latency history
+        if (data.clientStats && data.clientStats.length > 0) {
+          const avgLatency =
+            data.clientStats.reduce(
+              (sum, client) =>
+                sum + (client.latency ? client.latency.current : 0),
+              0,
+            ) / data.clientStats.length;
+
+          latencyHistory.push(avgLatency);
+          if (latencyHistory.length > 60) latencyHistory.shift();
+
+          drawLineChart(
+            "latencyChart",
+            latencyHistory,
+            "#4ec9b0",
+            "Latency (ms)",
+          );
+        }
+
+        // Update correction history
+        if (data.prediction) {
+          correctionHistory.push(data.prediction.recentCorrections || 0);
+          if (correctionHistory.length > 60) correctionHistory.shift();
+
+          drawLineChart(
+            "correctionChart",
+            correctionHistory,
+            "#f44747",
+            "Corrections",
+          );
+        }
+      }
+
+      function drawLineChart(canvasId, data, color, label) {
+        const canvas = document.getElementById(canvasId);
+        const ctx = canvas.getContext("2d");
+        const width = canvas.width;
+        const height = canvas.height;
+
+        ctx.clearRect(0, 0, width, height);
+
+        if (data.length < 2) return;
+
+        const max = Math.max(...data, 1);
+        const min = Math.min(...data, 0);
+        const range = max - min || 1;
+
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+
+        data.forEach((value, index) => {
+          const x = (index / (data.length - 1)) * width;
+          const y = height - ((value - min) / range) * height;
+
+          if (index === 0) {
+            ctx.moveTo(x, y);
+          } else {
+            ctx.lineTo(x, y);
+          }
+        });
+
+        ctx.stroke();
+      }
+
+      function formatUptime(ms) {
+        const seconds = Math.floor(ms / 1000);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+        const remainingSeconds = seconds % 60;
+
+        return `${hours}:${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`;
+      }
+
+      function toggleAutoRefresh() {
+        autoRefresh = !autoRefresh;
+        const button = document.getElementById("autoRefreshText");
+        button.textContent = `Auto Refresh: ${autoRefresh ? "ON" : "OFF"}`;
+
+        if (autoRefresh) {
+          refreshInterval = setInterval(refreshData, 1000);
+        } else {
+          clearInterval(refreshInterval);
+        }
+      }
+
+      function logEvent(message, type = "info") {
+        const logContainer = document.getElementById("eventLog");
+        const entry = document.createElement("div");
+        entry.className = `log-entry ${type}`;
+        entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+
+        logContainer.appendChild(entry);
+        logContainer.scrollTop = logContainer.scrollHeight;
+
+        // Keep only last 100 entries
+        while (logContainer.children.length > 100) {
+          logContainer.removeChild(logContainer.firstChild);
+        }
+      }
+
+      function clearLogs() {
+        document.getElementById("eventLog").innerHTML = "";
+        logEvent("Event log cleared", "info");
+      }
+
+      // Initialize dashboard when page loads
+      document.addEventListener("DOMContentLoaded", initDashboard);
+    </script>
+  </body>
+</html>
