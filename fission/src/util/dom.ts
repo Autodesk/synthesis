@@ -24,7 +24,8 @@ export const mousePosition = (x: number, y: number) => {
 
 // biome-ignore-start lint/suspicious/noExplicitAny: We need to index a generic object
 export const addGlobalFunc = <T>(name: string, func: (...args: any[]) => T) => {
-    ;(window as any)[name] = func
+    // biome-ignore format: The semicolon is not necessary
+    (window as any)[name] = func
 }
 // biome-ignore-end lint/suspicious/noExplicitAny: We need to index a generic object
 
