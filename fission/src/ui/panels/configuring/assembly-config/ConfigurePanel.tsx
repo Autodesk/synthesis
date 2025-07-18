@@ -1,6 +1,6 @@
 import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
 import type React from "react"
-import { useContext, useEffect, useMemo, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
@@ -12,8 +12,8 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { StateContext, useStateContext } from "@/ui/StateProvider"
-import { CloseType, UIContext, useUIContext, type UIScreen } from "@/ui/UIProvider"
+import { useStateContext } from "@/ui/StateProvider"
+import { CloseType, useUIContext, type UIScreen } from "@/ui/UIProvider"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
@@ -77,7 +77,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
                         onClick={() => {
                             setSpotlightAssembly(assembly)
                             openPanel(<ChooseInputSchemePanel />, panel)
-                            closePanel(panel.id, CloseType.Overwrite);
+                            closePanel(panel.id, CloseType.Overwrite)
                         }}
                     >
                         Set Scheme

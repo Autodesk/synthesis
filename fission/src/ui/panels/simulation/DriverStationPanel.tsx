@@ -1,7 +1,5 @@
 import type React from "react"
 import { useState } from "react"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import { PanelImplProps } from "@/ui/components/Panel"
 import { Button, MenuItem, Select, Stack } from "@mui/material"
 
 const DriverStationPanel: React.FC = () => {

@@ -1,14 +1,12 @@
-import { Box, Stack, Typography } from "@mui/material"
+import { Stack, Typography } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import {
-    type SceneOverlayTag,
     SceneOverlayEvent,
     SceneOverlayEventKey,
     SceneOverlayTag,
     SceneOverlayTagEvent,
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
-import ViewCube from "./ViewCube"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 const tagMap = new Map<number, SceneOverlayTag>()

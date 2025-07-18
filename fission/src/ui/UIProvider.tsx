@@ -1,222 +1,246 @@
-import type { VariantType } from "notistack";
-import { useSnackbar } from "notistack";
-import type React from "react";
-import type { ReactElement, ReactNode } from "react";
-import { createContext, useCallback, useContext, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import type { VariantType } from "notistack"
+import { useSnackbar } from "notistack"
+import type React from "react"
+import type { ReactElement, ReactNode } from "react"
+import { createContext, useCallback, useContext, useState } from "react"
+import { v4 as uuidv4 } from "uuid"
+import { UICallback } from "./UICallbacks"
 
 export type UIProviderProps = {
-	children?: ReactNode;
-};
-
-export enum CloseType {
-	Accept = 0,
-	Cancel = 1,
-	Overwrite = 2,
+    children?: ReactNode
 }
 
-export interface UIScreenProps<T> {
-	onClose?: (closeType: CloseType) => void;
-	onCancel?: () => void;
-	onAccept?: (x?: T) => void;
-	onBeforeAccept?: () => T;
-	htmlProps?: string;
-	hideCancel?: boolean;
-	hideAccept?: boolean;
+export enum CloseType {
+    Accept = 0,
+    Cancel = 1,
+    Overwrite = 2,
+}
+
+interface UIScreenCallbacks<T> {
+    onClose?: () => void
+    onCancel?: () => void
+    onAccept?: (x?: T) => void
+    onBeforeAccept?: () => T
+}
+
+/**
+ *  Props for generic UIScreen
+ */
+export interface UIScreenProps {
+    htmlProps?: string
+    hideCancel?: boolean
+    hideAccept?: boolean
     cancelText?: string
     acceptText?: string
 }
 
-export interface ModalProps<T> extends UIScreenProps<T> {
-	allowClickAway?: boolean;
+/**
+ * Modal-specific props for creating a modal
+ */
+export interface ModalProps extends UIScreenProps {
+    allowClickAway?: boolean
 }
 
-export interface PanelProps<T> extends UIScreenProps<T> {}
+/**
+ * Panel-specific props for creating a panel
+ */
+export interface PanelProps extends UIScreenProps {
+    position: PanelPosition
+}
 
+/**
+ * UIScreen type
+ */
 export interface UIScreen<T> {
-	id: string;
-	parent: UIScreen<unknown>;
-	content: ReactElement;
-	props: UIScreenProps<T>;
+    id: string
+    parent: UIScreen<unknown>
+    content: ReactElement
+    onClose: UICallback<[CloseType], void>
+    onCancel: UICallback<[], void>
+    onAccept: UICallback<[T], void>
+    onBeforeAccept: UICallback<[], T>
 }
 
 export type PanelPosition =
-	| "top-left"
-	| "top"
-	| "top-right"
-	| "left"
-	| "center"
-	| "right"
-	| "bottom-left"
-	| "bottom"
-	| "bottom-right";
+    | "top-left"
+    | "top"
+    | "top-right"
+    | "left"
+    | "center"
+    | "right"
+    | "bottom-left"
+    | "bottom"
+    | "bottom-right"
 
-export interface Modal<T> extends UIScreen<T> {}
-
-export interface Panel<T> extends UIScreen<T> {
-	position: PanelPosition;
+export interface Modal<T> extends UIScreen<T> {
+    props: ModalProps
 }
 
-export type OpenModalFn = <T>(
-	contents: ReactElement,
-	parent?: UIScreen<T>,
-	props?: ModalProps<T>,
-) => string;
-export type OpenPanelFn = <T>(
-	contents: ReactElement,
-	parent?: UIScreen<T>,
-	position?: PanelPosition,
-	props?: UIScreenProps<T>,
-) => string;
-export type CloseModalFn = (closeType: CloseType) => void;
-export type ClosePanelFn = (id: string, closeType: CloseType) => void;
-export type AddToastFn = (variant: VariantType, ...contents: string[]) => void;
+export interface Panel<T> extends UIScreen<T> {
+    props: PanelProps
+}
+
+export type OpenModalFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: ModalProps) => string
+export type OpenPanelFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: PanelProps) => string
+export type CloseModalFn = (closeType: CloseType) => void
+export type ClosePanelFn = (id: string, closeType: CloseType) => void
+export type AddToastFn = (variant: VariantType, ...contents: string[]) => void
 
 export type UIContextProps = {
-	modal?: Modal<unknown>;
-	panels: Panel<unknown>[];
-	openModal: OpenModalFn;
-	openPanel: OpenPanelFn;
-	closeModal: CloseModalFn;
-	closePanel: ClosePanelFn;
-	addToast: AddToastFn;
-};
+    modal?: Modal<unknown>
+    panels: Panel<unknown>[]
+    openModal: OpenModalFn
+    openPanel: OpenPanelFn
+    closeModal: CloseModalFn
+    closePanel: ClosePanelFn
+    addToast: AddToastFn
+}
 
 export const UIContext = createContext<UIContextProps>({
-	panels: [],
-	openModal: (
-		_content,
-		_parent,
-		_props = { hideAccept: false, hideCancel: false },
-	) => "",
-	openPanel: (
-		_content,
-		_parent,
-		_position = "center",
-		_props = { hideAccept: false, hideCancel: false },
-	) => "",
-	closeModal: () => {},
-	closePanel: (_id) => {},
-	addToast: (_variant, _msg) => "",
-});
+    panels: [],
+    openModal: (_content, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
+    openPanel: (_content, _parent, _props = { hideAccept: false, hideCancel: false, position: "center" }) => "",
+    closeModal: () => {},
+    closePanel: _id => {},
+    addToast: (_variant, _msg) => "",
+})
 
 export const useUIContext = () => useContext(UIContext)
 
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
-	const [modal, setModal] = useState<Modal<unknown> | undefined>(undefined);
-	const [panels, setPanels] = useState<Panel<unknown>[]>([]);
+    const [modal, setModal] = useState<Modal<unknown> | undefined>(undefined)
+    const [panels, setPanels] = useState<Panel<unknown>[]>([])
 
-	const { enqueueSnackbar } = useSnackbar();
+    const { enqueueSnackbar } = useSnackbar()
 
-	const openModal: OpenModalFn = useCallback(
-		<T,>(
-			content: ReactElement,
-			parent?: UIScreen<T>,
-			props: ModalProps<T> = {
-				hideAccept: false,
-				hideCancel: false,
+    const openModal: OpenModalFn = useCallback(
+        <T,>(
+            content: ReactElement,
+            parent?: UIScreen<T>,
+            props: ModalProps & UIScreenCallbacks<T> = {
+                hideAccept: false,
+                hideCancel: false,
                 acceptText: "Accept",
                 cancelText: "Cancel",
-			},
-		) => {
-			const id = uuidv4();
-			const newModal = {
-				id,
-				parent,
-				content,
-				props,
-			} as Modal<T>;
-			modal?.props.onClose?.(CloseType.Overwrite);
-			setModal(newModal as Modal<unknown>);
-			return id;
-		},
-		[modal],
-	);
+            }
+        ) => {
+            const id = uuidv4()
+            const newModal = {
+                id,
+                parent,
+                content,
+                props,
+            } as Modal<T>
+            modal?.onClose?.(CloseType.Overwrite)
 
-	const openPanel: OpenPanelFn = useCallback(
-		<T,>(
-			content: ReactElement,
-			parent?: UIScreen<T>,
-			position: PanelPosition = "center",
-			props: UIScreenProps<T> = {
-				hideAccept: false,
-				hideCancel: false,
+            newModal.onClose = new UICallback()
+            if (props.onClose) newModal.onClose.addFunc(props.onClose)
+
+            newModal.onBeforeAccept = new UICallback()
+            if (props.onBeforeAccept) newModal.onBeforeAccept.addFunc(props.onBeforeAccept)
+
+            newModal.onAccept = new UICallback()
+            if (props.onAccept) newModal.onAccept.addFunc(props.onAccept)
+
+            newModal.onCancel = new UICallback()
+            if (props.onCancel) newModal.onCancel.addFunc(props.onCancel)
+
+            setModal(newModal as Modal<unknown>)
+            return id
+        },
+        [modal]
+    )
+
+    const openPanel: OpenPanelFn = useCallback(
+        <T,>(
+            content: ReactElement,
+            parent?: UIScreen<T>,
+            props: PanelProps & UIScreenCallbacks<T> = {
+                hideAccept: false,
+                hideCancel: false,
                 acceptText: "Accept",
                 cancelText: "Cancel",
-			},
-		) => {
-			const id = uuidv4();
-			const panel = {
-				id,
-				parent,
-				content,
-				position,
-				props,
-			} as Panel<T>;
-			setPanels([...panels, panel as Panel<unknown>]);
-			return id;
-		},
-		[panels],
-	);
+                position: "center",
+            }
+        ) => {
+            const id = uuidv4()
+            const panel = {
+                id,
+                parent,
+                content,
+                props,
+            } as Panel<T>
 
-	const closeCallbacks = <T,>(
-		elem: Panel<T> | Modal<T>,
-		closeType: CloseType,
-	) => {
-		elem.props.onClose?.(closeType);
-		switch (closeType) {
-			case CloseType.Accept: {
-				const beforeAcceptResult = elem.props.onBeforeAccept?.();
-				elem.props.onAccept?.(beforeAcceptResult);
-				break;
-			}
-			case CloseType.Cancel:
-				elem.props.onCancel?.();
-				break;
-			default:
-				break;
-		}
-	};
+            panel.onClose = new UICallback()
+            if (props.onClose) panel.onClose.addFunc(props.onClose)
 
-	const closeModal = useCallback(
-		<T,>(closeType: CloseType) => {
-			if (modal) closeCallbacks<T>(modal as Modal<T>, closeType);
-			setModal(undefined);
-		},
-		[modal],
-	);
+            panel.onBeforeAccept = new UICallback(1)
+            if (props.onBeforeAccept) panel.onBeforeAccept.addFunc(props.onBeforeAccept)
 
-	const closePanel = useCallback(
-		(id: string, closeType: CloseType) => {
-			setPanels((p) => {
-				const panel = p.find((p: Panel<unknown>) => p.id === id);
-				if (panel) closeCallbacks(panel, closeType);
-				return p.filter((pnl: Panel<unknown>) => pnl.id !== id);
-			});
-		},
-		[panels],
-	);
+            panel.onAccept = new UICallback()
+            if (props.onAccept) panel.onAccept.addFunc(props.onAccept)
 
-	const addToast = useCallback(
-		(variant: VariantType, ...contents: string[]) => {
-			enqueueSnackbar(contents.join("\n"), { variant });
-		},
-		[],
-	);
+            panel.onCancel = new UICallback()
+            if (props.onCancel) panel.onCancel.addFunc(props.onCancel)
 
-	return (
-		<UIContext.Provider
-			value={{
-				modal,
-				panels,
-				openModal,
-				openPanel,
-				closeModal,
-				closePanel,
-				addToast,
-			}}
-		>
-			{children}
-		</UIContext.Provider>
-	);
-};
+            setPanels([...panels, panel as Panel<unknown>])
+            return id
+        },
+        [panels]
+    )
+
+    const closeCallbacks = <T,>(elem: Panel<T> | Modal<T>, closeType: CloseType) => {
+        elem.onClose?.(closeType)
+        switch (closeType) {
+            case CloseType.Accept: {
+                const beforeAcceptResult = elem.onBeforeAccept?.()
+                elem.onAccept?.(beforeAcceptResult)
+                break
+            }
+            case CloseType.Cancel:
+                elem.onCancel?.()
+                break
+            default:
+                break
+        }
+    }
+
+    const closeModal = useCallback(
+        <T,>(closeType: CloseType) => {
+            if (modal) closeCallbacks<T>(modal as Modal<T>, closeType)
+            setModal(undefined)
+        },
+        [modal]
+    )
+
+    const closePanel = useCallback((id: string, closeType: CloseType) => {
+        setPanels(p => {
+            const panel = p.find((p: Panel<unknown>) => p.id === id)
+            if (panel) closeCallbacks(panel, closeType)
+            return p.filter((pnl: Panel<unknown>) => pnl.id !== id)
+        })
+    }, [])
+
+    const addToast = useCallback(
+        (variant: VariantType, ...contents: string[]) => {
+            enqueueSnackbar(contents.join("\n"), { variant })
+        },
+        [enqueueSnackbar]
+    )
+
+    return (
+        <UIContext.Provider
+            value={{
+                modal,
+                panels,
+                openModal,
+                openPanel,
+                closeModal,
+                closePanel,
+                addToast,
+            }}
+        >
+            {children}
+        </UIContext.Provider>
+    )
+}

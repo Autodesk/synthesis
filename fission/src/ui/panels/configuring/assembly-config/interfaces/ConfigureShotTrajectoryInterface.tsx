@@ -18,16 +18,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import {
-    Box,
-    Button,
-    FormControl,
-    FormControlLabel,
-    Slider,
-    Stack,
-    ToggleButton,
-    ToggleButtonGroup,
-} from "@mui/material"
+import { Button, FormControlLabel, Slider, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
 
 // slider constants
 const MIN_VELOCITY = 0.0

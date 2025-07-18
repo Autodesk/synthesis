@@ -19,7 +19,7 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Button, Checkbox, FormControlLabel, Input, Stack, TextField } from "@mui/material"
+import { Button, Checkbox, FormControlLabel, Stack, TextField } from "@mui/material"
 
 /**
  * Saves ejector configuration to selected field.

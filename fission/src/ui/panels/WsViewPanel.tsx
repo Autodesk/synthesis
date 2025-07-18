@@ -21,7 +21,6 @@ import {
     Typography,
 } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
-import { SynthesisIcons } from "../components/StyledComponents"
 import { PanelImplProps } from "../components/Panel"
 
 const TABLE_UPDATE_INTERVAL = 250

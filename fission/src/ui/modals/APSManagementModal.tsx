@@ -8,10 +8,16 @@ import type { ModalImplProps } from "@/ui/components/Modal"
 const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
     const [userInfo, _] = useState(APS.userInfo)
     useEffect(() => {
-        modal!.props.onAccept = () => {
+        const onAccept = () => {
             APS.logout()
         }
-    }, [])
+
+        modal!.onAccept.addFunc(onAccept)
+
+        return () => {
+            modal!.onAccept.removeFunc(onAccept)
+        }
+    }, [modal])
 
     return (
         <Stack spacing={10} direction="row">

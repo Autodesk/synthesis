@@ -1,10 +1,9 @@
 import { Button, Stack, styled, Typography } from "@mui/material"
 import type React from "react"
-import { useContext } from "react"
 import MatchMode from "@/systems/MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type { ModalImplProps } from "../components/Modal"
-import { CloseType, UIContext, useUIContext } from "../UIProvider"
+import { CloseType, useUIContext } from "../UIProvider"
 
 type Entry = {
     name: string
@@ -98,7 +97,9 @@ const MatchResultsModal: React.FC<ModalImplProps<void>> = () => {
                     MatchMode.getInstance().sandboxModeStart()
                 }}
                 className="w-full"
-            >Back to Sandbox Mode</Button>
+            >
+                Back to Sandbox Mode
+            </Button>
         </>
     )
 }

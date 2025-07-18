@@ -1,14 +1,14 @@
 import type React from "react"
-import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { UIContext, useUIContext } from "@/ui/UIProvider"
+import { useUIContext } from "@/ui/UIProvider"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { StateContext, useStateContext } from "@/ui/StateProvider"
+import { useStateContext } from "@/ui/StateProvider"
 import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
 /** If a scheme is assigned to a robot, find the name of that robot */

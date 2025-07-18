@@ -2,7 +2,7 @@ import type Jolt from "@azaleacolburn/jolt-physics"
 import { Button, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
 import { Stack, styled } from "@mui/system"
 import type React from "react"
-import { useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -10,7 +10,7 @@ import { type AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { UIContext, useUIContext } from "@/ui/UIProvider"
+import { useUIContext } from "@/ui/UIProvider"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,

@@ -1,9 +1,3 @@
-// import { useModalControlContext } from "@/ui/ModalContext"
-// import { usePanelControlContext } from "@/ui/PanelContext"
-// import { useToastContext } from "@/ui/ToastContext"
-import { useEffect } from "react"
-import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
-
 /**
  * So this is Hunter's kinda cursed approach to de-react-ifying some of our UI controls.
  * Essentially, this component will expose context controls for our UI, which allows

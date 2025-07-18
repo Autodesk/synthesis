@@ -1,6 +1,6 @@
+import type { InputScheme } from "@/systems/input/InputSchemeManager"
 import type React from "react"
 import { createContext, type ReactNode, useContext, useMemo, useState } from "react"
-import type { InputScheme } from "@/systems/input/InputSchemeManager"
 import { ConfigurationType, ConfigurePanelSettings } from "./panels/configuring/assembly-config/ConfigurePanel"
 
 interface StateProviderProps {

@@ -1,13 +1,13 @@
 import { Box, Button, Checkbox, FormControlLabel, Slider, Stack, Typography } from "@mui/material"
 import type React from "react"
-import { useContext, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { Spacer } from "@/ui/components/StyledComponents"
 import GraphicsSettingsPanel from "@/ui/panels/GraphicsSettingsPanel"
-import { CloseType, UIContext, useUIContext } from "@/ui/UIProvider"
+import { CloseType, useUIContext } from "@/ui/UIProvider"
 
 const StatefulSlider: React.FC<
     Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & {
@@ -36,19 +36,26 @@ const StatefulSlider: React.FC<
 
 const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
     const { closeModal, openPanel } = useUIContext()
-    const save = () => {
+    const save = useCallback(() => {
         SoundPlayer.changeVolume()
         PreferencesSystem.savePreferences()
         globalAddToast("info", "Settings Saved")
-    }
+    }, [])
 
     useEffect(() => {
-        modal!.props.onAccept = save
-        modal!.props.onCancel = () => {
+        const onCancel = () => {
             PreferencesSystem.revertPreferences()
             SoundPlayer.changeVolume()
         }
-    }, [])
+
+        modal!.onAccept.addFunc(save)
+        modal!.onCancel.addFunc(onCancel)
+
+        return () => {
+            modal!.onAccept.removeFunc(save)
+            modal!.onCancel.removeFunc(onCancel)
+        }
+    }, [modal, save])
 
     return (
         <Stack
