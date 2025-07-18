@@ -64,7 +64,7 @@ export const Modal = <T,>({
 								variant="outlined"
 								color="error"
 							>
-								Close
+                                {props.cancelText ?? "Cancel"}
 							</Button>
 						)}
 						{props.hideAccept !== undefined && !props.hideAccept && (
@@ -73,7 +73,7 @@ export const Modal = <T,>({
 								variant="contained"
 								color="success"
 							>
-								Accept
+                                {props.acceptText ?? "Accept"}
 							</Button>
 						)}
 					</CardActions>

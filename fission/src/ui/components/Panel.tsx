@@ -85,7 +85,7 @@ export const Panel = <T,>({
 								variant="outlined"
 								color="secondary"
 							>
-								Close
+                                {props.cancelText ?? "Cancel"}
 							</Button>
 						)}
 						{!props.hideAccept && (
@@ -94,7 +94,7 @@ export const Panel = <T,>({
 								variant="contained"
 								color="primary"
 							>
-								Accept
+                                {props.acceptText ?? "Accept"}
 							</Button>
 						)}
 					</CardActions>

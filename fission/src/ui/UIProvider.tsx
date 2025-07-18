@@ -23,6 +23,8 @@ export interface UIScreenProps<T> {
 	htmlProps?: string;
 	hideCancel?: boolean;
 	hideAccept?: boolean;
+    cancelText?: string
+    acceptText?: string
 }
 
 export interface ModalProps<T> extends UIScreenProps<T> {
@@ -111,6 +113,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 			props: ModalProps<T> = {
 				hideAccept: false,
 				hideCancel: false,
+                acceptText: "Accept",
+                cancelText: "Cancel",
 			},
 		) => {
 			const id = uuidv4();
@@ -135,6 +139,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 			props: UIScreenProps<T> = {
 				hideAccept: false,
 				hideCancel: false,
+                acceptText: "Accept",
+                cancelText: "Cancel",
 			},
 		) => {
 			const id = uuidv4();
