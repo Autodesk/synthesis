@@ -9,7 +9,7 @@ const DriverStationPanel: React.FC = () => {
 
     return (
         <Stack direction="row">
-            <Button value={enabled ? "Enabled" : "Disabled"} onClick={() => setEnabled(!enabled)} />
+            <Button onClick={() => setEnabled(!enabled)}>{enabled ? "Enabled" : "Disabled"}</Button>
             <Select>
                 <MenuItem value="Auto">Auto</MenuItem>
                 <MenuItem value="Teleop">Teleop</MenuItem>

@@ -112,15 +112,14 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     <Box>
                         <Button
                             key={input.inputName}
-                            value={
-                                input.inputName === selectedInput
-                                    ? "Press anything"
-                                    : transformKeyName(input.keyCode, input.keyModifiers)
-                            }
                             onClick={() => {
                                 setSelectedInput(input.inputName)
                             }}
-                        />
+                        >
+                            {input.inputName === selectedInput
+                                ? "Press anything"
+                                : transformKeyName(input.keyCode, input.keyModifiers)}
+                        </Button>
                     </Box>
                 </Stack>
                 <Divider />

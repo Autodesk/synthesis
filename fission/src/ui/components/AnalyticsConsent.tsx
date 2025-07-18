@@ -45,7 +45,7 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                     justifyContent: "space-between",
                 }}
             >
-                <Button value="I consent" onClick={() => onConsent()} />
+                <Button onClick={() => onConsent()}>I consent</Button>
                 <Button startIcon={<AiOutlineClose />} onClick={() => onClose()} color="secondary" />
             </Box>
         </Box>

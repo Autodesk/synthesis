@@ -18,7 +18,16 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Box, Button, FormControl, FormControlLabel, Slider, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import {
+    Box,
+    Button,
+    FormControl,
+    FormControlLabel,
+    Slider,
+    Stack,
+    ToggleButton,
+    ToggleButtonGroup,
+} from "@mui/material"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -211,7 +220,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             />
 
             {/* Toggle for adjusting eject order */}
-            <Box className="mt-4 flex items-center space-x-2">
+            <Stack direction="row" spacing={2} alignItems="center" className="mt-4">
                 {LabelWithTooltip(
                     "Eject Order",
                     "Choose how to eject pieces: FIFO (first in, first out) ejects the oldest-loaded item first, or LIFO (last in, first out) ejects the most recently loaded item first."
@@ -224,7 +233,7 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                     <ToggleButton value="FIFO">FIFO</ToggleButton>
                     <ToggleButton value="LIFO">LIFO</ToggleButton>
                 </ToggleButtonGroup>
-            </Box>
+            </Stack>
 
             {/* Slider for user to set velocity of ejector configuration */}
             <FormControlLabel
