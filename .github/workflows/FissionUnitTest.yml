@@ -28,18 +28,17 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Cache Synthesis assets
+      - name: Cache Unzipped Synthesis Assets
         id: cache-assets
         uses: actions/cache@v3
         with:
-          path: fission/public/
-          key: ${{ runner.os }}-assets-v1
-          restore-keys: |
-            ${{ runner.os }}-assets-
+          path: fission/public/Downloadables
+          key: ${{ runner.os }}-assets-${{hashFiles('fission/public/assetpack.zip')}}
 
-      - name: Download assets if not cached
+      - name: Download Synthesis assetpack if not cached
         if: steps.cache-assets.outputs.cache-hit != 'true'
         run: |
+<<<<<<< HEAD
           curl -o public/assetpack.zip https://synthesis.autodesk.com/downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
       # Transition GH-1205:
       # Avoiding the cache step for now as it was causing issues.
@@ -51,6 +50,17 @@ jobs:
       #     path: |
       #       ~/.cache/ms-playwright/
       #     key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
+=======
+          cd ..
+          apt update
+          apt install git-lfs unzip
+          git config --global --add safe.directory `pwd`
+          git lfs pull
+          
+          cd fission
+          unzip -o public/assetpack.zip -d public/ || echo
+
+>>>>>>> refs/rewritten/origin-dev-2
 
       - name: Cache Dependencies
         uses: actions/cache@v3
