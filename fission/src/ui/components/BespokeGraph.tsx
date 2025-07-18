@@ -517,7 +517,6 @@ const GraphComp: React.FC<{ graph: Graph }> = ({ graph }) => {
         ) : (
             <></>
         )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [graph])
 
     return (

@@ -9,7 +9,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 let selectedScheme: InputScheme | undefined = undefined
-// eslint-disable-next-line react-refresh/only-export-components
+
 export function setSelectedScheme(scheme: InputScheme | undefined) {
     selectedScheme = scheme
 }

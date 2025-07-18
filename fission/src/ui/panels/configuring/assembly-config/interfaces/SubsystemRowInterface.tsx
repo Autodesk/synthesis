@@ -76,7 +76,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
 
                     PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
                 }
-                // eslint-disable-next-line no-extra-semi
+
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
             }

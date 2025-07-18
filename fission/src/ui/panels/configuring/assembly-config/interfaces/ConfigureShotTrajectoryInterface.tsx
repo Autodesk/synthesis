@@ -167,7 +167,6 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             gizmoRef.current = undefined
             return <></>
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         placeholderMesh,
         selectedRobot.ejectorPreferences,

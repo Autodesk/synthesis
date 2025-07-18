@@ -184,7 +184,6 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             gizmoRef.current = undefined
             return <></>
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
         selectedRobot?.intakePreferences,
         placeholderMesh,

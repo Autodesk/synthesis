@@ -321,7 +321,6 @@ const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
 
     useEffect(() => {
         closePanel("configure")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [closePanel])
 
     return (
