@@ -1,5 +1,5 @@
 import { afterAll, assert, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest"
-import { page, server } from "@vitest/browser/context"
+import { server } from "@vitest/browser/context"
 
 import { cleanup, render, RenderResult } from "vitest-browser-react"
 import { ReactElement } from "react"
@@ -50,15 +50,11 @@ describe("React Mounting", async () => {
         expect(screenElement.querySelector("canvas")).toBeInTheDocument()
         expect(screen.getByText("Singleplayer")).toBeInTheDocument()
         await annotate("DOM successfully updated to include Synthesis components")
-
-        await annotate("Main Menu", { path: await page.screenshot() })
-
         const initWorldSpy = vi.spyOn(World, "initWorld")
         await screen.getByText("Singleplayer").click()
         expect(initWorldSpy).toHaveBeenCalledOnce()
         await annotate("Singleplayer Button calls initWorld")
         await wait(50)
-        await annotate("Initial Scene", { path: await page.screenshot() })
         await annotate("Initial Scene DOM", { contentType: "text/html", body: document.documentElement.outerHTML })
     })
 })
