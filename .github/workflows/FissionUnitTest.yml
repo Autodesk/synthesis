@@ -19,14 +19,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Update and Install Unzip
-        run: |
-          apt update
-          apt install -y unzip
-      - name: Bun Runtime Setup
-        uses: oven-sh/setup-bun@v2
+      - name: JavaScript Setup
+        uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: 20
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
@@ -43,11 +39,11 @@ jobs:
           apt install git-lfs unzip
           git config --global --add safe.directory `pwd`
           git lfs pull
-          
+
           cd fission
           unzip -o public/assetpack.zip -d public/ || echo
 
-      - name: Cache Dependencies
+      - name: Cache Node Dependencies
         uses: actions/cache@v3
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
@@ -57,7 +53,7 @@ jobs:
             ${{runner.os}}-npm
 
       - name: Install Dependencies
-        run: bun install
+        run: npm install
 
       - name: Run Tests
-        run: HOME=/root bun run test
+        run: HOME=/root npm run test
