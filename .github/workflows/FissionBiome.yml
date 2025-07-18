@@ -1,4 +1,4 @@
-name: Fission - ES Lint Format Validation
+name: Fission - Biome Format and Lint Validation
 
 on:
   workflow_dispatch: {}
@@ -8,8 +8,8 @@ on:
     branches: [prod, dev]
 
 jobs:
-  runFormatValidationScript:
-    name: ESLint Format Validation
+  runBiomeValidationScript:
+    name: Biome Validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -33,15 +33,15 @@ jobs:
           cd fission
           bun install
 
-      - name: Linter
-        id: linter-validation
+      - name: Lint
+        id: lint-validation
         if: ${{ always() }}
         run: |
           cd fission
           bun run lint && echo "Biome Linting Validation Passed" || (echo "Biome Linting Validation Failed" && exit 1)
 
-      - name: Prettier
-        id: prettier-validation
+      - name: Format
+        id: format-validation
         if: ${{ always() }}
         run: |
           cd fission

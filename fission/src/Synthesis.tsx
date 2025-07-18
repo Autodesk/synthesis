@@ -132,8 +132,6 @@ const Synthesis: React.FC = () => {
             World.destroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [openModal])
 
     useEffect(() => {

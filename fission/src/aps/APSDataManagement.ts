@@ -65,7 +65,6 @@ export type Relationships = {
 
 export type RawData = Omit<{ [key in keyof Data]: Data[key] }, "raw" | "href"> & { relationships: Relationships }
 
-// biome-ignore-start lint/suspicious/noExplicitAny: We need to index a generic object
 export class Data {
     id: string
     type: string
@@ -264,8 +263,6 @@ export async function searchFolder(project: Project, folder: Folder, filters?: F
     const json = await res.json()
     return json.data.map((data: RawData) => new Data(data))
 }
-
-// biome-ignore-end lint/suspicious/noExplicitAny: We need to index a generic object
 
 export async function searchRootForMira(project: Project): Promise<Data[] | undefined> {
     return searchFolder(project, project.folder, [{ fieldName: "fileType", matchValue: "mira" }])

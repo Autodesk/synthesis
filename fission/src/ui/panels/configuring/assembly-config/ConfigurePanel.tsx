@@ -71,14 +71,12 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
             .filter(x => !pendingDeletes.includes(x.id))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pendingDeletes])
 
     const fields = useMemo(() => {
         return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
             .filter(x => !pendingDeletes.includes(x.id))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pendingDeletes])
 
     const options = useMemo(() => {
@@ -369,7 +367,6 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         closePanel("choose-scheme")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [closePanel])
 
     return (

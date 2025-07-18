@@ -170,7 +170,6 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             return
         }
         closePanel("configure")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [closePanel])
 
     // Get Default Mirabuf Data, Load into manifest.
@@ -383,7 +382,6 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .forEach(path => cacheRemoteOnly(path, miraType))
 
             closePanel(panelId)
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [cached, panelId])
     }
 
