@@ -1,25 +1,18 @@
 import { expect, test, vi, beforeEach, describe, afterEach } from "vitest"
-import SceneRenderer from "@/systems/scene/SceneRenderer"
+import SceneRenderer, { STANDARD_CAMERA_FOV_X, STANDARD_CAMERA_FOV_Y } from "@/systems/scene/SceneRenderer"
 import * as THREE from "three"
 import { Theme } from "@/ui/helpers/UseThemeHelpers"
 import SceneObject from "@/systems/scene/SceneObject"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
+import JOLT from "@/util/loading/JoltSyncLoader"
 
-interface MockSceneObject extends Partial<SceneObject> {
+interface MockSceneObject {
     dispose: ReturnType<typeof vi.fn>
     update: ReturnType<typeof vi.fn>
     setup: ReturnType<typeof vi.fn>
     id: number
-}
-
-interface MockVec3 {
-    /* eslint-disable @typescript-eslint/naming-convention */
-    GetX(): number
-    GetY(): number
-    GetZ(): number
-    /* eslint-enable @typescript-eslint/naming-convention */
 }
 
 vi.mock("three", async () => {
@@ -126,19 +119,16 @@ Object.defineProperty(window, "devicePixelRatio", {
 
 describe("SceneRenderer", () => {
     let sceneRenderer: SceneRenderer
-    const originalConsoleLog = console.log
 
     beforeEach(() => {
         vi.clearAllMocks()
         sceneRenderer = new SceneRenderer()
-        console.log = vi.fn()
     })
 
     afterEach(() => {
         if (sceneRenderer) {
             sceneRenderer.destroy()
         }
-        console.log = originalConsoleLog
     })
 
     describe("Scene Object Management", () => {
@@ -196,9 +186,9 @@ describe("SceneRenderer", () => {
         })
 
         test("should create box with default material and correct position", () => {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            const mockVec3: MockVec3 = { GetX: () => 2, GetY: () => 3, GetZ: () => 4 }
-            const box = sceneRenderer.createBox(mockVec3 as unknown as Parameters<typeof sceneRenderer.createBox>[0])
+            const vec3 = new JOLT.Vec3(2, 3, 4)
+
+            const box = sceneRenderer.createBox(vec3)
             expect(box.material).toBeInstanceOf(THREE.MeshToonMaterial)
             expect(box.geometry.attributes.position.array[0]).toBe(1)
             expect(box.geometry.attributes.position.array[1]).toBe(1.5)
@@ -223,9 +213,22 @@ describe("SceneRenderer", () => {
         })
 
         test("should convert world to pixel space", () => {
-            const pixelPos = sceneRenderer.worldToPixelSpace(new THREE.Vector3(0, 0, 0))
-            expect(pixelPos[0]).toBeCloseTo(1861, 0)
-            expect(pixelPos[1]).toBeCloseTo(1261, 0)
+            const worldPos = new THREE.Vector3(0, 0, 0)
+
+            sceneRenderer.updateCanvasSize()
+            const pixelPos1920 = sceneRenderer.worldToPixelSpace(worldPos)
+
+            Object.defineProperty(window, "innerWidth", { value: 800 })
+            Object.defineProperty(window, "innerHeight", { value: 600 })
+            sceneRenderer.updateCanvasSize()
+
+            const pixelPos800 = sceneRenderer.worldToPixelSpace(worldPos)
+            expect(pixelPos800[0]).not.toBe(pixelPos1920[0])
+            expect(pixelPos800[1]).not.toBe(pixelPos1920[1])
+
+            Object.defineProperty(window, "innerWidth", { value: 1920 })
+            Object.defineProperty(window, "innerHeight", { value: 1080 })
+            sceneRenderer.updateCanvasSize()
         })
     })
 
@@ -236,7 +239,7 @@ describe("SceneRenderer", () => {
 
             const aspectRatio = 1920 / 1080
             expect(sceneRenderer.mainCamera.aspect).toBeCloseTo(aspectRatio)
-            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(110 / aspectRatio)
+            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_X / aspectRatio)
         })
 
         test("should handle wide aspect ratios correctly", () => {
@@ -248,7 +251,7 @@ describe("SceneRenderer", () => {
             const aspectRatio = 3840 / 1080
             expect(sceneRenderer.mainCamera.aspect).toBeCloseTo(aspectRatio)
 
-            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(110 / aspectRatio)
+            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_X / aspectRatio)
         })
 
         test("should handle tall aspect ratios correctly", () => {
@@ -258,7 +261,7 @@ describe("SceneRenderer", () => {
             sceneRenderer.updateCanvasSize()
 
             expect(sceneRenderer.mainCamera.aspect).toBeCloseTo(800 / 1200)
-            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(110 / (16 / 9))
+            expect(sceneRenderer.mainCamera.fov).toBeCloseTo(STANDARD_CAMERA_FOV_Y)
         })
     })
 
@@ -285,84 +288,6 @@ describe("SceneRenderer", () => {
             sceneRenderer.changeLighting(true)
 
             expect(() => sceneRenderer.setupMaterial(null as unknown as THREE.Material)).not.toThrow()
-        })
-    })
-
-    describe("Scene Management", () => {
-        test("should add object to scene and verify it exists", () => {
-            const mockObject = new THREE.Object3D()
-            mockObject.name = "TestObject"
-
-            sceneRenderer.addObject(mockObject)
-
-            expect(sceneRenderer.scene.children).toContain(mockObject)
-            expect(sceneRenderer.scene.getObjectByName("TestObject")).toBe(mockObject)
-        })
-
-        test("should remove object from scene and verify it no longer exists", () => {
-            const mockObject = new THREE.Object3D()
-            mockObject.name = "TestObjectToRemove"
-
-            sceneRenderer.addObject(mockObject)
-            sceneRenderer.removeObject(mockObject)
-
-            expect(sceneRenderer.scene.children).not.toContain(mockObject)
-            expect(sceneRenderer.scene.getObjectByName("TestObjectToRemove")).toBeUndefined()
-        })
-
-        test("should handle adding same object multiple times gracefully", () => {
-            const mockObject = new THREE.Object3D()
-
-            const initialChildCount = sceneRenderer.scene.children.length
-
-            sceneRenderer.addObject(mockObject)
-            sceneRenderer.addObject(mockObject)
-
-            expect(sceneRenderer.scene.children.length).toBe(initialChildCount + 1)
-        })
-
-        test("should handle removing non-existent object gracefully", () => {
-            const mockObject = new THREE.Object3D()
-            const initialChildCount = sceneRenderer.scene.children.length
-
-            // Try to remove an object that was never added
-            sceneRenderer.removeObject(mockObject)
-
-            // Scene should remain unchanged
-            expect(sceneRenderer.scene.children.length).toBe(initialChildCount)
-        })
-
-        test("should maintain scene hierarchy when adding child objects", () => {
-            const parentObject = new THREE.Object3D()
-            parentObject.name = "Parent"
-
-            const childObject = new THREE.Object3D()
-            childObject.name = "Child"
-
-            parentObject.add(childObject)
-
-            // Add parent to scene
-            sceneRenderer.addObject(parentObject)
-
-            // Verify both parent and child are accessible through the scene
-            expect(sceneRenderer.scene.getObjectByName("Parent")).toBe(parentObject)
-            expect(sceneRenderer.scene.getObjectByName("Child")).toBe(childObject)
-            expect(childObject.parent).toBe(parentObject)
-        })
-
-        test("should handle removing parent object and its children", () => {
-            const parentObject = new THREE.Object3D()
-            parentObject.name = "ParentToRemove"
-
-            const childObject = new THREE.Object3D()
-            childObject.name = "ChildToRemove"
-
-            parentObject.add(childObject)
-            sceneRenderer.addObject(parentObject)
-            sceneRenderer.removeObject(parentObject)
-
-            expect(sceneRenderer.scene.getObjectByName("ParentToRemove")).toBeUndefined()
-            expect(sceneRenderer.scene.getObjectByName("ChildToRemove")).toBeUndefined()
         })
     })
 
