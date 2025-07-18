@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Client-Side Prediction Spike</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: monospace;
+        background: #222;
+        color: white;
+        overflow: hidden;
+        height: 100vh;
+      }
+
+      #gameCanvas {
+        background: #000;
+        display: block;
+      }
+
+      #info {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        font-size: 12px;
+        border: 1px solid #333;
+        border-radius: 4px;
+        min-width: 200px;
+      }
+
+      #predictionStats {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        font-size: 12px;
+        border: 1px solid #333;
+        border-radius: 4px;
+        min-width: 200px;
+      }
+
+      #serverStats {
+        position: absolute;
+        top: 200px;
+        right: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        font-size: 12px;
+        border: 1px solid #444;
+        border-radius: 4px;
+        min-width: 200px;
+      }
+
+      #controls {
+        position: absolute;
+        bottom: 10px;
+        left: 10px;
+        background: rgba(0, 0, 0, 0.8);
+        padding: 10px;
+        font-size: 12px;
+        border: 1px solid #333;
+        border-radius: 4px;
+      }
+
+      .stat-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2px;
+      }
+
+      .stat-label {
+        color: #aaa;
+      }
+
+      .stat-value {
+        color: #fff;
+        font-weight: bold;
+      }
+
+      .correction-flash {
+        color: #ff4444 !important;
+      }
+
+      @keyframes flash {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.3;
+        }
+      }
+
+      .prediction-enabled {
+        color: #44ff44;
+      }
+
+      .prediction-disabled {
+        color: #ff4444;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="gameCanvas"></canvas>
+
+    <div id="info">
+      <div class="stat-row">
+        <span class="stat-label">s:</span>
+        <span id="status" class="stat-value">Connecting...</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">count:</span>
+        <span id="playerCount" class="stat-value">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">ping:</span>
+        <span id="latency" class="stat-value">-</span>ms
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">jitter:</span>
+        <span id="jitter" class="stat-value">0.0</span>ms
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">tick:</span>
+        <span id="serverTick" class="stat-value">-</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">fps:</span>
+        <span id="fps" class="stat-value">60</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">uptime:</span>
+        <span id="uptime" class="stat-value">0:00</span>
+      </div>
+    </div>
+
+    <div id="predictionStats">
+      <div class="stat-row">
+        <span class="stat-label">pred:</span>
+        <span id="predictionEnabled" class="stat-value prediction-enabled"
+          >ON</span
+        >
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">corrections:</span>
+        <span id="correctionCount" class="stat-value">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">err:</span>
+        <span id="avgDivergence" class="stat-value">0.0</span>px
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">accuracy:</span>
+        <span id="predictionAccuracy" class="stat-value">0.0</span>px
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">latency:</span>
+        <span id="inputLag" class="stat-value">0</span>ms
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">cli-seq:</span>
+        <span id="inputSequence" class="stat-value">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">realtime:</span>
+        <span id="lastCorrection" class="stat-value">None</span>
+      </div>
+    </div>
+
+    <div id="serverStats">
+      <div class="stat-row">
+        <span class="stat-label">srv-tick:</span>
+        <span id="serverTickRate" class="stat-value">60/60</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">msg/s:</span>
+        <span id="networkThroughput" class="stat-value">0</span>
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">memory:</span>
+        <span id="serverMemory" class="stat-value">0</span>MB
+      </div>
+      <div class="stat-row">
+        <span class="stat-label">total-msg:</span>
+        <span id="totalMessages" class="stat-value">0</span>
+      </div>
+    </div>
+
+    <div id="controls">
+      <div>R: Reset stats</div>
+      <div>M: Toggle metrics (press to show/hide panels)</div>
+    </div>
+
+    <script src="RobotClient.ts"></script>
+  </body>
+</html>
