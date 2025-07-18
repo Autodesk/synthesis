@@ -12,10 +12,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: JavaScript Setup
+      - name: Bun Runtime Setup
         uses: oven-sh/setup-bun@v2
         with:
-          node-version: latest
+          bun-version: latest
 
       - name: Get date
         id: date # this is used on variable path

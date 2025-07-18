@@ -19,14 +19,10 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: Update and Install Unzip
-        run: |
-          apt update
-          apt install -y unzip
-      - name: Bun Runtime Setup
-        uses: oven-sh/setup-bun@v2
+      - name: JavaScript Setup
+        uses: actions/setup-node@v4
         with:
-          bun-version: latest
+          node-version: 20
 
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
@@ -38,31 +34,16 @@ jobs:
       - name: Download Synthesis assetpack if not cached
         if: steps.cache-assets.outputs.cache-hit != 'true'
         run: |
-<<<<<<< HEAD
-          curl -o public/assetpack.zip https://synthesis.autodesk.com/downloadables/assetpack.zip && unzip -o public/assetpack.zip -d public/
-      # Transition GH-1205:
-      # Avoiding the cache step for now as it was causing issues.
-      # Should revisit this later as this is a major speedup that we lost.
-      # - name: Cache downloaded browsers
-      #   id: cache-browsers
-      #   uses: actions/cache@v3
-      #   with:
-      #     path: |
-      #       ~/.cache/ms-playwright/
-      #     key: ${{ runner.os }}-assets-playwright-${{ env.PLAYWRIGHT_VERSION }}-v3
-=======
           cd ..
           apt update
           apt install git-lfs unzip
           git config --global --add safe.directory `pwd`
           git lfs pull
-          
+
           cd fission
           unzip -o public/assetpack.zip -d public/ || echo
 
->>>>>>> refs/rewritten/origin-dev-2
-
-      - name: Cache Dependencies
+      - name: Cache Node Dependencies
         uses: actions/cache@v3
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
@@ -72,7 +53,7 @@ jobs:
             ${{runner.os}}-npm
 
       - name: Install Dependencies
-        run: bun install
+        run: npm install
 
       - name: Run Tests
-        run: HOME=/root bun run test
+        run: HOME=/root npm run test
