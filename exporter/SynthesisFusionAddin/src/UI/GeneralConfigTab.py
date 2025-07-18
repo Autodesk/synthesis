@@ -5,9 +5,9 @@ from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Types import KG, ExportLocation, ExportMode, UnitSystem
 from src.UI.CreateCommandInputsHelper import createBooleanInput
+from src.UI.DesignCheckTab import DesignCheckTab
 from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.JointConfigTab import JointConfigTab
-from src.UI.DesignCheckTab import DesignCheckTab
 from src.UI.TaggingConfigTab import TaggingConfigTab
 from src.Util import (
     convertMassUnitsFrom,

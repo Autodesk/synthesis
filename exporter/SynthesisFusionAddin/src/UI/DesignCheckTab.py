@@ -1,7 +1,7 @@
 import adsk.core
 import adsk.fusion
 
-from src import gm, Logging
+from src import Logging, gm
 
 logger = Logging.getLogger()
 
