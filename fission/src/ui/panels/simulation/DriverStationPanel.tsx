@@ -11,12 +11,12 @@ const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, s
     return (
         <Panel
             name="Driver Station (Not Connected)"
-            icon={SynthesisIcons.SteeringWheel}
+            icon={SynthesisIcons.STEERING_WHEEL}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
         >
-            <Stack direction={StackDirection.Horizontal}>
+            <Stack direction={StackDirection.HORIZONTAL}>
                 <Button value={enabled ? "Enabled" : "Disabled"} onClick={() => setEnabled(!enabled)} />
                 <Dropdown options={["Auto", "Teleop"]} onSelect={() => {}} />
             </Stack>

@@ -8,6 +8,7 @@ from src.UI.CreateCommandInputsHelper import createBooleanInput
 from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.JointConfigTab import JointConfigTab
 from src.UI.DesignCheckTab import DesignCheckTab
+from src.UI.TaggingConfigTab import TaggingConfigTab
 from src.Util import (
     convertMassUnitsFrom,
     convertMassUnitsTo,
@@ -24,7 +25,8 @@ class GeneralConfigTab:
     previousSelectedModeDropdownIndex: int
     jointConfigTab: JointConfigTab
     gamepieceConfigTab: GamepieceConfigTab
-    designConfigTab: DesignCheckTab
+    designCheckTab: DesignCheckTab
+    taggingConfigTab: TaggingConfigTab
 
     @logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs, exporterOptions: ExporterOptions) -> None:

@@ -5,12 +5,12 @@ import { NoraType, NoraTypes } from "../Nora"
 import { SimReceiver } from "../wpilib_brain/SimDataFlow"
 
 export enum DriverType {
-    Driv_Hinge = "Driv_Hinge",
-    Driv_Wheel = "Driv_Wheel",
-    Driv_Slider = "Driv_Slider",
-    Driv_Intake = "Driv_Intake",
-    Driv_Ejector = "Driv_Ejector",
-    Driv_Unknown = "Driv_Unknown",
+    HINGE = "Driv_Hinge",
+    WHEEL = "Driv_Wheel",
+    SLIDER = "Driv_Slider",
+    INTAKE = "Driv_Intake",
+    EJECTOR = "Driv_Ejector",
+    UNKNOWN = "Driv_Unknown",
 }
 
 export type DriverID = {
@@ -20,16 +20,16 @@ export type DriverID = {
 }
 
 export function makeDriverID(constraint: MechanismConstraint): DriverID {
-    let driverType: DriverType = DriverType.Driv_Unknown
+    let driverType: DriverType = DriverType.UNKNOWN
     switch (constraint.primaryConstraint.GetSubType()) {
         case JOLT.EConstraintSubType_Hinge:
-            driverType = DriverType.Driv_Hinge
+            driverType = DriverType.HINGE
             break
         case JOLT.EConstraintSubType_Slider:
-            driverType = DriverType.Driv_Slider
+            driverType = DriverType.SLIDER
             break
         case JOLT.EConstraintSubType_Vehicle:
-            driverType = DriverType.Driv_Wheel
+            driverType = DriverType.WHEEL
             break
     }
 
@@ -49,7 +49,7 @@ abstract class Driver implements SimReceiver {
         this._info = info
     }
 
-    public abstract Update(deltaT: number): void
+    public abstract update(deltaT: number): void
 
     public get id() {
         return this._id
@@ -65,12 +65,12 @@ abstract class Driver implements SimReceiver {
 
     public abstract setReceiverValue(val: NoraType): void
     public abstract getReceiverType(): NoraTypes
-    public abstract DisplayName(): string
+    public abstract displayName(): string
 }
 
 export enum DriverControlMode {
-    Velocity = 0,
-    Position = 1,
+    VELOCITY = 0,
+    POSITION = 1,
 }
 
 export default Driver

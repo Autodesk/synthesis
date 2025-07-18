@@ -47,7 +47,7 @@ def clearIconCache() -> None:
 
     This is useful for now but should be cached in the event the app is closed and re-opened.
     """
-    path = OString.ThumbnailPath("Whatever.png").getDirectory()  # type: ignore[attr-defined]
+    path = OString.thumbnailPath("Whatever.png").getDirectory()  # type: ignore[attr-defined]
 
     for _r, _d, f in os.walk(path):
         for file in f:

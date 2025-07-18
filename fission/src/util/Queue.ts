@@ -9,7 +9,7 @@ class Queue<T> {
 
     constructor() {}
 
-    public Enqueue(...items: T[]) {
+    public enqueue(...items: T[]) {
         for (const item of items) {
             const node = new LinkedNode<T>(item)
             if (this._head) {
@@ -23,7 +23,7 @@ class Queue<T> {
         }
     }
 
-    public Dequeue(): T | undefined {
+    public dequeue(): T | undefined {
         let retVal: T | undefined
         if (this._head) {
             retVal = this._head.value
@@ -34,11 +34,11 @@ class Queue<T> {
         return retVal
     }
 
-    public Clone(): Queue<T> {
+    public clone(): Queue<T> {
         const queue = new Queue<T>()
         let node = this._head
         while (node != null) {
-            queue.Enqueue(node.value)
+            queue.enqueue(node.value)
             node = node.next
         }
         return queue

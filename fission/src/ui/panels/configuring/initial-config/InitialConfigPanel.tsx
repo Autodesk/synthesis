@@ -16,7 +16,7 @@ import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import Button from "@/components/Button"
-import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
@@ -24,16 +24,17 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
+    const [station, setStation] = useState<Station>(1)
 
     const targetAssembly = useMemo(() => {
         return getSpotlightAssembly()
     }, [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 
@@ -50,10 +51,11 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
             targetAssembly.alliance = alliance
-            SimulationSystem.AddPerRobotScore(targetAssembly, 0) // Initialize score for the robot
+            targetAssembly.station = station
+            SimulationSystem.addPerRobotScore(targetAssembly, 0) // Initialize score for the robot
 
             setSelectedConfigurationType(ConfigurationType.ROBOT)
-            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+            const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
@@ -67,18 +69,18 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         closePanel(panelId)
-    }, [closePanel, panelId, alliance, targetAssembly])
+    }, [closePanel, panelId, alliance, station, targetAssembly])
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) {
-            World.SceneRenderer.RemoveSceneObject(targetAssembly.id)
+            World.sceneRenderer.removeSceneObject(targetAssembly.id)
         }
 
         closePanel(panelId)
     }, [closePanel, panelId, targetAssembly])
 
     const brainIndex = useMemo(() => {
-        return SynthesisBrain.GetBrainIndex(targetAssembly)
+        return SynthesisBrain.getBrainIndex(targetAssembly)
     }, [targetAssembly])
 
     return (
@@ -90,7 +92,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             acceptEnabled={true}
             acceptName="Finish"
             onAccept={() => closeFinish()}
-            icon={SynthesisIcons.Gamepad}
+            icon={SynthesisIcons.GAMEPAD}
             cancelEnabled={true}
             cancelName="Remove"
             onCancel={() => closeDelete()}
@@ -108,6 +110,28 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             }}
                             colorOverrideClass={`bg-match-${alliance}-alliance`}
                         />
+                        <div className="mt-4">
+                            <Label>Station: </Label>
+                            {/** Set the station number */}
+                            <div className="flex gap-2">
+                                <Button
+                                    value="1"
+                                    onClick={() => setStation(1)}
+                                    colorOverrideClass={station === 1 ? `bg-match-${alliance}-alliance` : ""}
+                                />
+                                <Button
+                                    value="2"
+                                    onClick={() => setStation(2)}
+                                    colorOverrideClass={station === 2 ? `bg-match-${alliance}-alliance` : ""}
+                                />
+                                <Button
+                                    value="3"
+                                    onClick={() => setStation(3)}
+                                    colorOverrideClass={station === 3 ? `bg-match-${alliance}-alliance` : ""}
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-4"></div>
                     </div>
                 ) : (
                     <></>

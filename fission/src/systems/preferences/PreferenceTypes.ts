@@ -29,22 +29,22 @@ export type GlobalPreferences = {
 export type GlobalPreference = keyof GlobalPreferences
 
 export type Preferences = GlobalPreferences & {
-    [RobotPreferencesKey]: Record<string, RobotPreferences>
-    [FieldPreferencesKey]: Record<string, FieldPreferences>
-    [MotorPreferencesKey]: Record<string, MotorPreferences>
-    [GraphicsPreferenceKey]: GraphicsPreferences
+    [ROBOT_PREFERENCE_KEY]: Record<string, RobotPreferences>
+    [FIELD_PREFERENCE_KEY]: Record<string, FieldPreferences>
+    [MOTOR_PREFERENCES_KEY]: Record<string, MotorPreferences>
+    [GRAPHICS_PREFERENCE_KEY]: GraphicsPreferences
 }
 
-export const RobotPreferencesKey = "Robots" as const
-export const FieldPreferencesKey = "Fields" as const
-export const MotorPreferencesKey = "Motors" as const
-export const GraphicsPreferenceKey = "Quality" as const
+export const ROBOT_PREFERENCE_KEY = "Robots" as const
+export const FIELD_PREFERENCE_KEY = "Fields" as const
+export const MOTOR_PREFERENCES_KEY = "Motors" as const
+export const GRAPHICS_PREFERENCE_KEY = "Quality" as const
 
 /**
  * Default values for GlobalPreferences as a fallback if they are not configured by the user.
  * Every global preference should have a default value.
  */
-export const DefaultGlobalPreferences: GlobalPreferences = {
+export const defaultGlobalPreferences: GlobalPreferences = {
     ZoomSensitivity: 15,
     PitchSensitivity: 10,
     YawSensitivity: 3,
@@ -75,7 +75,7 @@ export type GraphicsPreferences = {
     antiAliasing: boolean
 }
 
-export function DefaultGraphicsPreferences(): GraphicsPreferences {
+export function defaultGraphicsPreferences(): GraphicsPreferences {
     return {
         lightIntensity: 5,
         fancyShadows: false,
@@ -113,7 +113,7 @@ export type SequentialBehaviorPreferences = {
 }
 
 /** Default preferences for a joint with not parent specified and inverted set to false. */
-export function DefaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
+export function defaultSequentialConfig(index: number, type: BehaviorType): SequentialBehaviorPreferences {
     return {
         jointIndex: index,
         parentJointIndex: undefined,
@@ -140,6 +140,8 @@ export type MotorPreferences = {
 }
 
 export type Alliance = "red" | "blue"
+
+export type Station = 1 | 2 | 3
 
 export type ScoringZonePreferences = {
     name: string
@@ -169,7 +171,7 @@ export type FieldPreferences = {
     protectedZones: ProtectedZonePreferences[]
 }
 
-export function DefaultRobotPreferences(): RobotPreferences {
+export function defaultRobotPreferences(): RobotPreferences {
     return {
         inputsSchemes: [],
         motors: [],
@@ -191,11 +193,11 @@ export function DefaultRobotPreferences(): RobotPreferences {
     }
 }
 
-export function DefaultFieldPreferences(): FieldPreferences {
+export function defaultFieldPreferences(): FieldPreferences {
     return { defaultSpawnLocation: [0, 1, 0], scoringZones: [], protectedZones: [] }
 }
 
-export function DefaultMotorPreferences(name: string): MotorPreferences {
+export function defaultMotorPreferences(name: string): MotorPreferences {
     return {
         name: name,
         maxVelocity: 1,

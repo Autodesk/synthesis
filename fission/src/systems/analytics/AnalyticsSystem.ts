@@ -34,37 +34,37 @@ class AnalyticsSystem extends WorldSystem {
             trackingConsent: this._consent,
         })
 
-        PreferencesSystem.addPreferenceEventListener("ReportAnalytics", e => this.ConsentUpdate(e.prefValue))
+        PreferencesSystem.addPreferenceEventListener("ReportAnalytics", e => this.consentUpdate(e.prefValue))
 
-        this.SendMetaData()
+        this.sendMetaData()
     }
 
-    public Event(name: string, params?: { [key: string]: string | number }) {
+    public event(name: string, params?: { [key: string]: string | number }) {
         event({ name: name, params: params ?? {} })
     }
 
-    public Exception(description: string, fatal?: boolean) {
+    public exception(description: string, fatal?: boolean) {
         exception({ description: description, fatal: fatal ?? false })
     }
 
-    public SetUserId(id: string) {
+    public setUserId(id: string) {
         setUserId({ id: id })
     }
 
-    public SetUserProperty(name: string, value: string) {
+    public setUserProperty(name: string, value: string) {
         setUserProperty({ name: name, value: value })
     }
 
-    private ConsentUpdate(granted: boolean) {
+    private consentUpdate(granted: boolean) {
         this._consent = granted
         consent(granted)
 
-        this.SendMetaData()
+        this.sendMetaData()
     }
 
-    private SendMetaData() {
+    private sendMetaData() {
         if (import.meta.env.DEV) {
-            this.SetUserProperty("Internal Traffic", "true")
+            this.setUserProperty("Internal Traffic", "true")
         }
 
         if (!this._consent) {
@@ -75,13 +75,13 @@ class AnalyticsSystem extends WorldSystem {
         if (betaCode) {
             betaCode = betaCode.substring(betaCode.indexOf("=") + 1, betaCode.indexOf(";"))
 
-            this.SetUserProperty("Beta Code", betaCode)
+            this.setUserProperty("Beta Code", betaCode)
         }
 
         if (MOBILE_USER_AGENT_REGEX.test(navigator.userAgent)) {
-            this.SetUserProperty("Is Mobile", "true")
+            this.setUserProperty("Is Mobile", "true")
         } else {
-            this.SetUserProperty("Is Mobile", "false")
+            this.setUserProperty("Is Mobile", "false")
         }
     }
 
@@ -89,32 +89,32 @@ class AnalyticsSystem extends WorldSystem {
         return 0.001 * (Date.now() - this._lastSampleTime)
     }
 
-    public Update(_: number): void {
+    public update(_: number): void {
         if (Date.now() - this._lastSampleTime > SAMPLE_INTERVAL) {
             const interval = this.currentSampleInterval()
             const times = World.accumTimes
-            this.PushPerformanceSample(interval, times)
+            this.pushPerformanceSample(interval, times)
             World.resetAccumTimes()
 
             const apsCalls = APS.numApsCalls
-            this.PushApsCounts(interval, apsCalls)
+            this.pushAPSCounts(interval, apsCalls)
             APS.resetNumApsCalls()
 
             this._lastSampleTime = Date.now()
         }
     }
 
-    public Destroy(): void {
+    public destroy(): void {
         const interval = this.currentSampleInterval()
         const times = World.accumTimes
-        this.PushPerformanceSample(interval, times)
+        this.pushPerformanceSample(interval, times)
         const apsCalls = APS.numApsCalls
-        this.PushApsCounts(interval, apsCalls)
+        this.pushAPSCounts(interval, apsCalls)
     }
 
-    private PushPerformanceSample(interval: number, times: AccumTimes) {
+    private pushPerformanceSample(interval: number, times: AccumTimes) {
         if (times.frames > 0 && interval > 1.0) {
-            this.Event("Performance Sample", {
+            this.event("Performance Sample", {
                 frames: times.frames,
                 avgTotal: times.totalTime / times.frames,
                 avgPhysics: times.physicsTime / times.frames,
@@ -125,10 +125,10 @@ class AnalyticsSystem extends WorldSystem {
         }
     }
 
-    private PushApsCounts(interval: number, calls: Map<string, number>) {
+    private pushAPSCounts(interval: number, calls: Map<string, number>) {
         if (interval > 1.0) {
             const entries = Object.fromEntries([...calls.entries()].map(v => [v[0], v[1] / interval]))
-            this.Event("APS Calls per Minute", entries)
+            this.event("APS Calls per Minute", entries)
         }
     }
 }

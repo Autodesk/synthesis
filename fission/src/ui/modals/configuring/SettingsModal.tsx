@@ -10,7 +10,7 @@ import { Box } from "@mui/material"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import Slider from "@/ui/components/Slider"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import { Global_AddToast } from "@/components/GlobalUIControls.ts"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 const StatefulSlider: React.FC<
     Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & { defaultValue: number; onChange: (val: number) => void }
@@ -33,19 +33,19 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const save = () => {
         SoundPlayer.changeVolume()
         PreferencesSystem.savePreferences()
-        Global_AddToast?.("info", "Settings Saved", "")
+        globalAddToast("info", "Settings Saved", "")
     }
     return (
         <Modal
             name="Settings"
-            icon={SynthesisIcons.GearLarge}
+            icon={SynthesisIcons.GEAR_LARGE}
             modalId={modalId}
             onAccept={save}
-            onClickAway={save}
             onCancel={() => {
                 PreferencesSystem.revertPreferences()
                 SoundPlayer.changeVolume()
             }}
+            allowClickAway={false}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]">
                 <Box alignSelf={"center"}>
@@ -91,7 +91,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     tooltipText="Moving the camera left and right."
                 />*/}
                 {Spacer(5)}
-                <Label size={LabelSize.Medium}>Camera Settings</Label>
+                <Label size={LabelSize.MEDIUM}>Camera Settings</Label>
                 <StatefulSlider
                     min={0.1}
                     max={2.0}
@@ -122,7 +122,7 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
                 />
                 {Spacer(10)}
-                <Label size={LabelSize.Medium}>Preferences</Label>
+                <Label size={LabelSize.MEDIUM}>Preferences</Label>
                 <Box display="flex" flexDirection={"column"}>
                     <Checkbox
                         label="Report Analytics"
