@@ -38,7 +38,7 @@ if (useSsl) {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig(({ command, mode, }) => {
+export default defineConfig(({ mode, }) => {
     process.env = {...process.env, ...loadEnv(mode, process.cwd())};
     const useLocalAssets = mode === "test" || process.env.DEV
     const proxies: Record<string, ProxyOptions> = {}
@@ -98,6 +98,9 @@ export default defineConfig(({ command, mode, }) => {
                     },
                 ],
             },
+        },
+        build: {
+            target: "esnext"
         },
         server: {
 
