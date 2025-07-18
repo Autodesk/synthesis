@@ -55,7 +55,12 @@ describe("React Mounting", async () => {
         expect(initWorldSpy).toHaveBeenCalledOnce()
         await annotate("Singleplayer Button calls initWorld")
         await wait(50)
+
         await annotate("Initial Scene DOM", { contentType: "text/html", body: document.documentElement.outerHTML })
+
+        screen.unmount()
+
+        await annotate("Screen unmounted gracefully")
     })
 })
 
