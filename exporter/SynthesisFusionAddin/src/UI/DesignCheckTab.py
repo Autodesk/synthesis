@@ -2,29 +2,75 @@ import adsk.core
 import adsk.fusion
 
 from src import Logging, gm
+from src.UI import IconPaths
+
+import importlib
 
 logger = Logging.getLogger()
 
 
 class DesignCheckTab:
     designCheckTab: adsk.core.TabCommandInput
+    designCheckTable: adsk.core.TableCommandInput
+
+    MAX_HEIGHT = 106.0  # cm
 
     @Logging.logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs) -> None:
+        # TODO: Remove
+        importlib.reload(IconPaths)
+
         self.designCheckTab = args.command.commandInputs.addTabCommandInput("designCheckTab", "Design Rule Check")
         designCheckTabInputs = self.designCheckTab.children
 
-        # add a height thing (maximum 106 cm)
-        self.designCheckTab.children.addTextBoxCommandInput(
-            "designHeightText", "Design Height", f"{self.fusion_design_height:.2f} cm", 1, True
+        # Create the table for design checks
+        self.designCheckTable = designCheckTabInputs.addTableCommandInput(
+            "designCheckTable", "Design Checks", 3, "3:2:2"
+        )
+        self.designCheckTable.tablePresentationStyle = adsk.core.TablePresentationStyles.itemBorderTablePresentationStyle
+
+        # Row 1: Design Height
+        height = self.fusion_design_height
+        is_height_valid = height <= self.MAX_HEIGHT
+
+        height_name_input = designCheckTabInputs.addTextBoxCommandInput(
+            "designHeightText", "Design Height", "Design Height", 1, True
+        )
+        height_value_input = designCheckTabInputs.addTextBoxCommandInput(
+            "designHeightValue", "Value", f"{height:.2f} cm", 1, True
+        )
+        height_icon_input = designCheckTabInputs.addImageCommandInput(
+            "heightStatusIcon",
+            "",
+            IconPaths.designCheckIcons["valid"] if is_height_valid else IconPaths.designCheckIcons["invalid"],
         )
 
-        # get the robot perimeter
-        self.designCheckTab.children.addTextBoxCommandInput(
-            "designPerimeterText", "Design Perimeter", f"{self.fusion_design_perimeter:.2f} cm", 1, True
+        self.designCheckTable.addCommandInput(height_name_input, 0, 0)
+        self.designCheckTable.addCommandInput(height_value_input, 0, 1)
+        self.designCheckTable.addCommandInput(height_icon_input, 0, 2)
+
+        # Row 2: Design Perimeter
+        perimeter = self.fusion_design_perimeter
+        # No rule for perimeter, so it's always valid for now
+        is_perimeter_valid = True
+
+        perimeter_name_input = designCheckTabInputs.addTextBoxCommandInput(
+            "designPerimeterText", "Design Perimeter", "Design Perimeter", 1, True
+        )
+        perimeter_value_input = designCheckTabInputs.addTextBoxCommandInput(
+            "designPerimeterValue", "Value", f"{perimeter:.2f} cm", 1, True
+        )
+        perimeter_icon_input = designCheckTabInputs.addImageCommandInput(
+            "perimeterStatusIcon",
+            "",
+            IconPaths.designCheckIcons["valid"] if is_perimeter_valid else IconPaths.designCheckIcons["invalid"],
         )
 
-        logger.info(f"{self.fusion_design_perimeter}")
+        self.designCheckTable.addCommandInput(perimeter_name_input, 1, 0)
+        self.designCheckTable.addCommandInput(perimeter_value_input, 1, 1)
+        self.designCheckTable.addCommandInput(perimeter_icon_input, 1, 2)
+
+        logger.info(f"Design Perimeter: {self.fusion_design_perimeter}")
 
     @property
     def isVisible(self) -> bool:

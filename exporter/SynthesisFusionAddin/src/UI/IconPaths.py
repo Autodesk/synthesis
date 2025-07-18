@@ -43,6 +43,11 @@ stringIcons = {
     "friction_override-enabled": resources + os.path.join("FrictionOverride_icon"),  # resource folder
 }
 
+designCheckIcons = {
+    "valid": resources + os.path.join("DesignCheckIcons", "valid-preview148x26.png"),
+    "invalid": resources + os.path.join("DesignCheckIcons", "valid-preview148x26.png"),
+}
+
 tagIcons = {
     "blank": resources + "blank-preview16x16.png",
 }
