@@ -7,7 +7,6 @@ import { PRIMARY_MOUSE_INTERACTION, InteractionType } from "@/systems/scene/Scre
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
-// Mock World to provide minimal required interface
 vi.mock("@/systems/World", () => ({
     default: {
         get physicsSystem() {
@@ -140,7 +139,7 @@ describe("DragModeSystem Integration Tests", () => {
     })
 
     describe("Physics Integration", () => {
-        test("should actually drag and move a cube and respond to wheel scroll", () => {
+        function setupDraggableCube() {
             // Create a physics cube which will then be a draggable game piece
             const vertices = new Float32Array([
                 -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5,
@@ -158,7 +157,6 @@ describe("DragModeSystem Integration Tests", () => {
             // Create a mock MirabufSceneObject that properly passes instanceof checks
             const mockSceneObject = Object.create(MirabufSceneObject.prototype)
             mockSceneObject.loadFocusTransform = vi.fn()
-
             vi.spyOn(mockSceneObject, "miraType", "get").mockReturnValue(MiraType.FIELD)
 
             const mockAssociation = {
@@ -166,11 +164,9 @@ describe("DragModeSystem Integration Tests", () => {
                 isGamePiece: true,
             }
 
-            // Mock the physics system to return our association
             const originalGetBodyAssociation = physicsSystem.getBodyAssociation
             physicsSystem.getBodyAssociation = vi.fn().mockReturnValue(mockAssociation)
 
-            // Mock the raycasting to return our cube when clicked
             const originalRayCast = physicsSystem.rayCast
             const mockRaycastResult = {
                 data: { mBodyID: bodyId },
@@ -180,14 +176,24 @@ describe("DragModeSystem Integration Tests", () => {
             physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)
 
             const physicsBody = physicsSystem.getBody(bodyId)
+            dragModeSystem.enabled = true
+
+            return {
+                physicsBody,
+                cleanup: () => {
+                    physicsSystem.getBodyAssociation = originalGetBodyAssociation
+                    physicsSystem.rayCast = originalRayCast
+                    physicsSystem.destroyBodyIds(bodyId)
+                    shape.Release()
+                },
+            }
+        }
+
+        test("should drag and move a cube when mouse is moved", () => {
+            const { physicsBody, cleanup } = setupDraggableCube()
+
             const initialPos = physicsBody.GetPosition()
             const initialPosition = { x: initialPos.GetX(), y: initialPos.GetY(), z: initialPos.GetZ() }
-
-            // Get camera position for distance calculation
-            const camera = World.sceneRenderer.mainCamera
-            const cameraPosition = camera.position.clone()
-
-            dragModeSystem.enabled = true
 
             // Simulate mouse click to start dragging
             const startInteraction = {
@@ -195,7 +201,6 @@ describe("DragModeSystem Integration Tests", () => {
                 position: [400, 300] as [number, number],
             }
 
-            // Access the interaction handler directly
             const screenHandler = World.sceneRenderer.screenInteractionHandler
             screenHandler?.interactionStart?.(startInteraction)
 
@@ -215,6 +220,7 @@ describe("DragModeSystem Integration Tests", () => {
                 physicsSystem.update(0.016)
             }
 
+            // Check that the cube has moved from its initial position
             const afterDragPos = physicsBody.GetPosition()
             const moved =
                 Math.abs(afterDragPos.GetX() - initialPosition.x) > 0.2 ||
@@ -222,11 +228,43 @@ describe("DragModeSystem Integration Tests", () => {
                 Math.abs(afterDragPos.GetZ() - initialPosition.z) > 0.2
             expect(moved).toBe(true)
 
-            // Test wheel scroll functionality - record distance before wheel scroll
+            // Simulate mouse release to stop dragging
+            const endInteraction = {
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                position: [400, 300] as [number, number],
+            }
+
+            screenHandler.interactionEnd?.(endInteraction)
+
+            cleanup()
+        })
+
+        test("should move cube away from camera when wheel scrolled during drag", () => {
+            const { physicsBody, cleanup } = setupDraggableCube()
+
+            const camera = World.sceneRenderer.mainCamera
+            const cameraPosition = camera.position.clone()
+
+            // Start dragging first
+            const startInteraction = {
+                interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
+                position: [400, 300] as [number, number],
+            }
+
+            const screenHandler = World.sceneRenderer.screenInteractionHandler
+            screenHandler?.interactionStart?.(startInteraction)
+
+            // Update to establish drag state
+            for (let i = 0; i < 5; i++) {
+                dragModeSystem.update(0.016)
+                physicsSystem.update(0.016)
+            }
+
+            const beforeScrollPos = physicsBody.GetPosition()
             const beforeScrollPosition = new THREE.Vector3(
-                afterDragPos.GetX(),
-                afterDragPos.GetY(),
-                afterDragPos.GetZ()
+                beforeScrollPos.GetX(),
+                beforeScrollPos.GetY(),
+                beforeScrollPos.GetZ()
             )
             const distanceBeforeScroll = cameraPosition.distanceTo(beforeScrollPosition)
 
@@ -244,29 +282,25 @@ describe("DragModeSystem Integration Tests", () => {
                 physicsSystem.update(0.016)
             }
 
-            // Check that the cube has moved away from the camera after wheel scroll
             const afterWheelPos = physicsBody.GetPosition()
-            const distanceAfterScrollPosition = new THREE.Vector3(
+            const afterScrollPosition = new THREE.Vector3(
                 afterWheelPos.GetX(),
                 afterWheelPos.GetY(),
                 afterWheelPos.GetZ()
             )
-            const distanceAfterScroll = cameraPosition.distanceTo(distanceAfterScrollPosition)
+            const distanceAfterScroll = cameraPosition.distanceTo(afterScrollPosition)
 
             expect(Math.abs(distanceAfterScroll - distanceBeforeScroll)).toBeGreaterThan(0.5)
 
-            // Simulate mouse release to stop dragging
+            // End dragging
             const endInteraction = {
                 interactionType: PRIMARY_MOUSE_INTERACTION as InteractionType,
                 position: [400, 300] as [number, number],
             }
 
-            screenHandler?.interactionEnd?.(endInteraction)
+            screenHandler.interactionEnd?.(endInteraction)
 
-            physicsSystem.getBodyAssociation = originalGetBodyAssociation
-            physicsSystem.rayCast = originalRayCast
-            physicsSystem.destroyBodyIds(bodyId)
-            shape.Release()
+            cleanup()
         })
     })
 })
