@@ -1,4 +1,5 @@
 import SimulationSystem from "./simulation/SimulationSystem"
+import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { SoundPlayer } from "./sound/SoundPlayer"
 import beep from "@/assets/sound-files/beep.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
@@ -12,6 +13,11 @@ export enum MatchModeType {
     MATCH_ENDED = 3,
 }
 
+// Default match mode timing values
+export const DEFAULT_AUTONOMOUS_TIME = 15
+export const DEFAULT_TELEOP_TIME = 135
+export const DEFAULT_ENDGAME_TIME = 20
+
 class MatchMode {
     private static _instance: MatchMode
     private _matchEnabled: boolean = false
@@ -22,11 +28,25 @@ class MatchMode {
     private _timeLeft: number = 0
     private _intervalId: number | null = null
 
+    // Match Mode Config
+    private _matchModeConfig: MatchModeConfig = {
+        id: "default",
+        name: "Default",
+        isDefault: true,
+        autonomousTime: DEFAULT_AUTONOMOUS_TIME,
+        teleopTime: DEFAULT_TELEOP_TIME,
+        endgameTime: DEFAULT_ENDGAME_TIME,
+    }
+
     private constructor() {}
 
     static getInstance(): MatchMode {
         MatchMode._instance ??= new MatchMode()
         return MatchMode._instance
+    }
+
+    setMatchModeConfig(config: MatchModeConfig) {
+        this._matchModeConfig = config
     }
 
     startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
@@ -44,7 +64,7 @@ class MatchMode {
             }
 
             // Checks if endgame has started
-            if (this._matchModeType === MatchModeType.TELEOP && this._timeLeft == 20) {
+            if (this._matchModeType === MatchModeType.TELEOP && this._timeLeft == this._matchModeConfig.endgameTime) {
                 this.endgameStart()
             }
 
@@ -58,7 +78,7 @@ class MatchMode {
     autonomousModeStart(openModal: (modalName: string) => void) {
         SoundPlayer.play(MatchStart)
         this._matchModeType = MatchModeType.AUTONOMOUS
-        this.startTimer(15, () => this.autonomousModeEnd(openModal))
+        this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd(openModal))
     }
 
     autonomousModeEnd(openModal: (modalName: string) => void) {
@@ -69,7 +89,7 @@ class MatchMode {
     teleopModeStart(openModal: (modalName: string) => void) {
         SoundPlayer.play(MatchResume)
         this._matchModeType = MatchModeType.TELEOP
-        this.startTimer(135, () => this.matchEnded(openModal)) // 2 minutes and 15 seconds
+        this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded(openModal))
     }
 
     endgameStart() {
@@ -98,6 +118,7 @@ class MatchMode {
         this._initialTime = 0
         this._timeLeft = 0
         new UpdateTimeLeft(this._timeLeft).dispatch()
+        SimulationSystem.resetScores()
     }
 
     isMatchEnabled(): boolean {

@@ -42,3 +42,7 @@ stringIcons = {
     "calculate-enabled": resources + os.path.join("AutoCalcWeight_icon"),  # resource folder
     "friction_override-enabled": resources + os.path.join("FrictionOverride_icon"),  # resource folder
 }
+
+tagIcons = {
+    "blank": resources + "blank-preview16x16.png",
+}

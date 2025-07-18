@@ -4,9 +4,14 @@ import React, { useState, useEffect, useRef } from "react"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import Button, { ButtonSize } from "../components/Button"
+import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { globalAddToast } from "../components/GlobalUIControls"
+import { LabelWithTooltip } from "../components/StyledComponents"
+import { mirabuf } from "@/proto/mirabuf"
 
 const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
@@ -18,6 +23,23 @@ function getCurrentFieldObj() {
         }
     }
     return undefined
+}
+
+// Helper: type guard for ScoringZonePreferences[]
+function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferences[] {
+    if (!Array.isArray(val)) return false
+    return val.every(
+        z =>
+            typeof z === "object" &&
+            z !== null &&
+            typeof z.name === "string" &&
+            (z.alliance === "red" || z.alliance === "blue") &&
+            (typeof z.parentNode === "string" || z.parentNode === undefined) &&
+            typeof z.points === "number" &&
+            typeof z.destroyGamepiece === "boolean" &&
+            typeof z.persistentPoints === "boolean" &&
+            Array.isArray(z.deltaTransformation)
+    )
 }
 
 const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
@@ -68,15 +90,25 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => clearInterval(interval)
     }, [editor])
 
-    // Load value when key changes
+    // Load value when key changes or when field scoring zones change
     useEffect(() => {
-        if (editor && selectedKey) {
+        if (editor && selectedKey === "devtool:scoring_zones") {
+            const field = getCurrentFieldObj()
+            const zones = field?.fieldPreferences?.scoringZones ?? []
+            const devtoolValue = editor.getUserData("devtool:scoring_zones")
+            if (JSON.stringify(devtoolValue) !== JSON.stringify(zones)) {
+                editor.setUserData("devtool:scoring_zones", zones)
+                setJsonValue(JSON.stringify(zones, null, 2))
+            } else {
+                setJsonValue(devtoolValue ? JSON.stringify(devtoolValue, null, 2) : "")
+            }
+            setError("")
+        } else if (editor && selectedKey) {
             const val = editor.getUserData(selectedKey)
-            // console.log(val ? JSON.stringify(val, null, 2) : "")
             setJsonValue(val ? JSON.stringify(val, null, 2) : "")
             setError("")
         }
-    }, [selectedKey, editor])
+    }, [selectedKey, editor, fieldLoaded])
 
     const handleSave = () => {
         if (!editor || !selectedKey) return
@@ -85,6 +117,53 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             editor.setUserData(selectedKey, parsed)
             setError("")
             setKeys(editor.getAllDevtoolKeys())
+
+            // Persist changes to cache
+            const field = getCurrentFieldObj()
+            if (field) {
+                const assembly = field.mirabufInstance.parser.assembly
+                const cacheId = field.cacheId // add to MirabufSceneObject
+                if (cacheId) {
+                    MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+                        .then(success => {
+                            if (success) {
+                                globalAddToast?.("info", "Devtool Saved", "Changes have been persisted to cache.")
+                            } else {
+                                globalAddToast?.(
+                                    "warning",
+                                    "Devtool Warning",
+                                    "Changes saved but failed to persist to cache."
+                                )
+                            }
+                        })
+                        .catch(() => {
+                            globalAddToast?.(
+                                "warning",
+                                "Devtool Warning",
+                                "Changes saved but failed to persist to cache."
+                            )
+                        })
+                }
+            }
+
+            if (selectedKey === "devtool:scoring_zones") {
+                const field = getCurrentFieldObj()
+                if (!field) {
+                    globalAddToast?.("error", "Devtool Error", "No field loaded to apply scoring zones.")
+                    return
+                }
+                if (!isScoringZonePreferencesArray(parsed)) {
+                    globalAddToast?.("error", "Devtool Error", "Value must be an array of scoring zone objects.")
+                    return
+                }
+                if (!field.fieldPreferences) {
+                    globalAddToast?.("error", "Devtool Error", "Field preferences not available.")
+                    return
+                }
+                field.fieldPreferences.scoringZones = parsed
+                PreferencesSystem.savePreferences?.()
+                field.updateScoringZones()
+            }
         } catch (e) {
             setError("Invalid JSON")
         }
@@ -97,12 +176,86 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         setSelectedKey(undefined)
         setJsonValue("")
         setError("")
+
+        // Persist removal to cache
+        const field = getCurrentFieldObj()
+        if (field) {
+            const assembly = field.mirabufInstance.parser.assembly
+            const cacheId = field.cacheId
+            if (cacheId) {
+                MirabufCachingService.persistDevtoolChanges(cacheId, MiraType.FIELD, assembly)
+                    .then(success => {
+                        if (success) {
+                            globalAddToast?.("info", "Devtool Removed", "Removal has been persisted to cache.")
+                        } else {
+                            globalAddToast?.(
+                                "warning",
+                                "Devtool Warning",
+                                "Removal saved but failed to persist to cache."
+                            )
+                        }
+                    })
+                    .catch(() => {
+                        globalAddToast?.("warning", "Devtool Warning", "Removal saved but failed to persist to cache.")
+                    })
+            }
+        }
+
+        if (selectedKey === "devtool:scoring_zones") {
+            const field = getCurrentFieldObj()
+            if (field && field.fieldPreferences) {
+                field.fieldPreferences.scoringZones = []
+                PreferencesSystem.savePreferences?.()
+                field.updateScoringZones()
+            }
+        }
     }
 
     const handleAdd = (key: DevtoolKey) => {
         setSelectedKey(key)
         setJsonValue("{}")
         setError("")
+    }
+
+    const handleExport = () => {
+        const field = getCurrentFieldObj()
+        if (!field) {
+            globalAddToast?.("error", "Export Error", "No field loaded to export.")
+            return
+        }
+        const assembly = field?.mirabufInstance.parser.assembly
+        if (!assembly) {
+            globalAddToast?.("error", "Export Error", "No assembly found for field.")
+            return
+        }
+        try {
+            const encoded = mirabuf.Assembly.encode(assembly).finish()
+            const blob = new Blob([encoded], { type: "application/octet-stream" })
+            const url = URL.createObjectURL(blob)
+
+            // Check if assembly has devtool data to determine filename
+            let name = assembly.info?.name ?? "field"
+            if (assembly.data?.parts?.userData?.data) {
+                const devtoolKeys = Object.keys(assembly.data.parts.userData.data).filter(k => k.startsWith("devtool:"))
+                if (devtoolKeys.length > 0) {
+                    name = `edited-${name}`
+                }
+            }
+            const filename = `${name}.mira`
+
+            const a = document.createElement("a")
+            a.href = url
+            a.download = filename
+            document.body.appendChild(a)
+            a.click()
+            setTimeout(() => {
+                document.body.removeChild(a)
+                URL.revokeObjectURL(url)
+            }, 0)
+            globalAddToast?.("info", "Exported", `Exported field as ${filename}`)
+        } catch (e) {
+            globalAddToast?.("error", "Export Error", "Failed to export field.")
+        }
     }
 
     const handleAccept = () => closePanel(panelId)
@@ -172,7 +325,17 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             {selectedKey ? (
                                 <>
                                     {/* strip off the prefix here */}
-                                    <div className="font-bold text-sm mb-2">{selectedKey.replace(/^devtool:/, "")}</div>
+                                    {selectedKey === "devtool:scoring_zones" ? (
+                                        LabelWithTooltip(
+                                            "scoring_zones",
+                                            'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "persistentPoints": true,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]',
+                                            undefined
+                                        )
+                                    ) : (
+                                        <div className="font-bold text-sm mb-2">
+                                            {selectedKey.replace(/^devtool:/, "")}
+                                        </div>
+                                    )}
                                     <textarea
                                         className={`
                             w-full h-48 font-mono text-sm
@@ -191,6 +354,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                                     <div className="mt-3 flex gap-2">
                                         <Button onClick={handleSave} size={buttonSize} value="Save" />
                                         <Button onClick={handleRemove} size={buttonSize} value="Remove" />
+                                        <Button onClick={handleExport} size={buttonSize} value="Export" />
                                     </div>
                                 </>
                             ) : (
