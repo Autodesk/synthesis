@@ -1,12 +1,11 @@
-import { afterAll, assert, describe, expect, beforeEach, expectTypeOf, test, vi } from "vitest"
-import { server } from "@vitest/browser/context"
+import { afterAll, assert, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest"
+import { page, server } from "@vitest/browser/context"
 
 import { cleanup, render, RenderResult } from "vitest-browser-react"
 import { ReactElement } from "react"
 import World from "@/systems/World.ts"
+
 const { readFile } = server.commands
-
-
 
 let screen: RenderResult | null
 const renderMock = vi.fn((children: ReactElement) => {
@@ -32,8 +31,10 @@ describe("React Mounting", async () => {
         expect(document.getElementById("root")).not.toBeNull()
     })
 
-    // importing main.tsx has side effects that I could not clean up and can only be done once (per file), so I am using one test and many annotations
-    test("App fully mounts", async ({annotate}) => {
+    // importing main.tsx has side effects that I could not clean up and can only be done once (per file),
+    // so I am using one test and many annotations. It's possible that there's a better way, but I couldn't
+    // find it in 4 hours of trying
+    test("App fully mounts through main.tsx", async ({ annotate }) => {
         await import("@/main.tsx")
 
         expect(window.convertAuthToken).toBeDefined()
@@ -45,16 +46,25 @@ describe("React Mounting", async () => {
         expect(renderMock).toHaveBeenCalledOnce()
         assert(screen != null, "Screen was null")
 
-
         const screenElement = screen.baseElement
         expect(screenElement.querySelector("canvas")).toBeInTheDocument()
         expect(screen.getByText("Singleplayer")).toBeInTheDocument()
         await annotate("DOM successfully updated to include Synthesis components")
 
+        await annotate("Main Menu", { path: await page.screenshot() })
+
         const initWorldSpy = vi.spyOn(World, "initWorld")
         await screen.getByText("Singleplayer").click()
         expect(initWorldSpy).toHaveBeenCalledOnce()
         await annotate("Singleplayer Button calls initWorld")
-        await annotate("Post-load DOM", {contentType:"text/html", body: document.documentElement.outerHTML})
+        await wait(50)
+        await annotate("Initial Scene", { path: await page.screenshot() })
+        await annotate("Inttial Scene DOM", { contentType: "text/html", body: document.documentElement.outerHTML })
     })
 })
+
+function wait(milliseconds: number) {
+    return new Promise(resolve => {
+        setTimeout(resolve, milliseconds)
+    })
+}

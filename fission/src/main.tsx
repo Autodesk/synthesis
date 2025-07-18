@@ -5,7 +5,6 @@ import "./index.css"
 import APS from "./aps/APS"
 import { initialThemeName, themes, defaultColors } from "@/theme.ts"
 
-
 window.convertAuthToken = code => APS.convertAuthToken(code)
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
