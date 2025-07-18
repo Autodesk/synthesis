@@ -1,6 +1,6 @@
 import adsk.core
 
-from src.Logging import logFailure
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result, handle_err_top
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.PDMessage import PDMessage
 from src.Parser.SynthesisParser.Utilities import construct_info, fill_info
@@ -26,26 +26,37 @@ DYNAMIC_FRICTION_COEFFS = {
 }
 
 
-def _MapAllPhysicalMaterials(
+@handle_err_top
+def mapAllPhysicalMaterials(
     physicalMaterials: list[material_pb2.PhysicalMaterial],
     materials: material_pb2.Materials,
     options: ExporterOptions,
     progressDialog: PDMessage,
-) -> None:
-    setDefaultMaterial(materials.physicalMaterials["default"], options)
+) -> Result[None]:
+    set_result = setDefaultMaterial(materials.physicalMaterials["default"], options)
+    if set_result.is_fatal():
+        return set_result
 
     for material in physicalMaterials:
-        progressDialog.addMaterial(material.name)
+        if material.name is None or material.id is None:
+            return Err("Material missing id or name", ErrorSeverity.Fatal)
 
+        progressDialog.addMaterial(material.name)
         if progressDialog.wasCancelled():
-            raise RuntimeError("User canceled export")
+            return Err("User canceled export", ErrorSeverity.Fatal)
 
         newmaterial = materials.physicalMaterials[material.id]
-        getPhysicalMaterialData(material, newmaterial, options)
+        material_result = getPhysicalMaterialData(material, newmaterial, options)
+        if material_result.is_fatal():
+            return material_result
+
+    return Ok(None)
 
 
-def setDefaultMaterial(physicalMaterial: material_pb2.PhysicalMaterial, options: ExporterOptions) -> None:
-    construct_info("default", physicalMaterial)
+def setDefaultMaterial(physicalMaterial: material_pb2.PhysicalMaterial, options: ExporterOptions) -> Result[None]:
+    construct_info_result = construct_info("default", physicalMaterial)
+    if construct_info_result.is_err():
+        return construct_info_result
 
     physicalMaterial.description = "A default physical material"
     if options.frictionOverride:
@@ -59,11 +70,12 @@ def setDefaultMaterial(physicalMaterial: material_pb2.PhysicalMaterial, options:
     physicalMaterial.deformable = False
     physicalMaterial.matType = 0  # type: ignore[assignment]
 
+    return Ok(None)
 
-@logFailure
+
 def getPhysicalMaterialData(
     fusionMaterial: adsk.core.Material, physicalMaterial: material_pb2.PhysicalMaterial, options: ExporterOptions
-) -> None:
+) -> Result[None]:
     """Gets the material data and adds it to protobuf
 
     Args:
@@ -71,7 +83,9 @@ def getPhysicalMaterialData(
         proto_material (protomaterial): proto material mirabuf
         options (parseoptions): parse options
     """
-    construct_info("", physicalMaterial, fus_object=fusionMaterial)
+    construct_info_result = construct_info("", physicalMaterial, fus_object=fusionMaterial)
+    if construct_info_result.is_err():
+        return construct_info_result
 
     physicalMaterial.deformable = False
     physicalMaterial.matType = 0  # type: ignore[assignment]
@@ -127,41 +141,65 @@ def getPhysicalMaterialData(
     mechanicalProperties.density = materialProperties.itemById("structural_Density").value
     mechanicalProperties.damping_coefficient = materialProperties.itemById("structural_Damping_coefficient").value
 
+    missingProperties: list[str] = [
+        k for k, v in vars(mechanicalProperties).items() if v is None and not k.startswith("__")
+    ]  # ignore: type
+    if missingProperties.__len__() > 0:
+        _: Err[None] = Err(f"Missing Mechanical Properties {missingProperties}", ErrorSeverity.Warning)
+
     """
     Strength Properties
     """
     strengthProperties.yield_strength = materialProperties.itemById("structural_Minimum_yield_stress").value
     strengthProperties.tensile_strength = materialProperties.itemById("structural_Minimum_tensile_strength").value
+
+    missingStrengthProperties: list[str] = [k for k, v in vars(strengthProperties).items() if v is None]  # ignore: type
+    if missingStrengthProperties.__len__() > 0:
+        __: Err[None] = Err(f"Missing Strength Properties {missingProperties}", ErrorSeverity.Warning)
+
     """
     strengthProperties.thermal_treatment = materialProperties.itemById(
         "structural_Thermally_treated"
     ).value
     """
 
+    return Ok(None)
 
-def _MapAllAppearances(
+
+@handle_err_top
+def mapAllAppearances(
     appearances: list[material_pb2.Appearance],
     materials: material_pb2.Materials,
     options: ExporterOptions,
     progressDialog: PDMessage,
-) -> None:
+) -> Result[None]:
     # in case there are no appearances on a body
     # this is just a color tho
-    setDefaultAppearance(materials.appearances["default"])
+    set_default_result = setDefaultAppearance(materials.appearances["default"])
+    if set_default_result.is_fatal():
+        return set_default_result
 
-    fill_info(materials, None)
+    fill_info_result = fill_info(materials, None)
+    if fill_info_result.is_err():
+        return fill_info_result
 
     for appearance in appearances:
         progressDialog.addAppearance(appearance.name)
 
+        # NOTE I'm not sure if this should be integrated with the error handling system or not, since it's fully intentional and immediantly aborts, which is the desired behavior
+        # TODO Talk to Brandon about this
         if progressDialog.wasCancelled():
-            raise RuntimeError("User canceled export")
+            return Err("User canceled export", ErrorSeverity.Fatal)
 
         material = materials.appearances["{}_{}".format(appearance.name, appearance.id)]
-        getMaterialAppearance(appearance, options, material)
+        material_result = getMaterialAppearance(appearance, options, material)
+        if material_result.is_fatal():
+            return material_result
+
+    return Ok(None)
 
 
-def setDefaultAppearance(appearance: material_pb2.Appearance) -> None:
+def setDefaultAppearance(appearance: material_pb2.Appearance) -> Result[None]:
     """Get a default color for the appearance
 
     Returns:
@@ -169,7 +207,10 @@ def setDefaultAppearance(appearance: material_pb2.Appearance) -> None:
     """
 
     # add info
-    construct_info("default", appearance)
+    # TODO: Check if appearance actually can be passed in here in place of an assembly or smth
+    construct_info_result = construct_info("default", appearance)
+    if construct_info_result.is_err():
+        return construct_info_result
 
     appearance.roughness = 0.5
     appearance.metallic = 0.5
@@ -181,18 +222,22 @@ def setDefaultAppearance(appearance: material_pb2.Appearance) -> None:
     color.B = 127
     color.A = 255
 
+    return Ok(None)
+
 
 def getMaterialAppearance(
     fusionAppearance: adsk.core.Appearance,
     options: ExporterOptions,
     appearance: material_pb2.Appearance,
-) -> None:
+) -> Result[None]:
     """Takes in a Fusion Mesh and converts it to a usable unity mesh
 
     Args:
         fusionAppearance (adsk.core.Appearance): Fusion appearance material
     """
-    construct_info("", appearance, fus_object=fusionAppearance)
+    construct_info_result = construct_info("", appearance, fus_object=fusionAppearance)
+    if construct_info_result.is_err():
+        return construct_info_result
 
     appearance.roughness = 0.9
     appearance.metallic = 0.3
@@ -206,6 +251,8 @@ def getMaterialAppearance(
     color.A = 127
 
     properties = fusionAppearance.appearanceProperties
+    if properties is None:
+        return Err("Apperarance Properties were None", ErrorSeverity.Fatal)
 
     roughnessProp = properties.itemById("surface_roughness")
     if roughnessProp:
@@ -260,3 +307,4 @@ def getMaterialAppearance(
                     color.B = baseColor.blue
                     color.A = baseColor.opacity
                     break
+    return Ok(None)
