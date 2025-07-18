@@ -1,70 +1,38 @@
 import sirv from "sirv";
 import http from "node:http";
 import path from "node:path"
-import type { AddressInfo } from "node:net";
 
 let server: http.Server | undefined;
-
-interface StartStaticServerOptions {
-    staticDir: string;
-    port?: number;
-    host?: string;
-    dev?: boolean;
-    single?: boolean;
-    allowedOrigin?: string;
-}
-
-export async function startStaticServer(options: StartStaticServerOptions) {
+const PORT = 3001
+const serveDirectory = path.join(process.cwd(), "public")
+export async function setup() {
     if (server) {
         return;
     }
 
     console.log("Starting static file server...");
 
-    const {
-        staticDir,
-        port = 0,
-        host = "127.0.0.1",
-        dev = true,
-        single = true,
-        allowedOrigin = "*",
-    } = options;
-
-    const assets = sirv(staticDir, {
-        dev,
-        single,
-    });
+    const assets = sirv(serveDirectory);
 
     server = http.createServer((req, res) => {
-        res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-        res.setHeader("Access-Control-Allow-Methods", "GET, HEAD, OPTIONS");
-        res.setHeader(
-            "Access-Control-Allow-Headers",
-            "Origin, X-Requested-With, Content-Type, Accept",
-        );
-
-        if (req.method === "OPTIONS") {
-            res.writeHead(204);
-            res.end();
-            return;
-        }
-        console.log(req.url)
+        res.setHeader("Access-Control-Allow-Origin", "*");
+        res.setHeader("Access-Control-Allow-Methods", "GET");
         assets(req, res);
     });
 
     await new Promise<void>((resolve, reject) => {
-        server!.listen(port, host, () => {
-            const addressInfo = server!.address() as AddressInfo;
-            const serverUrl = `http://${addressInfo.address}:${addressInfo.port}`;
-
+        if (!server) {
+            console.warn("no server")
+            return
+        }
+        server.listen(PORT, "127.0.0.1", () => {
             console.log(
-                `Static file server started on ${serverUrl} serving from ${staticDir}`,
+                `Serving files from ${serveDirectory} on port ${PORT} `,
             );
-
             resolve();
         });
 
-        server!.once("error", (err) => {
+        server.once("error", (err) => {
             console.error("Failed to start static file server:", err);
             server = undefined;
             reject(err);
@@ -88,8 +56,4 @@ export async function teardown() {
             });
         });
     }
-}
-
-export async function setup() {
-    await startStaticServer({staticDir: path.join(process.cwd(), "public"), port:3001})
 }
