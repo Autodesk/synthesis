@@ -10,7 +10,11 @@ import {
 import { LabelSize } from "@/components/Label"
 import { Box } from "@mui/material"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAME_TIME } from "@/systems/MatchMode"
+import MatchMode, {
+    DEFAULT_AUTONOMOUS_TIME,
+    DEFAULT_TELEOP_TIME,
+    DEFAULT_ENDGAME_TIME,
+} from "@/systems/match_mode/MatchMode"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Button from "@/ui/components/Button"

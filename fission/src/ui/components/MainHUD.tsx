@@ -13,7 +13,7 @@ import { Box } from "@mui/material"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import { setAddToast } from "./GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import MatchMode from "@/systems/MatchMode"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 type ButtonProps = {

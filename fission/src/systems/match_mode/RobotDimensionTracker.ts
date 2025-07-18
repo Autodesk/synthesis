@@ -1,8 +1,8 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
-import SceneRenderer from "./scene/SceneRenderer"
+import SceneRenderer from "../scene/SceneRenderer"
 import * as THREE from "three"
-import World from "./World"
+import World from "../World"
 import { convertJoltMat44ToThreeMatrix4 } from "@/util/TypeConversions"
 import JOLT from "@/util/loading/JoltSyncLoader"
 

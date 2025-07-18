@@ -6,7 +6,7 @@ import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import MatchMode, { MatchModeType, UpdateTimeLeft } from "@/systems/MatchMode"
+import MatchMode, { MatchModeType, UpdateTimeLeft } from "@/systems/match_mode/MatchMode"
 import { Spacer } from "@/components/StyledComponents"
 
 function showTime(): boolean {

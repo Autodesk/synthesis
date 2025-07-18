@@ -6,7 +6,7 @@ import { SynthesisIcons, Spacer } from "../components/StyledComponents"
 import Button from "@/components/Button"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import MatchMode from "@/systems/MatchMode"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { styled } from "@mui/material"
 
 type Entry = {

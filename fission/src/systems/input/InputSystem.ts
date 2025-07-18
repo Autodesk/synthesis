@@ -2,7 +2,7 @@ import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
-import MatchMode, { MatchModeType } from "@/systems/MatchMode"
+import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
 
 export type ModifierState = {
     alt: boolean

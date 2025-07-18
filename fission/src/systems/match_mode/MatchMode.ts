@@ -1,6 +1,6 @@
-import SimulationSystem from "./simulation/SimulationSystem"
+import SimulationSystem from "../simulation/SimulationSystem"
 import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { SoundPlayer } from "./sound/SoundPlayer"
+import { SoundPlayer } from "../sound/SoundPlayer"
 import beep from "@/assets/sound-files/beep.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"

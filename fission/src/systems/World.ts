@@ -7,7 +7,7 @@ import InputSystem from "./input/InputSystem"
 import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
 import DragModeSystem from "./scene/DragModeSystem"
 import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
-import RobotDimensionTracker from "./RobotDimensionTracker"
+import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
 
 class World {
     private static _isAlive: boolean = false
