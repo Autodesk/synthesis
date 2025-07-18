@@ -89,7 +89,7 @@ export default defineConfig(({ command, mode, }) => {
                     {
                         name: "chromium",
                         browser: "chromium",
-                        headless: false,
+                        headless: true,
                     },
                     {
                         name: "firefox",

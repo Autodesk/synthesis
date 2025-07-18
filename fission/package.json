@@ -17,7 +17,7 @@
     "prettier": "bun x prettier src --check || npx prettier src --check",
     "prettier:fix": "bun x prettier src --write || npx prettier src --write",
     "format": "bun run prettier:fix && bun run lint:fix || npm run prettier:fix && npm run lint:fix",
-    "assetpack": "curl -o public/assetpack.zip https://synthesis.autodesk.com/downloadables/assetpack.zip && tar -xf public/assetpack.zip -C public/",
+    "assetpack": "git lfs pull && tar -xf public/assetpack.zip -C public/",
     "playwright:install": "bun x playwright install || npx playwright install"
   },
   "dependencies": {
