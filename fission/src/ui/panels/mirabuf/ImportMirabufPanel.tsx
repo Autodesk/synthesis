@@ -87,10 +87,10 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
         canOPFS
             ? MirabufCachingService.getCacheMap(miraType)
             : miraType == MiraType.ROBOT
-              ? backUpRobots
-              : miraType == MiraType.FIELD
-                ? backUpFields
-                : backUpPieces
+                ? backUpRobots
+                : miraType == MiraType.FIELD
+                    ? backUpFields
+                    : backUpPieces
     )
 }
 
@@ -117,13 +117,10 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         })
                         progressHandle.done()
 
-                        // Disables config for fields/game pieces but not for independent game pieces
-                        if (
-                            gamePieces == undefined ||
-                            gamePieces.length < 0 ||
-                            mainSceneObject.miraType === MiraType.FIELD
-                        )
+                        if (mainSceneObject.miraType === MiraType.ROBOT) {
+                            console.log(`Loaded Robot`)
                             globalOpenPanel("initial-config")
+                        }
                     } else {
                         progressHandle.fail()
                     }
@@ -449,7 +446,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         // eslint-disable-next-line react-hooks/rules-of-hooks
         return useCallback(() => {
             const miraType: MiraType | undefined = cached[0]?.miraType
-            const property = miraType === MiraType.ROBOT ? "robots" : "fields"
+            const property = miraType === MiraType.ROBOT ? "robots" : miraType === MiraType.FIELD ? "fields" : "pieces"
             const remotes = manifest ? manifest[property] : []
 
             remotes

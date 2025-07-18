@@ -69,7 +69,10 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                     World.sceneRenderer.registerSceneObject(sceneObject)
                                 })
 
-                                globalOpenPanel("initial-config")
+                                if (mainSceneObject.miraType === MiraType.ROBOT) {
+                                    console.log(`Loaded Robot Locally`)
+                                    globalOpenPanel("initial-config")
+                                }
                             }
                         })
                         .finally(() =>
