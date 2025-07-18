@@ -12,7 +12,7 @@ import World from "@/systems/World"
 import { random } from "@/util/Random"
 import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
-import { UIContext } from "../UIProvider"
+import { UIContext, useUIContext } from "../UIProvider"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
 
@@ -21,12 +21,12 @@ function ToggleDragMode() {
     if (dragSystem) {
         dragSystem.enabled = !dragSystem.enabled
         const status = dragSystem.enabled ? "enabled" : "disabled"
-        globalAddToast<"info">("Drag Mode", `Drag mode has been ${status}`)
+        globalAddToast("info", "Drag Mode", `Drag mode has been ${status}`)
     }
 }
 
 const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
-    const { openPanel } = useContext(UIContext)
+    const { openPanel } = useUIContext()
     return (
         <Box
             component="div"
@@ -45,7 +45,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
                 <Button
                     onClick={() => {
                         const toastType = (["info", "warning", "error"] as const)[Math.floor(random() * 3)]
-                        globalAddToast<typeof toastType>(toastType, "This is a test toast to test the toast system")
+                        globalAddToast(toastType, "This is a test toast to test the toast system")
                     }}
                     className="w-full"
                 >
@@ -62,15 +62,15 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
                 <Typography variant="h5">Autodesk Platform Services</Typography>
                 <Button
                     onClick={async () =>
-                        APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
+                        await APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
                     }
                     className="w-full"
                 >
                     Refresh APS Token
                 </Button>
                 <Button
-                    onClick={() => {
-                        if (APS.isSignedIn()) {
+                    onClick={async () => {
+                        if (await APS.isSignedIn()) {
                             APS.setExpiresAt(Date.now())
                             APS.getAuthOrLogin()
                         }

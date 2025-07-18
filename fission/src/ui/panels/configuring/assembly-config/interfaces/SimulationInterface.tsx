@@ -6,7 +6,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem";
 import type { PanelImplProps } from "@/ui/components/Panel";
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel";
 import WiringPanel from "@/ui/panels/simulation/WiringPanel";
-import { CloseType, UIContext } from "@/ui/UIProvider";
+import { CloseType, UIContext, useUIContext } from "@/ui/UIProvider";
 
 type SimulationInterfaceProps = {
 	selectedAssembly: MirabufSceneObject;
@@ -16,7 +16,7 @@ export default function SimulationInterface({
 	selectedAssembly,
 	panel,
 }: SimulationInterfaceProps & PanelImplProps<void>) {
-	const { openPanel, closePanel } = useContext(UIContext);
+	const { openPanel, closePanel } = useUIContext()
 	const [autoReconnect, setAutoReconnect] = useState<boolean>(
 		PreferencesSystem.getGlobalPreference("SimAutoReconnect"),
 	);

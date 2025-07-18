@@ -1,11 +1,11 @@
 import { Button, Divider, Stack, Typography } from "@mui/material"
-import { useContext, useReducer } from "react"
+import { useContext, useReducer, useState } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { AddButton, DeleteButton, EditButton, SelectButton, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { StateContext } from "@/ui/StateProvider"
+import { StateContext, useStateContext } from "@/ui/StateProvider"
 
 interface InputSchemeSelectionProps {
     brainIndex: number
@@ -17,7 +17,7 @@ interface InputSchemeSelectionProps {
 export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onCreateNew }: InputSchemeSelectionProps) {
     const [_, update] = useReducer(x => !x, false)
 
-    const { setSelectedScheme, setConfigurationType } = useContext(StateContext)
+    const { setSelectedScheme, setConfigurationType } = useStateContext()
 
     return (
         <>

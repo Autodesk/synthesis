@@ -9,7 +9,7 @@ import Driver from "@/systems/simulation/driver/Driver";
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain";
 import { SynthesisIcons } from "@/ui/components/StyledComponents";
 import { ModalImplProps } from "@/ui/components/Modal";
-import { UIContext } from "@/ui/UIProvider";
+import { UIContext, useUIContext } from "@/ui/UIProvider";
 import RoboRIOModal from "../RoboRIOModal";
 import {
 	Checkbox,
@@ -25,7 +25,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({
 	modal,
 	parent,
 }) => {
-	const { openModal } = useContext(UIContext);
+	const { openModal } = useUIContext()
 	const [name, setName] = useState<string>("");
 	const [checkedPorts, setCheckedPorts] = useState<number[]>([]);
 	const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([]);

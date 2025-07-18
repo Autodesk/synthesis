@@ -11,7 +11,7 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel"
 import DebugPanel from "../panels/DebugPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
-import { UIContext } from "../UIProvider"
+import { UIContext, useUIContext } from "../UIProvider"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { SynthesisIcons } from "./StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
@@ -70,7 +70,7 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
-    const { openModal, openPanel, addToast } = useContext(UIContext)
+    const { openModal, openPanel, addToast } = useUIContext()
     const [isOpen, setIsOpen] = useState(false)
 
     const touchCompatibility = matchMedia("(hover: none)").matches

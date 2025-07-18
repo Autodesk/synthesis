@@ -2,10 +2,10 @@ import type React from "react";
 import { useContext } from "react";
 import { Panel } from "@/components/Panel";
 import { Modal } from "./components/Modal";
-import { UIContext } from "./UIProvider";
+import { UIContext, useUIContext } from "./UIProvider";
 
 export const UIRenderer: React.FC = () => {
-	const { modal, panels } = useContext(UIContext);
+	const { modal, panels } = useUIContext()
 
 	return (
 		<>

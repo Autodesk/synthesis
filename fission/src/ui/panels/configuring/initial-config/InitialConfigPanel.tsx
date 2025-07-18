@@ -10,17 +10,16 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { CloseType, UIContext } from "@/ui/UIProvider"
-import { StateContext } from "@/ui/StateProvider"
+import { CloseType, UIContext, useUIContext } from "@/ui/UIProvider"
+import { StateContext, useStateContext } from "@/ui/StateProvider"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
 import type { Alliance } from "@/systems/preferences/PreferenceTypes"
 import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { setConfigurationType } = useContext(StateContext)
-    const { openModal, closePanel, openPanel } = useContext(UIContext)
-    const { setSelectedScheme } = useContext(StateContext)
+    const { setSelectedScheme, setConfigurationType } = useStateContext()
+    const { openModal, closePanel, openPanel } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
 
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])

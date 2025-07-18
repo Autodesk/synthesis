@@ -31,8 +31,8 @@ import {
     RefreshButton,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import { StateContext } from "@/ui/StateProvider"
-import { CloseType, UIContext } from "@/ui/UIProvider"
+import { StateContext, useStateContext } from "@/ui/StateProvider"
+import { CloseType, UIContext, useUIContext } from "@/ui/UIProvider"
 import type TaskStatus from "@/util/TaskStatus"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
@@ -116,8 +116,8 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 }
 
 const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
-    const { addToast, closePanel, openModal } = useContext(UIContext)
-    const { unconfirmedImport, configurationType, setConfigurationType } = useContext(StateContext)
+    const { addToast, closePanel, openModal } = useUIContext()
+    const { unconfirmedImport, configurationType, setConfigurationType } = useStateContext()
 
     const [cachedRobots, setCachedRobots] = useState(getCacheInfo(MiraType.ROBOT))
     const [cachedFields, setCachedFields] = useState(getCacheInfo(MiraType.FIELD))

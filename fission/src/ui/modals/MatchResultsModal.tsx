@@ -4,7 +4,7 @@ import { useContext } from "react"
 import MatchMode from "@/systems/MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type { ModalImplProps } from "../components/Modal"
-import { CloseType, UIContext } from "../UIProvider"
+import { CloseType, UIContext, useUIContext } from "../UIProvider"
 
 type Entry = {
     name: string
@@ -43,7 +43,7 @@ const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }
 }))
 
 const MatchResultsModal: React.FC<ModalImplProps<void>> = () => {
-    const { closeModal } = useContext(UIContext)
+    const { closeModal } = useUIContext()
 
     const { message, color } = getMatchWinner()
 

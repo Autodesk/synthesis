@@ -8,6 +8,7 @@ import {
 	PanelProps,
 	type Panel as PanelType,
 	UIContext,
+    useUIContext,
 } from "../UIProvider";
 
 export type PanelImplProps<T> = Partial<{
@@ -58,7 +59,7 @@ export const Panel = <T,>({
 	parent,
 	props,
 }: PanelElementProps<T>) => {
-	const { closePanel } = useContext(UIContext);
+	const { closePanel } = useUIContext()
 	return (
 		<Draggable positionOffset={getPositionOffset(panel.position)}>
 			<Card

@@ -1,5 +1,5 @@
 import { randomColor } from "@/util/Random"
-import { ThemeContext } from "../ThemeProvider"
+import { ThemeContext, useThemeContext } from "../ThemeProvider"
 import { Box, Switch, Button, Stack, TextField, Typography } from "@mui/material"
 import type React from "react"
 import { useContext, useState } from "react"
@@ -7,7 +7,7 @@ import { GiDiceEightFacesEight, GiPerspectiveDiceSix, GiPerspectiveDiceSixFacesO
 
 export const ThemeEditorPanel: React.FC = () => {
     const { mode, toggleColorMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =
-        useContext(ThemeContext)
+        useThemeContext()
 
     const [tempPrimary, setTempPrimary] = useState(primaryColor)
     const [tempSecondary, setTempSecondary] = useState(secondaryColor)

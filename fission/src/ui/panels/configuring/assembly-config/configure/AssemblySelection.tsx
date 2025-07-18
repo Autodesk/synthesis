@@ -8,7 +8,7 @@ import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { CloseType, UIContext } from "@/ui/UIProvider"
+import { CloseType, UIContext, useUIContext } from "@/ui/UIProvider"
 import type { ConfigurationType } from "../ConfigurePanel"
 
 interface AssemblySelectionProps {
@@ -44,7 +44,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void>>
     pendingDeletes,
 }) => {
     const [u, update] = useReducer(x => !x, false)
-    const { openPanel, closePanel } = useContext(UIContext)
+    const { openPanel, closePanel } = useUIContext()
 
     const robots = useMemo(() => {
         return [...World.sceneRenderer.sceneObjects.values()]
