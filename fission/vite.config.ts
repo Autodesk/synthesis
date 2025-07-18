@@ -1,30 +1,36 @@
-import { defineConfig } from 'vitest/config'
-import * as path from 'path'
-import react from '@vitejs/plugin-react-swc'
-import basicSsl from '@vitejs/plugin-basic-ssl'
-import glsl from 'vite-plugin-glsl'
+import { defineConfig } from "vitest/config"
+import * as path from "path"
+import react from "@vitejs/plugin-react-swc"
+import basicSsl from "@vitejs/plugin-basic-ssl"
+import glsl from "vite-plugin-glsl"
+import { loadEnv, ProxyOptions } from "vite"
 
 const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
 
-const useLocal = false
+const useLocalAPS = false
 const useSsl = false
 
 const plugins = [
-    react(), glsl({
-        include: [                   // Glob pattern, or array of glob patterns to import
-          '**/*.glsl', '**/*.wgsl',
-          '**/*.vert', '**/*.frag',
-          '**/*.vs', '**/*.fs'
+    react(),
+    glsl({
+        include: [
+            // Glob pattern, or array of glob patterns to import
+            "**/*.glsl",
+            "**/*.wgsl",
+            "**/*.vert",
+            "**/*.frag",
+            "**/*.vs",
+            "**/*.fs",
         ],
-        exclude: undefined,          // Glob pattern, or array of glob patterns to ignore
+        exclude: undefined, // Glob pattern, or array of glob patterns to ignore
         warnDuplicatedImports: true, // Warn if the same chunk was imported multiple times
-        defaultExtension: 'glsl',    // Shader suffix when no extension is specified
-        minify: false,               // Minify/optimize output shader code
-        watch: true,                 // Recompile shader on change
-        root: '/'                    // Directory for root imports
-    })
+        defaultExtension: "glsl", // Shader suffix when no extension is specified
+        minify: false, // Minify/optimize output shader code
+        watch: true, // Recompile shader on change
+        root: "/", // Directory for root imports
+    }),
 ]
 
 if (useSsl) {
@@ -32,67 +38,82 @@ if (useSsl) {
 }
 
 // https://vitejs.dev/config/
-export default defineConfig({
-    plugins: plugins,
-    resolve: {
-        alias: [
-            { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
-            { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
-            { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
-            { find: "@", replacement: path.resolve(__dirname, "src") },
-        ],
-    },
-    test: {
-        testTimeout: 10000,
-        globals: true,
-        environment: "jsdom",
-        browser: {
-            enabled: true,
-            provider: "playwright",
-            instances: [
-                {
-                    name: "chromium",
-                    browser: "chromium",
-                    headless: false,
-                },
-                // {
-                //     name: "firefox",
-                //     browser: "firefox",
-                //     headless: true,
-                // },
+export default defineConfig(({ mode, }) => {
+    process.env = {...process.env, ...loadEnv(mode, process.cwd())};
+    const useLocalAssets = mode === "test" || process.env.DEV
+    const proxies: Record<string, ProxyOptions> = {}
+    proxies["/api/mira"] = useLocalAssets
+        ? {
+              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+              changeOrigin: true,
+              secure: false,
+              rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira").replace("robots", "Robots").replace("fields", "Fields"),
+          }
+        : {
+              target: `https://synthesis.autodesk.com/`,
+              changeOrigin: true,
+              secure: true,
+          }
+    proxies["/api/aps"] = useLocalAPS
+        ? {
+              target: `http://localhost:${dockerServerPort}/`,
+              changeOrigin: true,
+              secure: false,
+          }
+        : {
+              target: `https://synthesis.autodesk.com/`,
+              changeOrigin: true,
+              secure: true,
+          }
+
+    return {
+        plugins: plugins,
+        publicDir: "./public",
+        resolve: {
+            alias: [
+                { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
+                { find: "@/modals", replacement: path.resolve(__dirname, "src", "ui", "modals") },
+                { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
+                { find: "@", replacement: path.resolve(__dirname, "src") },
             ],
         },
-    },
-    server: {
-        // this ensures that the browser opens upon server start
-        // open: true,
-        // this sets a default port to 3000
-        port: serverPort,
-        cors: false,
-        proxy: useLocal
-            ? {
-                  "/api/mira": {
-                      target: `http://localhost:${serverPort}${basePath}`,
-                      changeOrigin: true,
-                      secure: false,
-                      rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira"),
-                  },
-                  "/api/aps": {
-                      target: `http://localhost:${dockerServerPort}/`,
-                      changeOrigin: true,
-                      secure: false,
-                  },
-              }
-            : {
-                  "/api": {
-                      target: `https://synthesis.autodesk.com/`,
-                      changeOrigin: true,
-                      secure: true,
-                  },
-              },
-    },
-    build: {
-        target: "esnext",
-    },
-    base: basePath,
+        test: {
+            globalSetup: ["src/test/TestSetup.server.ts"],
+            testTimeout: 10000,
+            globals: true,
+            environment: "jsdom",
+            browser: {
+                enabled: true,
+                provider: "playwright",
+                instances: [
+                    {
+                        name: "chromium",
+                        browser: "chromium",
+                        headless: true,
+                    },
+                    {
+                        name: "firefox",
+                        browser: "firefox",
+                        headless: true,
+                    },
+                ],
+            },
+        },
+        build: {
+            target: "esnext"
+        },
+        server: {
+
+            // this ensures that the browser opens upon server start
+            // open: true,
+            // this sets a default port to 3000
+            port: serverPort,
+            cors: false,
+            proxy: proxies,
+            build: {
+                target: "esnext",
+            },
+            base: basePath,
+        },
+    }
 })
