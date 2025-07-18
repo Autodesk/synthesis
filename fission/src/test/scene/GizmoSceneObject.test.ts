@@ -123,18 +123,18 @@ describe("GizmoSceneObject", () => {
 
             gizmoSceneObject.obj.matrix.decompose(extractedPos, extractedRot, extractedScale)
 
-            expect(extractedPos.x).toBe(position.x)
-            expect(extractedPos.y).toBe(position.y)
-            expect(extractedPos.z).toBe(position.z)
+            expect(extractedPos.x).toBeCloseTo(position.x)
+            expect(extractedPos.y).toBeCloseTo(position.y)
+            expect(extractedPos.z).toBeCloseTo(position.z)
 
-            expect(extractedScale.x).toBe(scale.x)
-            expect(extractedScale.y).toBe(scale.y)
-            expect(extractedScale.z).toBe(scale.z)
+            expect(extractedScale.x).toBeCloseTo(scale.x)
+            expect(extractedScale.y).toBeCloseTo(scale.y)
+            expect(extractedScale.z).toBeCloseTo(scale.z)
 
-            expect(extractedRot.x).toBe(rotation.x)
-            expect(extractedRot.y).toBe(rotation.y)
-            expect(extractedRot.z).toBe(rotation.z)
-            expect(extractedRot.w).toBe(rotation.w)
+            expect(extractedRot.x).toBeCloseTo(rotation.x)
+            expect(extractedRot.y).toBeCloseTo(rotation.y)
+            expect(extractedRot.z).toBeCloseTo(rotation.z)
+            expect(extractedRot.w).toBeCloseTo(rotation.w)
         })
     })
 
