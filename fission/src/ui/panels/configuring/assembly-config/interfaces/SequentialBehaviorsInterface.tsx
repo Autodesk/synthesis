@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useReducer, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { Box, Button, styled, alpha, Typography, Stack } from "@mui/material"
+import { Button, Typography, Stack } from "@mui/material"
 import { defaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"

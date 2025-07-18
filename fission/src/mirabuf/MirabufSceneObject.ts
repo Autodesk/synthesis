@@ -78,7 +78,7 @@ interface UIActionHandlers {
  */
 
 // biome-ignore lint/complexity/noStaticOnlyClass: TODO: fix later
-class  UIActionRegistry {
+class UIActionRegistry {
     private static handlers: UIActionHandlers = {}
 
     public static registerHandlers(handlers: UIActionHandlers): void {

@@ -1,6 +1,6 @@
 import { Box, Button, Divider, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
 import type React from "react"
-import { type ReactNode, useCallback, useContext, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import {
     type Data,
     getMirabufFiles,
@@ -31,8 +31,8 @@ import {
     RefreshButton,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import { StateContext, useStateContext } from "@/ui/StateProvider"
-import { CloseType, UIContext, useUIContext } from "@/ui/UIProvider"
+import { useStateContext } from "@/ui/StateProvider"
+import { CloseType, useUIContext } from "@/ui/UIProvider"
 import type TaskStatus from "@/util/TaskStatus"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"

@@ -1,11 +1,11 @@
 import { Button, Divider, Stack, Typography } from "@mui/material"
-import { useContext, useReducer, useState } from "react"
+import { useReducer } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { AddButton, DeleteButton, EditButton, SelectButton, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { StateContext, useStateContext } from "@/ui/StateProvider"
+import { DeleteButton, EditButton, SelectButton, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { useStateContext } from "@/ui/StateProvider"
 
 interface InputSchemeSelectionProps {
     brainIndex: number

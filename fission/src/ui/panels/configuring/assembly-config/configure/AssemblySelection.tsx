@@ -1,5 +1,5 @@
 import type React from "react"
-import { useContext, useMemo, useReducer } from "react"
+import { useMemo, useReducer } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
@@ -8,7 +8,7 @@ import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { CloseType, UIContext, useUIContext } from "@/ui/UIProvider"
+import { CloseType, useUIContext } from "@/ui/UIProvider"
 import type { ConfigurationType } from "../ConfigurePanel"
 
 interface AssemblySelectionProps {

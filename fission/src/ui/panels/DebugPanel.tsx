@@ -1,6 +1,5 @@
 import { Box, Button, Stack, Typography } from "@mui/material"
 import type React from "react"
-import { useContext } from "react"
 import APS from "@/aps/APS"
 import MirabufCachingService, {
     backUpFields as hashedMiraFields,
@@ -12,7 +11,7 @@ import World from "@/systems/World"
 import { random } from "@/util/Random"
 import { globalAddToast } from "../components/GlobalUIControls"
 import type { PanelImplProps } from "../components/Panel"
-import { UIContext, useUIContext } from "../UIProvider"
+import { useUIContext } from "../UIProvider"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
 
@@ -62,7 +61,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
                 <Typography variant="h5">Autodesk Platform Services</Typography>
                 <Button
                     onClick={async () =>
-                        await APS.isSignedIn() && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
+                        (await APS.isSignedIn()) && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
                     }
                     className="w-full"
                 >

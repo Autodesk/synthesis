@@ -1,7 +1,7 @@
 import { Button, Divider, IconButton, Stack, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import { AddButton, CustomTooltip, Spacer, SynthesisIcons } from "./StyledComponents"
+import { CustomTooltip, Spacer, SynthesisIcons } from "./StyledComponents"
 
 /** Extend this to make a type that contains custom data */
 export class SelectMenuOption {
@@ -150,7 +150,9 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                             onOptionSelected(undefined)
                         }}
                         id="select-menu-back-button"
-                    >{SynthesisIcons.LEFT_ARROW_LARGE}</IconButton>
+                    >
+                        {SynthesisIcons.LEFT_ARROW_LARGE}
+                    </IconButton>
                 )}
 
                 {/** Label with either the header text, or the name of the selected option if an option is selected */}

@@ -1,9 +1,9 @@
 import { randomColor } from "@/util/Random"
-import { ThemeContext, useThemeContext } from "../ThemeProvider"
-import { Box, Switch, Button, Stack, TextField, Typography } from "@mui/material"
+import { useThemeContext } from "../ThemeProvider"
+import { Box, Button, Stack, TextField, Typography } from "@mui/material"
 import type React from "react"
-import { useContext, useState } from "react"
-import { GiDiceEightFacesEight, GiPerspectiveDiceSix, GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
+import { useState } from "react"
+import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 
 export const ThemeEditorPanel: React.FC = () => {
     const { mode, toggleColorMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =

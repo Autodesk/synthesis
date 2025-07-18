@@ -1,7 +1,7 @@
 import { Button, FormControlLabel, Radio, Stack, Typography } from "@mui/material"
 import type React from "react"
-import { useContext, useState } from "react"
-import { UIContext, useUIContext } from "../UIProvider"
+import { useState } from "react"
+import { useUIContext } from "../UIProvider"
 
 const RobotSwitchPanel: React.FC = () => {
     const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])

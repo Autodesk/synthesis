@@ -1,4 +1,3 @@
-import type { VariantType } from "notistack"
 import type { AddToastFn, OpenModalFn, OpenPanelFn } from "../UIProvider"
 
 /**

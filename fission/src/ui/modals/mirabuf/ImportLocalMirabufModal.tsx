@@ -1,14 +1,14 @@
-import { Button, Stack, styled, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
-import { type ChangeEvent, useContext, useEffect, useRef, useState } from "react"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import type { ModalImplProps } from "@/ui/components/Modal"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { UIContext, useUIContext } from "@/ui/UIProvider"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import { useUIContext } from "@/ui/UIProvider"
+import { Button, Stack, styled, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import { type ChangeEvent, useEffect, useState } from "react"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",
@@ -37,8 +37,9 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     }
 
     useEffect(() => {
-        modal!.props.onCancel = () => openPanel(<ImportMirabufPanel />, undefined)
-        modal!.props.onAccept = async () => {
+        const onCancel = () => openPanel(<ImportMirabufPanel />, undefined)
+
+        const onAccept = async () => {
             if (selectedFile && miraType !== undefined) {
                 const hashBuffer = await selectedFile.arrayBuffer()
                 World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
@@ -59,7 +60,15 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     .finally(() => setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500))
             }
         }
-    }, [selectedFile])
+
+        modal!.onCancel.addFunc(onCancel)
+        modal!.onAccept.addFunc(onAccept)
+
+        return () => {
+            modal!.onCancel.removeFunc(onCancel)
+            modal!.onAccept.removeFunc(onAccept)
+        }
+    }, [selectedFile, miraType, openPanel, modal])
 
     return (
         <Stack className="items-center" gap={5}>
