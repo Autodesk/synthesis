@@ -115,7 +115,7 @@ class MirabufInstance {
         this._mirabufParser = parser
         this._materials = new Map()
         this._meshes = new Map()
-        this._batches = [] as THREE.BatchedMesh[]
+        this._batches = []
 
         progressHandle?.update("Loading materials...", 0.4)
         this.loadMaterials(materialStyle ?? MaterialStyle.REGULAR)
