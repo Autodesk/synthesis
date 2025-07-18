@@ -4,6 +4,7 @@ import adsk.fusion
 from src import Logging, gm
 from src.UI import IconPaths
 
+
 class DesignCheckTab:
     designCheckTab: adsk.core.TabCommandInput
     designCheckTable: adsk.core.TableCommandInput
@@ -20,7 +21,9 @@ class DesignCheckTab:
         self.designCheckTable = designCheckTabInputs.addTableCommandInput(
             "designCheckTable", "Design Checks", 3, "3:2:2"
         )
-        self.designCheckTable.tablePresentationStyle = adsk.core.TablePresentationStyles.itemBorderTablePresentationStyle
+        self.designCheckTable.tablePresentationStyle = (
+            adsk.core.TablePresentationStyles.itemBorderTablePresentationStyle
+        )
 
         # Row 1: Design Height
         height = self.fusion_design_height
