@@ -12,6 +12,7 @@ from typing import Any
 import requests
 
 from src import ADDIN_PATH, gm
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Logging import getLogger
 
 logger = getLogger()
@@ -149,10 +150,10 @@ def refreshAuthToken() -> None:
         gm.ui.messageBox("Please sign in again.")
 
 
-def loadUserInfo() -> APSUserInfo | None:
+def loadUserInfo() -> Result[APSUserInfo]:
     global APS_AUTH
     if not APS_AUTH:
-        return None
+        return Err("Aps Authentication is undefined", ErrorSeverity.Fatal)
     global APS_USER_INFO
     req = urllib.request.Request("https://api.userprofile.autodesk.com/userinfo")
     req.add_header(key="Authorization", val=APS_AUTH.access_token)
@@ -174,22 +175,19 @@ def loadUserInfo() -> APSUserInfo | None:
             company=data["company"],
             picture=data["picture"],
         )
-        return APS_USER_INFO
+        return Ok(APS_USER_INFO)
     except urllib.request.HTTPError as e:
         removeAuth()
-        logger.error(f"User Info Error:\n{e.code} - {e.reason}")
-        gm.ui.messageBox("Please sign in again.")
-    finally:
-        return None
+        return Err(f"User Info Error:\n{e.code} - {e.reason}\nPlease sign in again", ErrorSeverity.Fatal)
 
 
-def getUserInfo() -> APSUserInfo | None:
+def getUserInfo() -> Result[APSUserInfo]:
     if APS_USER_INFO is not None:
-        return APS_USER_INFO
+        return Ok(APS_USER_INFO)
     return loadUserInfo()
 
 
-def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_display_name: str) -> str | None:
+def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_display_name: str) -> Result[str]:
     """
     creates a folder on an APS project
 
@@ -219,18 +217,17 @@ def create_folder(auth: str, project_id: str, parent_folder_id: str, folder_disp
         f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/folders", headers=headers, json=data
     )
     if not res.ok:
-        gm.ui.messageBox(f"Failed to create new folder: {res.text}", "ERROR")
-        return None
+        return Err(f"Failed to create new folder: {res.text}", ErrorSeverity.Fatal)
     json: dict[str, Any] = res.json()
     id: str = json["data"]["id"]
-    return id
+    return Ok(id)
 
 
 def file_path_to_file_name(file_path: str) -> str:
     return file_path.split("/").pop()
 
 
-def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_contents: str) -> str | None:
+def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_contents: str) -> Result[str]:
     """
     uploads mirabuf file to a specific folder in an APS project
     the folder and project must be created and valid
@@ -261,34 +258,37 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
     # data:create
     global APS_AUTH
     if APS_AUTH is None:
-        gm.ui.messageBox("You must login to upload designs to APS", "USER ERROR")
-        return None
+        return Err("You must login to upload designs to APS (USER ERROR)", ErrorSeverity.Fatal)
 
     auth = APS_AUTH.access_token
     # Get token from APS API later
 
     new_folder_id = get_item_id(auth, project_id, folder_id, "MirabufDir", "folders")
     if new_folder_id is None:
-        created_folder_id = create_folder(auth, project_id, folder_id, "MirabufDir")
+        created_folder_result = create_folder(auth, project_id, folder_id, "MirabufDir")
+        if created_folder_result.is_fatal():
+            return created_folder_result
+        else:
+            created_folder_id = created_folder_result.unwrap()
     else:
         created_folder_id = new_folder_id
 
-    if created_folder_id is None:
-        return None
-
-    file_id_data = get_file_id(auth, project_id, created_folder_id, file_name)
-    if file_id_data is None:
-        return None
+    file_id_result = get_file_id(auth, project_id, created_folder_id, file_name)
+    if file_id_result.is_fatal():
+        # Hack to get around different return types
+        return Err(file_id_result.unwrap_err()[0], ErrorSeverity.Fatal)
+    file_id_data = file_id_result.unwrap()
 
     (lineage_id, file_id, file_version) = file_id_data
 
     """
     Create APS Storage Location
     """
-    object_id = create_storage_location(auth, project_id, created_folder_id, file_name)
-    if object_id is None:
-        gm.ui.messageBox("UPLOAD ERROR", "Object id is none; check create storage location")
-        return None
+    object_id_result = create_storage_location(auth, project_id, created_folder_id, file_name)
+    if object_id_result.is_fatal():
+        return object_id_result
+    object_id = object_id_result.unwrap()
+
     (prefix, object_key) = str(object_id).split("/", 1)
     bucket_key = prefix.split(":", 3)[3]  # gets the last element smth like: wip.dm.prod
 
@@ -296,25 +296,31 @@ def upload_mirabuf(project_id: str, folder_id: str, file_name: str, file_content
     Create Signed URL For APS Upload
     """
     generate_signed_url_result = generate_signed_url(auth, bucket_key, object_key)
-    if generate_signed_url_result is None:
-        return None
+    if generate_signed_url_result.is_fatal():
+        # Hack to get around different Result success types in the err case
+        return Err(generate_signed_url_result.unwrap_err()[0], ErrorSeverity.Fatal)
 
-    (upload_key, signed_url) = generate_signed_url_result
-    if upload_file(signed_url, file_contents) is None:
-        return None
+    (upload_key, signed_url) = generate_signed_url_result.unwrap()
+    upload_file_result = upload_file(signed_url, file_contents)
+    if upload_file_result.is_fatal():
+        return upload_file_result
 
     """
     Finish Upload and Initialize File Version
     """
-    if complete_upload(auth, upload_key, object_key, bucket_key) is None:
-        return None
+    complete_upload_result = complete_upload(auth, upload_key, object_key, bucket_key)
+    if complete_upload_result.is_fatal():
+        return complete_upload_result
+
     if file_id != "":
-        update_file_version(
+        update_file_result = update_file_version(
             auth, project_id, created_folder_id, lineage_id, file_id, file_name, file_contents, file_version, object_id
         )
+        if update_file_result.is_fatal():
+            return update_file_result
     else:
         _lineage_info = create_first_file_version(auth, str(object_id), project_id, str(created_folder_id), file_name)
-    return ""
+    return Ok("")
 
 
 def get_hub_id(auth: str, hub_name: str) -> str | None:
@@ -403,7 +409,7 @@ def update_file_version(
     file_contents: str,
     curr_file_version: str,
     object_id: str,
-) -> str | None:
+) -> Result[str]:
     """
     updates an existing file in an APS folder
 
@@ -423,22 +429,6 @@ def update_file_version(
     - file doesn't exist in that position / with that id / name ; fix: get_file_id() or smth
     - version one of the file hasn't been created ; fix: create_first_file_version()
     """
-
-    # object_id = create_storage_location(auth, project_id, folder_id, file_name)
-    # if object_id is None:
-    #    return None
-    #
-    # (prefix, object_key) = str(object_id).split("/", 1)
-    # bucket_key = prefix.split(":", 3)[3] # gets the last element smth like: wip.dm.prod
-    # (upload_key, signed_url) = generate_signed_url(auth, bucket_key, object_key)
-    #
-    # if upload_file(signed_url, file_contents) is None:
-    #    return None
-
-    # if complete_upload(auth, upload_key, object_key, bucket_key) is None:
-    #    return None
-
-    # gm.ui.messageBox(f"file_name:{file_name}\nlineage_id:{lineage_id}\nfile_id:{file_id}\ncurr_file_version:{curr_file_version}\nobject_id:{object_id}", "REUPLOAD ARGS")
     headers = {
         "Authorization": f"Bearer {auth}",
         "Content-Type": "application/vnd.api+json",
@@ -469,16 +459,15 @@ def update_file_version(
         f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/versions", headers=headers, json=data
     )
     if not update_res.ok:
-        gm.ui.messageBox(f"UPLOAD ERROR:\n{update_res.text}", "Updating file to new version failed")
-        return None
+        return Err(f"Updating file to new version failed\nUPLOAD ERROR:\n{update_res.text}", ErrorSeverity.Fatal)
     gm.ui.messageBox(
         f"Successfully updated file {file_name} to version {int(curr_file_version) + 1} on APS", "UPLOAD SUCCESS"
     )
     new_id: str = update_res.json()["data"]["id"]
-    return new_id
+    return Ok(new_id)
 
 
-def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> tuple[str, str, str] | None:
+def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> Result[tuple[str, str, str]]:
     """
     gets the file id given a file name
 
@@ -509,20 +498,19 @@ def get_file_id(auth: str, project_id: str, folder_id: str, file_name: str) -> t
         params=params,
     )
     if file_res.status_code == 404:
-        return ("", "", "")
+        return Ok(("", "", ""))
     elif not file_res.ok:
-        gm.ui.messageBox(f"UPLOAD ERROR: {file_res.text}", "Failed to get file")
-        return None
+        return Err(f"UPLOAD ERROR: {file_res.text} (Failed to get file)", ErrorSeverity.Fatal)
     file_json: dict[str, Any] = file_res.json()
     if len(file_json["data"]) == 0:
-        return ("", "", "")
+        return Ok(("", "", ""))
     id: str = str(file_json["data"][0]["id"])
     lineage: str = str(file_json["data"][0]["relationships"]["item"]["data"]["id"])
     version: str = str(file_json["data"][0]["attributes"]["versionNumber"])
-    return (lineage, id, version)
+    return Ok((lineage, id, version))
 
 
-def create_storage_location(auth: str, project_id: str, folder_id: str, file_name: str) -> str | None:
+def create_storage_location(auth: str, project_id: str, folder_id: str, file_name: str) -> Result[str]:
     """
     creates a storage location (a bucket)
     the bucket can be used to upload a file to
@@ -560,14 +548,15 @@ def create_storage_location(auth: str, project_id: str, folder_id: str, file_nam
         f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/storage", json=data, headers=headers
     )
     if not storage_location_res.ok:
-        gm.ui.messageBox(f"UPLOAD ERROR: {storage_location_res.text}", f"Failed to create storage location")
-        return None
+        return Err(
+            f"UPLOAD ERROR: {storage_location_res.text} (Failed to create storage location)", ErrorSeverity.Fatal
+        )
     storage_location_json: dict[str, Any] = storage_location_res.json()
     object_id: str = storage_location_json["data"]["id"]
-    return object_id
+    return Ok(object_id)
 
 
-def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> tuple[str, str] | None:
+def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> Result[tuple[str, str]]:
     """
     generates a signed_url for a bucket, given a bucket_key and object_key
 
@@ -593,13 +582,12 @@ def generate_signed_url(auth: str, bucket_key: str, object_key: str) -> tuple[st
         headers=headers,
     )
     if not signed_url_res.ok:
-        gm.ui.messageBox(f"UPLOAD ERROR: {signed_url_res.text}", "Failed to get signed url")
-        return None
+        return Err(f"Failed to get signed URL:\nUPLOAD ERROR: {signed_url_res.text}", ErrorSeverity.Fatal)
     signed_url_json: dict[str, str] = signed_url_res.json()
-    return (signed_url_json["uploadKey"], signed_url_json["urls"][0])
+    return Ok((signed_url_json["uploadKey"], signed_url_json["urls"][0]))
 
 
-def upload_file(signed_url: str, file_contents: str) -> str | None:
+def upload_file(signed_url: str, file_contents: str) -> Result[str]:
     """
     uploads a file to APS given a signed_url a path to the file on your machine
 
@@ -616,12 +604,11 @@ def upload_file(signed_url: str, file_contents: str) -> str | None:
     """
     upload_response = requests.put(url=signed_url, data=file_contents)
     if not upload_response.ok:
-        gm.ui.messageBox("UPLOAD ERROR", f"Failed to upload to signed url: {upload_response.text}")
-        return None
-    return ""
+        return Err(f"Failed to upload to signed url\nUPLOAD ERROR: {upload_response.text}", ErrorSeverity.Fatal)
+    return Ok("")
 
 
-def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str) -> str | None:
+def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str) -> Result[str]:
     """
     completes and verifies the APS file upload given the upload_key
 
@@ -647,16 +634,16 @@ def complete_upload(auth: str, upload_key: str, object_key: str, bucket_key: str
         headers=headers,
     )
     if not completed_res.ok:
-        gm.ui.messageBox(
-            f"UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}", "Failed to complete upload"
+        return Err(
+            f"Failed to complete upload\n UPLOAD ERROR: {completed_res.text}\n{completed_res.status_code}",
+            ErrorSeverity.Fatal,
         )
-        return None
-    return ""
+    return Ok("")
 
 
 def create_first_file_version(
     auth: str, object_id: str, project_id: str, folder_id: str, file_name: str
-) -> tuple[str, str] | None:
+) -> Result[tuple[str, str]]:
     """
     initializes versioning for a file
 
@@ -720,8 +707,7 @@ def create_first_file_version(
         f"https://developer.api.autodesk.com/data/v1/projects/{project_id}/items", json=data, headers=headers
     )
     if not first_version_res.ok:
-        gm.ui.messageBox(f"Failed to create first file version: {first_version_res.text}", "UPLOAD ERROR")
-        return None
+        return Err(f"Failed to create first file version:\nUPLOAD ERROR: {first_version_res.text}", ErrorSeverity.Fatal)
     first_version_json: dict[str, Any] = first_version_res.json()
 
     lineage_id: str = first_version_json["data"]["id"]
@@ -729,4 +715,4 @@ def create_first_file_version(
 
     gm.ui.messageBox(f"Successful Upload of {file_name} to APS", "UPLOAD SUCCESS")
 
-    return (lineage_id, href)
+    return Ok((lineage_id, href))

@@ -143,6 +143,8 @@ export type MotorPreferences = {
 
 export type Alliance = "red" | "blue"
 
+export type Station = 1 | 2 | 3
+
 export type ScoringZonePreferences = {
     name: string
     alliance: Alliance
