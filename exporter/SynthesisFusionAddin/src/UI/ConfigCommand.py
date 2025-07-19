@@ -31,6 +31,8 @@ taggingConfigTab: TaggingConfigTab.TaggingConfigTab
 
 INPUTS_ROOT: adsk.core.CommandInputs
 
+logger = Logging.getLogger()
+
 
 def reload() -> None:
     """Reloads the sub modules to reflect any changes made during development."""
@@ -131,10 +133,13 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                     taggingConfigTab.addTag(fusionBody[0], tag)
 
         getAuth()
-        user_info = getUserInfo()
-        apsSettings = INPUTS_ROOT.addTabCommandInput(
-            "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-        )
+        user_info_result = getUserInfo()
+        if user_info_result.is_err():
+            user_name = "Not Signed In"
+        else:
+            user_name = user_info_result.unwrap().given_name
+
+        apsSettings = INPUTS_ROOT.addTabCommandInput("aps_settings", f"APS Settings ({user_name})")
         apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 
 
@@ -146,9 +151,13 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
         design = adsk.fusion.Design.cast(adsk.core.Application.get().activeProduct)
         exporterOptions = ExporterOptions().readFromDesign() or ExporterOptions()
 
-        fullName = design.rootComponent.name
+        fullName: str = design.rootComponent.name
         versionMatch = re.search(r"v\d+", fullName)
-        docName = (fullName[: versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
+        if versionMatch:
+            strippedName: str = fullName[0 : versionMatch.start()].strip()
+        else:
+            strippedName = fullName
+        docName = strippedName.replace(" ", "_")
         docVersion = versionMatch.group() if versionMatch else "v0"
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
@@ -188,7 +197,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             openSynthesisUponExport=generalConfigTab.openSynthesisUponExport,
         )
 
-        Parser.Parser(exporterOptions).export()
+        try:
+            Parser.Parser(exporterOptions).export()
+        except:
+            pass
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
