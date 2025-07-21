@@ -27,8 +27,24 @@ describe("React Mounting", async () => {
         vi.resetModules()
     })
 
-    test("Root element exists", () => {
+    test("Root element exists", async () => {
         expect(document.getElementById("root")).not.toBeNull()
+    })
+
+    test("Static stylesheets load", async () => {
+        await wait(500) // need time to load from web
+        expect(document.styleSheets.length).toBe(2)
+        const iterable = document.fonts.values()
+        let iterator = iterable.next()
+        let hasArtifaktFont = false
+        while (!iterator.done) {
+            if (iterator.value.family.includes("Artifakt")) {
+                hasArtifaktFont = true
+                break
+            }
+            iterator = iterable.next()
+        }
+        expect(hasArtifaktFont).toBeTruthy()
     })
 
     // importing main.tsx has side effects that I could not clean up and can only be done once (per file),
@@ -43,6 +59,12 @@ describe("React Mounting", async () => {
         expectTypeOf(window.gtag).toBeFunction()
         await annotate("expected global functions mount")
 
+        // assorted style rules from index.css
+        const style = window.getComputedStyle(document.body)
+        expect(style.overflow).toBe("hidden")
+        expect(style.overscrollBehavior).toBe("none")
+        await annotate("index.css applied correctly")
+
         expect(renderMock).toHaveBeenCalledOnce()
         assert(screen != null, "Screen was null")
 
@@ -54,6 +76,7 @@ describe("React Mounting", async () => {
         await screen.getByText("Singleplayer").click()
         expect(initWorldSpy).toHaveBeenCalledOnce()
         await annotate("Singleplayer Button calls initWorld")
+
         await wait(50)
 
         await annotate("Initial Scene DOM", { contentType: "text/html", body: document.documentElement.outerHTML })
