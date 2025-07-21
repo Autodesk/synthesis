@@ -5,6 +5,9 @@ import type Mechanism from "@/systems/physics/Mechanism"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { createBodyMock } from "../mocks/jolt"
 import IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufParser from "@/mirabuf/MirabufParser"
+import MirabufInstanceClass from "../../mirabuf/MirabufInstance"
 
 const mockPhysicsSystem = {
     createMechanismFromParser: vi.fn(() => mockMechanism()),
@@ -14,6 +17,10 @@ const mockPhysicsSystem = {
     disablePhysicsForBody: vi.fn(),
     removeBodyAssociation: vi.fn(),
     destroyMechanism: vi.fn(),
+    setBodyPosition: vi.fn(),
+    setBodyRotation: vi.fn(),
+    setShape: vi.fn(),
+    createSensor: vi.fn(),
 }
 const mockSceneRenderer = {
     sceneObjects: new Map(),
@@ -23,6 +30,8 @@ const mockSceneRenderer = {
     createSphere: vi.fn(() => ({ material: {}, geometry: {}, position: {}, rotation: {} })),
     currentCameraControls: { focusProvider: undefined, controlsType: "Orbit", locked: false },
     worldToPixelSpace: vi.fn(() => [0, 0]),
+    createToonMaterial: vi.fn(() => ({ color: 0x123456 })),
+    setupMaterial: vi.fn(),
 }
 const mockSimulationSystem = {
     registerMechanism: vi.fn(),
@@ -88,6 +97,7 @@ function mockMechanism(): Mechanism {
 }
 
 function mockBodyId() {
+    // eslint-disable-next-line
     return { GetIndex: () => 0, GetIndexAndSequenceNumber: () => 0 }
 }
 
@@ -211,5 +221,30 @@ describe("MirabufSceneObject", () => {
         bodyId.GetIndexAndSequenceNumber = () => 123
         const result = instance.setEjectable(bodyId)
         expect(result).toBe(true)
+    })
+})
+
+describe("MirabufSceneObject - Real Systems Integration", () => {
+    test("getDimensions returns proper values for Dozer robot", async () => {
+        const assembly = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
+            x => MirabufCachingService.get(x!.id, MiraType.ROBOT)
+        )
+
+        expect(assembly).toBeDefined()
+
+        const parser = new MirabufParser(assembly!)
+        const mirabufInstance = new MirabufInstanceClass(parser)
+
+        mirabufInstance.batches.forEach(batch => {
+            batch.computeBoundingBox()
+        })
+
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v9", undefined)
+
+        const originalDimensions = dozerSceneObject.getDimensions()
+
+        expect(originalDimensions.width).toBeCloseTo(0.84, 0)
+        expect(originalDimensions.height).toBeCloseTo(0.48, 0)
+        expect(originalDimensions.depth).toBeCloseTo(0.9, 0)
     })
 })
