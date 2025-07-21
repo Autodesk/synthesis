@@ -15,65 +15,59 @@ on:
 
 jobs:
   runFormatValidationScript:
-    name: ESLint Format Validation
+    defaults:
+      run:
+        working-directory: exporter/SynthesisFusionAddin/web
+    name: Biome Format Validation
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
       uses: actions/checkout@v4
-    - name: JavaScript Setup
-      uses: actions/setup-node@v4
+    - name: Bun Runtime Setup
+      uses: oven-sh/setup-bun@v2
       with:
-        node-version: 24
-
+        bun-version: latest
     - name: Cache Node Dependencies
       uses: actions/cache@v3
       with:
-        key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/package-lock.json')}}"
+        key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/bun.lock')}}"
         path: 'exporter/SynthesisFusionAddin/web/node_modules'
         restore-keys: |
           ${{runner.os}}-npm-fusion-
           ${{runner.os}}-npm
 
     - name: Install Dependencies
-      run: |
-        cd exporter/SynthesisFusionAddin/web
-        npm ci
+      run: bun install --frozen-lockfile
 
     - name: Linter & Formatter
-      if: ${{ always() }}
       run: |
-        cd exporter/SynthesisFusionAddin/web
-        npx biome --version
-        npx biome ci --error-on-warnings
+        bunx biome --version
+        bunx biome ci --error-on-warnings
 
   runBuildScript:
     name: Build
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: exporter/SynthesisFusionAddin/web
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: JavaScript Setup
-        uses: actions/setup-node@v4
+      - name: Bun Runtime Setup
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 24
-
+          bun-version: latest
       - name: Cache Node Dependencies
         uses: actions/cache@v3
         with:
-          key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/package-lock.json')}}"
+          key: "${{runner.os}}-npm-fusion-${{hashFiles('exporter/SynthesisFusionAddin/web/bun.lock')}}"
           path: 'exporter/SynthesisFusionAddin/web/node_modules'
           restore-keys: |
             ${{runner.os}}-npm-fusion-
             ${{runner.os}}-npm
 
       - name: Install Dependencies
-        run: |
-          cd exporter/SynthesisFusionAddin/web
-          npm ci
+        run: bun install --frozen-lockfile
 
       - name: Build
-        id: build
-        if: ${{ always() }}
-        run: |
-          cd exporter/SynthesisFusionAddin/web
-          npm run build && echo "Build Successful" || (echo "Build Failed" && exit 1)
+        run: bun run build

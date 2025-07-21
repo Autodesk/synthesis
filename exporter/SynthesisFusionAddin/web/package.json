@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "dev": "NODE_ENV=dev vite build --watch",
+    "dev:ui": "vite --open",
     "build": "vite build",
-    "lint": "biome check",
-    "lint:fix": "biome check --fix",
-    "prettier": "prettier src --check",
-    "prettier:fix": "prettier src --write",
+    "lint": "biome lint",
+    "lint:fix": "biome lint --fix",
+    "style": "biome format",
+    "style:fix": "biome format --fix",
     "preview": "vite preview",
-    "format": "bun run prettier:fix || npm run prettier:fix ; bun run lint:fix || npm run lint:fix"
+    "format": "bun run style:fix; bun run lint:fix"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
