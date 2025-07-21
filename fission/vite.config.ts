@@ -41,7 +41,7 @@ const localAssetsExist = await fs.access("./public/Downloadables/Mira",fs.consta
 
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode, }) => {
+export default defineConfig(({ mode }) => {
     process.env = {...process.env, ...loadEnv(mode, process.cwd())};
 
     const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")
