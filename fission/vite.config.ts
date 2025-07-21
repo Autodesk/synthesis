@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react-swc"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import glsl from "vite-plugin-glsl"
 import { loadEnv, ProxyOptions } from "vite"
-
+import fs from "node:fs/promises"
 const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
@@ -37,34 +37,45 @@ if (useSsl) {
     plugins.push(basicSsl())
 }
 
+const localAssetsExist = await fs.access("./public/Downloadables/Mira",fs.constants.R_OK).then(() => true).catch(() => false)
+
+
 // https://vitejs.dev/config/
 export default defineConfig(({ mode, }) => {
     process.env = {...process.env, ...loadEnv(mode, process.cwd())};
-    const useLocalAssets = mode === "test" || process.env.DEV
+
+    const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")
+
+    if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")) {
+        console.warn("Can't find local assets, do you need to run `npm run assetpack`?")
+    }
+
+    console.log(`Using ${useLocalAssets?"local":"remote"} mirabuf assets`)
+
     const proxies: Record<string, ProxyOptions> = {}
     proxies["/api/mira"] = useLocalAssets
         ? {
-              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
-              changeOrigin: true,
-              secure: false,
-              rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira").replace("robots", "Robots").replace("fields", "Fields"),
-          }
+            target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+            changeOrigin: true,
+            secure: false,
+            rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira").replace("robots", "Robots").replace("fields", "Fields"),
+        }
         : {
-              target: `https://synthesis.autodesk.com/`,
-              changeOrigin: true,
-              secure: true,
-          }
+            target: `https://synthesis.autodesk.com/`,
+            changeOrigin: true,
+            secure: true,
+        }
     proxies["/api/aps"] = useLocalAPS
         ? {
-              target: `http://localhost:${dockerServerPort}/`,
-              changeOrigin: true,
-              secure: false,
-          }
+            target: `http://localhost:${dockerServerPort}/`,
+            changeOrigin: true,
+            secure: false,
+        }
         : {
-              target: `https://synthesis.autodesk.com/`,
-              changeOrigin: true,
-              secure: true,
-          }
+            target: `https://synthesis.autodesk.com/`,
+            changeOrigin: true,
+            secure: true,
+        }
 
     return {
         plugins: plugins,
