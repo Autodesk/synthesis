@@ -32,7 +32,7 @@ describe("React Mounting", async () => {
     })
 
     test("Static stylesheets load", async () => {
-        await wait(200) // need time to load from web
+        await wait(500) // need time to load from web
         expect(document.styleSheets.length).toBe(2)
         const iterable = document.fonts.values()
         let iterator = iterable.next()
