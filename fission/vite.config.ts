@@ -39,7 +39,6 @@ if (useSsl) {
 
 const localAssetsExist = await fs.access("./public/Downloadables/Mira",fs.constants.R_OK).then(() => true).catch(() => false)
 
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
     process.env = {...process.env, ...loadEnv(mode, process.cwd())};
