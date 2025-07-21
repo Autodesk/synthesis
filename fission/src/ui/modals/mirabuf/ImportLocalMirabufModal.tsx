@@ -61,13 +61,8 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             }
         }
 
-        modal!.onCancel.addFunc(onCancel)
-        modal!.onAccept.addFunc(onAccept)
-
-        return () => {
-            modal!.onCancel.removeFunc(onCancel)
-            modal!.onAccept.removeFunc(onAccept)
-        }
+        modal!.onCancel.setDefaultFunc(onCancel)
+        modal!.onAccept.setDefaultFunc(onAccept)
     }, [selectedFile, miraType, openPanel, modal])
 
     return (

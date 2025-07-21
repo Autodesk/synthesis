@@ -47,13 +47,8 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }
             openModal(<RoboRIOModal />, modal)
         }
 
-        modal!.onAccept.addFunc(onAccept)
-        modal!.onCancel.addFunc(onCancel)
-
-        return () => {
-            modal!.onAccept.removeFunc(onAccept)
-            modal!.onCancel.removeFunc(onCancel)
-        }
+        modal!.onAccept.setDefaultFunc(onAccept)
+        modal!.onCancel.setDefaultFunc(onCancel)
     }, [brain, name, checkedPorts, checkedDrivers, openModal, modal])
 
     return (

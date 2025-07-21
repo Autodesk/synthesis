@@ -19,7 +19,6 @@ export enum CloseType {
 interface UIScreenCallbacks<T> {
     onClose?: () => void
     onCancel?: () => void
-    onAccept?: (x?: T) => void
     onBeforeAccept?: () => T
 }
 
@@ -134,16 +133,13 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             modal?.onClose?.(CloseType.Overwrite)
 
             newModal.onClose = new UICallback()
-            if (props.onClose) newModal.onClose.addFunc(props.onClose)
+            if (props.onClose) newModal.onClose.setUserDefinedFunc(props.onClose)
 
             newModal.onBeforeAccept = new UICallback()
-            if (props.onBeforeAccept) newModal.onBeforeAccept.addFunc(props.onBeforeAccept)
-
-            newModal.onAccept = new UICallback()
-            if (props.onAccept) newModal.onAccept.addFunc(props.onAccept)
+            if (props.onBeforeAccept) newModal.onBeforeAccept.setUserDefinedFunc(props.onBeforeAccept)
 
             newModal.onCancel = new UICallback()
-            if (props.onCancel) newModal.onCancel.addFunc(props.onCancel)
+            if (props.onCancel) newModal.onCancel.setUserDefinedFunc(props.onCancel)
 
             setModal(newModal as Modal<unknown>)
             return id
@@ -172,16 +168,13 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             } as Panel<T>
 
             panel.onClose = new UICallback()
-            if (props.onClose) panel.onClose.addFunc(props.onClose)
+            if (props.onClose) panel.onClose.setUserDefinedFunc(props.onClose)
 
-            panel.onBeforeAccept = new UICallback(1)
-            if (props.onBeforeAccept) panel.onBeforeAccept.addFunc(props.onBeforeAccept)
-
-            panel.onAccept = new UICallback()
-            if (props.onAccept) panel.onAccept.addFunc(props.onAccept)
+            panel.onBeforeAccept = new UICallback()
+            if (props.onBeforeAccept) panel.onBeforeAccept.setUserDefinedFunc(props.onBeforeAccept)
 
             panel.onCancel = new UICallback()
-            if (props.onCancel) panel.onCancel.addFunc(props.onCancel)
+            if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
 
             setPanels([...panels, panel as Panel<unknown>])
             return id

@@ -30,11 +30,8 @@ const AssignNewSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             setSelectedScheme(scheme)
             openPanel(<ConfigurePanel />, modal)
         }
-        modal!.onAccept.addFunc(onAccept)
+        modal!.onAccept.setDefaultFunc(onAccept)
         modal!.props.hideCancel = true
-        return () => {
-            modal!.onAccept.removeFunc(onAccept)
-        }
     }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])
 
     return <TextField label="Name" placeholder="" defaultValue={name} onChange={e => setName(e.target.value)} />

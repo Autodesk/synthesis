@@ -48,13 +48,8 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
             SoundPlayer.changeVolume()
         }
 
-        modal!.onAccept.addFunc(save)
-        modal!.onCancel.addFunc(onCancel)
-
-        return () => {
-            modal!.onAccept.removeFunc(save)
-            modal!.onCancel.removeFunc(onCancel)
-        }
+        modal!.onAccept.setDefaultFunc(save)
+        modal!.onCancel.setDefaultFunc(onCancel)
     }, [modal, save])
 
     return (

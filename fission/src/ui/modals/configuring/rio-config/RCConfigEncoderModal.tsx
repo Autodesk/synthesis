@@ -47,13 +47,8 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal, parent })
         }
         const onCancel = () => openModal(<RoboRIOModal />, modal)
 
-        modal!.onAccept.addFunc(onAccept)
-        modal!.onCancel.addFunc(onCancel)
-
-        return () => {
-            modal!.onAccept.removeFunc(onAccept)
-            modal!.onCancel.removeFunc(onCancel)
-        }
+        modal!.onAccept.setDefaultFunc(onAccept)
+        modal!.onCancel.setDefaultFunc(onCancel)
     }, [brain, selectedDevice, selectedStimulus, openModal, modal])
 
     return (

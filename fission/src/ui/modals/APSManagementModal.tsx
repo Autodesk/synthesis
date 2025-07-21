@@ -12,11 +12,7 @@ const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) =
             APS.logout()
         }
 
-        modal!.onAccept.addFunc(onAccept)
-
-        return () => {
-            modal!.onAccept.removeFunc(onAccept)
-        }
+        modal!.onAccept.setDefaultFunc(onAccept)
     }, [modal])
 
     return (

@@ -1,41 +1,30 @@
+/**
+ * Holds 
+ */
 export class UICallback<T extends unknown[], U> extends Function {
-    private _funcs: Set<(...args: T) => U>
-    private _maxSize: number
+    private _userDefinedFunc?: (...args: T) => U
+    private _defaultFunc?: (...args: T) => U
+    private __self__: UICallback<T, U>
 
-    constructor(maxSize: number = -1) {
+    constructor() {
         super("...args", "return this.__self__.__call__(...args)")
         const self = this.bind(this)
         this.__self__ = self
-        self._funcs = new Set()
-        self._maxSize = maxSize
         return self
     }
 
-    addFunc(f: (...args: T) => U) {
-        if (this._maxSize !== -1 && this._funcs.size >= this._maxSize) {
-            throw new Error(`Cannot add another function to UICallback! Already at max size of ${this._maxSize}`)
-        }
-
-        this._funcs.add(f)
-        console.log(`TRYING ADDING FUNC ${f} FOR ${this._funcs.size} FUNCS`)
+    setUserDefinedFunc(f: (...args: T) => U) {
+        this._userDefinedFunc = f;
     }
 
-    setFunc(f: (...args: T) => U) {
-        this._funcs.clear()
-        this._funcs.add(f)
+    setDefaultFunc(f: (...args: T) => U) {
+        this._defaultFunc = f;
     }
 
-    setFuncs(f: ((...args: T) => U)[]) {
-        this._funcs.clear()
-        f.forEach(this._funcs.add)
-    }
+    __call__(...args: T): U | undefined {
+        const userDefinedRet = this._userDefinedFunc?.(...args);
+        const defaultRet = this._defaultFunc?.(...args);
 
-    removeFunc(f: (...args: T) => U) {
-        this._funcs.delete(f)
-    }
-
-    __call__(...args: T): U {
-        console.log("CALLING UI CALLBACK", args)
-        return [...this._funcs].reduce((_prev, f, _i, _arr) => f(...args), undefined as U)
+        return userDefinedRet ?? defaultRet;
     }
 }

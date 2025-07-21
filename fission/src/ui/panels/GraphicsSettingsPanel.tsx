@@ -46,13 +46,8 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         }
 
         // TODO: make sure useEffect rerun doesn't add a ton of callbacks
-        panel!.onAccept.addFunc(onAccept)
-        panel!.onCancel.addFunc(onCancel)
-
-        return () => {
-            panel!.onAccept.removeFunc(onAccept)
-            panel!.onCancel.removeFunc(onCancel)
-        }
+        panel!.onAccept.setDefaultFunc(onAccept)
+        panel!.onCancel.setDefaultFunc(onCancel)
     }, [fancyShadows, lightIntensity, maxFar, cascades, shadowMapSize, antiAliasing, reload])
 
     return (
