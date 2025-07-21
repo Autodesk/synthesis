@@ -13,11 +13,7 @@ const ViewModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             console.log("Selected view:", view)
         }
 
-        modal!.onAccept.addFunc(onAccept)
-
-        return () => {
-            modal!.onAccept.removeFunc(onAccept)
-        }
+        modal!.onAccept.setDefaultFunc(onAccept)
     }, [modal, view])
 
     return (
