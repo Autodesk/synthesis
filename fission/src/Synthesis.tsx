@@ -14,6 +14,7 @@ import {
     TooltipType,
     useTooltipManager,
 } from "@/ui/TooltipContext"
+import { applyInitialGraphicsSettings } from "@/ui/panels/GraphicsSettingsPanel"
 import MainHUD from "@/components/MainHUD"
 import DownloadAssetsModal from "@/modals/DownloadAssetsModal"
 import ExitSynthesisModal from "@/modals/ExitSynthesisModal"
@@ -100,6 +101,8 @@ const Synthesis: React.FC = () => {
                 modalId="main-menu"
                 startSingleplayerCallback={() => {
                     World.initWorld()
+
+                    applyInitialGraphicsSettings()
 
                     if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
                         setConsentPopupDisable(false)

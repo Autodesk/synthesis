@@ -24,6 +24,7 @@ export type GlobalPreferences = {
     MuteAllSound: boolean
     SFXVolume: number
     ShowCenterOfMassIndicators: boolean
+    GraphicsOptimizationApplied: boolean
 }
 
 export type GlobalPreference = keyof GlobalPreferences
@@ -64,6 +65,7 @@ export const defaultGlobalPreferences: GlobalPreferences = {
     MuteAllSound: false,
     SFXVolume: 25,
     ShowCenterOfMassIndicators: false,
+    GraphicsOptimizationApplied: false,
 }
 
 export type GraphicsPreferences = {
