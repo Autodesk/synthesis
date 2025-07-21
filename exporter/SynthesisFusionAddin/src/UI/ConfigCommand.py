@@ -19,7 +19,7 @@ import src.UI.GamepieceConfigTab as GamepieceConfigTab
 import src.UI.GeneralConfigTab as GeneralConfigTab
 import src.UI.JointConfigTab as JointConfigTab
 import src.UI.TaggingConfigTab as TaggingConfigTab
-from src import APP_WEBSITE_URL, gm
+from src import APP_WEBSITE_URL, Logging, gm
 from src.APS.APS import getAuth, getUserInfo
 from src.Logging import getLogger, logFailure
 from src.Parser.ExporterOptions import ExporterOptions
@@ -41,6 +41,8 @@ INPUTS_ROOT: adsk.core.CommandInputs
 PALETTE_ID = "synthesis_configure"
 USE_NEW_UI = True
 USE_OLD_UI = False  # allow both independently for testing
+
+logger = Logging.getLogger()
 
 
 def reload() -> None:
@@ -144,12 +146,15 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                     if len(fusionBody):
                         taggingConfigTab.addTag(fusionBody[0], tag)
 
-            getAuth()
-            user_info = getUserInfo()
-            apsSettings = INPUTS_ROOT.addTabCommandInput(
-                "aps_settings", f"APS Settings ({user_info.given_name if user_info else 'Not Signed In'})"
-            )
-            apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
+        getAuth()
+        user_info_result = getUserInfo()
+        if user_info_result.is_err():
+            user_name = "Not Signed In"
+        else:
+            user_name = user_info_result.unwrap().given_name
+
+        apsSettings = INPUTS_ROOT.addTabCommandInput("aps_settings", f"APS Settings ({user_name})")
+        apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 
         if USE_NEW_UI:
             palettes = gm.ui.palettes
@@ -378,9 +383,13 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
             moduleExporterOptions.ExporterOptions().readFromDesign() or moduleExporterOptions.ExporterOptions()
         )
 
-        fullName = design.rootComponent.name
+        fullName: str = design.rootComponent.name
         versionMatch = re.search(r"v\d+", fullName)
-        docName = (fullName[: versionMatch.start()].strip() if versionMatch else fullName).replace(" ", "_")
+        if versionMatch:
+            strippedName: str = fullName[0 : versionMatch.start()].strip()
+        else:
+            strippedName = fullName
+        docName = strippedName.replace(" ", "_")
         docVersion = versionMatch.group() if versionMatch else "v0"
 
         processedFileName = gm.app.activeDocument.name.replace(" ", "_")
@@ -422,7 +431,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
         logger.info("OLDUI")
         logger.info(exporterOptions)
 
-        Parser.Parser(exporterOptions).export()
+        try:
+            Parser.Parser(exporterOptions).export()
+        except:
+            pass
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
