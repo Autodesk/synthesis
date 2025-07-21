@@ -25,7 +25,7 @@ class DefaultMatchModeConfigs {
             teleopTime: 135,
             endgameTime: 20,
             ignoreRotation: true,
-            maxHeight: 1.2192,
+            maxHeight: 4,
             heightPenalty: 2,
         }
     }
@@ -39,7 +39,7 @@ class DefaultMatchModeConfigs {
             teleopTime: 135,
             endgameTime: 30,
             ignoreRotation: true,
-            maxHeight: 1.9812,
+            maxHeight: 6.5,
             heightPenalty: 5,
         }
     }
