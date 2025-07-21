@@ -5,7 +5,10 @@ import MatchMode from "./MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import { convertFeetToMeters } from "@/util/UnitConversions"
 
+const PENALTY_COOLDOWN = 1000
+
 class RobotDimensionTracker {
+    private static _robotHeightPenalties: Map<string, number> = new Map()
     private static _ignoreRotation: boolean = true
     private static _maxHeight: number = Infinity
     private static _heightPenalty: number = 0
@@ -27,8 +30,10 @@ class RobotDimensionTracker {
             const dimensions = this._ignoreRotation ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
 
             if (dimensions.height > this._maxHeight) {
-                console.log(`Robot ${robot.assemblyName} is too tall!`)
-                SimulationSystem.robotPenalty(robot, this._heightPenalty, "Height Expansion Limit")
+                if ((this._robotHeightPenalties.get(robot.assemblyName) ?? 0) < Date.now() - PENALTY_COOLDOWN) {
+                    this._robotHeightPenalties.set(robot.assemblyName, Date.now() + this._heightPenalty)
+                    SimulationSystem.robotPenalty(robot, this._heightPenalty, "Height Expansion Limit")
+                }
             }
         })
     }
