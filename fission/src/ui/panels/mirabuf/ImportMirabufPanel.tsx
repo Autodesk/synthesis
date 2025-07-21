@@ -383,7 +383,6 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .forEach(path => cacheRemoteOnly(path, miraType))
 
             closePanel(panelId)
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [manifest, cached, cacheRemoteOnly, closePanel, panelId])
     }
 
