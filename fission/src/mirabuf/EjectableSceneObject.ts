@@ -69,7 +69,11 @@ class EjectableSceneObject extends SceneObject {
 
             this._startTranslation = new THREE.Vector3(0, 0, 0)
             this._startRotation = new THREE.Quaternion(0, 0, 0, 1)
-            convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).decompose(this._startTranslation, this._startRotation, new THREE.Vector3(1, 1, 1))
+            convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).decompose(
+                this._startTranslation,
+                this._startRotation,
+                new THREE.Vector3(1, 1, 1)
+            )
 
             this._animationDuration = EjectableSceneObject._defaultAnimationDuration
             this._animationStartTime = performance.now()
@@ -129,7 +133,11 @@ class EjectableSceneObject extends SceneObject {
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))
 
             World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(position), false)
-            World.physicsSystem.setBodyRotation(this._gamePieceBodyId, convertThreeQuaternionToJoltQuat(rotation), false)
+            World.physicsSystem.setBodyRotation(
+                this._gamePieceBodyId,
+                convertThreeQuaternionToJoltQuat(rotation),
+                false
+            )
         }
     }
 
@@ -152,8 +160,8 @@ class EjectableSceneObject extends SceneObject {
         World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
         gpBody.SetLinearVelocity(
             parentBody
-            .GetLinearVelocity()
-            .Add(convertThreeVector3ToJoltVec3(ejectDir.multiplyScalar(this._ejectVelocity)))
+                .GetLinearVelocity()
+                .Add(convertThreeVector3ToJoltVec3(ejectDir.multiplyScalar(this._ejectVelocity)))
         )
         gpBody.SetAngularVelocity(parentBody.GetAngularVelocity())
 
