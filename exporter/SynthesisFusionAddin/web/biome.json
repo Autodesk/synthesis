@@ -18,7 +18,12 @@
   },
   "linter": {
     "enabled": true,
-    "rules": { "recommended": true },
+    "rules": {
+      "recommended": true,
+      "correctness": {
+        "noUnusedImports": "warn"
+      }
+    },
     "includes": ["**", "!dist", "!public", "!node_modules", "!.vite"]
   },
   "javascript": {

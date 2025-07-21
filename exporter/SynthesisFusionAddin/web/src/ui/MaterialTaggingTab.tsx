@@ -1,7 +1,5 @@
 import DeleteIcon from "@mui/icons-material/Delete"
 import {
-    Box,
-    Button,
     IconButton,
     MenuItem,
     Paper,
@@ -16,6 +14,7 @@ import {
 
 import { type FusionBody, selectBody } from "../lib"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
+import FusionSelectButton from "./components/SelectButton.tsx"
 
 export const MATERIALS = ["Softbody", "Rigid", "Chain", "Spring", "Rope"] as const
 export type Material = (typeof MATERIALS)[number]
@@ -94,43 +93,25 @@ function MaterialTaggingTab({ tags, updateTags, selection }: MaterialTaggingTabP
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Box
-                paddingTop="15px"
-                style={{
-                    display: "flex",
-                    justifyContent: "left",
-                    alignItems: "center",
-                    gap: "10px",
-                }}
-            >
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    loading={selection.isSelecting}
-                    sx={{ px: "20px" }}
-                    loadingIndicator={"Selecting..."}
-                    onClick={async () => {
-                        selection.setIsSelecting(true)
-                        const data = await selectBody()
-
-                        selection.setIsSelecting(false)
-                        if (data == null) return
-                        if (tags.some(tag => tag.entityToken === data.entityToken)) {
-                            console.warn("attempted to add existing element")
-                            Global_SetAlert("warning", "Component already added")
-                            return
-                        }
-                        updateTags(draft => {
-                            draft.push({
-                                ...data,
-                                material: "Rigid",
-                            })
+            <FusionSelectButton
+                label={"Add Body"}
+                selection={selection}
+                onClick={selectBody}
+                onSelection={data => {
+                    if (data == null) return
+                    if (tags.some(tag => tag.entityToken === data.entityToken)) {
+                        console.warn("attempted to add existing element")
+                        Global_SetAlert("warning", "Component already added")
+                        return
+                    }
+                    updateTags(draft => {
+                        draft.push({
+                            ...data,
+                            material: "Rigid",
                         })
-                    }}
-                >
-                    Add Body
-                </Button>
-            </Box>
+                    })
+                }}
+            />
         </>
     )
 }

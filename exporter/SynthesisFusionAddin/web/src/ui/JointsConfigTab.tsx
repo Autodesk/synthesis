@@ -1,7 +1,5 @@
 import DeleteIcon from "@mui/icons-material/Delete"
 import {
-    Box,
-    Button,
     Checkbox,
     IconButton,
     InputAdornment,
@@ -19,6 +17,7 @@ import {
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 import { createJoint, jointInfo, selectJoint, signalInfo } from "../lib/joints"
 import { type Joint, JointParentType, JointType, SignalType, WheelType } from "../lib/types"
+import FusionSelectButton from "./components/SelectButton.tsx"
 
 interface JointsConfigTabProps {
     joints: Joint[]
@@ -191,48 +190,21 @@ function JointsConfigTab({ joints, updateJoints, selection }: JointsConfigTabPro
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Box
-                paddingTop="15px"
-                style={{
-                    display: "flex",
-                    justifyContent: "left",
-                    alignItems: "center",
-                    gap: "10px",
+            <FusionSelectButton
+                label={"Add Joint"}
+                selection={selection}
+                onClick={selectJoint}
+                onSelection={data => {
+                    if (data == null) return
+                    if (joints.some(joint => joint.jointToken === data.entityToken)) {
+                        Global_SetAlert("warning", "Joint already selected")
+                        return
+                    }
+                    updateJoints(draft => {
+                        draft.push(createJoint(data))
+                    })
                 }}
-            >
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    sx={{ px: "20px" }}
-                    loading={selection.isSelecting}
-                    loadingIndicator={"Selecting..."}
-                    title={"Select a joint in Fusion"}
-                    onClick={async () => {
-                        selection.setIsSelecting(true)
-                        const data = await selectJoint()
-                        selection.setIsSelecting(false)
-                        if (data == null) return
-                        if (joints.some(joint => joint.jointToken === data.entityToken)) {
-                            Global_SetAlert("warning", "Joint already selected")
-                            return
-                        }
-                        updateJoints(draft => {
-                            draft.push(createJoint(data))
-                        })
-                    }}
-                >
-                    Add Joint
-                </Button>
-                {/*<Button*/}
-                {/*    disabled={!selectingJoint}*/}
-                {/*    onClick={async () => {*/}
-                {/*        jointCancelCallback.current?.()*/}
-                {/*    }}*/}
-                {/*    color="warning"*/}
-                {/*    variant="contained">*/}
-                {/*    Cancel*/}
-                {/*</Button>*/}
-            </Box>
+            />
 
             <h4>
                 {joints.filter(j => j.isWheel).length} Wheel{joints.filter(j => j.isWheel).length !== 1 ? "s" : ""}

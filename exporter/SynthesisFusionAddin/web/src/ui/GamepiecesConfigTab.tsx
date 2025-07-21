@@ -2,7 +2,6 @@ import BalanceIcon from "@mui/icons-material/Balance"
 import DeleteIcon from "@mui/icons-material/Delete"
 import {
     Box,
-    Button,
     IconButton,
     InputAdornment,
     List,
@@ -23,6 +22,7 @@ import {
 import { selectGamepiece } from "../lib"
 import { Global_SetAlert } from "../lib/GlobalUtils.tsx"
 import type { Gamepiece, GeneralConfig } from "../lib/types"
+import FusionSelectButton from "./components/SelectButton.tsx"
 
 interface GamepiecesConfigTabProps {
     gamepieces: Gamepiece[]
@@ -168,55 +168,36 @@ function GamepiecesConfigTab({
                     </TableBody>
                 </Table>
             </TableContainer>
-            <Box
-                paddingTop="15px"
-                style={{
-                    display: "flex",
-                    justifyContent: "left",
-                    alignItems: "center",
-                    gap: "10px",
-                }}
-            >
-                <Button
-                    variant="contained"
-                    color="secondary"
-                    loading={selection.isSelecting}
-                    sx={{ px: "20px" }}
-                    loadingIndicator={"Selecting..."}
-                    onClick={async () => {
-                        selection.setIsSelecting(true)
-
-                        const data = await selectGamepiece()
-
-                        selection.setIsSelecting(false)
-                        if (data == null) return
-                        const allDuplicates = data.every(newgamepiece => {
-                            if (gamepieces.some(gamepiece => gamepiece.entityIDs.includes(newgamepiece.entityIDs[0]))) {
-                                console.warn("attempted to add existing element")
-                                Global_SetAlert("warning", "Component already added")
-                                return true
-                            }
-                            return false
-                        })
-                        if (allDuplicates) {
-                            return
+            <FusionSelectButton
+                label={"Add Gamepiece"}
+                selection={selection}
+                onClick={selectGamepiece}
+                onSelection={data => {
+                    if (data == null) return
+                    const allDuplicates = data.every(newgamepiece => {
+                        if (gamepieces.some(gamepiece => gamepiece.entityIDs.includes(newgamepiece.entityIDs[0]))) {
+                            console.warn("attempted to add existing element")
+                            Global_SetAlert("warning", "Component already added")
+                            return true
                         }
-                        updateGamepieces(draft => {
-                            data.forEach(gamepiece => {
-                                const roundedMass = Math.round(gamepiece.mass * 100) / 100
-                                draft.push({
-                                    ...gamepiece,
-                                    userDefinedMass: roundedMass,
-                                    calculatedMass: roundedMass,
-                                    friction: 0.5,
-                                })
+                        return false
+                    })
+                    if (allDuplicates) {
+                        return
+                    }
+                    updateGamepieces(draft => {
+                        data.forEach(gamepiece => {
+                            const roundedMass = Math.round(gamepiece.mass * 100) / 100
+                            draft.push({
+                                ...gamepiece,
+                                userDefinedMass: roundedMass,
+                                calculatedMass: roundedMass,
+                                friction: 0.5,
                             })
                         })
-                    }}
-                >
-                    Add Gamepiece
-                </Button>
-            </Box>
+                    })
+                }}
+            />
         </>
     )
 }
