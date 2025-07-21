@@ -344,6 +344,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
+    // biome-ignore lint: Making closePanel a dep causes a depth exceeded error
     useEffect(() => {
         const allSchemes = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
@@ -367,7 +368,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         closePanel("choose-scheme")
-    }, [closePanel])
+    }, [])
 
     return (
         <Panel
