@@ -6,12 +6,15 @@ vi.mock("@/systems/physics/PhysicsSystem", () => ({
         update: vi.fn(),
         destroy: vi.fn(),
     })),
+    getLastDeltaT: vi.fn(() => 0.016),
+    BodyAssociate: vi.fn(),
 }))
 
 vi.mock("@/systems/scene/SceneRenderer", () => ({
     default: vi.fn(() => ({
         update: vi.fn(),
         destroy: vi.fn(),
+        sceneObjects: new Map(), // Add the missing sceneObjects property
     })),
 }))
 
