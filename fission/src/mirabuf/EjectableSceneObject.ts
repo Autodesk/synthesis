@@ -26,10 +26,8 @@ class EjectableSceneObject extends SceneObject {
     private _isAnimating = false
     private _animationStartTime = 0
     private _animationDuration = EjectableSceneObject._defaultAnimationDuration
-    private _startPosition?: THREE.Vector3
-    private _endPosition?: THREE.Vector3
-    private _startQuaternion?: THREE.Quaternion
-    private _endQuaternion?: THREE.Quaternion
+    private _startMatrix?: THREE.Matrix4
+    private _endMatrix?: THREE.Matrix4
 
     private static _defaultAnimationDuration = 0.5
 
@@ -70,8 +68,6 @@ class EjectableSceneObject extends SceneObject {
 
             // Animation start at game piece
             const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
-            this._startPosition = convertJoltVec3ToThreeVector3(gpBody.GetPosition())
-            this._startQuaternion = convertJoltQuatToThreeQuaternion(gpBody.GetRotation())
 
             // Compute the ejectable position/rotation 
             if (this._parentBodyId && this._deltaTransformation) {
@@ -86,11 +82,20 @@ class EjectableSceneObject extends SceneObject {
                             .clone()
                             .premultiply(convertJoltMat44ToThreeMatrix4(parentBody.GetWorldTransform()))
                     )
+                // Compose start and end matrices directly
+                this._startMatrix = new THREE.Matrix4().compose(
+                    convertJoltVec3ToThreeVector3(gpBody.GetPosition()),
+                    convertJoltQuatToThreeQuaternion(gpBody.GetRotation()),
+                    new THREE.Vector3(1, 1, 1)
+                )
                 const endPos = new THREE.Vector3()
                 const endQuat = new THREE.Quaternion()
                 bodyTransform.decompose(endPos, endQuat, new THREE.Vector3(1, 1, 1))
-                this._endPosition = endPos
-                this._endQuaternion = endQuat
+                this._endMatrix = new THREE.Matrix4().compose(
+                    endPos,
+                    endQuat,
+                    new THREE.Vector3(1, 1, 1)
+                )
             }
 
             this._animationDuration = EjectableSceneObject._defaultAnimationDuration
@@ -113,15 +118,33 @@ class EjectableSceneObject extends SceneObject {
     }
 
     public update(): void {
-        // Animation logic: lerp from start to held position
-        if (this._isAnimating && this._gamePieceBodyId && this._startPosition && this._endPosition && this._startQuaternion && this._endQuaternion) {
+        // Animation logic: interpolate full transform (matrix)
+        if (this._isAnimating && this._gamePieceBodyId && this._startMatrix && this._endMatrix) {
             const now = performance.now()
             const elapsed = (now - this._animationStartTime) / 1000
             const t = Math.min(elapsed / this._animationDuration, 1)
 
-            const pos = new THREE.Vector3().lerpVectors(this._startPosition, this._endPosition, t)
-            const quat = new THREE.Quaternion().copy(this._startQuaternion).slerp(this._endQuaternion, t)
+            // Decompose start and end
+            const startPos = new THREE.Vector3()
+            const startQuat = new THREE.Quaternion()
+            const startScale = new THREE.Vector3()
+            this._startMatrix.decompose(startPos, startQuat, startScale)
 
+            const endPos = new THREE.Vector3()
+            const endQuat = new THREE.Quaternion()
+            const endScale = new THREE.Vector3()
+            this._endMatrix.decompose(endPos, endQuat, endScale)
+
+            // Interpolate
+            const pos = new THREE.Vector3().lerpVectors(startPos, endPos, t)
+            const quat = new THREE.Quaternion().copy(startQuat).slerp(endQuat, t)
+            const scale = new THREE.Vector3().lerpVectors(startScale, endScale, t)
+
+            // Compose interpolated matrix
+            const interpMatrix = new THREE.Matrix4().compose(pos, quat, scale)
+
+            // Decompose to set position/rotation
+            interpMatrix.decompose(pos, quat, scale)
             World.physicsSystem.setBodyPosition(this._gamePieceBodyId, convertThreeVector3ToJoltRVec3(pos), false)
             World.physicsSystem.setBodyRotation(this._gamePieceBodyId, convertThreeQuaternionToJoltQuat(quat), false)
 
