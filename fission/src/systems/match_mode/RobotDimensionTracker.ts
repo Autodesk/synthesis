@@ -2,9 +2,18 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import SceneRenderer from "../scene/SceneRenderer"
 import MatchMode from "./MatchMode"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 class RobotDimensionTracker {
-    private static readonly IGNORE_ROTATION = true
+    private static _ignoreRotation: boolean = true
+    private static _maxHeight: number = Infinity
+    private static _heightPenalty: number = 0
+
+    public static setConfigValues(ignoreRotation: boolean, maxHeight: number, heightPenalty: number) {
+        this._ignoreRotation = ignoreRotation
+        this._maxHeight = maxHeight
+        this._heightPenalty = heightPenalty
+    }
 
     public static update(_deltaT: number, sceneRenderer: SceneRenderer): void {
         if (!MatchMode.getInstance().isMatchEnabled()) return
@@ -14,17 +23,11 @@ class RobotDimensionTracker {
         )
 
         robots.forEach(robot => {
-            const dimensions = this.IGNORE_ROTATION ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
+            const dimensions = this._ignoreRotation ? robot.getDimensionsWithoutRotation() : robot.getDimensions()
 
-            // TODO add penalty tracking
-            if (this.IGNORE_ROTATION) {
-                console.log(
-                    `Robot ${robot.assemblyName}: ${dimensions.width.toFixed(2)} x ${dimensions.height.toFixed(2)} x ${dimensions.depth.toFixed(2)} (unrotated)`
-                )
-            } else {
-                console.log(
-                    `Robot ${robot.assemblyName}: ${dimensions.width.toFixed(2)} x ${dimensions.height.toFixed(2)} x ${dimensions.depth.toFixed(2)} (rotated)`
-                )
+            if (dimensions.height > this._maxHeight) {
+                console.log(`Robot ${robot.assemblyName} is too tall!`)
+                SimulationSystem.robotPenalty(robot, this._heightPenalty, "Height Expansion Limit")
             }
         })
     }

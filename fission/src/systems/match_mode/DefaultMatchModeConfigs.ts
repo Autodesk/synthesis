@@ -10,6 +10,9 @@ class DefaultMatchModeConfigs {
             autonomousTime: 15,
             teleopTime: 135,
             endgameTime: 20,
+            ignoreRotation: true,
+            maxHeight: Infinity,
+            heightPenalty: 0,
         }
     }
 
@@ -21,6 +24,9 @@ class DefaultMatchModeConfigs {
             autonomousTime: 15,
             teleopTime: 135,
             endgameTime: 20,
+            ignoreRotation: true,
+            maxHeight: 1.2192,
+            heightPenalty: 2,
         }
     }
 
@@ -32,6 +38,9 @@ class DefaultMatchModeConfigs {
             autonomousTime: 15,
             teleopTime: 135,
             endgameTime: 30,
+            ignoreRotation: true,
+            maxHeight: 1.9812,
+            heightPenalty: 5,
         }
     }
 
@@ -43,6 +52,9 @@ class DefaultMatchModeConfigs {
             autonomousTime: 5,
             teleopTime: 15,
             endgameTime: 5,
+            ignoreRotation: true,
+            maxHeight: Infinity,
+            heightPenalty: 0,
         }
     }
 

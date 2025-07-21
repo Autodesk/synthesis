@@ -5,6 +5,7 @@ import beep from "@/assets/sound-files/beep.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
+import RobotDimensionTracker from "./RobotDimensionTracker"
 
 export enum MatchModeType {
     SANDBOX = 0,
@@ -17,6 +18,9 @@ export enum MatchModeType {
 export const DEFAULT_AUTONOMOUS_TIME = 15
 export const DEFAULT_TELEOP_TIME = 135
 export const DEFAULT_ENDGAME_TIME = 20
+export const DEFAULT_IGNORE_ROTATION = true
+export const DEFAULT_MAX_HEIGHT = 0
+export const DEFAULT_HEIGHT_PENALTY = 2
 
 class MatchMode {
     private static _instance: MatchMode
@@ -36,6 +40,9 @@ class MatchMode {
         autonomousTime: DEFAULT_AUTONOMOUS_TIME,
         teleopTime: DEFAULT_TELEOP_TIME,
         endgameTime: DEFAULT_ENDGAME_TIME,
+        ignoreRotation: DEFAULT_IGNORE_ROTATION,
+        maxHeight: DEFAULT_MAX_HEIGHT,
+        heightPenalty: DEFAULT_HEIGHT_PENALTY,
     }
 
     private constructor() {}
@@ -47,6 +54,7 @@ class MatchMode {
 
     setMatchModeConfig(config: MatchModeConfig) {
         this._matchModeConfig = config
+        RobotDimensionTracker.setConfigValues(config.ignoreRotation, config.maxHeight, config.heightPenalty)
     }
 
     startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {

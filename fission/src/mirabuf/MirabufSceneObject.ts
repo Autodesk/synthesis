@@ -635,7 +635,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     /**
      * Gets the maximum dimensions (length, width, height) of the mirabuf object.
      *
-     * @returns An object containing the width (x), height (y), and depth (z) dimensions.
+     * @returns An object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
     public getDimensions(): { width: number; height: number; depth: number } {
         const boundingBox = this.computeBoundingBox()
@@ -652,7 +652,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     /**
      * Calculates the robot's dimensions as if it had no rotation applied.
      *
-     * @returns the object containing the width (x), height (y), and depth (z) dimensions.
+     * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
     public getDimensionsWithoutRotation(): { width: number; height: number; depth: number } {
         const rootNodeId = this.getRootNodeId()

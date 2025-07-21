@@ -14,6 +14,9 @@ import MatchMode, {
     DEFAULT_AUTONOMOUS_TIME,
     DEFAULT_TELEOP_TIME,
     DEFAULT_ENDGAME_TIME,
+    DEFAULT_IGNORE_ROTATION,
+    DEFAULT_MAX_HEIGHT,
+    DEFAULT_HEIGHT_PENALTY,
 } from "@/systems/match_mode/MatchMode"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
@@ -27,6 +30,9 @@ export interface MatchModeConfig {
     autonomousTime: number // Optional, defaults to 15
     teleopTime: number // Optional, defaults to 135
     endgameTime: number // Optional, defaults to 20
+    ignoreRotation: boolean // Optional, defaults to true
+    maxHeight: number // Optional, defaults to infinity
+    heightPenalty: number // Optional, defaults to 2
 }
 
 function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
@@ -164,6 +170,9 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             { id: "autonomousTime", expectedType: "number", required: false },
             { id: "teleopTime", expectedType: "number", required: false },
             { id: "endgameTime", expectedType: "number", required: false },
+            { id: "ignoreRotation", expectedType: "boolean", required: false },
+            { id: "maxHeight", expectedType: "number", required: false },
+            { id: "heightPenalty", expectedType: "number", required: false },
         ]
 
         const typeError = (id: string, expectedType?: string) => {
@@ -205,6 +214,11 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : DEFAULT_AUTONOMOUS_TIME,
             teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : DEFAULT_TELEOP_TIME,
             endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : DEFAULT_ENDGAME_TIME,
+            ignoreRotation:
+                typeof configObj.ignoreRotation === "boolean" ? configObj.ignoreRotation : DEFAULT_IGNORE_ROTATION,
+            maxHeight: typeof configObj.maxHeight === "number" ? configObj.maxHeight : DEFAULT_MAX_HEIGHT,
+            heightPenalty:
+                typeof configObj.heightPenalty === "number" ? configObj.heightPenalty : DEFAULT_HEIGHT_PENALTY,
         }
 
         return normalizedConfig
