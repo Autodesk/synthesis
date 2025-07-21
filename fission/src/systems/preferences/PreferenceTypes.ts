@@ -92,6 +92,7 @@ export type IntakePreferences = {
     parentNode: string | undefined
     showZoneAlways: boolean
     maxPieces: number
+    animationDuration: number
 }
 
 export type EjectorPreferences = {
@@ -181,6 +182,7 @@ export function defaultRobotPreferences(): RobotPreferences {
             parentNode: undefined,
             showZoneAlways: false,
             maxPieces: 1,
+            animationDuration: 0.5,
         },
         ejector: {
             deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
