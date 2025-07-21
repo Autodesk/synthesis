@@ -32,7 +32,7 @@ describe("React Mounting", async () => {
     })
 
     test("Static stylesheets load", async () => {
-        await wait(500) // need time to load from web
+        await wait(200) // need time to load from web
         expect(document.styleSheets.length).toBe(2)
         const iterable = document.fonts.values()
         let iterator = iterable.next()
@@ -50,7 +50,9 @@ describe("React Mounting", async () => {
     // importing main.tsx has side effects that I could not clean up and can only be done once (per file),
     // so I am using one test and many annotations. It's possible that there's a better way, but I couldn't
     // find it in 4 hours of trying
-    test("App fully mounts through main.tsx", async ({ annotate }) => {
+    test("App fully mounts through main.tsx", async ({ annotate, skip }) => {
+        skip(server.browser == "firefox", "WebGL bug in Github Actions on Firefox")
+
         await import("@/main.tsx")
 
         expect(window.convertAuthToken).toBeDefined()
