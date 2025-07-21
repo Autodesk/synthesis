@@ -37,6 +37,7 @@ import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
 import GlobalAlert from "./ui/GlobalAlert.tsx"
 import JointsConfigTab from "./ui/JointsConfigTab.tsx"
 import MaterialTaggingTab, { type TaggedBody } from "./ui/MaterialTaggingTab.tsx"
+
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
 

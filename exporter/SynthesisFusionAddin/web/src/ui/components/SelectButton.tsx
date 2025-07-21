@@ -1,6 +1,6 @@
 import { Button, Stack } from "@mui/material"
-import { Global_SetAlert } from "../../lib/GlobalUtils.tsx"
 import type { ReactElement } from "react"
+import { Global_SetAlert } from "../../lib/GlobalUtils.tsx"
 
 interface FusionSelectButtonProps<T> {
     label: string

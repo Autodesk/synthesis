@@ -12,7 +12,7 @@
     "style": "biome format",
     "style:fix": "biome format --fix",
     "preview": "vite preview",
-    "format": "bun run style:fix; bun run lint:fix"
+    "format": "biome check --fix"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
