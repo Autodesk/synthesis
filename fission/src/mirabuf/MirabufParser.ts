@@ -75,7 +75,7 @@ class MirabufParser {
 
     public constructor(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle) {
         this._assembly = assembly
-        this._errors = [] as ParseError[]
+        this._errors = []
         this._globalTransforms = new Map()
 
         progressHandle?.update("Parsing assembly...", 0.3)
@@ -459,7 +459,7 @@ export class Graph {
     }
 
     public addNode(node: string) {
-        if (!this._adjacencyMap.has(node)) this._adjacencyMap.set(node, [] as string[])
+        if (!this._adjacencyMap.has(node)) this._adjacencyMap.set(node, [])
     }
 
     public addEdgeUndirected(nodeA: string, nodeB: string) {

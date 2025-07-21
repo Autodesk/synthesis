@@ -195,7 +195,7 @@ class MirabufInstance {
                 const partBodyGuid = this.getPartBodyGuid(definition, body)
                 let bodyInstances = materialBodyMap.get(partBodyGuid)
                 if (!bodyInstances) {
-                    bodyInstances = [body, [] as mirabuf.IPartInstance[]]
+                    bodyInstances = [body, []]
                     materialBodyMap.set(partBodyGuid, bodyInstances)
                 }
                 bodyInstances[1].push(instance)
@@ -240,7 +240,7 @@ class MirabufInstance {
 
                     let bodies = this._meshes.get(instance.info!.GUID!)
                     if (!bodies) {
-                        bodies = [] as [THREE.BatchedMesh, number][]
+                        bodies = []
                         this._meshes.set(instance.info!.GUID!, bodies)
                     }
 
