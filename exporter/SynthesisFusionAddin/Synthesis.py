@@ -51,7 +51,6 @@ def run(_context: dict[str, Any]) -> None:
     Arguments:
         **context** *context* -- Fusion context to derive app and UI.
     """
-
     reload()
 
     # Remove all items prior to start just to make sure
