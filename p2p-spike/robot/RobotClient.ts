@@ -1,4 +1,4 @@
-import type { Metrics, Point, Robot } from "../types";
+import type { Metrics, Point, Robot } from "./types";
 import PeerConnection from "./PeerConnection";
 
 class RobotClient {
@@ -12,16 +12,8 @@ class RobotClient {
   robotSpeed = 200;
 
   inputs = { w: false, s: false, a: false, d: false };
-  inputSequence = 0;
-  inputBuffer: Map<number, any> = new Map();
-
-  clientRobotState: Robot | null = null;
-  stateHistory: Map<number, Robot> = new Map();
-
-  correctionCount = 0;
-  totalDivergence = 0;
-  lastCorrectionTime = 0;
-  inputLagMeasurements: number[] = [];
+  // inputSequence = 0;
+  // inputBuffer: Map<number, any> = new Map();
 
   clientMetrics = {
     startTime: Date.now(),
@@ -65,7 +57,10 @@ class RobotClient {
 
   constructor() {
     this.clientId = this.generateClientId();
-    this.peerConnection = new PeerConnection(this.clientId);
+    this.peerConnection = new PeerConnection(
+      this.clientId,
+      this.handlePeerMessage,
+    );
 
     this.canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
     this.ctx = this.canvas.getContext("2d")!;
@@ -112,7 +107,7 @@ class RobotClient {
     return `client-${Math.random().toString(36).substring(2, 9)}`;
   }
 
-  handleServerMessage(data: any) {
+  handlePeerMessage(data: any) {
     try {
       switch (data.type) {
         case "init":
@@ -129,9 +124,6 @@ class RobotClient {
           break;
         case "ping":
           this.handlePing(data.data);
-          break;
-        case "inputAck":
-          this.handleInputAck(data.data);
           break;
         case "serverMetrics":
           this.handleServerMetrics(data.data);
@@ -151,18 +143,7 @@ class RobotClient {
 
     data.robots.forEach((robot: Robot) => {
       this.robots.set(robot.id, { ...robot });
-
-      if (robot.id === this.robotId) {
-        this.clientRobotState = {
-          position: robot.position,
-          velocity: robot.velocity,
-          rotation: robot.rotation,
-          lastUpdateTime: Date.now(),
-        };
-        this.serverRobotState = this.clientRobotState;
-      }
     });
-
     this.playerCountEl.textContent = data.robots.length;
     console.log(`Initialized with ${data.robots.length} robots`);
   }
@@ -176,16 +157,6 @@ class RobotClient {
         robot.position = { ...robotData.position };
         robot.velocity = { ...robotData.velocity };
         robot.rotation = robotData.rotation;
-        robot.reconciliation = robotData.reconciliation;
-
-        if (robotData.id === this.robotId) {
-          this.serverRobotState = {
-            position: { ...robotData.position },
-            velocity: { ...robotData.velocity },
-            rotation: robotData.rotation,
-            lastUpdateTime: Date.now(),
-          };
-        }
       }
     });
 
@@ -286,25 +257,6 @@ class RobotClient {
     }
   }
 
-  handleInputAck(data: any) {
-    this.inputBuffer.delete(data.sequence);
-
-    const inputTime = this.stateHistory.get(data.sequence);
-    if (inputTime) {
-      const lag = Date.now() - inputTime.timestamp;
-      this.inputLagMeasurements.push(lag);
-
-      if (this.inputLagMeasurements.length > 10) {
-        this.inputLagMeasurements.shift();
-      }
-
-      const avgLag =
-        this.inputLagMeasurements.reduce((a, b) => a + b, 0) /
-        this.inputLagMeasurements.length;
-      this.inputLagEl.textContent = Math.round(avgLag).toString();
-    }
-  }
-
   showCorrectionIndicator(type: string) {
     this.lastCorrectionEl.textContent = type.toUpperCase();
     this.lastCorrectionEl.classList.add("correction-flash");
@@ -314,15 +266,16 @@ class RobotClient {
     }, 500);
   }
 
-  sendPredictionState() {
-    if (!this.clientRobotState) return;
+  sendClientState() {
+    const clientRobotState = this.robots.get(this.robotId ?? "");
+    if (!clientRobotState) return;
 
     this.peerConnection.send({
-      type: "predictionState",
+      type: "clientState",
       data: {
-        position: this.clientRobotState.position,
-        velocity: this.clientRobotState.velocity,
-        rotation: this.clientRobotState.rotation,
+        position: clientRobotState.position,
+        velocity: clientRobotState.velocity,
+        rotation: clientRobotState.rotation,
         timestamp: Date.now(),
       },
     });
@@ -348,7 +301,7 @@ class RobotClient {
     });
 
     document.addEventListener("keypress", (e) => {
-      if (["w", "a", "s", "d", "p", "r", "m"].includes(e.key.toLowerCase())) {
+      if (["w", "a", "s", "d", "r", "m"].includes(e.key.toLowerCase())) {
         e.preventDefault();
       }
     });
@@ -367,52 +320,17 @@ class RobotClient {
     }
 
     if (["w", "a", "s", "d"].includes(key)) {
-      const oldInputs = { ...this.inputs };
-      this.inputs[key] = pressed;
-
-      if (JSON.stringify(oldInputs) !== JSON.stringify(this.inputs)) {
-        this.sendInputs();
-      }
+      this.inputs[key as "w" | "a" | "s" | "d"] = pressed;
     }
   }
 
-  sendInputs() {
-    this.inputSequence++;
-    this.clientMetrics.inputsSent++;
-    const timestamp = Date.now();
+  applyClientState() {
+    const clientRobotState = this.robots.get(this.robotId ?? "");
+    if (!clientRobotState) return;
 
-    this.inputBuffer.set(this.inputSequence, {
-      inputs: { ...this.inputs },
-      timestamp: timestamp,
-    });
-
-    this.stateHistory.set(this.inputSequence, {
-      state: this.clientRobotState ? { ...this.clientRobotState } : null,
-      timestamp: timestamp,
-    });
-
-    if (this.stateHistory.size > 60) {
-      const oldestKey = Math.min(...this.stateHistory.keys());
-      this.stateHistory.delete(oldestKey);
-    }
-
-    const message = {
-      type: "input",
-      data: {
-        inputs: { ...this.inputs },
-        sequence: this.inputSequence,
-        timestamp: timestamp,
-      },
-    };
-
-    this.peerConnection.send(message);
-    this.inputSequenceEl.textContent = this.inputSequence.toString();
-  }
-
-  applyClientPrediction() {
     const now = Date.now();
     const deltaTime = Math.min(
-      (now - this.clientRobotState.lastUpdateTime) / 1000,
+      (now - clientRobotState.lastUpdateTime) / 1000,
       1 / 60,
     );
 
@@ -423,53 +341,45 @@ class RobotClient {
     if (this.inputs.d) targetVelocity.x += this.robotSpeed;
 
     const smoothing = 0.15;
-    this.clientRobotState.velocity.x =
-      this.clientRobotState.velocity.x * (1 - smoothing) +
+    clientRobotState.velocity.x =
+      clientRobotState.velocity.x * (1 - smoothing) +
       targetVelocity.x * smoothing;
-    this.clientRobotState.velocity.y =
-      this.clientRobotState.velocity.y * (1 - smoothing) +
+    clientRobotState.velocity.y =
+      clientRobotState.velocity.y * (1 - smoothing) +
       targetVelocity.y * smoothing;
 
-    this.clientRobotState.position.x +=
-      this.clientRobotState.velocity.x * deltaTime;
-    this.clientRobotState.position.y +=
-      this.clientRobotState.velocity.y * deltaTime;
+    clientRobotState.position.x += clientRobotState.velocity.x * deltaTime;
+    clientRobotState.position.y += clientRobotState.velocity.y * deltaTime;
 
-    this.clientRobotState.position.x = Math.max(
+    clientRobotState.position.x = Math.max(
       0,
       Math.min(
         this.worldSize.width - this.robotSize.width,
-        this.clientRobotState.position.x,
+        clientRobotState.position.x,
       ),
     );
-    this.clientRobotState.position.y = Math.max(
+    clientRobotState.position.y = Math.max(
       0,
       Math.min(
         this.worldSize.height - this.robotSize.height,
-        this.clientRobotState.position.y,
+        clientRobotState.position.y,
       ),
     );
 
     if (
-      Math.abs(this.clientRobotState.velocity.x) > 10 ||
-      Math.abs(this.clientRobotState.velocity.y) > 10
+      Math.abs(clientRobotState.velocity.x) > 10 ||
+      Math.abs(clientRobotState.velocity.y) > 10
     ) {
-      this.clientRobotState.rotation =
-        (Math.atan2(
-          this.clientRobotState.velocity.y,
-          this.clientRobotState.velocity.x,
-        ) *
+      clientRobotState.rotation =
+        (Math.atan2(clientRobotState.velocity.y, clientRobotState.velocity.x) *
           180) /
         Math.PI;
     }
 
-    this.clientRobotState.lastUpdateTime = now;
+    clientRobotState.lastUpdateTime = now;
   }
 
   resetStats() {
-    this.correctionCount = 0;
-    this.totalDivergence = 0;
-    this.inputLagMeasurements = [];
     this.lastCorrectionEl.textContent = "None";
 
     // Reset client metrics
@@ -533,8 +443,6 @@ class RobotClient {
         this.drawOtherRobot(robot);
       }
     }
-
-    this.drawDebugInfo();
 
     this.lastRenderTime = timestamp;
   }
@@ -610,43 +518,6 @@ class RobotClient {
         position.y - 5,
       );
     }
-  }
-
-  drawCorrectionIndicator(position: Point) {
-    const radius = 30;
-    const alpha = Math.max(
-      0,
-      1 - (Date.now() - this.lastCorrectionTime) / 1000,
-    );
-
-    this.ctx.strokeStyle = `rgba(255, 255, 0, ${alpha})`;
-    this.ctx.lineWidth = 3;
-    this.ctx.beginPath();
-    this.ctx.arc(
-      position.x + this.robotSize.width / 2,
-      position.y + this.robotSize.height / 2,
-      radius,
-      0,
-      Math.PI * 2,
-    );
-    this.ctx.stroke();
-  }
-
-  drawDebugInfo() {
-    if (!this.clientRobotState || !this.serverRobotState) return;
-
-    this.ctx.strokeStyle = "rgba(255, 255, 0, 0.8)";
-    this.ctx.lineWidth = 2;
-    this.ctx.beginPath();
-    this.ctx.moveTo(
-      this.clientRobotState.position.x + this.robotSize.width / 2,
-      this.clientRobotState.position.y + this.robotSize.height / 2,
-    );
-    this.ctx.lineTo(
-      this.serverRobotState.position.x + this.robotSize.width / 2,
-      this.serverRobotState.position.y + this.robotSize.height / 2,
-    );
-    this.ctx.stroke();
   }
 }
 

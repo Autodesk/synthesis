@@ -5,10 +5,16 @@ class PeerConnection {
   connection: any;
   clientId: string;
   connected: boolean = false;
+  handlePeerMessage: (data: any) => void;
 
-  constructor(clientId: string) {
+  constructor(clientId: string, handlePeerMessage: (data: any) => void) {
     this.clientId = clientId;
-    this.peer = new Peer(clientId);
+    this.peer = new Peer(clientId, {
+      host: "localhost",
+      port: 9000,
+      path: "/",
+    });
+    this.handlePeerMessage = handlePeerMessage;
 
     this.peer.on("open", (id: string) => {
       this.connected = true;
@@ -49,11 +55,6 @@ class PeerConnection {
     if (this.connection && this.connected) {
       this.connection.send(message);
     }
-  }
-
-  handlePeerMessage(data: any) {
-    // Custom logic to handle incoming messages
-    console.log("Received message:", data);
   }
 }
 

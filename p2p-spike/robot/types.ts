@@ -13,6 +13,7 @@ export type Robot = {
   position: Point;
   rotation: number; // degrees
   velocity: Velocity;
+  lastUpdateTime: number;
 };
 
 export type Metrics = {
