@@ -10,6 +10,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "express": "^5.1.0",
     "peer": "^1.0.2",
     "peerjs": "^1.5.5"
   }
