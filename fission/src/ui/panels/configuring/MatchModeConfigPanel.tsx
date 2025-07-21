@@ -18,7 +18,7 @@ import MatchMode, {
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Button from "@/ui/components/Button"
-import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 
 export interface MatchModeConfig {
     id: string // Required
