@@ -55,7 +55,7 @@ export const canOPFS = await (async () => {
             console.log(`No access to OPFS`)
             return false
         }
-    } catch (e) {
+    } catch (_e) {
         console.log(`No access to OPFS`)
 
         // Copy-pasted from RemoveAll()

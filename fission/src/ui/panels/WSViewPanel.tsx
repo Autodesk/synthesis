@@ -120,7 +120,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         setSelectedDevice(undefined)
-    }, [selectedType])
+    }, [])
 
     useEffect(() => {
         const func = () => {
@@ -131,7 +131,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => {
             clearTimeout(id)
         }
-    }, [updateTable])
+    }, [])
 
     return (
         <Panel

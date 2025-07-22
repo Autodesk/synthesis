@@ -89,7 +89,7 @@ class MirabufParser {
 
     public constructor(assembly: mirabuf.Assembly, isGamePiece: boolean = false, progressHandle?: ProgressHandle) {
         this._assembly = assembly
-        this._errors = new Array<ParseError>()
+        this._errors = []
         this._globalTransforms = new Map()
         this._gamePieces = undefined
         this._isGamePiece = isGamePiece
@@ -138,15 +138,14 @@ class MirabufParser {
 
         // 8. Retrieve Masses
         this._rigidNodes.forEach(rn => {
-            rn.mass = [...rn.parts]
-                .map(part => assembly.data?.parts?.partInstances?.[part])
-                .reduce<number>((acc, inst) => {
-                    // The if statement satisfies the type guard while the filter function doesn't
-                    if (inst?.partDefinitionReference == undefined) return acc
+            rn.mass = 0
+            rn.parts.forEach(part => {
+                const inst = assembly.data?.parts?.partInstances?.[part]
+                if (!inst?.partDefinitionReference) return
+                const def = assembly.data?.parts?.partDefinitions?.[inst.partDefinitionReference!]
 
-                    const def = assembly.data?.parts?.partDefinitions?.[inst?.partDefinitionReference]
-                    return acc + (def?.massOverride ?? def?.physicalData?.mass ?? 0)
-                }, 0)
+                rn.mass += def?.massOverride ? def.massOverride : (def?.physicalData?.mass ?? 0)
+            })
         })
 
         this._directedGraph = this.generateRigidNodeGraph(assembly, rootNodeId)
@@ -582,7 +581,7 @@ export class Graph {
     }
 
     public addNode(node: string) {
-        if (!this._adjacencyMap.has(node)) this._adjacencyMap.set(node, new Array<string>())
+        if (!this._adjacencyMap.has(node)) this._adjacencyMap.set(node, [])
     }
 
     public addEdgeUndirected(nodeA: string, nodeB: string) {

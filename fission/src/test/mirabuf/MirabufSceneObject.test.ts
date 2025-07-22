@@ -110,7 +110,7 @@ function mockMirabufInstance(): MirabufInstance {
 }
 
 function setPrivate<T>(obj: T, key: string, value: unknown) {
-    // eslint-disable-next-line no-extra-semi
+
     ;(obj as Record<string, unknown>)[key] = value
 }
 

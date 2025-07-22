@@ -254,7 +254,7 @@ class APS {
                     }
                 }
                 return true
-            } catch (e) {
+            } catch (_e) {
                 World.analyticsSystem?.exception("APS Login Failure")
                 globalAddToast("error", "Error signing in.", "Please try again.")
                 this._auth = undefined
