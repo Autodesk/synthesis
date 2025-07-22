@@ -1,6 +1,6 @@
 import { ReactElement, useEffect, useRef, useState } from "react"
 import { alpha, styled } from "@mui/system"
-import { Button, Menu, MenuItem, Tooltip } from "@mui/material"
+import { Button, Menu, MenuItem, Tooltip, Checkbox, Chip, Box } from "@mui/material"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
@@ -10,6 +10,12 @@ const CustomButton = styled(Button)({
     color: colorNameToVar("InteractiveElementText"),
     backgroundColor: colorNameToVar("BackgroundSecondary"),
     width: "100%",
+    minHeight: "40px",
+    height: "auto",
+    justifyContent: "flex-start",
+    textAlign: "left",
+    alignItems: "flex-start",
+    padding: "8px 12px",
     "&:focus": {
         outline: "none !important",
         border: `2px solid ${colorNameToVar("InteractiveElementRight")} !important`,
@@ -66,28 +72,73 @@ const CustomMenu = styled(Menu)({
     },
 })
 
-interface DropdownProps<T extends string> {
+/** Custom styled chip for displaying selected items in multi-select mode */
+const CustomChip = styled(Chip)({
+    backgroundColor: colorNameToVar("InteractiveElementLeft"),
+    color: colorNameToVar("InteractiveElementText"),
+    fontSize: "0.75rem",
+    height: "20px",
+    "& .MuiChip-deleteIcon": {
+        color: colorNameToVar("InteractiveElementText"),
+        fontSize: "14px",
+        "&:hover": {
+            color: colorNameToVar("InteractiveElementText"),
+        },
+    },
+    "&:hover": {
+        backgroundColor: "#fc3903",
+    },
+})
+
+// Overloaded interfaces for single and multi-select modes
+interface SingleSelectDropdownProps<T extends string> {
     options: T[]
     onSelect: (value: T) => void
     defaultValue?: T
     label?: string
     className?: string
+    multiSelect?: false
+    textAlign?: "left" | "center" | "right"
 }
 
+interface MultiSelectDropdownProps<T extends string> {
+    options: T[]
+    onSelect: (values: T[]) => void
+    defaultValue?: T[]
+    label?: string
+    className?: string
+    multiSelect: true
+    maxWidth?: string
+    textAlign?: "left" | "center" | "right"
+}
+
+type DropdownProps<T extends string> = SingleSelectDropdownProps<T> | MultiSelectDropdownProps<T>
+
 /**
- * Dropdown component that renders a button which, when clicked, displays a dropdown menu with a list of selectable options.
+ * Dropdown component that renders a button which, when clicked, displays a dropdown menu with selectable options.
+ * Supports both single-select and multi-select modes.
  *
  * @param {DropdownProps} props - The properties object.
  * @param {string[]} props.options - An array of strings representing the dropdown options.
- * @param {function} props.onSelect - Callback function to handle selection of an option.
- * @param {string} [props.defaultValue] - The default selected value for the dropdown.
+ * @param {function} props.onSelect - Callback function to handle selection of an option (single value) or options (array of values).
+ * @param {string|string[]} [props.defaultValue] - The default selected value(s) for the dropdown.
  * @param {string} [props.label] - An optional label to be displayed above the dropdown.
+ * @param {boolean} [props.multiSelect=false] - Whether to enable multi-select mode.
+ * @param {string} [props.maxWidth="15rem"] - (Multi-select only) The maximum width of the chip container.
  *
  * @returns {JSX.Element} The rendered Dropdown component.
  */
-const Dropdown = <T extends string>({ options, onSelect, defaultValue, label }: DropdownProps<T>): ReactElement => {
+const Dropdown = <T extends string>(props: DropdownProps<T>): ReactElement => {
+    const { options, onSelect, defaultValue, label, multiSelect = false, textAlign = "center" } = props
+    const maxWidth = multiSelect ? (props as MultiSelectDropdownProps<T>).maxWidth ?? "15rem" : "15rem"
+
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-    const [selectedValue, setSelectedValue] = useState<string>(defaultValue || "")
+    const [selectedValue, setSelectedValue] = useState<string>(
+        multiSelect ? "" : (defaultValue as string) || ""
+    )
+    const [selectedValues, setSelectedValues] = useState<T[]>(
+        multiSelect ? (defaultValue as T[]) || [] : []
+    )
     const buttonRef = useRef<HTMLButtonElement>(null)
     const [menuWidth, setMenuWidth] = useState<number>(0)
 
@@ -110,9 +161,54 @@ const Dropdown = <T extends string>({ options, onSelect, defaultValue, label }: 
 
     /** Handles the selection of a dropdown option. */
     const handleSelect = (value: T) => {
-        setSelectedValue(value)
-        onSelect(value)
-        handleClose()
+        if (multiSelect) {
+            const newSelectedValues = selectedValues.includes(value)
+                ? selectedValues.filter(v => v !== value)
+                : [...selectedValues, value]
+            
+            setSelectedValues(newSelectedValues)
+            ;(onSelect as (values: T[]) => void)(newSelectedValues)
+        } else {
+            setSelectedValue(value)
+            ;(onSelect as (value: T) => void)(value)
+            handleClose()
+        }
+    }
+
+    /** Handles removing a selected item (for chips in multi-select mode) */
+    const handleRemoveItem = (value: T, event: React.MouseEvent) => {
+        event.stopPropagation()
+        const newSelectedValues = selectedValues.filter(v => v !== value)
+        setSelectedValues(newSelectedValues)
+        ;(onSelect as (values: T[]) => void)(newSelectedValues)
+    }
+
+    /** Renders the content inside the button for multi-select mode */
+    const renderMultiSelectContent = () => {
+        if (selectedValues.length === 0) {
+            return "Select options"
+        }
+
+        return (
+            <Box sx={{ 
+                display: "flex", 
+                flexWrap: "wrap", 
+                gap: 0.5, 
+                alignItems: "flex-start",
+                maxWidth: maxWidth,
+                overflow: "hidden"
+            }}>
+                {selectedValues.map((value) => (
+                    <CustomChip
+                        key={value}
+                        label={value}
+                        size="small"
+                        onDelete={(event) => handleRemoveItem(value, event)}
+                        onClick={(event) => handleRemoveItem(value, event)}
+                    />
+                ))}
+            </Box>
+        )
     }
 
     return (
@@ -123,7 +219,7 @@ const Dropdown = <T extends string>({ options, onSelect, defaultValue, label }: 
                         marginBottom: "4px",
                         fontSize: "0.875rem",
                         color: "white",
-                        textAlign: "center",
+                        textAlign: textAlign,
                     }}
                 >
                     {label}
@@ -137,7 +233,7 @@ const Dropdown = <T extends string>({ options, onSelect, defaultValue, label }: 
                         ref={buttonRef}
                         className={`transform transition-transform hover:scale-[1.012] active:scale-[1.024]`}
                     >
-                        {selectedValue || "Select an option"}
+                        {multiSelect ? renderMultiSelectContent() : (selectedValue || "Select an option")}
                     </CustomButton>
                 </div>
             </Tooltip>
@@ -149,6 +245,18 @@ const Dropdown = <T extends string>({ options, onSelect, defaultValue, label }: 
             >
                 {options.map((option, index) => (
                     <MenuItem key={index} onClick={() => handleSelect(option)}>
+                        {multiSelect && (
+                            <Checkbox
+                                checked={selectedValues.includes(option)}
+                                sx={{
+                                    color: colorNameToVar("InteractiveElementRight"),
+                                    "&.Mui-checked": {
+                                        color: colorNameToVar("InteractiveElementLeft"),
+                                    },
+                                    marginRight: 1,
+                                }}
+                            />
+                        )}
                         {option}
                     </MenuItem>
                 ))}
