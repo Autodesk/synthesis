@@ -1,0 +1,215 @@
+import type { Metrics, Point, Robot } from "./types";
+
+export default class DisplayManger {
+  worldSize = { width: 1000, height: 1000 };
+  robotSize = { width: 50, height: 50 };
+
+  canvas: HTMLCanvasElement;
+  ctx: CanvasRenderingContext2D;
+  lastRenderTime = 0;
+
+  // HTML Elements
+  statusEl: HTMLElement;
+  playerCountEl: HTMLElement;
+  latencyEl: HTMLElement;
+  serverTickEl: HTMLElement;
+  correctionCountEl: HTMLElement;
+  avgDivergenceEl: HTMLElement;
+  inputLagEl: HTMLElement;
+  inputSequenceEl: HTMLElement;
+  lastCorrectionEl: HTMLElement;
+  fpsEl: HTMLElement;
+  serverTickRateEl: HTMLElement;
+  networkThroughputEl: HTMLElement;
+  serverMemoryEl: HTMLElement;
+  totalMessagesEl: HTMLElement;
+  uptimeEl: HTMLElement;
+  jitterEl: HTMLElement;
+  infoPanel: HTMLElement;
+  serverPanel: HTMLElement;
+  controlsPanel: HTMLElement;
+  metricsVisible = true;
+
+
+  constructor() {
+    this.canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
+    this.ctx = this.canvas.getContext("2d")!;
+    this.statusEl = document.getElementById("status")!;
+    this.playerCountEl = document.getElementById("playerCount")!;
+    this.latencyEl = document.getElementById("latency")!;
+    this.serverTickEl = document.getElementById("serverTick")!;
+    this.correctionCountEl = document.getElementById("correctionCount")!;
+    this.avgDivergenceEl = document.getElementById("avgDivergence")!;
+    this.inputLagEl = document.getElementById("inputLag")!;
+    this.inputSequenceEl = document.getElementById("inputSequence")!;
+    this.lastCorrectionEl = document.getElementById("lastCorrection")!;
+    this.fpsEl = document.getElementById("fps")!;
+    this.serverTickRateEl = document.getElementById("serverTickRate")!;
+    this.networkThroughputEl = document.getElementById("networkThroughput")!;
+    this.serverMemoryEl = document.getElementById("serverMemory")!;
+    this.totalMessagesEl = document.getElementById("totalMessages")!;
+    this.uptimeEl = document.getElementById("uptime")!;
+    this.jitterEl = document.getElementById("jitter")!;
+    this.infoPanel = document.getElementById("info")!;
+    this.serverPanel = document.getElementById("serverStats")!;
+    this.controlsPanel = document.getElementById("controls")!;
+  }
+
+  updatePlayerCount(n: number) {
+    this.playerCountEl.textContent = n.toString();
+  }
+
+  updateServerTick(n: number) {
+    this.serverTickEl.textContent = n.toString();
+  }
+  updateFPS(n: number) {
+    this.fpsEl.textContent = n.toString();
+  }
+  updateTotalMessages(n: number) {
+    this.totalMessagesEl.textContent = n.toString();
+  }
+  updateJitter(n: number) {
+    this.jitterEl.textContent = n.toString() + "ms";
+  }
+  updateUptime(startTime: number) {
+    const uptime = Date.now() - startTime;
+    const seconds = Math.floor(uptime / 1000) % 60;
+    const minutes = Math.floor(uptime / 60000);
+    this.uptimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  }
+  setWorldsize({width, height}: {width: number, height: number}) {
+      this.worldSize.width = width
+      this.worldSize.height = height
+  }
+toggleMetrics() {
+    this.metricsVisible = !this.metricsVisible;
+    const display = this.metricsVisible ? "block" : "none";
+
+    if (this.infoPanel) this.infoPanel.style.display = display;
+    if (this.serverPanel) this.serverPanel.style.display = display;
+    if (this.controlsPanel) this.controlsPanel.style.display = display;
+
+    console.log(`Metrics panels ${this.metricsVisible ? "shown" : "hidden"}`);
+  }
+
+  setupCanvas() {
+    this.canvas.width = this.worldSize.width;
+    this.canvas.height = this.worldSize.height;
+
+    window.addEventListener("resize", () => {
+      this.canvas.width = this.worldSize.width;
+      this.canvas.height = this.worldSize.height;
+    });
+  }
+  drawGrid() {
+    this.ctx.strokeStyle = "#333";
+    this.ctx.lineWidth = 1;
+
+    for (let x = 0; x <= this.worldSize.width; x += 100) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, 0);
+      this.ctx.lineTo(x, this.worldSize.height);
+      this.ctx.stroke();
+    }
+
+    for (let y = 0; y <= this.worldSize.height; y += 100) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, y);
+      this.ctx.lineTo(this.worldSize.width, y);
+      this.ctx.stroke();
+    }
+  }
+
+startRenderLoop(robots: Map<string, Robot>, robotId: string, clientMetrics: Metrics) {
+    const render = (timestamp: number, robots: Map<string, Robot>, robotId: string, clientMetrics: Metrics) => {
+      this.render(timestamp, robots, robotId, clientMetrics);
+       
+      requestAnimationFrame((timestamp: number) => render(timestamp, robots, robotId, clientMetrics));
+    };
+    requestAnimationFrame((timestamp: number) => render(timestamp, robots, robotId, clientMetrics));
+  }
+
+  render(timestamp: number, robots: Map<string, Robot>, robotId: string, clientMetrics: Metrics) {
+    // Track frame timing
+    if (this.lastRenderTime > 0) {
+      const frameTime = timestamp - this.lastRenderTime;
+      clientMetrics.frameTimes.push(frameTime);
+
+      if (clientMetrics.frameTimes.length > 60) {
+        clientMetrics.frameTimes.shift();
+      }
+    }
+    clientMetrics.totalFrames++;
+
+    this.ctx.fillStyle = "#000";
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    this.drawGrid();
+
+    for (const [robotId, robot] of robots) {
+      if (robotId === robotId) {
+        this.drawOwnRobot(robot);
+      } else {
+        this.drawOtherRobot(robot);
+      }
+    }
+
+    this.lastRenderTime = timestamp;
+  }
+
+  drawOwnRobot(robot: Robot) {
+    this.drawRobotAt(robot.position, robot.rotation, "#ff4444", "YOU", false);
+  }
+
+  drawOtherRobot(robot: Robot) {
+    this.drawRobotAt(robot.position, robot.rotation, "#44ff44", "OTHER", false);
+  }
+
+  drawRobotAt(
+    position: Point,
+    rotation: number,
+    color: string,
+    label: string,
+    secondary: boolean,
+  ) {
+    this.ctx.save();
+    this.ctx.translate(
+      position.x + this.robotSize.width / 2,
+      position.y + this.robotSize.height / 2,
+    );
+    this.ctx.rotate((rotation * Math.PI) / 180);
+
+    this.ctx.fillStyle = color;
+    this.ctx.fillRect(
+      -this.robotSize.width / 2,
+      -this.robotSize.height / 2,
+      this.robotSize.width,
+      this.robotSize.height,
+    );
+
+    this.ctx.fillStyle = "#fff";
+    this.ctx.fillRect(this.robotSize.width / 2 - 5, -2, 10, 4);
+
+    this.ctx.restore();
+
+    this.ctx.font = "10px monospace";
+    this.ctx.textAlign = "center";
+    if (secondary) {
+      this.ctx.fillStyle = "#aaa";
+      this.ctx.fillText(
+        label,
+        position.x + this.robotSize.width / 2,
+        position.y + 62,
+      );
+    } else {
+      this.ctx.fillStyle = "#fff";
+      this.ctx.fillText(
+        label,
+        position.x + this.robotSize.width / 2,
+        position.y - 5,
+      );
+    }
+  }
+}
+
+}

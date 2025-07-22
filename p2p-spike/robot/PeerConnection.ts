@@ -1,15 +1,15 @@
-import Peer from "peerjs";
+import Peer, { DataConnection } from "peerjs";
 
 class PeerConnection {
   peer: Peer;
-  connection: any;
+  connection?: DataConnection;
   clientId: string;
   connected: boolean = false;
   handlePeerMessage: (data: any) => void;
 
-  constructor(clientId: string, handlePeerMessage: (data: any) => void) {
-    this.clientId = clientId;
-    this.peer = new Peer(clientId, {
+  constructor(handlePeerMessage: (data: any) => void) {
+    this.clientId = this.generateClientId();
+    this.peer = new Peer(this.clientId, {
       host: "localhost",
       port: 9000,
       path: "/",
@@ -19,20 +19,27 @@ class PeerConnection {
     this.peer.on("open", (id: string) => {
       this.connected = true;
       console.log(`Peer connected: ID - ${id}`);
+      this.connectToPeer(); // Replace 'some-peer-id' with the actual peer ID
+      console.log(`Their peer ID is: ${this.getOtherPeerId()}`);
     });
 
-    this.peer.on("connection", (conn: any) => {
+    this.peer.on("connection", (conn) => {
       this.connection = conn;
       this.setupConnectionHandlers();
     });
   }
 
-  connectToPeer(peerId: string) {
+  connectToPeer() {
+    if (!this.connection) return;
+
+    const peerId = this.connection?.peer;
     this.connection = this.peer.connect(peerId);
     this.setupConnectionHandlers();
   }
 
   setupConnectionHandlers() {
+    if (!this.connection) return;
+
     this.connection.on("open", () => {
       console.log("Connection opened");
     });
@@ -55,6 +62,16 @@ class PeerConnection {
     if (this.connection && this.connected) {
       this.connection.send(message);
     }
+  }
+
+  generateClientId(): string {
+    return `client-${Math.random().toString(36).substring(2, 9)}`;
+  }
+
+  getOtherPeerId(): string | null {
+    if (!this.connection) return null;
+
+    return this.connection.peer;
   }
 }
 
