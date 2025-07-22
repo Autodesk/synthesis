@@ -379,7 +379,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         },
                     })
                 ),
-        [cachedPieces, selectCache, setCachedPieces]
+        [cachedPieces, selectCache]
     )
 
     // Generate Item cards for remote robots.

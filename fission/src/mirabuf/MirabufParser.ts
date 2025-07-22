@@ -138,14 +138,15 @@ class MirabufParser {
 
         // 8. Retrieve Masses
         this._rigidNodes.forEach(rn => {
-            rn.mass = 0
-            rn.parts.forEach(part => {
-                const inst = assembly.data?.parts?.partInstances?.[part]
-                if (!inst?.partDefinitionReference) return
-                const def = assembly.data?.parts?.partDefinitions?.[inst.partDefinitionReference!]
+            rn.mass = [...rn.parts]
+                .map(part => assembly.data?.parts?.partInstances?.[part])
+                .reduce<number>((acc, inst) => {
+                    // The if statement satisfies the type guard while the filter function doesn't
+                    if (inst?.partDefinitionReference == undefined) return acc
 
-                rn.mass += def?.massOverride ? def.massOverride : (def?.physicalData?.mass ?? 0)
-            })
+                    const def = assembly.data?.parts?.partDefinitions?.[inst?.partDefinitionReference]
+                    return acc + (def?.massOverride ?? def?.physicalData?.mass ?? 0)
+                }, 0)
         })
 
         this._directedGraph = this.generateRigidNodeGraph(assembly, rootNodeId)

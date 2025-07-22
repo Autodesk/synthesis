@@ -491,8 +491,9 @@ class MirabufCachingService {
 
             // Update OPFS if available
             if (canOPFS) {
-                const fileHandle = await (
-                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : fieldFolderHandle
                 ).getFileHandle(id, { create: false })
                 const writable = await fileHandle.createWritable()
                 await writable.write(updatedBuffer)
@@ -554,12 +555,11 @@ class MirabufCachingService {
             // Store buffer
             if (canOPFS) {
                 // Store in OPFS
-                const fileHandle = await (
-                    miraType == MiraType.ROBOT
-                        ? robotFolderHandle
-                        : miraType == MiraType.FIELD
-                          ? fieldFolderHandle
-                          : pieceFolderHandle
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : miraType == MiraType.FIELD
+                      ? fieldFolderHandle
+                      : pieceFolderHandle
                 ).getFileHandle(backupID, { create: true })
                 const writable = await fileHandle.createWritable()
                 await writable.write(miraBuff)

@@ -41,10 +41,7 @@ import {
     setNextConfigurePanelSettings,
 } from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import {
-    ConfigurationType,
-    setSelectedConfigurationType,
-} from "@/ui/panels/configuring/assembly-config/ConfigurationType"
+import { setSelectedConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"

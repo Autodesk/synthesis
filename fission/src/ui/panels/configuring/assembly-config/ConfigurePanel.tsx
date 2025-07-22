@@ -84,7 +84,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.PIECE)
             .filter(x => !pendingDeletes.includes(x.id))
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u, pendingDeletes])
+    }, [pendingDeletes])
 
     const options = useMemo(() => {
         const list =
@@ -96,7 +96,7 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
         return list
             .filter((assembly): assembly is MirabufSceneObject => assembly != null)
             .map(assembly => makeSelectionOption(configurationType, assembly))
-    }, [configurationType, robots, fields])
+    }, [configurationType, robots, fields, gamePieces])
 
     /** Robot, game piece, or field select menu */
     return (
@@ -467,7 +467,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 >
                     <ToggleButton value={ConfigurationType.ROBOT}>Robots</ToggleButton>
                     <ToggleButton value={ConfigurationType.FIELD}>Fields</ToggleButton>
-                    <ToggleButton value={ConfigurationType.PIECES}>Game Pieces</ToggleButton>
+                    <ToggleButton value={ConfigurationType.PIECE}>Game Pieces</ToggleButton>
                     <ToggleButton value={ConfigurationType.INPUTS}>Inputs</ToggleButton>
                 </ToggleButtonGroup>
                 {configurationType == ConfigurationType.INPUTS ? (
