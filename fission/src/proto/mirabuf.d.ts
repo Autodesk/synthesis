@@ -1,3 +1,5 @@
+// biome-ignore-all lint/correctness/noUnusedVariables: We need the entire mirabuf spec in this file, but might not need to use all of it right now
+// biome-ignore-all lint/style/noNamespace: We need the entire mirabuf spec in this file, but don't have a choice about how it was contructed
 import * as $protobuf from "protobufjs"
 import Long = require("long")
 /** Namespace mirabuf. */
@@ -112,14 +114,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates an Assembly message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Assembly
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Assembly
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Assembly
 
         /**
          * Creates a plain object from an Assembly message. Also converts values to other types if specified.
@@ -127,13 +129,16 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Assembly, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(
+            message: mirabuf.Assembly,
+            options?: $protobuf.IConversionOptions
+        ): { [k: string]: unknown }
 
         /**
          * Converts this Assembly to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Assembly
@@ -225,14 +230,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates an AssemblyData message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns AssemblyData
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.AssemblyData
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.AssemblyData
 
         /**
          * Creates a plain object from an AssemblyData message. Also converts values to other types if specified.
@@ -243,13 +248,13 @@ export namespace mirabuf {
         public static toObject(
             message: mirabuf.AssemblyData,
             options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        ): { [k: string]: unknown }
 
         /**
          * Converts this AssemblyData to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for AssemblyData
@@ -341,14 +346,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a Parts message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Parts
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Parts
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Parts
 
         /**
          * Creates a plain object from a Parts message. Also converts values to other types if specified.
@@ -356,13 +361,13 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Parts, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(message: mirabuf.Parts, options?: $protobuf.IConversionOptions): { [k: string]: unknown }
 
         /**
          * Converts this Parts to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Parts
@@ -476,14 +481,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a PartDefinition message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns PartDefinition
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.PartDefinition
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.PartDefinition
 
         /**
          * Creates a plain object from a PartDefinition message. Also converts values to other types if specified.
@@ -494,13 +499,13 @@ export namespace mirabuf {
         public static toObject(
             message: mirabuf.PartDefinition,
             options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        ): { [k: string]: unknown }
 
         /**
          * Converts this PartDefinition to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for PartDefinition
@@ -616,14 +621,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a PartInstance message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns PartInstance
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.PartInstance
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.PartInstance
 
         /**
          * Creates a plain object from a PartInstance message. Also converts values to other types if specified.
@@ -634,13 +639,13 @@ export namespace mirabuf {
         public static toObject(
             message: mirabuf.PartInstance,
             options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        ): { [k: string]: unknown }
 
         /**
          * Converts this PartInstance to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for PartInstance
@@ -732,14 +737,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a Body message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Body
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Body
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Body
 
         /**
          * Creates a plain object from a Body message. Also converts values to other types if specified.
@@ -747,13 +752,13 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Body, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(message: mirabuf.Body, options?: $protobuf.IConversionOptions): { [k: string]: unknown }
 
         /**
          * Converts this Body to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Body
@@ -854,14 +859,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a TriangleMesh message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns TriangleMesh
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.TriangleMesh
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.TriangleMesh
 
         /**
          * Creates a plain object from a TriangleMesh message. Also converts values to other types if specified.
@@ -872,13 +877,13 @@ export namespace mirabuf {
         public static toObject(
             message: mirabuf.TriangleMesh,
             options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        ): { [k: string]: unknown }
 
         /**
          * Converts this TriangleMesh to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for TriangleMesh
@@ -970,14 +975,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a Mesh message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Mesh
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Mesh
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Mesh
 
         /**
          * Creates a plain object from a Mesh message. Also converts values to other types if specified.
@@ -985,13 +990,13 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Mesh, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(message: mirabuf.Mesh, options?: $protobuf.IConversionOptions): { [k: string]: unknown }
 
         /**
          * Converts this Mesh to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Mesh
@@ -1065,14 +1070,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a BinaryMesh message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns BinaryMesh
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.BinaryMesh
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.BinaryMesh
 
         /**
          * Creates a plain object from a BinaryMesh message. Also converts values to other types if specified.
@@ -1083,13 +1088,13 @@ export namespace mirabuf {
         public static toObject(
             message: mirabuf.BinaryMesh,
             options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        ): { [k: string]: unknown }
 
         /**
          * Converts this BinaryMesh to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for BinaryMesh
@@ -1175,14 +1180,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a Node message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Node
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Node
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Node
 
         /**
          * Creates a plain object from a Node message. Also converts values to other types if specified.
@@ -1190,13 +1195,13 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Node, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(message: mirabuf.Node, options?: $protobuf.IConversionOptions): { [k: string]: unknown }
 
         /**
          * Converts this Node to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Node
@@ -1270,14 +1275,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a GraphContainer message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns GraphContainer
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.GraphContainer
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.GraphContainer
 
         /**
          * Creates a plain object from a GraphContainer message. Also converts values to other types if specified.
@@ -1288,13 +1293,13 @@ export namespace mirabuf {
         public static toObject(
             message: mirabuf.GraphContainer,
             options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        ): { [k: string]: unknown }
 
         /**
          * Converts this GraphContainer to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for GraphContainer
@@ -1372,14 +1377,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a UserData message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns UserData
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.UserData
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.UserData
 
         /**
          * Creates a plain object from a UserData message. Also converts values to other types if specified.
@@ -1387,13 +1392,16 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.UserData, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(
+            message: mirabuf.UserData,
+            options?: $protobuf.IConversionOptions
+        ): { [k: string]: unknown }
 
         /**
          * Converts this UserData to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for UserData
@@ -1479,14 +1487,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a Vector3 message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Vector3
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Vector3
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Vector3
 
         /**
          * Creates a plain object from a Vector3 message. Also converts values to other types if specified.
@@ -1494,13 +1502,16 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Vector3, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(
+            message: mirabuf.Vector3,
+            options?: $protobuf.IConversionOptions
+        ): { [k: string]: unknown }
 
         /**
          * Converts this Vector3 to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Vector3
@@ -1598,14 +1609,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a PhysicalProperties message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns PhysicalProperties
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.PhysicalProperties
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.PhysicalProperties
 
         /**
          * Creates a plain object from a PhysicalProperties message. Also converts values to other types if specified.
@@ -1616,13 +1627,13 @@ export namespace mirabuf {
         public static toObject(
             message: mirabuf.PhysicalProperties,
             options?: $protobuf.IConversionOptions
-        ): { [k: string]: any }
+        ): { [k: string]: unknown }
 
         /**
          * Converts this PhysicalProperties to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for PhysicalProperties
@@ -1700,14 +1711,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a Transform message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Transform
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Transform
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Transform
 
         /**
          * Creates a plain object from a Transform message. Also converts values to other types if specified.
@@ -1715,13 +1726,16 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Transform, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(
+            message: mirabuf.Transform,
+            options?: $protobuf.IConversionOptions
+        ): { [k: string]: unknown }
 
         /**
          * Converts this Transform to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Transform
@@ -1813,14 +1827,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a Color message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Color
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Color
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Color
 
         /**
          * Creates a plain object from a Color message. Also converts values to other types if specified.
@@ -1828,13 +1842,13 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Color, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(message: mirabuf.Color, options?: $protobuf.IConversionOptions): { [k: string]: unknown }
 
         /**
          * Converts this Color to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Color
@@ -1930,14 +1944,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates an Info message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Info
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Info
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Info
 
         /**
          * Creates a plain object from an Info message. Also converts values to other types if specified.
@@ -1945,13 +1959,13 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Info, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(message: mirabuf.Info, options?: $protobuf.IConversionOptions): { [k: string]: unknown }
 
         /**
          * Converts this Info to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Info
@@ -2052,14 +2066,14 @@ export namespace mirabuf {
          * @param message Plain object to verify
          * @returns `null` if valid, otherwise the reason why it is not
          */
-        public static verify(message: { [k: string]: any }): string | null
+        public static verify(message: { [k: string]: unknown }): string | null
 
         /**
          * Creates a Thumbnail message from a plain object. Also converts values to their respective internal types.
          * @param object Plain object
          * @returns Thumbnail
          */
-        public static fromObject(object: { [k: string]: any }): mirabuf.Thumbnail
+        public static fromObject(object: { [k: string]: unknown }): mirabuf.Thumbnail
 
         /**
          * Creates a plain object from a Thumbnail message. Also converts values to other types if specified.
@@ -2067,13 +2081,16 @@ export namespace mirabuf {
          * @param [options] Conversion options
          * @returns Plain object
          */
-        public static toObject(message: mirabuf.Thumbnail, options?: $protobuf.IConversionOptions): { [k: string]: any }
+        public static toObject(
+            message: mirabuf.Thumbnail,
+            options?: $protobuf.IConversionOptions
+        ): { [k: string]: unknown }
 
         /**
          * Converts this Thumbnail to JSON.
          * @returns JSON object
          */
-        public toJSON(): { [k: string]: any }
+        public toJSON(): { [k: string]: unknown }
 
         /**
          * Gets the default type url for Thumbnail
@@ -2178,14 +2195,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Joints message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Joints
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Joints
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.Joints
 
             /**
              * Creates a plain object from a Joints message. Also converts values to other types if specified.
@@ -2196,13 +2213,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.Joints,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Joints to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Joints
@@ -2342,14 +2359,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a JointInstance message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns JointInstance
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.JointInstance
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.JointInstance
 
             /**
              * Creates a plain object from a JointInstance message. Also converts values to other types if specified.
@@ -2360,13 +2377,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.JointInstance,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this JointInstance to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for JointInstance
@@ -2459,14 +2476,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a MotionLink message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns MotionLink
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.MotionLink
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.MotionLink
 
             /**
              * Creates a plain object from a MotionLink message. Also converts values to other types if specified.
@@ -2477,13 +2494,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.MotionLink,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this MotionLink to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for MotionLink
@@ -2612,14 +2629,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Joint message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Joint
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Joint
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.Joint
 
             /**
              * Creates a plain object from a Joint message. Also converts values to other types if specified.
@@ -2630,13 +2647,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.Joint,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Joint to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Joint
@@ -2716,14 +2733,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Dynamics message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Dynamics
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Dynamics
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.Dynamics
 
             /**
              * Creates a plain object from a Dynamics message. Also converts values to other types if specified.
@@ -2734,13 +2751,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.Dynamics,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Dynamics to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Dynamics
@@ -2836,14 +2853,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Limits message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Limits
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Limits
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.Limits
 
             /**
              * Creates a plain object from a Limits message. Also converts values to other types if specified.
@@ -2854,13 +2871,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.Limits,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Limits to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Limits
@@ -2959,14 +2976,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Safety message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Safety
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.Safety
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.Safety
 
             /**
              * Creates a plain object from a Safety message. Also converts values to other types if specified.
@@ -2977,13 +2994,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.Safety,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Safety to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Safety
@@ -3087,14 +3104,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a DOF message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns DOF
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.DOF
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.DOF
 
             /**
              * Creates a plain object from a DOF message. Also converts values to other types if specified.
@@ -3105,13 +3122,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.DOF,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this DOF to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for DOF
@@ -3191,14 +3208,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a CustomJoint message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns CustomJoint
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.CustomJoint
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.CustomJoint
 
             /**
              * Creates a plain object from a CustomJoint message. Also converts values to other types if specified.
@@ -3209,13 +3226,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.CustomJoint,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this CustomJoint to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for CustomJoint
@@ -3295,14 +3312,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a RotationalJoint message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns RotationalJoint
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.RotationalJoint
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.RotationalJoint
 
             /**
              * Creates a plain object from a RotationalJoint message. Also converts values to other types if specified.
@@ -3313,13 +3330,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.RotationalJoint,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this RotationalJoint to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for RotationalJoint
@@ -3408,14 +3425,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a BallJoint message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns BallJoint
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.BallJoint
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.BallJoint
 
             /**
              * Creates a plain object from a BallJoint message. Also converts values to other types if specified.
@@ -3426,13 +3443,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.BallJoint,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this BallJoint to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for BallJoint
@@ -3509,14 +3526,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a PrismaticJoint message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns PrismaticJoint
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.PrismaticJoint
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.PrismaticJoint
 
             /**
              * Creates a plain object from a PrismaticJoint message. Also converts values to other types if specified.
@@ -3527,13 +3544,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.PrismaticJoint,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this PrismaticJoint to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for PrismaticJoint
@@ -3616,14 +3633,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a RigidGroup message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns RigidGroup
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.joint.RigidGroup
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.joint.RigidGroup
 
             /**
              * Creates a plain object from a RigidGroup message. Also converts values to other types if specified.
@@ -3634,13 +3651,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.joint.RigidGroup,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this RigidGroup to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for RigidGroup
@@ -3748,14 +3765,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Motor message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Motor
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.motor.Motor
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.motor.Motor
 
             /**
              * Creates a plain object from a Motor message. Also converts values to other types if specified.
@@ -3766,13 +3783,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.motor.Motor,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Motor to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Motor
@@ -3866,14 +3883,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a SimpleMotor message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns SimpleMotor
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.motor.SimpleMotor
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.motor.SimpleMotor
 
             /**
              * Creates a plain object from a SimpleMotor message. Also converts values to other types if specified.
@@ -3884,13 +3901,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.motor.SimpleMotor,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this SimpleMotor to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for SimpleMotor
@@ -4010,14 +4027,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a DCMotor message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns DCMotor
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.motor.DCMotor
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.motor.DCMotor
 
             /**
              * Creates a plain object from a DCMotor message. Also converts values to other types if specified.
@@ -4028,13 +4045,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.motor.DCMotor,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this DCMotor to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for DCMotor
@@ -4148,14 +4165,14 @@ export namespace mirabuf {
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
-                public static verify(message: { [k: string]: any }): string | null
+                public static verify(message: { [k: string]: unknown }): string | null
 
                 /**
                  * Creates an Advanced message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
                  * @returns Advanced
                  */
-                public static fromObject(object: { [k: string]: any }): mirabuf.motor.DCMotor.Advanced
+                public static fromObject(object: { [k: string]: unknown }): mirabuf.motor.DCMotor.Advanced
 
                 /**
                  * Creates a plain object from an Advanced message. Also converts values to other types if specified.
@@ -4166,13 +4183,13 @@ export namespace mirabuf {
                 public static toObject(
                     message: mirabuf.motor.DCMotor.Advanced,
                     options?: $protobuf.IConversionOptions
-                ): { [k: string]: any }
+                ): { [k: string]: unknown }
 
                 /**
                  * Converts this Advanced to JSON.
                  * @returns JSON object
                  */
-                public toJSON(): { [k: string]: any }
+                public toJSON(): { [k: string]: unknown }
 
                 /**
                  * Gets the default type url for Advanced
@@ -4273,14 +4290,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Materials message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Materials
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.material.Materials
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.material.Materials
 
             /**
              * Creates a plain object from a Materials message. Also converts values to other types if specified.
@@ -4291,13 +4308,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.material.Materials,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Materials to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Materials
@@ -4401,14 +4418,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates an Appearance message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Appearance
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.material.Appearance
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.material.Appearance
 
             /**
              * Creates a plain object from an Appearance message. Also converts values to other types if specified.
@@ -4419,13 +4436,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.material.Appearance,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Appearance to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Appearance
@@ -4468,7 +4485,7 @@ export namespace mirabuf {
             matType?: mirabuf.material.PhysicalMaterial.MaterialType | null
         }
 
-        /** Data to represent any given Physical Material */
+        /** Data to represent unknown given Physical Material */
         class PhysicalMaterial implements IPhysicalMaterial {
             /**
              * Constructs a new PhysicalMaterial.
@@ -4562,14 +4579,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a PhysicalMaterial message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns PhysicalMaterial
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.material.PhysicalMaterial
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.material.PhysicalMaterial
 
             /**
              * Creates a plain object from a PhysicalMaterial message. Also converts values to other types if specified.
@@ -4580,13 +4597,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.material.PhysicalMaterial,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this PhysicalMaterial to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for PhysicalMaterial
@@ -4692,14 +4709,14 @@ export namespace mirabuf {
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
-                public static verify(message: { [k: string]: any }): string | null
+                public static verify(message: { [k: string]: unknown }): string | null
 
                 /**
                  * Creates a Thermal message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
                  * @returns Thermal
                  */
-                public static fromObject(object: { [k: string]: any }): mirabuf.material.PhysicalMaterial.Thermal
+                public static fromObject(object: { [k: string]: unknown }): mirabuf.material.PhysicalMaterial.Thermal
 
                 /**
                  * Creates a plain object from a Thermal message. Also converts values to other types if specified.
@@ -4710,13 +4727,13 @@ export namespace mirabuf {
                 public static toObject(
                     message: mirabuf.material.PhysicalMaterial.Thermal,
                     options?: $protobuf.IConversionOptions
-                ): { [k: string]: any }
+                ): { [k: string]: unknown }
 
                 /**
                  * Converts this Thermal to JSON.
                  * @returns JSON object
                  */
-                public toJSON(): { [k: string]: any }
+                public toJSON(): { [k: string]: unknown }
 
                 /**
                  * Gets the default type url for Thermal
@@ -4827,14 +4844,14 @@ export namespace mirabuf {
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
-                public static verify(message: { [k: string]: any }): string | null
+                public static verify(message: { [k: string]: unknown }): string | null
 
                 /**
                  * Creates a Mechanical message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
                  * @returns Mechanical
                  */
-                public static fromObject(object: { [k: string]: any }): mirabuf.material.PhysicalMaterial.Mechanical
+                public static fromObject(object: { [k: string]: unknown }): mirabuf.material.PhysicalMaterial.Mechanical
 
                 /**
                  * Creates a plain object from a Mechanical message. Also converts values to other types if specified.
@@ -4845,13 +4862,13 @@ export namespace mirabuf {
                 public static toObject(
                     message: mirabuf.material.PhysicalMaterial.Mechanical,
                     options?: $protobuf.IConversionOptions
-                ): { [k: string]: any }
+                ): { [k: string]: unknown }
 
                 /**
                  * Converts this Mechanical to JSON.
                  * @returns JSON object
                  */
-                public toJSON(): { [k: string]: any }
+                public toJSON(): { [k: string]: unknown }
 
                 /**
                  * Gets the default type url for Mechanical
@@ -4950,14 +4967,14 @@ export namespace mirabuf {
                  * @param message Plain object to verify
                  * @returns `null` if valid, otherwise the reason why it is not
                  */
-                public static verify(message: { [k: string]: any }): string | null
+                public static verify(message: { [k: string]: unknown }): string | null
 
                 /**
                  * Creates a Strength message from a plain object. Also converts values to their respective internal types.
                  * @param object Plain object
                  * @returns Strength
                  */
-                public static fromObject(object: { [k: string]: any }): mirabuf.material.PhysicalMaterial.Strength
+                public static fromObject(object: { [k: string]: unknown }): mirabuf.material.PhysicalMaterial.Strength
 
                 /**
                  * Creates a plain object from a Strength message. Also converts values to other types if specified.
@@ -4968,13 +4985,13 @@ export namespace mirabuf {
                 public static toObject(
                     message: mirabuf.material.PhysicalMaterial.Strength,
                     options?: $protobuf.IConversionOptions
-                ): { [k: string]: any }
+                ): { [k: string]: unknown }
 
                 /**
                  * Converts this Strength to JSON.
                  * @returns JSON object
                  */
-                public toJSON(): { [k: string]: any }
+                public toJSON(): { [k: string]: unknown }
 
                 /**
                  * Gets the default type url for Strength
@@ -5058,14 +5075,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Signals message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Signals
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.signal.Signals
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.signal.Signals
 
             /**
              * Creates a plain object from a Signals message. Also converts values to other types if specified.
@@ -5076,13 +5093,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.signal.Signals,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Signals to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Signals
@@ -5204,14 +5221,14 @@ export namespace mirabuf {
              * @param message Plain object to verify
              * @returns `null` if valid, otherwise the reason why it is not
              */
-            public static verify(message: { [k: string]: any }): string | null
+            public static verify(message: { [k: string]: unknown }): string | null
 
             /**
              * Creates a Signal message from a plain object. Also converts values to their respective internal types.
              * @param object Plain object
              * @returns Signal
              */
-            public static fromObject(object: { [k: string]: any }): mirabuf.signal.Signal
+            public static fromObject(object: { [k: string]: unknown }): mirabuf.signal.Signal
 
             /**
              * Creates a plain object from a Signal message. Also converts values to other types if specified.
@@ -5222,13 +5239,13 @@ export namespace mirabuf {
             public static toObject(
                 message: mirabuf.signal.Signal,
                 options?: $protobuf.IConversionOptions
-            ): { [k: string]: any }
+            ): { [k: string]: unknown }
 
             /**
              * Converts this Signal to JSON.
              * @returns JSON object
              */
-            public toJSON(): { [k: string]: any }
+            public toJSON(): { [k: string]: unknown }
 
             /**
              * Gets the default type url for Signal

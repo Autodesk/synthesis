@@ -3,12 +3,11 @@ name: Fission - Unit Test
 on:
   workflow_dispatch: {}
   push:
-    branches: [ prod, dev ]
+    branches: [prod, dev]
   pull_request:
-    branches: [ prod, dev ]
+    branches: [prod, dev]
 
 jobs:
-
   runUnitTests:
     name: Playwright Unit Tests
     container:
@@ -25,7 +24,6 @@ jobs:
         with:
           node-version: 20
 
-
       - name: Cache Unzipped Synthesis Assets
         id: cache-assets
         uses: actions/cache@v3
@@ -41,16 +39,15 @@ jobs:
           apt install git-lfs unzip
           git config --global --add safe.directory `pwd`
           git lfs pull
-          
+
           cd fission
           unzip -o public/assetpack.zip -d public/ || echo
-
 
       - name: Cache Node Dependencies
         uses: actions/cache@v3
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
-          path: 'fission/node_modules'
+          path: "fission/node_modules"
           restore-keys: |
             ${{runner.os}}-npm-fission-
             ${{runner.os}}-npm

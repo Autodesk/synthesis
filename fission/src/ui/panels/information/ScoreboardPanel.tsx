@@ -19,20 +19,14 @@ const ScoreboardPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, side
     const [time, setTime] = useState<string>("0")
     const { closePanel } = usePanelControlContext()
 
-    const onScoreChange = useCallback(
-        (e: OnScoreChangedEvent) => {
-            setRedScore(e.red)
-            setBlueScore(e.blue)
-        },
-        [setRedScore, setBlueScore]
-    )
+    const onScoreChange = useCallback((e: OnScoreChangedEvent) => {
+        setRedScore(e.red)
+        setBlueScore(e.blue)
+    }, [])
 
-    const onTimeLeftChange = useCallback(
-        (e: UpdateTimeLeft) => {
-            setTime(e.autonomousTime)
-        },
-        [setTime]
-    )
+    const onTimeLeftChange = useCallback((e: UpdateTimeLeft) => {
+        setTime(e.autonomousTime)
+    }, [])
 
     const onRenderChange = useCallback(
         (e: PreferenceEvent<"RenderScoreboard">) => {
