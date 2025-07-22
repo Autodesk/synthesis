@@ -146,15 +146,15 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                     if len(fusionBody):
                         taggingConfigTab.addTag(fusionBody[0], tag)
 
-        getAuth()
-        user_info_result = getUserInfo()
-        if user_info_result.is_err():
-            user_name = "Not Signed In"
-        else:
-            user_name = user_info_result.unwrap().given_name
+            getAuth()
+            user_info_result = getUserInfo()
+            if user_info_result.is_err():
+                user_name = "Not Signed In"
+            else:
+                user_name = user_info_result.unwrap().given_name
 
-        apsSettings = INPUTS_ROOT.addTabCommandInput("aps_settings", f"APS Settings ({user_name})")
-        apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
+            apsSettings = INPUTS_ROOT.addTabCommandInput("aps_settings", f"APS Settings ({user_name})")
+            apsSettings.tooltip = "Configuration settings for Autodesk Platform Services."
 
         if USE_NEW_UI:
             palettes = gm.ui.palettes
@@ -174,8 +174,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
                 height=800,
                 useNewWebBrowser=True,
             )
-            # futil.add_handler(palette.closed, palette_closed)
-            # futil.add_handler(palette.navigatingURL, palette_navigating)
             onMessage = IncomingHTMLMessageHandler()
             exporterPalette.incomingFromHTML.add(onMessage)
 
@@ -183,7 +181,6 @@ class ConfigureCommandCreatedHandler(adsk.core.CommandCreatedEventHandler):
             exporterPalette.closed.add(onClose)
 
             exporterPalette.isVisible = True
-            # palette.dockingState = adsk.core.PaletteDockingStates.PaletteDockStateRight
 
 
 class PaletteCloseHandler(PersistentEventHandler, adsk.core.UserInterfaceGeneralEventHandler):
