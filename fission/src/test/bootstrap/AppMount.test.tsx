@@ -65,6 +65,7 @@ describe("React Mounting", async () => {
         const style = window.getComputedStyle(document.body)
         expect(style.overflow).toBe("hidden")
         expect(style.overscrollBehavior).toBe("none")
+        expect(style.fontFamily.split(",")[0].trim()).toBe("Artifakt")
         await annotate("index.css applied correctly")
 
         expect(renderMock).toHaveBeenCalledOnce()
