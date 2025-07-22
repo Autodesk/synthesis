@@ -293,14 +293,14 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     const { screenToFlowPosition } = useReactFlow()
     const [nodes, setNodes, onNodesChange] = useNodesState([] as FlowNode[])
     const [edges, setEdges, onEdgesChange] = useEdgesState([] as FlowEdge[])
-    const [refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
+    const [_refreshHook, refreshGraph] = useReducer(x => !x, false) // Whenever I use reducers, it's always sketch. -Hunter
 
     // Essentially a callback, but it can use itself.
     useEffect(() => {
         const [nodes, edges] = generateGraph(simConfig, refreshGraph, setConfigState)
         setNodes(nodes)
         setEdges(edges)
-    }, [setConfigState, setEdges, setNodes, simConfig, refreshHook])
+    }, [setConfigState, setEdges, setNodes, simConfig])
 
     const onEdgeDoubleClick = useCallback(
         (_: React.MouseEvent, edge: FlowEdge) => {
@@ -367,7 +367,7 @@ const WiringComponent: React.FC<ConfigComponentProps> = ({ setConfigState, simCo
     const onCreateJunction = useCallback(() => {
         SimConfig.addJunctionNode(simConfig)
         refreshGraph()
-    }, [refreshGraph, simConfig])
+    }, [simConfig])
 
     return (
         <ReactFlow
