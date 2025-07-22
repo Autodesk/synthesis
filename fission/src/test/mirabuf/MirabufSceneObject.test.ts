@@ -223,7 +223,7 @@ describe("MirabufSceneObject", () => {
 })
 
 describe("MirabufSceneObject - Real Systems Integration", () => {
-    test("getDimensions returns proper values for Dozer robot", async (context) => {
+    test("getDimensions returns proper values for Dozer robot", async context => {
         const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
 
         if (!cacheInfo) {
