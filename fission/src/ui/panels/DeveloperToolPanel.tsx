@@ -108,7 +108,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             setJsonValue(val ? JSON.stringify(val, null, 2) : "")
             setError("")
         }
-    }, [selectedKey, editor, fieldLoaded])
+    }, [selectedKey, editor])
 
     const handleSave = () => {
         if (!editor || !selectedKey) return
@@ -164,7 +164,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 PreferencesSystem.savePreferences?.()
                 field.updateScoringZones()
             }
-        } catch (e) {
+        } catch (_e) {
             setError("Invalid JSON")
         }
     }
@@ -253,7 +253,7 @@ const DeveloperToolPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 URL.revokeObjectURL(url)
             }, 0)
             globalAddToast?.("info", "Exported", `Exported field as ${filename}`)
-        } catch (e) {
+        } catch (_e) {
             globalAddToast?.("error", "Export Error", "Failed to export field.")
         }
     }

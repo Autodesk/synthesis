@@ -248,7 +248,7 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
 
             globalAddToast("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
-        } catch (error) {
+        } catch (_error) {
             globalAddToast("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
         }
     }

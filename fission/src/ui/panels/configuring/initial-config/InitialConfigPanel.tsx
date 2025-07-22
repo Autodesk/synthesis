@@ -38,6 +38,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }, [])
 
+    // biome-ignore lint: Making closePanel a dep causes maxium depth exceeded errors
     useEffect(() => {
         closePanel("import-mirabuf")
         mirabufPanelState.hasUnconfirmedImport = true
@@ -45,7 +46,6 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => {
             mirabufPanelState.hasUnconfirmedImport = false
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const closeFinish = useCallback(() => {

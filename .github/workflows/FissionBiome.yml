@@ -1,13 +1,15 @@
-name: Fission - Build
+name: Fission - Biome Format and Lint Validation
 
 on:
   workflow_dispatch: {}
+  push:
+    branches: [prod, dev]
   pull_request:
     branches: [prod, dev]
 
 jobs:
-  buildFission:
-    name: Build
+  runBiomeValidationScript:
+    name: Biome Validation
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
@@ -17,7 +19,7 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Cache Node Dependencies
+      - name: Cache Dependencies
         uses: actions/cache@v3
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
@@ -31,7 +33,16 @@ jobs:
           cd fission
           bun install
 
-      - name: Build Fission
+      - name: Lint
+        id: lint-validation
+        if: ${{ always() }}
         run: |
           cd fission
-          bun run build && echo "Build Passed" || (echo "Build Failed" && exit 1)
+          bun run lint && echo "Biome Linting Validation Passed" || (echo "Biome Linting Validation Failed" && exit 1)
+
+      - name: Format
+        id: format-validation
+        if: ${{ always() }}
+        run: |
+          cd fission
+          bun run fmt && echo "Biome Formatting Validation Passed" || (echo "Biome Formatting Validation Failed" && exit 1)
