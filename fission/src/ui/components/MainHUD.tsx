@@ -212,7 +212,7 @@ const MainHUD: React.FC = () => {
                 />:
                 <MainHUDButton
                     value={"Abort Match Mode"}
-                    icon={SynthesisIcons.XMARK}
+                    icon={SynthesisIcons.XMARK_LARGE}
                     larger={true}
                     onClick={() => {
                         MatchMode.getInstance().sandboxModeStart()
