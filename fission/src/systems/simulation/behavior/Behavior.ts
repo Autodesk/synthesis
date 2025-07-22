@@ -1,6 +1,12 @@
 import Driver from "@/systems/simulation/driver/Driver"
 import Stimulus from "@/systems/simulation/stimulus/Stimulus"
 
+export enum DriveType {
+    ARCADE = "Arcade",
+    TANK = "Tank",
+    SWERVE = "Swerve",
+}
+
 abstract class Behavior {
     private _drivers: Driver[]
     private _stimuli: Stimulus[]

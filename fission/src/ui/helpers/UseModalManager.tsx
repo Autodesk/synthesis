@@ -79,7 +79,7 @@ export const useModalManager = (modals: ReactElement[]) => {
                 onClose: () => {},
             })
         })
-    }, [modals, closeModal, openModal, registerModal])
+    }, [modals, registerModal])
 
     return {
         modalDictionary,
