@@ -97,7 +97,6 @@ function mockMechanism(): Mechanism {
 }
 
 function mockBodyId() {
-    // eslint-disable-next-line
     return { GetIndex: () => 0, GetIndexAndSequenceNumber: () => 0 }
 }
 
