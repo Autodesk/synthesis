@@ -16,9 +16,27 @@ export type Robot = {
   lastUpdateTime: number;
 };
 
+export type ServerMetrics = {
+  actualTickRate?: number;
+  tickRate?: number;
+  messagesPerSecond?: number;
+  memoryUsageMB?: number;
+};
+
 export type Metrics = {
-  actualTickRate: number;
-  tickRate: number;
-  messagesPerSecond: number;
-  memoryUsageMB: number;
+  startTime: number;
+  totalFrames: number;
+  frameTimes: number[];
+  inputsSent: number;
+  messagesReceived: number;
+  bytesReceived: number;
+  bytesSent: number;
+  connectionTime: number;
+  averageFPS: number;
+  networkStats: {
+    packetsLost: number;
+    roundTripTimes: number[];
+    jitter: number;
+  };
+  serverMetrics: ServerMetrics;
 };
