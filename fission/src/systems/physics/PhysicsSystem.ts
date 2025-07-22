@@ -355,11 +355,11 @@ class PhysicsSystem extends WorldSystem {
             const rnB = parser.partToNodeMap.get(jInst.childPart!)
 
             if (!rnA || !rnB) {
-                console.warn(`Skipping joint '${jInst.info!.name!}'. Couldn't find associated rigid nodes.`)
+                console.warn(`Skipping joint '${jInst.info?.name ?? "Unknown"}'. Couldn't find associated rigid nodes.`)
                 return
             } else if (rnA.id == rnB.id) {
                 console.warn(
-                    `Skipping joint '${jInst.info!.name!}'. Jointing the same parts. Likely in issue with Fusion Design structure.`
+                    `Skipping joint '${jInst.info?.name ?? "Unknown"}'. Jointing the same parts. Likely in issue with Fusion Design structure.`
                 )
                 return
             }
@@ -368,7 +368,7 @@ class PhysicsSystem extends WorldSystem {
             const bodyIdA = mechanism.getBodyByNodeId(rnA.id)
             const bodyIdB = mechanism.getBodyByNodeId(rnB.id)
             if (!bodyIdA || !bodyIdB) {
-                console.warn(`Skipping joint '${jInst.info!.name!}'. Failed to find rigid nodes' associated bodies.`)
+                console.warn(`Skipping joint '${jInst.info?.name ?? "Unknown"}'. Failed to find rigid nodes' associated bodies.`)
                 return
             }
             const bodyA = this.getBody(bodyIdA)

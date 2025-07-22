@@ -1,4 +1,5 @@
 import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import type manifestFile from "../../../../public/Downloadables/Mira/manifest.json"
 import { LabelSize } from "@/components/Label"
 import {
     Data,
@@ -179,12 +180,21 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const x = async () => {
             fetch(`/api/mira/manifest.json`)
                 .then(x => x.json())
+                .then(x => x as typeof manifestFile)
                 .then(x => {
                     const map = MirabufCachingService.getCacheMap(MiraType.ROBOT)
                     const robots: MirabufRemoteInfo[] = []
                     for (const src of x["robots"]) {
                         if (typeof src == "string") {
                             const str = `/api/mira/robots/${src}`
+                            if (!map[str]) robots.push({ displayName: src, src: str })
+                        } else {
+                            if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
+                        }
+                    }
+                    for (const src of x["private"]) {
+                        if (typeof src === "string") {
+                            const str = `/api/mira/private/${src}`
                             if (!map[str]) robots.push({ displayName: src, src: str })
                         } else {
                             if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
