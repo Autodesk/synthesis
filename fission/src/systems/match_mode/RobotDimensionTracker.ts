@@ -3,7 +3,6 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import SceneRenderer from "../scene/SceneRenderer"
 import MatchMode from "./MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import { convertFeetToMeters } from "@/util/UnitConversions"
 
 const PENALTY_COOLDOWN = 1000
 
@@ -15,7 +14,7 @@ class RobotDimensionTracker {
 
     public static setConfigValues(ignoreRotation: boolean, maxHeight: number, heightPenalty: number) {
         this._ignoreRotation = ignoreRotation
-        this._maxHeight = convertFeetToMeters(maxHeight)
+        this._maxHeight = maxHeight
         this._heightPenalty = heightPenalty
     }
 

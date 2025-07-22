@@ -223,19 +223,17 @@ describe("MirabufSceneObject", () => {
 })
 
 describe("MirabufSceneObject - Real Systems Integration", () => {
-    test("getDimensions returns proper values for Dozer robot", async () => {
+    test("getDimensions returns proper values for Dozer robot", async (context) => {
         const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
 
         if (!cacheInfo) {
-            console.warn("Dozer robot file not available, skipping integration test")
-            return
+            context.skip()
         }
 
-        const assembly = await MirabufCachingService.get(cacheInfo.id, MiraType.ROBOT)
+        const assembly = await MirabufCachingService.get(cacheInfo!.id, MiraType.ROBOT)
 
         if (!assembly) {
-            console.warn("Dozer robot assembly not available, skipping integration test")
-            return
+            context.skip()
         }
 
         const parser = new MirabufParser(assembly!)
