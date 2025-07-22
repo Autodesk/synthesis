@@ -7,6 +7,7 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltVec3ToThreeVector3,
+    convertMiraTypeToConfigurationType,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
 import * as THREE from "three"
@@ -772,9 +773,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             {
                 name: "Move",
                 func: () => {
-                    setSelectedConfigurationType(
-                        this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
-                    )
+                    setSelectedConfigurationType(convertMiraTypeToConfigurationType(this.miraType))
                     setNextConfigurePanelSettings({
                         configMode: ConfigMode.MOVE,
                         selectedAssembly: this,
@@ -785,9 +784,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             {
                 name: "Configure",
                 func: () => {
-                    setSelectedConfigurationType(
-                        this.miraType == MiraType.ROBOT ? ConfigurationType.ROBOT : ConfigurationType.FIELD
-                    )
+                    setSelectedConfigurationType(convertMiraTypeToConfigurationType(this.miraType))
                     setNextConfigurePanelSettings({
                         configMode: undefined,
                         selectedAssembly: this,
