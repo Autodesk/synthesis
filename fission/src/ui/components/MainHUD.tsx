@@ -13,7 +13,7 @@ import { Box } from "@mui/material"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import { setAddToast } from "./GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import MatchMode from "@/systems/MatchMode"
+import MatchMode, { MatchStateChangeEvent } from "@/systems/MatchMode"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 
 type ButtonProps = {
@@ -66,10 +66,17 @@ const MainHUD: React.FC = () => {
     setAddToast(addToast)
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
+    const [matchModeRunning, setMatchModeRunning] = useState(MatchMode.getInstance().isMatchEnabled())
 
     useEffect(() => {
         document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
             setUserInfo(APS.userInfo)
+        })
+    }, [])
+
+    useEffect(() => {
+        MatchStateChangeEvent.addListener(() => {
+            setMatchModeRunning(MatchMode.getInstance().isMatchEnabled())
         })
     }, [])
 
@@ -193,21 +200,27 @@ const MainHUD: React.FC = () => {
                         onClick={() => APS.requestAuthCode()}
                     />
                 )}
-                <MainHUDButton
-                    value={"Start Match Mode"}
-                    icon={SynthesisIcons.GAMEPAD}
-                    larger={true}
-                    onClick={() => {
-                        MatchMode.getInstance().isMatchEnabled()
-                            ? globalAddToast(
-                                  "error",
-                                  "Match Mode Already Running",
-                                  "You can't start match mode if its already running"
-                              )
-                            : openPanel("match-mode-config")
-                        setIsOpen(false)
-                    }}
-                />
+                {!matchModeRunning ? (
+                    <MainHUDButton
+                        value={"Start Match Mode"}
+                        icon={SynthesisIcons.GAMEPAD}
+                        larger={true}
+                        onClick={() => {
+                            openPanel("match-mode-config")
+                            setIsOpen(false)
+                        }}
+                    />
+                ) : (
+                    <MainHUDButton
+                        value={"Abort Match Mode"}
+                        icon={SynthesisIcons.XMARK_LARGE}
+                        larger={true}
+                        onClick={() => {
+                            MatchMode.getInstance().sandboxModeStart()
+                            globalAddToast("info", "Match Mode Cancelled", "")
+                        }}
+                    />
+                )}
             </motion.div>
         </>
     )

@@ -97,13 +97,14 @@ export const Spacer = (heightPx?: number, widthPx?: number) => {
     return <Box minHeight={`${heightPx}px`} minWidth={`${widthPx}px`} />
 }
 
-export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick }) => {
+export const PositiveButton: React.FC<ButtonProps> = ({ value, onClick, disabled }) => {
     return (
         <Button
+            disabled={disabled}
             size={ButtonSize.MEDIUM}
             value={value}
             onClick={onClick}
-            colorOverrideClass="bg-accept-button hover:brightness-90"
+            colorOverrideClass={disabled ? "bg-interactive-background" : "bg-accept-button hover:brightness-90"}
         />
     )
 }
