@@ -64,9 +64,8 @@ class EjectableSceneObject extends SceneObject {
             )
             this._ejectVelocity = this._parentAssembly.ejectorPreferences.ejectorVelocity
 
-            // Animation start at game piece
+            // Record start transform at the game piece center of mass
             const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
-
             this._startTranslation = new THREE.Vector3(0, 0, 0)
             this._startRotation = new THREE.Quaternion(0, 0, 0, 1)
             convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).decompose(
@@ -80,7 +79,7 @@ class EjectableSceneObject extends SceneObject {
 
             World.physicsSystem.disablePhysicsForBody(this._gamePieceBodyId)
 
-            // Remove from scoring zones
+            // Remove from any scoring zones
             const zones = [...World.sceneRenderer.sceneObjects.entries()]
                 .filter(x => x[1] instanceof ScoringZoneSceneObject)
                 .map(x => x[1]) as ScoringZoneSceneObject[]
@@ -96,7 +95,11 @@ class EjectableSceneObject extends SceneObject {
     public update(): void {
         const now = performance.now()
         const elapsed = (now - this._animationStartTime) / 1000
-        const t = Math.min(elapsed / this._animationDuration, 1)
+        const tRaw = elapsed / this._animationDuration
+        const t = Math.min(tRaw, 1)
+
+        // ease-in curve for gradual acceleration
+        const easedT = t * t * t
 
         if (this._parentBodyId && this._deltaTransformation && this._gamePieceBodyId) {
             if (!World.physicsSystem.isBodyAdded(this._gamePieceBodyId)) {
@@ -113,6 +116,7 @@ class EjectableSceneObject extends SceneObject {
             let desiredPosition = new THREE.Vector3(0, 0, 0)
             let desiredRotation = new THREE.Quaternion(0, 0, 0, 1)
 
+            // Compute target world transform
             const desiredTransform = this._deltaTransformation
                 .clone()
                 .premultiply(convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()))
@@ -120,10 +124,15 @@ class EjectableSceneObject extends SceneObject {
             desiredTransform.decompose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
 
             if (t < 1 && this._startTranslation && this._startRotation) {
-                desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, t)
-                desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, t)
+                // gradual acceleration via easedT
+                desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
+                desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, easedT)
+            } else if (t >= 1) {
+                // snap instantly and re-enable physics
+                World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
             }
 
+            // apply the transform
             desiredTransform.identity().compose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
 
             const bodyTransform = posToCOM.clone().invert().premultiply(desiredTransform)
