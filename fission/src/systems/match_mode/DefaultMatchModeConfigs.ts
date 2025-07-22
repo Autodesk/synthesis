@@ -53,7 +53,7 @@ class DefaultMatchModeConfigs {
             teleopTime: 15,
             endgameTime: 5,
             ignoreRotation: true,
-            maxHeight: Infinity,
+            maxHeight: 5,
             heightPenalty: 0,
         }
     }
