@@ -25,6 +25,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
+import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
@@ -129,6 +130,10 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
         [
             ConfigMode.MOVE,
             new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of robot relative to field."),
+        ],
+        [
+            ConfigMode.DRIVETRAIN,
+            new ConfigModeSelectionOption("Drivetrain", ConfigMode.DRIVETRAIN, "Sets the drivetrain type ."),
         ],
         [
             ConfigMode.INTAKE,
@@ -326,6 +331,9 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
         }
         case ConfigMode.ALLIANCE: {
             return <AllianceSelectionInterface selectedAssembly={assembly} />
+        }
+        case ConfigMode.DRIVETRAIN: {
+            return <DrivetrainSelectionInterface selectedAssembly={assembly} />
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
