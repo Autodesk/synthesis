@@ -15,17 +15,17 @@ import {
 
 // Select menu item button (appears as an outline when hovered over, the text is a separate component)
 const CustomButton = styled(MUIButton)({
-    "borderStyle": "none",
-    "borderWidth": "1px",
-    "transition": "border-color 0s",
-    "outline": "none",
+    borderStyle: "none",
+    borderWidth: "1px",
+    transition: "border-color 0s",
+    outline: "none",
     "&:hover": {
         borderStyle: "solid",
         borderColor: "grey",
         backgroundColor: "transparent",
     },
-    "position": "relative",
-    "overflow": "hidden",
+    position: "relative",
+    overflow: "hidden",
     "& .MuiTouchRipple-root span": {
         backgroundColor: alpha("#ffffff", 0.07),
         animationDuration: "300ms",
