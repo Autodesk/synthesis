@@ -118,7 +118,6 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         progressHandle.done()
 
                         if (mainSceneObject.miraType === MiraType.ROBOT) {
-                            console.log(`Loaded Robot`)
                             globalOpenPanel("initial-config")
                         }
                     } else {

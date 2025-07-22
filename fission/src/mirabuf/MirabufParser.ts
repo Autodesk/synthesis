@@ -268,7 +268,6 @@ class MirabufParser {
         }
         const partDefinition = this.assembly.data?.parts?.partDefinitions?.[partDefinitionReference] ?? {}
 
-        console.log(`${inst.info?.name} ${inst.info?.GUID}`)
         const parts = new mirabuf.Parts({
             info: inst.info,
             partDefinitions: {
@@ -279,7 +278,6 @@ class MirabufParser {
             },
         })
 
-        console.log(`Assembly being converted: ${inst.info?.name}`)
         const gamePieceAssembly = new mirabuf.Assembly({
             info: inst.info,
             data: {

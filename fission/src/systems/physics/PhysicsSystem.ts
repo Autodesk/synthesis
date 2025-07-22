@@ -787,9 +787,7 @@ class PhysicsSystem extends WorldSystem {
 
         const reservedLayer: number | undefined = layerReserve?.layer
 
-        console.log(`${parser.assembly.info?.name} rigid nodes ${[...parser.rigidNodes.values()]}`) // pipes have no nodes
         const nonPhysicsNodes = filterNonPhysicsNodes([...parser.rigidNodes.values()], parser.assembly)
-        console.log(`physics filtering: ${[...parser.rigidNodes.values()].length} ${nonPhysicsNodes.length}`)
 
         const massMod = (() => {
             let assemblyMass = 0
@@ -798,7 +796,6 @@ class PhysicsSystem extends WorldSystem {
             return parser.assembly.dynamic && assemblyMass > MAX_ROBOT_MASS ? MAX_ROBOT_MASS / assemblyMass : 1
         })()
 
-        console.log(`${parser.assembly.info?.name} nonPhysicsNodes ${nonPhysicsNodes}`) // pipes have no rigid nodes
         nonPhysicsNodes.forEach(rn => {
             const compoundShapeSettings = new JOLT.StaticCompoundShapeSettings()
             let shapesAdded = 0
@@ -823,11 +820,9 @@ class PhysicsSystem extends WorldSystem {
                   ? LAYER_GENERAL_DYNAMIC
                   : LAYER_FIELD
 
-            console.log(`${parser.assembly.info?.name} parts ${[...rn.parts.values()]}`) // pipes have no rigid nodes
             rn.parts.forEach(partId => {
                 const partInstance = parser.assembly.data!.parts!.partInstances![partId]!
                 if (!partInstance?.partDefinitionReference || partInstance?.skipCollider) {
-                    console.log("no part instance")
                     return
                 }
 
@@ -1447,19 +1442,14 @@ function setupCollisionFiltering(settings: Jolt.JoltSettings) {
 }
 
 function filterNonPhysicsNodes(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly): RigidNodeReadOnly[] {
-    console.log(`${mira.info?.name}: ${nodes.map(n => n.id)}`)
-
     const instances = mira.data?.parts?.partInstances
     return nodes.filter(x => {
-        console.log(`parts: ${[...x.parts.entries()].map(n => n[0])}`)
         for (const part of x.parts) {
             const inst = instances![part] ?? instances![mira.info?.GUID ?? ""]
             if (!inst) {
-                console.error("no part inst ")
                 return false
             }
             const def = mira.data!.parts!.partDefinitions![inst.partDefinitionReference!]!
-            console.log(`Definition name: ${def.bodies}`)
             if (def.bodies && def.bodies.length > 0) {
                 return true
             }
