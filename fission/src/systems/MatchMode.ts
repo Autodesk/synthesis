@@ -23,7 +23,7 @@ class MatchMode {
     private _endgame: boolean = false
     private _matchModeType: MatchModeType = MatchModeType.SANDBOX
 
-    private setMatchModeType(val:MatchModeType) {
+    private setMatchModeType(val: MatchModeType) {
         this._matchModeType = val
         new MatchStateChangeEvent(val).dispatch()
     }
@@ -132,7 +132,6 @@ class MatchMode {
     getMatchModeType(): MatchModeType {
         return this._matchModeType
     }
-
 }
 
 export default MatchMode
@@ -163,8 +162,8 @@ export class UpdateTimeLeft extends Event {
 export class MatchStateChangeEvent extends Event {
     public static readonly EVENT_KEY = "MatchEnd"
 
-    public readonly matchModeType:MatchModeType
-    constructor(matchModeType:MatchModeType) {
+    public readonly matchModeType: MatchModeType
+    constructor(matchModeType: MatchModeType) {
         super(MatchStateChangeEvent.EVENT_KEY)
         this.matchModeType = matchModeType
     }
@@ -181,4 +180,3 @@ export class MatchStateChangeEvent extends Event {
         window.removeEventListener(MatchStateChangeEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }
-

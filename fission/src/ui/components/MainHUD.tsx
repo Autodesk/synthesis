@@ -200,26 +200,27 @@ const MainHUD: React.FC = () => {
                         onClick={() => APS.requestAuthCode()}
                     />
                 )}
-                {!matchModeRunning ?
-                <MainHUDButton
-                    value={"Start Match Mode"}
-                    icon={SynthesisIcons.GAMEPAD}
-                    larger={true}
-                    onClick={() => {
-                        openPanel("match-mode-config")
-                        setIsOpen(false)
-                    }}
-                />:
-                <MainHUDButton
-                    value={"Abort Match Mode"}
-                    icon={SynthesisIcons.XMARK_LARGE}
-                    larger={true}
-                    onClick={() => {
-                        MatchMode.getInstance().sandboxModeStart()
-                        globalAddToast("info", "Match Mode Cancelled", "")
-                    }}
-                />
-                }
+                {!matchModeRunning ? (
+                    <MainHUDButton
+                        value={"Start Match Mode"}
+                        icon={SynthesisIcons.GAMEPAD}
+                        larger={true}
+                        onClick={() => {
+                            openPanel("match-mode-config")
+                            setIsOpen(false)
+                        }}
+                    />
+                ) : (
+                    <MainHUDButton
+                        value={"Abort Match Mode"}
+                        icon={SynthesisIcons.XMARK_LARGE}
+                        larger={true}
+                        onClick={() => {
+                            MatchMode.getInstance().sandboxModeStart()
+                            globalAddToast("info", "Match Mode Cancelled", "")
+                        }}
+                    />
+                )}
             </motion.div>
         </>
     )
