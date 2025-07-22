@@ -19,7 +19,7 @@ class RobotDimensionTracker {
         this._heightPenalty = heightPenalty
     }
 
-    public static update(_deltaT: number, sceneRenderer: SceneRenderer): void {
+    public static update(sceneRenderer: SceneRenderer): void {
         if (!MatchMode.getInstance().isMatchEnabled()) return
 
         const robots = [...sceneRenderer.sceneObjects.values()].filter(

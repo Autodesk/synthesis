@@ -119,7 +119,7 @@ class World {
         World._analyticsSystem?.update(this._currentDeltaT)
         World._performanceMonitorSystem?.update(this._currentDeltaT)
 
-        RobotDimensionTracker.update(this._currentDeltaT, World._sceneRenderer)
+        RobotDimensionTracker.update(World._sceneRenderer)
     }
 
     public static get currentDeltaT(): number {

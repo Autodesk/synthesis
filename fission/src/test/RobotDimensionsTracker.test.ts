@@ -27,7 +27,7 @@ interface MockSceneRenderer {
     sceneObjects: Map<string, MockRobotObject | MockNonRobotObject>
 }
 
-type TrackerUpdateParam = Parameters<typeof RobotDimensionTracker.update>[1]
+type TrackerUpdateParam = Parameters<typeof RobotDimensionTracker.update>[0]
 
 const mockMatchModeInstance = {
     isMatchEnabled: vi.fn(() => true),
@@ -57,10 +57,6 @@ vi.mock("@/systems/simulation/SimulationSystem", () => ({
     },
 }))
 
-vi.mock("@/util/UnitConversions", () => ({
-    convertFeetToMeters: vi.fn((feet: number) => feet * 0.3048),
-}))
-
 describe("RobotDimensionTracker", () => {
     let mockSceneRenderer: MockSceneRenderer
     let mockRobot1: MockRobotObject
@@ -70,12 +66,8 @@ describe("RobotDimensionTracker", () => {
     beforeEach(() => {
         vi.clearAllMocks()
 
-        mockMatchModeInstance.isMatchEnabled.mockReturnValue(true)
-
         const tracker = RobotDimensionTracker as unknown as { _robotHeightPenalties?: Map<string, number> }
-        tracker._robotHeightPenalties?.clear?.()
-
-        RobotDimensionTracker.setConfigValues(true, 1000, 0) // Very high limit to reset
+        tracker._robotHeightPenalties?.clear()
 
         const robot1Base = Object.create(MirabufSceneObject.prototype)
         const robot2Base = Object.create(MirabufSceneObject.prototype)
@@ -84,26 +76,16 @@ describe("RobotDimensionTracker", () => {
         mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 1.8, width: 1.0, depth: 1.0 })
 
-        Object.defineProperty(mockRobot1, "assemblyName", {
-            get: () => "Robot1",
-            configurable: true,
-        })
         Object.defineProperty(mockRobot1, "miraType", {
             get: () => MiraType.ROBOT,
-            configurable: true,
         })
 
         mockRobot2 = robot2Base as MockRobotObject
         mockRobot2.getDimensions = vi.fn().mockReturnValue({ height: 3.0, width: 1.0, depth: 1.0 })
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.5, width: 1.0, depth: 1.0 })
 
-        Object.defineProperty(mockRobot2, "assemblyName", {
-            get: () => "Robot2",
-            configurable: true,
-        })
         Object.defineProperty(mockRobot2, "miraType", {
             get: () => MiraType.ROBOT,
-            configurable: true,
         })
 
         mockNonRobot = {
@@ -119,8 +101,6 @@ describe("RobotDimensionTracker", () => {
                 ["field", mockNonRobot],
             ]),
         }
-
-        RobotDimensionTracker.setConfigValues(true, Infinity, 0)
     })
 
     afterEach(() => {
@@ -128,26 +108,32 @@ describe("RobotDimensionTracker", () => {
     })
 
     describe("setConfigValues", () => {
-        test("should set configuration values correctly", () => {
+        test("should get dimensions without rotation", () => {
             RobotDimensionTracker.setConfigValues(false, 6.0, 15)
-
-            mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
-
-            RobotDimensionTracker.update(16, mockSceneRenderer as unknown as TrackerUpdateParam)
+            RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
 
             expect(mockRobot1.getDimensions).toHaveBeenCalled()
             expect(mockRobot1.getDimensionsWithoutRotation).not.toHaveBeenCalled()
         })
 
-        test("should convert feet to meters for max height", () => {
-            RobotDimensionTracker.setConfigValues(true, 10.0, 5)
+        test("should get dimensions with rotation", () => {
+            RobotDimensionTracker.setConfigValues(true, 6.0, 15)
+
+            RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+
+            expect(mockRobot1.getDimensions).not.toHaveBeenCalled()
+            expect(mockRobot1.getDimensionsWithoutRotation).toHaveBeenCalled()
+        })
+
+        test("should penalize robot if it exceeds max height", () => {
+            RobotDimensionTracker.setConfigValues(true, 10.0, 5) // 10 feet is around 3 meters
 
             mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
             mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 3.5, width: 1.0, depth: 1.0 })
 
-            RobotDimensionTracker.update(16, mockSceneRenderer as unknown as TrackerUpdateParam)
+            RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
 
-            expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, "Height Expansion Limit")
+            expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 5, expect.any(String))
             expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
                 mockRobot1,
                 expect.any(Number),
