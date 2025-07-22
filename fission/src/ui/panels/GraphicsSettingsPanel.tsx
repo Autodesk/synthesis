@@ -8,7 +8,8 @@ import Slider from "@/ui/components/Slider"
 import { useState } from "react"
 import Dropdown from "@/ui/components/Dropdown"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import { GRAPHICS_PRESETS, GraphicsPreset } from "../helpers/GraphicsSettings"
+import Button from "../components/Button"
+import { autoOptimizeGraphics, GRAPHICS_PRESETS, GraphicsPreset } from "../helpers/GraphicsSettings"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -176,6 +177,14 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                         }
                     }}
                     className="mb-2"
+                />
+                <Button
+                    value="Auto Optimize"
+                    onClick={() => {
+                        const preset = autoOptimizeGraphics("short")
+                        applyPreset(preset)
+                    }}
+                    className="mb-2 w-full"
                 />
                 <SectionDivider />
                 <Slider

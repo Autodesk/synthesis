@@ -66,32 +66,48 @@ export const shouldUseFastModeByDefault = (): boolean => {
     return isLowEndDevice()
 }
 
+export const autoOptimizeGraphics = (toastType: "long" | "short" | "none" = "none"): GraphicsPreset => {
+    if (shouldUseFastModeByDefault()) {
+        if (toastType === "long") {
+            globalAddToast?.(
+                "info",
+                "Graphics Optimized",
+                "We've set your graphics to 'Fast' mode for optimal performance on your device. You can change this in Graphics Settings."
+            )
+        } else if (toastType === "short") {
+            globalAddToast?.("info", "Success", "Auto-optimized graphics to 'Fast'.")
+        }
+        return "Fast"
+    } else {
+        if (toastType === "long") {
+            globalAddToast?.(
+                "info",
+                "Graphics Optimized",
+                "We've set your graphics to 'Balanced' mode for optimal performance on your device. You can change this in Graphics Settings."
+            )
+        } else if (toastType === "short") {
+            globalAddToast?.("info", "Success", "Auto-optimized graphics to 'Balanced'.")
+        }
+        return "Balanced"
+    }
+}
+
 export const applyInitialGraphicsSettings = (): void => {
     // Check if graphics optimization has already been applied
     const optimizationApplied = PreferencesSystem.getGlobalPreference("GraphicsOptimizationApplied")
 
     // If optimization hasn't been applied yet and device should use fast mode, apply fast settings
-    if (!optimizationApplied && shouldUseFastModeByDefault()) {
-        const fastSettings = GRAPHICS_PRESETS.Fast
-        PreferencesSystem.getGraphicsPreferences().lightIntensity = fastSettings.lightIntensity
-        PreferencesSystem.getGraphicsPreferences().fancyShadows = fastSettings.fancyShadows
-        PreferencesSystem.getGraphicsPreferences().maxFar = fastSettings.maxFar
-        PreferencesSystem.getGraphicsPreferences().cascades = fastSettings.cascades
-        PreferencesSystem.getGraphicsPreferences().shadowMapSize = fastSettings.shadowMapSize
-        PreferencesSystem.getGraphicsPreferences().antiAliasing = fastSettings.antiAliasing
+    if (!optimizationApplied) {
+        const presetToApply = autoOptimizeGraphics("long")
+        const settings = GRAPHICS_PRESETS[presetToApply]
+        PreferencesSystem.getGraphicsPreferences().lightIntensity = settings.lightIntensity
+        PreferencesSystem.getGraphicsPreferences().fancyShadows = settings.fancyShadows
+        PreferencesSystem.getGraphicsPreferences().maxFar = settings.maxFar
+        PreferencesSystem.getGraphicsPreferences().cascades = settings.cascades
+        PreferencesSystem.getGraphicsPreferences().shadowMapSize = settings.shadowMapSize
+        PreferencesSystem.getGraphicsPreferences().antiAliasing = settings.antiAliasing
 
         // Mark that optimization has been applied
-        PreferencesSystem.setGlobalPreference("GraphicsOptimizationApplied", true)
-        PreferencesSystem.savePreferences()
-
-        // Show a toast to let user know we optimized for their device
-        globalAddToast?.(
-            "info",
-            "Graphics Optimized",
-            "We've set your graphics to 'Fast' mode for optimal performance on your device. You can change this in Graphics Settings."
-        )
-    } else if (!optimizationApplied) {
-        // Mark that optimization check has been completed (even if no changes were made)
         PreferencesSystem.setGlobalPreference("GraphicsOptimizationApplied", true)
         PreferencesSystem.savePreferences()
     }
