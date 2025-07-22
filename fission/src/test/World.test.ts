@@ -14,7 +14,7 @@ vi.mock("@/systems/scene/SceneRenderer", () => ({
     default: vi.fn(() => ({
         update: vi.fn(),
         destroy: vi.fn(),
-        sceneObjects: new Map(), // Add the missing sceneObjects property
+        sceneObjects: new Map(),
     })),
 }))
 
