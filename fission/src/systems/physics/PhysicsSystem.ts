@@ -702,8 +702,8 @@ class PhysicsSystem extends WorldSystem {
                 axis: pitchAxis,
                 friction: 0.0,
                 value: pitchDof?.value ?? 0,
-                upper: pitchDof?.limits ? (pitchDof.limits.upper ?? 0) : undefined,
-                lower: pitchDof?.limits ? (pitchDof.limits.lower ?? 0) : undefined,
+                upper: pitchDof?.limits ? pitchDof.limits.upper ?? 0 : undefined,
+                lower: pitchDof?.limits ? pitchDof.limits.lower ?? 0 : undefined,
             })
         }
 
@@ -712,8 +712,8 @@ class PhysicsSystem extends WorldSystem {
                 axis: yawAxis,
                 friction: 0.0,
                 value: yawDof?.value ?? 0,
-                upper: yawDof?.limits ? (yawDof.limits.upper ?? 0) : undefined,
-                lower: yawDof?.limits ? (yawDof.limits.lower ?? 0) : undefined,
+                upper: yawDof?.limits ? yawDof.limits.upper ?? 0 : undefined,
+                lower: yawDof?.limits ? yawDof.limits.lower ?? 0 : undefined,
             })
         }
 
@@ -722,8 +722,8 @@ class PhysicsSystem extends WorldSystem {
                 axis: rollAxis,
                 friction: 0.0,
                 value: rollDof?.value ?? 0,
-                upper: rollDof?.limits ? (rollDof.limits.upper ?? 0) : undefined,
-                lower: rollDof?.limits ? (rollDof.limits.lower ?? 0) : undefined,
+                upper: rollDof?.limits ? rollDof.limits.upper ?? 0 : undefined,
+                lower: rollDof?.limits ? rollDof.limits.lower ?? 0 : undefined,
             })
         }
 
