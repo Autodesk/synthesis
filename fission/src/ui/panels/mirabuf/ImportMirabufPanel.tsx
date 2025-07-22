@@ -87,10 +87,10 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
         canOPFS
             ? MirabufCachingService.getCacheMap(miraType)
             : miraType == MiraType.ROBOT
-                ? backUpRobots
-                : miraType == MiraType.FIELD
-                    ? backUpFields
-                    : backUpPieces
+              ? backUpRobots
+              : miraType == MiraType.FIELD
+                ? backUpFields
+                : backUpPieces
     )
 }
 
