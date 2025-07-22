@@ -14,7 +14,7 @@ import RCConfigPWMGroupModal from "./RCConfigPWMGroupModal"
 type DeviceType = "PWM" | "CAN" | "Encoder"
 
 const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
-    const { openModal } = useUIContext()
+    const { openModal, configureScreen } = useUIContext()
     const [type, setType] = useState<DeviceType>("PWM")
 
     useEffect(() => {
@@ -46,8 +46,7 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) 
         }
         const onCancel = () => openModal(<RoboRIOModal />, modal)
 
-        modal!.onAccept.setDefaultFunc(onAccept)
-        modal!.onCancel.setDefaultFunc(onCancel)
+        configureScreen(modal!, {}, { onAccept, onCancel })
     }, [])
 
     return (

@@ -24,7 +24,7 @@ const VisuallyHiddenInput = styled("input")({
 
 const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
-    const { openPanel } = useUIContext()
+    const { openPanel, configureScreen } = useUIContext()
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
     const [miraType, setSelectedType] = useState<MiraType | undefined>(MiraType.ROBOT)
@@ -61,8 +61,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             }
         }
 
-        modal!.onCancel.setDefaultFunc(onCancel)
-        modal!.onAccept.setDefaultFunc(onAccept)
+        configureScreen(modal!, { title: "Import from File" }, { onAccept, onCancel })
     }, [selectedFile, miraType, openPanel, modal])
 
     return (

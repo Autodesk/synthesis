@@ -35,7 +35,7 @@ const StatefulSlider: React.FC<
 }
 
 const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
-    const { closeModal, openPanel } = useUIContext()
+    const { closeModal, openPanel, configureScreen } = useUIContext()
     const save = useCallback(() => {
         SoundPlayer.changeVolume()
         PreferencesSystem.savePreferences()
@@ -48,8 +48,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
             SoundPlayer.changeVolume()
         }
 
-        modal!.onAccept.setDefaultFunc(save)
-        modal!.onCancel.setDefaultFunc(onCancel)
+        configureScreen(modal!, {}, { onAccept: save, onCancel })
     }, [modal, save])
 
     return (

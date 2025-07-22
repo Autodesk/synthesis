@@ -12,7 +12,7 @@ import { useUIContext } from "@/ui/UIProvider"
 import RoboRIOModal from "../RoboRIOModal"
 
 const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
-    const { openModal } = useUIContext()
+    const { openModal, configureScreen } = useUIContext()
     const [_name, setName] = useState<string>("")
 
     let stimuli: EncoderStimulus[] = []
@@ -47,8 +47,7 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal, parent })
         }
         const onCancel = () => openModal(<RoboRIOModal />, modal)
 
-        modal!.onAccept.setDefaultFunc(onAccept)
-        modal!.onCancel.setDefaultFunc(onCancel)
+        configureScreen(modal!, {}, { onAccept, onCancel })
     }, [brain, selectedDevice, selectedStimulus, openModal, modal])
 
     return (

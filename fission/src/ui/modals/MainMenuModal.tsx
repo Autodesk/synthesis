@@ -3,11 +3,16 @@ import type React from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type { ModalImplProps } from "../components/Modal"
 import { CloseType, useUIContext } from "../UIProvider"
+import { useEffect } from "react"
 
 const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback: () => void }> = ({
+    modal,
     startSingleplayerCallback,
 }) => {
     const { closeModal } = useUIContext()
+    useEffect(() => {
+        modal!.props.title ??= "Welcome"
+    }, [])
     return (
         <Stack gap={1}>
             <Button

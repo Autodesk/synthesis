@@ -4,6 +4,7 @@ import { Box, Button, Checkbox, FormControlLabel, Slider, Stack, Typography } fr
 import type React from "react"
 import { useEffect, useState } from "react"
 import { PanelImplProps } from "../components/Panel"
+import { useUIContext } from "../UIProvider"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -17,6 +18,7 @@ const MAX_CASCADES = 8
 const MIN_SHADOW_MAP_SIZE = 1024
 
 const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [reload, setReload] = useState<boolean>(false)
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
@@ -45,9 +47,7 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             World.sceneRenderer.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
         }
 
-        // TODO: make sure useEffect rerun doesn't add a ton of callbacks
-        panel!.onAccept.setDefaultFunc(onAccept)
-        panel!.onCancel.setDefaultFunc(onCancel)
+        configureScreen(panel!, { position: "left" }, { onAccept, onCancel })
     }, [fancyShadows, lightIntensity, maxFar, cascades, shadowMapSize, antiAliasing, reload])
 
     return (

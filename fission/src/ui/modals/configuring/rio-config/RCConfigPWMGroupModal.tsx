@@ -13,7 +13,7 @@ import { Box } from "@mui/system"
 import ScrollView from "@/ui/components/ScrollView"
 
 const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
-    const { openModal } = useUIContext()
+    const { openModal, configureScreen } = useUIContext()
     const [name, setName] = useState<string>("")
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
     const [checkedDrivers, setCheckedDrivers] = useState<Driver[]>([])
@@ -47,8 +47,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }
             openModal(<RoboRIOModal />, modal)
         }
 
-        modal!.onAccept.setDefaultFunc(onAccept)
-        modal!.onCancel.setDefaultFunc(onCancel)
+        configureScreen(modal!, {}, { onAccept, onCancel })
     }, [brain, name, checkedPorts, checkedDrivers, openModal, modal])
 
     return (

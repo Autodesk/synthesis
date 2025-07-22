@@ -2,10 +2,12 @@ import { MenuItem, Select } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import type { ModalImplProps } from "../components/Modal"
+import { useUIContext } from "../UIProvider"
 
 type ViewType = "Orbit" | "Freecam" | "Overview" | "Driver Station"
 
 const ViewModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+    const { configureScreen } = useUIContext()
     const [view, setView] = useState<ViewType>("Orbit")
 
     useEffect(() => {
@@ -13,7 +15,7 @@ const ViewModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             console.log("Selected view:", view)
         }
 
-        modal!.onAccept.setDefaultFunc(onAccept)
+        configureScreen(modal!, { title: "Camera View" }, { onAccept })
     }, [modal, view])
 
     return (
