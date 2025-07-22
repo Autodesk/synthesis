@@ -99,7 +99,7 @@ class EjectableSceneObject extends SceneObject {
         const t = Math.min(tRaw, 1)
 
         // ease-in curve for gradual acceleration
-        const easedT = t * t * t
+        const easedT = t * t
 
         if (this._parentBodyId && this._deltaTransformation && this._gamePieceBodyId) {
             if (!World.physicsSystem.isBodyAdded(this._gamePieceBodyId)) {
