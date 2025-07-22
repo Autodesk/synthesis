@@ -16,7 +16,7 @@ import {
     SectionLabel,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import { Box } from "@mui/material"
+import { Box, Tooltip } from "@mui/material"
 import React, { ReactElement, useEffect, useReducer, useState } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
 import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
@@ -36,75 +36,84 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
         setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
     }, [robotDriveType])
 
-    const SchemeSelector = (scheme: InputScheme, isAvailable: boolean): ReactElement | null => {
+    const SchemeSelector = (
+        scheme: InputScheme,
+        style: React.CSSProperties,
+        message: string,
+        disabled: boolean = false
+    ): ReactElement | null => {
         if (scheme.usesTouchControls && !matchMedia("(hover: none)").matches) return null
         return (
-            <Box
-                component={"div"}
-                display={"flex"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-                gap={"1rem"}
-                key={scheme.schemeName}
-            >
-                <SectionLabel>
-                    {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
-                </SectionLabel>
+            <Tooltip title={message} key={scheme.schemeName} placement={"left"}>
                 <Box
                     component={"div"}
                     display={"flex"}
-                    flexDirection={"row-reverse"}
-                    gap={"0.25rem"}
-                    justifyContent={"center"}
+                    justifyContent={"space-between"}
                     alignItems={"center"}
+                    gap={"1rem"}
+                    key={scheme.schemeName}
                 >
-                    {/** Select button */}
-                    <div style={{ filter: isAvailable ? "" : "brightness(60%)" }}>
-                        <PositiveButton
-                            value={SynthesisIcons.SELECT_LARGE}
-                            onClick={() => {
-                                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
-                                // TODO: if touch controls, then ensure that they are enabled.
-                                if (scheme.usesTouchControls) {
-                                    new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
-                                }
-                                onSelect?.()
+                    <SectionLabel>
+                        {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
+                    </SectionLabel>
+                    <Box
+                        component={"div"}
+                        display={"flex"}
+                        flexDirection={"row-reverse"}
+                        gap={"0.25rem"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                    >
+                        {/** Select button */}
+                        <div style={style}>
+                            <PositiveButton
+                                disabled={disabled}
+                                value={SynthesisIcons.SELECT_LARGE}
+                                onClick={() => {
+                                    InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                    // TODO: if touch controls, then ensure that they are enabled.
+                                    if (scheme.usesTouchControls) {
+                                        new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
+                                    }
+                                    setAvailableSchemes(InputSchemeManager.availableInputSchemesByType(robotDriveType))
+                                    onSelect?.()
+                                    update()
+                                }}
+                            />
+                        </div>
+                        {/** Edit button - same as select but opens the inputs modal */}
+                        {EditButton(() => {
+                            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+
+                            setSelectedConfigurationType(ConfigurationType.INPUTS)
+                            setSelectedScheme(scheme)
+                            onEdit?.()
+                        })}
+
+                        {/** Delete button (only if the scheme is customized) */}
+                        {scheme.customized ? (
+                            DeleteButton(() => {
+                                // Fetch current custom schemes
+                                InputSchemeManager.saveSchemes()
+                                InputSchemeManager.resetDefaultSchemes()
+                                const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+
+                                // Find and remove this input scheme
+                                const index = schemes.indexOf(scheme)
+                                schemes.splice(index, 1)
+
+                                // Save to preferences
+                                PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
+                                PreferencesSystem.savePreferences()
+
                                 update()
-                            }}
-                        />
-                    </div>
-                    {/** Edit button - same as select but opens the inputs modal */}
-                    {EditButton(() => {
-                        InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
-
-                        setSelectedConfigurationType(ConfigurationType.INPUTS)
-                        setSelectedScheme(scheme)
-                        onEdit?.()
-                    })}
-
-                    {/** Delete button (only if the scheme is customized) */}
-                    {scheme.customized ? (
-                        DeleteButton(() => {
-                            // Fetch current custom schemes
-                            InputSchemeManager.saveSchemes()
-                            InputSchemeManager.resetDefaultSchemes()
-                            const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
-
-                            // Find and remove this input scheme
-                            const index = schemes.indexOf(scheme)
-                            schemes.splice(index, 1)
-
-                            // Save to preferences
-                            PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
-                            PreferencesSystem.savePreferences()
-
-                            update()
-                        })
-                    ) : (
-                        <></>
-                    )}
+                            })
+                        ) : (
+                            <></>
+                        )}
+                    </Box>
                 </Box>
-            </Box>
+            </Tooltip>
         )
     }
     return (
@@ -135,13 +144,24 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.AVAILABLE)
                     .map(scheme => {
-                        return SchemeSelector(scheme.scheme, true)
+                        return SchemeSelector(scheme.scheme, {}, "Available", false)
                     })}
                 <SectionDivider />
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
                     .map(scheme => {
-                        return SchemeSelector(scheme.scheme, false)
+                        return SchemeSelector(
+                            scheme.scheme,
+                            { filter: "brightness(60%)" },
+                            "Conflicats with " + scheme.conflicts_with_names,
+                            false
+                        )
+                    })}
+                <SectionDivider />
+                {availableSchemes
+                    ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
+                    .map(scheme => {
+                        return SchemeSelector(scheme.scheme, {}, "In Use", true)
                     })}
             </>
             {/** New scheme with a randomly assigned name button */}

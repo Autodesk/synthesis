@@ -21,7 +21,7 @@ export enum InputSchemeUseType {
     AVAILABLE, // no overlap and not bound
 }
 
-export type InputSchemeAvailability = { scheme: InputScheme; status: InputSchemeUseType }
+export type InputSchemeAvailability = { scheme: InputScheme; status: InputSchemeUseType; conflicts_with_names?: string }
 
 class InputSchemeManager {
     // References to the current custom schemes to avoid parsing every time they are requested
@@ -108,18 +108,35 @@ class InputSchemeManager {
         const allSchemes = this.allInputSchemes
 
         // Remove schemes that have conflicts
-        const usedKeyMap = new Set<KeyDescriptor>()
+        const usedKeyMap = new Map<KeyDescriptor, string[]>()
         const result: Record<string, InputSchemeAvailability> = {}
         for (const scheme of InputSystem.brainIndexSchemeMap.values()) {
             result[scheme.schemeName] = { scheme, status: InputSchemeUseType.IN_USE }
             scheme?.inputs?.forEach(input => {
-                input.keysUsed.filter(key => key != null).forEach(key => usedKeyMap.add(key))
+                input.keysUsed
+                    .filter(key => key != null)
+                    .forEach(key => {
+                        const entry = usedKeyMap.get(key)
+                        if (entry != null) {
+                            entry.push(scheme.schemeName)
+                        } else {
+                            usedKeyMap.set(key, [scheme.schemeName])
+                        }
+                    })
             })
         }
 
         allSchemes.forEach(scheme => {
-            if (scheme.inputs.some(input => input.keysUsed.some(k => usedKeyMap.has(k)))) {
-                result[scheme.schemeName] ??= { scheme, status: InputSchemeUseType.CONFLICT }
+            const conflictingSchemes = scheme.inputs.flatMap(input =>
+                input.keysUsed.flatMap(key => usedKeyMap.get(key) ?? [])
+            )
+            console.log(conflictingSchemes)
+            if (conflictingSchemes.length > 0) {
+                result[scheme.schemeName] ??= {
+                    scheme,
+                    status: InputSchemeUseType.CONFLICT,
+                    conflicts_with_names: [...new Set(conflictingSchemes)].join(", "),
+                }
             } else {
                 result[scheme.schemeName] = { scheme, status: InputSchemeUseType.AVAILABLE }
             }
