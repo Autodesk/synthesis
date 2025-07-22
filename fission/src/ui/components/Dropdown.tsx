@@ -6,10 +6,10 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 /** The clickable button for a dropdown that shows the selected item and opens the menu. Custom styling over the MUI material button.*/
 const CustomButton = styled(Button)({
-    "border": `2px solid ${colorNameToVar("InteractiveElementRight")}`,
-    "color": colorNameToVar("InteractiveElementText"),
-    "backgroundColor": colorNameToVar("BackgroundSecondary"),
-    "width": "100%",
+    border: `2px solid ${colorNameToVar("InteractiveElementRight")}`,
+    color: colorNameToVar("InteractiveElementText"),
+    backgroundColor: colorNameToVar("BackgroundSecondary"),
+    width: "100%",
     "&:focus": {
         outline: "none !important",
         border: `2px solid ${colorNameToVar("InteractiveElementRight")} !important`,
@@ -51,8 +51,8 @@ const CustomMenu = styled(Menu)({
         minWidth: "unset",
     },
     "& .MuiMenuItem-root": {
-        "transition": "background-color 0.3s ease, color 0.3s ease, transform 0.2s ease",
-        "transform": "scale(1.06)",
+        transition: "background-color 0.3s ease, color 0.3s ease, transform 0.2s ease",
+        transform: "scale(1.06)",
         "&:hover": {
             color: "#da6659",
             transform: "scale(1.05)",

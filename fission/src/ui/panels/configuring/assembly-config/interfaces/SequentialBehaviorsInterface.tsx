@@ -21,14 +21,14 @@ const ChildLabelStyled = styled(Label)({
 
 /** A button used to select a parent behavior. Appears at a grey outline when the 'set' button is pressed on a different behavior */
 const CustomButton = styled(MUIButton)({
-    "borderStyle": "solid",
-    "borderWidth": "1px",
-    "transition": "border-color 0.3s ease",
+    borderStyle: "solid",
+    borderWidth: "1px",
+    transition: "border-color 0.3s ease",
     "&:hover": {
         borderColor: "white",
     },
-    "position": "relative",
-    "overflow": "hidden",
+    position: "relative",
+    overflow: "hidden",
     "& .MuiTouchRipple-root span": {
         backgroundColor: alpha("#ffffff", 0.3), // Set your desired ripple color here
         animationDuration: "300ms",
