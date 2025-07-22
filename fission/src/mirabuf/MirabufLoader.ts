@@ -121,10 +121,15 @@ class MirabufCachingService {
      *
      * @param {string} fetchLocation Location of Mirabuf file.
      * @param {MiraType} miraType Type of Mirabuf Assembly.
+     * @param {string} name Optional display name for the cached file.
      *
      * @returns {Promise<MirabufCacheInfo | undefined>} Promise with the result of the promise. Metadata on the mirabuf file if successful, undefined if not.
      */
-    public static async cacheRemote(fetchLocation: string, miraType?: MiraType): Promise<MirabufCacheInfo | undefined> {
+    public static async cacheRemote(
+        fetchLocation: string,
+        miraType?: MiraType,
+        name?: string
+    ): Promise<MirabufCacheInfo | undefined> {
         if (miraType !== undefined) {
             const map = MirabufCachingService.getCacheMap(miraType)
             const target = map[fetchLocation]
@@ -142,7 +147,7 @@ class MirabufCachingService {
                 fileSize: miraBuff.byteLength,
             })
 
-            const cached = await MirabufCachingService.storeInCache(fetchLocation, miraBuff, miraType)
+            const cached = await MirabufCachingService.storeInCache(fetchLocation, miraBuff, miraType, name)
 
             if (cached) return cached
 
@@ -155,6 +160,7 @@ class MirabufCachingService {
                 miraType: miraType ?? (this.assemblyFromBuffer(miraBuff).dynamic ? MiraType.ROBOT : MiraType.FIELD),
                 cacheKey: fetchLocation,
                 buffer: miraBuff,
+                name: name,
             }
         } catch (e) {
             console.warn("Caching failed", e)

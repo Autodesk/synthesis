@@ -179,9 +179,9 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
         [
             ConfigMode.ALLIANCE,
             new ConfigModeSelectionOption(
-                "Alliance",
+                "Alliance / Station",
                 ConfigMode.ALLIANCE,
-                "Set the robot's alliance color for matches. (red or blue)"
+                "Set the robot's alliance color and station number for matches. (red or blue, 1-3)"
             ),
         ],
     ])
