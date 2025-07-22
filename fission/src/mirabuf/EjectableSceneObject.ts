@@ -127,10 +127,11 @@ class EjectableSceneObject extends SceneObject {
                 // gradual acceleration via easedT
                 desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
                 desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, easedT)
-            } else if (t >= 1) {
-                // snap instantly and re-enable physics
-                World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
             }
+            // } else if (t >= 1) {
+            //     // snap instantly and re-enable physics
+            //     World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
+            // }
 
             // apply the transform
             desiredTransform.identity().compose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
