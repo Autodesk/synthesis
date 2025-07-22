@@ -114,7 +114,7 @@ export class SimAccelInput extends SimInput {
 
         const x = (newVel.x - this._prevVel.x) / deltaT
         const y = (newVel.y - this._prevVel.y) / deltaT
-        const z = (newVel.y - this._prevVel.y) / deltaT
+        const z = (newVel.z - this._prevVel.z) / deltaT
 
         SimAccel.setX(this._device, x)
         SimAccel.setY(this._device, y)
