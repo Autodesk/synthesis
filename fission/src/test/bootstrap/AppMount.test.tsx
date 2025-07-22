@@ -32,7 +32,13 @@ describe("React Mounting", async () => {
     })
 
     test("Static stylesheets load", async () => {
-        await wait(500) // need time to load from web
+        for (let i = 0; i<50;i++) {
+            await wait(200)
+            if (document.styleSheets.length >= 2) {
+                break
+            }
+        }
+
         expect(document.styleSheets.length).toBe(2)
         const iterable = document.fonts.values()
         let iterator = iterable.next()
@@ -87,7 +93,7 @@ describe("React Mounting", async () => {
         screen.unmount()
 
         await annotate("Screen unmounted gracefully")
-    })
+    }, { timeout: 20000 })
 })
 
 function wait(milliseconds: number) {
