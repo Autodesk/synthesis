@@ -23,7 +23,7 @@ const ServerHostingModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         setTimeout(() => {
             setClients(CLIENTS_SOURCE)
         }, 2_000)
-    }, [clients])
+    }, [])
     return (
         <Modal name={"Server Hosting"} icon={SynthesisIcons.ADD} modalId={modalId}>
             {clients.length == 0 ? (

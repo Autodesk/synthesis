@@ -170,7 +170,6 @@ describe("DragModeSystem Integration Tests", () => {
             const originalRayCast = physicsSystem.rayCast
             const mockRaycastResult = {
                 data: { mBodyID: bodyId },
-                // eslint-disable-next-line
                 point: { GetX: () => 0, GetY: () => 0, GetZ: () => 0 },
             }
             physicsSystem.rayCast = vi.fn().mockReturnValue(mockRaycastResult)

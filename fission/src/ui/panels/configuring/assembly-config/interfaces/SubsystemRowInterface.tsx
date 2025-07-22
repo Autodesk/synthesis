@@ -77,7 +77,6 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                     PreferencesSystem.getRobotPreferences(robot.assemblyName).motors = removedMotor
                 }
 
-                // eslint-disable-next-line no-extra-semi
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxVelocity = vel
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
             }
@@ -92,7 +91,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
             <Box component={"div"} display={"flex"} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
                 <Stack direction={StackDirection.VERTICAL} spacing={8} justify="start">
                     <Label size={LabelSize.MEDIUM}>
-                        {driver instanceof WheelDriver ? "Drive" : driver.info?.name ?? "UnnamedMotor"}
+                        {driver instanceof WheelDriver ? "Drive" : (driver.info?.name ?? "UnnamedMotor")}
                     </Label>
                     <Slider
                         min={0.1}

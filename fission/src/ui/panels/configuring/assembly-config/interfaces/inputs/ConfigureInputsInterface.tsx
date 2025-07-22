@@ -9,7 +9,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 let selectedScheme: InputScheme | undefined = undefined
-// eslint-disable-next-line react-refresh/only-export-components
+
 export function setSelectedScheme(scheme: InputScheme | undefined) {
     selectedScheme = scheme
 }
@@ -32,7 +32,7 @@ class SchemeSelectionOption extends SelectMenuOption {
 
     constructor(scheme: InputScheme) {
         const robotName = findSchemeRobotName(scheme)
-        const schemeName = `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`
+        const schemeName = `${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName} | ${scheme.supportedDrivetrains}`
         super(schemeName, schemeName, robotName ? `Bound to: ${robotName}` : undefined)
         this.scheme = scheme
     }
