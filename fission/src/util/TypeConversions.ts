@@ -3,8 +3,6 @@ import JOLT from "./loading/JoltSyncLoader"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { mirabuf } from "../proto/mirabuf"
 import { RgbaColor } from "react-colorful"
-import { ConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
-import { MiraType } from "@/mirabuf/MirabufLoader"
 
 export function convertThreeToJoltQuat(a: THREE.Euler | THREE.Quaternion | undefined) {
     if (a instanceof THREE.Euler) {
@@ -141,12 +139,4 @@ export function convertMirabufFloatToArrJoltVec3Arr(v: number[]): Jolt.Vec3[] {
 
 export function convertReactRgbaColorToThreeColor(color: RgbaColor) {
     return new THREE.Color(Math.floor(color.r / 255), Math.floor(color.g / 255), Math.floor(color.b / 255))
-}
-
-export function convertMiraTypeToConfigurationType(miraType: MiraType): ConfigurationType {
-    return miraType == MiraType.ROBOT
-        ? ConfigurationType.ROBOT
-        : miraType === MiraType.PIECE
-          ? ConfigurationType.PIECE
-          : ConfigurationType.FIELD
 }

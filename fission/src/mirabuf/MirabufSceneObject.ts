@@ -7,7 +7,6 @@ import Jolt from "@azaleacolburn/jolt-physics"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertJoltVec3ToThreeVector3,
-    convertMiraTypeToConfigurationType,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
 import * as THREE from "three"
@@ -41,7 +40,10 @@ import {
     setNextConfigurePanelSettings,
 } from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import { setSelectedConfigurationType } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
+import {
+    ConfigurationType,
+    setSelectedConfigurationType,
+} from "@/ui/panels/configuring/assembly-config/ConfigurationType"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
@@ -932,6 +934,14 @@ export class RigidNodeAssociate extends BodyAssociate {
         this.sceneObject = sceneObject
         this.rigidNode = rigidNode
     }
+}
+// Cannot go in TypeConversions.ts because of circular import issues
+function convertMiraTypeToConfigurationType(miraType: MiraType): ConfigurationType {
+    return miraType == MiraType.ROBOT
+        ? ConfigurationType.ROBOT
+        : miraType === MiraType.PIECE
+          ? ConfigurationType.PIECE
+          : ConfigurationType.FIELD
 }
 
 export default MirabufSceneObject
