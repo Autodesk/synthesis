@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent, Modal as MUIModal } from "@mui/material"
+import { Button, Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
 import React, { type ReactElement } from "react"
 import type { Modal as ModalType, Panel as PanelType } from "../UIProvider"
 import { CloseType, useUIContext } from "../UIProvider"
@@ -35,6 +35,7 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
                     p: 4,
                 }}
             >
+                {props.title && <CardHeader title={props.title} />}
                 <CardContent>
                     {React.Children.map(children, child => {
                         if (React.isValidElement(child)) return React.cloneElement(child, { modal, parent })

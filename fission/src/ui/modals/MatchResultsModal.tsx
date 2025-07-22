@@ -4,6 +4,7 @@ import MatchMode from "@/systems/MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type { ModalImplProps } from "../components/Modal"
 import { CloseType, useUIContext } from "../UIProvider"
+import { useEffect } from "react"
 
 type Entry = {
     name: string
@@ -41,7 +42,7 @@ const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }
     color: winnerColor,
 }))
 
-const MatchResultsModal: React.FC<ModalImplProps<void>> = () => {
+const MatchResultsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { closeModal } = useUIContext()
 
     const { message, color } = getMatchWinner()
@@ -51,7 +52,11 @@ const MatchResultsModal: React.FC<ModalImplProps<void>> = () => {
         { name: "Blue Score", value: SimulationSystem.blueScore },
     ]
 
-    const { redRobotScores: redRobotScores, blueRobotScores: blueRobotScores } = getPerRobotScores()
+    const { redRobotScores, blueRobotScores } = getPerRobotScores()
+
+    useEffect(() => {
+        modal!.props.title ??= "Match Results"
+    }, [])
 
     return (
         <>

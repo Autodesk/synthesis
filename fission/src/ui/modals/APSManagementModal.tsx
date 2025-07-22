@@ -4,16 +4,18 @@ import { useEffect, useState } from "react"
 import { HiUser } from "react-icons/hi"
 import APS from "@/aps/APS"
 import type { ModalImplProps } from "@/ui/components/Modal"
+import { useUIContext } from "../UIProvider"
 
 const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
+    const { configureScreen } = useUIContext()
     const [userInfo, _] = useState(APS.userInfo)
     useEffect(() => {
         const onAccept = () => {
             APS.logout()
         }
 
-        modal!.onAccept.setDefaultFunc(onAccept)
-    }, [modal])
+        configureScreen(modal!, { title: "Not signed in" }, { onAccept })
+    }, [modal, userInfo?.name])
 
     return (
         <Stack spacing={10} direction="row">

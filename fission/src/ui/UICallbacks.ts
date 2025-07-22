@@ -1,5 +1,5 @@
 /**
- * Holds 
+ * Holds
  */
 export class UICallback<T extends unknown[], U> extends Function {
     private _userDefinedFunc?: (...args: T) => U
@@ -14,17 +14,17 @@ export class UICallback<T extends unknown[], U> extends Function {
     }
 
     setUserDefinedFunc(f: (...args: T) => U) {
-        this._userDefinedFunc = f;
+        this._userDefinedFunc = f
     }
 
     setDefaultFunc(f: (...args: T) => U) {
-        this._defaultFunc = f;
+        this._defaultFunc = f
     }
 
     __call__(...args: T): U | undefined {
-        const userDefinedRet = this._userDefinedFunc?.(...args);
-        const defaultRet = this._defaultFunc?.(...args);
+        const userDefinedRet = this._userDefinedFunc?.(...args)
+        const defaultRet = this._defaultFunc?.(...args)
 
-        return userDefinedRet ?? defaultRet;
+        return userDefinedRet ?? defaultRet
     }
 }

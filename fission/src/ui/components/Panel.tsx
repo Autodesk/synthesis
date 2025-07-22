@@ -1,4 +1,4 @@
-import { Button, Card, CardActions, CardContent } from "@mui/material"
+import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material"
 import React, { type ReactElement } from "react"
 import Draggable from "react-draggable"
 import {
@@ -64,6 +64,7 @@ export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => 
                     p: 4,
                 }}
             >
+                {props.title && <CardHeader title={props.title} />}
                 <CardContent>
                     <div className="panel-contents">
                         {React.Children.map(children, child => {

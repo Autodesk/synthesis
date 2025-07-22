@@ -20,12 +20,14 @@ interface UIScreenCallbacks<T> {
     onClose?: () => void
     onCancel?: () => void
     onBeforeAccept?: () => T
+    onAccept?: (arg: T) => void
 }
 
 /**
  *  Props for generic UIScreen
  */
 export interface UIScreenProps {
+    title?: string
     htmlProps?: string
     hideCancel?: boolean
     hideAccept?: boolean
@@ -37,6 +39,8 @@ export interface UIScreenProps {
  * Modal-specific props for creating a modal
  */
 export interface ModalProps extends UIScreenProps {
+    // required for PanelProps to not satisfy ModalProps
+    type: "modal"
     allowClickAway?: boolean
 }
 
@@ -44,6 +48,7 @@ export interface ModalProps extends UIScreenProps {
  * Panel-specific props for creating a panel
  */
 export interface PanelProps extends UIScreenProps {
+    type: "panel"
     position: PanelPosition
 }
 
@@ -54,6 +59,7 @@ export interface UIScreen<T> {
     id: string
     parent: UIScreen<unknown>
     content: ReactElement
+    props: ModalProps | PanelProps
     onClose: UICallback<[CloseType], void>
     onCancel: UICallback<[], void>
     onAccept: UICallback<[T], void>
@@ -84,6 +90,15 @@ export type OpenPanelFn = <T>(contents: ReactElement, parent?: UIScreen<T>, prop
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: string[]) => void
+export type ConfigureScreenFn = <T extends UIScreen<any>>(
+    screen: T,
+    props: T extends Panel<infer _> ? Partial<PanelProps> : Partial<ModalProps>,
+    callbacks: T extends Modal<infer S>
+        ? Omit<Partial<UIScreenCallbacks<S>>, "onBeforeAccept">
+        : T extends Panel<infer S>
+          ? Omit<Partial<UIScreenCallbacks<S>>, "onBeforeAccept">
+          : never
+) => void
 
 export type UIContextProps = {
     modal?: Modal<unknown>
@@ -93,15 +108,21 @@ export type UIContextProps = {
     closeModal: CloseModalFn
     closePanel: ClosePanelFn
     addToast: AddToastFn
+    configureScreen: ConfigureScreenFn
 }
 
 export const UIContext = createContext<UIContextProps>({
     panels: [],
-    openModal: (_content, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
-    openPanel: (_content, _parent, _props = { hideAccept: false, hideCancel: false, position: "center" }) => "",
+    openModal: (_content, _parent, _props = { type: "modal", hideAccept: false, hideCancel: false }) => "",
+    openPanel: (
+        _content,
+        _parent,
+        _props = { type: "panel", hideAccept: false, hideCancel: false, position: "center" }
+    ) => "",
     closeModal: () => {},
     closePanel: _id => {},
     addToast: (_variant, _msg) => "",
+    configureScreen: (_screen, _props) => {},
 })
 
 export const useUIContext = () => useContext(UIContext)
@@ -116,7 +137,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: ModalProps & UIScreenCallbacks<T> = {
+            props: ModalProps & Omit<UIScreenCallbacks<T>, "onAccept"> = {
+                type: "modal",
                 hideAccept: false,
                 hideCancel: false,
                 acceptText: "Accept",
@@ -151,7 +173,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: PanelProps & UIScreenCallbacks<T> = {
+            props: PanelProps & Omit<UIScreenCallbacks<T>, "onAccept"> = {
+                type: "panel",
                 hideAccept: false,
                 hideCancel: false,
                 acceptText: "Accept",
@@ -221,6 +244,22 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         [enqueueSnackbar]
     )
 
+    const configureScreen: ConfigureScreenFn = (screen, props, callbacks) => {
+        type PropKey = keyof typeof screen.props
+        type PropValue = (typeof screen.props)[keyof typeof screen.props]
+
+        for (const [k, v] of Object.entries(props)) {
+            (screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
+        }
+
+        if (callbacks.onAccept) screen.onAccept.setDefaultFunc(callbacks.onAccept)
+        if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
+        if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
+    }
+
+    const m = {} as Modal<number>
+    configureScreen(m, {} as ModalProps, {} as UIScreenCallbacks<number>)
+
     return (
         <UIContext.Provider
             value={{
@@ -231,6 +270,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 closeModal,
                 closePanel,
                 addToast,
+                configureScreen,
             }}
         >
             {children}
