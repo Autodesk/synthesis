@@ -146,22 +146,30 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                     .map(scheme => {
                         return SchemeSelector(scheme.scheme, {}, "Available", false)
                     })}
-                <SectionDivider />
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.CONFLICT)
-                    .map(scheme => {
-                        return SchemeSelector(
-                            scheme.scheme,
-                            { filter: "brightness(60%)" },
-                            "Conflicats with " + scheme.conflicts_with_names,
-                            false
+                    .map((scheme, i) => {
+                        return (
+                            <>
+                                {i == 0 && <SectionDivider />}
+                                {SchemeSelector(
+                                    scheme.scheme,
+                                    { filter: "brightness(60%)" },
+                                    "Conflicts with " + scheme.conflicts_with_names,
+                                    false
+                                )}
+                            </>
                         )
                     })}
-                <SectionDivider />
                 {availableSchemes
                     ?.filter(scheme => scheme.status == InputSchemeUseType.IN_USE)
-                    .map(scheme => {
-                        return SchemeSelector(scheme.scheme, {}, "In Use", true)
+                    .map((scheme, i) => {
+                        return (
+                            <>
+                                {i == 0 && <SectionDivider />}
+                                {SchemeSelector(scheme.scheme, {}, "In Use", true)}
+                            </>
+                        )
                     })}
             </>
             {/** New scheme with a randomly assigned name button */}
