@@ -14,7 +14,7 @@ import {
     TooltipType,
     useTooltipManager,
 } from "@/ui/TooltipContext"
-import { applyInitialGraphicsSettings } from "@/ui/panels/GraphicsSettingsPanel"
+import { applyInitialGraphicsSettings } from "@/ui/helpers/GraphicsSettings"
 import MainHUD from "@/components/MainHUD"
 import DownloadAssetsModal from "@/modals/DownloadAssetsModal"
 import ExitSynthesisModal from "@/modals/ExitSynthesisModal"
