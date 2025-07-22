@@ -16,7 +16,7 @@ import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import Button from "@/components/Button"
-import { Alliance } from "@/systems/preferences/PreferenceTypes"
+import { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
@@ -24,6 +24,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
     const { openModal } = useModalControlContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
+    const [station, setStation] = useState<Station>(1)
 
     const targetAssembly = useMemo(() => {
         return getSpotlightAssembly()
@@ -50,6 +51,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType == MiraType.ROBOT) {
             targetAssembly.alliance = alliance
+            targetAssembly.station = station
             SimulationSystem.addPerRobotScore(targetAssembly, 0) // Initialize score for the robot
 
             setSelectedConfigurationType(ConfigurationType.ROBOT)
@@ -69,7 +71,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         closePanel(panelId)
-    }, [closePanel, panelId, alliance, targetAssembly])
+    }, [closePanel, panelId, alliance, station, targetAssembly])
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) {
@@ -110,6 +112,28 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             }}
                             colorOverrideClass={`bg-match-${alliance}-alliance`}
                         />
+                        <div className="mt-4">
+                            <Label>Station: </Label>
+                            {/** Set the station number */}
+                            <div className="flex gap-2">
+                                <Button
+                                    value="1"
+                                    onClick={() => setStation(1)}
+                                    colorOverrideClass={station === 1 ? `bg-match-${alliance}-alliance` : ""}
+                                />
+                                <Button
+                                    value="2"
+                                    onClick={() => setStation(2)}
+                                    colorOverrideClass={station === 2 ? `bg-match-${alliance}-alliance` : ""}
+                                />
+                                <Button
+                                    value="3"
+                                    onClick={() => setStation(3)}
+                                    colorOverrideClass={station === 3 ? `bg-match-${alliance}-alliance` : ""}
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-4"></div>
                     </div>
                 ) : (
                     <></>

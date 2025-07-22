@@ -100,7 +100,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                createMirabuf(assembly).then(x => {
+                createMirabuf(assembly, progressHandle, info.id).then(x => {
                     if (x) {
                         World.sceneRenderer.registerSceneObject(x)
                         progressHandle.done()
@@ -250,7 +250,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const status = new ProgressHandle(info.displayName)
         status.update("Downloading from Synthesis...", 0.05)
 
-        MirabufCachingService.cacheRemote(info.src, type)
+        MirabufCachingService.cacheRemote(info.src, type, info.displayName)
             .then(cacheInfo => {
                 if (cacheInfo) {
                     status.done()
