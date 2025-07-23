@@ -1,7 +1,8 @@
-import { Button } from "@mui/material"
+import { Box, Button, Stack, Typography } from "@mui/material"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import type { Alliance } from "@/systems/preferences/PreferenceTypes"
+import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
+import Label from "@/ui/components/Label"
 
 type AllianceSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject
@@ -15,20 +16,20 @@ export default function AllianceSelectionInterface({ selectedAssembly }: Allianc
     const [alliance, setAlliance] = useState<Alliance>(selectedAssembly.alliance ?? "red")
 
     return (
-        <div className="flex flex-col gap-2">
-            <div>
-                <Typography>Alliance: </Typography>
+        <Stack gap={2}>
+            <Box>
+                <Label size="md">Alliance: </Label>
                 <Button
                     value={`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
                     onClick={() => {
                         setAlliance(alliance == "blue" ? "red" : "blue")
                         saveSetAlliance(alliance == "blue" ? "red" : "blue", selectedAssembly)
                     }}
-                    colorOverrideClass={`bg-match-${alliance}-alliance`}
-                />
-            </div>
+                    style={{ background: alliance === "red" ? "#ff0000" : "#0000ff" }}
+                >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
+            </Box>
             <div>
-                <Typography>Station: </Typography>
+                <Label size="md">Station: </Label>
                 <div className="flex gap-2">
                     <Button
                         value="1"
@@ -62,6 +63,6 @@ export default function AllianceSelectionInterface({ selectedAssembly }: Allianc
                     </Button>
                 </div>
             </div>
-        </div>
+        </Stack>
     )
 }

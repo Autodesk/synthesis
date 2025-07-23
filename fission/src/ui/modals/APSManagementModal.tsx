@@ -5,6 +5,7 @@ import { HiUser } from "react-icons/hi"
 import APS from "@/aps/APS"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "../UIProvider"
+import Label from "../components/Label"
 
 const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
@@ -24,7 +25,7 @@ const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             ) : (
                 <HiUser />
             )}
-            <Typography variant="h4">{userInfo?.name ?? "Not signed in"}</Typography>
+            <Label size="md">{userInfo?.name ?? "Not signed in"}</Label>
         </Stack>
     )
 }

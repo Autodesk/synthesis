@@ -8,6 +8,7 @@ import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
 import ZoneConfigInterface from "./ProtectedZoneConfigInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import Label from "@/ui/components/Label"
 
 const protectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -52,9 +53,9 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                         {/** Label with either the header text, or the name of the selected option if an option is selected */}
                         <Stack alignSelf={"center"}>
                             <Box width="8px" />
-                            <Typography variant="h5" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 Configuring Zone
-                            </Typography>
+                            </Label >
                         </Stack>
                     </Stack>
                     <Divider />

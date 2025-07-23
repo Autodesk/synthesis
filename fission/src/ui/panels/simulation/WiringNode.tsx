@@ -5,6 +5,7 @@ import {
     SimConfig,
     type SimConfigData,
 } from "@/systems/simulation/SimConfigShared"
+import Label from "@/ui/components/Label"
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
 import { Stack, Typography } from "@mui/material"
 import { type Connection, type Edge, Handle, type NodeProps, Position } from "@xyflow/react"
@@ -33,7 +34,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                 <Stack gap={4}>
                     {robotInput.sort(handleInfoDisplayCompare).map((x, i) => (
                         <div key={i} className="relative">
-                            <Typography variant="h4">{x.displayName}</Typography>
+                            <Label size="md">{x.displayName}</Label>
                             <Handle
                                 style={{
                                     backgroundColor: NORA_TYPES_COLORS[x.noraType],
@@ -58,7 +59,7 @@ const WiringNode = ({ data, isConnectable }: NodeProps) => {
                 <Stack gap={4}>
                     {robotOutput.sort(handleInfoDisplayCompare).map((x, i) => (
                         <div key={i} className="relative">
-                            <Typography variant="h4">{x.displayName}</Typography>
+                            <Label size="md">{x.displayName}</Label>
                             <Handle
                                 style={{
                                     backgroundColor: NORA_TYPES_COLORS[x.noraType],

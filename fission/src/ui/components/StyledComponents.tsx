@@ -34,6 +34,7 @@ import { GiSteeringWheel } from "react-icons/gi"
 import { GrConnect } from "react-icons/gr"
 import { HiDownload } from "react-icons/hi"
 import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
+import Label from "./Label"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */
@@ -211,7 +212,7 @@ export const CustomTooltip = (text: string) => {
 export const LabelWithTooltip = (labelText: string, tooltipText: string) => {
     return (
         <Stack direction="row" alignItems={"center"} textAlign={"center"}>
-            <Typography variant="h5">{labelText}</Typography>
+            <Label size="sm">{labelText}</Label>
             {CustomTooltip(tooltipText)}
         </Stack>
     )

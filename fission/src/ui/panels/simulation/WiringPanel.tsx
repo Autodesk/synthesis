@@ -35,6 +35,7 @@ import WiringNode from "./WiringNode"
 import ScrollView from "@/ui/components/ScrollView"
 import { PanelImplProps } from "@/ui/components/Panel"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Label from "@/ui/components/Label"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -151,10 +152,10 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 
     return (
         <Stack gap={4}>
-            <Typography variant="h4">Configure the Simulation's IO Modules</Typography>
+            <Label size="md">Configure the Simulation's IO Modules</Label>
             <Grid>
                 <Stack>
-                    <Typography variant="h6">Output</Typography>
+                    <Label size="sm">Output</Label>
                     <ScrollView>
                         {simOut.sort(handleInfoDisplayCompare).map(handle => (
                             <StatefulCheckbox
@@ -167,7 +168,7 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                     </ScrollView>
                 </Stack>
                 <Stack>
-                    <Typography variant="h6">Input</Typography>
+                    <Label size="sm">Input</Label>
                     <ScrollView>
                         {simIn.sort(handleInfoDisplayCompare).map(handle => (
                             <StatefulCheckbox
@@ -227,23 +228,23 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
 
     return (
         <Stack gap={4}>
-            <Typography variant="h4">Configure your Robot's IO Module</Typography>
+            <Label size="md">Configure your Robot's IO Module</Label>
             <Grid>
                 <Stack>
-                    <Typography variant="h6">Input</Typography>
+                    <Label size="sm">Input</Label>
                     <ScrollView>
-                        <Typography variant="h4">CAN Encoders</Typography>
+                        <Label size="md">CAN Encoders</Label>
                         {canEncoders}
-                        <Typography variant="h4">Accelerometers</Typography>
+                        <Label size="md">Accelerometers</Label>
                         {accelerometers}
                     </ScrollView>
                 </Stack>
                 <Stack>
-                    <Typography variant="h6">Output</Typography>
+                    <Label size="sm">Output</Label>
                     <ScrollView>
-                        <Typography variant="h4">CAN Motors</Typography>
+                        <Label size="md">CAN Motors</Label>
                         {canMotors}
-                        <Typography variant="h4">PWM Devices</Typography>
+                        <Label size="md">PWM Devices</Label>
                         {pwmDevices}
                     </ScrollView>
                 </Stack>

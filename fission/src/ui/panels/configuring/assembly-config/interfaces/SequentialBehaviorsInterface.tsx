@@ -8,6 +8,7 @@ import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericA
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import Label from "@/ui/components/Label"
 
 interface BehaviorCardProps {
     elementKey: number
@@ -34,21 +35,21 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
         <Stack textAlign={"center"} key={elementKey} position="relative">
             <Stack position="absolute" alignSelf={"center"}>
                 {behavior.parentJointIndex !== undefined ? (
-                    <Typography
-                        variant="h5"
+                    <Label
+                        size="sm"
                         key={`arm-nodes-notation ${elementKey}`}
                         className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
                     >
                         {name}
-                    </Typography>
+                    </Label>
                 ) : (
-                    <Typography
-                        variant="h5"
+                    <Label
+                        size="sm"
                         key={`arm-nodes-notation ${elementKey}`}
                         className="text-center mt-[4pt] mb-[2pt] mx-[5%]"
                     >
                         {name}
-                    </Typography>
+                    </Label>
                 )}
             </Stack>
 

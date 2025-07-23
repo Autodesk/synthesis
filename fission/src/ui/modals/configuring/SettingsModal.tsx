@@ -10,6 +10,7 @@ import GraphicsSettingsPanel from "@/ui/panels/GraphicsSettingsPanel"
 import { CloseType, useUIContext } from "@/ui/UIProvider"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Label from "@/ui/components/Label"
 
 const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { closeModal, openPanel, configureScreen } = useUIContext()
@@ -78,7 +79,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     tooltipText="Moving the camera left and right."
                 />*/}
             {Spacer(5)}
-            <Typography variant="h5">Camera Settings</Typography>
+            <Label size="sm">Camera Settings</Label>
             <StatefulSlider
                 min={0.1}
                 max={2.0}
@@ -109,7 +110,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 // tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
             />
             {Spacer(10)}
-            <Typography variant="h5">Preferences</Typography>
+            <Label size="sm">Preferences</Label>
             <Stack direction="column">
                 <StatefulCheckbox
                     label="Report Analytics"

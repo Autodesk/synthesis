@@ -8,6 +8,7 @@ import type { ScoringZonePreferences } from "@/systems/preferences/PreferenceTyp
 import World from "@/systems/World"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import ScrollView from "@/ui/components/ScrollView"
+import Label from "@/ui/components/Label"
 
 const saveZones = (zones: ScoringZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -37,10 +38,10 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone,
                     }}
                 />
                 <Stack direction="row" gap={4} className="w-max">
-                    <Typography variant="h5">{zone.name}</Typography>
-                    <Typography variant="h5">
+                    <Label size="sm">{zone.name}</Label>
+                    <Label size="sm">
                         {zone.points} {zone.points === 1 ? "point" : "points"}
-                    </Typography>
+                    </Label>
                 </Stack>
             </Stack>
             <Stack direction={"row-reverse"} gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
@@ -113,7 +114,7 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
                     </Stack>
                 </ScrollView>
             ) : (
-                <Typography>No scoring zones</Typography>
+                <Label size="md">No scoring zones</Label>
             )}
             {AddButton(() => {
                 if (zones === undefined) return

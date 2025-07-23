@@ -28,6 +28,7 @@ import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterf
 import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import Label from "@/ui/components/Label"
 
 const CONFIG_OPTS = ["ROBOTS", "FIELDS", "INPUTS"] as const
 export type ConfigurationType = (typeof CONFIG_OPTS)[number]
@@ -93,7 +94,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
             const zones = assembly.fieldPreferences?.scoringZones ?? []
             if (zones === undefined) {
                 console.error("Field does not contain scoring zone preferences!")
-                return <Typography>ERROR: Field does not contain scoring zone configuration!</Typography>
+                return <Label size="md">ERROR: Field does not contain scoring zone configuration!</Label>
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         }
@@ -101,7 +102,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
             const zones = assembly.fieldPreferences?.protectedZones ?? []
             if (zones === undefined) {
                 console.error("Field does not contain protected zone preferences!")
-                return <Typography>ERROR: Field does not contain protected zone configuration!</Typography>
+                return <Label size="md">ERROR: Field does not contain protected zone configuration!</Label>
             }
             return <ConfigureProtectedZonesInterface selectedField={assembly} initialZones={zones} />
         }

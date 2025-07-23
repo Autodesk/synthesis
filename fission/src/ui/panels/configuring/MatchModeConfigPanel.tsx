@@ -7,6 +7,7 @@ import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs"
 import { CloseType, OpenModalFn, useUIContext } from "@/ui/UIProvider"
 import { Stack } from "@mui/system"
+import Label from "@/ui/components/Label"
 
 export interface MatchModeConfig {
     id: string // Required
@@ -41,9 +42,9 @@ interface ItemCardProps {
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondaryOnClick }) => {
     return (
         <Stack direction="row" key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
-            <Typography variant="h5" className="text-wrap break-all">
+            <Label size="sm" className="text-wrap break-all">
                 {name.replace(/.mira$/, "")}
-            </Typography>
+            </Label>
             <Stack
                 key={`button-box-${id}`}
                 direction="row-reverse"
@@ -244,10 +245,10 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     return (
         <>
-            <Typography variant="h5" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+            <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                 {matchModeConfigs.length} Match Mode
                 {matchModeConfigs.length === 1 ? "" : "s"}
-            </Typography>
+            </Label>
             <Divider />
             {matchModeConfigElements}
             <input ref={fileUploadRef} onChange={onInputChanged} type="file" hidden={true} accept=".json" />

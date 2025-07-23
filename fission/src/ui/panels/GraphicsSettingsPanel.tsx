@@ -7,6 +7,7 @@ import { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../UIProvider"
 import StatefulSlider from "../components/StatefulSlider"
 import StatefulCheckbox from "../components/StatefulCheckbox"
+import Label from "../components/Label"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -156,7 +157,7 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     </Box>
                 </>
             )}
-            <Typography variant="h5">Requires Browser Refresh</Typography>
+            <Label size="sm">Requires Browser Refresh</Label>
             <StatefulCheckbox
                 label="Anti-Aliasing"
                 checked={antiAliasing}

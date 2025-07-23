@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
-import { hasSimBrain, isConnected } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { FaCheck, FaXmark } from "react-icons/fa6"
-import { Typography } from "@mui/material"
+import { hasSimBrain, isConnected } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import Label from "@/ui/components/Label"
 
 const WPILibConnectionStatus: React.FC = () => {
     const [status, setStatus] = useState<boolean>(false)
@@ -22,7 +22,7 @@ const WPILibConnectionStatus: React.FC = () => {
             ) : (
                 <FaXmark className="text-cancel-button self-center" />
             )}
-            <Typography variant="h6">Code Connection</Typography>
+            <Label size="sm">Code Connection</Label>
         </div>
     ) : (
         <></>
