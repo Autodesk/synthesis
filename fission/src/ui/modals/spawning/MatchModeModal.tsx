@@ -1,6 +1,6 @@
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Dropdown from "@/components/Dropdown"
 import Label, { LabelSize } from "@/components/Label"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const MatchModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
@@ -13,7 +13,7 @@ const MatchModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
         "FRC Field 2022_v4.mira",
         "FRC_Field_2023_v7.mira",
     ]
-
+    // biome-ignore-start lint/correctness/useJsxKeyInIterable: This file is unused but I can't figure out why these dropdowns exist like this
     return (
         <Modal
             name="Field and Robot Selection"
@@ -39,6 +39,7 @@ const MatchModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Dropdown options={fields} onSelect={() => {}} />
         </Modal>
     )
+    // biome-ignore-end lint/correctness/useJsxKeyInIterable: This file is unused but I can't figure out why these dropdowns exist like this
 }
 
 export default MatchModeModal

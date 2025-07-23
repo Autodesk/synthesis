@@ -1,19 +1,19 @@
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import WorldSystem from "../WorldSystem"
-import World from "../World"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import InputSystem from "@/systems/input/InputSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import World from "../World"
+import WorldSystem from "../WorldSystem"
+import { CustomOrbitControls, SphericalCoords } from "./CameraControls"
 import {
     InteractionEnd,
     InteractionMove,
     InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
-import { CustomOrbitControls, SphericalCoords } from "./CameraControls"
-import Jolt from "@azaleacolburn/jolt-physics"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import InputSystem from "@/systems/input/InputSystem.ts"
 
 interface DragTarget {
     bodyId: Jolt.BodyID

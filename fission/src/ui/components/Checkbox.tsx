@@ -1,9 +1,9 @@
-import React, { useState } from "react"
-import Label, { LabelSize } from "./Label"
 import { Switch } from "@mui/base/Switch"
 import { Box } from "@mui/material"
-import { LabelWithTooltip } from "./StyledComponents"
+import React, { useState } from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import Label, { LabelSize } from "./Label"
+import { LabelWithTooltip } from "./StyledComponents"
 
 type CheckboxProps = {
     label: string

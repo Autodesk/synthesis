@@ -1,5 +1,5 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import * as THREE from "three"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import MirabufInstance from "../../mirabuf/MirabufInstance"
 import type MirabufParser from "../../mirabuf/MirabufParser"
 import { ParseErrorSeverity } from "../../mirabuf/MirabufParser"

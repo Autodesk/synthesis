@@ -1,3 +1,7 @@
+import { Box } from "@mui/material"
+import React, { useReducer } from "react"
+import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
+import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
@@ -11,12 +15,8 @@ import {
     SectionLabel,
     SelectButton,
 } from "@/ui/components/StyledComponents"
-import { Box } from "@mui/material"
-import React, { useReducer } from "react"
-import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
-import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
-import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
 
 const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex, onSelect, onEdit, onCreateNew }) => {
     const [_, update] = useReducer(x => !x, false)

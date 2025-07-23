@@ -1,8 +1,8 @@
 import Jolt from "@azaleacolburn/jolt-physics"
-import Stimulus, { StimulusID } from "./Stimulus"
-import World from "@/systems/World"
 import { mirabuf } from "@/proto/mirabuf"
+import World from "@/systems/World"
 import { NoraNumber3, NoraTypes } from "../Nora"
+import Stimulus, { StimulusID } from "./Stimulus"
 
 class ChassisStimulus extends Stimulus {
     private _body: Jolt.Body

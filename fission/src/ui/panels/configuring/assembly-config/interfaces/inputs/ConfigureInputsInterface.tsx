@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import InputSystem from "@/systems/input/InputSystem"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
+import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import ConfigureSchemeInterface from "./ConfigureSchemeInterface"
 
 let selectedScheme: InputScheme | undefined = undefined
 

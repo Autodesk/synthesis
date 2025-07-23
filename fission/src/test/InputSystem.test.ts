@@ -1,7 +1,7 @@
-import { beforeEach, test, describe, assert, expect, vi } from "vitest"
-import InputSystem, { AxisInput, ButtonInput, EMPTY_MODIFIER_STATE, ModifierState } from "@/systems/input/InputSystem"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import { assert, beforeEach, describe, expect, test, vi } from "vitest"
 import DefaultInputs from "@/systems/input/DefaultInputs"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSystem, { AxisInput, ButtonInput, EMPTY_MODIFIER_STATE, ModifierState } from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 describe("Input Scheme Manager Checks", () => {

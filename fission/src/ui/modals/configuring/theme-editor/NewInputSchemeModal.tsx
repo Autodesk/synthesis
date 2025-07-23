@@ -1,15 +1,15 @@
 import React, { useState } from "react"
 import Input from "@/components/Input"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import {
     ConfigurationType,
     setSelectedConfigurationType,
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
+import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 
 const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openPanel } = usePanelControlContext()

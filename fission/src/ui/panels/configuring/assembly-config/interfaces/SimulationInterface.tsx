@@ -1,9 +1,9 @@
+import React, { useState } from "react"
 import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import Button from "@/ui/components/Button"
 import Checkbox from "@/ui/components/Checkbox"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import React, { useState } from "react"
 
 type SimulationInterfaceProps = {
     selectedAssembly: MirabufSceneObject

@@ -1,7 +1,7 @@
+import InputSystem from "@/systems/input/InputSystem"
+import Behavior from "@/systems/simulation/behavior/Behavior"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus"
-import Behavior from "@/systems/simulation/behavior/Behavior"
-import InputSystem from "@/systems/input/InputSystem"
 
 class ArcadeDriveBehavior extends Behavior {
     private _leftWheels: WheelDriver[]
@@ -31,8 +31,12 @@ class ArcadeDriveBehavior extends Behavior {
         const leftDirection = Math.min(1, Math.max(-1, driveInput + turnInput))
         const rightDirection = Math.min(1, Math.max(-1, driveInput - turnInput))
 
-        this._leftWheels.forEach(wheel => (wheel.accelerationDirection = leftDirection))
-        this._rightWheels.forEach(wheel => (wheel.accelerationDirection = rightDirection))
+        this._leftWheels.forEach(wheel => {
+            wheel.accelerationDirection = leftDirection
+        })
+        this._rightWheels.forEach(wheel => {
+            wheel.accelerationDirection = rightDirection
+        })
     }
 
     public update(_: number): void {

@@ -1,10 +1,10 @@
 import React, { useState } from "react"
+import Button from "@/components/Button"
+import Checkbox from "@/components/Checkbox"
 import Label, { LabelSize } from "@/components/Label"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Stack, { StackDirection } from "@/components/Stack"
-import Button from "@/components/Button"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import Checkbox from "@/components/Checkbox"
 import { SynthesisIcons } from "../components/StyledComponents"
 
 const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {

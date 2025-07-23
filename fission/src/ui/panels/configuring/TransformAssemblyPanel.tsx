@@ -1,10 +1,10 @@
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useEffect, useMemo } from "react"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
+import World from "@/systems/World"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 const TransformAssemblyPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const targetAssembly = useMemo(() => {

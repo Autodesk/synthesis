@@ -4,6 +4,7 @@
     "": {
       "name": "synthesis-fission",
       "dependencies": {
+        "@analytics/google-analytics": "^1.1.0",
         "@azaleacolburn/jolt-physics": "^0.31.2",
         "@biomejs/biome": "^2.1.2",
         "@haensl/google-analytics": "^1.2.2",
@@ -15,12 +16,13 @@
         "@vitest/browser": "^3.2.4",
         "@vitest/coverage-v8": "^3.2.4",
         "@xyflow/react": "^12.7.0",
+        "analytics": "^0.8.16",
         "async-mutex": "^0.5.0",
         "colord": "^2.9.3",
         "framer-motion": "^10.18.0",
         "lygia": "^1.3.3",
         "playwright": "^1.54.0",
-        "postprocessing": "^6.37.4",
+        "postprocessing": "^6.37.6",
         "react": "^18.3.1",
         "react-colorful": "^5.6.1",
         "react-dom": "^18.3.1",
@@ -74,6 +76,22 @@
     "@alloc/quick-lru": ["@alloc/quick-lru@5.2.0", "", {}, "sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw=="],
 
     "@ampproject/remapping": ["@ampproject/remapping@2.3.0", "", { "dependencies": { "@jridgewell/gen-mapping": "^0.3.5", "@jridgewell/trace-mapping": "^0.3.24" } }, "sha512-30iZtAPgz+LTIYoeivqYo853f02jBYSd5uGnGpkFV0M3xOt9aN73erkgYAmZU43x4VfqcnLxW9Kpg3R5LC4YYw=="],
+
+    "@analytics/cookie-utils": ["@analytics/cookie-utils@0.2.12", "", { "dependencies": { "@analytics/global-storage-utils": "^0.1.7" } }, "sha512-2h/yuIu3kmu+ZJlKmlT6GoRvUEY2k1BbQBezEv5kGhnn9KpmzPz715Y3GmM2i+m7Y0QmBdVUoA260dQZkofs2A=="],
+
+    "@analytics/core": ["@analytics/core@0.12.17", "", { "dependencies": { "@analytics/global-storage-utils": "^0.1.7", "@analytics/type-utils": "^0.6.2", "analytics-utils": "^1.0.14" } }, "sha512-GMxRm5Dp3Wam/w5NNvqNKMO6zWecozbVv21Kn4WhftCx6OjJI7zMlVtiLpjGjxa0RRZfVG80YhupF0Qh9XL2gw=="],
+
+    "@analytics/global-storage-utils": ["@analytics/global-storage-utils@0.1.7", "", { "dependencies": { "@analytics/type-utils": "^0.6.2" } }, "sha512-V+spzGLZYm4biZT4uefaylm80SrLXf8WOTv9hCgA46cLcyxx3LD4GCpssp1lj+RcWLl/uXJQBRO4Mnn/o1x6Gw=="],
+
+    "@analytics/google-analytics": ["@analytics/google-analytics@1.1.0", "", {}, "sha512-i8uGyELMtwEUAf3GNWNLNBzhRvReDn1RUxvMdMhjUA7+GNGxPOM4kkzFfv3giQXKNxTEjfsh75kqNcscbJsuaA=="],
+
+    "@analytics/localstorage-utils": ["@analytics/localstorage-utils@0.1.10", "", { "dependencies": { "@analytics/global-storage-utils": "^0.1.7" } }, "sha512-uJS+Jp1yLG5VFCgA5T82ZODYBS0xuDQx0NtAZrgbqt9j51BX3TcgmOez5LVkrUNu/lpbxjCLq35I4TKj78VmOQ=="],
+
+    "@analytics/session-storage-utils": ["@analytics/session-storage-utils@0.0.7", "", { "dependencies": { "@analytics/global-storage-utils": "^0.1.7" } }, "sha512-PSv40UxG96HVcjY15e3zOqU2n8IqXnH8XvTkg1X43uXNTKVSebiI2kUjA3Q7ESFbw5DPwcLbJhV7GforpuBLDw=="],
+
+    "@analytics/storage-utils": ["@analytics/storage-utils@0.4.2", "", { "dependencies": { "@analytics/cookie-utils": "^0.2.12", "@analytics/global-storage-utils": "^0.1.7", "@analytics/localstorage-utils": "^0.1.10", "@analytics/session-storage-utils": "^0.0.7", "@analytics/type-utils": "^0.6.2" } }, "sha512-AXObwyVQw9h2uJh1t2hUgabtVxzYpW+7uKVbdHQK80vr3Td5rrmCxrCxarh7HUuAgSDZ0bZWqmYxVgmwKceaLg=="],
+
+    "@analytics/type-utils": ["@analytics/type-utils@0.6.2", "", {}, "sha512-TD+xbmsBLyYy/IxFimW/YL/9L2IEnM7/EoV9Aeh56U64Ify8o27HJcKjo38XY9Tcn0uOq1AX3thkKgvtWvwFQg=="],
 
     "@asamuzakjp/css-color": ["@asamuzakjp/css-color@3.2.0", "", { "dependencies": { "@csstools/css-calc": "^2.1.3", "@csstools/css-color-parser": "^3.0.9", "@csstools/css-parser-algorithms": "^3.0.4", "@csstools/css-tokenizer": "^3.0.3", "lru-cache": "^10.4.3" } }, "sha512-K1A6z8tS3XsmCMM86xoWdn7Fkdn9m6RSVtocUrJYIwZnFVkng/PvkEoWtOWmP+Scc6saYWHWZYbndEEXxl24jw=="],
 
@@ -447,6 +465,8 @@
 
     "@types/deep-eql": ["@types/deep-eql@4.0.2", "", {}, "sha512-c9h9dVVMigMPc4bwTvC5dxqtqJZwQPePsWjPlpSOnojbor6pGqdk541lfA7AqFQr5pB1BRdq0juY9db81BwyFw=="],
 
+    "@types/dlv": ["@types/dlv@1.1.5", "", {}, "sha512-JHOWNfiWepAhfwlSw17kiWrWrk6od2dEQgHltJw9AS0JPFoLZJBge5+Dnil2NfdjAvJ/+vGSX60/BRW20PpUXw=="],
+
     "@types/draco3d": ["@types/draco3d@1.4.10", "", {}, "sha512-AX22jp8Y7wwaBgAixaSvkoG4M/+PlAcm3Qs4OW8yT9DM4xUpWKeFhLueTAyZF39pviAdcDdeJoACapiAceqNcw=="],
 
     "@types/estree": ["@types/estree@1.0.8", "", {}, "sha512-dWHzHa2WqEXI/O1E9OjrocMTKJl2mSrEolh1Iomrv6U+JuNwaHXsXx9bLu5gG7BUWFIN0skIQJQ/L1rIex4X6w=="],
@@ -542,6 +562,10 @@
     "agent-base": ["agent-base@7.1.3", "", {}, "sha512-jRR5wdylq8CkOe6hei19GGZnxM6rBGwFl3Bg0YItGDimvjGtAvdZk4Pu6Cl4u4Igsws4a1fd1Vq3ezrhn4KmFw=="],
 
     "ajv": ["ajv@6.12.6", "", { "dependencies": { "fast-deep-equal": "^3.1.1", "fast-json-stable-stringify": "^2.0.0", "json-schema-traverse": "^0.4.1", "uri-js": "^4.2.2" } }, "sha512-j3fVLgvTo527anyYyJOGTYJbG+vnnQYvE0m5mmkc1TK+nxAppkCLMIL0aZ4dblVCNoGShhm+kzE4ZUykBoMg4g=="],
+
+    "analytics": ["analytics@0.8.16", "", { "dependencies": { "@analytics/core": "^0.12.17", "@analytics/storage-utils": "^0.4.2" } }, "sha512-LEFQ47G9V1zVp9WIh2xhnbmSFEJq+WEzSv6voJ5uba88lefiIIYeG2nq87gFu83ocz1qtb9u7XgeaKKVBbbgWA=="],
+
+    "analytics-utils": ["analytics-utils@1.0.14", "", { "dependencies": { "@analytics/type-utils": "^0.6.2", "dlv": "^1.1.3" }, "peerDependencies": { "@types/dlv": "^1.0.0" } }, "sha512-9v0kPd8v0GuBvfQcg5BO48AElaEAr9IXMAfJWXYMAhrD3QprgozEIUgMp/de0vS136PUOBB+10XQH9eBgBmfMw=="],
 
     "ansi-regex": ["ansi-regex@5.0.1", "", {}, "sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ=="],
 
@@ -1267,7 +1291,7 @@
 
     "postcss-value-parser": ["postcss-value-parser@4.2.0", "", {}, "sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ=="],
 
-    "postprocessing": ["postprocessing@6.37.4", "", { "peerDependencies": { "three": ">= 0.157.0 < 0.178.0" } }, "sha512-O4dv29MDRSjXgMF1Luz3YHlT7NawKIliCfO2OgUCtIMTLNMCg+v0RLuT9/LQSDtVNXxUHGyy3mucbF3UePcElA=="],
+    "postprocessing": ["postprocessing@6.37.6", "", { "peerDependencies": { "three": ">= 0.157.0 < 0.179.0" } }, "sha512-KrdKLf1257RkoIk3z3nhRS0aToKrX2xJgtR0lbnOQUjd+1I4GVNv1gQYsQlfRglvEXjpzrwqOA5fXfoDBimadg=="],
 
     "potpack": ["potpack@1.0.2", "", {}, "sha512-choctRBIV9EMT9WGAZHn3V7t0Z2pMQyl0EZE6pFc/6ml3ssw7Dlf/oAOvFwjm1HVsqfQN8GfeFyJ+d8tRzqueQ=="],
 

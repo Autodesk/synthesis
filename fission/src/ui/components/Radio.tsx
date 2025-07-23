@@ -1,6 +1,6 @@
 import React, { useState } from "react"
-import Stack, { StackDirection } from "./Stack"
 import Label, { LabelSize } from "./Label"
+import Stack, { StackDirection } from "./Stack"
 
 type RadioProps = {
     label: string

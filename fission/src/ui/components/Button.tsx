@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react"
 import { Button as BaseButton } from "@mui/base/Button"
+import React, { ReactNode } from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 export enum ButtonSize {

@@ -1,7 +1,7 @@
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { mirabuf } from "@/proto/mirabuf"
 import { NoraNumber, NoraTypes } from "../Nora"
 import Driver, { DriverID } from "./Driver"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 class EjectorDriver extends Driver {
     public value: number
