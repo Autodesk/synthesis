@@ -9,32 +9,6 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 
-// TODO:
-/** Grey label for a child behavior name */
-// const ChildLabelStyled = styled(Label)({
-//     fontWeight: 700,
-//     margin: "0pt",
-//     color: "#bbbbbb",
-//     textWrap: "nowrap",
-// })
-
-// TODO:
-/** A button used to select a parent behavior. Appears at a grey outline when the 'set' button is pressed on a different behavior */
-// const CustomButton = styled(Button)({
-//     "borderStyle": "solid",
-//     "borderWidth": "1px",
-//     "transition": "border-color 0.3s ease",
-//     "&:hover": {
-//         borderColor: "white",
-//     },
-//     "position": "relative",
-//     "overflow": "hidden",
-//     "& .MuiTouchRipple-root span": {
-//         backgroundColor: alpha("#ffffff", 0.3), // Set your desired ripple color here
-//         animationDuration: "300ms",
-//     },
-// })
-
 interface BehaviorCardProps {
     elementKey: number
     name: string
@@ -109,8 +83,8 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                         onSetPressed()
                         update()
                     }}
-                    // TODO:
-                    // colorOverrideClass={hasChild ? "bg-background hover:brightness-100" : undefined}
+                    // TODO: theme
+                    sx={hasChild ? { bgcolor: "background.primary", "&:hover": { filter: "brightness(100%)" } } : {}}
                 >
                     {lookingForParent === behavior || behavior.parentJointIndex !== undefined
                         ? SynthesisIcons.XMARK_LARGE

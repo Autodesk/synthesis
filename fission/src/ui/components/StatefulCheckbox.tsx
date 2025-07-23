@@ -1,8 +1,8 @@
-import React from "react"
 import { Switch } from "@mui/base/Switch"
-import { Box, Typography } from "@mui/material"
-import { LabelWithTooltip } from "./StyledComponents"
+import { Stack, Typography } from "@mui/material"
+import React from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { LabelWithTooltip } from "./StyledComponents"
 
 type CheckboxProps = {
     /**
@@ -35,12 +35,11 @@ type CheckboxProps = {
 
 const StatefulCheckbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabel, onClick, tooltipText }) => {
     return (
-        <Box
-            display="flex"
-            flexDirection={"row"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            textAlign={"center"}
+        <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            textAlign="center"
         >
             {hideLabel ? null : tooltipText ? (
                 LabelWithTooltip(label, tooltipText)
@@ -71,7 +70,7 @@ const StatefulCheckbox: React.FC<CheckboxProps> = ({ label, className, checked, 
                 checked={checked}
                 role="checkbox"
             />
-        </Box>
+        </Stack>
     )
 }
 

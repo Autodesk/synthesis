@@ -19,6 +19,8 @@ import UserIcon from "./UserIcon"
 import { deobf } from "@/util/Utility"
 import SettingsModal from "../modals/configuring/SettingsModal"
 import APSManagementModal from "../modals/APSManagementModal"
+import DeveloperToolPanel from "../panels/DeveloperToolPanel"
+import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 
 type ButtonProps = {
     value: string
@@ -213,8 +215,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Developer Tool"}
                         icon={SynthesisIcons.CODE_SQUARE}
-                        // TODO:
-                        // onClick={() => openPanel("developer")}
+                        onClick={() => openPanel(<DeveloperToolPanel />)}
                     />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
@@ -258,8 +259,7 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.GAMEPAD}
                         larger={true}
                         onClick={() => {
-                            // TODO:
-                            // openPanel("match-mode-config")
+                            openPanel(<MatchModeConfigPanel />)
                             setIsOpen(false)
                         }}
                     />

@@ -33,13 +33,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         }
     }, [])
 
-    // biome-ignore lint: Making closePanel a dep causes maxium depth exceeded errors
-    useEffect(() => {
-        // TODO:
-        // if (parent)
-        //     closePanel(parent.id, CloseType.Overwrite);
-    }, [])
-
     // TODO: unconfirmed import
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {

@@ -167,8 +167,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
             setConfigurePanelSettings(undefined)
         }
-
-        // TODO: close choose scheme panel
     }, [])
 
     useEffect(() => {

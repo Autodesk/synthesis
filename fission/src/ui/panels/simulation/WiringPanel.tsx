@@ -34,6 +34,7 @@ import { useUIContext } from "../../UIProvider"
 import WiringNode from "./WiringNode"
 import ScrollView from "@/ui/components/ScrollView"
 import { PanelImplProps } from "@/ui/components/Panel"
+import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -156,17 +157,11 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                     <Typography variant="h6">Output</Typography>
                     <ScrollView>
                         {simOut.sort(handleInfoDisplayCompare).map(handle => (
-                            <FormControlLabel
+                            <StatefulCheckbox
                                 label={`${handle.displayName}`}
-                                control={
-                                    <Checkbox
-                                        key={handle.id}
-                                        defaultChecked={handle.enabled}
-                                        onChange={e => {
-                                            handle.enabled = e.target.checked
-                                        }}
-                                    />
-                                }
+                                key={handle.id}
+                                checked={handle.enabled}
+                                onClick={checked => handle.enabled = checked}
                             />
                         ))}
                     </ScrollView>
@@ -175,17 +170,11 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                     <Typography variant="h6">Input</Typography>
                     <ScrollView>
                         {simIn.sort(handleInfoDisplayCompare).map(handle => (
-                            <FormControlLabel
+                            <StatefulCheckbox
                                 label={`${handle.displayName}`}
-                                control={
-                                    <Checkbox
-                                        key={handle.id}
-                                        defaultChecked={handle.enabled}
-                                        onChange={e => {
-                                            handle.enabled = e.target.checked
-                                        }}
-                                    />
-                                }
+                                key={handle.id}
+                                checked={handle.enabled}
+                                onClick={checked => handle.enabled = checked}
                             />
                         ))}
                     </ScrollView>

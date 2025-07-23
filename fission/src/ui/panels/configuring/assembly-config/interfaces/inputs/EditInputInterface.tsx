@@ -10,6 +10,7 @@ import InputSystem, {
 } from "@/systems/input/InputSystem"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { KeyCode } from "@/systems/input/KeyboardTypes"
+import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {
@@ -301,32 +302,24 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         {input.useGamepadButtons
                             ? GamepadButtonAxisSelection()
                             : // Gamepad joystick axis
-                              JoystickAxisSelection()}
+                            JoystickAxisSelection()}
 
                         {/* // Button to switch between two buttons and a joystick axis */}
-                        <FormControlLabel
+                        <StatefulCheckbox
                             label="Use Gamepad Buttons"
-                            control={
-                                <Checkbox
-                                    defaultChecked={useGamepadButtons}
-                                    onChange={e => {
-                                        input.useGamepadButtons = e.target.checked
-                                        setUseGamepadButtons(e.target.checked)
-                                    }}
-                                />
-                            }
+                            checked={useGamepadButtons}
+                            onClick={checked => {
+                                input.useGamepadButtons = checked
+                                setUseGamepadButtons(checked)
+                            }}
                         />
                         {/* // Button to invert the joystick axis */}
-                        <FormControlLabel
+                        <StatefulCheckbox
                             label="Invert Joystick"
-                            control={
-                                <Checkbox
-                                    defaultChecked={input.joystickInverted}
-                                    onChange={e => {
-                                        input.joystickInverted = e.target.checked
-                                    }}
-                                />
-                            }
+                            checked={input.joystickInverted}
+                            onClick={checked => {
+                                input.joystickInverted = checked
+                            }}
                         />
                         <Divider />
                     </div>
@@ -339,16 +332,12 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     <div key={input.inputName}>
                         {TouchControlsAxisSelection()}
                         {/* // Button to invert the joystick axis */}
-                        <FormControlLabel
+                        <StatefulCheckbox
                             label="Invert Joystick"
-                            control={
-                                <Checkbox
-                                    defaultChecked={input.joystickInverted}
-                                    onChange={e => {
-                                        input.joystickInverted = e.target.checked
-                                    }}
-                                />
-                            }
+                            checked={input.joystickInverted}
+                            onClick={checked => {
+                                input.joystickInverted = checked
+                            }}
                         />
                         <Divider />
                     </div>

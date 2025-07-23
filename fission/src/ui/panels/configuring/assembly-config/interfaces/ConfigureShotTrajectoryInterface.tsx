@@ -19,6 +19,7 @@ import {
 } from "@/util/TypeConversions"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import { Button, FormControlLabel, Slider, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 
 // slider constants
 const MIN_VELOCITY = 0.0
@@ -231,21 +232,17 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             </Stack>
 
             {/* Slider for user to set velocity of ejector configuration */}
-            <FormControlLabel
+            <StatefulSlider
                 label="Velocity"
-                control={
-                    <Slider
-                        min={MIN_VELOCITY}
-                        max={MAX_VELOCITY}
-                        value={ejectorVelocity}
-                        // TODO:
-                        // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                        onChange={(_, vel: number | number[]) => {
-                            setEjectorVelocity(vel as number)
-                        }}
-                        step={0.01}
-                    />
-                }
+                min={MIN_VELOCITY}
+                max={MAX_VELOCITY}
+                defaultValue={ejectorVelocity}
+                // TODO:
+                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={vel => {
+                    setEjectorVelocity(vel as number)
+                }}
+                step={0.01}
             />
 
             {Spacer(10)}

@@ -5,6 +5,8 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../UIProvider"
+import StatefulSlider from "../components/StatefulSlider"
+import StatefulCheckbox from "../components/StatefulCheckbox"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -52,104 +54,84 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     return (
         <Stack gap={2}>
-            <FormControlLabel
+            <StatefulSlider
                 label="Light Intensity"
-                control={
-                    <Slider
-                        min={MIN_LIGHT_INTENSITY}
-                        max={MAX_LIGHT_INTENSITY}
-                        value={lightIntensity}
-                        valueLabelFormat={(val, _idx) => val.toFixed(2)}
-                        onChange={(_, value: number | number[]) => {
-                            setLightIntensity(value as number)
-                            World.sceneRenderer.setLightIntensity(value as number)
-                        }}
-                        step={0.25}
-                    />
-                }
+                min={MIN_LIGHT_INTENSITY}
+                max={MAX_LIGHT_INTENSITY}
+                defaultValue={lightIntensity}
+                valueLabelFormat={(val, _idx) => val.toFixed(2)}
+                onChange={value => {
+                    setLightIntensity(value as number)
+                    World.sceneRenderer.setLightIntensity(value as number)
+                }}
+                step={0.25}
             />
-            <FormControlLabel
+            <StatefulCheckbox
                 label="Fancy Shadows"
-                control={
-                    <Checkbox
-                        defaultChecked={fancyShadows}
-                        onChange={(_, checked) => {
-                            setFancyShadows(checked)
-                            World.sceneRenderer.changeLighting(checked)
-                        }}
-                    />
-                }
+                checked={fancyShadows}
+                onClick={checked => {
+                    setFancyShadows(checked)
+                    World.sceneRenderer.changeLighting(checked)
+                }}
             />
             {fancyShadows && (
                 <>
-                    <FormControlLabel
+                    <StatefulSlider
                         label="Max Far"
-                        control={
-                            <Slider
-                                min={MIN_MAX_FAR}
-                                max={MAX_MAX_FAR}
-                                value={maxFar}
-                                onChange={(_, value: number | number[]) => {
-                                    setMaxFar(value as number)
-                                    World.sceneRenderer.changeCSMSettings({
-                                        maxFar: value as number,
+                        min={MIN_MAX_FAR}
+                        max={MAX_MAX_FAR}
+                        defaultValue={maxFar}
+                        onChange={value => {
+                            setMaxFar(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                maxFar: value as number,
 
-                                        lightIntensity,
-                                        fancyShadows,
-                                        cascades,
-                                        shadowMapSize,
-                                        antiAliasing,
-                                    })
-                                }}
-                                step={1}
-                            />
-                        }
+                                lightIntensity,
+                                fancyShadows,
+                                cascades,
+                                shadowMapSize,
+                                antiAliasing,
+                            })
+                        }}
+                        step={1}
                     />
-                    <FormControlLabel
+                    <StatefulSlider
                         label="Cascade Count"
-                        control={
-                            <Slider
-                                min={MIN_CASCADES}
-                                max={MAX_CASCADES}
-                                value={cascades}
-                                onChange={(_, value: number | number[]) => {
-                                    setCascades(value as number)
-                                    World.sceneRenderer.changeCSMSettings({
-                                        cascades: value as number,
+                        min={MIN_CASCADES}
+                        max={MAX_CASCADES}
+                        defaultValue={cascades}
+                        onChange={value => {
+                            setCascades(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                cascades: value as number,
 
-                                        maxFar,
-                                        lightIntensity,
-                                        fancyShadows,
-                                        shadowMapSize,
-                                        antiAliasing,
-                                    })
-                                }}
-                                step={1}
-                            />
-                        }
+                                maxFar,
+                                lightIntensity,
+                                fancyShadows,
+                                shadowMapSize,
+                                antiAliasing,
+                            })
+                        }}
+                        step={1}
                     />
-                    <FormControlLabel
+                    <StatefulSlider
                         label="Shadow Map Size"
-                        control={
-                            <Slider
-                                min={MIN_SHADOW_MAP_SIZE}
-                                max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
-                                value={shadowMapSize}
-                                onChange={(_, value: number | number[]) => {
-                                    setShadowMapSize(value as number)
-                                    World.sceneRenderer.changeCSMSettings({
-                                        shadowMapSize: value as number,
+                        min={MIN_SHADOW_MAP_SIZE}
+                        max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
+                        defaultValue={shadowMapSize}
+                        onChange={value => {
+                            setShadowMapSize(value as number)
+                            World.sceneRenderer.changeCSMSettings({
+                                shadowMapSize: value as number,
 
-                                        maxFar,
-                                        lightIntensity,
-                                        fancyShadows,
-                                        cascades,
-                                        antiAliasing,
-                                    })
-                                }}
-                                step={1024}
-                            />
-                        }
+                                maxFar,
+                                lightIntensity,
+                                fancyShadows,
+                                cascades,
+                                antiAliasing,
+                            })
+                        }}
+                        step={1024}
                     />
                     <Box alignSelf="center">
                         <Button
@@ -175,17 +157,13 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 </>
             )}
             <Typography variant="h5">Requires Browser Refresh</Typography>
-            <FormControlLabel
+            <StatefulCheckbox
                 label="Anti-Aliasing"
-                control={
-                    <Checkbox
-                        defaultChecked={antiAliasing}
-                        onChange={(_, checked) => {
-                            setAntiAliasing(checked)
-                            setReload(true)
-                        }}
-                    />
-                }
+                checked={antiAliasing}
+                onClick={checked => {
+                    setAntiAliasing(checked)
+                    setReload(true)
+                }}
             />
         </Stack>
     )

@@ -8,6 +8,8 @@ import HingeDriver from "@/systems/simulation/driver/HingeDriver"
 import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import World from "@/systems/World"
+import StatefulSlider from "@/ui/components/StatefulSlider"
+import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 type SubsystemRowProps = {
     robot: MirabufSceneObject
@@ -88,55 +90,43 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                     <Typography variant="h5">
                         {driver instanceof WheelDriver ? "Drive" : (driver.info?.name ?? "UnnamedMotor")}
                     </Typography>
-                    <FormControlLabel
+                    <StatefulSlider
                         label="Max Velocity"
-                        control={
-                            <Slider
-                                min={0.1}
-                                max={driverSwitch(driver, 80, 40, 80) as number}
-                                value={velocity}
-                                // TODO:
-                                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                                onChange={(_, _velocity: number | number[]) => {
-                                    setVelocity(_velocity as number)
-                                    onChange(_velocity as number, force)
-                                }}
-                                step={0.01}
-                            />
-                        }
+                        min={0.1}
+                        max={driverSwitch(driver, 80, 40, 80) as number}
+                        defaultValue={velocity}
+                        // TODO:
+                        // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                        onChange={velocity => {
+                            setVelocity(velocity as number)
+                            onChange(velocity as number, force)
+                        }}
+                        step={0.01}
                     />
                     {PreferencesSystem.getGlobalPreference("SubsystemGravity") ||
                         (driver instanceof WheelDriver && (
-                            <FormControlLabel
+                            <StatefulSlider
                                 label={driverSwitch(driver, "Max Force", "Max Torque", "Max Acceleration") as string}
-                                control={
-                                    <Slider
-                                        min={driverSwitch(driver, 100, 20, 0.1) as number}
-                                        max={driverSwitch(driver, 800, 150, 15) as number}
-                                        value={force}
-                                        // TODO:
-                                        // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                                        onChange={(_, _force: number | number[]) => {
-                                            setForce(_force as number)
-                                            onChange(velocity, _force as number)
-                                        }}
-                                        step={0.01}
-                                    />
-                                }
+                                min={driverSwitch(driver, 100, 20, 0.1) as number}
+                                max={driverSwitch(driver, 800, 150, 15) as number}
+                                defaultValue={force}
+                                // TODO:
+                                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                                onChange={force => {
+                                    setForce(force as number)
+                                    onChange(velocity, force as number)
+                                }}
+                                step={0.01}
                             />
                         ))}
                     {sequentialBehavior && (
-                        <FormControlLabel
+                        <StatefulCheckbox
                             label="Invert Motor"
-                            control={
-                                <Checkbox
-                                    defaultChecked={sequentialBehavior.inverted}
-                                    onChange={val => {
-                                        sequentialBehavior.inverted = val.target.checked
-                                        saveBehaviors?.()
-                                    }}
-                                />
-                            }
+                            checked={sequentialBehavior.inverted}
+                            onClick={checked => {
+                                sequentialBehavior.inverted = checked
+                                saveBehaviors?.()
+                            }}
                         />
                     )}
                 </Stack>
