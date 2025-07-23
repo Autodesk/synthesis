@@ -42,19 +42,14 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
                             MirabufCachingService.CacheRemote(
                                 "/api/mira/fields/FRC Field 2023_v7.mira",
                                 MiraType.FIELD
-                            ).then(cacheInfoField => {
-                                if (cacheInfoField) {
-                                    SpawnCachedMira(cacheInfoField, MiraType.FIELD)
-                                }
-                            }),
-                            MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT).then(
-                                cacheInfoRobot => {
-                                    if (cacheInfoRobot) {
-                                        SpawnCachedMira(cacheInfoRobot, MiraType.ROBOT)
-                                    }
-                                }
                             ),
-                        ])
+                            MirabufCachingService.CacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT),
+                        ]).then(([cachedField, cachedRobot]) => {
+                            if (cachedField && cachedRobot) {
+                                SpawnCachedMira(cachedField, MiraType.FIELD)
+                                SpawnCachedMira(cachedRobot, MiraType.ROBOT)
+                            }
+                        })
                     }}
                     className="w-full my-1"
                 />
