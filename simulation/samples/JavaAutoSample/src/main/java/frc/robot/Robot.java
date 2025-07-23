@@ -10,7 +10,6 @@ import com.autodesk.synthesis.io.*;
 
 import edu.wpi.first.wpilibj.SPI;
 
-import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -21,6 +20,7 @@ import com.autodesk.synthesis.revrobotics.CANSparkMax;
 import com.autodesk.synthesis.revrobotics.RelativeEncoder;
 import com.autodesk.synthesis.revrobotics.SparkAbsoluteEncoder;
 import com.kauailabs.navx.frc.AHRS;
+import com.autodesk.synthesis.wpilibj.ADXL362;
 import com.autodesk.synthesis.CANEncoder;
 import com.autodesk.synthesis.ctre.TalonFX;
 
@@ -39,7 +39,7 @@ public class Robot extends TimedRobot {
     private String m_autoSelected;
     private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-    private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
+    private ADXL362 m_Accel = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
     private AHRS m_Gyro = new AHRS();
 
     private CANSparkMax m_sparkLeft = new CANSparkMax(1, MotorType.kBrushless);

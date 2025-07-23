@@ -10,7 +10,6 @@ import com.autodesk.synthesis.io.*;
 
 import edu.wpi.first.wpilibj.SPI;
 
-import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -20,6 +19,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import com.autodesk.synthesis.revrobotics.CANSparkMax;
 import com.kauailabs.navx.frc.AHRS;
 import com.autodesk.synthesis.ctre.TalonFX;
+import com.autodesk.synthesis.wpilibj.ADXL362;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
   private TalonFX m_Talon = new TalonFX(7);
   private XboxController m_Controller = new XboxController(0);
 
-  private ADXL362 m_Accelerometer = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
+  private ADXL362 m_Accel = new ADXL362(SPI.Port.kMXP, ADXL362.Range.k8G);
   private AHRS m_Gyro = new AHRS();
 
   private DigitalInput m_DI = new DigitalInput(0);
