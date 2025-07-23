@@ -22,6 +22,7 @@ import {
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 import StatefulSlider from "@/ui/components/StatefulSlider"
+import Label from "@/ui/components/Label"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -292,9 +293,9 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
 
             {/* Checkbox for showing intake zone indicator at all times */}
             <Stack direction="row" justifyContent={"space-between"} alignItems={"center"} textAlign={"center"}>
-                <Typography variant="h5" className="mr-12 whitespace-nowrap">
+                <Label size="sm" className="mr-12 whitespace-nowrap">
                     Show intake zone indicator always
-                </Typography>
+                </Label>
                 <Switch
                     checked={showZoneAlways}
                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => {

@@ -9,6 +9,7 @@ import {
 } from "./SceneOverlayEvents"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ViewCube from "./ViewCube"
+import Label from "./Label"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -37,7 +38,7 @@ const SceneOverlay: React.FC = () => {
                     transform: "translate(-50%, -100%)",
                 }}
             >
-                <Typography variant="h3">{x.text()}</Typography>
+                <Label size="md">{x.text()}</Label>
             </div>
         ))
     }, [])

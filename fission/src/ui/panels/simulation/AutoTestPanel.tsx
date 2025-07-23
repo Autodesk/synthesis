@@ -16,6 +16,7 @@ import {
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
+import Label from "@/ui/components/Label"
 
 type StagingProps = {
     state: "Staging"
@@ -213,7 +214,7 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
 
     return (
         <>
-            <Typography className="text-center">{Math.max(remaining, 0).toFixed(1)}s</Typography>
+            <Label size="md" className="text-center">{Math.max(remaining, 0).toFixed(1)}s</Label>
             <Button className="self-center" onClick={end}>
                 Stop
             </Button>
@@ -237,7 +238,7 @@ function Staging({ assembly, setPlaying }: StagingProps) {
     return (
         <>
             <Stack>
-                <Typography textAlign="center">Countdown</Typography>
+                <Label size="md" textAlign="center">Countdown</Label>
                 <ToggleButtonGroup
                     value={countdown}
                     exclusive
@@ -256,7 +257,7 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                 </ToggleButtonGroup>
             </Stack>
             <Stack>
-                <Typography textAlign="center">Alliance Station</Typography>
+                <Label size="md" textAlign="center">Alliance Station</Label>
                 <ToggleButtonGroup
                     value={station}
                     exclusive
@@ -281,7 +282,7 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                 />
             </Stack>
             <Stack>
-                <Typography textAlign="center">Placement</Typography>
+                <Label size="md" textAlign="center">Placement</Label>
                 <TransformGizmoControl parent={assembly} size={3} defaultMode="translate" scaleDisabled />
             </Stack>
             <Button className="self-center" onClick={next}>

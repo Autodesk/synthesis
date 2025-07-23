@@ -3,6 +3,7 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
+import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
@@ -84,7 +85,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 <VisuallyHiddenInput type="file" onChange={onInputChanged} multiple />
             </Button>
             {selectedFile && (
-                <Typography className="text-center" variant="h5">{`Selected File: ${selectedFile.name}`}</Typography>
+                <Label className="text-center" size="sm">{`Selected File: ${selectedFile.name}`}</Label>
             )}
         </Stack>
     )

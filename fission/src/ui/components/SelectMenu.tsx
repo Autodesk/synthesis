@@ -2,6 +2,7 @@ import { Button, Divider, IconButton, Stack, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { CustomTooltip, Spacer, SynthesisIcons } from "./StyledComponents"
+import Label from "./Label"
 
 /** Extend this to make a type that contains custom data */
 export class SelectMenuOption {
@@ -60,9 +61,9 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 }}
                 id={`select-button-${value.name}`}
             >
-                <Typography key={value.name + index} variant="h5" className="text-left mt-[4pt] mb-[2pt] mx-[5%]">
+                <Label key={value.name + index} size="sm" className="text-left mt-[4pt] mb-[2pt] mx-[5%]">
                     {value.name}
-                </Typography>
+                </Label>
             </Button>
 
             {/* Button used for selecting a parent (shows up as an outline) */}
@@ -155,9 +156,9 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
 
                 {/** Label with either the header text, or the name of the selected option if an option is selected */}
                 <Stack alignSelf={"center"}>
-                    <Typography variant="h5" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {selectedOption !== undefined ? selectedOption.name : defaultHeaderText}
-                    </Typography>
+                    </Label>
                 </Stack>
             </Stack>
             <Divider />
@@ -185,7 +186,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                         ) : (
                             <>
                                 {/** No options available text */}
-                                <Typography variant="h5">{noOptionsText ?? "No options available!"}</Typography>
+                                <Label size="sm">{noOptionsText ?? "No options available!"}</Label>
                             </>
                         )}
                         {/** Add button */}

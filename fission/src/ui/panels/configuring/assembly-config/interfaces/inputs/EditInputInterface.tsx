@@ -11,6 +11,7 @@ import InputSystem, {
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { KeyCode } from "@/systems/input/KeyboardTypes"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Label from "@/ui/components/Label"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {
@@ -109,7 +110,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         return (
             <>
                 <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                    <Typography>{toTitleCase(input.inputName)}</Typography>
+                    <Label size="md">{toTitleCase(input.inputName)}</Label>
 
                     <Box>
                         <Button
@@ -136,7 +137,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         return (
             <>
                 <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                    <Typography>{toTitleCase(input.inputName)}</Typography>
+                    <Label size="md">{toTitleCase(input.inputName)}</Label>
 
                     <Stack direction="row" gap="10px" alignItems={"center"}>
                         {SynthesisIcons.ADD}
@@ -178,7 +179,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
         return (
             <>
                 <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                    <Typography>{toTitleCase(input.inputName)}</Typography>
+                    <Label size="md">{toTitleCase(input.inputName)}</Label>
                     <Button
                         key={input.inputName}
                         value={
@@ -204,7 +205,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
         return (
             <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                <Typography>{toTitleCase(input.inputName)}</Typography>
+                <Label size="md">{toTitleCase(input.inputName)}</Label>
                 <Select
                     key={input.inputName}
                     value={gamepadAxes[input.gamepadAxisNumber + 1]}
@@ -227,7 +228,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
         return (
             <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                <Typography>{toTitleCase(input.inputName)}</Typography>
+                <Label size="md">{toTitleCase(input.inputName)}</Label>
 
                 <Stack direction="row" gap="10px" alignItems={"center"}>
                     {/* Positive gamepad button */}
@@ -270,7 +271,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
 
         return (
             <Stack direction="row" gap={10} alignItems="center" justifyContent="space-between" width="98%">
-                <Typography>{toTitleCase(input.inputName)}</Typography>
+                <Label size="md">{toTitleCase(input.inputName)}</Label>
                 <Select
                     key={input.inputName}
                     value={touchControlsAxes[input.touchControlAxis]}

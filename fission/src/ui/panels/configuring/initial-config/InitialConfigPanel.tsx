@@ -16,6 +16,7 @@ import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
+import Label from "@/ui/components/Label"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { setSelectedScheme, setConfigurationType } = useStateContext()
@@ -72,13 +73,14 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         <Stack gap={2}>
             {targetAssembly?.miraType === MiraType.ROBOT && (
                 <Box>
-                    <Typography>Alliance: </Typography>
+                    <Label size="md">Alliance: </Label>
+                    {/** Set the alliance color */}
                     <Button
                         onClick={() => setAlliance(alliance === "blue" ? "red" : "blue")}
                         style={{ background: alliance === "red" ? "#ff0000" : "#0000ff" }}
                     >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
                     <Box>
-                        <Typography>Station: </Typography>
+                        <Label size="md">Station: </Label>
                         {/** Set the station number */}
                         <Stack gap={2}>
                             <Button

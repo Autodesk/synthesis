@@ -14,6 +14,7 @@ import type { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../UIProvider"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
+import Label from "../components/Label"
 
 function ToggleDragMode() {
     const dragSystem = World.dragModeSystem
@@ -40,7 +41,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             minWidth="290px"
         >
             <Stack>
-                <Typography variant="h5">Generic</Typography>
+                <Label size="sm">Generic</Label>
                 <Button
                     onClick={() => {
                         const toastType = (["info", "warning", "error"] as const)[Math.floor(random() * 3)]
@@ -58,7 +59,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     Clear Preferences
                 </Button>
 
-                <Typography variant="h5">Autodesk Platform Services</Typography>
+                <Label size="sm">Autodesk Platform Services</Label>
                 <Button
                     onClick={async () =>
                         (await APS.isSignedIn()) && APS.refreshAuthToken((await APS.getAuth())!.refresh_token, true)
@@ -79,7 +80,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     Expire APS Token
                 </Button>
 
-                <Typography variant="h5">Caching Services</Typography>
+                <Label size="sm">Caching Services</Label>
                 <Button
                     onClick={() => {
                         console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
@@ -95,7 +96,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     Clear Mira Cache
                 </Button>
 
-                <Typography variant="h5">Code Simulation</Typography>
+                <Label size="sm">Code Simulation</Label>
                 <Button onClick={() => openPanel(<WsViewPanel />, panel)} className="w-full">
                     WS Viewer
                 </Button>

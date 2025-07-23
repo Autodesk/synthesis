@@ -12,6 +12,7 @@ import { Checkbox, FormControlLabel, Stack, TextField, Typography } from "@mui/m
 import { Box } from "@mui/system"
 import ScrollView from "@/ui/components/ScrollView"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Label from "@/ui/components/Label"
 
 const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
@@ -53,11 +54,11 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
 
     return (
         <>
-            <Typography variant="h6">Name</Typography>
+            <Label size="sm">Name</Label>
             <TextField placeholder="..." className="w-full" onChange={e => setName(e.target.value)} />
             <Stack direction="row" className="w-full min-w-full">
                 <Box className="w-max">
-                    <Typography>Ports</Typography>
+                    <Label size="md">Ports</Label>
                     <ScrollView>
                         {devices.map(([p, _]) => (
                             <StatefulCheckbox
@@ -77,7 +78,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     </ScrollView>
                 </Box>
                 <Box className="w-max">
-                    <Typography>Signals</Typography>
+                    <Label size="md">Signals</Label>
                     <ScrollView>
                         {drivers.map((driver, idx) => (
                             <StatefulCheckbox

@@ -10,6 +10,7 @@ import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Label from "@/ui/components/Label"
 
 type SubsystemRowProps = {
     robot: MirabufSceneObject
@@ -87,9 +88,9 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
         <>
             <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
                 <Stack direction="row" gap={8}>
-                    <Typography variant="h5">
+                    <Label size="sm">
                         {driver instanceof WheelDriver ? "Drive" : (driver.info?.name ?? "UnnamedMotor")}
-                    </Typography>
+                    </Label>
                     <StatefulSlider
                         label="Max Velocity"
                         min={0.1}

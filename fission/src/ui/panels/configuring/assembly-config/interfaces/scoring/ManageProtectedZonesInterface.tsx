@@ -8,6 +8,7 @@ import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceT
 import World from "@/systems/World"
 import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import ScrollView from "@/ui/components/ScrollView"
+import Label from "@/ui/components/Label"
 
 const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -32,10 +33,10 @@ const ProtectedZoneRow: React.FC<ProtectedZoneRowProps> = ({ zone, save, deleteZ
             <Stack direction="row" gap={8}>
                 <div className={`w-12 h-12 bg-match-${zone.alliance}-alliance rounded-lg`} />
                 <Stack gap={4} className="w-max">
-                    <Typography variant="h5">{zone.name}</Typography>
-                    <Typography variant="h5">
+                    <Label size="sm">{zone.name}</Label>
+                    <Label size="sm">
                         {zone.penaltyPoints} {zone.penaltyPoints === 1 ? "penalty point" : "penalty points"}
-                    </Typography>
+                    </Label>
                 </Stack>
             </Stack>
             <Stack direction="row-reverse" gap={"0.25rem"} justifyContent={"center"} alignItems={"center"}>
@@ -108,7 +109,7 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
                     </Stack>
                 </ScrollView>
             ) : (
-                <Typography>No protected zones</Typography>
+                <Label size="md">No protected zones</Label>
             )}
             {AddButton(() => {
                 if (zones === undefined) return

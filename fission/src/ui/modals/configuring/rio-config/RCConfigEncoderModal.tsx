@@ -10,6 +10,7 @@ import World from "@/systems/World"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "@/ui/UIProvider"
 import RoboRIOModal from "../RoboRIOModal"
+import Label from "@/ui/components/Label"
 
 const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
@@ -52,7 +53,7 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
 
     return (
         <>
-            <Typography variant="h6">Name</Typography>
+            <Label size="sm">Name</Label>
             <TextField placeholder="..." className="w-full" onChange={e => setName(e.target.value)} />
             <Select label="CAN Encoders" onChange={e => setSelectedDevice(e.target.value as string)}>
                 {devices.map(d => (

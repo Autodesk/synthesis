@@ -1,4 +1,9 @@
-import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import type React from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -24,9 +29,7 @@ import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/Conf
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
-import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
-import { useEffect, useMemo, useRef, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import Label from "@/ui/components/Label"
 
 const CONFIG_OPTS = ["ROBOTS", "FIELDS", "INPUTS"] as const
 export type ConfigurationType = (typeof CONFIG_OPTS)[number]
@@ -92,7 +95,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
             const zones = assembly.fieldPreferences?.scoringZones ?? []
             if (zones === undefined) {
                 console.error("Field does not contain scoring zone preferences!")
-                return <Typography>ERROR: Field does not contain scoring zone configuration!</Typography>
+                return <Label size="md">ERROR: Field does not contain scoring zone configuration!</Label>
             }
             return <ConfigureScoringZonesInterface selectedField={assembly} initialZones={zones} />
         }
@@ -100,7 +103,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
             const zones = assembly.fieldPreferences?.protectedZones ?? []
             if (zones === undefined) {
                 console.error("Field does not contain protected zone preferences!")
-                return <Typography>ERROR: Field does not contain protected zone configuration!</Typography>
+                return <Label size="md">ERROR: Field does not contain protected zone configuration!</Label>
             }
             return <ConfigureProtectedZonesInterface selectedField={assembly} initialZones={zones} />
         }

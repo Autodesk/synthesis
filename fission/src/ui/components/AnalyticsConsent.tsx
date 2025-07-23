@@ -1,6 +1,7 @@
 import { Box, Button, Typography } from "@mui/material"
 // import { colorNameToVar } from "../ThemeContext"
 import { AiOutlineClose } from "react-icons/ai"
+import Label from "./Label"
 
 interface AnalyticsConsentProps {
     onClose: () => void
@@ -24,10 +25,10 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                 gap: "0.5rem",
             }}
         >
-            <Typography variant="h6">
+            <Label size="sm">
                 Synthesis uses cookies to improve the performance and quality of our app. Do you consent to the usage of
                 cookies for tracking analytics data?
-            </Typography>
+            </Label>
             <a
                 target="_blank"
                 rel="noopener noreferrer"

@@ -5,6 +5,7 @@ import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type { ModalImplProps } from "../components/Modal"
 import { CloseType, useUIContext } from "../UIProvider"
 import { useEffect } from "react"
+import Label from "../components/Label"
 
 type Entry = {
     name: string
@@ -66,8 +67,8 @@ const MatchResultsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             <Stack>
                 {entries.map(e => (
                     <Stack key={e.name} direction="row">
-                        <Typography>{e.name}</Typography>
-                        <Typography>{e.value}</Typography>
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
                     </Stack>
                 ))}
             </Stack>
@@ -80,8 +81,8 @@ const MatchResultsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             <div className="flex flex-col">
                 {redRobotScores.map(e => (
                     <Stack key={e.name} direction="row">
-                        <Typography>{e.name}</Typography>
-                        <Typography>{e.value}</Typography>
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
                     </Stack>
                 ))}
             </div>
@@ -91,8 +92,8 @@ const MatchResultsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             <div className="flex flex-col">
                 {blueRobotScores.map(e => (
                     <Stack key={e.name} direction="row">
-                        <Typography>{e.name}</Typography>
-                        <Typography>{e.value}</Typography>
+                        <Label size="md">{e.name}</Label>
+                        <Label size="md">{e.value}</Label>
                     </Stack>
                 ))}
             </div>

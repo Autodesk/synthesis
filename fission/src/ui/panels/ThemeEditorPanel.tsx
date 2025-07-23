@@ -4,6 +4,7 @@ import { Box, Button, Stack, TextField, Typography } from "@mui/material"
 import type React from "react"
 import { useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
+import Label from "../components/Label"
 
 export const ThemeEditorPanel: React.FC = () => {
     const { mode, toggleColorMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =
@@ -14,7 +15,7 @@ export const ThemeEditorPanel: React.FC = () => {
 
     return (
         <Stack gap={4}>
-            <Typography variant="h4">Theme Editor</Typography>
+            <Label size="md">Theme Editor</Label>
             <Stack direction="row" gap={2}>
                 <TextField
                     label="Primary Color"

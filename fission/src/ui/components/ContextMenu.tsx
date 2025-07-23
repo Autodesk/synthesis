@@ -1,6 +1,7 @@
 import { Box, Button, Divider, Typography } from "@mui/material"
 import { useEffect, useState } from "react"
 import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
+import Label from "./Label"
 // import { colorNameToVar } from "../ThemeContext"
 
 interface ContextMenuStateData {
@@ -68,7 +69,7 @@ const ContextMenu: React.FC = () => {
                         flexDirection: "column",
                     }}
                 >
-                    <Typography key="context-title">{state.data.title}</Typography>
+                    <Label key="context-title" size="md">{state.data.title}</Label>
                     <Divider />
                 </Box>
                 {state.data.items.map(x => (

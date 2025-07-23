@@ -36,6 +36,7 @@ import { CloseType, useUIContext } from "@/ui/UIProvider"
 import type TaskStatus from "@/util/TaskStatus"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
+import Label from "@/ui/components/Label"
 
 interface ItemCardProps {
     id: string
@@ -48,7 +49,7 @@ interface ItemCardProps {
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
     return (
         <Stack key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"} direction="row">
-            <Typography className="text-wrap break-all">{name.replace(/.mira$/, "")}</Typography>
+            <Label size="md" className="text-wrap break-all">{name.replace(/.mira$/, "")}</Label>
             <Stack
                 key={`button-box-${id}`}
                 direction="row-reverse"
@@ -422,21 +423,21 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
             </ToggleButtonGroup>
             {viewType === MiraType.ROBOT ? (
                 <>
-                    <Typography variant="h4" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {cachedRobotElements
                             ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length === 1 ? "" : "s"}`
                             : "Loading Saved Robots"}
-                    </Typography>
+                    </Label>
                     <Divider />
                     {cachedRobotElements}
                 </>
             ) : (
                 <>
-                    <Typography variant="h4" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {cachedFieldElements
                             ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
                             : "Loading Saved Fields"}
-                    </Typography>
+                    </Label>
                     <Divider />
                     {cachedFieldElements}
                 </>
@@ -448,22 +449,22 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                <Typography variant="h4" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {hubElements
                         ? `${hubElements.length} Remote Asset${hubElements.length === 1 ? "" : "s"}`
                         : filesStatus.message}
-                </Typography>
+                </Label>
                 {hubElements && filesStatus.isDone && RefreshButton(() => requestMirabufFiles())}
             </Stack>
             <Divider />
             {hubElements}
             {viewType === MiraType.ROBOT ? (
                 <>
-                    <Typography variant="h4" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {remoteRobotElements
                             ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length === 1 ? "" : "s"}`
                             : "Loading Default Robots"}
-                    </Typography>
+                    </Label>
                     <Divider />
                     {remoteRobotElements}
                     <Stack justifyContent="center" mt={1}>
@@ -472,11 +473,11 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 </>
             ) : (
                 <>
-                    <Typography variant="h4" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                         {remoteFieldElements
                             ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length === 1 ? "" : "s"}`
                             : "Loading Default Fields"}
-                    </Typography>
+                    </Label>
                     <Divider />
                     {remoteFieldElements}
                     <Stack justifyContent="center" mt={1}>

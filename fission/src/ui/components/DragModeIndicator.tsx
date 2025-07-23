@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { FaHandPaper } from "react-icons/fa"
 import { globalAddToast } from "./GlobalUIControls"
 import { Typography } from "@mui/material"
+import Label from "./Label"
 
 const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
@@ -29,7 +30,7 @@ const DragModeIndicator: React.FC = () => {
             onClick={handleClick}
         >
             <FaHandPaper className="text-main-text self-center" />
-            <Typography variant="h5">Drag Mode</Typography>
+            <Label size="sm">Drag Mode</Label>
         </div>
     ) : (
         <></>

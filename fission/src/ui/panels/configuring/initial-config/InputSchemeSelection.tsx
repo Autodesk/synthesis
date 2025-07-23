@@ -13,6 +13,7 @@ import { useStateContext } from "@/ui/StateProvider"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import Label from "@/ui/components/Label"
 
 interface InputSchemeSelectionProps {
     brainIndex: number
@@ -48,9 +49,9 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                     gap={"1rem"}
                     key={scheme.schemeName}
                 >
-                    <Typography variant="h5">
+                    <Label size="sm">
                         {`${scheme.schemeName} | ${scheme.customized ? "Custom" : scheme.descriptiveName}`}
-                    </Typography>
+                    </Label>
                     <Stack direction="row-reverse" gap="0.25rem" justifyContent={"center"} alignItems={"center"}>
                         {/** Select button */}
                         <Box sx={style}>
@@ -129,9 +130,9 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                     ))}
                 </Select>
                 <Divider />
-                <Typography variant="h4" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${availableSchemes?.length} Input Schemes`}
-                </Typography>
+                </Label>
                 <Divider />
 
                 {/** Creates list items with buttons */}
