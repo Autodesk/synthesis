@@ -12,7 +12,6 @@ type BrainSelectionInterfaceProps = {
 
 const BrainSelectionInterface: React.FC<BrainSelectionInterfaceProps> = ({ selectedAssembly }) => {
     const [robotBrainType, setRobotBrainType] = useState<BrainType | undefined>(selectedAssembly.brain?.brainType)
-
     return (
         <>
             <ToggleButtonGroup

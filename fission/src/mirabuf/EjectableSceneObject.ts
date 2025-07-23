@@ -21,6 +21,21 @@ class EjectableSceneObject extends SceneObject {
     private _deltaTransformation?: THREE.Matrix4
     private _ejectVelocity?: number
 
+    // Animation state
+    private _animationStartTime = 0
+    private _animationDuration = EjectableSceneObject._defaultAnimationDuration
+    private _startTranslation?: THREE.Vector3
+    private _startRotation?: THREE.Quaternion
+
+    private static _defaultAnimationDuration = 0.5
+
+    public static setAnimationDuration(duration: number) {
+        EjectableSceneObject._defaultAnimationDuration = duration
+    }
+    public static getAnimationDuration() {
+        return EjectableSceneObject._defaultAnimationDuration
+    }
+
     public get gamePieceBodyId() {
         return this._gamePieceBodyId
     }
@@ -49,15 +64,24 @@ class EjectableSceneObject extends SceneObject {
             )
             this._ejectVelocity = this._parentAssembly.ejectorPreferences.ejectorVelocity
 
+            // Record start transform at the game piece center of mass
+            const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
+            this._startTranslation = new THREE.Vector3(0, 0, 0)
+            this._startRotation = new THREE.Quaternion(0, 0, 0, 1)
+            convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).decompose(
+                this._startTranslation,
+                this._startRotation,
+                new THREE.Vector3(1, 1, 1)
+            )
+
+            this._animationDuration = EjectableSceneObject._defaultAnimationDuration
+            this._animationStartTime = performance.now()
+
             World.physicsSystem.disablePhysicsForBody(this._gamePieceBodyId)
 
-            // Checks if the gamepiece comes from a zone for persistent point score updates
-            // because gamepieces removed by intake are not detected in the collision listener
+            // Remove from any scoring zones
             const zones = [...World.sceneRenderer.sceneObjects.entries()]
-                .filter(x => {
-                    const y = x[1] instanceof ScoringZoneSceneObject
-                    return y
-                })
+                .filter(x => x[1] instanceof ScoringZoneSceneObject)
                 .map(x => x[1]) as ScoringZoneSceneObject[]
 
             zones.forEach(x => {
@@ -69,26 +93,51 @@ class EjectableSceneObject extends SceneObject {
     }
 
     public update(): void {
+        const now = performance.now()
+        const elapsed = (now - this._animationStartTime) / 1000
+        const tRaw = elapsed / this._animationDuration
+        const t = Math.min(tRaw, 1)
+
+        // ease-in curve for gradual acceleration
+        const easedT = t * t
+
         if (this._parentBodyId && this._deltaTransformation && this._gamePieceBodyId) {
             if (!World.physicsSystem.isBodyAdded(this._gamePieceBodyId)) {
                 this._gamePieceBodyId = undefined
                 return
             }
 
-            // I had a think and free wrote this matrix math on a whim. It worked first try and I honestly can't quite remember how it works... -Hunter
             const gpBody = World.physicsSystem.getBody(this._gamePieceBodyId)
             const posToCOM = convertJoltMat44ToThreeMatrix4(gpBody.GetCenterOfMassTransform()).premultiply(
                 convertJoltMat44ToThreeMatrix4(gpBody.GetWorldTransform()).invert()
             )
 
             const body = World.physicsSystem.getBody(this._parentBodyId)
-            const bodyTransform = posToCOM
-                .invert()
-                .premultiply(
-                    this._deltaTransformation
-                        .clone()
-                        .premultiply(convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()))
-                )
+            let desiredPosition = new THREE.Vector3(0, 0, 0)
+            let desiredRotation = new THREE.Quaternion(0, 0, 0, 1)
+
+            // Compute target world transform
+            const desiredTransform = this._deltaTransformation
+                .clone()
+                .premultiply(convertJoltMat44ToThreeMatrix4(body.GetWorldTransform()))
+
+            desiredTransform.decompose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
+
+            if (t < 1 && this._startTranslation && this._startRotation) {
+                // gradual acceleration via easedT
+                desiredPosition = new THREE.Vector3().lerpVectors(this._startTranslation, desiredPosition, easedT)
+                desiredRotation = new THREE.Quaternion().copy(this._startRotation).slerp(desiredRotation, easedT)
+            }
+            // } else if (t >= 1) {
+            //     // snap instantly and re-enable physics
+            //     World.physicsSystem.enablePhysicsForBody(this._gamePieceBodyId)
+            // }
+
+            // apply the transform
+            desiredTransform.identity().compose(desiredPosition, desiredRotation, new THREE.Vector3(1, 1, 1))
+
+            const bodyTransform = posToCOM.clone().invert().premultiply(desiredTransform)
+
             const position = new THREE.Vector3(0, 0, 0)
             const rotation = new THREE.Quaternion(0, 0, 0, 1)
             bodyTransform.decompose(position, rotation, new THREE.Vector3(1, 1, 1))

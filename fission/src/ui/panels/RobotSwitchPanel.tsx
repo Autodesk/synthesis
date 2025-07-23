@@ -6,6 +6,7 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Stack, { StackDirection } from "@/components/Stack"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { SynthesisIcons } from "../components/StyledComponents"
+import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
 
 const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
@@ -23,12 +24,12 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
             <form>
                 <fieldset>
                     {robots.map((name: string, i: number) => (
-                        <Checkbox
+                        // fixme: new checkbox
+                        <StatefulCheckbox
                             label={name}
-                            defaultState={i == selected}
+                            checked={i == selected}
                             className="whitespace-nowrap"
                             onClick={() => setSelected(i)}
-                            stateOverride={i == selected}
                             key={i}
                         />
                     ))}

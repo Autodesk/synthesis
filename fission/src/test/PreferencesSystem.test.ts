@@ -123,6 +123,7 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 showZoneAlways: true,
                 maxPieces: 3,
+                animationDuration: 0.5,
             },
             ejector: {
                 deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
@@ -142,6 +143,7 @@ describe("Preference System Robot/Field", () => {
                 parentNode: undefined,
                 showZoneAlways: false,
                 maxPieces: 1,
+                animationDuration: 0.5,
             },
             ejector: {
                 deltaTransformation: [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],

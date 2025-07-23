@@ -1,26 +1,26 @@
+import Brain from "../Brain"
+import Behavior, { DriveType } from "../behavior/Behavior"
+import World from "@/systems/World"
+import WheelDriver from "../driver/WheelDriver"
+import WheelRotationStimulus from "../stimulus/WheelStimulus"
+import { SimulationLayer } from "../SimulationSystem"
 import Jolt from "@azaleacolburn/jolt-physics"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import InputSystem from "@/systems/input/InputSystem"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import HingeDriver from "../driver/HingeDriver"
+import HingeStimulus from "../stimulus/HingeStimulus"
+import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
+import SliderDriver from "../driver/SliderDriver"
+import SliderStimulus from "../stimulus/SliderStimulus"
+import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
-import World from "@/systems/World"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
-import Brain from "../Brain"
-import Behavior from "../behavior/Behavior"
-import ArcadeDriveBehavior from "../behavior/synthesis/ArcadeDriveBehavior"
-import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
-import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
-import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
-import EjectorDriver from "../driver/EjectorDriver"
-import HingeDriver from "../driver/HingeDriver"
+import InputSystem from "@/systems/input/InputSystem"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import IntakeDriver from "../driver/IntakeDriver"
-import SliderDriver from "../driver/SliderDriver"
-import WheelDriver from "../driver/WheelDriver"
-import { SimulationLayer } from "../SimulationSystem"
-import HingeStimulus from "../stimulus/HingeStimulus"
-import SliderStimulus from "../stimulus/SliderStimulus"
-import WheelRotationStimulus from "../stimulus/WheelStimulus"
+import EjectorDriver from "../driver/EjectorDriver"
+import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
+import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
+import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -30,6 +30,7 @@ class SynthesisBrain extends Brain {
     private _assemblyName: string
     private _brainIndex: number
     private _assembly: MirabufSceneObject
+    public driveType: DriveType = DriveType.ARCADE
 
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
@@ -58,13 +59,36 @@ class SynthesisBrain extends Brain {
         return this._brainIndex
     }
 
+    public configureDriveBehavior(driveType: DriveType) {
+        this.driveType = driveType
+        const existing = this._behaviors.find((behavior: Behavior) => behavior instanceof SkidSteerDriveBehavior)
+        if (existing == null) {
+            console.error("Can't find drive behavior!")
+            return
+        }
+        existing.setIsArcade(driveType == DriveType.ARCADE)
+    }
+
+    public configure(): void {
+        this._behaviors = []
+        // Only adds controls to mechanisms that are controllable (ignores fields)
+        if (this._assembly.mechanism.controllable) {
+            this.configureSkidSteerDriveBehavior(this.driveType == DriveType.ARCADE)
+            this.configureArmBehaviors()
+            this.configureElevatorBehaviors()
+            this.configureGamepieceManipBehavior()
+        } else {
+            this.configureField()
+        }
+    }
+
     /**
-     * @param mechanism The mechanism this brain will control.
+     * @param assembly
      * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
+     * @param driveType
      */
     public constructor(assembly: MirabufSceneObject, assemblyName: string) {
         super(assembly.mechanism, "synthesis")
-
         this._assembly = assembly
         this._simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)!
         this._assemblyName = assemblyName
@@ -78,15 +102,7 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        // Only adds controls to mechanisms that are controllable (ignores fields)
-        if (assembly.mechanism.controllable) {
-            this.configureArcadeDriveBehavior()
-            this.configureArmBehaviors()
-            this.configureElevatorBehaviors()
-            this.configureGamepieceManipBehavior()
-        } else {
-            this.configureField()
-        }
+        this.configure()
     }
 
     public enable(): void {}
@@ -106,9 +122,8 @@ class SynthesisBrain extends Brain {
     public clearControls(): void {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
-
     /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */
-    private configureArcadeDriveBehavior() {
+    private configureSkidSteerDriveBehavior(isArcade: boolean) {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
@@ -150,7 +165,7 @@ class SynthesisBrain extends Brain {
         }
 
         this._behaviors.push(
-            new ArcadeDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex)
+            new SkidSteerDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex, isArcade)
         )
     }
 

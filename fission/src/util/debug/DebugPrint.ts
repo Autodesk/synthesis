@@ -39,6 +39,10 @@ export function threeVector3ToString(v: THREE.Vector3, units: number = 3) {
     return `(${v.x.toFixed(units)}, ${v.y.toFixed(units)}, ${v.z.toFixed(units)})`
 }
 
+export function threeQuaternionToString(v: THREE.Quaternion, units: number = 3) {
+    return `(${v.x.toFixed(units)}, ${v.y.toFixed(units)}, ${v.z.toFixed(units)}, ${v.w.toFixed(units)})`
+}
+
 export function joltVec3ToString(v: Jolt.Vec3 | Jolt.RVec3, units: number = 3) {
     return `(${v.GetX().toFixed(units)}, ${v.GetY().toFixed(units)}, ${v.GetZ().toFixed(units)})`
 }
