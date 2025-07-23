@@ -20,6 +20,8 @@ class RobotClient {
   robots: Map<string, Robot> = new Map();
   robotSpeed = 200;
 
+  clientToRobotId: Map<string, string> = new Map();
+
   inputs = {
     ArrowUp: false,
     ArrowDown: false,
@@ -77,6 +79,12 @@ class RobotClient {
     iteration();
   }
 
+  testPing() {
+    if (!this.peerConnection.connected) return;
+
+    this.peerConnection.send({ type: "ping", data: { timestamp: Date.now() } });
+  }
+
   handlePeerMessage = ((data: Message) => {
     try {
       switch (data.type) {
@@ -110,23 +118,22 @@ class RobotClient {
   }).bind(this);
 
   handleInit(data: InitData) {
-    this.clientId = data.clientId;
-    this.robotId = data.robotId;
     this.displayManager.setWorldsize(data.worldSize);
+    this.clientToRobotId.set(data.clientId, data.robotId);
 
     data.robots.forEach((robot: Robot) => {
       this.robots.set(robot.id, { ...robot });
     });
-    this.displayManager.updatePlayerCount(data.robots.length);
-    console.log(`Initialized with ${data.robots.length} robots`);
+    this.displayManager.updatePlayerCount(data.robots.length + 1);
+    console.log(`Initialized with ${data.robots.length + 1} robots`);
   }
 
   handleGameState(data: GameStateData) {
-    // this.displayManager.updateServerTick(data.sequence);
-
+    const timestamp = Date.now();
     data.otherRobots.forEach((robotData: Robot) => {
       this.robots.set(robotData.id, robotData);
     });
+    this.measurePing(timestamp, data.timestamp);
   }
 
   handleRobotJoined(data: Robot) {
@@ -136,9 +143,18 @@ class RobotClient {
   }
 
   handleRobotLeft(data: RobotLeftData) {
-    this.robots.delete(data.robotId);
-    this.displayManager.updatePlayerCount(this.robots.size);
-    console.log(`Robot ${data.robotId} left`);
+    const removeRobot = (robot: string) => {
+      this.robots.delete(robot);
+      this.displayManager.updatePlayerCount(this.robots.size);
+      console.log(`Robot ${data.robotId} left`);
+    };
+    if (data.robotId === "") {
+      [...this.robots.values()]
+        .filter((robot) => robot.id !== this.robotId)
+        .forEach((robot) => removeRobot(robot.id));
+    } else {
+      removeRobot(data.robotId);
+    }
   }
 
   handlePing(data: PingData) {
@@ -147,8 +163,15 @@ class RobotClient {
       type: "pong",
       data: { timestamp: data.timestamp },
     });
+    this.measurePing(timestamp, data.timestamp);
+  }
 
-    const rtt = timestamp - data.timestamp;
+  handleServerMetrics(data: ServerMetrics) {
+    this.clientMetrics.serverMetrics = data;
+  }
+
+  measurePing(ourTimestamp: number, theirTimestamp: number) {
+    const rtt = ourTimestamp - theirTimestamp;
     this.clientMetrics.networkStats.roundTripTimes.push(rtt);
     if (this.clientMetrics.networkStats.roundTripTimes.length > 10) {
       this.clientMetrics.networkStats.roundTripTimes.shift();
@@ -162,10 +185,6 @@ class RobotClient {
         rtts.length;
       this.clientMetrics.networkStats.jitter = Math.sqrt(variance);
     }
-  }
-
-  handleServerMetrics(data: ServerMetrics) {
-    this.clientMetrics.serverMetrics = data;
   }
 
   startMetricsCollection() {
@@ -191,12 +210,16 @@ class RobotClient {
 
   updateMetricsDisplay() {
     this.displayManager.updateFPS(this.clientMetrics.averageFPS ?? 0);
-    this.displayManager.updateTotalMessages(
-      this.clientMetrics.messagesReceived,
-    );
     this.displayManager.updateJitter(
       Math.round(this.clientMetrics.networkStats.jitter * 10) / 10,
     );
+    const last = this.clientMetrics.networkStats.roundTripTimes.length - 1;
+    if (last > -1) {
+      this.displayManager.updateLatency(
+        Math.round(this.clientMetrics.networkStats.roundTripTimes[last]! * 10) /
+          10,
+      );
+    }
     this.displayManager.updateUptime(this.clientMetrics.startTime);
   }
 
@@ -211,6 +234,7 @@ class RobotClient {
         otherRobots: [
           ...this.robots.values().filter((robot) => robot.id !== this.clientId),
         ],
+        timestamp: Date.now(),
       },
     });
   }

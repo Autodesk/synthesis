@@ -118,7 +118,7 @@
         <span id="status" class="stat-value">Connecting...</span>
       </div>
       <div class="stat-row">
-        <span class="stat-label">count:</span>
+        <span class="stat-label">player count:</span>
         <span id="playerCount" class="stat-value">0</span>
       </div>
       <div class="stat-row">
@@ -130,10 +130,6 @@
         <span id="jitter" class="stat-value">0.0</span>ms
       </div>
       <div class="stat-row">
-        <span class="stat-label">tick:</span>
-        <span id="serverTick" class="stat-value">-</span>
-      </div>
-      <div class="stat-row">
         <span class="stat-label">fps:</span>
         <span id="fps" class="stat-value">60</span>
       </div>
@@ -143,59 +139,8 @@
       </div>
     </div>
 
-    <div id="predictionStats">
-      <div class="stat-row">
-        <span class="stat-label">pred:</span>
-        <span id="predictionEnabled" class="stat-value prediction-enabled"
-          >ON</span
-        >
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">corrections:</span>
-        <span id="correctionCount" class="stat-value">0</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">err:</span>
-        <span id="avgDivergence" class="stat-value">0.0</span>px
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">accuracy:</span>
-        <span id="predictionAccuracy" class="stat-value">0.0</span>px
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">latency:</span>
-        <span id="inputLag" class="stat-value">0</span>ms
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">cli-seq:</span>
-        <span id="inputSequence" class="stat-value">0</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">realtime:</span>
-        <span id="lastCorrection" class="stat-value">None</span>
-      </div>
-    </div>
-
-    <div id="serverStats">
-      <div class="stat-row">
-        <span class="stat-label">srv-tick:</span>
-        <span id="serverTickRate" class="stat-value">60/60</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">msg/s:</span>
-        <span id="networkThroughput" class="stat-value">0</span>
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">memory:</span>
-        <span id="serverMemory" class="stat-value">0</span>MB
-      </div>
-      <div class="stat-row">
-        <span class="stat-label">total-msg:</span>
-        <span id="totalMessages" class="stat-value">0</span>
-      </div>
-    </div>
-
     <div id="controls">
+      <div>Arrow Keys to Move Robot</div>
       <div>R: Reset stats</div>
       <div>M: Toggle metrics (press to show/hide panels)</div>
     </div>

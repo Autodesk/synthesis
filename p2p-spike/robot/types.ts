@@ -60,6 +60,7 @@ export type InitData = {
 export type GameStateData = {
   sequence: number;
   otherRobots: Robot[];
+  timestamp: number;
 };
 
 export type RobotJoinedData = Robot;

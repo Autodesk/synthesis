@@ -12,21 +12,10 @@ export default class DisplayManger {
   statusEl: HTMLElement;
   playerCountEl: HTMLElement;
   latencyEl: HTMLElement;
-  serverTickEl: HTMLElement;
-  correctionCountEl: HTMLElement;
-  avgDivergenceEl: HTMLElement;
-  inputLagEl: HTMLElement;
-  inputSequenceEl: HTMLElement;
-  lastCorrectionEl: HTMLElement;
   fpsEl: HTMLElement;
-  serverTickRateEl: HTMLElement;
-  networkThroughputEl: HTMLElement;
-  serverMemoryEl: HTMLElement;
-  totalMessagesEl: HTMLElement;
   uptimeEl: HTMLElement;
   jitterEl: HTMLElement;
   infoPanel: HTMLElement;
-  serverPanel: HTMLElement;
   controlsPanel: HTMLElement;
   metricsVisible = true;
 
@@ -36,21 +25,10 @@ export default class DisplayManger {
     this.statusEl = document.getElementById("status")!;
     this.playerCountEl = document.getElementById("playerCount")!;
     this.latencyEl = document.getElementById("latency")!;
-    this.serverTickEl = document.getElementById("serverTick")!;
-    this.correctionCountEl = document.getElementById("correctionCount")!;
-    this.avgDivergenceEl = document.getElementById("avgDivergence")!;
-    this.inputLagEl = document.getElementById("inputLag")!;
-    this.inputSequenceEl = document.getElementById("inputSequence")!;
-    this.lastCorrectionEl = document.getElementById("lastCorrection")!;
     this.fpsEl = document.getElementById("fps")!;
-    this.serverTickRateEl = document.getElementById("serverTickRate")!;
-    this.networkThroughputEl = document.getElementById("networkThroughput")!;
-    this.serverMemoryEl = document.getElementById("serverMemory")!;
-    this.totalMessagesEl = document.getElementById("totalMessages")!;
     this.uptimeEl = document.getElementById("uptime")!;
     this.jitterEl = document.getElementById("jitter")!;
     this.infoPanel = document.getElementById("info")!;
-    this.serverPanel = document.getElementById("serverStats")!;
     this.controlsPanel = document.getElementById("controls")!;
   }
 
@@ -58,17 +36,15 @@ export default class DisplayManger {
     this.playerCountEl.textContent = n.toString();
   }
 
-  updateServerTick(n: number) {
-    this.serverTickEl.textContent = n.toString();
-  }
   updateFPS(n: number) {
     this.fpsEl.textContent = n.toString();
   }
-  updateTotalMessages(n: number) {
-    this.totalMessagesEl.textContent = n.toString();
-  }
+
   updateJitter(n: number) {
     this.jitterEl.textContent = n.toString() + "ms";
+  }
+  updateLatency(n: number) {
+    this.latencyEl.textContent = n.toString() + "ms";
   }
   updateUptime(startTime: number) {
     const uptime = Date.now() - startTime;
@@ -85,7 +61,6 @@ export default class DisplayManger {
     const display = this.metricsVisible ? "block" : "none";
 
     if (this.infoPanel) this.infoPanel.style.display = display;
-    if (this.serverPanel) this.serverPanel.style.display = display;
     if (this.controlsPanel) this.controlsPanel.style.display = display;
 
     console.log(`Metrics panels ${this.metricsVisible ? "shown" : "hidden"}`);

@@ -9,7 +9,7 @@ class PeerConnection {
   connected: boolean = false;
   otherPeers: string[] = [];
   initialization: InitData;
-  handlePeerMessage: (data: any) => void;
+  handlePeerMessage: (data: Message) => void;
 
   constructor(
     handlePeerMessage: (data: Message) => void,
@@ -43,7 +43,7 @@ class PeerConnection {
         .forEach((peer) => this.otherPeers.push(peer as string));
       if (this.otherPeers.length > 0)
         this.connection = this.peer.connect(this.otherPeers[0]!);
-      console.log(`connection: ${this.connection?.peer}`);
+      console.log(`Connection: ${this.connection?.peer}`);
       this.setupConnectionHandlers();
     });
   }
@@ -64,8 +64,13 @@ class PeerConnection {
 
     this.connection.on("close", () => {
       this.connected = false;
+      this.handlePeerMessage({ type: "robotLeft", data: { robotId: "" } });
       console.log("Connection closed");
     });
+
+    // this.connection.on("disconnected", () => {
+    //   this.handlePeerMessage({ type: "robotLeft", data: { robotId: "" } });
+    // })
 
     this.connection.on("error", (err: Error) => {
       console.error("Connection error:", err);
