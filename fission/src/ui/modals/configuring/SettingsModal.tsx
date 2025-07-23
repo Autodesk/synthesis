@@ -34,7 +34,7 @@ const StatefulSlider: React.FC<
     )
 }
 
-const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
+const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { closeModal, openPanel, configureScreen } = useUIContext()
     const save = useCallback(() => {
         SoundPlayer.changeVolume()

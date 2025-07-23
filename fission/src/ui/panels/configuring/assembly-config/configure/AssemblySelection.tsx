@@ -76,7 +76,7 @@ const AssemblySelection: React.FC<AssemblySelectionProps & PanelImplProps<void>>
             }}
             onAddClicked={() => {
                 openPanel(<ImportMirabufPanel />, undefined)
-                closePanel(panel.id, CloseType.Overwrite)
+                closePanel(panel!.id, CloseType.Overwrite)
             }}
             noOptionsText={`No ${configurationType === "ROBOTS" ? "robots" : "fields"} spawned!`}
             defaultSelectedOption={

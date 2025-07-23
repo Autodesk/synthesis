@@ -11,6 +11,7 @@ import { useStateContext } from "@/ui/StateProvider"
 import { CloseType, useUIContext } from "../../UIProvider"
 import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
+import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { openModal, openPanel, closePanel } = useUIContext()
@@ -37,7 +38,8 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
             setConfigurationType("INPUTS")
             // TODO:
-            setSelectedScheme(scheme)
+            if (scheme)
+                setSelectedScheme(scheme)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
@@ -53,8 +55,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     brainIndex={brainIndex}
                     onSelect={() => closePanel(panel!.id, CloseType.Accept)}
                     onEdit={() => openPanel(<ConfigurePanel />)}
-                    // TODO:
-                    // onCreateNew={() => openModal(<AssignNewSchemeModal />)}
+                    onCreateNew={() => openModal(<AssignNewSchemeModal />)}
                 />
             )}
         </Stack>

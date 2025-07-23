@@ -10,7 +10,7 @@ export const UIRenderer: React.FC = () => {
         <>
             <div id="panel-container" className="relative pointer-events-none w-[100vw] h-[100vh]">
                 {panels.map((p, _i) => (
-                    <Panel key={`panel-${p.id}`} panel={p} props={p.props}>
+                    <Panel key={`panel-${p.id}`} panel={p}>
                         {p.content}
                     </Panel>
                 ))}

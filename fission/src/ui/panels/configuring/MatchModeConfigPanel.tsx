@@ -60,7 +60,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
     )
 }
 
-const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
+const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { closePanel, openModal } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
@@ -94,7 +94,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel, parent })
                         name={config.name || config.id || "Unnamed Match Mode"}
                         primaryOnClick={() => {
                             matchConfigSelected(config, openModal)
-                            closePanel(panel.id, CloseType.Accept)
+                            closePanel(panel!.id, CloseType.Accept)
                         }}
                         secondaryOnClick={
                             !config.isDefault

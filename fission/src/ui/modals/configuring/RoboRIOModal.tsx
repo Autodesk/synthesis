@@ -4,7 +4,7 @@ import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "@/ui/UIProvider"
 import RCCreateDeviceModal from "./rio-config/RCCreateDeviceModal"
 
-const RoboRIOModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
+const RoboRIOModal: React.FC<ModalImplProps<void>> = () => {
     const { openModal } = useUIContext()
     return (
         <FormControlLabel

@@ -12,7 +12,7 @@ import { Checkbox, FormControlLabel, Stack, TextField, Typography } from "@mui/m
 import { Box } from "@mui/system"
 import ScrollView from "@/ui/components/ScrollView"
 
-const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
+const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
     const [name, setName] = useState<string>("")
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])

@@ -1,12 +1,11 @@
-import { Button, FormControlLabel, Radio, Stack, Typography } from "@mui/material"
+import { Button, Stack, Typography } from "@mui/material"
 import type React from "react"
 import { useState } from "react"
-import { useUIContext } from "../UIProvider"
+import StatefulCheckbox from "../components/StatefulCheckbox"
 
 const RobotSwitchPanel: React.FC = () => {
     const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
     const [selected, setSelected] = useState(0)
-    const { openModal } = useUIContext()
 
     return (
         <>
@@ -29,7 +28,7 @@ const RobotSwitchPanel: React.FC = () => {
                 </fieldset>
             </form>
             <Stack direction="row">
-                <Button onClick={() => /* TODO: openModal("robots")*/ undefined}>Add</Button>
+                <Button onClick={() => /* TODO: openModal("robots") <- what modal is this??? */ undefined}>Add</Button>
                 <Button onClick={() => setRobots(robots.filter(r => r !== robots[selected]))}>Remove</Button>
             </Stack>
         </>

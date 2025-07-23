@@ -10,7 +10,6 @@ import { type AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { useUIContext } from "@/ui/UIProvider"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
@@ -293,7 +292,6 @@ function Staging({ assembly, setPlaying }: StagingProps) {
 }
 
 const AutoTestPanel: React.FC = () => {
-    const { closePanel } = useUIContext()
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
 
     const assembly = useMemo(

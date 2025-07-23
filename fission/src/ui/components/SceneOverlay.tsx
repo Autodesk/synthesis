@@ -8,6 +8,7 @@ import {
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import ViewCube from "./ViewCube"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -104,6 +105,7 @@ const SceneOverlay: React.FC = () => {
             }}
         >
             {components}
+            {showViewCube && <ViewCube position={{ top: 20, right: 20 }} />}
         </Stack>
     )
 }

@@ -25,9 +25,9 @@ import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControl
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
-    AddButton,
     DeleteButton,
     PositiveButton,
+    PositiveIconButton,
     RefreshButton,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
@@ -56,7 +56,7 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primar
                 justifyContent={"center"}
                 alignItems={"center"}
             >
-                {AddButton(primaryOnClick)}
+                {PositiveIconButton({ children: primaryButtonNode, onClick: primaryOnClick })}
                 {secondaryOnClick && DeleteButton(secondaryOnClick)}
             </Stack>
         </Stack>
@@ -116,7 +116,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 }
 
 const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
-    const { addToast, closePanel, openModal } = useUIContext()
+    const { closePanel, openModal } = useUIContext()
     const { unconfirmedImport, configurationType, setConfigurationType } = useStateContext()
 
     const [cachedRobots, setCachedRobots] = useState(getCacheInfo(MiraType.ROBOT))

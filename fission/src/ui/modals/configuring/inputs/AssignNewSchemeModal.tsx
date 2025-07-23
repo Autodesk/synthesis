@@ -10,7 +10,7 @@ import { useStateContext } from "@/ui/StateProvider"
 import { useUIContext } from "@/ui/UIProvider"
 
 const AssignNewSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
-    const { openPanel } = useUIContext()
+    const { openPanel, configureScreen } = useUIContext()
     const { setSelectedScheme, setConfigurationType } = useStateContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)

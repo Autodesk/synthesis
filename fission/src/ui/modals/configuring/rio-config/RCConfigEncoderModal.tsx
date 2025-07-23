@@ -11,7 +11,7 @@ import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "@/ui/UIProvider"
 import RoboRIOModal from "../RoboRIOModal"
 
-const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
+const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
     const [_name, setName] = useState<string>("")
 

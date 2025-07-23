@@ -1,3 +1,4 @@
+import * as THREE from "three"
 import World from "@/systems/World"
 import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import { Checkbox, FormControlLabel, Slider, Stack, Typography } from "@mui/material"

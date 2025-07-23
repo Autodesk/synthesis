@@ -89,7 +89,7 @@ interface SelectMenuProps {
     defaultSelectedOption?: SelectMenuOption | undefined
     defaultHeaderText: string
     noOptionsText?: string
-    indentation?: number
+    // TODO: indentation?: number
     onDelete?: (val: SelectMenuOption) => void | undefined
 
     // If false, this menu option will not have a delete button
@@ -105,7 +105,6 @@ interface SelectMenuProps {
  * @param {function} props.onOptionSelected - Callback function to handle an option being selected. Called with undefined when no option is selected.
  * @param {string} props.defaultHeaderText - The text displayed in the header if no option is selected.
  * @param {string} [props.noOptionsText] - The text displayed if there are no available options.
- * @param {number} [props.indentation] - The number of indentations before the header text. Used to nest multiple select menus together.
  * @param {function} [props.onDelete] - Callback function to handle the deletion of an option. If undefined, delete buttons will not be included.
  * @param {function} [props.deleteCondition] - A function take in a specific option and return true if it's deletable.
  * @param {function} [props.onAddClicked] - Callback function to handle the addition of an option. If undefined, no add button will be included.
@@ -118,7 +117,6 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
     defaultSelectedOption,
     defaultHeaderText,
     noOptionsText,
-    indentation,
     onDelete,
     deleteCondition,
     onAddClicked,
