@@ -5,6 +5,7 @@ import {
     FieldPreferences,
     GraphicsPreferences,
 } from "@/systems/preferences/PreferenceTypes"
+import { MatchModeType } from "@/systems/MatchMode"
 import { test, describe, expect } from "vitest"
 
 describe("Preferences System Global Values", () => {
@@ -201,6 +202,7 @@ describe("Preference System Robot/Field", () => {
                     deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                     penaltyPoints: 2,
                     requireRobotContact: false,
+                    activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP],
                 },
             ],
         }

@@ -22,6 +22,8 @@ import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
+import Dropdown from "@/ui/components/Dropdown"
+import { MatchModeType } from "@/systems/MatchMode"
 
 /**
  * Saves ejector configuration to selected field.
@@ -45,6 +47,7 @@ import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
  * @param alliance protected zone alliance.
  * @param points Number of points to penalize.
  * @param requireRobotContact Do you need to contact a robot for the penalty to apply.
+ * @param activeDuring Array of match mode types during which the zone is active.
  * @param gizmo Reference to the transform gizmo object.
  * @param selectedNode Selected node that configuration is relative to.
  */
@@ -55,6 +58,7 @@ function save(
     alliance: Alliance,
     points: number,
     requireRobotContact: boolean,
+    activeDuring: MatchModeType[],
     gizmo: GizmoSceneObject,
     selectedNode?: RigidNodeId
 ) {
@@ -90,6 +94,7 @@ function save(
     zone.parentNode = selectedNode
     zone.penaltyPoints = points
     zone.requireRobotContact = requireRobotContact
+    zone.activeDuring = activeDuring
 
     if (!field.fieldPreferences.protectedZones.includes(zone)) field.fieldPreferences.protectedZones.push(zone)
 
@@ -103,7 +108,6 @@ interface ZoneConfigProps {
 }
 
 const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
-    //Official FIRST hex
     // TODO: Do we want to eventually make these editable?
     const redMaterial = useMemo(() => {
         return ProtectedZoneSceneObject.redMaterial.clone() as THREE.MeshPhongMaterial
@@ -118,6 +122,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(selectedZone.parentNode)
     const [points, setPoints] = useState<number>(selectedZone.penaltyPoints)
     const [requireRobotContact, setRequireRobotContact] = useState<boolean>(selectedZone.requireRobotContact)
+    const [activeDuring, setActiveDuring] = useState<MatchModeType[]>(selectedZone.activeDuring)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
@@ -130,12 +135,23 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 alliance,
                 points,
                 requireRobotContact,
+                activeDuring,
                 gizmoRef.current,
                 selectedNode
             )
             saveAllZones()
         }
-    }, [selectedField, selectedZone, name, alliance, points, requireRobotContact, selectedNode, saveAllZones])
+    }, [
+        selectedField,
+        selectedZone,
+        name,
+        alliance,
+        points,
+        requireRobotContact,
+        activeDuring,
+        selectedNode,
+        saveAllZones,
+    ])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
@@ -255,7 +271,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
             />
 
-            {/** Set the point value */}
+            {/** Set the penalty value */}
             <NumberInput
                 label="Penalty Points"
                 placeholder="Zone penalty points"
@@ -263,21 +279,59 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 onInput={v => setPoints(v || 1)}
             />
 
-            {/** When checked, the zone will destroy gamepieces it comes in contact with */}
-            {/** <Checkbox
-                    label="Destroy Gamepiece"
-                    defaultState={selectedZone.destroyGamepiece}
-                    onClick={setDestroy}
-                /> */}
+            {/** Determines during what game state the protected zone is active */}
+            <Dropdown
+                label="Active During"
+                options={["Sandbox", "Autonomous", "Teleop", "Endgame"]}
+                onSelect={(selectedOptions: string[]) => {
+                    const matchModes: MatchModeType[] = []
+                    selectedOptions.forEach(option => {
+                        switch (option) {
+                            case "Sandbox":
+                                matchModes.push(MatchModeType.SANDBOX)
+                                break
+                            case "Autonomous":
+                                matchModes.push(MatchModeType.AUTONOMOUS)
+                                break
+                            case "Teleop":
+                                matchModes.push(MatchModeType.TELEOP)
+                                break
+                            case "Endgame":
+                                matchModes.push(MatchModeType.ENDGAME)
+                                break
+                            default:
+                                break
+                        }
+                    })
+                    setActiveDuring(matchModes)
+                }}
+                defaultValue={activeDuring
+                    .map(mode => {
+                        switch (mode) {
+                            case MatchModeType.SANDBOX:
+                                return "Sandbox"
+                            case MatchModeType.AUTONOMOUS:
+                                return "Autonomous"
+                            case MatchModeType.TELEOP:
+                                return "Teleop"
+                            case MatchModeType.ENDGAME:
+                                return "Endgame"
+                            default:
+                                return ""
+                        }
+                    })
+                    .filter(val => val !== "")}
+                maxWidth="15rem"
+                multiSelect={true}
+                textAlign="left"
+            />
 
-            {/** When checked, points will stay even when a gamepiece leaves the zone */}
+            {/** When checked, the zone will count a penalty only if robot contact occurs */}
             <Checkbox
                 label="Require Robot Contact"
                 defaultState={selectedZone.requireRobotContact}
                 onClick={setRequireRobotContact}
             />
-
-            {/** Switch between transform control modes */}
 
             {gizmoComponent}
         </div>

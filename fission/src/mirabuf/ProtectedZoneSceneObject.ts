@@ -16,6 +16,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MiraType } from "./MirabufLoader"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import MatchMode, { MatchModeType } from "@/systems/MatchMode"
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors
@@ -30,7 +31,7 @@ class ProtectedZoneSceneObject extends SceneObject {
         shininess: 0.0,
         opacity: 0.8,
         transparent: true,
-    }) //0x0000ff
+    })
     static transparentMaterial = new THREE.MeshPhongMaterial({
         color: 0x0000,
         shininess: 0.0,
@@ -53,6 +54,15 @@ class ProtectedZoneSceneObject extends SceneObject {
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
 
     private _lastRobotCollisionTime: number = 0
+
+    private isZoneActive(): boolean {
+        if (!this._prefs?.activeDuring) {
+            return [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME].includes(
+                MatchMode.getInstance().getMatchModeType()
+            )
+        }
+        return this._prefs.activeDuring.includes(MatchMode.getInstance().getMatchModeType())
+    }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
         super()
@@ -116,7 +126,7 @@ class ProtectedZoneSceneObject extends SceneObject {
                     }
 
                     // If the preference is set to require robot contact, we want to penalize robots here
-                    if (!this._prefs?.requireRobotContact) return
+                    if (!this._prefs?.requireRobotContact || !this.isZoneActive()) return
                     const [collisionObjectBody1, collisionObjectBody2] = [body1, body2].map(body => {
                         const associate = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate | undefined
                         return associate?.sceneObject as MirabufSceneObject | undefined
@@ -229,6 +239,8 @@ class ProtectedZoneSceneObject extends SceneObject {
     }
 
     private zoneCollision(collisionID: Jolt.BodyID) {
+        if (!this.isZoneActive()) return
+
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collisionID)
         const collisionObject = associate.sceneObject as MirabufSceneObject
         if (collisionObject.miraType === MiraType.ROBOT && collisionObject.alliance !== this._prefs?.alliance) {

@@ -130,15 +130,11 @@ type DropdownProps<T extends string> = SingleSelectDropdownProps<T> | MultiSelec
  */
 const Dropdown = <T extends string>(props: DropdownProps<T>): ReactElement => {
     const { options, onSelect, defaultValue, label, multiSelect = false, textAlign = "center" } = props
-    const maxWidth = multiSelect ? (props as MultiSelectDropdownProps<T>).maxWidth ?? "15rem" : "15rem"
+    const maxWidth = multiSelect ? ((props as MultiSelectDropdownProps<T>).maxWidth ?? "15rem") : "15rem"
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
-    const [selectedValue, setSelectedValue] = useState<string>(
-        multiSelect ? "" : (defaultValue as string) || ""
-    )
-    const [selectedValues, setSelectedValues] = useState<T[]>(
-        multiSelect ? (defaultValue as T[]) || [] : []
-    )
+    const [selectedValue, setSelectedValue] = useState<string>(multiSelect ? "" : (defaultValue as string) || "")
+    const [selectedValues, setSelectedValues] = useState<T[]>(multiSelect ? (defaultValue as T[]) || [] : [])
     const buttonRef = useRef<HTMLButtonElement>(null)
     const [menuWidth, setMenuWidth] = useState<number>(0)
 
@@ -165,7 +161,7 @@ const Dropdown = <T extends string>(props: DropdownProps<T>): ReactElement => {
             const newSelectedValues = selectedValues.includes(value)
                 ? selectedValues.filter(v => v !== value)
                 : [...selectedValues, value]
-            
+
             setSelectedValues(newSelectedValues)
             ;(onSelect as (values: T[]) => void)(newSelectedValues)
         } else {
@@ -190,21 +186,23 @@ const Dropdown = <T extends string>(props: DropdownProps<T>): ReactElement => {
         }
 
         return (
-            <Box sx={{ 
-                display: "flex", 
-                flexWrap: "wrap", 
-                gap: 0.5, 
-                alignItems: "flex-start",
-                maxWidth: maxWidth,
-                overflow: "hidden"
-            }}>
-                {selectedValues.map((value) => (
+            <Box
+                sx={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 0.5,
+                    alignItems: "flex-start",
+                    maxWidth: maxWidth,
+                    overflow: "hidden",
+                }}
+            >
+                {selectedValues.map(value => (
                     <CustomChip
                         key={value}
                         label={value}
                         size="small"
-                        onDelete={(event) => handleRemoveItem(value, event)}
-                        onClick={(event) => handleRemoveItem(value, event)}
+                        onDelete={event => handleRemoveItem(value, event)}
+                        onClick={event => handleRemoveItem(value, event)}
                     />
                 ))}
             </Box>
@@ -233,7 +231,7 @@ const Dropdown = <T extends string>(props: DropdownProps<T>): ReactElement => {
                         ref={buttonRef}
                         className={`transform transition-transform hover:scale-[1.012] active:scale-[1.024]`}
                     >
-                        {multiSelect ? renderMultiSelectContent() : (selectedValue || "Select an option")}
+                        {multiSelect ? renderMultiSelectContent() : selectedValue || "Select an option"}
                     </CustomButton>
                 </div>
             </Tooltip>

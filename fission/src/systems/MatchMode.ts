@@ -10,7 +10,8 @@ export enum MatchModeType {
     SANDBOX = 0,
     AUTONOMOUS = 1,
     TELEOP = 2,
-    MATCH_ENDED = 3,
+    ENDGAME = 3,
+    MATCH_ENDED = 4,
 }
 
 // Default match mode timing values
@@ -94,6 +95,7 @@ class MatchMode {
 
     endgameStart() {
         SoundPlayer.play(beep)
+        this._matchModeType = MatchModeType.ENDGAME
         this._endgame = true
     }
 
