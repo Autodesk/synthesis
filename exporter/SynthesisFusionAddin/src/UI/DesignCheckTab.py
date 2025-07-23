@@ -81,14 +81,16 @@ class DesignCheckTab:
     def fusion_design_height(self) -> float:
         design = adsk.fusion.Design.cast(gm.app.activeProduct)
         if design:
-            overall_bounding_box = design.rootComponent.orientedMinimumBoundingBox
-            return float(overall_bounding_box.height)
+            overall_bounding_box = design.rootComponent.boundingBox
+            return float(overall_bounding_box.maxPoint.z - overall_bounding_box.minPoint.z)
         return 0.0
 
     @property
     def fusion_design_perimeter(self) -> float:
         design = adsk.fusion.Design.cast(gm.app.activeProduct)
         if design:
-            overall_bounding_box = design.rootComponent.orientedMinimumBoundingBox
-            return float(2 * (overall_bounding_box.width + overall_bounding_box.length))
+            overall_bounding_box = design.rootComponent.boundingBox
+            width = overall_bounding_box.maxPoint.x - overall_bounding_box.minPoint.x
+            length = overall_bounding_box.maxPoint.y - overall_bounding_box.minPoint.y
+            return float(2 * (width + length))
         return 0.0
