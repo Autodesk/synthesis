@@ -111,7 +111,7 @@ export const usePanelManager = (panels: ReactElement[]) => {
                 onClose: () => {},
             })
         })
-    }, [panels, closePanel, openPanel, registerPanel])
+    }, [panels, registerPanel])
 
     return {
         panelDictionary,
