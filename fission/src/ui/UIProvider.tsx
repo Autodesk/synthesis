@@ -85,8 +85,8 @@ export interface Panel<T> extends UIScreen<T> {
     props: PanelProps
 }
 
-export type OpenModalFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: ModalProps) => string
-export type OpenPanelFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: PanelProps) => string
+export type OpenModalFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: Omit<ModalProps, "type">) => string
+export type OpenPanelFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: Omit<PanelProps, "type">) => string
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: string[]) => void
@@ -113,11 +113,11 @@ export type UIContextProps = {
 
 export const UIContext = createContext<UIContextProps>({
     panels: [],
-    openModal: (_content, _parent, _props = { type: "modal", hideAccept: false, hideCancel: false }) => "",
+    openModal: (_content, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
     openPanel: (
         _content,
         _parent,
-        _props = { type: "panel", hideAccept: false, hideCancel: false, position: "center" }
+        _props = { hideAccept: false, hideCancel: false, position: "center" }
     ) => "",
     closeModal: () => {},
     closePanel: _id => {},
@@ -137,8 +137,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: ModalProps & Omit<UIScreenCallbacks<T>, "onAccept"> = {
-                type: "modal",
+            props: Omit<ModalProps, "type"> & Omit<UIScreenCallbacks<T>, "onAccept"> = {
                 hideAccept: false,
                 hideCancel: false,
                 acceptText: "Accept",
@@ -173,8 +172,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: PanelProps & Omit<UIScreenCallbacks<T>, "onAccept"> = {
-                type: "panel",
+            props: Omit<PanelProps, "type"> & Omit<UIScreenCallbacks<T>, "onAccept"> = {
                 hideAccept: false,
                 hideCancel: false,
                 acceptText: "Accept",
@@ -249,7 +247,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         type PropValue = (typeof screen.props)[keyof typeof screen.props]
 
         for (const [k, v] of Object.entries(props)) {
-            (screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
+            ;(screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
         }
 
         if (callbacks.onAccept) screen.onAccept.setDefaultFunc(callbacks.onAccept)

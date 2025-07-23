@@ -80,7 +80,6 @@ interface UIActionHandlers {
  * This allows React components to register handlers with MirabufSceneObject
  */
 
-// biome-ignore lint/complexity/noStaticOnlyClass: TODO: fix later
 class UIActionRegistry {
     private static handlers: UIActionHandlers = {}
 

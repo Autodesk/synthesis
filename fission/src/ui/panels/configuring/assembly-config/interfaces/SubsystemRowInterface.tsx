@@ -86,7 +86,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
             <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
                 <Stack direction="row" gap={8}>
                     <Typography variant="h5">
-                        {driver instanceof WheelDriver ? "Drive" : driver.info?.name ?? "UnnamedMotor"}
+                        {driver instanceof WheelDriver ? "Drive" : (driver.info?.name ?? "UnnamedMotor")}
                     </Typography>
                     <FormControlLabel
                         label="Max Velocity"

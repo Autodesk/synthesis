@@ -186,7 +186,7 @@ const MainHUD: React.FC = () => {
                                 outline: "none",
                                 borderColor: "transparent",
                             },
-                            "color": "text.primary",
+                            color: "text.primary",
                         }}
                         onClick={() => setIsOpen(false)}
                     >

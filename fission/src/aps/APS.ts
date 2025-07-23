@@ -32,7 +32,6 @@ export interface APSUserInfo {
     email: string
 }
 
-// biome-ignore lint/complexity/noStaticOnlyClass: TODO: fix later
 class APS {
     static authCode: string | undefined = undefined
     static requestMutex: Mutex = new Mutex()
