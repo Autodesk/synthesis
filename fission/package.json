@@ -33,7 +33,6 @@
     "@vitest/browser": "^3.2.4",
     "@vitest/coverage-v8": "^3.2.4",
     "@xyflow/react": "^12.7.0",
-    "analytics": "^0.8.16",
     "async-mutex": "^0.5.0",
     "colord": "^2.9.3",
     "framer-motion": "^10.18.0",
