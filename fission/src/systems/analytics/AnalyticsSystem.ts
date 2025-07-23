@@ -1,9 +1,9 @@
-import { consent, event, exception, init, setUserId, setUserProperty } from "@haensl/google-analytics"
-
-import WorldSystem from "../WorldSystem"
+import googleAnalytics from "@analytics/google-analytics"
+import Analytics, { AnalyticsInstance } from "analytics"
+import APS from "@/aps/APS"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
-import APS from "@/aps/APS"
+import WorldSystem from "../WorldSystem"
 
 const SAMPLE_INTERVAL = 60000 // 1 minute
 const BETA_CODE_COOKIE_REGEX = /access_code=.*(;|$)/
@@ -21,68 +21,70 @@ export interface AccumTimes {
 class AnalyticsSystem extends WorldSystem {
     private _lastSampleTime = Date.now()
     private _consent: boolean
+    private _analytics: AnalyticsInstance
+    private _userId: string | null = null
 
     public constructor() {
         super()
 
         this._consent = PreferencesSystem.getGlobalPreference("ReportAnalytics")
-        init({
-            measurementId: "G-6XNCRD7QNC",
-            debug: import.meta.env.DEV,
-            anonymizeIp: true,
-            sendPageViews: false,
-            trackingConsent: this._consent,
+        this._analytics = Analytics({
+            app: "synthesis-fission",
+            version: COMMIT_HASH,
+            plugins: [
+                googleAnalytics({
+                    measurementIds: ["G-6XNCRD7QNC"],
+                    anonymize_ip: true,
+                }),
+            ],
         })
-
         PreferencesSystem.addPreferenceEventListener("ReportAnalytics", e => this.consentUpdate(e.prefValue))
-
+        this._analytics.ready(() => {
+            console.log(this._analytics)
+        })
         this.sendMetaData()
+        setTimeout(() => this._analytics.page())
     }
 
-    public event(name: string, params?: { [key: string]: string | number }) {
-        event({ name: name, params: params ?? {} })
+    public event(name: string, params?: Record<string, unknown>) {
+        if (!this._consent) return
+        console.log("SENDING", name)
+        setTimeout(() => this._analytics.track(name, params))
     }
 
-    public exception(description: string, fatal?: boolean) {
-        exception({ description: description, fatal: fatal ?? false })
+    public registerUser() {
+        if (!this._consent) return
+
+        this._userId = window.localStorage.getItem("AnalyticsKey")
+        if (this._userId == null) {
+            this._userId = crypto.randomUUID()
+            window.localStorage.setItem("AnalyticsKey", this._userId)
+        }
     }
 
-    public setUserId(id: string) {
-        setUserId({ id: id })
-    }
-
-    public setUserProperty(name: string, value: string) {
-        setUserProperty({ name: name, value: value })
+    public exception(description: string, fatal: boolean = false) {
+        this.event("exception", { description: description, fatal: fatal })
     }
 
     private consentUpdate(granted: boolean) {
         this._consent = granted
-        consent(granted)
-
         this.sendMetaData()
     }
 
     private sendMetaData() {
-        if (import.meta.env.DEV) {
-            this.setUserProperty("Internal Traffic", "true")
-        }
+        if (!this._consent) return
+        if (!this._userId) this.registerUser()
 
-        if (!this._consent) {
-            return
-        }
+        const properties: Record<string, unknown> = {}
+        properties["Internal Traffic"] = import.meta.env.DEV
 
         let betaCode = document.cookie.match(BETA_CODE_COOKIE_REGEX)?.[0]
         if (betaCode) {
             betaCode = betaCode.substring(betaCode.indexOf("=") + 1, betaCode.indexOf(";"))
-
-            this.setUserProperty("Beta Code", betaCode)
+            properties["Beta Code"] = betaCode
         }
-
-        if (MOBILE_USER_AGENT_REGEX.test(navigator.userAgent)) {
-            this.setUserProperty("Is Mobile", "true")
-        } else {
-            this.setUserProperty("Is Mobile", "false")
-        }
+        properties["Is Mobile"] = MOBILE_USER_AGENT_REGEX.test(navigator.userAgent)
+        setTimeout(() => this._analytics.identify(this._userId!, properties))
     }
 
     private currentSampleInterval() {
