@@ -23,10 +23,14 @@ import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import { Box } from "@mui/material"
 import { Switch } from "@mui/base/Switch"
 import Label, { LabelSize } from "@/ui/components/Label"
+import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
 const MAX_ZONE_SIZE = 1.0
+const MIN_ANIMATION_DURATION = 0.1
+const MAX_ANIMATION_DURATION = 2.0
+const ANIMATION_DURATION_STEP = 0.05
 
 /**
  * Saves ejector configuration to selected robot.
@@ -57,7 +61,8 @@ function save(
     selectedRobot: MirabufSceneObject,
     selectedNode?: RigidNodeId,
     showZoneAlways?: boolean,
-    maxPieces?: number
+    maxPieces?: number,
+    animationDuration?: number
 ) {
     if (!selectedRobot?.intakePreferences || !gizmo) {
         return
@@ -88,6 +93,7 @@ function save(
     }
 
     selectedRobot.intakePreferences.maxPieces = maxPieces!
+    selectedRobot.intakePreferences.animationDuration = animationDuration!
 
     PreferencesSystem.savePreferences()
 }
@@ -106,15 +112,18 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     const [zoneSize, setZoneSize] = useState<number>((MIN_ZONE_SIZE + MAX_ZONE_SIZE) / 2.0)
     const [showZoneAlways, setShowZoneAlways] = useState<boolean>(false)
     const [maxPieces, setMaxPieces] = useState<number>(selectedRobot.intakePreferences?.maxPieces || 1)
+    const [animationDuration, setAnimationDuration] = useState<number>(
+        selectedRobot.intakePreferences?.animationDuration || 0.5
+    )
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
     const saveEvent = useCallback(() => {
         if (gizmoRef.current && selectedRobot) {
-            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces)
+            save(zoneSize, gizmoRef.current, selectedRobot, selectedNode, showZoneAlways, maxPieces, animationDuration)
             selectedRobot.updateIntakeSensor()
         }
-    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces])
+    }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
@@ -184,8 +193,12 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             gizmoRef.current = undefined
             return <></>
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedRobot?.intakePreferences, placeholderMesh])
+    }, [
+        selectedRobot?.intakePreferences,
+        placeholderMesh,
+        selectedRobot.mechanism.nodeToBody.get,
+        selectedRobot.rootNodeId,
+    ])
 
     useEffect(() => {
         if (selectedRobot?.intakePreferences) {
@@ -193,9 +206,11 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             setSelectedNode(selectedRobot.intakePreferences.parentNode)
             setMaxPieces(selectedRobot.intakePreferences.maxPieces)
             setShowZoneAlways(selectedRobot.intakePreferences.showZoneAlways ?? false)
+            setAnimationDuration(selectedRobot.intakePreferences.animationDuration ?? 0.5)
         } else {
             setSelectedNode(undefined)
             setShowZoneAlways(false)
+            setAnimationDuration(0.5)
         }
     }, [selectedRobot])
 
@@ -248,12 +263,22 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                 min={MIN_ZONE_SIZE}
                 max={MAX_ZONE_SIZE}
                 value={zoneSize}
-                label="Zone Size"
-                format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                onChange={(_, vel: number | number[]) => {
-                    setZoneSize(vel as number)
-                }}
+                onChange={(_, v) => setZoneSize(typeof v === "number" ? v : v[0])}
                 step={0.01}
+                label="Intake Zone Diameter (m)"
+            />
+            <Slider
+                min={MIN_ANIMATION_DURATION}
+                max={MAX_ANIMATION_DURATION}
+                value={animationDuration ?? 0.5}
+                onChange={(_, v) => {
+                    const val = typeof v === "number" ? v : v[0]
+                    setAnimationDuration(val)
+                    EjectableSceneObject.setAnimationDuration(val)
+                }}
+                step={ANIMATION_DURATION_STEP}
+                label="Intake Animation Duration (s)"
+                format={{ maximumFractionDigits: 2 }}
             />
 
             {/* Slider for adjusting max pieces the robot can intake */}
@@ -338,6 +363,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
                     setZoneSize(0.5)
                     setSelectedNode(selectedRobot?.rootNodeId)
                     setMaxPieces(selectedRobot.intakePreferences?.maxPieces ?? 1)
+                    setAnimationDuration(0.5)
                 }}
             />
         </>

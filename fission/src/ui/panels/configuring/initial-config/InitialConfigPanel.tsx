@@ -1,5 +1,5 @@
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSchemeManager, { InputSchemeUseType } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
@@ -38,6 +38,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }, [])
 
+    // biome-ignore lint: Making closePanel a dep causes maxium depth exceeded errors
     useEffect(() => {
         closePanel("import-mirabuf")
         mirabufPanelState.hasUnconfirmedImport = true
@@ -45,7 +46,6 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => {
             mirabufPanelState.hasUnconfirmedImport = false
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     const closeFinish = useCallback(() => {
@@ -60,8 +60,14 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemes[0]
-            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            // Find first available scheme
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).find(
+                scheme => scheme.status == InputSchemeUseType.AVAILABLE
+            )?.scheme
+
+            if (scheme) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            }
 
             setSelectedScheme(scheme)
         } else {

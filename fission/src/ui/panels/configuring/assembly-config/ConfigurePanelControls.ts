@@ -11,6 +11,7 @@ export enum ConfigMode {
     MOVE,
     SIM,
     BRAIN,
+    DRIVETRAIN,
     ALLIANCE,
 }
 

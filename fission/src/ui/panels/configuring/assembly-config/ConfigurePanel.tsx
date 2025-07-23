@@ -25,6 +25,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
+import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
@@ -64,22 +65,20 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
     pendingDeletes,
 }) => {
     // Update is used when a robot or field is deleted to update the select menu
-    const [u, update] = useReducer(x => !x, false)
+    const [_u, update] = useReducer(x => !x, false)
     const { openPanel } = usePanelControlContext()
 
     const robots = useMemo(() => {
         return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
             .filter(x => !pendingDeletes.includes(x.id))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u, pendingDeletes])
+    }, [pendingDeletes])
 
     const fields = useMemo(() => {
         return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
             .filter(x => !pendingDeletes.includes(x.id))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u, pendingDeletes])
+    }, [pendingDeletes])
 
     const options = useMemo(() => {
         const list = configurationType == ConfigurationType.ROBOT ? robots : fields
@@ -131,6 +130,10 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
         [
             ConfigMode.MOVE,
             new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of robot relative to field."),
+        ],
+        [
+            ConfigMode.DRIVETRAIN,
+            new ConfigModeSelectionOption("Drivetrain", ConfigMode.DRIVETRAIN, "Sets the drivetrain type ."),
         ],
         [
             ConfigMode.INTAKE,
@@ -329,6 +332,9 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
         case ConfigMode.ALLIANCE: {
             return <AllianceSelectionInterface selectedAssembly={assembly} />
         }
+        case ConfigMode.DRIVETRAIN: {
+            return <DrivetrainSelectionInterface selectedAssembly={assembly} />
+        }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }
@@ -346,6 +352,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
+    // biome-ignore lint: Making closePanel a dep causes a depth exceeded error
     useEffect(() => {
         const allSchemes = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
@@ -369,7 +376,6 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         closePanel("choose-scheme")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

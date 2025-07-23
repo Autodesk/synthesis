@@ -18,6 +18,7 @@ export type ButtonProps = {
     className?: string
     id?: string
     disabled?: boolean
+    label?: string
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -60,7 +61,7 @@ const Button: React.FC<ButtonProps> = ({
                 ${sizeClassNames} 
                 rounded-sm 
                 font-semibold 
-                cursor-pointer 
+                ${!disabled && "cursor-pointer"} 
                 duration-200 
                 border-none 
                 focus-visible:outline-0 

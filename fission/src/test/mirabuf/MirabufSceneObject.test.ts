@@ -110,7 +110,7 @@ function mockMirabufInstance(): MirabufInstance {
 }
 
 function setPrivate<T>(obj: T, key: string, value: unknown) {
-    // eslint-disable-next-line no-extra-semi
+
     ;(obj as Record<string, unknown>)[key] = value
 }
 
@@ -188,6 +188,7 @@ describe("MirabufSceneObject", () => {
             zoneDiameter: 1,
             showZoneAlways: false,
             maxPieces: 0,
+            animationDuration: 0.5,
         })
         expect(instance.setEjectable(bodyId)).toBe(false)
     })
@@ -205,6 +206,7 @@ describe("MirabufSceneObject", () => {
             zoneDiameter: 1,
             showZoneAlways: false,
             maxPieces: 2,
+            animationDuration: 0.5,
         })
         setPrivate(instance, "_ejectables", [])
         const bodyId = mockBodyId()
