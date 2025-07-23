@@ -66,54 +66,57 @@ const ConfigureInputsInterface = () => {
     return (
         <>
             {/** Select menu with input schemes */}
-            <SelectMenu
-                options={[...schemeOptionMap.values()]}
-                onOptionSelected={val => {
-                    setSelectedScheme((val as SchemeSelectionOption)?.scheme)
-                    if (val == undefined) {
-                        new ConfigurationSavedEvent()
-                    }
-                }}
-                defaultHeaderText={"Select an Input Scheme"}
-                onDelete={val => {
-                    if (!(val instanceof SchemeSelectionOption)) return
-
-                    // Fetch current custom schemes
-                    InputSchemeManager.saveSchemes()
-                    InputSchemeManager.resetDefaultSchemes()
-
-                    // Find the scheme to remove in preferences
-                    const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
-                    const index = schemes.indexOf(val.scheme)
-
-                    // If currently bound to a robot, remove the binding
-                    for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
-                        if (value == schemes[index]) {
-                            InputSystem.brainIndexSchemeMap.delete(key)
+            {!selectedScheme ? (
+                <SelectMenu
+                    options={[...schemeOptionMap.values()]}
+                    onOptionSelected={val => {
+                        setSelectedScheme((val as SchemeSelectionOption)?.scheme)
+                        if (val == undefined) {
+                            new ConfigurationSavedEvent()
                         }
-                    }
+                    }}
+                    defaultHeaderText={"Select an Input Scheme"}
+                    onDelete={val => {
+                        if (!(val instanceof SchemeSelectionOption)) return
 
-                    // Find and remove this input scheme from preferences
-                    schemes.splice(index, 1)
+                        // Fetch current custom schemes
+                        InputSchemeManager.saveSchemes()
+                        InputSchemeManager.resetDefaultSchemes()
 
-                    // Save to preferences
-                    PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
-                    PreferencesSystem.savePreferences()
+                        // Find the scheme to remove in preferences
+                        const schemes = PreferencesSystem.getGlobalPreference("InputSchemes")
+                        const index = schemes.indexOf(val.scheme)
 
-                    // Update UI with new schemes
-                    setSchemes(InputSchemeManager.allInputSchemes)
-                }}
-                deleteCondition={val => {
-                    if (!(val instanceof SchemeSelectionOption)) return false
+                        // If currently bound to a robot, remove the binding
+                        for (const [key, value] of InputSystem.brainIndexSchemeMap.entries()) {
+                            if (value == schemes[index]) {
+                                InputSystem.brainIndexSchemeMap.delete(key)
+                            }
+                        }
 
-                    return val.scheme.customized
-                }}
-                onAddClicked={() => {
-                    openModal("new-scheme")
-                }}
-                defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
-            />
-            {selectedScheme && <ConfigureSchemeInterface selectedScheme={selectedScheme} />}
+                        // Find and remove this input scheme from preferences
+                        schemes.splice(index, 1)
+
+                        // Save to preferences
+                        PreferencesSystem.setGlobalPreference("InputSchemes", schemes)
+                        PreferencesSystem.savePreferences()
+
+                        // Update UI with new schemes
+                        setSchemes(InputSchemeManager.allInputSchemes)
+                    }}
+                    deleteCondition={val => {
+                        if (!(val instanceof SchemeSelectionOption)) return false
+
+                        return val.scheme.customized
+                    }}
+                    onAddClicked={() => {
+                        openModal("new-scheme")
+                    }}
+                    defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
+                />
+            ) : (
+                <ConfigureSchemeInterface selectedScheme={selectedScheme} />
+            )}
         </>
     )
 }
