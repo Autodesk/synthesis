@@ -95,7 +95,7 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
                     setSelectedConfigMode(val as ConfigModeSelectionOption)
                 }}
                 defaultHeaderText="Select a Subsystem"
-                indentation={2}
+                // indentation={2}
             />
             {selectedConfigMode !== undefined && (
                 <ConfigInterface

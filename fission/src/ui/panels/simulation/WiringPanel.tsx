@@ -33,6 +33,7 @@ import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../UIProvider"
 import WiringNode from "./WiringNode"
 import ScrollView from "@/ui/components/ScrollView"
+import { PanelImplProps } from "@/ui/components/Panel"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
@@ -364,9 +365,9 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
     )
 }
 
-const WiringPanel: React.FC = () => {
+const WiringPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const [configState, setConfigState] = useState<ConfigState>("wiring")
-    const { closePanel, addToast } = useUIContext()
+    const { addToast, configureScreen } = useUIContext()
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)
 
     const selectedAssembly = useMemo(() => {
@@ -407,6 +408,10 @@ const WiringPanel: React.FC = () => {
             setSimConfig(SimConfig.Default(selectedAssembly))
         }
     }, [selectedAssembly])
+
+    useEffect(() => {
+        configureScreen(panel!, {}, { onAccept: save });
+    }, [])
 
     return (
         <>

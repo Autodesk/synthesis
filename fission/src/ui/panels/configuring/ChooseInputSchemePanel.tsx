@@ -11,6 +11,7 @@ import { useStateContext } from "@/ui/StateProvider"
 import { CloseType, useUIContext } from "../../UIProvider"
 import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
+import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { openModal, openPanel, closePanel } = useUIContext()
@@ -42,7 +43,9 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
             }
             setConfigurationType("INPUTS")
-            setSelectedScheme(scheme)
+            // TODO:
+            if (scheme)
+                setSelectedScheme(scheme)
         }
     }, [closePanel, targetAssembly])
 
@@ -57,8 +60,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     brainIndex={brainIndex}
                     onSelect={() => closePanel(panel!.id, CloseType.Accept)}
                     onEdit={() => openPanel(<ConfigurePanel />)}
-                    // TODO:
-                    // onCreateNew={() => openModal(<AssignNewSchemeModal />)}
+                    onCreateNew={() => openModal(<AssignNewSchemeModal />)}
                 />
             )}
         </Stack>

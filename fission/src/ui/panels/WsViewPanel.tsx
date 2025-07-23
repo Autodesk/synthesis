@@ -99,7 +99,7 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
     }
 }
 
-const WSViewPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
+const WSViewPanel: React.FC<PanelImplProps<void>> = () => {
     // const [tb, setTb] = useState(generateTableBody())
 
     const [table, updateTable] = useReducer(_ => generateTableBody(), generateTableBody())

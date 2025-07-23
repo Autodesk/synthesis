@@ -1,4 +1,4 @@
-import { TextField } from "@mui/material"
+import { MenuItem, Select, TextField } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
@@ -7,16 +7,18 @@ import type { ModalImplProps } from "@/ui/components/Modal"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import { useStateContext } from "@/ui/StateProvider"
 import { useUIContext } from "@/ui/UIProvider"
+import { DriveType } from "@/systems/simulation/behavior/Behavior"
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openPanel, configureScreen } = useUIContext()
     const { setSelectedScheme, setConfigurationType } = useStateContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
+    const [type, setType] = useState<DriveType>(DriveType.ARCADE)
 
     useEffect(() => {
         const onAccept = () => {
-            const scheme = DefaultInputs.newBlankScheme
+            const scheme = DefaultInputs.newBlankScheme(type)
             scheme.schemeName = name
 
             InputSchemeManager.addCustomScheme(scheme)
@@ -29,7 +31,14 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
         configureScreen(modal!, { hideCancel: true }, { onAccept })
     }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])
 
-    return <TextField label="Name" placeholder="" defaultValue={name} onChange={e => setName(e.target.value)} />
+    return (
+        <>
+            <TextField label="Name" placeholder="" defaultValue={name} onChange={e => setName(e.target.value)} />
+            <Select label="Drive Type" value={type} onChange={e => setType(e.target.value as DriveType)}>
+                {[DriveType.TANK, DriveType.ARCADE].map(dt => <MenuItem key={dt} value={dt}>{dt}</MenuItem>)}
+            </Select>
+        </>
+    )
 }
 
 export default NewInputSchemeModal

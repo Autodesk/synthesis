@@ -42,24 +42,30 @@ const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({
                             setStation(1)
                             saveSetStation(1, selectedAssembly)
                         }}
-                        colorOverrideClass={station === 1 ? `bg-match-${alliance}-alliance` : ""}
-                    />
+                        style={station === 1 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                    >
+                        1
+                    </Button>
                     <Button
                         value="2"
                         onClick={() => {
                             setStation(2)
                             saveSetStation(2, selectedAssembly)
                         }}
-                        colorOverrideClass={station === 2 ? `bg-match-${alliance}-alliance` : ""}
-                    />
+                        style={station === 2 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                    >
+                        2
+                    </Button>
                     <Button
                         value="3"
                         onClick={() => {
                             setStation(3)
                             saveSetStation(3, selectedAssembly)
                         }}
-                        colorOverrideClass={station === 3 ? `bg-match-${alliance}-alliance` : ""}
-                    />
+                        style={station === 3 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                    >
+                        3
+                    </Button>
                 </div>
             </div>
         </div>

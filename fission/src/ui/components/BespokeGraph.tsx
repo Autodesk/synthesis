@@ -8,7 +8,6 @@
 
 import { DOMUnitExpression } from "@/util/Units"
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
 
 const DEBUG_EDGE_CONTROL_LINES = false
 
@@ -228,10 +227,12 @@ const NodeComp: React.FC<{ node: Node; graph: Graph; element: Element }> = ({ no
             <path
                 d={pathCmds}
                 onClick={onClick}
-                fill={colorNameToVar("Background")}
+                // TODO: theme
+                fill={"black"}
                 strokeWidth={"0.125rem"}
                 stroke={
-                    (graph.adjacency.get(node.id)?.size ?? 0) > 0 ? colorNameToVar("InteractiveElementSolid") : "white"
+                    // TODO: theme (change blue)
+                    (graph.adjacency.get(node.id)?.size ?? 0) > 0 ? "blue" : "white"
                 }
             />
             {label ? (

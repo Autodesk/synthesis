@@ -24,7 +24,8 @@ const ConfigModeSelection: React.FC<ConfigModeSelectionProps> = ({ onModeSelecte
                 onModeSelected((val as ConfigModeSelectionOption)?.configMode)
             }}
             defaultHeaderText="Select a Configuration Mode"
-            indentation={1}
+            // TODO:
+            // indentation={1}
             defaultSelectedOption={undefined}
         />
     )

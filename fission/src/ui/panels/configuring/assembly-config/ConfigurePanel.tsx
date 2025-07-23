@@ -3,7 +3,6 @@ import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchem
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
 import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
 import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
@@ -12,7 +11,6 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
 import SimulationInterface from "./interfaces/SimulationInterface"
 import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
 import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
@@ -49,6 +47,7 @@ export enum ConfigMode {
     MOVE,
     SIM,
     BRAIN,
+    DRIVETRAIN,
     ALLIANCE,
 }
 
@@ -130,7 +129,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
     }
 }
 
-const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel, parent, props }) => {
+const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const { configurePanelSettings, setConfigurePanelSettings, configurationType, setConfigurationType } =
         useStateContext()
 
@@ -172,48 +172,45 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel, parent, props }
     }, [])
 
     useEffect(() => {
-        if (panel) {
-            panel.props.onAccept = () => {
-                pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
-                setPendingDeletes([])
+        const onAccept = () => {
+            pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
+            setPendingDeletes([])
 
-                InputSchemeManager.saveSchemes()
+            InputSchemeManager.saveSchemes()
 
-                originalRobotPrefs.current = null
-                originalFieldPrefs.current = null
-                originalMotorPrefs.current = null
-                originalInputSchemes.current = null
+            originalRobotPrefs.current = null
+            originalFieldPrefs.current = null
+            originalMotorPrefs.current = null
+            originalInputSchemes.current = null
 
-                setConfigurationType(configurationType)
-                new ConfigurationSavedEvent()
-            }
-            panel.props.onCancel = () => {
-                setPendingDeletes([])
-
-                if (selectedAssembly) {
-                    const name = selectedAssembly.assemblyName
-
-                    if (originalRobotPrefs.current)
-                        PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
-                    if (originalFieldPrefs.current)
-                        PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
-                    if (originalMotorPrefs.current)
-                        PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
-                    selectedAssembly.getPreferences()
-                }
-
-                if (originalInputSchemes.current) {
-                    PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
-                    PreferencesSystem.savePreferences()
-                    InputSchemeManager.resetDefaultSchemes()
-                }
-
-                originalRobotPrefs.current = null
-                originalFieldPrefs.current = null
-                originalMotorPrefs.current = null
-                originalInputSchemes.current = null
-            }
+            setConfigurationType(configurationType)
+            new ConfigurationSavedEvent()
         }
+        const onCancel = () => {
+            setPendingDeletes([])
+
+            if (selectedAssembly) {
+                const name = selectedAssembly.assemblyName
+
+                if (originalRobotPrefs.current) PreferencesSystem.setRobotPreferences(name, originalRobotPrefs.current)
+                if (originalFieldPrefs.current) PreferencesSystem.setFieldPreferences(name, originalFieldPrefs.current)
+                if (originalMotorPrefs.current) PreferencesSystem.setMotorPreferences(name, originalMotorPrefs.current)
+                selectedAssembly.getPreferences()
+            }
+
+            if (originalInputSchemes.current) {
+                PreferencesSystem.setGlobalPreference("InputSchemes", originalInputSchemes.current)
+                PreferencesSystem.savePreferences()
+                InputSchemeManager.resetDefaultSchemes()
+            }
+
+            originalRobotPrefs.current = null
+            originalFieldPrefs.current = null
+            originalMotorPrefs.current = null
+            originalInputSchemes.current = null
+        }
+
+        configureScreen(panel!, {}, { onAccept, onCancel });
     }, [])
 
     const modes = useMemo(() => {

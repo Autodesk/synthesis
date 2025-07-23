@@ -56,9 +56,8 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
             if (scheme) {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                setSelectedScheme(scheme)
             }
-
-            setSelectedScheme(scheme)
         } else {
             setConfigurationType("FIELDS")
         }
@@ -84,9 +83,31 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     <Button
                         onClick={() => setAlliance(alliance === "blue" ? "red" : "blue")}
                         style={{ background: alliance === "red" ? "#ff0000" : "#0000ff" }}
-                    >
-                        {`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}
-                    </Button>
+                    >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
+                    <Box>
+                        <Typography>Station: </Typography>
+                        {/** Set the station number */}
+                        <Stack gap={2}>
+                            <Button
+                                onClick={() => setStation(1)}
+                                style={station === 1 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                            >
+                                1
+                            </Button>
+                            <Button
+                                onClick={() => setStation(2)}
+                                style={station === 2 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                            >
+                                2
+                            </Button>
+                            <Button
+                                onClick={() => setStation(3)}
+                                style={station === 3 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                            >
+                                3
+                            </Button>
+                        </Stack>
+                    </Box>
                 </Box>
             )}
             {targetAssembly && (

@@ -113,7 +113,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                 <Divider />
                 <Select
                     label="Drivetrain Type"
-                    defaultValue={robotDriveType}
+                    value={robotDriveType}
                     onChange={e => {
                         const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
                         if (brain) {
@@ -123,7 +123,7 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                     }}
                 >
                     {[DriveType.TANK, DriveType.ARCADE].map(dt => (
-                        <MenuItem value={dt}>{dt}</MenuItem>
+                        <MenuItem key={dt} value={dt}>{dt}</MenuItem>
                     ))}
                 </Select>
                 <Divider />

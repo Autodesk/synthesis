@@ -24,7 +24,7 @@ function ToggleDragMode() {
     }
 }
 
-const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
+const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { openPanel } = useUIContext()
     return (
         <Box

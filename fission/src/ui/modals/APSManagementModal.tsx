@@ -6,7 +6,7 @@ import APS from "@/aps/APS"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "../UIProvider"
 
-const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
+const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
     const [userInfo, _] = useState(APS.userInfo)
     useEffect(() => {

@@ -13,7 +13,7 @@ import RCConfigPWMGroupModal from "./RCConfigPWMGroupModal"
 
 type DeviceType = "PWM" | "CAN" | "Encoder"
 
-const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal, parent }) => {
+const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
     const [type, setType] = useState<DeviceType>("PWM")
 

@@ -1,19 +1,14 @@
-import { SynthesisIcons } from "../components/StyledComponents"
 import React, { useState, useEffect, useRef } from "react"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import Button, { ButtonSize } from "../components/Button"
 import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { globalAddToast } from "../components/GlobalUIControls"
 import { LabelWithTooltip } from "../components/StyledComponents"
 import { mirabuf } from "@/proto/mirabuf"
-import { PanelImplProps } from "../components/Panel"
-import { useUIContext } from "../UIProvider"
-import { Stack } from "@mui/material"
+import { Button, Stack } from "@mui/material"
 
 const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
@@ -259,8 +254,6 @@ const DeveloperToolPanel: React.FC = () => {
         }
     }
 
-    const buttonSize = ButtonSize.SMALL
-
     return (
         <Stack gap={4} className="rounded-md p-4 max-h-[60vh] min-h-[350px] overflow-y-auto">
             {!fieldLoaded && <div className="text-red-600 m-4">No mira field loaded.</div>}
@@ -297,9 +290,9 @@ const DeveloperToolPanel: React.FC = () => {
                                     key={key}
                                     onClick={() => handleAdd(key)}
                                     className="w-full mb-1 whitespace-normal break-words"
-                                    size={buttonSize}
-                                    value={key}
-                                />
+                                >
+                                    {key}
+                                </Button>
                             ))}
                             {DEVTOOL_KEYS.filter(k => !keys.includes(k)).length === 0 && (
                                 <div className="text-gray-400 italic text-xs">All keys added</div>
@@ -314,7 +307,7 @@ const DeveloperToolPanel: React.FC = () => {
                                 {selectedKey === "devtool:scoring_zones" ? (
                                     LabelWithTooltip(
                                         "scoring_zones",
-                                        'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "persistentPoints": true,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]',
+                                        'Add and cache scoring zones. \n Example:\n[\n  {\n    "name": "Red Zone",\n    "alliance": "red",\n    "parentNode": "root",\n    "points": 5,\n    "destroyGamepiece": false,\n    "persistentPoints": true,\n    "deltaTransformation": [1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1]\n  }\n]'
                                     )
                                 ) : (
                                     <div className="font-bold text-sm mb-2">{selectedKey.replace(/^devtool:/, "")}</div>
@@ -335,9 +328,9 @@ const DeveloperToolPanel: React.FC = () => {
                                 />
                                 {error && <div className="text-red-400 mt-1">{error}</div>}
                                 <div className="mt-3 flex gap-2">
-                                    <Button onClick={handleSave} size={buttonSize} value="Save" />
-                                    <Button onClick={handleRemove} size={buttonSize} value="Remove" />
-                                    <Button onClick={handleExport} size={buttonSize} value="Export" />
+                                    <Button onClick={handleSave}>Save</Button>
+                                    <Button onClick={handleRemove}>Remove</Button>
+                                    <Button onClick={handleExport}>Export</Button>
                                 </div>
                             </>
                         ) : (

@@ -1,7 +1,6 @@
 import React from "react"
-import Label, { LabelSize } from "./Label"
 import { Switch } from "@mui/base/Switch"
-import { Box } from "@mui/material"
+import { Box, Typography } from "@mui/material"
 import { LabelWithTooltip } from "./StyledComponents"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
@@ -46,9 +45,9 @@ const StatefulCheckbox: React.FC<CheckboxProps> = ({ label, className, checked, 
             {hideLabel ? null : tooltipText ? (
                 LabelWithTooltip(label, tooltipText)
             ) : (
-                <Label size={LabelSize.SMALL} className={`mr-12 ${className} whitespace-nowrap`}>
+                <Typography variant="h6" className={`mr-12 ${className} whitespace-nowrap`}>
                     {label}
-                </Label>
+                </Typography>
             )}
             <Switch
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => onClick && onClick(e.target.checked)}
