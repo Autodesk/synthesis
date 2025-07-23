@@ -1,6 +1,7 @@
+from typing import Any, Dict
+
 import adsk.core
 import adsk.fusion
-from typing import Any, Dict
 
 from src import Logging, gm
 from src.UI import IconPaths
@@ -43,9 +44,7 @@ class DesignCheckTab:
             rule_name = rule["name"]
             rule_id = rule_name.replace(" ", "")
 
-            name_input = designCheckTabInputs.addTextBoxCommandInput(
-                f"{rule_id}Name", rule_name, rule_name, 1, True
-            )
+            name_input = designCheckTabInputs.addTextBoxCommandInput(f"{rule_id}Name", rule_name, rule_name, 1, True)
             value_input = designCheckTabInputs.addTextBoxCommandInput(
                 f"{rule_id}Value", "Value", f"{value:.2f} cm", 1, True
             )
