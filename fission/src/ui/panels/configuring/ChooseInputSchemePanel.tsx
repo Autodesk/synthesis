@@ -38,8 +38,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
             setConfigurationType("INPUTS")
             // TODO:
-            if (scheme)
-                setSelectedScheme(scheme)
+            if (scheme) setSelectedScheme(scheme)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])

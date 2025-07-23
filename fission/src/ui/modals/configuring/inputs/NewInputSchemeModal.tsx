@@ -35,7 +35,11 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
         <>
             <TextField label="Name" placeholder="" defaultValue={name} onChange={e => setName(e.target.value)} />
             <Select label="Drive Type" value={type} onChange={e => setType(e.target.value as DriveType)}>
-                {[DriveType.TANK, DriveType.ARCADE].map(dt => <MenuItem key={dt} value={dt}>{dt}</MenuItem>)}
+                {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                    <MenuItem key={dt} value={dt}>
+                        {dt}
+                    </MenuItem>
+                ))}
             </Select>
         </>
     )

@@ -123,7 +123,9 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
                     }}
                 >
                     {[DriveType.TANK, DriveType.ARCADE].map(dt => (
-                        <MenuItem key={dt} value={dt}>{dt}</MenuItem>
+                        <MenuItem key={dt} value={dt}>
+                            {dt}
+                        </MenuItem>
                     ))}
                 </Select>
                 <Divider />
