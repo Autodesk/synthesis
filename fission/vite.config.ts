@@ -57,7 +57,7 @@ export default defineConfig(({ mode }) => {
             target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
             changeOrigin: true,
             secure: false,
-            rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira").replace("robots", "Robots").replace("fields", "Fields"),
+            rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira"),
         }
         : {
             target: `https://synthesis.autodesk.com/`,
