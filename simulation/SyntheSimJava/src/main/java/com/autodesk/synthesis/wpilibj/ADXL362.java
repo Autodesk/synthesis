@@ -40,10 +40,16 @@ public class ADXL362 extends edu.wpi.first.wpilibj.ADXL362 {
         switch (range) {
             case k2G:
                 rangeValue = 2.0;
+                break;
             case k4G:
                 rangeValue = 4.0;
+                break;
             case k8G:
                 rangeValue = 8.0;
+                break;
+            default:
+                rangeValue = 2.0;
+                break;
         }
 
         this.m_Accel.setRange(rangeValue);
