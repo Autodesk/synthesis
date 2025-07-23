@@ -7,12 +7,12 @@ import InputSystem, {
     Input,
     ModifierState,
 } from "@/systems/input/InputSystem"
+import { KeyCode } from "@/systems/input/KeyboardTypes"
 import Button from "@/ui/components/Button"
 import Checkbox from "@/ui/components/Checkbox"
 import Dropdown from "@/ui/components/Dropdown"
 import Label from "@/ui/components/Label"
 import { SectionDivider, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { KeyCode } from "@/systems/input/KeyboardTypes"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {

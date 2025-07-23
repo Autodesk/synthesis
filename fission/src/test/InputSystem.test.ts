@@ -1,4 +1,6 @@
 import { assert, beforeEach, describe, expect, test, vi } from "vitest"
+import DefaultInputs from "@/systems/input/DefaultInputs"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import InputSystem, {
     AxisInput,
     ButtonInput,
@@ -7,11 +9,9 @@ import InputSystem, {
     KeyDescriptor,
     ModifierState,
 } from "@/systems/input/InputSystem"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import DefaultInputs from "@/systems/input/DefaultInputs"
+import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 
 describe("Input Scheme Manager Checks", () => {
     test("Available Schemes", () => {

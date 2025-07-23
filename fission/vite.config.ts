@@ -10,7 +10,7 @@ const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
 
-import * as child from "child_process";
+
 
 
 const useLocalAPS = false
@@ -40,7 +40,6 @@ const plugins = [
 if (useSsl) {
     plugins.push(basicSsl())
 }
-const commitHash = child.execSync("git rev-parse --short HEAD").toString();
 
 
 const localAssetsExist = await fs.access("./public/Downloadables/Mira",fs.constants.R_OK).then(() => true).catch(() => false)
@@ -85,9 +84,6 @@ export default defineConfig(({ mode }) => {
     return {
         plugins: plugins,
         publicDir: "./public",
-        define: {
-            COMMIT_HASH: JSON.stringify(commitHash),
-        },
         resolve: {
             alias: [
                 { find: "@/components", replacement: path.resolve(__dirname, "src", "ui", "components") },
