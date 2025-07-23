@@ -10,6 +10,7 @@ from src.UI import IconPaths
 class DesignCheckTab:
     designCheckTab: adsk.core.TabCommandInput
     designCheckTable: adsk.core.TableCommandInput
+    designRules: Dict[str, Any] = {}
 
     @Logging.logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs) -> None:
@@ -25,7 +26,7 @@ class DesignCheckTab:
         )
 
         # Define and add design rules to the table
-        design_rules = [
+        self.design_rules = [
             {
                 "name": "Design Height",
                 "calculation": self.fusion_design_height,
@@ -38,11 +39,11 @@ class DesignCheckTab:
             },
         ]
 
-        for i, rule in enumerate(design_rules):
-            value = rule["calculation"]
-            is_valid = value <= rule["max_value"]
-            rule_name = rule["name"]
-            rule_id = rule_name.replace(" ", "")
+        for i, rule in enumerate(self.design_rules):
+            value: float = rule["calculation"]()
+            is_valid: bool = value <= rule["max_value"]
+            rule_name: str = str(rule["name"])
+            rule_id: str = rule_name.replace(" ", "")
 
             name_input = designCheckTabInputs.addTextBoxCommandInput(f"{rule_id}Name", rule_name, rule_name, 1, True)
             value_input = designCheckTabInputs.addTextBoxCommandInput(
@@ -70,7 +71,7 @@ class DesignCheckTab:
     def isActive(self) -> bool:
         return self.designCheckTab.isActive or False
 
-    @property
+    @Logging.logFailure
     def fusion_design_height(self) -> float:
         design = adsk.fusion.Design.cast(gm.app.activeProduct)
         if design:
@@ -78,7 +79,7 @@ class DesignCheckTab:
             return float(overall_bounding_box.maxPoint.z - overall_bounding_box.minPoint.z)
         return 0.0
 
-    @property
+    @Logging.logFailure
     def fusion_design_perimeter(self) -> float:
         design = adsk.fusion.Design.cast(gm.app.activeProduct)
         if design:
