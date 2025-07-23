@@ -22,10 +22,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         return assembly?.miraType === MiraType.ROBOT ? assembly : undefined
     }, [])
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
     useEffect(() => {
-        // TODO: figure out closing other panels (specifically import mirabuf and configure)
-
         if (targetAssembly) return
 
         return () => {
@@ -37,11 +34,9 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             const scheme = InputSchemeManager.availableInputSchemes[0]
 
             setConfigurationType("INPUTS")
-            // TODO:
             if (scheme) setSelectedScheme(scheme)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [setSelectedScheme, setConfigurationType, targetAssembly])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)
@@ -53,8 +48,14 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 <InputSchemeSelection
                     brainIndex={brainIndex}
                     onSelect={() => closePanel(panel!.id, CloseType.Accept)}
-                    onEdit={() => openPanel(<ConfigurePanel />)}
-                    onCreateNew={() => openModal(<AssignNewSchemeModal />)}
+                    onEdit={() => {
+                        openPanel(<ConfigurePanel />)
+                        closePanel(panel!.id, CloseType.Overwrite)
+                    }}
+                    onCreateNew={() => {
+                        openModal(<AssignNewSchemeModal />)
+                        closePanel(panel!.id, CloseType.Overwrite)
+                    }}
                 />
             )}
         </Stack>

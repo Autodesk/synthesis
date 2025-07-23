@@ -20,6 +20,8 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import EjectableSceneObject from "@/mirabuf/EjectableSceneObject"
+import StatefulSlider from "@/ui/components/StatefulSlider"
 
 // slider constants
 const MIN_ZONE_SIZE = 0.1
@@ -237,34 +239,41 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             />
 
             {/* Slider for user to set velocity of ejector configuration */}
-            <FormControlLabel
-                label="Zone Size"
-                control={
-                    <Slider
-                        min={MIN_ZONE_SIZE}
-                        max={MAX_ZONE_SIZE}
-                        value={zoneSize}
-                        // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
-                        onChange={(_, vel: number | number[]) => {
-                            setZoneSize(vel as number)
-                        }}
-                        step={0.01}
-                    />
-                }
+            <StatefulSlider
+                label="Intake Zone Diameter (m)"
+                min={MIN_ZONE_SIZE}
+                max={MAX_ZONE_SIZE}
+                defaultValue={zoneSize}
+                // TODO:
+                // format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
+                onChange={vel => {
+                    setZoneSize(vel as number)
+                }}
+                step={0.01}
+            />
+            <StatefulSlider
+                label="Intake Animation Duration (s)"
+                min={MIN_ANIMATION_DURATION}
+                max={MAX_ANIMATION_DURATION}
+                defaultValue={animationDuration ?? 0.5}
+                onChange={v => {
+                    const val = typeof v === "number" ? v : v[0]
+                    setAnimationDuration(val)
+                    EjectableSceneObject.setAnimationDuration(val)
+                }}
+                step={ANIMATION_DURATION_STEP}
+                // TODO:
+                // format={{ maximumFractionDigits: 2 }}
             />
 
             {/* Slider for adjusting max pieces the robot can intake */}
-            <FormControlLabel
+            <StatefulSlider
                 label="Max Pieces"
-                control={
-                    <Slider
-                        min={1}
-                        max={10}
-                        step={1}
-                        value={maxPieces ?? 1}
-                        onChange={(_, v) => setMaxPieces(v as number)}
-                    />
-                }
+                min={1}
+                max={10}
+                step={1}
+                defaultValue={maxPieces ?? 1}
+                onChange={v => setMaxPieces(v as number)}
             />
 
             {/* Checkbox for showing intake zone indicator at all times */}

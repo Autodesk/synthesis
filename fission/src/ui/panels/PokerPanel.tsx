@@ -4,6 +4,8 @@ import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/uti
 import { Checkbox, FormControlLabel, Slider, Stack, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
+import StatefulSlider from "../components/StatefulSlider"
+import StatefulCheckbox from "../components/StatefulCheckbox"
 
 const RAY_MAX_LENGTH = 20.0
 
@@ -88,33 +90,31 @@ const PokerPanel: React.FC = () => {
 
     return (
         <Stack>
-            <FormControlLabel
-                control={<Checkbox defaultChecked={PUNCH_DEFAULT} onChange={x => setPunch(x.target.checked)} />}
+            <StatefulCheckbox
                 label="Punch?"
+                checked={PUNCH_DEFAULT}
+                onClick={setPunch}
             />
-            <Stack>
-                <Typography>Punch Force</Typography>
-                <Slider
-                    min={PUNCH_FORCE_MIN}
-                    max={PUNCH_FORCE_MAX}
-                    value={punchForce}
-                    onChange={(_, x) => setPunchForce(x as number)}
-                />
-            </Stack>
-            <FormControlLabel
-                control={<Checkbox defaultChecked={MARK_DEFAULT} onChange={x => setMark(x.target.checked)} />}
+            <StatefulSlider
+                label="Punch Force"
+                min={PUNCH_FORCE_MIN}
+                max={PUNCH_FORCE_MAX}
+                defaultValue={punchForce}
+                onChange={x => setPunchForce(x as number)}
+            />
+            <StatefulCheckbox
                 label="Mark?"
+                checked={MARK_DEFAULT}
+                onClick={setMark}
             />
-            <Stack>
-                <Typography>Mark Radius</Typography>
-                <Slider
-                    min={MARK_RADIUS_MIN}
-                    max={MARK_RADIUS_MAX}
-                    step={MARK_RADIUS_SLIDER_STEP}
-                    value={markRadius}
-                    onChange={(_, x) => setMarkRadius(x as number)}
-                />
-            </Stack>
+            <StatefulSlider
+                label="Mark Radius"
+                min={MARK_RADIUS_MIN}
+                max={MARK_RADIUS_MAX}
+                step={MARK_RADIUS_SLIDER_STEP}
+                defaultValue={markRadius}
+                onChange={x => setMarkRadius(x as number)}
+            />
         </Stack>
     )
 }

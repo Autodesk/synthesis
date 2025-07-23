@@ -20,6 +20,7 @@ import {
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import { Button, Checkbox, FormControlLabel, Stack, TextField } from "@mui/material"
+import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 /**
  * Saves ejector configuration to selected field.
@@ -275,14 +276,10 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 /> */}
 
             {/** When checked, points will stay even when a gamepiece leaves the zone */}
-            <FormControlLabel
+            <StatefulCheckbox
                 label="Require Robot Contact"
-                control={
-                    <Checkbox
-                        defaultChecked={selectedZone.requireRobotContact}
-                        onChange={e => setRequireRobotContact(e.target.checked)}
-                    />
-                }
+                checked={selectedZone.requireRobotContact}
+                onClick={checked => setRequireRobotContact(checked)}
             />
 
             {/** Switch between transform control modes */}

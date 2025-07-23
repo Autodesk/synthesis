@@ -7,6 +7,7 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import WiringPanel from "@/ui/panels/simulation/WiringPanel"
 import { CloseType, useUIContext } from "@/ui/UIProvider"
+import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 type SimulationInterfaceProps = {
     selectedAssembly: MirabufSceneObject
@@ -23,17 +24,13 @@ export default function SimulationInterface({
 
     return (
         <>
-            <FormControlLabel
+            <StatefulCheckbox
                 label="Auto Reconnect?"
-                control={
-                    <Checkbox
-                        defaultChecked={autoReconnect}
-                        onClick={() => {
-                            PreferencesSystem.setGlobalPreference("SimAutoReconnect", !autoReconnect)
-                            setAutoReconnect(!autoReconnect)
-                        }}
-                    />
-                }
+                checked={autoReconnect}
+                onClick={_ => {
+                    PreferencesSystem.setGlobalPreference("SimAutoReconnect", !autoReconnect)
+                    setAutoReconnect(!autoReconnect)
+                }}
             />
             <Button
                 className="self-center"

@@ -11,6 +11,7 @@ import RoboRIOModal from "../RoboRIOModal"
 import { Checkbox, FormControlLabel, Stack, TextField, Typography } from "@mui/material"
 import { Box } from "@mui/system"
 import ScrollView from "@/ui/components/ScrollView"
+import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
@@ -59,23 +60,18 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     <Typography>Ports</Typography>
                     <ScrollView>
                         {devices.map(([p, _]) => (
-                            <FormControlLabel
+                            <StatefulCheckbox
                                 label={p}
-                                control={
-                                    <Checkbox
-                                        key={p}
-                                        defaultChecked={false}
-                                        onChange={e => {
-                                            const checked = e.target.checked
-                                            const port = parseInt(p)
-                                            if (checked && !checkedPorts.includes(port)) {
-                                                setCheckedPorts([...checkedPorts, port])
-                                            } else if (!checked && checkedPorts.includes(port)) {
-                                                setCheckedPorts(checkedPorts.filter(a => a !== port))
-                                            }
-                                        }}
-                                    />
-                                }
+                                key={p}
+                                checked={false}
+                                onClick={checked => {
+                                    const port = parseInt(p)
+                                    if (checked && !checkedPorts.includes(port)) {
+                                        setCheckedPorts([...checkedPorts, port])
+                                    } else if (!checked && checkedPorts.includes(port)) {
+                                        setCheckedPorts(checkedPorts.filter(a => a !== port))
+                                    }
+                                }}
                             />
                         ))}
                     </ScrollView>
@@ -84,22 +80,17 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     <Typography>Signals</Typography>
                     <ScrollView>
                         {drivers.map((driver, idx) => (
-                            <FormControlLabel
+                            <StatefulCheckbox
                                 label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
-                                control={
-                                    <Checkbox
-                                        key={`${driver.constructor.name}-${idx}`}
-                                        defaultChecked={false}
-                                        onChange={e => {
-                                            const checked = e.target.checked
-                                            if (checked && !checkedDrivers.includes(driver)) {
-                                                setCheckedDrivers([...checkedDrivers, driver])
-                                            } else if (!checked && checkedDrivers.includes(driver)) {
-                                                setCheckedDrivers(checkedDrivers.filter(a => a !== driver))
-                                            }
-                                        }}
-                                    />
-                                }
+                                key={`${driver.constructor.name}-${idx}`}
+                                checked={false}
+                                onClick={checked => {
+                                    if (checked && !checkedDrivers.includes(driver)) {
+                                        setCheckedDrivers([...checkedDrivers, driver])
+                                    } else if (!checked && checkedDrivers.includes(driver)) {
+                                        setCheckedDrivers(checkedDrivers.filter(a => a !== driver))
+                                    }
+                                }}
                             />
                         ))}
                     </ScrollView>

@@ -19,6 +19,8 @@ import UserIcon from "./UserIcon"
 import { deobf } from "@/util/Utility"
 import SettingsModal from "../modals/configuring/SettingsModal"
 import APSManagementModal from "../modals/APSManagementModal"
+import DeveloperToolPanel from "../panels/DeveloperToolPanel"
+import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
 
 type ButtonProps = {
     value: string
@@ -206,8 +208,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Developer Tool"}
                         icon={SynthesisIcons.CODE_SQUARE}
-                        // TODO:
-                        // onClick={() => openPanel("developer")}
+                        onClick={() => openPanel(<DeveloperToolPanel />)}
                     />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
@@ -245,20 +246,27 @@ const MainHUD: React.FC = () => {
                         onClick={() => APS.requestAuthCode()}
                     />
                 )}
-                <MainHUDButton
-                    value={"Start Match Mode"}
-                    icon={SynthesisIcons.GAMEPAD}
-                    larger={true}
-                    onClick={() => {
-                        MatchMode.getInstance().isMatchEnabled()
-                            ? globalAddToast(
-                                  "error",
-                                  "Match Mode Already Running\nYou can't start match mode if its already running"
-                              )
-                            : MatchMode.getInstance().start(openModal)
-                        setIsOpen(false)
-                    }}
-                />
+                {!matchModeRunning ? (
+                    <MainHUDButton
+                        value={"Start Match Mode"}
+                        icon={SynthesisIcons.GAMEPAD}
+                        larger={true}
+                        onClick={() => {
+                            openPanel(<MatchModeConfigPanel />)
+                            setIsOpen(false)
+                        }}
+                    />
+                ) : (
+                    <MainHUDButton
+                        value={"Abort Match Mode"}
+                        icon={SynthesisIcons.XMARK_LARGE}
+                        larger={true}
+                        onClick={() => {
+                            MatchMode.getInstance().sandboxModeStart()
+                            globalAddToast("info", "Match Mode Cancelled", "")
+                        }}
+                    />
+                )}
             </Box>
         </>
     )

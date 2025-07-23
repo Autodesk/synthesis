@@ -5,6 +5,7 @@ import { Checkbox, FormControlLabel, ToggleButton, ToggleButtonGroup } from "@mu
 import World from "@/systems/World"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
@@ -18,9 +19,10 @@ function OrbitSettings({ controls }: OrbitSettingsProps) {
     }, [controls, locked])
 
     return (
-        <FormControlLabel
-            control={<Checkbox defaultChecked={locked} onChange={e => setLocked(e.target.checked)} />}
+        <StatefulCheckbox
             label="Lock to Robot"
+            checked={locked}
+            onClick={setLocked}
         />
     )
 }

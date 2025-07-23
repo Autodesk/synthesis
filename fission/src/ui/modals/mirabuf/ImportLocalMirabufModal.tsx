@@ -6,7 +6,7 @@ import World from "@/systems/World"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { useUIContext } from "@/ui/UIProvider"
+import { CloseType, useUIContext } from "@/ui/UIProvider"
 import { Button, Stack, styled, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
 import { type ChangeEvent, useEffect, useState } from "react"
 
@@ -24,7 +24,7 @@ const VisuallyHiddenInput = styled("input")({
 
 const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
-    const { openPanel, configureScreen } = useUIContext()
+    const { openPanel, closeModal, configureScreen } = useUIContext()
 
     const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined)
     const [miraType, setSelectedType] = useState<MiraType | undefined>(MiraType.ROBOT)
@@ -55,6 +55,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                             World.sceneRenderer.registerSceneObject(x)
 
                             openPanel(<InitialConfigPanel />, modal)
+                            closeModal(CloseType.Overwrite)
                         }
                     })
                     .finally(() => setTimeout(() => World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_SPAWNING), 500))
