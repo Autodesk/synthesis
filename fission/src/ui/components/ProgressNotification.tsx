@@ -42,8 +42,7 @@ function useInterp(elapse: number, progressData: ProgressData): number {
             clearTimeout(timeout)
             clearInterval(interval)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [progressData])
+    }, [progressData, elapse])
 
     return value
 }
@@ -136,7 +135,7 @@ const ProgressNotifications: React.FC = () => {
         return () => {
             ProgressEvent.removeListener(onHandleUpdate)
         }
-    }, [updateProgressElements])
+    }, [])
 
     return (
         <Box

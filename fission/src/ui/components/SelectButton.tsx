@@ -44,7 +44,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, 
                 }
             }
         },
-        [setSelecting, onSelect]
+        [onSelect]
     )
 
     useEffect(() => {

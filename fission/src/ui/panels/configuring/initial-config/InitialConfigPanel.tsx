@@ -3,7 +3,7 @@ import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSchemeManager, { InputSchemeUseType } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -14,13 +14,14 @@ import { CloseType, useUIContext } from "@/ui/UIProvider"
 import { useStateContext } from "@/ui/StateProvider"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
-import type { Alliance } from "@/systems/preferences/PreferenceTypes"
+import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { setSelectedScheme, setConfigurationType } = useStateContext()
     const { openModal, closePanel, openPanel } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
+    const [station, setStation] = useState<Station>(1)
 
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
@@ -32,6 +33,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         }
     }, [])
 
+    // biome-ignore lint: Making closePanel a dep causes maxium depth exceeded errors
     useEffect(() => {
         // TODO:
         // if (parent)
@@ -39,7 +41,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     }, [])
 
     // TODO: unconfirmed import
-
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             setConfigurationType("ROBOTS")
@@ -48,8 +49,14 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             if (brainIndex === undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemes[0]
-            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            // Find first available scheme
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).find(
+                scheme => scheme.status == InputSchemeUseType.AVAILABLE
+            )?.scheme
+
+            if (scheme) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            }
 
             setSelectedScheme(scheme)
         } else {

@@ -521,7 +521,7 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     } else {
         try {
             data = JSON.parse(eventData.data)
-        } catch (e) {
+        } catch (_e) {
             console.error(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
             return
         }

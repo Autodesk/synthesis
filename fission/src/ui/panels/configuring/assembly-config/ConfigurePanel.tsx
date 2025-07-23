@@ -1,33 +1,34 @@
-import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
-import type React from "react"
-import { useEffect, useMemo, useRef, useState } from "react"
-import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
+import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
+import SimulationInterface from "./interfaces/SimulationInterface"
+import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
+import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
-import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useStateContext } from "@/ui/StateProvider"
 import { CloseType, useUIContext, type UIScreen } from "@/ui/UIProvider"
 import ChooseInputSchemePanel from "../ChooseInputSchemePanel"
 import AssemblySelection, { type AssemblySelectionOption } from "./configure/AssemblySelection"
 import ConfigModeSelection, { ConfigModeSelectionOption } from "./configure/ConfigModeSelection"
-import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
-import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
-import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
 import ConfigureInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
-import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
-import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
+import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import { useEffect, useMemo, useRef, useState } from "react"
+import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 
 const CONFIG_OPTS = ["ROBOTS", "FIELDS", "INPUTS"] as const
 export type ConfigurationType = (typeof CONFIG_OPTS)[number]
@@ -122,6 +123,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
             return <BrainSelectionInterface selectedAssembly={assembly} />
         case ConfigMode.ALLIANCE:
             return <AllianceSelectionInterface selectedAssembly={assembly} />
+        case ConfigMode.DRIVETRAIN:
+            return <DrivetrainSelectionInterface selectedAssembly={assembly} />
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }

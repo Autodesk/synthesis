@@ -23,10 +23,13 @@ export const DEFAULT_ENDGAME_TIME = 20
 
 class MatchMode {
     private static _instance: MatchMode
-    private _matchEnabled: boolean = false
     private _endgame: boolean = false
     private _matchModeType: MatchModeType = MatchModeType.SANDBOX
 
+    private setMatchModeType(val: MatchModeType) {
+        this._matchModeType = val
+        new MatchStateChangeEvent(val).dispatch()
+    }
     private _initialTime: number = 0
     private _timeLeft: number = 0
     private _intervalId: number | null = null
@@ -80,7 +83,7 @@ class MatchMode {
 
     autonomousModeStart(openModal: OpenModalFn) {
         SoundPlayer.play(MatchStart)
-        this._matchModeType = MatchModeType.AUTONOMOUS
+        this.setMatchModeType(MatchModeType.AUTONOMOUS)
         this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd(openModal))
     }
 
@@ -91,7 +94,7 @@ class MatchMode {
 
     teleopModeStart(openModal: OpenModalFn) {
         SoundPlayer.play(MatchResume)
-        this._matchModeType = MatchModeType.TELEOP
+        this.setMatchModeType(MatchModeType.TELEOP)
         this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded(openModal))
     }
 
@@ -101,7 +104,6 @@ class MatchMode {
     }
 
     start(openModal: OpenModalFn) {
-        this._matchEnabled = true
         this.autonomousModeStart(openModal)
         SimulationSystem.resetScores()
     }
@@ -109,8 +111,7 @@ class MatchMode {
     matchEnded(openModal: OpenModalFn) {
         SoundPlayer.play(MatchEnd)
         clearInterval(this._intervalId as number)
-        this._matchEnabled = false
-        this._matchModeType = MatchModeType.MATCH_ENDED
+        this.setMatchModeType(MatchModeType.MATCH_ENDED)
         if (openModal)
             openModal(React.createElement(MatchResultsModal), undefined, {
                 allowClickAway: false,
@@ -120,8 +121,7 @@ class MatchMode {
     }
 
     sandboxModeStart() {
-        this._matchEnabled = false
-        this._matchModeType = MatchModeType.SANDBOX
+        this.setMatchModeType(MatchModeType.SANDBOX)
         clearInterval(this._intervalId as number)
         this._initialTime = 0
         this._timeLeft = 0
@@ -130,7 +130,7 @@ class MatchMode {
     }
 
     isMatchEnabled(): boolean {
-        return this._matchEnabled
+        return !(this._matchModeType == MatchModeType.SANDBOX || this._matchModeType == MatchModeType.MATCH_ENDED)
     }
 
     isEndgame(): boolean {
@@ -164,5 +164,27 @@ export class UpdateTimeLeft extends Event {
 
     public static removeListener(func: (e: UpdateTimeLeft) => void) {
         window.removeEventListener(UpdateTimeLeft.EVENT_KEY, func as (e: Event) => void)
+    }
+}
+
+export class MatchStateChangeEvent extends Event {
+    public static readonly EVENT_KEY = "MatchEnd"
+
+    public readonly matchModeType: MatchModeType
+    constructor(matchModeType: MatchModeType) {
+        super(MatchStateChangeEvent.EVENT_KEY)
+        this.matchModeType = matchModeType
+    }
+
+    public dispatch(): void {
+        window.dispatchEvent(this)
+    }
+
+    public static addListener(func: (e: MatchStateChangeEvent) => void) {
+        window.addEventListener(MatchStateChangeEvent.EVENT_KEY, func as (e: Event) => void)
+    }
+
+    public static removeListener(func: (e: MatchStateChangeEvent) => void) {
+        window.removeEventListener(MatchStateChangeEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }

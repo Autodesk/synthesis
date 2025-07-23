@@ -3,7 +3,7 @@ import type React from "react"
 import { useEffect, useMemo } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSchemeManager, { InputSchemeUseType } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -33,14 +33,18 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             if (brainIndex === undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemes[0]
+            // Find first available scheme
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).find(
+                scheme => scheme.status == InputSchemeUseType.AVAILABLE
+            )?.scheme
 
+            if (scheme) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            }
             setConfigurationType("INPUTS")
-            // TODO:
             setSelectedScheme(scheme)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [closePanel, targetAssembly])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)

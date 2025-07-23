@@ -8,6 +8,7 @@ import { BodyAssociate, type LayerReserve } from "@/systems/physics/PhysicsSyste
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type {
     Alliance,
+    Station,
     EjectorPreferences,
     FieldPreferences,
     IntakePreferences,
@@ -38,6 +39,8 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
 const DEBUG_BODIES = false
 
@@ -103,6 +106,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _mechanism: Mechanism
     private _brain: Brain | undefined
     private _alliance: Alliance | undefined
+    private _station: Station | undefined
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
@@ -194,6 +198,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._alliance
     }
 
+    public get station() {
+        return this._station
+    }
+
     public set brain(brain: Brain | undefined) {
         this._brain = brain
         const simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
@@ -202,6 +210,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public set alliance(alliance: Alliance | undefined) {
         this._alliance = alliance
+    }
+
+    public set station(station: Station | undefined) {
+        this._station = station
     }
 
     public get cacheId() {
@@ -383,7 +395,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
         this._debugBodies?.clear()
         this._physicsLayerReserve?.release()
-        this._centerOfMassIndicator?.geometry?.dispose()
+        if (this._centerOfMassIndicator) {
+            World.sceneRenderer.scene.remove(this._centerOfMassIndicator)
+            this._centerOfMassIndicator = undefined
+            this._centerOfMassListenerUnsubscribe?.()
+        }
+
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
         }

@@ -4,14 +4,15 @@ import type React from "react"
 import { useCallback, useEffect, useRef, useState } from "react"
 import EditInputInterface from "./EditInputInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
 }
 
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
-    const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme.usesGamepad)
-    const [useTouchControls, setUseTouchControls] = useState<boolean>(selectedScheme.usesTouchControls)
+    const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
+    const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const saveEvent = useCallback(() => {
@@ -49,31 +50,31 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     return (
         <>
             {/** Toggle the input scheme between controller and keyboard mode */}
-            <FormControlLabel
+            <StatefulCheckbox
                 label="Use Controller"
-                control={
-                    <Checkbox
-                        defaultChecked={selectedScheme.usesGamepad}
-                        onChange={e => {
-                            setUseGamepad(e.target.checked)
-                            selectedScheme.usesGamepad = e.target.checked
-                        }}
-                        // tooltipText="Supported controllers: Xbox one, Xbox 360."
-                    />
-                }
+                checked={useGamepad}
+                onClick={val => {
+                    setUseGamepad(val)
+                    if (val) {
+                        setUseTouchControls(false)
+                        selectedScheme.usesTouchControls = false
+                    }
+                    selectedScheme.usesGamepad = val
+                }}
+                tooltipText="Supported controllers: Xbox one, Xbox 360."
             />
-            <FormControlLabel
+            <StatefulCheckbox
                 label="Use Touch Controls"
-                control={
-                    <Checkbox
-                        defaultChecked={selectedScheme.usesTouchControls}
-                        onChange={e => {
-                            setUseTouchControls(e.target.checked)
-                            selectedScheme.usesTouchControls = e.target.checked
-                        }}
-                        // tooltipText="Enable on-screen touch controls (only for mobile devices)."
-                    />
-                }
+                checked={useTouchControls}
+                onClick={val => {
+                    setUseTouchControls(val)
+                    if (val) {
+                        setUseGamepad(false)
+                        selectedScheme.usesGamepad = false
+                    }
+                    selectedScheme.usesTouchControls = val
+                }}
+                tooltipText="Enable on-screen touch controls (only for mobile devices)."
             />
             <Divider />
 

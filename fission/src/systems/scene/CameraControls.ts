@@ -211,12 +211,6 @@ export class CustomOrbitControls extends CameraControls {
         return { ...this._coords }
     }
 
-    public setTargetCoordinates(coords: Partial<SphericalCoords>) {
-        if (coords.theta !== undefined) this._nextCoords.theta = coords.theta
-        if (coords.phi !== undefined) this._nextCoords.phi = coords.phi
-        if (coords.r !== undefined) this._nextCoords.r = coords.r
-    }
-
     public setImmediateCoordinates(coords: Partial<SphericalCoords>) {
         if (coords.theta !== undefined) {
             this._coords.theta = coords.theta

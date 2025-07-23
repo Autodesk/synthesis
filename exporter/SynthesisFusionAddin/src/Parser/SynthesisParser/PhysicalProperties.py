@@ -16,28 +16,37 @@ Adds:
 
 """
 
-from typing import Union
+from typing import Any
 
 import adsk
 
+from src.ErrorHandling import Err, ErrorSeverity, Ok, Result
 from src.Logging import logFailure
 from src.Proto import types_pb2
 
 
-@logFailure
-def GetPhysicalProperties(
-    fusionObject: Union[adsk.fusion.BRepBody, adsk.fusion.Occurrence, adsk.fusion.Component],
+def getPhysicalProperties(
+    fusionObject: adsk.fusion.BRepBody | adsk.fusion.Occurrence | adsk.fusion.Component,
     physicalProperties: types_pb2.PhysicalProperties,
     level: int = 1,
-) -> None:
+) -> Result[None]:
     """Will populate a physical properties section of an exported file
 
     Args:
-        fusionObject (Union[adsk.fusion.BRepBody, adsk.fusion.Occurrence, adsk.fusion.Component]): The base fusion object
+        fusionObject (adsk.fusion.BRepBody | adsk.fusion.Occurrence, adsk.fusion.Component): The base fusion object
         physicalProperties (any): Unity Joint object for now
         level (int): Level of accurracy
     """
     physical = fusionObject.getPhysicalProperties(level)
+    if physical is None:
+        return Err("Physical properties object is None", ErrorSeverity.Error)
+
+    missing_properties_bools: list[bool] = [
+        value is None for prop, value in vars(physical).items() if not prop.startswith("__")
+    ]
+    if any(prop for prop in missing_properties_bools):
+        # missing_properties: list[Any] = [physical[i] for i, prop in enumerate(missing_properties_bools) if prop]
+        _: Err[None] = Err("Missing some physical properties", ErrorSeverity.Warning)
 
     physicalProperties.density = physical.density
     physicalProperties.mass = physical.mass
@@ -51,3 +60,7 @@ def GetPhysicalProperties(
         _com.x = com.x
         _com.y = com.y
         _com.z = com.z
+    else:
+        __: Err[None] = Err("com is None", ErrorSeverity.Warning)
+
+    return Ok(None)

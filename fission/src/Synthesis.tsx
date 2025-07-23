@@ -61,7 +61,7 @@ function Synthesis() {
             World.destroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
-    }, [])
+    }, [openModal])
 
     // useEffect(() => {
     // TODO:

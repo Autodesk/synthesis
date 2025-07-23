@@ -1,9 +1,8 @@
 import Brain from "../Brain"
-import Behavior from "../behavior/Behavior"
+import Behavior, { DriveType } from "../behavior/Behavior"
 import World from "@/systems/World"
 import WheelDriver from "../driver/WheelDriver"
 import WheelRotationStimulus from "../stimulus/WheelStimulus"
-import ArcadeDriveBehavior from "../behavior/synthesis/ArcadeDriveBehavior"
 import { SimulationLayer } from "../SimulationSystem"
 import Jolt from "@azaleacolburn/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -20,6 +19,8 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import IntakeDriver from "../driver/IntakeDriver"
 import EjectorDriver from "../driver/EjectorDriver"
 import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
+import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
 
 class SynthesisBrain extends Brain {
@@ -30,6 +31,7 @@ class SynthesisBrain extends Brain {
     private _assemblyName: string
     private _brainIndex: number
     private _assembly: MirabufSceneObject
+    public driveType: DriveType = DriveType.ARCADE
 
     // Tracks how many joins have been made with unique controls
     private _currentJointIndex = 1
@@ -58,13 +60,37 @@ class SynthesisBrain extends Brain {
         return this._brainIndex
     }
 
-    /**
-     * @param mechanism The mechanism this brain will control.
-     * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
-     */
-    public constructor(assembly: MirabufSceneObject, assemblyName: string) {
-        super(assembly.mechanism, "synthesis")
+    public configure(driveType: DriveType): void {
+        this.driveType = driveType
+        this._behaviors = []
+        // Only adds controls to mechanisms that are controllable (ignores fields)
+        if (this._assembly.mechanism.controllable) {
+            switch (driveType) {
+                case DriveType.ARCADE:
+                    this.configureSkidSteerDriveBehavior(true)
+                    break
+                case DriveType.TANK:
+                    this.configureSkidSteerDriveBehavior(false)
+                    break
+                case DriveType.SWERVE:
+                    this.configureSwerveDriveBehavior()
+                    break
+            }
+            this.configureArmBehaviors()
+            this.configureElevatorBehaviors()
+            this.configureGamepieceManipBehavior()
+        } else {
+            this.configureField()
+        }
+    }
 
+    /**
+     * @param assembly
+     * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
+     * @param driveType
+     */
+    public constructor(assembly: MirabufSceneObject, assemblyName: string, driveType: DriveType = DriveType.ARCADE) {
+        super(assembly.mechanism, "synthesis")
         this._assembly = assembly
         this._simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)!
         this._assemblyName = assemblyName
@@ -78,15 +104,7 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        // Only adds controls to mechanisms that are controllable (ignores fields)
-        if (assembly.mechanism.controllable) {
-            this.configureArcadeDriveBehavior()
-            this.configureArmBehaviors()
-            this.configureElevatorBehaviors()
-            this.configureGamepieceManipBehavior()
-        } else {
-            this.configureField()
-        }
+        this.configure(driveType)
     }
 
     public enable(): void {}
@@ -107,8 +125,11 @@ class SynthesisBrain extends Brain {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
 
+    private configureSwerveDriveBehavior(): void {
+        globalAddToast("error", "Swerve not supported", "check back soon")
+    }
     /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */
-    private configureArcadeDriveBehavior() {
+    private configureSkidSteerDriveBehavior(isArcade: boolean) {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
@@ -150,7 +171,7 @@ class SynthesisBrain extends Brain {
         }
 
         this._behaviors.push(
-            new ArcadeDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex)
+            new SkidSteerDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex, isArcade)
         )
     }
 

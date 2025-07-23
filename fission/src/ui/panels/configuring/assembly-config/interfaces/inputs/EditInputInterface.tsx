@@ -9,6 +9,7 @@ import InputSystem, {
     type ModifierState,
 } from "@/systems/input/InputSystem"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { KeyCode } from "@/systems/input/KeyboardTypes"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {
@@ -18,13 +19,13 @@ const toTitleCase = (camelCase: string) => {
 }
 
 // Special characters only
-const codeToCharacterMap: { [code: string]: string } = {
+const codeToCharacterMap: Partial<Record<KeyCode, string>> = {
     Slash: "/",
     Comma: ",",
     Period: ".",
     BracketLeft: "{",
     BracketRight: "}",
-    BackQuote: "`",
+    Backquote: "`",
     Minus: "-",
     Equal: "=",
     Backslash: "\\",
@@ -55,7 +56,7 @@ const gamepadAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
 const touchControlsAxes: string[] = ["N/A", "Left X", "Left Y", "Right X", "Right Y"]
 
 // Converts a key code to displayable character (ex: KeyA -> "A")
-const keyCodeToCharacter = (code: string) => {
+const keyCodeToCharacter = (code: KeyCode) => {
     if (code.startsWith("Key")) return code.charAt(3)
 
     if (code.startsWith("Digit")) return code.charAt(5)
@@ -67,7 +68,7 @@ const keyCodeToCharacter = (code: string) => {
     return code
 }
 
-const transformKeyName = (keyCode: string, keyModifiers: ModifierState) => {
+const transformKeyName = (keyCode: KeyCode, keyModifiers: ModifierState) => {
     let prefix = ""
     if (keyModifiers) {
         if (keyModifiers.meta) prefix += "Meta + "
@@ -93,7 +94,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
     const [selectedInput, setSelectedInput] = useState<string>("")
     const [chosenGamepadAxis, setChosenGamepadAxis] = useState<number>(-1)
     const [chosenTouchControlsAxis, setChosenTouchControlsAxis] = useState<number>(-1)
-    const [chosenKey, setChosenKey] = useState<string>("")
+    const [chosenKey, setChosenKey] = useState<KeyCode>("")
     const [modifierState, setModifierState] = useState<ModifierState>(EMPTY_MODIFIER_STATE)
     const [chosenButton, setChosenButton] = useState<number>(-1)
     const [useGamepadButtons, setUseGamepadButtons] = useState<boolean>(
@@ -465,7 +466,8 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
     return (
         <Box
             onKeyUp={e => {
-                if (selectedInput !== "") setChosenKey(selectedInput ? e.code : "")
+                e.preventDefault()
+                if (selectedInput != "") setChosenKey(selectedInput ? (e.code as KeyCode) : "")
                 setModifierState({
                     ctrl: e.ctrlKey,
                     alt: e.altKey,

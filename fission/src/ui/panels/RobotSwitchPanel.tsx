@@ -2,6 +2,7 @@ import { Button, FormControlLabel, Radio, Stack, Typography } from "@mui/materia
 import type React from "react"
 import { useState } from "react"
 import { useUIContext } from "../UIProvider"
+import StatefulCheckbox from "../components/StatefulCheckbox"
 
 const RobotSwitchPanel: React.FC = () => {
     const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
@@ -14,16 +15,13 @@ const RobotSwitchPanel: React.FC = () => {
             <form>
                 <fieldset>
                     {robots.map((name: string, i: number) => (
-                        <FormControlLabel
+                        // fixme: new checkbox
+                        <StatefulCheckbox
                             label={name}
-                            control={
-                                <Radio
-                                    checked={i === selected}
-                                    className="whitespace-nowrap"
-                                    onChange={() => setSelected(i)}
-                                    key={name}
-                                />
-                            }
+                            checked={i == selected}
+                            className="whitespace-nowrap"
+                            onClick={() => setSelected(i)}
+                            key={i}
                         />
                     ))}
                 </fieldset>
