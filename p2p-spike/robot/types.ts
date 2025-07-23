@@ -40,3 +40,28 @@ export type Metrics = {
   };
   serverMetrics: ServerMetrics;
 };
+
+export type Message =
+  | { type: "init"; data: InitData }
+  | { type: "gameState"; data: GameStateData }
+  | { type: "robotJoined"; data: RobotJoinedData }
+  | { type: "robotLeft"; data: RobotLeftData }
+  | { type: "ping"; data: PingData }
+  | { type: "pong"; data: PingData }
+  | { type: "serverMetrics"; data: ServerMetrics };
+
+export type InitData = {
+  clientId: string;
+  robotId: string;
+  worldSize: { height: number; width: number };
+  robots: Robot[];
+};
+
+export type GameStateData = {
+  sequence: number;
+  otherRobots: Robot[];
+};
+
+export type RobotJoinedData = Robot;
+export type RobotLeftData = { robotId: string };
+export type PingData = { timestamp: number };

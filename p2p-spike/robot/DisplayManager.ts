@@ -30,7 +30,6 @@ export default class DisplayManger {
   controlsPanel: HTMLElement;
   metricsVisible = true;
 
-
   constructor() {
     this.canvas = document.getElementById("gameCanvas") as HTMLCanvasElement;
     this.ctx = this.canvas.getContext("2d")!;
@@ -77,11 +76,11 @@ export default class DisplayManger {
     const minutes = Math.floor(uptime / 60000);
     this.uptimeEl.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
   }
-  setWorldsize({width, height}: {width: number, height: number}) {
-      this.worldSize.width = width
-      this.worldSize.height = height
+  setWorldsize({ width, height }: { width: number; height: number }) {
+    this.worldSize.width = width;
+    this.worldSize.height = height;
   }
-toggleMetrics() {
+  toggleMetrics() {
     this.metricsVisible = !this.metricsVisible;
     const display = this.metricsVisible ? "block" : "none";
 
@@ -120,16 +119,12 @@ toggleMetrics() {
     }
   }
 
-startRenderLoop(robots: Map<string, Robot>, robotId: string, clientMetrics: Metrics) {
-    const render = (timestamp: number, robots: Map<string, Robot>, robotId: string, clientMetrics: Metrics) => {
-      this.render(timestamp, robots, robotId, clientMetrics);
-       
-      requestAnimationFrame((timestamp: number) => render(timestamp, robots, robotId, clientMetrics));
-    };
-    requestAnimationFrame((timestamp: number) => render(timestamp, robots, robotId, clientMetrics));
-  }
-
-  render(timestamp: number, robots: Map<string, Robot>, robotId: string, clientMetrics: Metrics) {
+  render(
+    timestamp: number,
+    robots: Map<string, Robot>,
+    robotId: string,
+    clientMetrics: Metrics,
+  ) {
     // Track frame timing
     if (this.lastRenderTime > 0) {
       const frameTime = timestamp - this.lastRenderTime;
@@ -146,8 +141,8 @@ startRenderLoop(robots: Map<string, Robot>, robotId: string, clientMetrics: Metr
 
     this.drawGrid();
 
-    for (const [robotId, robot] of robots) {
-      if (robotId === robotId) {
+    for (const [otherRobotId, robot] of robots) {
+      if (otherRobotId === robotId) {
         this.drawOwnRobot(robot);
       } else {
         this.drawOtherRobot(robot);
@@ -210,6 +205,4 @@ startRenderLoop(robots: Map<string, Robot>, robotId: string, clientMetrics: Metr
       );
     }
   }
-}
-
 }

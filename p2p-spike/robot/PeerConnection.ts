@@ -1,26 +1,32 @@
 import Peer, { DataConnection } from "peerjs";
+import type { InitData, Message } from "./types";
+import { generateId } from "./utils";
 
 class PeerConnection {
   peer: Peer;
   connection?: DataConnection;
   clientId: string;
   connected: boolean = false;
+  otherPeers: string[] = [];
+  initialization: InitData;
   handlePeerMessage: (data: any) => void;
 
-  constructor(handlePeerMessage: (data: any) => void) {
+  constructor(
+    handlePeerMessage: (data: Message) => void,
+    initialization: Omit<InitData, "clientId">,
+  ) {
     this.clientId = this.generateClientId();
     this.peer = new Peer(this.clientId, {
       host: "localhost",
       port: 9000,
       path: "/",
     });
+    this.initialization = { ...initialization, clientId: this.clientId };
     this.handlePeerMessage = handlePeerMessage;
 
     this.peer.on("open", (id: string) => {
-      this.connected = true;
-      console.log(`Peer connected: ID - ${id}`);
+      console.log(`Client connected: ID - ${id}`);
       this.connectToPeer(); // Replace 'some-peer-id' with the actual peer ID
-      console.log(`Their peer ID is: ${this.getOtherPeerId()}`);
     });
 
     this.peer.on("connection", (conn) => {
@@ -30,18 +36,26 @@ class PeerConnection {
   }
 
   connectToPeer() {
-    if (!this.connection) return;
-
-    const peerId = this.connection?.peer;
-    this.connection = this.peer.connect(peerId);
-    this.setupConnectionHandlers();
+    this.peer.listAllPeers((peers) => {
+      console.log(`Peers: ${peers}`);
+      peers
+        .filter((peer) => peer !== this.clientId)
+        .forEach((peer) => this.otherPeers.push(peer as string));
+      if (this.otherPeers.length > 0)
+        this.connection = this.peer.connect(this.otherPeers[0]!);
+      console.log(`connection: ${this.connection?.peer}`);
+      this.setupConnectionHandlers();
+    });
   }
 
   setupConnectionHandlers() {
     if (!this.connection) return;
 
     this.connection.on("open", () => {
+      this.connected = true;
       console.log("Connection opened");
+      // this.send({ type: "ping", data: { timestamp: Date.now() } });
+      this.send({ type: "init", data: this.initialization });
     });
 
     this.connection.on("data", (data: any) => {
@@ -58,14 +72,13 @@ class PeerConnection {
     });
   }
 
-  send(message: any) {
-    if (this.connection && this.connected) {
-      this.connection.send(message);
-    }
+  send(message: Message) {
+    if (!this.connection || !this.connected) return;
+    this.connection.send(message);
   }
 
   generateClientId(): string {
-    return `client-${Math.random().toString(36).substring(2, 9)}`;
+    return generateId("client");
   }
 
   getOtherPeerId(): string | null {

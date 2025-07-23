@@ -1,6 +1,16 @@
-import type { Metrics, Robot, ServerMetrics } from "./types";
+import type {
+  GameStateData,
+  InitData,
+  Message,
+  Metrics,
+  PingData,
+  Robot,
+  RobotLeftData,
+  ServerMetrics,
+} from "./types";
 import PeerConnection from "./PeerConnection";
 import DisplayManager from "./DisplayManager";
+import { generateId } from "./utils";
 
 class RobotClient {
   peerConnection: PeerConnection;
@@ -10,9 +20,14 @@ class RobotClient {
   robots: Map<string, Robot> = new Map();
   robotSpeed = 200;
 
-  inputs = { w: false, s: false, a: false, d: false };
-  // inputSequence = 0;
-  // inputBuffer: Map<number, any> = new Map();
+  inputs = {
+    ArrowUp: false,
+    ArrowDown: false,
+    ArrowLeft: false,
+    ArrowRight: false,
+  };
+  inputSequence = 0;
+  inputBuffer: Map<number, any> = new Map();
 
   displayManager: DisplayManager;
 
@@ -31,21 +46,38 @@ class RobotClient {
   };
 
   constructor() {
-    this.peerConnection = new PeerConnection(this.handlePeerMessage);
-    this.clientId = this.peerConnection.clientId;
+    this.setupRobots();
     this.displayManager = new DisplayManager();
-
     this.displayManager.setupCanvas();
     this.setupInputHandlers();
-    this.displayManager.startRenderLoop(
-      this.robots,
-      this.robotId ?? "",
-      this.clientMetrics,
-    );
+    this.peerConnection = new PeerConnection(this.handlePeerMessage, {
+      robotId: this.robotId!,
+      worldSize: this.displayManager.worldSize,
+      robots: [...this.robots.values()],
+    });
+
+    this.clientId = this.peerConnection.clientId;
     this.startMetricsCollection();
+    this.gameLoop();
   }
 
-  handlePeerMessage(data: any) {
+  gameLoop() {
+    const iteration = () =>
+      setTimeout(() => {
+        this.applyClientState();
+        this.sendClientState();
+        this.displayManager.render(
+          Date.now(),
+          this.robots,
+          this.robotId!,
+          this.clientMetrics,
+        );
+        iteration();
+      }, 10);
+    iteration();
+  }
+
+  handlePeerMessage = ((data: Message) => {
     try {
       switch (data.type) {
         case "init":
@@ -63,18 +95,21 @@ class RobotClient {
         case "ping":
           this.handlePing(data.data);
           break;
+        case "pong":
+          console.log("Pong!");
+          break;
         case "serverMetrics":
           this.handleServerMetrics(data.data);
           break;
         default:
-          console.warn("Unknown message type:", data.type);
+          console.warn("Could not parse message:", data);
       }
     } catch (error) {
       console.error("Failed to parse server message:", error);
     }
-  }
+  }).bind(this);
 
-  handleInit(data: any) {
+  handleInit(data: InitData) {
     this.clientId = data.clientId;
     this.robotId = data.robotId;
     this.displayManager.setWorldsize(data.worldSize);
@@ -86,34 +121,27 @@ class RobotClient {
     console.log(`Initialized with ${data.robots.length} robots`);
   }
 
-  handleGameState(data: any) {
-    this.displayManager.updateServerTick(data.sequence);
+  handleGameState(data: GameStateData) {
+    // this.displayManager.updateServerTick(data.sequence);
 
-    data.robots.forEach((robotData: any) => {
-      const robot = this.robots.get(robotData.id);
-      if (robot) {
-        robot.position = { ...robotData.position };
-        robot.velocity = { ...robotData.velocity };
-        robot.rotation = robotData.rotation;
-      }
+    data.otherRobots.forEach((robotData: Robot) => {
+      this.robots.set(robotData.id, robotData);
     });
-
-    this.displayManager.updatePlayerCount(data.robots.length);
   }
 
-  handleRobotJoined(data: any) {
+  handleRobotJoined(data: Robot) {
     this.robots.set(data.id, { ...data });
     this.displayManager.updatePlayerCount(this.robots.size);
     console.log(`Robot ${data.id} joined`);
   }
 
-  handleRobotLeft(data: any) {
+  handleRobotLeft(data: RobotLeftData) {
     this.robots.delete(data.robotId);
     this.displayManager.updatePlayerCount(this.robots.size);
     console.log(`Robot ${data.robotId} left`);
   }
 
-  handlePing(data: any) {
+  handlePing(data: PingData) {
     const timestamp = Date.now();
     this.peerConnection.send({
       type: "pong",
@@ -136,7 +164,7 @@ class RobotClient {
     }
   }
 
-  handleServerMetrics(data: any) {
+  handleServerMetrics(data: ServerMetrics) {
     this.clientMetrics.serverMetrics = data;
   }
 
@@ -174,32 +202,35 @@ class RobotClient {
 
   sendClientState() {
     const clientRobotState = this.robots.get(this.robotId ?? "");
-    if (!clientRobotState) return;
+    if (!clientRobotState || !this.peerConnection.connected) return;
 
     this.peerConnection.send({
-      type: "clientState",
+      type: "gameState",
       data: {
-        position: clientRobotState.position,
-        velocity: clientRobotState.velocity,
-        rotation: clientRobotState.rotation,
-        timestamp: Date.now(),
+        sequence: this.inputSequence,
+        otherRobots: [
+          ...this.robots.values().filter((robot) => robot.id !== this.clientId),
+        ],
       },
     });
   }
 
-  setupCanvas() {}
-
   setupInputHandlers() {
     document.addEventListener("keydown", (e) => {
-      this.handleKeyInput(e.key.toLowerCase(), true);
+      console.log(`keydown: ${e.key}`);
+      this.handleKeyInput(e.key, true);
     });
 
     document.addEventListener("keyup", (e) => {
-      this.handleKeyInput(e.key.toLowerCase(), false);
+      this.handleKeyInput(e.key, false);
     });
 
     document.addEventListener("keypress", (e) => {
-      if (["w", "a", "s", "d", "r", "m"].includes(e.key.toLowerCase())) {
+      if (
+        ["ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight", "r", "m"].includes(
+          e.key,
+        )
+      ) {
         e.preventDefault();
       }
     });
@@ -217,13 +248,14 @@ class RobotClient {
       }
     }
 
-    if (["w", "a", "s", "d"].includes(key)) {
-      this.inputs[key as "w" | "a" | "s" | "d"] = pressed;
+    if (["ArrowUp", "ArrowLeft", "ArrowDown", "ArrowRight"].includes(key)) {
+      this.inputs[key as "ArrowUp" | "ArrowLeft" | "ArrowDown" | "ArrowRight"] =
+        pressed;
     }
   }
 
   applyClientState() {
-    const clientRobotState = this.robots.get(this.robotId ?? "");
+    const clientRobotState = this.robots.get(this.robotId!);
     if (!clientRobotState) return;
 
     const now = Date.now();
@@ -233,10 +265,10 @@ class RobotClient {
     );
 
     const targetVelocity = { x: 0, y: 0 };
-    if (this.inputs.w) targetVelocity.y -= this.robotSpeed;
-    if (this.inputs.s) targetVelocity.y += this.robotSpeed;
-    if (this.inputs.a) targetVelocity.x -= this.robotSpeed;
-    if (this.inputs.d) targetVelocity.x += this.robotSpeed;
+    if (this.inputs.ArrowUp) targetVelocity.y -= this.robotSpeed;
+    if (this.inputs.ArrowDown) targetVelocity.y += this.robotSpeed;
+    if (this.inputs.ArrowLeft) targetVelocity.x -= this.robotSpeed;
+    if (this.inputs.ArrowRight) targetVelocity.x += this.robotSpeed;
 
     const smoothing = 0.15;
     clientRobotState.velocity.x =
@@ -291,12 +323,16 @@ class RobotClient {
     console.log("Stats reset");
   }
 
-  sendMessage(message: any) {
-    if (this.peerConnection && this.peerConnection.connected) {
-      const messageStr = JSON.stringify(message);
-      this.clientMetrics.bytesSent += messageStr.length;
-      this.peerConnection.send(messageStr);
-    }
+  setupRobots() {
+    const clientRobot: Robot = {
+      id: generateId("robot"),
+      position: { x: 0, y: 0 },
+      rotation: 0,
+      velocity: { x: 0, y: 0 },
+      lastUpdateTime: Date.now(),
+    };
+    this.robotId = clientRobot.id;
+    this.robots.set(this.robotId, clientRobot);
   }
 }
 
