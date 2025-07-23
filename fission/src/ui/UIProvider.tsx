@@ -114,11 +114,7 @@ export type UIContextProps = {
 export const UIContext = createContext<UIContextProps>({
     panels: [],
     openModal: (_content, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
-    openPanel: (
-        _content,
-        _parent,
-        _props = { hideAccept: false, hideCancel: false, position: "center" }
-    ) => "",
+    openPanel: (_content, _parent, _props = { hideAccept: false, hideCancel: false, position: "center" }) => "",
     closeModal: () => {},
     closePanel: _id => {},
     addToast: (_variant, _msg) => "",

@@ -210,7 +210,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             originalInputSchemes.current = null
         }
 
-        configureScreen(panel!, {}, { onAccept, onCancel });
+        configureScreen(panel!, {}, { onAccept, onCancel })
     }, [])
 
     const modes = useMemo(() => {

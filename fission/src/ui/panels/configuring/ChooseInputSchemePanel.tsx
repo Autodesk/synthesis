@@ -44,8 +44,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             }
             setConfigurationType("INPUTS")
             // TODO:
-            if (scheme)
-                setSelectedScheme(scheme)
+            if (scheme) setSelectedScheme(scheme)
         }
     }, [closePanel, targetAssembly])
 
