@@ -62,12 +62,8 @@ export const isLowEndDevice = (): boolean => {
     return false
 }
 
-export const shouldUseFastModeByDefault = (): boolean => {
-    return isLowEndDevice()
-}
-
 export const autoOptimizeGraphics = (toastType: "long" | "short" | "none" = "none"): GraphicsPreset => {
-    if (shouldUseFastModeByDefault()) {
+    if (isLowEndDevice()) {
         if (toastType === "long") {
             globalAddToast?.(
                 "info",
