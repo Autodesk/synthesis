@@ -11,6 +11,7 @@ import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import { MatchModeType } from "@/systems/MatchMode"
+import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
 
 const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return
@@ -126,7 +127,7 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
                     alliance: "blue",
                     penaltyPoints: 5,
                     parentNode: undefined,
-                    requireRobotContact: true,
+                    contactType: ContactType.ROBOT_ENTERS,
                     activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME],
                     deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                 }

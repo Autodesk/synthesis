@@ -18,6 +18,13 @@ import { MiraType } from "./MirabufLoader"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import MatchMode, { MatchModeType } from "@/systems/MatchMode"
 
+export enum ContactType {
+    ROBOT_ENTERS = "Robot Enters",
+    BOTH_ROBOTS_INSIDE = "Collision with Both Robots Inside",
+    OPPONENT_ROBOT_INSIDE = "Collision with Opponent Robot Inside",
+    ALLY_ROBOT_INSIDE = "Collision with Ally Robot Inside",
+}
+
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors
     public static redMaterial = new THREE.MeshPhongMaterial({
@@ -62,6 +69,11 @@ class ProtectedZoneSceneObject extends SceneObject {
             )
         }
         return this._prefs.activeDuring.includes(MatchMode.getInstance().getMatchModeType())
+    }
+
+    private isRobotInside(robot: MirabufSceneObject): boolean {
+        const timeInside = this._robotsInside.get(robot) ?? 0
+        return Date.now() - timeInside < 500
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
@@ -125,40 +137,9 @@ class ProtectedZoneSceneObject extends SceneObject {
                         this.zoneCollision(body1)
                     }
 
-                    // If the preference is set to require robot contact, we want to penalize robots here
-                    if (!this._prefs?.requireRobotContact || !this.isZoneActive()) return
-                    const [collisionObjectBody1, collisionObjectBody2] = [body1, body2].map(body => {
-                        const associate = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate | undefined
-                        return associate?.sceneObject as MirabufSceneObject | undefined
-                    })
-                    if (!collisionObjectBody1 || !collisionObjectBody2) return
-                    // Makes sure that both robots are from opposing alliances
-                    if (collisionObjectBody1.alliance === collisionObjectBody2.alliance) return
-                    // Ensure that both bodies are robots are inside the zone
-                    if (
-                        Date.now() - (this._robotsInside.get(collisionObjectBody1) ?? 0) > 500 ||
-                        Date.now() - (this._robotsInside.get(collisionObjectBody2) ?? 0) > 500
-                    ) {
-                        return
-                    }
-                    // Ensures that infinite collisions do not occur
-                    if (Date.now() - this._lastRobotCollisionTime < 1000) return
-                    this._lastRobotCollisionTime = Date.now()
-
-                    // Penalize the robot that entered the opposing alliance protected zone
-                    if (collisionObjectBody1.alliance === this._prefs?.alliance) {
-                        SimulationSystem.robotPenalty(
-                            collisionObjectBody2,
-                            this._prefs?.penaltyPoints ?? 0,
-                            `Touched robot in protected zone`
-                        )
-                    } else {
-                        SimulationSystem.robotPenalty(
-                            collisionObjectBody1,
-                            this._prefs?.penaltyPoints ?? 0,
-                            `Touched robot in protected zone`
-                        )
-                    }
+                    // Handle contact-based penalties based on the configured contact type
+                    if (this._prefs?.contactType == ContactType.ROBOT_ENTERS || !this.isZoneActive()) return
+                    this.handleContactPenalty(body1, body2)
                 }
                 OnContactAddedEvent.addListener(this._collision)
 
@@ -243,23 +224,85 @@ class ProtectedZoneSceneObject extends SceneObject {
 
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collisionID)
         const collisionObject = associate.sceneObject as MirabufSceneObject
-        if (collisionObject.miraType === MiraType.ROBOT && collisionObject.alliance !== this._prefs?.alliance) {
-            const timeInside = this._robotsInside.get(collisionObject) ?? 0
-            if (!this._prefs?.requireRobotContact && Date.now() - timeInside > 500) {
-                SimulationSystem.robotPenalty(
-                    collisionObject,
-                    this._prefs?.penaltyPoints ?? 0,
-                    `Entered protected zone`
-                )
-            }
-            this._robotsInside.set(collisionObject, Date.now())
+        if (collisionObject.miraType !== MiraType.ROBOT) return
+
+        if (
+            this._prefs?.contactType === ContactType.ROBOT_ENTERS &&
+            collisionObject.alliance !== this._prefs?.alliance &&
+            !this.isRobotInside(collisionObject)
+        ) {
+            SimulationSystem.robotPenalty(collisionObject, this._prefs?.penaltyPoints ?? 0, `Entered protected zone`)
         }
+
+        this._robotsInside.set(collisionObject, Date.now())
     }
 
     private zoneCollisionRemoved(collisionID: Jolt.BodyID) {
         const associate = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collisionID)
         const collisionObject = associate.sceneObject as MirabufSceneObject
         this._robotsInside.set(collisionObject, Date.now())
+    }
+
+    private handleContactPenalty(body1: Jolt.BodyID, body2: Jolt.BodyID) {
+        const [collisionObjectBody1, collisionObjectBody2] = [body1, body2].map(body => {
+            const associate = World.physicsSystem.getBodyAssociation(body) as RigidNodeAssociate | undefined
+            return associate?.sceneObject as MirabufSceneObject | undefined
+        })
+
+        if (!collisionObjectBody1 || !collisionObjectBody2) return
+        if (collisionObjectBody1.miraType !== MiraType.ROBOT || collisionObjectBody2.miraType !== MiraType.ROBOT) return
+
+        // Only penalize collisions between robots from different alliances
+        if (collisionObjectBody1.alliance === collisionObjectBody2.alliance) return
+
+        // Ensures that infinite collisions do not occur
+        if (Date.now() - this._lastRobotCollisionTime < 500) return
+
+        let shouldPenalize = false
+        let robotToPenalize: MirabufSceneObject | undefined
+
+        // Find the robot that has the opposite alliance from the zone
+        const opposingRobot = [collisionObjectBody1, collisionObjectBody2].find(
+            robot => robot.alliance !== this._prefs?.alliance
+        )
+        if (!opposingRobot) return
+        switch (this._prefs?.contactType) {
+            case ContactType.BOTH_ROBOTS_INSIDE:
+                // Penalize opposing robot if both robots are inside the zone and colliding
+                if (this.isRobotInside(collisionObjectBody1) && this.isRobotInside(collisionObjectBody2)) {
+                    shouldPenalize = true
+                    robotToPenalize = opposingRobot
+                }
+                break
+
+            case ContactType.OPPONENT_ROBOT_INSIDE:
+                // Penalize if the opposing robot is inside when collision occurs
+                if (this.isRobotInside(opposingRobot)) {
+                    shouldPenalize = true
+                    robotToPenalize = opposingRobot
+                }
+                break
+
+            case ContactType.ALLY_ROBOT_INSIDE:
+                // Penalize opposing robot if an ally robot is inside when collision occurs
+                const allyRobot = [collisionObjectBody1, collisionObjectBody2].find(
+                    robot => robot.alliance === this._prefs?.alliance
+                )
+                if (allyRobot && this.isRobotInside(allyRobot)) {
+                    shouldPenalize = true
+                    robotToPenalize = opposingRobot
+                }
+                break
+        }
+
+        if (shouldPenalize && robotToPenalize) {
+            this._lastRobotCollisionTime = Date.now()
+            SimulationSystem.robotPenalty(
+                robotToPenalize,
+                this._prefs?.penaltyPoints ?? 0,
+                `Contact penalty in protected zone`
+            )
+        }
     }
 }
 

@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import Input from "@/components/Input"
 import Button from "@/components/Button"
-import Checkbox from "@/components/Checkbox"
 import NumberInput from "@/components/NumberInput"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import SelectButton from "@/ui/components/SelectButton"
@@ -21,7 +20,7 @@ import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
+import ProtectedZoneSceneObject, { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
 import Dropdown from "@/ui/components/Dropdown"
 import { MatchModeType } from "@/systems/MatchMode"
 
@@ -57,7 +56,7 @@ function save(
     name: string,
     alliance: Alliance,
     points: number,
-    requireRobotContact: boolean,
+    contactType: ContactType,
     activeDuring: MatchModeType[],
     gizmo: GizmoSceneObject,
     selectedNode?: RigidNodeId
@@ -93,7 +92,7 @@ function save(
     zone.alliance = alliance
     zone.parentNode = selectedNode
     zone.penaltyPoints = points
-    zone.requireRobotContact = requireRobotContact
+    zone.contactType = contactType
     zone.activeDuring = activeDuring
 
     if (!field.fieldPreferences.protectedZones.includes(zone)) field.fieldPreferences.protectedZones.push(zone)
@@ -121,7 +120,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [alliance, setAlliance] = useState<Alliance>(selectedZone.alliance)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(selectedZone.parentNode)
     const [points, setPoints] = useState<number>(selectedZone.penaltyPoints)
-    const [requireRobotContact, setRequireRobotContact] = useState<boolean>(selectedZone.requireRobotContact)
+    const [contactType, setContactType] = useState<ContactType>(selectedZone.contactType || ContactType.ROBOT_ENTERS)
     const [activeDuring, setActiveDuring] = useState<MatchModeType[]>(selectedZone.activeDuring)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
@@ -134,24 +133,14 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 name,
                 alliance,
                 points,
-                requireRobotContact,
+                contactType,
                 activeDuring,
                 gizmoRef.current,
                 selectedNode
             )
             saveAllZones()
         }
-    }, [
-        selectedField,
-        selectedZone,
-        name,
-        alliance,
-        points,
-        requireRobotContact,
-        activeDuring,
-        selectedNode,
-        saveAllZones,
-    ])
+    }, [selectedField, selectedZone, name, alliance, points, contactType, activeDuring, selectedNode, saveAllZones])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
@@ -326,11 +315,48 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 textAlign="left"
             />
 
-            {/** When checked, the zone will count a penalty only if robot contact occurs */}
-            <Checkbox
-                label="Require Robot Contact"
-                defaultState={selectedZone.requireRobotContact}
-                onClick={setRequireRobotContact}
+            {/** Determines what type of contact is required for the penalty to apply */}
+            <Dropdown
+                label="Contact Type"
+                options={[
+                    "Robot Enters",
+                    "Collision with Both Robots Inside",
+                    "Collision with Opponent Robot Inside",
+                    "Collision with Ally Robot Inside",
+                ]}
+                onSelect={(selectedOption: string) => {
+                    switch (selectedOption) {
+                        case "Robot Enters":
+                            setContactType(ContactType.ROBOT_ENTERS)
+                            break
+                        case "Collision with Both Robots Inside":
+                            setContactType(ContactType.BOTH_ROBOTS_INSIDE)
+                            break
+                        case "Collision with Opponent Robot Inside":
+                            setContactType(ContactType.OPPONENT_ROBOT_INSIDE)
+                            break
+                        case "Collision with Ally Robot Inside":
+                            setContactType(ContactType.ALLY_ROBOT_INSIDE)
+                            break
+                        default:
+                            break
+                    }
+                }}
+                defaultValue={(() => {
+                    switch (contactType) {
+                        case ContactType.ROBOT_ENTERS:
+                            return "Robot Enters"
+                        case ContactType.BOTH_ROBOTS_INSIDE:
+                            return "Collision with Both Robots Inside"
+                        case ContactType.OPPONENT_ROBOT_INSIDE:
+                            return "Collision with Opponent Robot Inside"
+                        case ContactType.ALLY_ROBOT_INSIDE:
+                            return "Collision with Ally Robot Inside"
+                        default:
+                            return "Robot Enters"
+                    }
+                })()}
+                textAlign="left"
             />
 
             {gizmoComponent}
