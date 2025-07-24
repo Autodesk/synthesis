@@ -70,7 +70,6 @@ export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => 
                 sx={{
                     display: panel.props.configured ? "" : "none",
                     position: "absolute",
-                    maxWidth: 400,
                     pointerEvents: "auto",
                     p: 4,
                 }}

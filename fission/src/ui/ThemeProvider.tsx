@@ -18,15 +18,13 @@ interface StoredTheme {
 }
 
 export const ThemeContext = createContext({
-	mode: "",
-	toggleColorMode: () => {},
-	setPrimaryColor: (_color: string) => {},
-	setSecondaryColor: (_color: string) => {},
-	primaryColor: "",
-	secondaryColor: "",
-});
-
-export const useThemeContext = () => useContext(ThemeContext)
+    mode: "dark",
+    setMode: (_mode: PaletteMode) => {},
+    setPrimaryColor: (_color: string) => {},
+    setSecondaryColor: (_color: string) => {},
+    primaryColor: "",
+    secondaryColor: "",
+})
 
 export const useThemeContext = () => useContext(ThemeContext)
 
@@ -90,9 +88,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
 	const themeContextValue = useMemo(
 		() => ({
-			toggleColorMode: () => {
-				setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-			},
+            setMode,
 			setPrimaryColor,
 			setSecondaryColor,
 			mode,
@@ -108,4 +104,3 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 		</ThemeContext.Provider>
 	);
 };
-

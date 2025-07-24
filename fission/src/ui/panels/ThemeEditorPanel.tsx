@@ -1,16 +1,16 @@
 import { randomColor } from "@/util/Random"
 import { useThemeContext } from "../ThemeProvider"
-import { Box, Button, Stack, TextField, Typography } from "@mui/material"
+import { Box, Button, FormControlLabel, Stack, Switch, TextField, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 import Label from "../components/Label"
 import { useUIContext } from "../UIProvider"
 import { PanelImplProps } from "../components/Panel"
+import StatefulCheckbox from "../components/StatefulCheckbox"
 
 export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { mode, toggleColorMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =
-        useThemeContext()
+    const { mode, setMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } = useThemeContext()
     const { configureScreen } = useUIContext()
 
     const [tempPrimary, setTempPrimary] = useState(primaryColor)
@@ -59,6 +59,11 @@ export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     }}
                 />
             </Stack>
+            <StatefulCheckbox
+                label="Dark Mode"
+                checked={mode === "dark"}
+                onClick={checked => setMode(checked ? "dark" : "light")}
+            />
             <Button
                 startIcon={<GiPerspectiveDiceSixFacesOne />}
                 onClick={() => {

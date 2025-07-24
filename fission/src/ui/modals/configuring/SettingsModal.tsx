@@ -12,6 +12,7 @@ import StatefulSlider from "@/ui/components/StatefulSlider"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 import Label from "@/ui/components/Label"
 import { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
+import { ThemeEditorPanel } from "@/ui/panels/ThemeEditorPanel"
 
 const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { closeModal, openPanel, configureScreen } = useUIContext()
@@ -42,7 +43,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             gap={2}
             className="overflow-y-auto bg-background-secondary rounded-md p-2 max-h-[60vh] min-w-[20vw]"
         >
-            <Box alignSelf={"center"}>
+            <Stack alignSelf={"center"} direction="row" gap={2}>
                 <Button
                     onClick={() => {
                         openPanel(<GraphicsSettingsPanel />, modal)
@@ -52,7 +53,16 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 >
                     Graphics Settings
                 </Button>
-            </Box>
+                <Button
+                    onClick={() => {
+                        openPanel(<ThemeEditorPanel />, modal)
+                        closeModal(CloseType.Overwrite)
+                        save()
+                    }}
+                >
+                    Theme Editor
+                </Button>
+            </Stack>
 
             {/* Disabled until these settings are implemented */}
             {/*   {Spacer(5)}
