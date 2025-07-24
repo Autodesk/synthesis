@@ -32,12 +32,7 @@ describe("React Mounting", async () => {
     })
 
     test("Static stylesheets load", async () => {
-        for (let i = 0; i < 50; i++) {
-            await wait(200)
-            if (document.styleSheets.length >= 2) {
-                break
-            }
-        }
+        await vi.waitUntil(() => document.styleSheets.length >= 2, {timeout:10000, interval:200})
 
         expect(document.styleSheets.length).toBe(2)
         const iterable = document.fonts.values()

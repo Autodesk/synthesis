@@ -1,15 +1,14 @@
 import { consent, event, exception, init, setUserId, setUserProperty } from "@haensl/google-analytics"
-
-import WorldSystem from "../WorldSystem"
+import APS from "@/aps/APS"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
-import APS from "@/aps/APS"
+import WorldSystem from "../WorldSystem"
 
 const SAMPLE_INTERVAL = 60000 // 1 minute
 const BETA_CODE_COOKIE_REGEX = /access_code=.*(;|$)/
 const MOBILE_USER_AGENT_REGEX = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
 
-declare const GIT_COMMIT:string
+declare const GIT_COMMIT: string
 
 export interface AccumTimes {
     frames: number
@@ -19,11 +18,10 @@ export interface AccumTimes {
     simulationTime: number
     totalTime: number
 }
-
 type MiraEvent = {
-    key?: string,
-    type?: "robot" | "field",
-    assemblyName?: string,
+    key?: string
+    type?: "robot" | "field"
+    assemblyName?: string
     /**
      * Size (in bytes) of the mirabuf file
      */
@@ -37,7 +35,7 @@ export interface AnalyticsEvents {
         avgScene: number
         avgInput: number
         avgSimulation: number
-    },
+    }
     "APS Calls per Minute": unknown
     "APS Login": unknown
     "APS Download": MiraEvent
@@ -53,9 +51,8 @@ export interface AnalyticsEvents {
 
     "Scheme Applied": {
         isCustomized: boolean
-        schemeName:string
+        schemeName: string
     }
-
 }
 
 class AnalyticsSystem extends WorldSystem {
@@ -92,6 +89,10 @@ class AnalyticsSystem extends WorldSystem {
     }
 
     public setUserProperty(name: string, value: unknown) {
+        if (name.includes(" ")) {
+            console.warn("GA user property names must not contain spaces")
+            return
+        }
         setUserProperty({ name: name, value: value })
     }
 
@@ -105,7 +106,7 @@ class AnalyticsSystem extends WorldSystem {
     private sendMetaData() {
         this.setUserProperty("isInternal", import.meta.env.DEV)
         this.setUserProperty("commit", GIT_COMMIT)
-        console.log(GIT_COMMIT)
+
         if (!this._consent) {
             return
         }
@@ -116,7 +117,6 @@ class AnalyticsSystem extends WorldSystem {
             this.setUserProperty("betaCode", betaCode)
         }
         this.setUserProperty("isMobile", MOBILE_USER_AGENT_REGEX.test(navigator.userAgent))
-
     }
 
     private currentSampleInterval() {

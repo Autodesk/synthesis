@@ -1,11 +1,12 @@
-import { defineConfig } from "vitest/config"
-import * as path from "path"
-import react from "@vitejs/plugin-react-swc"
-import basicSsl from "@vitejs/plugin-basic-ssl"
-import glsl from "vite-plugin-glsl"
-import { loadEnv, ProxyOptions } from "vite"
 import fs from "node:fs/promises"
+import basicSsl from "@vitejs/plugin-basic-ssl"
+import react from "@vitejs/plugin-react-swc"
 import git from "git-rev-sync"
+import * as path from "path"
+import { loadEnv, ProxyOptions } from "vite"
+import glsl from "vite-plugin-glsl"
+import { defineConfig } from "vitest/config"
+
 const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
@@ -38,43 +39,50 @@ if (useSsl) {
     plugins.push(basicSsl())
 }
 
-const localAssetsExist = await fs.access("./public/Downloadables/Mira",fs.constants.R_OK).then(() => true).catch(() => false)
+const localAssetsExist = await fs
+    .access("./public/Downloadables/Mira", fs.constants.R_OK)
+    .then(() => true)
+    .catch(() => false)
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-    process.env = {...process.env, ...loadEnv(mode, process.cwd())};
+    process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
-    const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")
+    const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
 
-    if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")) {
+    if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")) {
         console.warn("Can't find local assets, do you need to run `npm run assetpack`?")
     }
-    console.log(`Using ${useLocalAssets?"local":"remote"} mirabuf assets`)
+    console.log(`Using ${useLocalAssets ? "local" : "remote"} mirabuf assets`)
 
     const proxies: Record<string, ProxyOptions> = {}
     proxies["/api/mira"] = useLocalAssets
         ? {
-            target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
-            changeOrigin: true,
-            secure: false,
-            rewrite: path => path.replace(/^\/api\/mira/, "/Downloadables/Mira").replace("robots", "Robots").replace("fields", "Fields"),
-        }
+              target: `http://localhost:${mode === "test" ? 3001 : serverPort}`,
+              changeOrigin: true,
+              secure: false,
+              rewrite: path =>
+                  path
+                      .replace(/^\/api\/mira/, "/Downloadables/Mira")
+                      .replace("robots", "Robots")
+                      .replace("fields", "Fields"),
+          }
         : {
-            target: `https://synthesis.autodesk.com/`,
-            changeOrigin: true,
-            secure: true,
-        }
+              target: `https://synthesis.autodesk.com/`,
+              changeOrigin: true,
+              secure: true,
+          }
     proxies["/api/aps"] = useLocalAPS
         ? {
-            target: `http://localhost:${dockerServerPort}/`,
-            changeOrigin: true,
-            secure: false,
-        }
+              target: `http://localhost:${dockerServerPort}/`,
+              changeOrigin: true,
+              secure: false,
+          }
         : {
-            target: `https://synthesis.autodesk.com/`,
-            changeOrigin: true,
-            secure: true,
-        }
+              target: `https://synthesis.autodesk.com/`,
+              changeOrigin: true,
+              secure: true,
+          }
     return {
         plugins: plugins,
         publicDir: "./public",
@@ -87,9 +95,10 @@ export default defineConfig(({ mode }) => {
             ],
         },
         define: {
-            GIT_COMMIT:JSON.stringify(git.short(".."))
+            GIT_COMMIT: JSON.stringify(git.short("..")),
         },
         test: {
+            setupFiles: ["src/test/TestSetup.browser.ts"],
             globalSetup: ["src/test/TestSetup.server.ts"],
             testTimeout: 10000,
             globals: true,
@@ -112,10 +121,9 @@ export default defineConfig(({ mode }) => {
             },
         },
         build: {
-            target: "esnext"
+            target: "esnext",
         },
         server: {
-
             // this ensures that the browser opens upon server start
             // open: true,
             // this sets a default port to 3000
