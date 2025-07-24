@@ -8,6 +8,8 @@ import ScreenInteractionHandler, {
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import World from "../World"
 
 export type CameraControlsType = "Orbit"
 
@@ -143,6 +145,32 @@ export class CustomOrbitControls extends CameraControls {
         this._interactionHandler.interactionMove = e => this.interactionMove(e)
     }
 
+    /**
+     * Finds a suitable fallback focus target when the current focus is no longer available.
+     * Prioritizes robots first, then fields, then any other MirabufSceneObject.
+     */
+    private findFallbackFocus(): MirabufSceneObject | undefined {
+        const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
+        const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+        
+        const robots = mirabufObjects.filter(obj => obj.miraType === MiraType.ROBOT)
+        const fields = mirabufObjects.filter(obj => obj.miraType === MiraType.FIELD)
+        
+        return robots[0] || fields[0] || mirabufObjects[0]
+    }
+
+    /**
+     * Validates that the current focus provider still exists in the scene.
+     * If not, automatically finds a suitable replacement.
+     */
+    private validateFocusProvider(): void {
+        if (this._focusProvider && !World.sceneRenderer.sceneObjects.has(this._focusProvider.id)) {
+            const fallbackFocus = this.findFallbackFocus()
+            this._focusProvider = fallbackFocus
+        }
+    }
+
+
     public interactionEnd(end: InteractionEnd) {
         /**
          * If Pointer is already down, and the button that is being
@@ -245,6 +273,8 @@ export class CustomOrbitControls extends CameraControls {
 
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
+
+        this.validateFocusProvider()
 
         if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
 
