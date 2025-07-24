@@ -12,12 +12,14 @@ export async function setup() {
 
     console.log("Starting static file server...")
 
-    const assets = sirv(serveDirectory)
-
+    const assets = sirv(serveDirectory, {
+        dev:false,
+    })
     server = http.createServer((req, res) => {
         res.setHeader("Access-Control-Allow-Origin", "*")
         res.setHeader("Access-Control-Allow-Methods", "GET")
         assets(req, res)
+        console.log(res.statusCode,res.statusMessage, req.url)
     })
 
     await new Promise<void>((resolve, reject) => {
