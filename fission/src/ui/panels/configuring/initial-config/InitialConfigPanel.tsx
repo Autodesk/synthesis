@@ -66,7 +66,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             )?.scheme
 
             if (scheme) {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
             }
 
             setSelectedScheme(scheme)

@@ -5,6 +5,7 @@ import { InputScheme } from "./InputSchemeManager"
 import MatchMode, { MatchModeType } from "@/systems/MatchMode"
 import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import World from "@/systems/World.ts";
 
 export type ModifierState = Readonly<{
     alt: boolean
@@ -336,6 +337,11 @@ class InputSystem extends WorldSystem {
 
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
+
+    public static setBrainIndexSchemeMapping(index:number, scheme:InputScheme) {
+        InputSystem.brainIndexSchemeMap.set(index, scheme)
+        World.analyticsSystem?.event("Scheme Applied", {isCustomized:scheme.customized, schemeName:scheme.schemeName})
+    }
 
     constructor() {
         super()

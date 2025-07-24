@@ -5,6 +5,7 @@ import basicSsl from "@vitejs/plugin-basic-ssl"
 import glsl from "vite-plugin-glsl"
 import { loadEnv, ProxyOptions } from "vite"
 import fs from "node:fs/promises"
+import git from "git-rev-sync"
 const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
@@ -48,7 +49,6 @@ export default defineConfig(({ mode }) => {
     if (!localAssetsExist && (mode === "test" || process.env.NODE_ENV=="development")) {
         console.warn("Can't find local assets, do you need to run `npm run assetpack`?")
     }
-
     console.log(`Using ${useLocalAssets?"local":"remote"} mirabuf assets`)
 
     const proxies: Record<string, ProxyOptions> = {}
@@ -75,7 +75,6 @@ export default defineConfig(({ mode }) => {
             changeOrigin: true,
             secure: true,
         }
-
     return {
         plugins: plugins,
         publicDir: "./public",
@@ -86,6 +85,9 @@ export default defineConfig(({ mode }) => {
                 { find: "@/panels", replacement: path.resolve(__dirname, "src", "ui", "panels") },
                 { find: "@", replacement: path.resolve(__dirname, "src") },
             ],
+        },
+        define: {
+            GIT_COMMIT:JSON.stringify(git.short(".."))
         },
         test: {
             globalSetup: ["src/test/TestSetup.server.ts"],

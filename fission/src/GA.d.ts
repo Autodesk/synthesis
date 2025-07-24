@@ -7,5 +7,5 @@ declare module "@haensl/google-analytics" {
     function event(e: GaEvent)
     function exception(e: GaException)
     function setUserId({ id }: { id: string })
-    function setUserProperty({ name, value }: { name: string; value: string })
+    function setUserProperty({ name, value }: { name: string; value: unknown })
 }

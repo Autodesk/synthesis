@@ -70,7 +70,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                                 disabled={disabled}
                                 value={SynthesisIcons.SELECT_LARGE}
                                 onClick={() => {
-                                    InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                                    InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
                                     // TODO: if touch controls, then ensure that they are enabled.
                                     if (scheme.usesTouchControls) {
                                         new TouchControlsEvent(TouchControlsEventKeys.JOYSTICK)
@@ -83,7 +83,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                         </div>
                         {/** Edit button - same as select but opens the inputs modal */}
                         {EditButton(() => {
-                            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                            InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
 
                             setSelectedConfigurationType(ConfigurationType.INPUTS)
                             setSelectedScheme(scheme)
@@ -174,7 +174,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
             </>
             {/** New scheme with a randomly assigned name button */}
             {AddButtonInteractiveColor(() => {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, DefaultInputs.newBlankScheme(robotDriveType))
                 onCreateNew?.()
             })}
         </>

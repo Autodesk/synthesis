@@ -42,7 +42,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             )?.scheme
 
             if (scheme) {
-                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+                InputSystem.setBrainIndexSchemeMapping(brainIndex, scheme)
             }
             setSelectedConfigurationType(ConfigurationType.INPUTS)
             setSelectedScheme(scheme)
