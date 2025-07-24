@@ -19,7 +19,7 @@ import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewScheme
 import Label from "@/ui/components/Label"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { setSelectedScheme, setConfigurationType } = useStateContext()
+    const { setSelectedScheme, setUnconfirmedImport, setConfigurationType } = useStateContext()
     const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
@@ -70,9 +70,14 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     }, [targetAssembly])
 
     useEffect(() => {
+        setUnconfirmedImport(true)
+
         configureScreen(panel!, { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" }, {
             onAccept: closeFinish,
-            onCancel: closeDelete
+            onCancel: closeDelete,
+            onClose: () => {
+                setUnconfirmedImport(false)
+            }
         })
     }, [])
 

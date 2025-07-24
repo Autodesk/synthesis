@@ -117,7 +117,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 }
 
 const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
-    const { closePanel, openModal, configureScreen } = useUIContext()
+    const { addToast, closePanel, openModal, configureScreen } = useUIContext()
     const { unconfirmedImport, configurationType, setConfigurationType } = useStateContext()
 
     const [cachedRobots, setCachedRobots] = useState(getCacheInfo(MiraType.ROBOT))
@@ -165,8 +165,8 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
     // biome-ignore lint: things break if we don't add the closePanel dep
     useLayoutEffect(() => {
         if (unconfirmedImport) {
+            addToast("warning", "You're already importing a model!\nConfirm that one before importing another.")
             closePanel(panel!.id, CloseType.Cancel)
-            globalAddToast("warning", "You're already importing a model!\nConfirm that one before importing another.")
             return
         }
         // TODO: validate behaviour
