@@ -54,7 +54,6 @@ class PeerConnection {
     this.connection.on("open", () => {
       this.connected = true;
       console.log("Connection opened");
-      // this.send({ type: "ping", data: { timestamp: Date.now() } });
       this.send({ type: "init", data: this.initialization });
     });
 

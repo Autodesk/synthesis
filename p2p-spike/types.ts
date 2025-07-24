@@ -8,6 +8,11 @@ export type Velocity = {
   y: number;
 };
 
+export type Dimensions = {
+  width: number;
+  height: number;
+};
+
 export type Robot = {
   id: string;
   position: Point;
@@ -44,6 +49,7 @@ export type Metrics = {
 export type Message =
   | { type: "init"; data: InitData }
   | { type: "gameState"; data: GameStateData }
+  | { type: "collision"; data: CollisionData }
   | { type: "robotJoined"; data: RobotJoinedData }
   | { type: "robotLeft"; data: RobotLeftData }
   | { type: "ping"; data: PingData }
@@ -60,6 +66,12 @@ export type InitData = {
 export type GameStateData = {
   sequence: number;
   otherRobots: Robot[];
+  timestamp: number;
+};
+
+export type CollisionData = {
+  sequence: number;
+  robots: Robot[];
   timestamp: number;
 };
 

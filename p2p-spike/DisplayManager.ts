@@ -1,8 +1,8 @@
-import type { Metrics, Point, Robot } from "./types";
+import type { Dimensions, Metrics, Point, Robot } from "./types";
 
 export default class DisplayManger {
-  worldSize = { width: 1000, height: 1000 };
-  robotSize = { width: 50, height: 50 };
+  worldSize: Dimensions = { width: 1000, height: 1000 };
+  robotSize: Dimensions = { width: 50, height: 50 };
 
   canvas: HTMLCanvasElement;
   ctx: CanvasRenderingContext2D;

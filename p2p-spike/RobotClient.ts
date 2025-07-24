@@ -1,4 +1,6 @@
 import type {
+  CollisionData,
+  Dimensions,
   GameStateData,
   InitData,
   Message,
@@ -11,6 +13,12 @@ import type {
 import PeerConnection from "./PeerConnection";
 import DisplayManager from "./DisplayManager";
 import { generateId } from "./utils";
+
+enum CollisionState {
+  None,
+  X,
+  Y,
+}
 
 class RobotClient {
   peerConnection: PeerConnection;
@@ -66,8 +74,12 @@ class RobotClient {
   gameLoop() {
     const iteration = () =>
       setTimeout(() => {
-        this.applyClientState();
-        this.sendClientState();
+        const collided = this.applyClientState();
+        if (collided) {
+          this.sendEntireState();
+        } else {
+          this.sendClientState();
+        }
         this.displayManager.render(
           Date.now(),
           this.robots,
@@ -93,6 +105,9 @@ class RobotClient {
           break;
         case "gameState":
           this.handleGameState(data.data);
+          break;
+        case "collision":
+          this.handleCollision(data.data);
           break;
         case "robotJoined":
           this.handleRobotJoined(data.data);
@@ -131,6 +146,14 @@ class RobotClient {
   handleGameState(data: GameStateData) {
     const timestamp = Date.now();
     data.otherRobots.forEach((robotData: Robot) => {
+      this.robots.set(robotData.id, robotData);
+    });
+    this.measurePing(timestamp, data.timestamp);
+  }
+
+  handleCollision(data: CollisionData) {
+    const timestamp = Date.now();
+    data.robots.forEach((robotData: Robot) => {
       this.robots.set(robotData.id, robotData);
     });
     this.measurePing(timestamp, data.timestamp);
@@ -239,6 +262,20 @@ class RobotClient {
     });
   }
 
+  sendEntireState() {
+    const clientRobotState = this.robots.get(this.robotId ?? "");
+    if (!clientRobotState || !this.peerConnection.connected) return;
+
+    this.peerConnection.send({
+      type: "collision",
+      data: {
+        sequence: this.inputSequence,
+        robots: [...this.robots.values()],
+        timestamp: Date.now(),
+      },
+    });
+  }
+
   setupInputHandlers() {
     document.addEventListener("keydown", (e) => {
       console.log(`keydown: ${e.key}`);
@@ -278,9 +315,11 @@ class RobotClient {
     }
   }
 
-  applyClientState() {
-    const clientRobotState = this.robots.get(this.robotId!);
-    if (!clientRobotState) return;
+  // Returns whether there was a collision
+  applyClientState(): boolean {
+    let clientRobotState = this.robots.get(this.robotId!);
+    if (!clientRobotState) return false;
+    const clientAnchor = structuredClone(clientRobotState);
 
     const now = Date.now();
     const deltaTime = Math.min(
@@ -332,7 +371,87 @@ class RobotClient {
         Math.PI;
     }
 
+    const [collisionState, id] = this.checkCollisions(clientRobotState);
+    if (collisionState !== CollisionState.None) {
+      const dimensions = this.displayManager.robotSize;
+      const otherRobot = this.robots.get(id!)!;
+
+      if (collisionState === CollisionState.X) {
+        if (clientRobotState.position.x > otherRobot?.position.x) {
+          clientRobotState.position.x = Math.max(
+            otherRobot?.position.x! + dimensions.width,
+            clientRobotState.position.x,
+          );
+        } else {
+          clientRobotState.position.x = Math.min(
+            otherRobot?.position.x! - dimensions.width,
+            clientRobotState.position.x,
+          );
+        }
+      } else {
+        if (clientRobotState.position.y < otherRobot.position.y) {
+          clientRobotState.position.y = Math.min(
+            otherRobot?.position.y! - dimensions.height,
+            clientRobotState.position.y,
+          );
+        } else {
+          clientRobotState.position.y = Math.max(
+            otherRobot?.position.y! + dimensions.height,
+            clientRobotState.position.y,
+          );
+        }
+      }
+
+      clientRobotState.velocity = { y: 0, x: 0 };
+      otherRobot!.velocity = { y: 0, x: 0 };
+      clientRobotState.lastUpdateTime = now;
+
+      return true;
+    }
+
     clientRobotState.lastUpdateTime = now;
+    return false;
+  }
+
+  checkCollisions(
+    clientRobotState: Robot,
+  ): [CollisionState, string | undefined] {
+    const dimensions = this.displayManager.robotSize;
+    for (const [id, otherRobot] of this.robots
+      .entries()
+      .filter(([id, _otherRobot]) => id !== clientRobotState.id)) {
+      const state = this.isColliding(clientRobotState, otherRobot, dimensions);
+      if (state !== CollisionState.None) {
+        return [state, id];
+      }
+    }
+    return [CollisionState.None, undefined];
+  }
+
+  isColliding(
+    clientRobotState: Robot,
+    otherRobot: Robot,
+    robotDimensions: Dimensions,
+  ): CollisionState {
+    const clientPosition = clientRobotState.position;
+
+    // TODO Both of these must be true, check for which dimension is the issues another way
+    if (
+      clientPosition.x <= otherRobot.position.x + robotDimensions.width &&
+      clientPosition.x + robotDimensions.width >= otherRobot.position.x &&
+      clientPosition.y <= otherRobot.position.y + robotDimensions.height &&
+      clientPosition.y + robotDimensions.height >= otherRobot.position.y
+    ) {
+      const yDiff = Math.abs(clientPosition.y - otherRobot.position.y);
+      const xDiff = Math.abs(clientPosition.x - otherRobot.position.x);
+      if (yDiff > xDiff) {
+        return CollisionState.Y;
+      } else {
+        return CollisionState.X;
+      }
+    }
+
+    return CollisionState.None;
   }
 
   resetStats() {
@@ -350,7 +469,7 @@ class RobotClient {
   setupRobots() {
     const clientRobot: Robot = {
       id: generateId("robot"),
-      position: { x: 0, y: 0 },
+      position: { x: Math.random() * 100, y: Math.random() * 100 },
       rotation: 0,
       velocity: { x: 0, y: 0 },
       lastUpdateTime: Date.now(),
