@@ -19,6 +19,9 @@ interface AppState {
     setConfigurePanelSettings: (_settings?: ConfigurePanelSettings) => void
     configurationType: ConfigurationType
     setConfigurationType: (_type: ConfigurationType) => void
+    // View Cube
+    isMainMenuOpen: boolean
+    setIsMainMenuOpen: (_state: boolean) => void
 }
 
 export const StateContext = createContext<AppState>({
@@ -30,6 +33,8 @@ export const StateContext = createContext<AppState>({
     setConfigurePanelSettings: () => {},
     configurationType: "ROBOTS",
     setConfigurationType: () => {},
+    isMainMenuOpen: true,
+    setIsMainMenuOpen: () => {},
 })
 
 export const useStateContext = () => useContext(StateContext)
@@ -39,6 +44,7 @@ export const StateProvider: React.FC<StateProviderProps> = ({ children }) => {
     const [selectedScheme, setSelectedScheme] = useState<InputScheme | undefined>(undefined)
     const [configurePanelSettings, setConfigurePanelSettings] = useState<ConfigurePanelSettings | undefined>(undefined)
     const [configurationType, setConfigurationType] = useState<ConfigurationType>("ROBOTS")
+    const [isMainMenuOpen, setIsMainMenuOpen] = useState<boolean>(true)
 
     const stateContextValue = useMemo(
         () => ({
@@ -50,8 +56,10 @@ export const StateProvider: React.FC<StateProviderProps> = ({ children }) => {
             setConfigurePanelSettings,
             configurationType,
             setConfigurationType,
+            isMainMenuOpen,
+            setIsMainMenuOpen,
         }),
-        [unconfirmedImport, selectedScheme, configurePanelSettings, configurationType]
+        [unconfirmedImport, selectedScheme, configurePanelSettings, configurationType, isMainMenuOpen]
     )
 
     return <StateContext.Provider value={stateContextValue}>{children}</StateContext.Provider>

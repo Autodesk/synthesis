@@ -4,14 +4,21 @@ import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type { ModalImplProps } from "../components/Modal"
 import { CloseType, useUIContext } from "../UIProvider"
 import { useEffect } from "react"
+import { useStateContext } from "../StateProvider"
 
 const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback: () => void }> = ({
     modal,
     startSingleplayerCallback,
 }) => {
     const { configureScreen, closeModal } = useUIContext()
+    const { setIsMainMenuOpen } = useStateContext()
     useEffect(() => {
+        setIsMainMenuOpen(true)
         configureScreen(modal!, { title: "Welcome", hideAccept: true, hideCancel: true, allowClickAway: false }, {})
+
+        return () => {
+            setIsMainMenuOpen(false)
+        }
     }, [])
     return (
         <Stack gap={1}>
