@@ -34,7 +34,7 @@ const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback
             </Button>
             <Button
                 onClick={() => {
-                    globalAddToast("error", "Not Supported\nMultiplayer is not yet supported. Come back soon!")
+                    globalAddToast("error", "Not Supported", "Multiplayer is not yet supported. Come back soon!")
                 }}
                 fullWidth={true}
                 className="mt-1 mb-3"

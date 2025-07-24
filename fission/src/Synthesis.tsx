@@ -16,10 +16,10 @@ import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
-import { UIContext } from "./ui/UIProvider.tsx"
+import { UIContext, UIProvider } from "./ui/UIProvider.tsx"
+import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 
 function Synthesis() {
-    const { openModal } = useContext(UIContext)
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
 
     const mainLoopHandle = useRef(0)
@@ -31,7 +31,7 @@ function Synthesis() {
             window.close()
             return
         }
-        openModal(
+        globalOpenModal(
             <MainMenuModal
                 startSingleplayerCallback={() => {
                     World.initWorld()
@@ -85,16 +85,20 @@ function Synthesis() {
                 <SnackbarProvider maxSnack={5}>
                     <Skybox key={"skybox"} />
                     <StateProvider>
-                        <GlobalUIComponent />
-                        <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
-                        <SceneOverlay />
-                        <ContextMenu />
-                        <MainHUD key={"main-hud"} />
-                        <UIRenderer />
-                        <ProgressNotifications key={"progress-notifications"} />
-                        <WPILibConnectionStatus />
+                        <UIProvider>
+                            <GlobalUIComponent />
+                            <Scene useStats={import.meta.env.DEV} key="scene-in-toast-provider" />
+                            <SceneOverlay />
+                            <ContextMenu />
+                            <MainHUD key={"main-hud"} />
+                            <UIRenderer />
+                            <ProgressNotifications key={"progress-notifications"} />
+                            <WPILibConnectionStatus />
 
-                        {!consentPopupDisable && <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />}
+                            {!consentPopupDisable && (
+                                <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />
+                            )}
+                        </UIProvider>
                     </StateProvider>
                 </SnackbarProvider>
             </ThemeProvider>
