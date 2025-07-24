@@ -4,6 +4,7 @@ import { setupWorker } from "msw/browser"
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, Mock, test, vi } from "vitest"
 import AnalyticsSystem from "@/systems/analytics/AnalyticsSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
+import {server} from "@vitest/browser/context";
 
 type RequestType = Parameters<Parameters<typeof http.get>[1]>[0]
 
@@ -20,16 +21,16 @@ describe("Analytics", () => {
         // }),
     ]
 
-    const server = setupWorker(...restHandlers)
+    const webMocks = setupWorker(...restHandlers)
 
     // Start server before all tests
-    beforeAll(async () => await server.start({ onUnhandledRequest: "bypass", quiet: true }))
+    beforeAll(async () => await webMocks.start({ onUnhandledRequest: "bypass", quiet: true }))
 
     //  Close server after all tests
-    afterAll(() => server.stop())
+    afterAll(() => webMocks.stop())
 
     // Reset handlers after each test `important for test isolation`
-    afterEach(() => server.resetHandlers())
+    afterEach(() => webMocks.resetHandlers())
     beforeEach(() => {
         vi.resetAllMocks()
     })
@@ -59,7 +60,8 @@ describe("Analytics", () => {
             expect(window.dataLayer).toBeDefined()
         })
 
-        test("gtag calls fetch with appropriate values", async () => {
+        test("gtag calls fetch with appropriate values", async ({skip}) => {
+            skip(server.browser == "firefox", "Firefox blocks Google Analytics")
             PreferencesSystem.setGlobalPreference("ReportAnalytics", true)
 
             const initialParams = mockRequestParametersHandle()
@@ -90,6 +92,9 @@ describe("Analytics", () => {
         system.event("Cache Get", { key: "1234" })
         expect(gtagMock).toHaveBeenCalledExactlyOnceWith("event", "Cache Get", { key: "1234" })
         expect(window.dataLayer!.length).toBe(originalDataLayerSize + 1)
-        expect(window.dataLayer![window.dataLayer!.length - 1]).toBe(["event", "Cache Get", { key: "1234" }])
+        const lastDatalayerItem = window.dataLayer![window.dataLayer!.length - 1]
+        expect(lastDatalayerItem[0]).toBe("event")
+        expect(lastDatalayerItem[1]).toBe("Cache Get")
+        expect(lastDatalayerItem[2]).toStrictEqual(expect.objectContaining({key:"1234"}))
     })
 })
