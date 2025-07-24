@@ -1,4 +1,4 @@
-import type { VariantType } from "notistack"
+import type { SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
 import type { ReactElement, ReactNode } from "react"
@@ -27,6 +27,7 @@ interface UIScreenCallbacks<T> {
  *  Props for generic UIScreen
  */
 export interface UIScreenProps {
+    configured: boolean
     title?: string
     htmlProps?: string
     hideCancel?: boolean
@@ -85,14 +86,22 @@ export interface Panel<T> extends UIScreen<T> {
     props: PanelProps
 }
 
-export type OpenModalFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: Omit<ModalProps, "type">) => string
-export type OpenPanelFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: Omit<PanelProps, "type">) => string
+export type OpenModalFn = <T>(
+    contents: ReactElement,
+    parent?: UIScreen<T>,
+    props?: Omit<ModalProps, "type" | "configured">
+) => string
+export type OpenPanelFn = <T>(
+    contents: ReactElement,
+    parent?: UIScreen<T>,
+    props?: Omit<PanelProps, "type" | "configured">
+) => string
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
-export type AddToastFn = (variant: VariantType, ...contents: ReactElement[]) => void
+export type AddToastFn = (variant: VariantType, ...contents: ReactNode[]) => void
 export type ConfigureScreenFn = <T extends UIScreen<any>>(
     screen: T,
-    props: T extends Panel<infer _> ? Partial<PanelProps> : Partial<ModalProps>,
+    props: T extends Panel<infer _> ? Partial<Omit<PanelProps, "configured">> : Partial<Omit<ModalProps, "configured">>,
     callbacks: T extends Modal<infer S>
         ? Omit<Partial<UIScreenCallbacks<S>>, "onBeforeAccept">
         : T extends Panel<infer S>
@@ -133,7 +142,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: Omit<ModalProps, "type"> & Omit<UIScreenCallbacks<T>, "onAccept"> = {
+            props: Omit<ModalProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onAccept"> = {
                 hideAccept: false,
                 hideCancel: false,
                 acceptText: "Accept",
@@ -148,6 +157,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 props,
             } as Modal<T>
             modal?.onClose?.(CloseType.Overwrite)
+
+            newModal.props.configured = false
 
             // don't allow configuring onAccept from open function
             newModal.onAccept = new UICallback()
@@ -171,7 +182,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: Omit<PanelProps, "type"> & Omit<UIScreenCallbacks<T>, "onAccept"> = {
+            props: Omit<PanelProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onAccept"> = {
                 hideAccept: false,
                 hideCancel: false,
                 acceptText: "Accept",
@@ -186,6 +197,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 content,
                 props,
             } as Panel<T>
+
+            panel.props.configured = false
 
             // don't allow configuring onAccept from open function
             panel.onAccept = new UICallback()
@@ -238,16 +251,20 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     }, [])
 
     const addToast = useCallback(
-        (variant: VariantType, ...contents: ReactElement[]) => {
+        (variant: VariantType, ...contents: SnackbarMessage[]) => {
             enqueueSnackbar(
-                <>
-                    {...contents.map(child => (
-                        <>
-                            {child}
-                            <br />
-                        </>
-                    ))}
-                </>,
+                contents.length <= 1 ? (
+                    <>{...contents}</>
+                ) : (
+                    <>
+                        {...contents.map(child => (
+                            <>
+                                {child}
+                                <br />
+                            </>
+                        ))}
+                    </>
+                ),
                 { variant }
             )
         },
@@ -262,13 +279,12 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             ;(screen.props as Record<PropKey, PropValue>)[k as PropKey] = v as PropValue
         }
 
+        screen.props.configured = true
+
         if (callbacks.onAccept) screen.onAccept.setDefaultFunc(callbacks.onAccept)
         if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
         if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
     }
-
-    const m = {} as Modal<number>
-    configureScreen(m, {} as ModalProps, {} as UIScreenCallbacks<number>)
 
     return (
         <UIContext.Provider

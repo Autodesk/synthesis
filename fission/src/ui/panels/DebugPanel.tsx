@@ -52,6 +52,12 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     onClick={() => {
                         const toastType = (["info", "warning", "error"] as const)[Math.floor(random() * 3)]
                         globalAddToast(toastType, "This is a test toast to test the toast system")
+                        globalAddToast(
+                            toastType,
+                            "This is a test toast to test the toast system",
+                            "with multiple",
+                            "arguments"
+                        )
                     }}
                     className="w-full"
                 >

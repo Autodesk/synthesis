@@ -3,7 +3,7 @@ import type React from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type { ModalImplProps } from "../components/Modal"
 import { CloseType, useUIContext } from "../UIProvider"
-import { useEffect } from "react"
+import { useEffect, useLayoutEffect } from "react"
 import { useStateContext } from "../StateProvider"
 
 const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback: () => void }> = ({
@@ -12,7 +12,7 @@ const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback
 }) => {
     const { configureScreen, closeModal } = useUIContext()
     const { setIsMainMenuOpen } = useStateContext()
-    useEffect(() => {
+    useLayoutEffect(() => {
         setIsMainMenuOpen(true)
         configureScreen(modal!, { title: "Welcome", hideAccept: true, hideCancel: true, allowClickAway: false }, {})
 
