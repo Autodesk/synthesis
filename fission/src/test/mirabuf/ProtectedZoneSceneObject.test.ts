@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
-import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
+import ProtectedZoneSceneObject, { ContactType } from "../../mirabuf/ProtectedZoneSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { createBodyMock } from "../mocks/jolt"
@@ -45,27 +45,36 @@ vi.mock("@/systems/simulation/SimulationSystem", () => ({
 }))
 
 vi.mock("@/systems/MatchMode", () => ({
+    MatchModeType: {
+        SANDBOX: 0,
+        AUTONOMOUS: 1,
+        TELEOP: 2,
+        ENDGAME: 3,
+        MATCH_ENDED: 4,
+    },
     default: {
         getInstance: vi.fn(() => ({
-            getMatchModeType: vi.fn(() => "TELEOP"),
+            getMatchModeType: vi.fn(() => MatchModeType.TELEOP),
         })),
-    },
-    MatchModeType: {
-        AUTONOMOUS: "AUTONOMOUS",
-        TELEOP: "TELEOP", 
-        ENDGAME: "ENDGAME",
     },
 }))
 
 describe("ProtectedZoneSceneObject", () => {
-    const createMockRobot = (alliance: string) => ({
-        miraType: MiraType.ROBOT,
-        alliance,
-    } as unknown as MirabufSceneObject)
+    let redRobot: MirabufSceneObject
+    let blueRobot: MirabufSceneObject
+    let redRobotBodyId: Jolt.BodyID
+    let blueRobotBodyId: Jolt.BodyID
 
-    const createMockBodyId = (id: string = "robot-id") => ({
-        GetIndexAndSequenceNumber: () => id
-    } as unknown as Jolt.BodyID)
+    const createMockRobot = (alliance: string) =>
+        ({
+            miraType: MiraType.ROBOT,
+            alliance,
+        }) as unknown as MirabufSceneObject
+
+    const createMockBodyId = (id: number) =>
+        ({
+            GetIndexAndSequenceNumber: () => id,
+        }) as unknown as Jolt.BodyID
 
     const createProtectedZoneInstance = (prefs: any) => {
         const instance = new ProtectedZoneSceneObject({} as unknown as MirabufSceneObject, 0)
@@ -73,20 +82,34 @@ describe("ProtectedZoneSceneObject", () => {
             activeDuring: [MatchModeType.TELEOP],
             alliance: "red",
             penaltyPoints: 5,
-            requireRobotContact: false,
-            ...prefs
+            contactType: ContactType.ROBOT_ENTERS,
+            ...prefs,
         })
         return instance
     }
 
-    const setupMockAssociation = (robot: MirabufSceneObject) => {
-        mockPhysicsSystem.getBodyAssociation = vi.fn(() => ({ 
-            sceneObject: robot 
-        }))
+    const setupMultipleAssociations = (associations: Map<number, MirabufSceneObject>) => {
+        mockPhysicsSystem.getBodyAssociation = vi.fn((bodyId: Jolt.BodyID) => {
+            const id = bodyId.GetIndexAndSequenceNumber()
+            const robot = associations.get(id)
+            return robot ? { sceneObject: robot } : undefined
+        })
     }
 
     beforeEach(() => {
         vi.clearAllMocks()
+
+        redRobot = createMockRobot("red")
+        blueRobot = createMockRobot("blue")
+        redRobotBodyId = createMockBodyId(1)
+        blueRobotBodyId = createMockBodyId(2)
+
+        setupMultipleAssociations(
+            new Map([
+                [1, redRobot],
+                [2, blueRobot],
+            ])
+        )
     })
 
     afterEach(() => {
@@ -95,55 +118,170 @@ describe("ProtectedZoneSceneObject", () => {
 
     test("ZoneCollision applies penalty to opposing robot", () => {
         const instance = createProtectedZoneInstance({})
-        const robotBodyId = createMockBodyId()
-        const mockRobot = createMockRobot("blue")
 
-        setupMockAssociation(mockRobot)
-        instance["zoneCollision"](robotBodyId)
+        instance["zoneCollision"](blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(
-            mockRobot,
-            5,
-            expect.any(String)
-        )
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(blueRobot, 5, expect.any(String))
     })
 
     test("ZoneCollision does not penalize same alliance robot", () => {
         const instance = createProtectedZoneInstance({
-            activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME]
+            activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP, MatchModeType.ENDGAME],
         })
-        const robotBodyId = createMockBodyId()
-        const mockRobot = createMockRobot("red")
 
-        setupMockAssociation(mockRobot)
-        instance["zoneCollision"](robotBodyId)
+        instance["zoneCollision"](redRobotBodyId)
 
         expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
     })
 
     test("ZoneCollision does not penalize when zone is inactive", () => {
         const instance = createProtectedZoneInstance({
-            activeDuring: [MatchModeType.AUTONOMOUS]
+            activeDuring: [MatchModeType.AUTONOMOUS],
         })
-        const robotBodyId = createMockBodyId()
-        const mockRobot = createMockRobot("blue")
 
-        setupMockAssociation(mockRobot)
-        instance["zoneCollision"](robotBodyId)
+        instance["zoneCollision"](blueRobotBodyId)
 
         expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("ZoneCollision does not penalize when requireRobotContact is true and only one robot is in the zone", () => {
+    test("ZoneCollision does not penalize when both robots must be inside but only one robot is in the zone", () => {
         const instance = createProtectedZoneInstance({
-            requireRobotContact: true
+            contactType: ContactType.BOTH_ROBOTS_INSIDE,
         })
-        const robotBodyId = createMockBodyId()
-        const mockRobot = createMockRobot("blue")
 
-        setupMockAssociation(mockRobot)
-        instance["zoneCollision"](robotBodyId)
+        instance["zoneCollision"](blueRobotBodyId)
 
         expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+    })
+
+    test("ZoneCollision doesn't penalize if robot robot is already inside", () => {
+        const instance = createProtectedZoneInstance({})
+
+        instance["zoneCollision"](blueRobotBodyId)
+        instance["zoneCollision"](blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
+    })
+
+    test("ZoneCollision doesn't penalize if robot is not a robot", () => {
+        const fieldObject = createMockRobot("red")
+        Reflect.set(fieldObject, "miraType", MiraType.FIELD)
+
+        const fieldBodyId = createMockBodyId(3)
+        setupMultipleAssociations(new Map([[3, fieldObject]]))
+
+        const instance = createProtectedZoneInstance({})
+        instance["zoneCollision"](fieldBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+    })
+
+    test("HandleContactPenalty both robots inside", () => {
+        const instance = createProtectedZoneInstance({
+            contactType: ContactType.BOTH_ROBOTS_INSIDE,
+        })
+
+        instance["zoneCollision"](blueRobotBodyId)
+        instance["zoneCollision"](redRobotBodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(blueRobot, 5, expect.any(String))
+    })
+
+    test("HandleContactPenalty opponent robot inside", () => {
+        const instance = createProtectedZoneInstance({
+            contactType: ContactType.OPPONENT_ROBOT_INSIDE,
+        })
+
+        instance["zoneCollision"](blueRobotBodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(blueRobot, 5, expect.any(String))
+    })
+
+    test("HandleContactPenalty ally robot inside", () => {
+        const instance = createProtectedZoneInstance({
+            contactType: ContactType.ALLY_ROBOT_INSIDE,
+        })
+
+        instance["zoneCollision"](redRobotBodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(blueRobot, 5, expect.any(String))
+    })
+
+    test("HandleContactPenalty doesn't penalize if not all robots are inside", () => {
+        const instance = createProtectedZoneInstance({
+            contactType: ContactType.BOTH_ROBOTS_INSIDE,
+        })
+
+        instance["zoneCollision"](blueRobotBodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+    })
+
+    test("HandleContactPenalty doesn't penalize if contact type is ally and ally is not inside", () => {
+        const instance = createProtectedZoneInstance({
+            contactType: ContactType.ALLY_ROBOT_INSIDE,
+        })
+
+        instance["zoneCollision"](blueRobotBodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+    })
+
+    test("HandleContactPenalty doesn't penalize if contact type is opponent and opponent is not inside", () => {
+        const instance = createProtectedZoneInstance({
+            contactType: ContactType.OPPONENT_ROBOT_INSIDE,
+        })
+
+        instance["zoneCollision"](redRobotBodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+    })
+
+    test("HandleContactPenalty doesn't penalize if robots are from same alliance", () => {
+        const redRobot2 = createMockRobot("red")
+        const redRobot2BodyId = createMockBodyId(3)
+        setupMultipleAssociations(
+            new Map([
+                [1, redRobot],
+                [2, blueRobot],
+                [3, redRobot2],
+            ])
+        )
+        const instance = createProtectedZoneInstance({})
+
+        instance["zoneCollision"](redRobotBodyId)
+        instance["zoneCollision"](redRobot2BodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, redRobot2BodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+    })
+
+    test("HandleContactPenalty doesn't penalize if collision occurs too quickly", () => {
+        const instance = createProtectedZoneInstance({})
+
+        instance["zoneCollision"](blueRobotBodyId)
+        instance["zoneCollision"](redRobotBodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
     })
 })
