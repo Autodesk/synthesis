@@ -6,6 +6,7 @@ import { createBodyMock } from "../mocks/jolt"
 import { MatchModeType } from "@/systems/MatchMode"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),
@@ -76,7 +77,7 @@ describe("ProtectedZoneSceneObject", () => {
             GetIndexAndSequenceNumber: () => id,
         }) as unknown as Jolt.BodyID
 
-    const createProtectedZoneInstance = (prefs: any) => {
+    const createProtectedZoneInstance = (prefs: Partial<ProtectedZonePreferences>) => {
         const instance = new ProtectedZoneSceneObject({} as unknown as MirabufSceneObject, 0)
         Reflect.set(instance, "_prefs", {
             activeDuring: [MatchModeType.TELEOP],

@@ -283,7 +283,7 @@ class ProtectedZoneSceneObject extends SceneObject {
                 }
                 break
 
-            case ContactType.ALLY_ROBOT_INSIDE:
+            case ContactType.ALLY_ROBOT_INSIDE: {
                 // Penalize opposing robot if an ally robot is inside when collision occurs
                 const allyRobot = [collisionObjectBody1, collisionObjectBody2].find(
                     robot => robot.alliance === this._prefs?.alliance
@@ -293,6 +293,7 @@ class ProtectedZoneSceneObject extends SceneObject {
                     robotToPenalize = opposingRobot
                 }
                 break
+            }
         }
 
         if (shouldPenalize && robotToPenalize) {
