@@ -1,6 +1,5 @@
 import Panel, { PanelPropsImpl } from "../components/Panel"
 import { SectionDivider, SectionLabel, SynthesisIcons } from "../components/StyledComponents"
-import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { LabelSize } from "../components/Label"
 import World from "@/systems/World"
@@ -10,6 +9,7 @@ import Dropdown from "@/ui/components/Dropdown"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import Button from "../components/Button"
 import { autoOptimizeGraphics, GRAPHICS_PRESETS, GraphicsPreset } from "../helpers/GraphicsSettings"
+import StatefulCheckbox from "../components/StatefulCheckbox"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10
@@ -201,9 +201,9 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     }}
                     step={0.25}
                 />
-                <Checkbox
+                <StatefulCheckbox
                     label="Fancy Shadows"
-                    defaultState={fancyShadows}
+                    checked={fancyShadows}
                     onClick={checked => {
                         setFancyShadows(checked)
                         World.sceneRenderer.changeLighting(checked)
@@ -306,9 +306,9 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     </SectionLabel>
                 </div>
                 <SectionDivider />
-                <Checkbox
+                <StatefulCheckbox
                     label="Anti-Aliasing"
-                    defaultState={antiAliasing}
+                    checked={antiAliasing}
                     onClick={handleAntiAliasingChange}
                     tooltipText="Will automatically refresh the tab when changed, causing all assets to disappear."
                 />
