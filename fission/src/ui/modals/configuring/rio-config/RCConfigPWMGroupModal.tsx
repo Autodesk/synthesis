@@ -49,7 +49,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             openModal(<RoboRIOModal />, modal)
         }
 
-        configureScreen(modal!, {}, { onAccept, onCancel })
+        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onAccept, onCancel })
     }, [brain, name, checkedPorts, checkedDrivers, openModal, modal])
 
     return (

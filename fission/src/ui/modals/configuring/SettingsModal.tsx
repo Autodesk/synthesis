@@ -26,7 +26,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             SoundPlayer.changeVolume()
         }
 
-        configureScreen(modal!, {}, { onAccept: save, onCancel })
+        configureScreen(modal!, { title: "Settings", allowClickAway: false }, { onAccept: save, onCancel })
     }, [modal, save])
 
     return (

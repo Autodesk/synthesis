@@ -48,11 +48,6 @@ function Synthesis() {
                     mainLoop()
                 }}
             />,
-            undefined,
-            {
-                hideCancel: true,
-                hideAccept: true,
-            }
         )
         // Cleanup
         return () => {

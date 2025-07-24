@@ -9,6 +9,8 @@ import { globalAddToast } from "../components/GlobalUIControls"
 import { LabelWithTooltip } from "../components/StyledComponents"
 import { mirabuf } from "@/proto/mirabuf"
 import { Button, Stack } from "@mui/material"
+import { PanelImplProps } from "../components/Panel"
+import { useUIContext } from "../UIProvider"
 
 const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]
@@ -39,7 +41,8 @@ function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferen
     )
 }
 
-const DeveloperToolPanel: React.FC = () => {
+const DeveloperToolPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [selectedKey, setSelectedKey] = useState<DevtoolKey | undefined>(undefined)
     const [jsonValue, setJsonValue] = useState<string>("")
     const [error, setError] = useState<string>("")
@@ -253,6 +256,10 @@ const DeveloperToolPanel: React.FC = () => {
             globalAddToast?.("error", "Export Error", "Failed to export field.")
         }
     }
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Developer Tool", acceptText: "Save", cancelText: "Cancel" }, {})
+    }, [])
 
     return (
         <Stack gap={4} className="rounded-md p-4 max-h-[60vh] min-h-[350px] overflow-y-auto">

@@ -17,6 +17,8 @@ import {
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
 import Label from "@/ui/components/Label"
+import { useUIContext } from "@/ui/UIProvider"
+import { PanelImplProps } from "@/ui/components/Panel"
 
 type StagingProps = {
     state: "Staging"
@@ -292,8 +294,9 @@ function Staging({ assembly, setPlaying }: StagingProps) {
     )
 }
 
-const AutoTestPanel: React.FC = () => {
+const AutoTestPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
+    const { configureScreen } = useUIContext()
 
     const assembly = useMemo(
         () =>
@@ -302,6 +305,10 @@ const AutoTestPanel: React.FC = () => {
             ) as MirabufSceneObject,
         []
     )
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Auto Testing", hideCancel: true, acceptText: "Done" }, {})
+    }, [])
 
     useEffect(() => {
         SimDriverStation.setMode(RobotSimMode.DISABLED)

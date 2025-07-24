@@ -50,7 +50,7 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             World.sceneRenderer.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
         }
 
-        configureScreen(panel!, { position: "left" }, { onAccept, onCancel })
+        configureScreen(panel!, { title: "Graphics Settings", position: "left" }, { onAccept, onCancel })
     }, [fancyShadows, lightIntensity, maxFar, cascades, shadowMapSize, antiAliasing, reload])
 
     return (

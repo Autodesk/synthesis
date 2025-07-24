@@ -6,6 +6,8 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import StatefulSlider from "../components/StatefulSlider"
 import StatefulCheckbox from "../components/StatefulCheckbox"
+import { PanelImplProps } from "../components/Panel"
+import { useUIContext } from "../UIProvider"
 
 const RAY_MAX_LENGTH = 20.0
 
@@ -59,7 +61,8 @@ function affect(
     }
 }
 
-const PokerPanel: React.FC = () => {
+const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [punch, setPunch] = useState(PUNCH_DEFAULT)
     const [punchForce, setPunchForce] = useState(PUNCH_FORCE_DEFAULT)
     const [mark, setMark] = useState(MARK_DEFAULT)
@@ -87,6 +90,10 @@ const PokerPanel: React.FC = () => {
             }
         }
     }, [markers])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "The Poker", hideAccept: true, cancelText: "Close" }, {})
+    }, [])
 
     return (
         <Stack>

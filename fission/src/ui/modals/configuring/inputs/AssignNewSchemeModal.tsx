@@ -31,7 +31,7 @@ const AssignNewSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             openPanel(<ConfigurePanel />, modal)
         }
 
-        configureScreen(modal!, { hideCancel: true }, { onAccept })
+        configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onAccept })
     }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])
 
     return <TextField label="Name" placeholder="" defaultValue={name} onChange={e => setName(e.target.value)} />

@@ -62,9 +62,13 @@ const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryOnClick, secondary
 }
 
 const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { closePanel, openModal } = useUIContext()
+    const { closePanel, openModal, configureScreen } = useUIContext()
 
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, { })
+    }, [])
 
     useEffect(() => {
         const loadConfigs = () => {

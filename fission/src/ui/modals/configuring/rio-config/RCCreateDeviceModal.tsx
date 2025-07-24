@@ -46,7 +46,7 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
         }
         const onCancel = () => openModal(<RoboRIOModal />, modal)
 
-        configureScreen(modal!, {}, { onAccept, onCancel })
+        configureScreen(modal!, { title: "Create Device", acceptText: "Next" }, { onAccept, onCancel })
     }, [])
 
     return (

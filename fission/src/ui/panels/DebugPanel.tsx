@@ -15,6 +15,7 @@ import { useUIContext } from "../UIProvider"
 import PokerPanel from "./PokerPanel"
 import WsViewPanel from "./WsViewPanel"
 import Label from "../components/Label"
+import { useEffect } from "react"
 
 function ToggleDragMode() {
     const dragSystem = World.dragModeSystem
@@ -26,7 +27,12 @@ function ToggleDragMode() {
 }
 
 const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { openPanel } = useUIContext()
+    const { openPanel, configureScreen } = useUIContext()
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Debug Tools", hideAccept: true, cancelText: "Close" }, {})
+    }, [])
+
     return (
         <Box
             component="div"

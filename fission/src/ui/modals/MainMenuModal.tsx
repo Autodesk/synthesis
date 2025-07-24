@@ -9,9 +9,9 @@ const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback
     modal,
     startSingleplayerCallback,
 }) => {
-    const { closeModal } = useUIContext()
+    const { configureScreen, closeModal } = useUIContext()
     useEffect(() => {
-        modal!.props.title ??= "Welcome"
+        configureScreen(modal!, { title: "Welcome", hideAccept: true, hideCancel: true, allowClickAway: false }, {})
     }, [])
     return (
         <Stack gap={1}>

@@ -14,12 +14,16 @@ import InputSchemeSelection from "./initial-config/InputSchemeSelection"
 import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { openModal, openPanel, closePanel } = useUIContext()
+    const { openModal, openPanel, closePanel, configureScreen } = useUIContext()
     const { setSelectedScheme, setConfigurationType } = useStateContext()
 
     const targetAssembly = useMemo(() => {
         const assembly = getSpotlightAssembly()
         return assembly?.miraType === MiraType.ROBOT ? assembly : undefined
+    }, [])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Choose Input Scheme", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     useEffect(() => {

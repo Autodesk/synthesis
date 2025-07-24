@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
-import React, { type ReactElement } from "react"
+import React, { useEffect, useState, type ReactElement } from "react"
 import type { Modal as ModalType, Panel as PanelType } from "../UIProvider"
 import { CloseType, useUIContext } from "../UIProvider"
 
@@ -17,6 +17,12 @@ interface ModalElementProps<T> {
 export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => {
     const { closeModal } = useUIContext()
     const props = modal.props
+    const [_, refresh] = useState(false)
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: to refresh on configure
+    useEffect(() => {
+        refresh(x => !x)
+    }, [modal.props.title])
 
     return (
         <MUIModal
@@ -26,7 +32,9 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
             }}
         >
             <Card
+                // TODO: come up with a better solution than this
                 sx={{
+                    display: modal.props.title ? "" : "none",
                     position: "absolute",
                     top: "50%",
                     left: "50%",

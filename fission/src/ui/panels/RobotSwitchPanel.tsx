@@ -1,12 +1,19 @@
 import { Button, Stack, Typography } from "@mui/material"
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
 import Label from "../components/Label"
+import { useUIContext } from "../UIProvider"
+import { PanelImplProps } from "../components/Panel"
 
-const RobotSwitchPanel: React.FC = () => {
+const RobotSwitchPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
     const [selected, setSelected] = useState(0)
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "MultiBot" }, {})
+    }, [])
 
     return (
         <>

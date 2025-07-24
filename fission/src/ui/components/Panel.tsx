@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, CardHeader } from "@mui/material"
-import React, { type ReactElement } from "react"
+import React, { useEffect, useMemo, useReducer, useState, type ReactElement } from "react"
 import Draggable from "react-draggable"
 import {
     CloseType,
@@ -52,7 +52,15 @@ const getPositionOffset = (position: PanelPosition) => {
 
 export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => {
     const { closePanel } = useUIContext()
-    const props = panel.props
+
+    const [_, refresh] = useState(false)
+
+    const props = panel.props;
+
+    // biome-ignore lint/correctness/useExhaustiveDependencies: to refresh on configure
+    useEffect(() => {
+        refresh(x => !x)
+    }, [panel.props.title])
 
     // FIXME: sliders show up as <span> so want to cancel drag on those
     // however still can drag on dropdown but menu elements are left behind
@@ -60,6 +68,7 @@ export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => 
         <Draggable cancel="span" positionOffset={getPositionOffset(props.position)}>
             <Card
                 sx={{
+                    display: panel.props.title ? "" : "none",
                     position: "absolute",
                     maxWidth: 400,
                     pointerEvents: "auto",

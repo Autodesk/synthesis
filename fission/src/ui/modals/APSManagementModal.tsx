@@ -1,11 +1,10 @@
-import { Stack, Typography } from "@mui/material"
+import { Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { HiUser } from "react-icons/hi"
 import APS from "@/aps/APS"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "../UIProvider"
-import Label from "../components/Label"
 
 const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
@@ -15,7 +14,7 @@ const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             APS.logout()
         }
 
-        configureScreen(modal!, { title: "Not signed in" }, { onAccept })
+        configureScreen(modal!, { title: userInfo?.name ?? "Not signed in", acceptText: "Logout" }, { onAccept })
     }, [modal, userInfo?.name])
 
     return (
@@ -25,7 +24,6 @@ const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             ) : (
                 <HiUser />
             )}
-            <Label size="md">{userInfo?.name ?? "Not signed in"}</Label>
         </Stack>
     )
 }
