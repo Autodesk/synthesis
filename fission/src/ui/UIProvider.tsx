@@ -99,6 +99,7 @@ export type OpenPanelFn = <T>(
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
 export type AddToastFn = (variant: VariantType, ...contents: ReactNode[]) => void
+// biome-ignore lint/suspicious/noExplicitAny: T necessarily must extend any type of UIScreen
 export type ConfigureScreenFn = <T extends UIScreen<any>>(
     screen: T,
     props: T extends Panel<infer _> ? Partial<Omit<PanelProps, "configured">> : Partial<Omit<ModalProps, "configured">>,

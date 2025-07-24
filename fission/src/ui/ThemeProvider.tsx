@@ -18,13 +18,13 @@ interface StoredTheme {
 }
 
 export const ThemeContext = createContext({
-	mode: "",
-	toggleColorMode: () => {},
-	setPrimaryColor: (_color: string) => {},
-	setSecondaryColor: (_color: string) => {},
-	primaryColor: "",
-	secondaryColor: "",
-});
+    mode: "dark",
+    setColorMode: (_mode: PaletteMode) => {},
+    setPrimaryColor: (_color: string) => {},
+    setSecondaryColor: (_color: string) => {},
+    primaryColor: "",
+    secondaryColor: "",
+})
 
 export const useThemeContext = () => useContext(ThemeContext)
 
@@ -42,7 +42,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }, [])
 
 	const [themeOptions, setThemeOptions] = useState<StoredTheme>(loadTheme());
-	const [mode, setMode] = useState<PaletteMode>(themeOptions.mode ?? "dark");
+	const [mode, setColorMode] = useState<PaletteMode>(themeOptions.mode ?? "dark");
 	const [primaryColor, setPrimaryColor] = useState(themeOptions.primary?.main ?? "#90caf9");
 	const [secondaryColor, setSecondaryColor] = useState(themeOptions.secondary?.main ?? "#ce93d8");
 
@@ -88,9 +88,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
 	const themeContextValue = useMemo(
 		() => ({
-			toggleColorMode: () => {
-				setMode((prevMode) => (prevMode === "light" ? "dark" : "light"));
-			},
+            setColorMode,
 			setPrimaryColor,
 			setSecondaryColor,
 			mode,

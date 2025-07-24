@@ -21,6 +21,7 @@ import SettingsModal from "../modals/configuring/SettingsModal"
 import APSManagementModal from "../modals/APSManagementModal"
 import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
+import { useThemeContext } from "../ThemeProvider"
 
 type ButtonProps = {
     value: string
@@ -71,6 +72,7 @@ const variants = {
 }
 
 const MainHUD: React.FC = () => {
+    const { mode } = useThemeContext()
     const { openModal, openPanel, addToast } = useUIContext()
     const [isOpen, setIsOpen] = useState(false)
 
@@ -175,7 +177,7 @@ const MainHUD: React.FC = () => {
                             MozUserSelect: "none",
                             msUserSelect: "none",
                             WebkitUserSelect: "none",
-                            filter: "invert(1)",
+                            filter: mode === "dark" ? "invert(1)" : "none",
                         }}
                     />
                     <IconButton
