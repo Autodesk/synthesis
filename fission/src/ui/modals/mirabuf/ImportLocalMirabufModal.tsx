@@ -56,6 +56,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     await MirabufCachingService.cacheAndGetLocalWithInfo(hashBuffer, miraType)
                         .then(x => {
                             if (x) {
+                                // TODO This function shouldn't cache game pieces when imported locally!!!
                                 return createMirabuf(x.assembly, x.cacheInfo.id)
                             }
                             return undefined
@@ -65,12 +66,12 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 const { mainSceneObject, gamePieces } = x
 
                                 World.sceneRenderer.registerSceneObject(mainSceneObject)
-                                gamePieces?.forEach(({ sceneObject, cacheInfo: _ }) => {
+                                gamePieces?.forEach(sceneObject => {
                                     World.sceneRenderer.registerSceneObject(sceneObject)
                                 })
 
+                                console.log(`Loaded ${mainSceneObject.miraType.toString()} Locally`)
                                 if (mainSceneObject.miraType === MiraType.ROBOT) {
-                                    console.log(`Loaded Robot Locally`)
                                     globalOpenPanel("initial-config")
                                 }
                             }
@@ -95,6 +96,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 >
                     <ToggleButton value={MiraType.ROBOT}>Robot</ToggleButton>
                     <ToggleButton value={MiraType.FIELD}>Field</ToggleButton>
+                    <ToggleButton value={MiraType.PIECE}>Piece</ToggleButton>
                 </ToggleButtonGroup>
                 <Button value="Upload File" size={ButtonSize.LARGE} onClick={uploadClicked} />
                 {selectedFile && (

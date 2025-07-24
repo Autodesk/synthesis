@@ -40,6 +40,7 @@ import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControl
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { mirabuf } from "@/proto/mirabuf"
 
 interface ItemCardProps {
     id: string
@@ -87,10 +88,10 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
         canOPFS
             ? MirabufCachingService.getCacheMap(miraType)
             : miraType == MiraType.ROBOT
-              ? backUpRobots
-              : miraType == MiraType.FIELD
-                ? backUpFields
-                : backUpPieces
+                ? backUpRobots
+                : miraType == MiraType.FIELD
+                    ? backUpFields
+                    : backUpPieces
     )
 }
 
@@ -106,24 +107,35 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                createMirabuf(assembly, info.id, progressHandle).then(x => {
-                    if (x) {
-                        const { mainSceneObject, gamePieces } = x
-                        World.sceneRenderer.registerSceneObject(mainSceneObject)
+                const { mainSceneObject, gamePieces } = createMirabuf(assembly, info.id, progressHandle) ?? {}
 
-                        // TODO Figure out what to do with cacheInfo
-                        gamePieces?.forEach(({ sceneObject, cacheInfo: _ }) => {
-                            World.sceneRenderer.registerSceneObject(sceneObject)
-                        })
-                        progressHandle.done()
+                if (mainSceneObject) {
+                    World.sceneRenderer.registerSceneObject(mainSceneObject)
 
-                        if (mainSceneObject.miraType === MiraType.ROBOT) {
-                            globalOpenPanel("initial-config")
-                        }
-                    } else {
-                        progressHandle.fail()
+                    gamePieces?.forEach(async sceneObject => {
+                        const assembly = sceneObject.mirabufInstance.parser.assembly
+                        const buffer = mirabuf.Assembly.encode(assembly).finish()
+
+                        const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
+                        if (!cacheInfo) return
+
+                        if (!cacheInfo.name)
+                            await MirabufCachingService.cacheInfo(
+                                cacheInfo.cacheKey,
+                                MiraType.PIECE,
+                                assembly.info?.name ?? undefined
+                            )
+
+                        World.sceneRenderer.registerSceneObject(sceneObject)
+                    })
+                    progressHandle.done()
+
+                    if (mainSceneObject.miraType === MiraType.ROBOT) {
+                        globalOpenPanel("initial-config")
                     }
-                })
+                } else {
+                    progressHandle.fail()
+                }
 
                 if (!info.name) MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
             } else {
@@ -434,7 +446,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                     id: path.src,
                     primaryButtonNode: SynthesisIcons.DOWNLOAD_LARGE,
                     primaryOnClick: () => {
-                        console.log(`Selecting remote: ${path}`)
+                        console.log(`Selecting remote: ${path.displayName}`)
                         selectRemote(path, MiraType.PIECE)
                     },
                 })

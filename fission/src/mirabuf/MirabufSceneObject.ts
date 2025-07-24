@@ -23,7 +23,7 @@ import {
     ScoringZonePreferences,
 } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import MirabufCachingService, { MirabufCacheID, MirabufCacheInfo, MiraType } from "./MirabufLoader"
+import MirabufCachingService, { MirabufCacheID, MiraType } from "./MirabufLoader"
 import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import Brain from "@/systems/simulation/Brain"
@@ -285,7 +285,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         // for pies nodeToBody is empty
         console.log(`${this.assemblyName} ${[...this._mechanism.nodeToBody.entries()].map(n => n[0])}`)
         this._mechanism.nodeToBody.forEach((bodyId, rigidNodeId) => {
-            console.log(`${this.assemblyName} ${rigidNodeId}`)
             const rigidNode = rigidNodes.get(rigidNodeId)
             if (!rigidNode) {
                 console.warn("Found a RigidNodeId with no related RigidNode. Skipping for now...")
@@ -855,17 +854,16 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 }
 
-export async function createMirabuf(
+export function createMirabuf(
     assembly: mirabuf.Assembly,
     id: MirabufCacheID,
     progressHandle?: ProgressHandle
-): Promise<
+):
     | {
           mainSceneObject: MirabufSceneObject
-          gamePieces?: { sceneObject: MirabufSceneObject; cacheInfo: MirabufCacheInfo }[]
+          gamePieces?: MirabufSceneObject[]
       }
-    | undefined
-> {
+    | undefined {
     const parser = new MirabufParser(assembly, false, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
@@ -883,29 +881,9 @@ export async function createMirabuf(
             mainSceneObject,
         }
 
-    const gamePieces = (
-        await Promise.all(
-            parser.gamePieces.map(async parser => {
-                // Cache the game pieces before exporting the scene objects
-                const buffer = mirabuf.Assembly.encode(parser.assembly).finish()
-
-                const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
-                if (!cacheInfo) return
-
-                if (!cacheInfo.name)
-                    await MirabufCachingService.cacheInfo(
-                        cacheInfo.cacheKey,
-                        MiraType.PIECE,
-                        parser.assembly.info?.name ?? undefined
-                    )
-
-                return {
-                    sceneObject: new MirabufSceneObject(new MirabufInstance(parser), parser.assembly.info!.name!, id),
-                    cacheInfo,
-                }
-            })
-        )
-    ).filter(n => n != undefined)
+    const gamePieces = parser.gamePieces.map(
+        parser => new MirabufSceneObject(new MirabufInstance(parser), parser.assembly.info!.name!, id)
+    )
 
     return {
         mainSceneObject,
