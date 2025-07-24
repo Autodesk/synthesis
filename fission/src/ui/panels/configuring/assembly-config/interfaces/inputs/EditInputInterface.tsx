@@ -303,7 +303,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                         {input.useGamepadButtons
                             ? GamepadButtonAxisSelection()
                             : // Gamepad joystick axis
-                            JoystickAxisSelection()}
+                              JoystickAxisSelection()}
 
                         {/* // Button to switch between two buttons and a joystick axis */}
                         <StatefulCheckbox

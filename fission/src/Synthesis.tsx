@@ -47,7 +47,7 @@ function Synthesis() {
 
                     mainLoop()
                 }}
-            />,
+            />
         )
         // Cleanup
         return () => {

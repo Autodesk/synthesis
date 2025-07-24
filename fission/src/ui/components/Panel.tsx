@@ -55,7 +55,7 @@ export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => 
 
     const [_, refresh] = useState(false)
 
-    const props = panel.props;
+    const props = panel.props
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: to refresh on configure
     useEffect(() => {

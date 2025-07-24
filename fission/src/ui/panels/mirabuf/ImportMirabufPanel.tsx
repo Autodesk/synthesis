@@ -1,4 +1,17 @@
-import { Box, Button, Divider, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import {
+    Accordion,
+    AccordionDetails,
+    AccordionSummary,
+    Box,
+    Button,
+    CircularProgress,
+    Divider,
+    Stack,
+    ToggleButton,
+    ToggleButtonGroup,
+    Tooltip,
+    Typography,
+} from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
 import {
@@ -37,6 +50,7 @@ import type TaskStatus from "@/util/TaskStatus"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import Label from "@/ui/components/Label"
+import { MdExpandMore } from "react-icons/md"
 
 interface ItemCardProps {
     id: string
@@ -49,7 +63,9 @@ interface ItemCardProps {
 const ItemCard: React.FC<ItemCardProps> = ({ id, name, primaryButtonNode, primaryOnClick, secondaryOnClick }) => {
     return (
         <Stack key={id} justifyContent={"space-between"} alignItems={"center"} gap={"1rem"} direction="row">
-            <Label size="md" className="text-wrap break-all">{name.replace(/.mira$/, "")}</Label>
+            <Label size="md" className="text-wrap break-all">
+                {name.replace(/.mira$/, "")}
+            </Label>
             <Stack
                 key={`button-box-${id}`}
                 direction="row-reverse"
@@ -129,6 +145,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
     const [filesStatus, setFilesStatus] = useState<TaskStatus>({
         isDone: false,
         message: "Waiting on APS...",
+        progress: 0,
     })
     const [files, setFiles] = useState<Data[] | undefined>(undefined)
 
@@ -424,70 +441,82 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 <ToggleButton value={MiraType.ROBOT}>Robots</ToggleButton>
                 <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
             </ToggleButtonGroup>
-            {viewType === MiraType.ROBOT ? (
-                <>
-                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {cachedRobotElements
-                            ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length === 1 ? "" : "s"}`
-                            : "Loading Saved Robots"}
-                    </Label>
-                    <Divider />
-                    {cachedRobotElements}
-                </>
-            ) : (
-                <>
-                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {cachedFieldElements
-                            ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
-                            : "Loading Saved Fields"}
-                    </Label>
-                    <Divider />
-                    {cachedFieldElements}
-                </>
-            )}
-            <Stack
-                direction="row"
-                key={`remote-label-container`}
-                gap={"0.25rem"}
-                justifyContent={"center"}
-                alignItems={"center"}
-            >
-                <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                    {hubElements
-                        ? `${hubElements.length} Remote Asset${hubElements.length === 1 ? "" : "s"}`
-                        : filesStatus.message}
-                </Label>
-                {hubElements && filesStatus.isDone && RefreshButton(() => requestMirabufFiles())}
-            </Stack>
-            <Divider />
-            {hubElements}
-            {viewType === MiraType.ROBOT ? (
-                <>
-                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {remoteRobotElements
-                            ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length === 1 ? "" : "s"}`
-                            : "Loading Default Robots"}
-                    </Label>
-                    <Divider />
-                    {remoteRobotElements}
-                    <Stack justifyContent="center" mt={1}>
-                        <PositiveButton onClick={downloadAllRemoteRobots}>Download All</PositiveButton>
+            <Accordion>
+                <AccordionSummary expandIcon={<MdExpandMore />}>
+                    {viewType === MiraType.ROBOT ? (
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {cachedRobotElements
+                                ? `${cachedRobotElements.length} Saved Robot${cachedRobotElements.length === 1 ? "" : "s"}`
+                                : "Loading Saved Robots"}
+                        </Label>
+                    ) : (
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {cachedFieldElements
+                                ? `${cachedFieldElements.length} Saved Field${cachedFieldElements.length == 1 ? "" : "s"}`
+                                : "Loading Saved Fields"}
+                        </Label>
+                    )}
+                </AccordionSummary>
+                <AccordionDetails>
+                    {viewType === MiraType.ROBOT ? cachedRobotElements : cachedFieldElements}
+                </AccordionDetails>
+            </Accordion>
+            <Accordion>
+                <AccordionSummary expandIcon={<MdExpandMore />}>
+                    <Stack
+                        direction="row"
+                        key={`remote-label-container`}
+                        gap={"0.25rem"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                    >
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {hubElements ? (
+                                `${hubElements.length} Remote Asset${hubElements.length === 1 ? "" : "s"}`
+                            ) : (
+                                <Tooltip title={filesStatus.message}>
+                                    <Stack direction="row" gap={1}>
+                                        <Label size="md">Loading from APS...</Label>
+                                        <CircularProgress
+                                            variant="determinate"
+                                            value={filesStatus.isDone ? 100 : filesStatus.progress * 100}
+                                        />
+                                    </Stack>
+                                </Tooltip>
+                            )}
+                        </Label>
+                        {hubElements && filesStatus.isDone && RefreshButton(() => requestMirabufFiles())}
                     </Stack>
-                </>
-            ) : (
-                <>
-                    <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
-                        {remoteFieldElements
-                            ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length === 1 ? "" : "s"}`
-                            : "Loading Default Fields"}
-                    </Label>
-                    <Divider />
-                    {remoteFieldElements}
+                </AccordionSummary>
+                <AccordionDetails>{hubElements}</AccordionDetails>
+            </Accordion>
+            <Accordion>
+                <AccordionSummary expandIcon={<MdExpandMore />}>
+                    {viewType === MiraType.ROBOT ? (
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {remoteRobotElements
+                                ? `${remoteRobotElements.length} Default Robot${remoteRobotElements.length === 1 ? "" : "s"}`
+                                : "Loading Default Robots"}
+                        </Label>
+                    ) : (
+                        <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
+                            {remoteFieldElements
+                                ? `${remoteFieldElements.length} Default Field${remoteFieldElements.length === 1 ? "" : "s"}`
+                                : "Loading Default Fields"}
+                        </Label>
+                    )}
+                </AccordionSummary>
+                <AccordionDetails>
+                    {viewType === MiraType.ROBOT ? remoteRobotElements : remoteFieldElements}
                     <Stack justifyContent="center" mt={1}>
-                        <PositiveButton onClick={downloadAllRemoteFields}>Download All</PositiveButton>
+                        <PositiveButton
+                            onClick={viewType === MiraType.ROBOT ? downloadAllRemoteRobots : downloadAllRemoteFields}
+                        >
+                            Download All
+                        </PositiveButton>
                     </Stack>
-                </>
-            )}
+                </AccordionDetails>
+            </Accordion>
             <Box alignSelf={"center"}>
                 <Button onClick={() => openModal(<ImportLocalMirabufModal />)}>Import from File</Button>
             </Box>

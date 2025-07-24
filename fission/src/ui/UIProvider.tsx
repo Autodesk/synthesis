@@ -150,7 +150,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             modal?.onClose?.(CloseType.Overwrite)
 
             // don't allow configuring onAccept from open function
-            newModal.onAccept = new UICallback();
+            newModal.onAccept = new UICallback()
 
             newModal.onClose = new UICallback()
             if (props.onClose) newModal.onClose.setUserDefinedFunc(props.onClose)
@@ -188,7 +188,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             } as Panel<T>
 
             // don't allow configuring onAccept from open function
-            panel.onAccept = new UICallback();
+            panel.onAccept = new UICallback()
 
             panel.onClose = new UICallback()
             if (props.onClose) panel.onClose.setUserDefinedFunc(props.onClose)

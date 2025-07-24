@@ -56,7 +56,11 @@ const MatchResultsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { redRobotScores, blueRobotScores } = getPerRobotScores()
 
     useEffect(() => {
-        configureScreen(modal!, { title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false }, {});
+        configureScreen(
+            modal!,
+            { title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false },
+            {}
+        )
     }, [])
 
     return (

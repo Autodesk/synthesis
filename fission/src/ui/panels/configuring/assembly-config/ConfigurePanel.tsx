@@ -208,7 +208,11 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             originalInputSchemes.current = null
         }
 
-        configureScreen(panel!, { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" }, { onAccept, onCancel })
+        configureScreen(
+            panel!,
+            { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
+            { onAccept, onCancel }
+        )
     }, [])
 
     const modes = useMemo(() => {

@@ -69,7 +69,9 @@ const ContextMenu: React.FC = () => {
                         flexDirection: "column",
                     }}
                 >
-                    <Label key="context-title" size="md">{state.data.title}</Label>
+                    <Label key="context-title" size="md">
+                        {state.data.title}
+                    </Label>
                     <Divider />
                 </Box>
                 {state.data.items.map(x => (

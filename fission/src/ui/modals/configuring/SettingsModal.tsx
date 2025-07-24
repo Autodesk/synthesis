@@ -134,14 +134,13 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 <StatefulCheckbox
                     label="Show Score Zones"
                     checked={PreferencesSystem.getGlobalPreference("RenderScoringZones")}
-                    onClick={checked => writePreference("RenderScoringZones", checked) }
+                    onClick={checked => writePreference("RenderScoringZones", checked)}
                     tooltip="If disabled, scoring zones will not be visible but will continue to function the same."
                 />
                 <StatefulCheckbox
                     label="Show Protected Zones"
                     checked={PreferencesSystem.getGlobalPreference("RenderProtectedZones")}
-                    onClick={checked => writePreference("RenderProtectedZones", checked)
-                    }
+                    onClick={checked => writePreference("RenderProtectedZones", checked)}
                     tooltip="If disabled, protected zones will not be visible but will continue to function the same."
                 />
                 <StatefulCheckbox
