@@ -49,31 +49,31 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     return (
         <>
             {/** Toggle the input scheme between controller and keyboard mode */}
-            <FormControlLabel
+            <StatefulCheckbox
                 label="Use Controller"
-                control={
-                    <Checkbox
-                        defaultChecked={selectedScheme.usesGamepad}
-                        onChange={e => {
-                            setUseGamepad(e.target.checked)
-                            selectedScheme.usesGamepad = e.target.checked
-                        }}
-                        // tooltipText="Supported controllers: Xbox one, Xbox 360."
-                    />
-                }
+                checked={useGamepad}
+                onClick={val => {
+                    setUseGamepad(val)
+                    if (val) {
+                        setUseTouchControls(false)
+                        selectedScheme.usesTouchControls = false
+                    }
+                    selectedScheme.usesGamepad = val
+                }}
+                tooltip="Supported controllers: Xbox one, Xbox 360."
             />
-            <FormControlLabel
+            <StatefulCheckbox
                 label="Use Touch Controls"
-                control={
-                    <Checkbox
-                        defaultChecked={selectedScheme.usesTouchControls}
-                        onChange={e => {
-                            setUseTouchControls(e.target.checked)
-                            selectedScheme.usesTouchControls = e.target.checked
-                        }}
-                        // tooltipText="Enable on-screen touch controls (only for mobile devices)."
-                    />
-                }
+                checked={useTouchControls}
+                onClick={val => {
+                    setUseTouchControls(val)
+                    if (val) {
+                        setUseGamepad(false)
+                        selectedScheme.usesGamepad = false
+                    }
+                    selectedScheme.usesTouchControls = val
+                }}
+                tooltip="Enable on-screen touch controls (only for mobile devices)."
             />
             <Divider />
 
