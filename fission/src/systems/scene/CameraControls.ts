@@ -152,10 +152,10 @@ export class CustomOrbitControls extends CameraControls {
     private findFallbackFocus(): MirabufSceneObject | undefined {
         const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
         const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
-        
+
         const robots = mirabufObjects.filter(obj => obj.miraType === MiraType.ROBOT)
         const fields = mirabufObjects.filter(obj => obj.miraType === MiraType.FIELD)
-        
+
         return robots[0] || fields[0] || mirabufObjects[0]
     }
 
@@ -164,12 +164,11 @@ export class CustomOrbitControls extends CameraControls {
      * If not, automatically finds a suitable replacement.
      */
     private validateFocusProvider(): void {
-        if (this._focusProvider && !World.sceneRenderer.sceneObjects.has(this._focusProvider.id)) {
+        if (this._focusProvider) {
             const fallbackFocus = this.findFallbackFocus()
             this._focusProvider = fallbackFocus
         }
     }
-
 
     public interactionEnd(end: InteractionEnd) {
         /**
