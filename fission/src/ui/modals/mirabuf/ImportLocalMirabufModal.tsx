@@ -5,13 +5,14 @@ import Label, { LabelSize } from "@/components/Label"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import World from "@/systems/World"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { mirabuf } from "@/proto/mirabuf"
 
 const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     // update tooltip based on type of drivetrain, receive message from Synthesis
@@ -66,7 +67,26 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                                 const { mainSceneObject, gamePieces } = x
 
                                 World.sceneRenderer.registerSceneObject(mainSceneObject)
-                                gamePieces?.forEach(sceneObject => {
+                                gamePieces?.forEach(async instance => {
+                                    const assembly = instance.parser.assembly
+                                    const buffer = mirabuf.Assembly.encode(assembly).finish()
+
+                                    const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
+                                    if (!cacheInfo) return
+
+                                    if (!cacheInfo.name) {
+                                        MirabufCachingService.cacheInfo(
+                                            cacheInfo.cacheKey,
+                                            MiraType.PIECE,
+                                            assembly.info?.name ?? undefined
+                                        )
+                                    }
+
+                                    const sceneObject = new MirabufSceneObject(
+                                        instance,
+                                        assembly.info?.name!,
+                                        cacheInfo.id
+                                    )
                                     World.sceneRenderer.registerSceneObject(sceneObject)
                                 })
 
