@@ -117,7 +117,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 }
 
 const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
-    const { closePanel, openModal } = useUIContext()
+    const { closePanel, openModal, configureScreen } = useUIContext()
     const { unconfirmedImport, configurationType, setConfigurationType } = useStateContext()
 
     const [cachedRobots, setCachedRobots] = useState(getCacheInfo(MiraType.ROBOT))
@@ -131,6 +131,10 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
         message: "Waiting on APS...",
     })
     const [files, setFiles] = useState<Data[] | undefined>(undefined)
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Spawn Asset", hideAccept: true, cancelText: "Back" }, {})
+    }, [])
 
     useEffect(() => {
         const updateFilesStatus = (e: Event) => {

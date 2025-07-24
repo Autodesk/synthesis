@@ -20,7 +20,7 @@ import Label from "@/ui/components/Label"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { setSelectedScheme, setConfigurationType } = useStateContext()
-    const { openModal, closePanel, openPanel } = useUIContext()
+    const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
     const [station, setStation] = useState<Station>(1)
 
@@ -68,6 +68,13 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)
     }, [targetAssembly])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" }, {
+            onAccept: closeFinish,
+            onCancel: closeDelete
+        })
+    }, [])
 
     return (
         <Stack gap={2}>

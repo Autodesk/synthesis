@@ -22,6 +22,7 @@ import {
 } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import { PanelImplProps } from "../components/Panel"
+import { useUIContext } from "../UIProvider"
 
 const TABLE_UPDATE_INTERVAL = 250
 
@@ -99,8 +100,9 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
     }
 }
 
-const WSViewPanel: React.FC<PanelImplProps<void>> = () => {
+const WSViewPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     // const [tb, setTb] = useState(generateTableBody())
+    const { configureScreen } = useUIContext()
 
     const [table, updateTable] = useReducer(_ => generateTableBody(), generateTableBody())
 
@@ -131,6 +133,10 @@ const WSViewPanel: React.FC<PanelImplProps<void>> = () => {
         return () => {
             clearTimeout(id)
         }
+    }, [])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "WS View Panel" }, {})
     }, [])
 
     return (

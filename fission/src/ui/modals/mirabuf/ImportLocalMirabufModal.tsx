@@ -63,7 +63,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             }
         }
 
-        configureScreen(modal!, { title: "Import from File" }, { onAccept, onCancel })
+        configureScreen(modal!, { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined }, { onAccept, onCancel })
     }, [selectedFile, miraType, openPanel, modal])
 
     return (

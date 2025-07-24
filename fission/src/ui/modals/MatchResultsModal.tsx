@@ -44,7 +44,7 @@ const LabelStyled = styled(Typography)<{ winnerColor: string; fontSize: string }
 }))
 
 const MatchResultsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
-    const { closeModal } = useUIContext()
+    const { configureScreen, closeModal } = useUIContext()
 
     const { message, color } = getMatchWinner()
 
@@ -56,7 +56,7 @@ const MatchResultsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { redRobotScores, blueRobotScores } = getPerRobotScores()
 
     useEffect(() => {
-        modal!.props.title ??= "Match Results"
+        configureScreen(modal!, { title: "Match Results", hideCancel: true, hideAccept: true, allowClickAway: false }, {});
     }, [])
 
     return (

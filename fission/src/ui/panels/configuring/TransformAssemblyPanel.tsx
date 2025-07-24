@@ -5,8 +5,11 @@ import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
 import World from "@/systems/World"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useUIContext } from "@/ui/UIProvider"
+import { PanelImplProps } from "@/ui/components/Panel"
 
-const TransformAssemblyPanel: React.FC = () => {
+const TransformAssemblyPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 
     useEffect(() => {
@@ -15,6 +18,10 @@ const TransformAssemblyPanel: React.FC = () => {
         return () => {
             World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
+    }, [])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Assembly Setup", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     return (

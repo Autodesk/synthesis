@@ -2,16 +2,23 @@ import { randomColor } from "@/util/Random"
 import { useThemeContext } from "../ThemeProvider"
 import { Box, Button, Stack, TextField, Typography } from "@mui/material"
 import type React from "react"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 import Label from "../components/Label"
+import { useUIContext } from "../UIProvider"
+import { PanelImplProps } from "../components/Panel"
 
-export const ThemeEditorPanel: React.FC = () => {
+export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { mode, toggleColorMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } =
         useThemeContext()
+    const { configureScreen } = useUIContext()
 
     const [tempPrimary, setTempPrimary] = useState(primaryColor)
     const [tempSecondary, setTempSecondary] = useState(secondaryColor)
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Theme Editor" }, {})
+    }, [])
 
     return (
         <Stack gap={4}>

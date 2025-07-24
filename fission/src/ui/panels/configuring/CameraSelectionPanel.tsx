@@ -6,6 +6,8 @@ import World from "@/systems/World"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import { useUIContext } from "@/ui/UIProvider"
+import { PanelImplProps } from "@/ui/components/Panel"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls
@@ -27,7 +29,8 @@ function OrbitSettings({ controls }: OrbitSettingsProps) {
     )
 }
 
-const CameraSelectionPanel: React.FC = () => {
+const CameraSelectionPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
     const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
         World.sceneRenderer.currentCameraControls.controlsType
     )
@@ -42,6 +45,10 @@ const CameraSelectionPanel: React.FC = () => {
                 console.error("Unrecognized camera control option detected")
                 break
         }
+    }, [])
+
+    useEffect(() => {
+        configureScreen(panel!, { title: "Choose a Camera", hideAccept: true, cancelText: "Close" }, {})
     }, [])
 
     return (
