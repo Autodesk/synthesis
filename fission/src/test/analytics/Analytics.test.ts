@@ -7,6 +7,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import {server} from "@vitest/browser/context";
 
 type RequestType = Parameters<Parameters<typeof http.get>[1]>[0]
+const tagID = "G-6XNCRD7QNC"
 
 describe("Analytics", () => {
     const gtagRequestMock: Mock<(req: RequestType) => void> = vi.fn(() => {})
@@ -45,11 +46,11 @@ describe("Analytics", () => {
         })
     }
 
-    describe("With Load", () => {
+    describe("With gtag Script", () => {
         beforeAll(async () => {
             vi.useFakeTimers()
             const script = document.createElement("script")
-            script.src = "https://www.googletagmanager.com/gtag/js?id=G-6XNCRD7QNC"
+            script.src = "https://www.googletagmanager.com/gtag/js?id="+tagID
             document.head.appendChild(script)
             await vi.waitUntil(() => window.dataLayer != null, { timeout: 3000 })
             install() // gtag is a function defined here to push to the datalayer object
@@ -66,11 +67,11 @@ describe("Analytics", () => {
 
             const initialParams = mockRequestParametersHandle()
 
-            const gtagSpy = vi.spyOn(window, "gtag")
+            const gtagSpy:Mock<NonNullable<typeof window.gtag>> = vi.spyOn(window, "gtag")
             const system = new AnalyticsSystem()
             expect(gtagSpy).toHaveBeenCalled()
             await initialParams.then(params => {
-                expect(params.get("tid")).toBe("G-6XNCRD7QNC")
+                expect(params.get("tid")).toBe(tagID)
             })
             gtagSpy.mockClear()
 
@@ -79,22 +80,35 @@ describe("Analytics", () => {
 
             expect(gtagSpy).toHaveBeenCalled()
             await eventParams.then(params => {
-                expect(params.get("tid")).toBe("G-6XNCRD7QNC")
+                expect(params.get("tid")).toBe(tagID)
                 expect(params.get("en")).toBe("APS Calls per Minute")
             })
         }, 20000)
     })
 
-    test("Calls appropriate gtag functions", async () => {
-        const system = new AnalyticsSystem()
-        const gtagMock = vi.spyOn(window, "gtag")
-        const originalDataLayerSize = window.dataLayer!.length
-        system.event("Cache Get", { key: "1234" })
-        expect(gtagMock).toHaveBeenCalledExactlyOnceWith("event", "Cache Get", { key: "1234" })
-        expect(window.dataLayer!.length).toBe(originalDataLayerSize + 1)
-        const lastDatalayerItem = window.dataLayer![window.dataLayer!.length - 1]
-        expect(lastDatalayerItem[0]).toBe("event")
-        expect(lastDatalayerItem[1]).toBe("Cache Get")
-        expect(lastDatalayerItem[2]).toStrictEqual(expect.objectContaining({key:"1234"}))
+    describe("Without gtag Script", () => {
+        beforeEach(() => {
+            window.dataLayer = undefined
+            window.gtag = undefined
+            install()
+        })
+        test("AnalyticsSystem calls gtag appropriately", async () => {
+            const system = new AnalyticsSystem()
+            const gtagMock = vi.spyOn(window, "gtag")
+            system.event("Cache Get", { key: "1234" })
+            expect(gtagMock).toHaveBeenCalledExactlyOnceWith("event", "Cache Get", { key: "1234" })
+        })
+
+        test("gtag propagates to dataLayer", () => {
+            const initialSize = window.dataLayer!.length
+            window.gtag!("event", "test", {a:2})
+            expect(window.dataLayer!.length).toBe(initialSize+1)
+            const lastDatalayerItem = window.dataLayer![window.dataLayer!.length-1]
+            expect(lastDatalayerItem[0]).toBe("event")
+            expect(lastDatalayerItem[1]).toBe("test")
+            expect(lastDatalayerItem[2]).toStrictEqual(expect.objectContaining({a:2}))
+        })
     })
+
+
 })
