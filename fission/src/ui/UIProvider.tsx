@@ -89,7 +89,7 @@ export type OpenModalFn = <T>(contents: ReactElement, parent?: UIScreen<T>, prop
 export type OpenPanelFn = <T>(contents: ReactElement, parent?: UIScreen<T>, props?: Omit<PanelProps, "type">) => string
 export type CloseModalFn = (closeType: CloseType) => void
 export type ClosePanelFn = (id: string, closeType: CloseType) => void
-export type AddToastFn = (variant: VariantType, ...contents: string[]) => void
+export type AddToastFn = (variant: VariantType, ...contents: ReactElement[]) => void
 export type ConfigureScreenFn = <T extends UIScreen<any>>(
     screen: T,
     props: T extends Panel<infer _> ? Partial<PanelProps> : Partial<ModalProps>,
@@ -117,7 +117,7 @@ export const UIContext = createContext<UIContextProps>({
     openPanel: (_content, _parent, _props = { hideAccept: false, hideCancel: false, position: "center" }) => "",
     closeModal: () => {},
     closePanel: _id => {},
-    addToast: (_variant, _msg) => "",
+    addToast: (_variant, ..._msg) => "",
     configureScreen: (_screen, _props) => {},
 })
 
@@ -238,8 +238,18 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     }, [])
 
     const addToast = useCallback(
-        (variant: VariantType, ...contents: string[]) => {
-            enqueueSnackbar(contents.join("\n"), { variant })
+        (variant: VariantType, ...contents: ReactElement[]) => {
+            enqueueSnackbar(
+                <>
+                    {...contents.map(child => (
+                        <>
+                            {child}
+                            <br />
+                        </>
+                    ))}
+                </>,
+                { variant }
+            )
         },
         [enqueueSnackbar]
     )

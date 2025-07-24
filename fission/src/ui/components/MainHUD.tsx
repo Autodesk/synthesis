@@ -263,7 +263,7 @@ const MainHUD: React.FC = () => {
                         larger={true}
                         onClick={() => {
                             MatchMode.getInstance().sandboxModeStart()
-                            globalAddToast("info", "Match Mode Cancelled", "")
+                            globalAddToast("info", "Match Mode Cancelled")
                         }}
                     />
                 )}

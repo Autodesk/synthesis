@@ -7,7 +7,5 @@ import { UIProvider } from "./ui/UIProvider"
 window.convertAuthToken = code => APS.convertAuthToken(code)
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
-    <UIProvider>
-        <Synthesis />
-    </UIProvider>
+    <Synthesis />
 )

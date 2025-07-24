@@ -365,7 +365,7 @@ const WiringPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         if (miraObjs.length > 0) {
             return miraObjs[0][1] as MirabufSceneObject
         }
-        addToast("warning", "Missing Robot\nMust have at least one robot spawned for selection.")
+        addToast("warning", "Missing Robot", "Must have at least one robot spawned for selection.")
         // closePanel(panel!.id, CloseType.Cancel)
     }, [])
 

@@ -5,15 +5,14 @@ import {
     Box,
     Button,
     CircularProgress,
-    Divider,
     Stack,
     ToggleButton,
     ToggleButtonGroup,
     Tooltip,
-    Typography,
 } from "@mui/material"
 import type React from "react"
 import { type ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
+import { MdExpandMore } from "react-icons/md"
 import {
     type Data,
     getMirabufFiles,
@@ -34,7 +33,8 @@ import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
-import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import Label from "@/ui/components/Label"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
@@ -44,13 +44,11 @@ import {
     RefreshButton,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
+import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
 import { useStateContext } from "@/ui/StateProvider"
 import { CloseType, useUIContext } from "@/ui/UIProvider"
 import type TaskStatus from "@/util/TaskStatus"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
-import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
-import Label from "@/ui/components/Label"
-import { MdExpandMore } from "react-icons/md"
 
 interface ItemCardProps {
     id: string
@@ -181,7 +179,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
 
     useLayoutEffect(() => {
         if (unconfirmedImport) {
-            addToast("warning", "You're already importing a model!\nConfirm that one before importing another.")
+            addToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
             closePanel(panel!.id, CloseType.Cancel)
             return
         }
@@ -441,7 +439,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 <ToggleButton value={MiraType.ROBOT}>Robots</ToggleButton>
                 <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
             </ToggleButtonGroup>
-            <Accordion>
+            <Accordion defaultExpanded>
                 <AccordionSummary expandIcon={<MdExpandMore />}>
                     {viewType === MiraType.ROBOT ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
