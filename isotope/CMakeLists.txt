@@ -57,16 +57,40 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(protobuf)
 find_package(Protobuf REQUIRED)
-
 set(Protobuf_PROTOC_EXECUTABLE $<TARGET_FILE:protoc>)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE protobuf::libprotobuf)
-file(GLOB PROTO_FILES "${CMAKE_CURRENT_LIST_DIR}/../mirabuf/*.proto")
+
 set(PROTO_GEN_DIR "${CMAKE_CURRENT_BINARY_DIR}/protobuf_gen")
 file(MAKE_DIRECTORY ${PROTO_GEN_DIR})
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES} GENERATE_EXTENSIONS ON PROTOC_OUT_DIR ${PROTO_GEN_DIR})
-target_sources(${PROJECT_NAME} PRIVATE ${PROTO_SRCS} ${PROTO_HDRS})
-target_include_directories(${PROJECT_NAME} BEFORE PRIVATE ${PROTO_GEN_DIR})
+file(GLOB PROTO_FILES "${CMAKE_CURRENT_LIST_DIR}/../mirabuf/*.proto")
+
+set(PROTO_SRCS "")
+set(PROTO_HDRS "")
+foreach(_P IN LISTS PROTO_FILES)
+    get_filename_component(_NWE "${_P}" NAME_WE)
+    list(APPEND PROTO_SRCS "${PROTO_GEN_DIR}/${_NWE}.pb.cc")
+    list(APPEND PROTO_HDRS "${PROTO_GEN_DIR}/${_NWE}.pb.h")
+endforeach()
+
+add_custom_command(
+  OUTPUT ${PROTO_SRCS} ${PROTO_HDRS}
+  COMMAND ${Protobuf_PROTOC_EXECUTABLE}
+          --cpp_out=${PROTO_GEN_DIR}
+          -I ${CMAKE_CURRENT_LIST_DIR}/../mirabuf
+          ${PROTO_FILES}
+  DEPENDS ${PROTO_FILES}
+  COMMENT "Generating protobuf sources"
+)
+
+add_custom_target(generate_protos ALL DEPENDS ${PROTO_SRCS} ${PROTO_HDRS})
+add_dependencies(${PROJECT_NAME} generate_protos)
+target_sources(${PROJECT_NAME}
+  PRIVATE
+    ${PROTO_SRCS}
+    ${PROTO_HDRS}
+)
+target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE ${PROTO_GEN_DIR})
 
 install(TARGETS ${PROJECT_NAME} DESTINATION ${PROJECT_INSTALL_DIR})
 install(FILES "${CMAKE_CURRENT_LIST_DIR}/isotope.manifest" DESTINATION ${PROJECT_INSTALL_DIR})

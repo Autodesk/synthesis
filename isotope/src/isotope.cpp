@@ -1,22 +1,22 @@
+#include "config_command.h"
+#include "context.h"
+
 #include <Core/Application/Application.h>
-#include <Core/UserInterface/UserInterface.h>
-#include <Core/UserInterface/Workspaces.h>
-#include <Core/UserInterface/Workspace.h>
+#include <Core/Memory.h>
+#include <Core/UserInterface/CommandControl.h>
+#include <Core/UserInterface/CommandCreatedEvent.h>
+#include <Core/UserInterface/CommandDefinition.h>
 #include <Core/UserInterface/CommandDefinitions.h>
-#include <Core/UserInterface/ToolbarTabs.h>
-#include <Core/UserInterface/ToolbarTab.h>
-#include <Core/UserInterface/ToolbarPanels.h>
-#include <Core/UserInterface/ToolbarPanel.h>
-#include <Core/UserInterface/ToolbarPanelList.h>
 #include <Core/UserInterface/ToolbarControl.h>
 #include <Core/UserInterface/ToolbarControls.h>
-#include <Core/UserInterface/CommandControl.h>
-#include <Core/UserInterface/CommandDefinition.h>
-#include <Core/UserInterface/CommandCreatedEvent.h>
-#include <Core/Memory.h>
-
-#include "context.h"
-#include "config_command.h"
+#include <Core/UserInterface/ToolbarPanel.h>
+#include <Core/UserInterface/ToolbarPanelList.h>
+#include <Core/UserInterface/ToolbarPanels.h>
+#include <Core/UserInterface/ToolbarTab.h>
+#include <Core/UserInterface/ToolbarTabs.h>
+#include <Core/UserInterface/UserInterface.h>
+#include <Core/UserInterface/Workspace.h>
+#include <Core/UserInterface/Workspaces.h>
 
 #include <string>
 
@@ -28,7 +28,7 @@ extern "C" XI_EXPORT bool run(const char* context) {
     }
 
     adsk::core::Ptr<adsk::core::Workspace> workspace = gctx.ui->workspaces()->itemById("FusionSolidEnvironment");
-    adsk::core::Ptr<adsk::core::ToolbarTab> tab = workspace->toolbarTabs()->itemById("ToolsTab");
+    adsk::core::Ptr<adsk::core::ToolbarTab> tab      = workspace->toolbarTabs()->itemById("ToolsTab");
     assert(workspace);
     assert(tab);
 
@@ -36,18 +36,14 @@ extern "C" XI_EXPORT bool run(const char* context) {
     tab->toolbarPanels()->add("isotope_tool_tab", "Isotope");
 
     auto button = gctx.ui->commandDefinitions()->addButtonDefinition(
-        "isotope_command",
-        "Isotope",
-        "This command does something interesting.",
-        "./resources/isotope_exporter/"
-    );
+        "isotope_command", "Isotope", "This command does something interesting.", "./resources/isotope_exporter/");
 
     if (!button || !button->isValid()) {
         gctx.ui->messageBox("Failed to create command definition for Isotope.");
         return false;
     }
 
-    button->commandCreated()->add(new ConfigureCommandCreatedHandler(&gctx));
+    button->commandCreated()->add(new ConfigureCommandCreatedHandler(gctx));
 
     auto panel = gctx.ui->allToolbarPanels()->itemById("isotope_tool_tab");
 

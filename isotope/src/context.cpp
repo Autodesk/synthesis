@@ -13,3 +13,7 @@ bool GlobalContext::configure() {
 
     return true;
 }
+
+bool GlobalContext::isValid() const {
+    return this->app && this->ui && this->app->isValid() && this->ui->isValid();
+}
