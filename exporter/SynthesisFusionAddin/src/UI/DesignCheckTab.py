@@ -1,4 +1,4 @@
-from typing import Any, Dict
+from typing import Any, Callable, Dict, List, TypedDict, cast
 
 import adsk.core
 import adsk.fusion
@@ -7,10 +7,17 @@ from src import Logging, gm
 from src.UI import IconPaths
 
 
+class DesignRule(TypedDict):
+    name: str
+    calculation: Callable[[], float]
+    max_value: float
+
+
 class DesignCheckTab:
     designCheckTab: adsk.core.TabCommandInput
     designCheckTable: adsk.core.TableCommandInput
     designRules: Dict[str, Any] = {}
+    design_rules: List[DesignRule]
 
     @Logging.logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs) -> None:
@@ -40,8 +47,10 @@ class DesignCheckTab:
         ]
 
         for i, rule in enumerate(self.design_rules):
-            value: float = rule["calculation"]()
-            is_valid: bool = value <= rule["max_value"]
+            calculation = rule["calculation"]
+            max_value: float = rule["max_value"]
+            value: float = calculation()
+            is_valid: bool = value <= max_value
             rule_name: str = str(rule["name"])
             rule_id: str = rule_name.replace(" ", "")
 
