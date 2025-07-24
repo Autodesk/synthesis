@@ -19,7 +19,7 @@ import MirabufCachingService, {
 } from "@/mirabuf/MirabufLoader"
 import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
-import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { Box } from "@mui/material"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
@@ -107,25 +107,27 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
-                const { mainSceneObject, gamePieces } = createMirabuf(assembly, info.id, progressHandle) ?? {}
+                const { mainSceneObject, gamePieces } = createMirabuf(assembly, info.id, type, progressHandle) ?? {}
 
                 if (mainSceneObject) {
                     World.sceneRenderer.registerSceneObject(mainSceneObject)
 
-                    gamePieces?.forEach(async sceneObject => {
-                        const assembly = sceneObject.mirabufInstance.parser.assembly
+                    gamePieces?.forEach(async instance => {
+                        const assembly = instance.parser.assembly
                         const buffer = mirabuf.Assembly.encode(assembly).finish()
 
                         const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
                         if (!cacheInfo) return
 
-                        if (!cacheInfo.name)
-                            await MirabufCachingService.cacheInfo(
+                        if (!cacheInfo.name) {
+                            MirabufCachingService.cacheInfo(
                                 cacheInfo.cacheKey,
                                 MiraType.PIECE,
                                 assembly.info?.name ?? undefined
                             )
+                        }
 
+                        const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, cacheInfo.id)
                         World.sceneRenderer.registerSceneObject(sceneObject)
                     })
                     progressHandle.done()
@@ -268,7 +270,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             const status = new ProgressHandle(info.displayName)
             status.update("Downloading from Synthesis...", 0.05)
 
-            MirabufCachingService.cacheRemote(info.src, type)
+            MirabufCachingService.cacheRemote(info.src, type, info.displayName)
                 .then(cacheInfo => {
                     if (cacheInfo) {
                         spawnCachedMira(cacheInfo, type, status)

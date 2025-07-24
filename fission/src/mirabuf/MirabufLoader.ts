@@ -105,7 +105,7 @@ class MirabufCachingService {
         }
 
         const key =
-            miraType == MiraType.ROBOT ? robotsDirName : miraType == MiraType.FIELD ? fieldsDirName : piecesDirName
+            miraType === MiraType.ROBOT ? robotsDirName : miraType === MiraType.FIELD ? fieldsDirName : piecesDirName
         const map = window.localStorage.getItem(key)
 
         if (map) {
@@ -149,7 +149,10 @@ class MirabufCachingService {
 
             const cached = await MirabufCachingService.storeInCache(fetchLocation, miraBuff, miraType, name)
 
-            if (cached) return cached
+            if (cached) {
+                console.log(`Returned cache for ${name}`)
+                return cached
+            }
 
             globalAddToast("error", "Cache Fallback", `Unable to cache “${fetchLocation}”. Using raw buffer instead.`)
 
@@ -234,9 +237,9 @@ class MirabufCachingService {
             const map: MapCache = this.getCacheMap(miraType)
             const id = map[key].id
             const buffer =
-                miraType == MiraType.ROBOT
+                miraType === MiraType.ROBOT
                     ? backUpRobots[id].buffer
-                    : miraType == MiraType.FIELD
+                    : miraType === MiraType.FIELD
                       ? backUpFields[id].buffer
                       : backUpPieces[id].buffer
             const defaultName = map[key].name
@@ -251,9 +254,9 @@ class MirabufCachingService {
                 thumbnailStorageID: thumbnailStorageID ?? defaultStorageID,
             }
             map[key] = info
-            miraType == MiraType.ROBOT
+            miraType === MiraType.ROBOT
                 ? (backUpRobots[id] = info)
-                : miraType == MiraType.FIELD
+                : miraType === MiraType.FIELD
                   ? (backUpFields[id] = info)
                   : (backUpPieces[id] = info)
             window.localStorage.setItem(
@@ -353,7 +356,7 @@ class MirabufCachingService {
      */
     public static async get(id: MirabufCacheID, miraType: MiraType): Promise<mirabuf.Assembly | undefined> {
         const cache =
-            miraType == MiraType.ROBOT ? backUpRobots : miraType == MiraType.FIELD ? backUpFields : backUpPieces
+            miraType === MiraType.ROBOT ? backUpRobots : miraType === MiraType.FIELD ? backUpFields : backUpPieces
 
         try {
             // Get buffer from hashMap. If not in hashMap, check OPFS. Otherwise, buff is undefined
@@ -484,16 +487,16 @@ class MirabufCachingService {
             const updatedBuffer = mirabuf.Assembly.encode(assembly).finish()
 
             // Update the cached buffer
-            const cache = miraType == MiraType.ROBOT ? backUpRobots : backUpFields
+            const cache =
+                miraType === MiraType.ROBOT ? backUpRobots : miraType === MiraType.FIELD ? backUpFields : backUpPieces
             if (cache[id]) {
                 cache[id].buffer = updatedBuffer
             }
 
             // Update OPFS if available
             if (canOPFS) {
-                const fileHandle = await (miraType == MiraType.ROBOT
-                    ? robotFolderHandle
-                    : fieldFolderHandle
+                const fileHandle = await (
+                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
                 ).getFileHandle(id, { create: false })
                 const writable = await fileHandle.createWritable()
                 await writable.write(updatedBuffer)
@@ -524,7 +527,7 @@ class MirabufCachingService {
         name?: string
     ): Promise<MirabufCacheInfo | undefined> {
         try {
-            const backupID = Date.now().toString()
+            const backupID = crypto.randomUUID()
             if (!miraType) {
                 console.debug("Double loading")
                 // Piece can't be known without parsing
@@ -555,11 +558,12 @@ class MirabufCachingService {
             // Store buffer
             if (canOPFS) {
                 // Store in OPFS
-                const fileHandle = await (miraType == MiraType.ROBOT
-                    ? robotFolderHandle
-                    : miraType == MiraType.FIELD
-                      ? fieldFolderHandle
-                      : pieceFolderHandle
+                const fileHandle = await (
+                    miraType == MiraType.ROBOT
+                        ? robotFolderHandle
+                        : miraType == MiraType.FIELD
+                          ? fieldFolderHandle
+                          : pieceFolderHandle
                 ).getFileHandle(backupID, { create: true })
                 const writable = await fileHandle.createWritable()
                 await writable.write(miraBuff)

@@ -191,6 +191,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._station = station
     }
 
+    public set miraType(type: MiraType) {
+        this._miraType = type
+    }
+
     public get cacheId() {
         return this._cacheId
     }
@@ -209,7 +213,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         this._miraType = this._mirabufInstance.parser.assembly.dynamic
             ? // Game pieces imported with a field
               this._mirabufInstance.parser.isGamePiece ||
-              // Game pieces imported independently
+              // Game pieces imported independently (this doesn't work ig)
               MirabufCachingService.getCacheMap(MiraType.PIECE)[cacheId] != undefined
                 ? MiraType.PIECE
                 : MiraType.ROBOT
@@ -283,7 +287,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         const rigidNodes = this._mirabufInstance.parser.rigidNodes
         // for pies nodeToBody is empty
-        console.log(`${this.assemblyName} ${[...this._mechanism.nodeToBody.entries()].map(n => n[0])}`)
         this._mechanism.nodeToBody.forEach((bodyId, rigidNodeId) => {
             const rigidNode = rigidNodes.get(rigidNodeId)
             if (!rigidNode) {
@@ -857,14 +860,15 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 export function createMirabuf(
     assembly: mirabuf.Assembly,
     id: MirabufCacheID,
+    type: MiraType,
     progressHandle?: ProgressHandle
 ):
     | {
           mainSceneObject: MirabufSceneObject
-          gamePieces?: MirabufSceneObject[]
+          gamePieces?: MirabufInstance[]
       }
     | undefined {
-    const parser = new MirabufParser(assembly, false, progressHandle)
+    const parser = new MirabufParser(assembly, type == MiraType.PIECE, progressHandle)
     if (parser.maxErrorSeverity >= ParseErrorSeverity.UNIMPORTABLE) {
         console.error(`Assembly Parser produced significant errors for '${assembly.info!.name!}'`)
         return
@@ -881,9 +885,7 @@ export function createMirabuf(
             mainSceneObject,
         }
 
-    const gamePieces = parser.gamePieces.map(
-        parser => new MirabufSceneObject(new MirabufInstance(parser), parser.assembly.info!.name!, id)
-    )
+    const gamePieces = parser.gamePieces.map(parser => new MirabufInstance(parser))
 
     return {
         mainSceneObject,

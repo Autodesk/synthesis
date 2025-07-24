@@ -105,6 +105,7 @@ class MirabufParser {
 
         // Fields Only: Assign Game Piece rigid nodes
         if (!assembly.dynamic) {
+            progressHandle?.update("Wrangling Gamepieces...", 0.4)
             this._gamePieces = this.pruneGamePieceNodes().map(assembly => new MirabufParser(assembly, true))
         }
 

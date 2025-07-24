@@ -57,7 +57,7 @@ const ImportLocalMirabufModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                         .then(x => {
                             if (x) {
                                 // TODO This function shouldn't cache game pieces when imported locally!!!
-                                return createMirabuf(x.assembly, x.cacheInfo.id)
+                                return createMirabuf(x.assembly, x.cacheInfo.id, miraType)
                             }
                             return undefined
                         })
