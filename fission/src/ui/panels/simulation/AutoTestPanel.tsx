@@ -216,7 +216,9 @@ function Playing({ assembly, setEnd, countdown, captures }: PlayingProps) {
 
     return (
         <>
-            <Label size="md" className="text-center">{Math.max(remaining, 0).toFixed(1)}s</Label>
+            <Label size="md" className="text-center">
+                {Math.max(remaining, 0).toFixed(1)}s
+            </Label>
             <Button className="self-center" onClick={end}>
                 Stop
             </Button>
@@ -240,7 +242,9 @@ function Staging({ assembly, setPlaying }: StagingProps) {
     return (
         <>
             <Stack>
-                <Label size="md" textAlign="center">Countdown</Label>
+                <Label size="md" textAlign="center">
+                    Countdown
+                </Label>
                 <ToggleButtonGroup
                     value={countdown}
                     exclusive
@@ -259,7 +263,9 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                 </ToggleButtonGroup>
             </Stack>
             <Stack>
-                <Label size="md" textAlign="center">Alliance Station</Label>
+                <Label size="md" textAlign="center">
+                    Alliance Station
+                </Label>
                 <ToggleButtonGroup
                     value={station}
                     exclusive
@@ -284,7 +290,9 @@ function Staging({ assembly, setPlaying }: StagingProps) {
                 />
             </Stack>
             <Stack>
-                <Label size="md" textAlign="center">Placement</Label>
+                <Label size="md" textAlign="center">
+                    Placement
+                </Label>
                 <TransformGizmoControl parent={assembly} size={3} defaultMode="translate" scaleDisabled />
             </Stack>
             <Button className="self-center" onClick={next}>

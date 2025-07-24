@@ -72,13 +72,17 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     useEffect(() => {
         setUnconfirmedImport(true)
 
-        configureScreen(panel!, { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" }, {
-            onAccept: closeFinish,
-            onCancel: closeDelete,
-            onClose: () => {
-                setUnconfirmedImport(false)
+        configureScreen(
+            panel!,
+            { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
+            {
+                onAccept: closeFinish,
+                onCancel: closeDelete,
+                onClose: () => {
+                    setUnconfirmedImport(false)
+                },
             }
-        })
+        )
     }, [])
 
     return (

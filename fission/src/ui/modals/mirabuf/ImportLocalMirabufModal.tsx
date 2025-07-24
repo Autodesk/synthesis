@@ -63,7 +63,11 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             }
         }
 
-        configureScreen(modal!, { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined }, { onAccept, onCancel })
+        configureScreen(
+            modal!,
+            { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
+            { onAccept, onCancel }
+        )
     }, [selectedFile, miraType, openPanel, modal])
 
     return (
@@ -84,9 +88,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 Upload File
                 <VisuallyHiddenInput type="file" onChange={onInputChanged} multiple />
             </Button>
-            {selectedFile && (
-                <Label className="text-center" size="sm">{`Selected File: ${selectedFile.name}`}</Label>
-            )}
+            {selectedFile && <Label className="text-center" size="sm">{`Selected File: ${selectedFile.name}`}</Label>}
         </Stack>
     )
 }

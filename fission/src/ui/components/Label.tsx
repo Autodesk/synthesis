@@ -17,7 +17,11 @@ const sizeToVariant: { [key in LabelSize]: Variant } = {
 }
 
 const Label: React.FC<PropsWithChildren<LabelProps> & TypographyProps> = ({ children, size, ...props }) => {
-    return <Typography variant={sizeToVariant[size]} {...props}>{children}</Typography>
+    return (
+        <Typography variant={sizeToVariant[size]} {...props}>
+            {children}
+        </Typography>
+    )
 }
 
 export default Label

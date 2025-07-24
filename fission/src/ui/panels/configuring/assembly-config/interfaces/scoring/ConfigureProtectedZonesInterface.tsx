@@ -55,7 +55,7 @@ const ConfigureProtectedZonesInterface: React.FC<ConfigureZonesProps> = ({ selec
                             <Box width="8px" />
                             <Label size="sm" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                                 Configuring Zone
-                            </Label >
+                            </Label>
                         </Stack>
                     </Stack>
                     <Divider />

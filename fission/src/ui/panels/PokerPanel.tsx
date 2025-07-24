@@ -99,11 +99,7 @@ const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     return (
         <Stack>
-            <StatefulCheckbox
-                label="Punch?"
-                checked={punch}
-                onClick={setPunch}
-            />
+            <StatefulCheckbox label="Punch?" checked={punch} onClick={setPunch} />
             <StatefulSlider
                 label="Punch Force"
                 min={PUNCH_FORCE_MIN}
@@ -111,11 +107,7 @@ const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 defaultValue={punchForce}
                 onChange={x => setPunchForce(x as number)}
             />
-            <StatefulCheckbox
-                label="Mark?"
-                checked={mark}
-                onClick={setMark}
-            />
+            <StatefulCheckbox label="Mark?" checked={mark} onClick={setMark} />
             <StatefulSlider
                 label="Mark Radius"
                 min={MARK_RADIUS_MIN}

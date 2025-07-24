@@ -20,13 +20,7 @@ function OrbitSettings({ controls }: OrbitSettingsProps) {
         controls.locked = locked
     }, [controls, locked])
 
-    return (
-        <StatefulCheckbox
-            label="Lock to Robot"
-            checked={locked}
-            onClick={setLocked}
-        />
-    )
+    return <StatefulCheckbox label="Lock to Robot" checked={locked} onClick={setLocked} />
 }
 
 const CameraSelectionPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
