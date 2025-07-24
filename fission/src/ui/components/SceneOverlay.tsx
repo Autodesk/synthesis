@@ -10,10 +10,12 @@ import {
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ViewCube from "./ViewCube"
 import Label from "./Label"
+import { useStateContext } from "../StateProvider"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
 const SceneOverlay: React.FC = () => {
+    const { isMainMenuOpen } = useStateContext()
     /* State to determine if the overlay is disabled */
     const [isDisabled, setIsDisabled] = useState(false)
 
@@ -106,7 +108,7 @@ const SceneOverlay: React.FC = () => {
             }}
         >
             {components}
-            {showViewCube && <ViewCube position={{ top: 20, right: 20 }} />}
+            {showViewCube && !isMainMenuOpen && <ViewCube position={{ top: 20, right: 20 }} />}
         </Stack>
     )
 }
