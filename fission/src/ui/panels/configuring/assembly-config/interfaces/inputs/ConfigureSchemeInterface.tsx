@@ -61,7 +61,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                     }
                     selectedScheme.usesGamepad = val
                 }}
-                tooltipText="Supported controllers: Xbox one, Xbox 360."
+                tooltip="Supported controllers: Xbox one, Xbox 360."
             />
             <StatefulCheckbox
                 label="Use Touch Controls"
@@ -74,7 +74,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                     }
                     selectedScheme.usesTouchControls = val
                 }}
-                tooltipText="Enable on-screen touch controls (only for mobile devices)."
+                tooltip="Enable on-screen touch controls (only for mobile devices)."
             />
             <Divider />
 

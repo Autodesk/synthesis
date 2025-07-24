@@ -75,6 +75,8 @@ const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             affect(e, punch, mark, punchForce, markRadius, markers)
         }
 
+        console.log(punch, mark)
+
         World.sceneRenderer.renderer.domElement.addEventListener("click", onClick)
 
         return () => {
@@ -99,7 +101,7 @@ const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         <Stack>
             <StatefulCheckbox
                 label="Punch?"
-                checked={PUNCH_DEFAULT}
+                checked={punch}
                 onClick={setPunch}
             />
             <StatefulSlider
@@ -111,7 +113,7 @@ const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             />
             <StatefulCheckbox
                 label="Mark?"
-                checked={MARK_DEFAULT}
+                checked={mark}
                 onClick={setMark}
             />
             <StatefulSlider

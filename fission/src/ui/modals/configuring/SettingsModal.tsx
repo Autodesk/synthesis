@@ -1,6 +1,6 @@
 import { Box, Button, Checkbox, FormControlLabel, Slider, Stack, Typography } from "@mui/material"
 import type React from "react"
-import { useCallback, useEffect } from "react"
+import { useCallback, useEffect, useReducer } from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
@@ -11,9 +11,11 @@ import { CloseType, useUIContext } from "@/ui/UIProvider"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 import Label from "@/ui/components/Label"
+import { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 
 const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { closeModal, openPanel, configureScreen } = useUIContext()
+    const [_, refresh] = useReducer(x => !x, false)
     const save = useCallback(() => {
         SoundPlayer.changeVolume()
         PreferencesSystem.savePreferences()
@@ -28,6 +30,11 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
 
         configureScreen(modal!, { title: "Settings", allowClickAway: false }, { onAccept: save, onCancel })
     }, [modal, save])
+
+    const writePreference = <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => {
+        PreferencesSystem.setGlobalPreference(pref, value)
+        refresh()
+    }
 
     return (
         <Stack
@@ -66,7 +73,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     label={"Pitch Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setPitchSensitivity(value as number)}
-                    tooltipText="Moving the camera up and down."
+                    tooltip="Moving the camera up and down."
                 />
                 {Spacer(2)}
                 <Slider
@@ -76,7 +83,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     label={"Yaw Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value) => setYawSensitivity(value as number)}
-                    tooltipText="Moving the camera left and right."
+                    tooltip="Moving the camera left and right."
                 />*/}
             {Spacer(5)}
             <Label size="sm">Camera Settings</Label>
@@ -86,9 +93,9 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 defaultValue={PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")}
                 label={"Scene Rotation Sensitivity"}
                 // format={{ maximumFractionDigits: 2 }}
-                onChange={value => PreferencesSystem.setGlobalPreference("SceneRotationSensitivity", value)}
+                onChange={value => writePreference("SceneRotationSensitivity", value)}
                 step={0.1}
-                // TODO: tooltipText="Controls how fast the scene rotates when dragging with the mouse."
+                tooltip="Controls how fast the scene rotates when dragging with the mouse."
             />
             {Spacer(5)}
             <StatefulSlider
@@ -97,17 +104,17 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
                 label={"ViewCube Rotation Sensitivity"}
                 // TODO: format={{ maximumFractionDigits: 2 }}
-                onChange={value => PreferencesSystem.setGlobalPreference("ViewCubeRotationSensitivity", value)}
+                onChange={value => writePreference("ViewCubeRotationSensitivity", value)}
                 step={0.06}
-                // tooltipText="Controls how fast the view changes when dragging on the view cube."
+                tooltip="Controls how fast the view changes when dragging on the view cube."
             />
             <StatefulCheckbox
                 label="Show View Cube"
                 checked={PreferencesSystem.getGlobalPreference("ShowViewCube")}
                 onClick={checked => {
-                    PreferencesSystem.setGlobalPreference("ShowViewCube", checked)
+                    writePreference("ShowViewCube", checked)
                 }}
-                // tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
+                tooltip="Show the view cube in the top-right corner for quick camera orientation changes."
             />
             {Spacer(10)}
             <Label size="sm">Preferences</Label>
@@ -115,44 +122,39 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 <StatefulCheckbox
                     label="Report Analytics"
                     checked={PreferencesSystem.getGlobalPreference("ReportAnalytics")}
-                    onClick={checked => PreferencesSystem.setGlobalPreference("ReportAnalytics", checked)}
-                    // tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
+                    onClick={checked => writePreference("ReportAnalytics", checked)}
+                    tooltip="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                 />
                 <StatefulCheckbox
                     label="Realistic Subsystem Gravity"
                     checked={PreferencesSystem.getGlobalPreference("SubsystemGravity")}
-                    onClick={checked => PreferencesSystem.setGlobalPreference("SubsystemGravity", checked)}
-                    // tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
+                    onClick={checked => writePreference("SubsystemGravity", checked)}
+                    tooltip="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
                 />
                 <StatefulCheckbox
                     label="Show Score Zones"
                     checked={PreferencesSystem.getGlobalPreference("RenderScoringZones")}
-                    onClick={checked =>
-                        PreferencesSystem.setGlobalPreference("RenderScoringZones", checked)
-                    }
-                    // tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
+                    onClick={checked => writePreference("RenderScoringZones", checked) }
+                    tooltip="If disabled, scoring zones will not be visible but will continue to function the same."
                 />
                 <StatefulCheckbox
                     label="Show Protected Zones"
                     checked={PreferencesSystem.getGlobalPreference("RenderProtectedZones")}
-                    onClick={checked => {
-                        PreferencesSystem.setGlobalPreference("RenderProtectedZones", checked)
-                    }}
-                    // tooltipText="If disabled, protected zones will not be visible but will continue to function the same."
+                    onClick={checked => writePreference("RenderProtectedZones", checked)
+                    }
+                    tooltip="If disabled, protected zones will not be visible but will continue to function the same."
                 />
                 <StatefulCheckbox
                     label="Show Scene Tags"
                     checked={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
-                    onClick={checked => {
-                        PreferencesSystem.setGlobalPreference("RenderSceneTags", checked)
-                    }}
-                    // tooltipText="Name tags above robot."
+                    onClick={checked => writePreference("RenderSceneTags", checked)}
+                    tooltip="Name tags above robot."
                 />
                 <StatefulCheckbox
                     label="Show Scoreboard"
                     checked={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
                     onClick={checked => {
-                        PreferencesSystem.setGlobalPreference("RenderScoreboard", checked)
+                        writePreference("RenderScoreboard", checked)
                         if (checked) {
                             // TODO: figure out scoreboard - I think it should be its own component and not a panel
                             // openPanel("scoreboard");
@@ -163,14 +165,14 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     label="Show Centers of Mass"
                     checked={PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")}
                     onClick={checked => {
-                        PreferencesSystem.setGlobalPreference("ShowCenterOfMassIndicators", checked)
+                        writePreference("ShowCenterOfMassIndicators", checked)
                     }}
-                    // tooltipText="Show a purple dot to indicate the center of mass of each robot in frame"
+                    tooltip="Show a purple dot to indicate the center of mass of each robot in frame"
                 />
                 <StatefulCheckbox
                     label="Mute All Sound"
                     checked={PreferencesSystem.getGlobalPreference("MuteAllSound")}
-                    onClick={checked => PreferencesSystem.setGlobalPreference("MuteAllSound", checked)}
+                    onClick={checked => writePreference("MuteAllSound", checked)}
                 />
                 <StatefulSlider
                     min={0}
@@ -178,8 +180,8 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
                     label={"SFX Volume"}
                     // format={{ maximumFractionDigits: 2 }}
-                    onChange={value => PreferencesSystem.setGlobalPreference("SFXVolume", value)}
-                    // tooltipText="Volume of sound effects (%)."
+                    onChange={value => writePreference("SFXVolume", value)}
+                    tooltip="Volume of sound effects (%)."
                 />
                 {Spacer(8)}
             </Stack>
