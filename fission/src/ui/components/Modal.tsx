@@ -22,7 +22,7 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
     // biome-ignore lint/correctness/useExhaustiveDependencies: to refresh on configure
     useEffect(() => {
         refresh(x => !x)
-    }, [modal.props.title])
+    }, [modal.props.configured])
 
     return (
         <MUIModal
@@ -34,7 +34,7 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
             <Card
                 // TODO: come up with a better solution than this
                 sx={{
-                    display: modal.props.title ? "" : "none",
+                    display: modal.props.configured ? "" : "none",
                     position: "absolute",
                     top: "50%",
                     left: "50%",

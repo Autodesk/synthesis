@@ -60,7 +60,7 @@ export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => 
     // biome-ignore lint/correctness/useExhaustiveDependencies: to refresh on configure
     useEffect(() => {
         refresh(x => !x)
-    }, [panel.props.title])
+    }, [panel.props.configured])
 
     // FIXME: sliders show up as <span> so want to cancel drag on those
     // however still can drag on dropdown but menu elements are left behind
@@ -68,7 +68,7 @@ export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => 
         <Draggable cancel="span" positionOffset={getPositionOffset(props.position)}>
             <Card
                 sx={{
-                    display: panel.props.title ? "" : "none",
+                    display: panel.props.configured ? "" : "none",
                     position: "absolute",
                     maxWidth: 400,
                     pointerEvents: "auto",
