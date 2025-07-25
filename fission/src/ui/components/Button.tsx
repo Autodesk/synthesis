@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react"
 import { Button as BaseButton } from "@mui/base/Button"
+import React, { ReactNode } from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 export enum ButtonSize {
@@ -18,6 +18,7 @@ export type ButtonProps = {
     className?: string
     id?: string
     disabled?: boolean
+    label?: string
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -60,7 +61,7 @@ const Button: React.FC<ButtonProps> = ({
                 ${sizeClassNames} 
                 rounded-sm 
                 font-semibold 
-                cursor-pointer 
+                ${!disabled && "cursor-pointer"} 
                 duration-200 
                 border-none 
                 focus-visible:outline-0 

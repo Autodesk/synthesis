@@ -1,21 +1,20 @@
+import Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
+import { OnContactAddedEvent, OnContactPersistedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import SceneObject from "@/systems/scene/SceneObject"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import World from "@/systems/World"
-import Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
-import { OnContactAddedEvent, OnContactRemovedEvent, OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
-import SceneObject from "@/systems/scene/SceneObject"
-import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MiraType } from "./MirabufLoader"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import MatchMode, { MatchModeType } from "@/systems/MatchMode"
 
 export enum ContactType {
@@ -25,6 +24,7 @@ export enum ContactType {
     RED_ROBOT_INSIDE = "Collision with Red Robot Inside",
     BLUE_ROBOT_INSIDE = "Collision with Blue Robot Inside",
 }
+import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors

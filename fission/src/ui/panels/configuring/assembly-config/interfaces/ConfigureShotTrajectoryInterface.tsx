@@ -1,26 +1,26 @@
-import * as THREE from "three"
-import { useCallback, useEffect, useMemo, useState, useRef } from "react"
-import SelectButton from "@/components/SelectButton"
-import Slider from "@/ui/components/Slider"
 import Jolt from "@azaleacolburn/jolt-physics"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
+import * as THREE from "three"
+import SelectButton from "@/components/SelectButton"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+import Button from "@/ui/components/Button"
+import Slider from "@/ui/components/Slider"
+import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertReactRgbaColorToThreeColor,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { useTheme } from "@/ui/helpers/UseThemeHelpers"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
-import Button from "@/ui/components/Button"
-import { LabelWithTooltip, Spacer } from "@/ui/components/StyledComponents"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import { ToggleButtonGroup, ToggleButton } from "@/ui/components/ToggleButtonGroup"
 
 // slider constants
 const MIN_VELOCITY = 0.0

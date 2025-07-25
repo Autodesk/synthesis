@@ -1,5 +1,5 @@
-import Behavior from "@/systems/simulation/behavior/Behavior"
 import InputSystem from "@/systems/input/InputSystem"
+import Behavior from "@/systems/simulation/behavior/Behavior"
 import EjectorDriver from "../../driver/EjectorDriver"
 import IntakeDriver from "../../driver/IntakeDriver"
 

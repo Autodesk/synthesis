@@ -1,13 +1,13 @@
+import { styled } from "@mui/material"
 import React from "react"
+import Button from "@/components/Button"
+import Label from "@/components/Label"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Stack, { StackDirection } from "@/components/Stack"
-import Label from "@/components/Label"
 import { SynthesisIcons, Spacer } from "../components/StyledComponents"
-import Button from "@/components/Button"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import MatchMode from "@/systems/MatchMode"
-import { styled } from "@mui/material"
 
 type Entry = {
     name: string

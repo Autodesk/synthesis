@@ -1,35 +1,36 @@
+import { MouseEvent, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
+import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import InputSystem from "@/systems/input/InputSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
+import Button from "@/ui/components/Button"
 import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { MouseEvent, useEffect, useMemo, useReducer, useRef, useState } from "react"
-import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
-import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
-import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
-import InputSystem from "@/systems/input/InputSystem"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import Button from "@/ui/components/Button"
-import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
 import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
-import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
-import SimulationInterface from "./interfaces/SimulationInterface"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
-import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
+import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
+import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
+import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
+import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
+import SimulationInterface from "./interfaces/SimulationInterface"
+import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
+import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -129,6 +130,10 @@ function getRobotModes(assembly: MirabufSceneObject): Map<ConfigMode, ConfigMode
         [
             ConfigMode.MOVE,
             new ConfigModeSelectionOption("Move", ConfigMode.MOVE, "Adjust position of robot relative to field."),
+        ],
+        [
+            ConfigMode.DRIVETRAIN,
+            new ConfigModeSelectionOption("Drivetrain", ConfigMode.DRIVETRAIN, "Sets the drivetrain type ."),
         ],
         [
             ConfigMode.INTAKE,
@@ -326,6 +331,9 @@ const ConfigInterface: React.FC<ConfigInterfaceProps> = ({ configMode, assembly,
         }
         case ConfigMode.ALLIANCE: {
             return <AllianceSelectionInterface selectedAssembly={assembly} />
+        }
+        case ConfigMode.DRIVETRAIN: {
+            return <DrivetrainSelectionInterface selectedAssembly={assembly} />
         }
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)

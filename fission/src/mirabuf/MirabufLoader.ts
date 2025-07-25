@@ -1,8 +1,8 @@
-import { Data, downloadData } from "@/aps/APSDataManagement"
-import { mirabuf } from "@/proto/mirabuf"
-import { globalAddToast } from "@/components/GlobalUIControls"
-import World from "@/systems/World"
 import Pako from "pako"
+import { Data, downloadData } from "@/aps/APSDataManagement"
+import { globalAddToast } from "@/components/GlobalUIControls"
+import { mirabuf } from "@/proto/mirabuf"
+import World from "@/systems/World"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "4543246"
@@ -238,7 +238,11 @@ class MirabufCachingService {
                 thumbnailStorageID: thumbnailStorageID ?? defaultStorageID,
             }
             map[key] = info
-            miraType == MiraType.ROBOT ? (backUpRobots[id] = info) : (backUpFields[id] = info)
+            if (miraType == MiraType.ROBOT) {
+                backUpRobots[id] = info
+            } else {
+                backUpFields[id] = info
+            }
             window.localStorage.setItem(miraType == MiraType.ROBOT ? robotsDirName : fieldsDirName, JSON.stringify(map))
             return true
         } catch (e) {
@@ -543,7 +547,9 @@ class MirabufCachingService {
     private static async hashBuffer(buffer: ArrayBuffer): Promise<string> {
         const hashBuffer = await crypto.subtle.digest("SHA-256", buffer)
         let hash = ""
-        new Uint8Array(hashBuffer).forEach(x => (hash = hash + String.fromCharCode(x)))
+        new Uint8Array(hashBuffer).forEach(x => {
+            hash = hash + String.fromCharCode(x)
+        })
         return btoa(hash).replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "")
     }
 

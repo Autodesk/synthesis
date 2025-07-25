@@ -2,8 +2,8 @@ import ReactDOM from "react-dom/client"
 import { ThemeProvider } from "@/ui/ThemeContext"
 import Synthesis from "./Synthesis"
 import "./index.css"
+import { defaultColors, initialThemeName, themes } from "@/theme.ts"
 import APS from "./aps/APS"
-import { initialThemeName, themes, defaultColors } from "@/theme.ts"
 
 window.convertAuthToken = code => APS.convertAuthToken(code)
 

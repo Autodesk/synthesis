@@ -1,9 +1,9 @@
 import React from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Button from "@/components/Button"
-import Stack, { StackDirection } from "@/components/Stack"
 import Dropdown from "@/components/Dropdown"
 import Label from "@/components/Label"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
+import Stack, { StackDirection } from "@/components/Stack"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const ConnectToMultiplayerModal: React.FC<ModalPropsImpl> = ({ modalId }) => (

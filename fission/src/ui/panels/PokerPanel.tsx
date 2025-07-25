@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react"
+import * as THREE from "three"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import World from "@/systems/World"
-import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
+import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import { SynthesisIcons } from "../components/StyledComponents"
-import * as THREE from "three"
 
 const RAY_MAX_LENGTH = 20.0
 

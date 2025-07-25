@@ -30,7 +30,9 @@ export class ProgressHandle {
     public update(message: string, progress: number, status?: ProgressHandleStatus) {
         this.message = message
         this.progress = progress
-        status && (this.status = status)
+        if (status) {
+            this.status = status
+        }
 
         this.push()
     }

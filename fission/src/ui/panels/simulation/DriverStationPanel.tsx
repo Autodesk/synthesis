@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import Stack, { StackDirection } from "@/components/Stack"
 import Button from "@/components/Button"
 import Dropdown from "@/components/Dropdown"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
+import Stack, { StackDirection } from "@/components/Stack"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const DriverStationPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
