@@ -286,7 +286,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         }
 
         const rigidNodes = this._mirabufInstance.parser.rigidNodes
-        // for pies nodeToBody is empty
         this._mechanism.nodeToBody.forEach((bodyId, rigidNodeId) => {
             const rigidNode = rigidNodes.get(rigidNodeId)
             if (!rigidNode) {

@@ -41,6 +41,8 @@ import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { mirabuf } from "@/proto/mirabuf"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 interface ItemCardProps {
     id: string
@@ -88,10 +90,10 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
         canOPFS
             ? MirabufCachingService.getCacheMap(miraType)
             : miraType == MiraType.ROBOT
-              ? backUpRobots
-              : miraType == MiraType.FIELD
-                ? backUpFields
-                : backUpPieces
+                ? backUpRobots
+                : miraType == MiraType.FIELD
+                    ? backUpFields
+                    : backUpPieces
     )
 }
 
@@ -112,25 +114,65 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                 if (mainSceneObject) {
                     World.sceneRenderer.registerSceneObject(mainSceneObject)
 
+                    // The point of this code is to prevent the caching of game pieces of the same type
+                    // This might actually be the worst code I've ever written
+                    // It essentially keeps a list of all the game piece name prefixes as delimited by a few characters I noticed were being used for that purpose
+                    // It also tracks which prefixes have already had a game piece of that type cached
+
+                    // There are certainly better ways of checking prefixes, although the correct way of handling this problem would be to traverse the mesh and check that it's identical
+                    // However, that solution would be slow and more difficult to implement and this solution will work for now
+                    const pieceNames: [string, boolean][] = []
+                    gamePieces
+                        ?.map(gp => gp.parser.assembly?.info?.name)
+                        .filter(name => name != undefined)
+                        .forEach(name => {
+                            // Which prefixes are checked should be updated whenever someone finds a new one
+                            if (name.includes(":")) {
+                                pieceNames.push([name.split(":")[0], false])
+                            } else if (name.includes(" ")) {
+                                pieceNames.push([name.split(" ")[0], false])
+                            }
+                        })
+
                     gamePieces?.forEach(async instance => {
                         const assembly = instance.parser.assembly
-                        const buffer = mirabuf.Assembly.encode(assembly).finish()
+                        if (
+                            pieceNames.some(([name, hasCached], i, arr) => {
+                                // If a piece has a prefix and another game piece of this type has been cached, this pieces should not be
+                                const hasPrefix = assembly?.info?.name?.includes(name)
+                                const noCache = hasPrefix && hasCached
+                                // If a piece has the prefix but there hasn't been a cache, there will be so we should mark it as such
+                                // This has to be done here, since we loose information about what prefix this game piece has when this predicate is resolved
+                                if (hasPrefix && !hasCached) {
+                                    arr[i][1] = true
+                                }
+                                return noCache
+                            })
+                        ) {
+                            const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, "")
+                            World.sceneRenderer.registerSceneObject(sceneObject)
+                        } else {
+                            const buffer = mirabuf.Assembly.encode(assembly).finish()
 
-                        const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
-                        if (!cacheInfo) return
+                            const cacheInfo = await MirabufCachingService.cacheLocal(buffer, MiraType.PIECE)
+                            if (!cacheInfo) return
 
-                        if (!cacheInfo.name) {
-                            MirabufCachingService.cacheInfo(
-                                cacheInfo.cacheKey,
-                                MiraType.PIECE,
-                                assembly.info?.name ?? undefined
-                            )
+                            if (!cacheInfo.name) {
+                                MirabufCachingService.cacheInfo(
+                                    cacheInfo.cacheKey,
+                                    MiraType.PIECE,
+                                    assembly.info?.name ?? undefined
+                                )
+                            }
+                            const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, cacheInfo.id)
+                            World.sceneRenderer.registerSceneObject(sceneObject)
                         }
-
-                        const sceneObject = new MirabufSceneObject(instance, assembly.info?.name!, cacheInfo.id)
-                        World.sceneRenderer.registerSceneObject(sceneObject)
                     })
                     progressHandle.done()
+
+                    if (mainSceneObject.miraType === MiraType.PIECE) {
+                        // return <TransformGizmoControl size={0} defaultMode={"translate"}></TransformGizmoControl>
+                    }
 
                     if (mainSceneObject.miraType === MiraType.ROBOT) {
                         globalOpenPanel("initial-config")
