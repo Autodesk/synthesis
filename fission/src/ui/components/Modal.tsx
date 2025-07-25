@@ -1,7 +1,7 @@
-import React, { ReactNode } from "react"
 import { ClickAwayListener } from "@mui/base/ClickAwayListener"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import React, { ReactNode } from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 export type ModalPropsImpl = {
     modalId: string

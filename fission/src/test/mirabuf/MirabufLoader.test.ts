@@ -1,5 +1,5 @@
-import { describe, test, expect, vi, beforeEach, afterEach, type MockedFunction } from "vitest"
-import MirabufLoader, { MiraType, backUpRobots } from "../../mirabuf/MirabufLoader"
+import { afterEach, beforeEach, describe, expect, type MockedFunction, test, vi } from "vitest"
+import MirabufLoader, { backUpRobots, MiraType } from "../../mirabuf/MirabufLoader"
 
 vi.mock("@/systems/World", () => ({
     default: {

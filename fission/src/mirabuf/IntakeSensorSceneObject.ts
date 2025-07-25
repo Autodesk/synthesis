@@ -1,8 +1,8 @@
-import SceneObject from "@/systems/scene/SceneObject"
-import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
+import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
+import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
@@ -11,7 +11,7 @@ import {
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import { OnContactPersistedEvent } from "@/systems/physics/ContactEvents"
+import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
 
 class IntakeSensorSceneObject extends SceneObject {
     private _parentAssembly: MirabufSceneObject

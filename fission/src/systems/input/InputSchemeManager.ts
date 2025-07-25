@@ -1,9 +1,9 @@
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import { random } from "@/util/Random"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import DefaultInputs from "./DefaultInputs"
 import InputSystem, { AxisInput, ButtonInput, Input, KeyDescriptor } from "./InputSystem"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 
 export type InputScheme = {
     schemeName: string

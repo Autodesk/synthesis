@@ -1,22 +1,22 @@
+import Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
+import { OnContactAddedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import SceneObject from "@/systems/scene/SceneObject"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import World from "@/systems/World"
-import Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
-import { OnContactAddedEvent, OnContactRemovedEvent } from "@/systems/physics/ContactEvents"
-import SceneObject from "@/systems/scene/SceneObject"
-import { ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { findListDifference } from "@/util/Utility"
 import { LAYER_GENERAL_DYNAMIC } from "@/systems/physics/PhysicsSystem"
+import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
 
 class ScoringZoneSceneObject extends SceneObject {
     //Official FIRST hex

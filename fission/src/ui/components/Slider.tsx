@@ -1,6 +1,6 @@
-import React from "react"
 import { Slider as BaseSlider } from "@mui/base/Slider"
 import { Mark } from "@mui/base/useSlider"
+import React from "react"
 import Label, { LabelSize } from "./Label"
 import { LabelWithTooltip } from "./StyledComponents"
 

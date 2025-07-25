@@ -1,6 +1,6 @@
-import sirv from "sirv"
 import http from "node:http"
 import path from "node:path"
+import sirv from "sirv"
 
 let server: http.Server | undefined
 const PORT = 3001

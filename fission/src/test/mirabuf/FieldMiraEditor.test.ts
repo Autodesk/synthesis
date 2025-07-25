@@ -1,7 +1,7 @@
 import { describe, expect, test } from "vitest"
+import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import FieldMiraEditor from "../../mirabuf/FieldMiraEditor"
 import { mirabuf } from "../../proto/mirabuf"
-import { ScoringZonePreferences, Alliance } from "@/systems/preferences/PreferenceTypes"
 
 function mockParts(): mirabuf.IParts {
     return { userData: { data: {} } }
@@ -108,7 +108,11 @@ describe("Devtool Scoring Zones Caching Tests", () => {
         editor.setUserData("devtool:scoring_zones", scoringZonePayload)
 
         const newPayload: ScoringZonePreferences[] = [
-            { ...scoringZonePayload[0], name: "Blue Zone", alliance: "blue" as Alliance },
+            {
+                ...scoringZonePayload[0],
+                name: "Blue Zone",
+                alliance: "blue" as Alliance,
+            },
         ]
         editor.setUserData("devtool:scoring_zones", newPayload)
         expect(editor.getUserData("devtool:scoring_zones")).toEqual(newPayload)

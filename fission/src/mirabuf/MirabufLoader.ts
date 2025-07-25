@@ -1,9 +1,9 @@
-import { Data, downloadData } from "@/aps/APSDataManagement"
-import { mirabuf } from "@/proto/mirabuf"
-import { globalAddToast } from "@/components/GlobalUIControls"
-import World from "@/systems/World"
 import Pako from "pako"
 import { clean } from "@/util/Utility"
+import { Data, downloadData } from "@/aps/APSDataManagement"
+import { globalAddToast } from "@/components/GlobalUIControls"
+import { mirabuf } from "@/proto/mirabuf"
+import World from "@/systems/World"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "4543246"
@@ -36,9 +36,15 @@ const robotsDirName = "Robots"
 const fieldsDirName = "Fields"
 const piecesDirName = "Pieces"
 const root = await navigator.storage.getDirectory()
-const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, { create: true })
-const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, { create: true })
-const pieceFolderHandle = await root.getDirectoryHandle(piecesDirName, { create: true })
+const robotFolderHandle = await root.getDirectoryHandle(robotsDirName, {
+    create: true,
+})
+const fieldFolderHandle = await root.getDirectoryHandle(fieldsDirName, {
+    create: true,
+})
+const pieceFolderHandle = await root.getDirectoryHandle(piecesDirName, {
+    create: true,
+})
 
 const dirNameMap = new Map([
     [MiraType.ROBOT, robotsDirName],
@@ -62,7 +68,9 @@ export const canOPFS = await (async () => {
             robotFolderHandle.entries
             robotFolderHandle.keys
 
-            const fileHandle = await robotFolderHandle.getFileHandle("0", { create: true })
+            const fileHandle = await robotFolderHandle.getFileHandle("0", {
+                create: true,
+            })
             const writable = await fileHandle.createWritable()
             await writable.close()
             await fileHandle.getFile()
@@ -493,8 +501,9 @@ class MirabufCachingService {
 
             // Update OPFS if available
             if (canOPFS) {
-                const fileHandle = await (
-                    miraType == MiraType.ROBOT ? robotFolderHandle : fieldFolderHandle
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : fieldFolderHandle
                 ).getFileHandle(id, { create: false })
                 const writable = await fileHandle.createWritable()
                 await writable.write(updatedBuffer)
@@ -553,12 +562,11 @@ class MirabufCachingService {
             // Store buffer
             if (canOPFS) {
                 // Store in OPFS
-                const fileHandle = await (
-                    miraType == MiraType.ROBOT
-                        ? robotFolderHandle
-                        : miraType == MiraType.FIELD
-                          ? fieldFolderHandle
-                          : pieceFolderHandle
+                const fileHandle = await (miraType == MiraType.ROBOT
+                    ? robotFolderHandle
+                    : miraType == MiraType.FIELD
+                      ? fieldFolderHandle
+                      : pieceFolderHandle
                 ).getFileHandle(backupID, { create: true })
                 const writable = await fileHandle.createWritable()
                 await writable.write(miraBuff)
@@ -566,7 +574,7 @@ class MirabufCachingService {
             }
 
             // Store in hash
-            const cache = backUpMap.get(miraType)
+            const cache = backUpMap.get(miraType)!
             const mapInfo: MirabufCacheInfo = {
                 id: backupID,
                 miraType: miraType,

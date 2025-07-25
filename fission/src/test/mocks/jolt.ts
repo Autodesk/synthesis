@@ -1,3 +1,4 @@
+// biome-ignore-all lint/style/useNamingConvention: Match Jolt functions
 import { vi } from "vitest"
 
 interface Vec3Mock {
@@ -14,7 +15,7 @@ interface Vec3Mock {
 }
 
 export function createVec3Mock(): Vec3Mock {
-    const mock = {
+    return {
         GetX: vi.fn(() => 0),
         GetY: vi.fn(() => 0),
         GetZ: vi.fn(() => 0),
@@ -36,8 +37,6 @@ export function createVec3Mock(): Vec3Mock {
         }),
         Clone: vi.fn(() => createVec3Mock()),
     }
-
-    return mock
 }
 
 export function createQuatMock() {

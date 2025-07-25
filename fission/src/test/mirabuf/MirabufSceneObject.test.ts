@@ -1,10 +1,13 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
-import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import type MirabufInstance from "../../mirabuf/MirabufInstance"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
+import IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
 import type Mechanism from "@/systems/physics/Mechanism"
 import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import type MirabufInstance from "../../mirabuf/MirabufInstance"
+import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import { createBodyMock } from "../mocks/jolt"
-import IntakeSensorSceneObject from "@/mirabuf/IntakeSensorSceneObject"
+import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufParser from "@/mirabuf/MirabufParser"
+import MirabufInstanceClass from "../../mirabuf/MirabufInstance"
 
 const mockPhysicsSystem = {
     createMechanismFromParser: vi.fn(() => mockMechanism()),
@@ -14,15 +17,30 @@ const mockPhysicsSystem = {
     disablePhysicsForBody: vi.fn(),
     removeBodyAssociation: vi.fn(),
     destroyMechanism: vi.fn(),
+    setBodyPosition: vi.fn(),
+    setBodyRotation: vi.fn(),
+    setShape: vi.fn(),
+    createSensor: vi.fn(),
 }
 const mockSceneRenderer = {
     sceneObjects: new Map(),
     scene: { add: vi.fn(), remove: vi.fn() },
     registerSceneObject: vi.fn(),
     removeSceneObject: vi.fn(),
-    createSphere: vi.fn(() => ({ material: {}, geometry: {}, position: {}, rotation: {} })),
-    currentCameraControls: { focusProvider: undefined, controlsType: "Orbit", locked: false },
+    createSphere: vi.fn(() => ({
+        material: {},
+        geometry: {},
+        position: {},
+        rotation: {},
+    })),
+    currentCameraControls: {
+        focusProvider: undefined,
+        controlsType: "Orbit",
+        locked: false,
+    },
     worldToPixelSpace: vi.fn(() => [0, 0]),
+    createToonMaterial: vi.fn(() => ({ color: 0x123456 })),
+    setupMaterial: vi.fn(),
 }
 const mockSimulationSystem = {
     registerMechanism: vi.fn(),
@@ -47,11 +65,25 @@ vi.mock("@/systems/World", () => ({
 vi.mock("@/systems/preferences/PreferencesSystem", () => ({
     default: {
         getRobotPreferences: vi.fn(() => ({
-            intake: { deltaTransformation: [1], zoneDiameter: 1, parentNode: "n", showZoneAlways: false, maxPieces: 1 },
-            ejector: { deltaTransformation: [1], ejectorVelocity: 1, parentNode: "n", ejectOrder: "FIFO" },
+            intake: {
+                deltaTransformation: [1],
+                zoneDiameter: 1,
+                parentNode: "n",
+                showZoneAlways: false,
+                maxPieces: 1,
+            },
+            ejector: {
+                deltaTransformation: [1],
+                ejectorVelocity: 1,
+                parentNode: "n",
+                ejectOrder: "FIFO",
+            },
             simConfig: undefined,
         })),
-        getFieldPreferences: vi.fn(() => ({ defaultSpawnLocation: [0, 1, 0], scoringZones: [] })),
+        getFieldPreferences: vi.fn(() => ({
+            defaultSpawnLocation: [0, 1, 0],
+            scoringZones: [],
+        })),
         getGlobalPreference: vi.fn(() => false),
         addPreferenceEventListener: vi.fn(() => () => {}),
         setRobotPreferences: vi.fn(),
@@ -64,7 +96,10 @@ vi.mock("@/ui/components/SceneOverlayEvents", () => ({
 }))
 
 vi.mock("@/systems/simulation/synthesis_brain/SynthesisBrain", () => ({
-    default: vi.fn(() => ({ inputSchemeName: "TestScheme", clearControls: vi.fn() })),
+    default: vi.fn(() => ({
+        inputSchemeName: "TestScheme",
+        clearControls: vi.fn(),
+    })),
 }))
 
 vi.mock("@/systems/simulation/wpilib_brain/WPILibBrain", () => ({
@@ -97,7 +132,16 @@ function mockMirabufInstance(): MirabufInstance {
             assembly: { dynamic: true, info: { name: "TestAssembly" } },
             rootNode: "root",
             rigidNodes: new Map([
-                ["root", { id: "root", parts: new Set(), isDynamic: true, isGamePiece: false, mass: 1 }],
+                [
+                    "root",
+                    {
+                        id: "root",
+                        parts: new Set(),
+                        isDynamic: true,
+                        isGamePiece: false,
+                        mass: 1,
+                    },
+                ],
             ]),
             globalTransforms: new Map(),
         },
@@ -110,7 +154,6 @@ function mockMirabufInstance(): MirabufInstance {
 }
 
 function setPrivate<T>(obj: T, key: string, value: unknown) {
-
     ;(obj as Record<string, unknown>)[key] = value
 }
 
@@ -159,7 +202,9 @@ describe("MirabufSceneObject", () => {
     test("Dispose cleans up scene objects and mechanism", () => {
         setPrivate(instance, "_ejectables", [{ id: 1, gamePieceBodyId: mockBodyId() }])
         setPrivate(instance, "_scoringZones", [{ id: 2 }])
-        setPrivate(instance, "_intakeSensor", { id: 3 } as unknown as IntakeSensorSceneObject)
+        setPrivate(instance, "_intakeSensor", {
+            id: 3,
+        } as unknown as IntakeSensorSceneObject)
         instance.dispose()
         expect(mockSceneRenderer.removeSceneObject).toHaveBeenCalled()
         expect(mockPhysicsSystem.destroyMechanism).toHaveBeenCalled()
@@ -213,5 +258,36 @@ describe("MirabufSceneObject", () => {
         bodyId.GetIndexAndSequenceNumber = () => 123
         const result = instance.setEjectable(bodyId)
         expect(result).toBe(true)
+    })
+})
+
+describe("MirabufSceneObject - Real Systems Integration", () => {
+    test("getDimensions returns proper values for Dozer robot", async context => {
+        const cacheInfo = await MirabufCachingService.cacheRemote("/api/mira/robots/Dozer_v9.mira", MiraType.ROBOT)
+
+        if (!cacheInfo) {
+            context.skip()
+        }
+
+        const assembly = await MirabufCachingService.get(cacheInfo!.id, MiraType.ROBOT)
+
+        if (!assembly) {
+            context.skip()
+        }
+
+        const parser = new MirabufParser(assembly!)
+        const mirabufInstance = new MirabufInstanceClass(parser)
+
+        mirabufInstance.batches.forEach(batch => {
+            batch.computeBoundingBox()
+        })
+
+        const dozerSceneObject = new MirabufSceneObject(mirabufInstance, "Dozer_v9", cacheInfo!.id, undefined)
+
+        const originalDimensions = dozerSceneObject.getDimensions()
+
+        expect(originalDimensions.width).toBeCloseTo(0.84, 0)
+        expect(originalDimensions.height).toBeCloseTo(0.48, 0)
+        expect(originalDimensions.depth).toBeCloseTo(0.9, 0)
     })
 })

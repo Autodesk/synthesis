@@ -1,16 +1,16 @@
 import * as THREE from "three"
 import { Object3D, PerspectiveCamera } from "three"
-import SceneObject from "./SceneObject"
 import { TransformControls } from "three/examples/jsm/controls/TransformControls.js"
-import InputSystem from "../input/InputSystem"
-import World from "../World"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import InputSystem from "../input/InputSystem"
+import World from "../World"
+import SceneObject from "./SceneObject"
 
 export type GizmoMode = "translate" | "rotate" | "scale"
 
