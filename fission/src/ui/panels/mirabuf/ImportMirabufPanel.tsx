@@ -97,11 +97,15 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
     MirabufCachingService.get(info.id, type)
         .then(assembly => {
             if (assembly) {
+                if (type === MiraType.PIECE) {
+                    assembly.transform = new mirabuf.Transform({
+                        // Transform matrix for the position (0, 200, 0)
+                        spatialMatrix: [1, 0, 0, 0, 0, 1, 0, 200, 0, 0, 1, 0, 0, 0, 0, 1],
+                    })
+                }
                 const { mainSceneObject, gamePieces } = createMirabuf(assembly, info.id, type, progressHandle) ?? {}
 
                 if (mainSceneObject) {
-                    World.sceneRenderer.registerSceneObject(mainSceneObject)
-
                     // The point of this code is to prevent the caching of game pieces of the same type
                     // This might actually be the worst code I've ever written
                     // It essentially keeps a list of all the game piece name prefixes as delimited by a few characters I noticed were being used for that purpose
@@ -156,6 +160,8 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                             World.sceneRenderer.registerSceneObject(sceneObject)
                         }
                     })
+
+                    World.sceneRenderer.registerSceneObject(mainSceneObject)
                     progressHandle.done()
 
                     globalOpenPanel("initial-config")
