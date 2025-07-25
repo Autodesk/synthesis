@@ -166,6 +166,10 @@ export class CustomOrbitControls extends CameraControls {
      * If not, automatically finds a suitable replacement.
      */
     private validateFocusProvider(): void {
+        if (!World.sceneRenderer?.sceneObjects) {
+            return
+        }
+        
         const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
         const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
 
