@@ -4,17 +4,17 @@ import {
     defaultGraphicsPreferences,
     defaultMotorPreferences,
     defaultRobotPreferences,
-    FieldPreferences,
     FIELD_PREFERENCE_KEY,
+    FieldPreferences,
     GlobalPreference,
     GlobalPreferences,
     GRAPHICS_PREFERENCE_KEY,
     GraphicsPreferences,
-    MotorPreferences,
     MOTOR_PREFERENCES_KEY,
+    MotorPreferences,
     Preferences,
-    RobotPreferences,
     ROBOT_PREFERENCE_KEY,
+    RobotPreferences,
 } from "./PreferenceTypes"
 
 /** An event that's triggered when a preference is changed. */

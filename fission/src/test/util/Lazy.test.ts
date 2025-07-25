@@ -1,4 +1,4 @@
-import { describe, test, expect, vi } from "vitest"
+import { describe, expect, test, vi } from "vitest"
 import Lazy from "@/util/Lazy"
 
 describe("Lazy<T> Tests", () => {

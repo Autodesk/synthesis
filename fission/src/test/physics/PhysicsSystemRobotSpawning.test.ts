@@ -1,6 +1,6 @@
-import { describe, test, expect } from "vitest"
-import MirabufParser from "@/mirabuf/MirabufParser"
+import { describe, expect, test } from "vitest"
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufParser from "@/mirabuf/MirabufParser"
 import PhysicsSystem, { LayerReserve } from "@/systems/physics/PhysicsSystem"
 
 describe("Mirabuf Physics Loading", () => {

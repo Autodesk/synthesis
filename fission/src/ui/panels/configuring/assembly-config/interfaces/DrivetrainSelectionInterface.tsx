@@ -1,7 +1,7 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import Dropdown from "@/components/Dropdown.tsx"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 
 interface DrivetrainSelectionProps {
     selectedAssembly: MirabufSceneObject

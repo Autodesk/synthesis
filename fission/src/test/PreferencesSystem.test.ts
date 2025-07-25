@@ -1,11 +1,11 @@
+import { describe, expect, test } from "vitest"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
-    MotorPreferences,
-    RobotPreferences,
     FieldPreferences,
     GraphicsPreferences,
+    MotorPreferences,
+    RobotPreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import { test, describe, expect } from "vitest"
 
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
