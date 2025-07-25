@@ -170,13 +170,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                     })
                     progressHandle.done()
 
-                    if (mainSceneObject.miraType === MiraType.PIECE) {
-                        // return <TransformGizmoControl size={0} defaultMode={"translate"}></TransformGizmoControl>
-                    }
-
-                    if (mainSceneObject.miraType === MiraType.ROBOT) {
-                        globalOpenPanel("initial-config")
-                    }
+                    globalOpenPanel("initial-config")
                 } else {
                     progressHandle.fail()
                 }

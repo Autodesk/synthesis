@@ -70,8 +70,10 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }
 
             setSelectedScheme(scheme)
-        } else {
+        } else if (targetAssembly?.miraType === MiraType.FIELD) {
             setSelectedConfigurationType(ConfigurationType.FIELD)
+        } else {
+            setSelectedConfigurationType(ConfigurationType.PIECE)
         }
 
         closePanel(panelId)
@@ -158,7 +160,7 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 {brainIndex != undefined ? (
                     <InputSchemeSelection
                         brainIndex={brainIndex}
-                        onSelect={() => {}}
+                        onSelect={() => { }}
                         onEdit={() => openPanel("configure")}
                         onCreateNew={() => openModal("assign-new-scheme")}
                     />
