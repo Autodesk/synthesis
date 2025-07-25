@@ -6,8 +6,8 @@ import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import { useStateContext } from "@/ui/StateProvider"
-import { useUIContext } from "@/ui/UIProvider"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 const AssignNewSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openPanel, configureScreen } = useUIContext()

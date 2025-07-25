@@ -3,7 +3,7 @@ import type React from "react"
 import MatchMode from "@/systems/MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type { ModalImplProps } from "../components/Modal"
-import { CloseType, useUIContext } from "../UIProvider"
+import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { useEffect } from "react"
 import Label from "../components/Label"
 

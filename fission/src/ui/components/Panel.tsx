@@ -7,7 +7,7 @@ import {
     type PanelPosition,
     type Panel as PanelType,
     useUIContext,
-} from "../UIProvider"
+} from "../helpers/UIProviderHelpers"
 
 export type PanelImplProps<T> = Partial<{
     panel: PanelType<T>

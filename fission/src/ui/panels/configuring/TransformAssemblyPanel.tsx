@@ -5,7 +5,7 @@ import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
 import World from "@/systems/World"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { useUIContext } from "@/ui/UIProvider"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { PanelImplProps } from "@/ui/components/Panel"
 
 const TransformAssemblyPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {

@@ -5,7 +5,7 @@ import beep from "@/assets/sound-files/beep.wav"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
-import { OpenModalFn } from "@/ui/UIProvider"
+import { OpenModalFn } from "@/ui/helpers/UIProviderHelpers"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import React from "react"
 

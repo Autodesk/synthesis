@@ -5,8 +5,8 @@ import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import { useStateContext } from "@/ui/StateProvider"
-import { useUIContext } from "@/ui/UIProvider"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {

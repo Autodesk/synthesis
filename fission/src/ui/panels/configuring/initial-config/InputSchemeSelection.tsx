@@ -9,7 +9,7 @@ import InputSchemeManager, {
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DeleteButton, EditButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { useStateContext } from "@/ui/StateProvider"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"

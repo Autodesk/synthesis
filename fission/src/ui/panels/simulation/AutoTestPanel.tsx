@@ -17,7 +17,7 @@ import {
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
 import Label from "@/ui/components/Label"
-import { useUIContext } from "@/ui/UIProvider"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { PanelImplProps } from "@/ui/components/Panel"
 
 type StagingProps = {

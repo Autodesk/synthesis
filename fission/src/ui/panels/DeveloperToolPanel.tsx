@@ -10,7 +10,7 @@ import { LabelWithTooltip } from "../components/StyledComponents"
 import { mirabuf } from "@/proto/mirabuf"
 import { Button, Stack } from "@mui/material"
 import { PanelImplProps } from "../components/Panel"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const DEVTOOL_KEYS = ["devtool:scoring_zones", "devtool:spawn_points", "devtool:camera_locations"] as const
 type DevtoolKey = (typeof DEVTOOL_KEYS)[number]

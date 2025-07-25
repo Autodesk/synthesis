@@ -2,7 +2,7 @@ import { MenuItem, Select } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import type { ModalImplProps } from "../components/Modal"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 type ViewType = "Orbit" | "Freecam" | "Overview" | "Driver Station"
 

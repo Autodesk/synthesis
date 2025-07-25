@@ -7,7 +7,7 @@ import { useEffect, useState } from "react"
 import StatefulSlider from "../components/StatefulSlider"
 import StatefulCheckbox from "../components/StatefulCheckbox"
 import { PanelImplProps } from "../components/Panel"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const RAY_MAX_LENGTH = 20.0
 

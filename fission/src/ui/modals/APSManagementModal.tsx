@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { HiUser } from "react-icons/hi"
 import APS from "@/aps/APS"
 import type { ModalImplProps } from "@/ui/components/Modal"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()

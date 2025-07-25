@@ -45,8 +45,8 @@ import {
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
 import ImportLocalMirabufModal from "@/ui/modals/mirabuf/ImportLocalMirabufModal"
-import { useStateContext } from "@/ui/StateProvider"
-import { CloseType, useUIContext } from "@/ui/UIProvider"
+import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import type TaskStatus from "@/util/TaskStatus"
 import InitialConfigPanel from "../configuring/initial-config/InitialConfigPanel"
 

@@ -1,11 +1,11 @@
 import { randomColor } from "@/util/Random"
-import { useThemeContext } from "../ThemeProvider"
+import { useThemeContext } from "../helpers/ThemeProviderHelpers"
 import { Box, Button, FormControlLabel, Stack, Switch, TextField, Typography } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 import Label from "../components/Label"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 import { PanelImplProps } from "../components/Panel"
 import StatefulCheckbox from "../components/StatefulCheckbox"
 
