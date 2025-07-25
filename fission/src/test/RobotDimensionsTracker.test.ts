@@ -66,8 +66,8 @@ describe("RobotDimensionTracker", () => {
     beforeEach(() => {
         vi.clearAllMocks()
 
-        const tracker = RobotDimensionTracker as unknown as { _robotHeightPenalties?: Map<string, number> }
-        tracker._robotHeightPenalties?.clear()
+        const tracker = RobotDimensionTracker as unknown as { _robotLastFramePenalty?: Map<number, boolean> }
+        tracker._robotLastFramePenalty?.clear()
 
         const robot1Base = Object.create(MirabufSceneObject.prototype)
         const robot2Base = Object.create(MirabufSceneObject.prototype)
