@@ -114,7 +114,11 @@ In this architecture, one the hosting client essentially acts as the authoritati
 
 #### Hybrid Approach
 
-In this architecture, each client handles handles the physics calculations for their own robot which it sends to the other client each tick. The exception to this would be whenever it collided with either another robot or a game piece, in that case, it would send over its entire physics state to the other client(s), who would apply it. The hosting robot would have priority in the case that each client sent
+In this architecture, each client handles handles the physics calculations for their own robot which it sends to the other client each tick. The exception to this would be whenever it collided with either another robot or a game piece, in that case, it would send over its entire physics state to the other client(s), who would apply it.
+
+The hosting robot would have priority in the case that each client sent a collision report to the other within a certain small interval of time, to avoid each client taking on the other's state instead of synchronizing.
+
+Pictures of the original plans on whiteboard and shown below:
 
 ## Verification
 
@@ -122,6 +126,10 @@ In this architecture, each client handles handles the physics calculations for t
 How did you test and verify your changes were correct?
 List steps taken, tests/added/updated, and any manual verification done that should be replicated in review.
 -->
+
+1. `bun server.ts` to start the brokering server on port 9000
+2. `bun client.html` to serve the client on port 3000
+3. Open two tabs,
 
 ---
 
