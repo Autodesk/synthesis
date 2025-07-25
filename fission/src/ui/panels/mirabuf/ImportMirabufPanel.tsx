@@ -9,13 +9,11 @@ import {
     requestMirabufFiles,
 } from "@/aps/APSDataManagement"
 import MirabufCachingService, {
-    backUpFields,
-    backUpRobots,
-    backUpPieces,
     canOPFS,
     MirabufCacheInfo,
     MirabufRemoteInfo,
     MiraType,
+    backUpMap,
 } from "@/mirabuf/MirabufLoader"
 import World from "@/systems/World"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
@@ -41,8 +39,6 @@ import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { mirabuf } from "@/proto/mirabuf"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 interface ItemCardProps {
     id: string
@@ -86,15 +82,7 @@ export type MiraManifest = {
 }
 
 function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
-    return Object.values(
-        canOPFS
-            ? MirabufCachingService.getCacheMap(miraType)
-            : miraType == MiraType.ROBOT
-                ? backUpRobots
-                : miraType == MiraType.FIELD
-                    ? backUpFields
-                    : backUpPieces
-    )
+    return Object.values(canOPFS ? MirabufCachingService.getCacheMap(miraType) : backUpMap.get(miraType)!)
 }
 
 function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
