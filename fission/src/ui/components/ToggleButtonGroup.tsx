@@ -1,4 +1,4 @@
-import { ToggleButton as ToggleButtonMUI, ToggleButtonGroup as ToggleButtonGroupMUI } from "@mui/material"
+import { ToggleButtonGroup as ToggleButtonGroupMUI, ToggleButton as ToggleButtonMUI } from "@mui/material"
 import { styled } from "@mui/system"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
 

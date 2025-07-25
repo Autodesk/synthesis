@@ -1,20 +1,20 @@
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import { Box } from "@mui/material"
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
+import { LabelSize } from "@/components/Label"
+import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs"
+import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_ENDGAME_TIME, DEFAULT_TELEOP_TIME } from "@/systems/MatchMode"
+import Button from "@/ui/components/Button"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import {
-    SectionLabel,
-    SynthesisIcons,
+    NegativeButton,
     PositiveButton,
     SectionDivider,
-    NegativeButton,
+    SectionLabel,
+    SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import { LabelSize } from "@/components/Label"
-import { Box } from "@mui/material"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAME_TIME } from "@/systems/MatchMode"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import Button from "@/ui/components/Button"
-import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 
 export interface MatchModeConfig {
     id: string // Required

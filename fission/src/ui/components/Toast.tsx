@@ -1,8 +1,8 @@
 import React, { ReactElement, useEffect } from "react"
-import { ToastData, useToastContext } from "@/ui/ToastContext"
-import { FaXmark } from "react-icons/fa6"
 import { AiFillWarning, AiOutlineInfoCircle } from "react-icons/ai"
 import { BiSolidErrorCircle } from "react-icons/bi"
+import { FaXmark } from "react-icons/fa6"
+import { ToastData, useToastContext } from "@/ui/ToastContext"
 
 const TOAST_TIMEOUT: number = 5_000
 

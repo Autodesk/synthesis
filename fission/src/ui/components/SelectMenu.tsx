@@ -1,6 +1,5 @@
+import { alpha, Box, Button as MUIButton, styled } from "@mui/material"
 import React, { useEffect, useState } from "react"
-
-import { Box, Button as MUIButton, styled, alpha } from "@mui/material"
 import Label, { LabelSize } from "./Label"
 import {
     AddButtonInteractiveColor,

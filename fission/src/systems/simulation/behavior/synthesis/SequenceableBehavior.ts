@@ -1,8 +1,8 @@
+import InputSystem, { InputName } from "@/systems/input/InputSystem"
 import { SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import Driver from "../../driver/Driver"
 import Stimulus from "../../stimulus/Stimulus"
 import Behavior from "../Behavior"
-import InputSystem, { InputName } from "@/systems/input/InputSystem"
 
 abstract class SequenceableBehavior extends Behavior {
     private _jointIndex: number

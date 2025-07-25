@@ -1,8 +1,8 @@
+import InputSystem from "@/systems/input/InputSystem.ts"
+import Behavior from "@/systems/simulation/behavior/Behavior.ts"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
-import Behavior from "@/systems/simulation/behavior/Behavior.ts"
 import { clamp } from "@/util/Utility.ts"
-import InputSystem from "@/systems/input/InputSystem.ts"
 
 class SkidSteerDriveBehavior extends Behavior {
     private readonly _leftWheels: WheelDriver[]
@@ -38,8 +38,12 @@ class SkidSteerDriveBehavior extends Behavior {
     protected driveSpeeds(leftInput: number, rightInput: number) {
         const leftDirection = clamp(leftInput, -1, 1)
         const rightDirection = clamp(rightInput, -1, 1)
-        this._leftWheels.forEach(wheel => (wheel.accelerationDirection = leftDirection))
-        this._rightWheels.forEach(wheel => (wheel.accelerationDirection = rightDirection))
+        this._leftWheels.forEach(wheel => {
+            wheel.accelerationDirection = leftDirection
+        })
+        this._rightWheels.forEach(wheel => {
+            wheel.accelerationDirection = rightDirection
+        })
     }
 
     private arcadeUpdate() {

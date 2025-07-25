@@ -1,13 +1,17 @@
-import { defineConfig } from "vitest/config"
-import * as path from "path"
-import react from "@vitejs/plugin-react-swc"
-import basicSsl from "@vitejs/plugin-basic-ssl"
-import glsl from "vite-plugin-glsl"
-import { loadEnv, ProxyOptions } from "vite"
 import fs from "node:fs/promises"
+import basicSsl from "@vitejs/plugin-basic-ssl"
+import react from "@vitejs/plugin-react-swc"
+import * as path from "path"
+import { loadEnv, ProxyOptions } from "vite"
+import glsl from "vite-plugin-glsl"
+import { defineConfig } from "vitest/config"
+
 const basePath = "/fission/"
 const serverPort = 3000
 const dockerServerPort = 80
+
+
+
 
 const useLocalAPS = false
 const useSsl = false
@@ -36,6 +40,7 @@ const plugins = [
 if (useSsl) {
     plugins.push(basicSsl())
 }
+
 
 const localAssetsExist = await fs.access("./public/Downloadables/Mira",fs.constants.R_OK).then(() => true).catch(() => false)
 

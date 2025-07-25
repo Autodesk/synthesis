@@ -1,8 +1,8 @@
-import { test, describe, expect } from "vitest"
+import * as THREE from "three"
+import { Vector3 } from "three"
+import { describe, expect, test } from "vitest"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { createMeshForShape, deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
-import { Vector3 } from "three"
-import * as THREE from "three"
 
 describe("Mesh Creation Tests", () => {
     test("Sphere Mesh Creation", () => {

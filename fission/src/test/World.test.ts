@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, vi, afterEach } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 // Mock all the system dependencies before importing World
 vi.mock("@/systems/physics/PhysicsSystem", () => ({
