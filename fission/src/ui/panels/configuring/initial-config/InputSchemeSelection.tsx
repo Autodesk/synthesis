@@ -155,7 +155,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                                 {SchemeSelector(
                                     scheme.scheme,
                                     { filter: "brightness(60%)" },
-                                    "Conflicts with " + scheme.conflicts_with_names,
+                                    "Conflicts with " + scheme.conflictingSchemeNames,
                                     false
                                 )}
                             </>
