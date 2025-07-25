@@ -1,9 +1,8 @@
 import { consent, event, exception, init, setUserId, setUserProperty } from "@haensl/google-analytics"
-
-import WorldSystem from "../WorldSystem"
+import APS from "@/aps/APS"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import World from "../World"
-import APS from "@/aps/APS"
+import WorldSystem from "../WorldSystem"
 
 const SAMPLE_INTERVAL = 60000 // 1 minute
 const BETA_CODE_COOKIE_REGEX = /access_code=.*(;|$)/

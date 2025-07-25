@@ -1,6 +1,6 @@
 import React from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Button from "@/components/Button"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const ChooseSingleplayerModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

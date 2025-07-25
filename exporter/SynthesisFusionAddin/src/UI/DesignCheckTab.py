@@ -8,6 +8,7 @@ from src.UI import IconPaths
 
 logger = Logging.getLogger()
 
+
 class DesignRule(TypedDict):
     name: str
     calculation: Callable[[], float]
@@ -86,7 +87,7 @@ class DesignCheckTab:
         design = adsk.fusion.Design.cast(gm.app.activeProduct)
         if design:
             overall_bounding_box = design.rootComponent.orientedMinimumBoundingBox
-            return float(overall_bounding_box.width) 
+            return float(overall_bounding_box.width)
         return 0.0
 
     @Logging.logFailure

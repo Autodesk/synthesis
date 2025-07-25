@@ -1,8 +1,8 @@
-import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
+import Jolt from "@azaleacolburn/jolt-physics"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import EjectableSceneObject from "../../mirabuf/EjectableSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
-import Jolt from "@azaleacolburn/jolt-physics"
-import { createVec3Mock, createBodyMock } from "../mocks/jolt"
+import { createBodyMock, createVec3Mock } from "../mocks/jolt"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),

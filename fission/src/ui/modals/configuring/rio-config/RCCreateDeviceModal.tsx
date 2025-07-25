@@ -1,11 +1,11 @@
 import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Dropdown from "@/components/Dropdown"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 type DeviceType = "PWM" | "CAN" | "Encoder"
 

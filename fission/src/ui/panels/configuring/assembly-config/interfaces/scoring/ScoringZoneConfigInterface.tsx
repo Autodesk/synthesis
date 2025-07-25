@@ -1,26 +1,26 @@
+import Jolt from "@azaleacolburn/jolt-physics"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import Input from "@/components/Input"
+import * as THREE from "three"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
+import Input from "@/components/Input"
 import NumberInput from "@/components/NumberInput"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SelectButton from "@/ui/components/SelectButton"
-import Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
+import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+import SelectButton from "@/ui/components/SelectButton"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { Alliance, ScoringZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
-import { deltaFieldTransformsPhysicalProp as DeltaFieldTransforms_VisualProperties } from "@/util/threejs/MeshCreation"
+import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 
 /**
  * Saves ejector configuration to selected field.
@@ -204,7 +204,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 const fieldTransformation = convertJoltMat44ToThreeMatrix4(
                     World.physicsSystem.getBody(nodeBodyId).GetWorldTransform()
                 )
-                const props = DeltaFieldTransforms_VisualProperties(deltaTransformation, fieldTransformation)
+                const props = deltaFieldTransformsPhysicalProp(deltaTransformation, fieldTransformation)
 
                 gizmo.obj.position.set(props.translation.x, props.translation.y, props.translation.z)
                 gizmo.obj.rotation.setFromQuaternion(props.rotation)

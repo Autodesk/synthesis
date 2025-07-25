@@ -1,7 +1,7 @@
+import { useState } from "react"
+import Label, { LabelSize } from "@/components/Label"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Slider from "@/components/Slider"
-import Label, { LabelSize } from "@/components/Label"
-import { useState } from "react"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 type Motor = {
@@ -57,7 +57,7 @@ const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     </th>
                 </tr>
                 {motors.map((m: Motor) => (
-                    <tr>
+                    <tr key={m.name}>
                         <td className="w-32">
                             <Label size={LabelSize.MEDIUM}>{m.name}</Label>
                         </td>
