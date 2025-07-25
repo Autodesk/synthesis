@@ -99,7 +99,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
 
     World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
     MirabufCachingService.get(info.id, type)
-        .then(assembly => {
+        .then(async assembly => {
             if (assembly) {
                 createMirabuf(assembly, progressHandle, info.id).then(x => {
                     if (x) {
@@ -112,7 +112,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                     }
                 })
 
-                if (!info.name) MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
+                if (!info.name) await MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
             } else {
                 progressHandle.fail()
                 console.error("Failed to spawn robot")
@@ -158,7 +158,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         if (!hasMirabufFiles()) {
-            requestMirabufFiles()
+            requestMirabufFiles().catch(console.error)
         } else {
             setFiles(getMirabufFiles())
         }
@@ -171,13 +171,10 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             return
         }
         closePanel("configure")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [closePanel])
 
     // Get Default Mirabuf Data, Load into manifest.
     useEffect(() => {
-        // To remove the prettier warning
-        const x = async () => {
             fetch(`/api/mira/manifest.json`)
                 .then(x => x.json())
                 .then(x => x as typeof manifestFile)
@@ -192,12 +189,14 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
                         }
                     }
-                    for (const src of x["private"]) {
-                        if (typeof src === "string") {
-                            const str = `/api/mira/private/${src}`
-                            if (!map[str]) robots.push({ displayName: src, src: str })
-                        } else {
-                            if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
+                    if (import.meta.env.DEV) {
+                        for (const src of x["private"]) {
+                            if (typeof src === "string") {
+                                const str = `/api/mira/private/${src}`
+                                if (!map[str]) robots.push({ displayName: src, src: str })
+                            } else {
+                                if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
+                            }
                         }
                     }
                     const fields: MirabufRemoteInfo[] = []
@@ -213,9 +212,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         robots,
                         fields,
                     })
-                })
-        }
-        x()
+                }).catch(console.log)
     }, [])
 
     // Select a mirabuf assembly from the cache.
@@ -305,15 +302,14 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             console.log(`Selecting cached robot: ${info.cacheKey}`)
                             selectCache(info, MiraType.ROBOT)
                         },
-                        secondaryOnClick: () => {
+                        secondaryOnClick: async () => {
                             console.log(`Deleting cache of: ${info.cacheKey}`)
-                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.ROBOT)
-
+                            await MirabufCachingService.remove(info.cacheKey, info.id, MiraType.ROBOT)
                             setCachedRobots(getCacheInfo(MiraType.ROBOT))
                         },
                     })
                 ),
-        [cachedRobots, selectCache, setCachedRobots]
+        [cachedRobots, selectCache]
     )
 
     // Generate Item cards for cached fields.
@@ -330,15 +326,15 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                             console.log(`Selecting cached field: ${info.cacheKey}`)
                             selectCache(info, MiraType.FIELD)
                         },
-                        secondaryOnClick: () => {
+                        secondaryOnClick: async () => {
                             console.log(`Deleting cache of: ${info.cacheKey}`)
-                            MirabufCachingService.remove(info.cacheKey, info.id, MiraType.FIELD)
+                            await MirabufCachingService.remove(info.cacheKey, info.id, MiraType.FIELD)
 
                             setCachedFields(getCacheInfo(MiraType.FIELD))
                         },
                     })
                 ),
-        [cachedFields, selectCache, setCachedFields]
+        [cachedFields, selectCache]
     )
 
     // Generate Item cards for remote robots.
@@ -382,8 +378,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [manifest?.fields, cachedFields, selectRemote])
 
     function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
-        return useCallback(() => {
+        return () => {
             const miraType: MiraType | undefined = cached[0]?.miraType
             const property = miraType === MiraType.ROBOT ? "robots" : "fields"
             const remotes = manifest ? manifest[property] : []
@@ -393,8 +388,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 .forEach(path => cacheRemoteOnly(path, miraType))
 
             closePanel(panelId)
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [manifest, cached, cacheRemoteOnly, closePanel, panelId])
+        }
     }
 
     const downloadAllRemoteRobots = downloadAllRemote(cachedRobots)
