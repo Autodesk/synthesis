@@ -4,10 +4,10 @@ import Button from "@/components/Button"
 import Label from "@/components/Label"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Stack, { StackDirection } from "@/components/Stack"
-import MatchMode from "@/systems/MatchMode"
-import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import { SynthesisIcons, Spacer } from "../components/StyledComponents"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { Spacer, SynthesisIcons } from "../components/StyledComponents"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 type Entry = {
     name: string

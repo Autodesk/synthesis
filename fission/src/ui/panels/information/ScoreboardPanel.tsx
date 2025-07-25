@@ -4,9 +4,9 @@ import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Stack, { StackDirection } from "@/components/Stack"
 import { Spacer } from "@/components/StyledComponents"
 import { OnScoreChangedEvent } from "@/mirabuf/ScoringZoneSceneObject"
-import MatchMode, { MatchModeType, UpdateTimeLeft } from "@/systems/MatchMode"
 import PreferencesSystem, { PreferenceEvent } from "@/systems/preferences/PreferencesSystem"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import MatchMode, { MatchModeType, UpdateTimeLeft } from "@/systems/match_mode/MatchMode"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 
 function showTime(): boolean {
