@@ -1,10 +1,10 @@
 import { install } from "@haensl/google-analytics"
+import { server } from "@vitest/browser/context"
 import { HttpResponse, http } from "msw"
 import { setupWorker } from "msw/browser"
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, Mock, test, vi } from "vitest"
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, expectTypeOf, Mock, test, vi } from "vitest"
 import AnalyticsSystem from "@/systems/analytics/AnalyticsSystem.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
-import {server} from "@vitest/browser/context";
 
 type RequestType = Parameters<Parameters<typeof http.get>[1]>[0]
 const tagID = "G-6XNCRD7QNC"
@@ -17,9 +17,6 @@ describe("Analytics", () => {
             gtagRequestMock(req)
             return HttpResponse.text("")
         }),
-        // http.all("*", _req => {
-        //     return HttpResponse.text("")
-        // }),
     ]
 
     const webMocks = setupWorker(...restHandlers)
@@ -50,7 +47,7 @@ describe("Analytics", () => {
         beforeAll(async () => {
             vi.useFakeTimers()
             const script = document.createElement("script")
-            script.src = "https://www.googletagmanager.com/gtag/js?id="+tagID
+            script.src = "https://www.googletagmanager.com/gtag/js?id=" + tagID
             document.head.appendChild(script)
             await vi.waitUntil(() => window.dataLayer != null, { timeout: 3000 })
             install() // gtag is a function defined here to push to the datalayer object
@@ -59,15 +56,17 @@ describe("Analytics", () => {
         test("google analytics loaded", async () => {
             expect(window.gtag).toBeDefined()
             expect(window.dataLayer).toBeDefined()
+            expectTypeOf(window.gtag!).toBeFunction()
+            expectTypeOf(window.dataLayer!).toBeArray()
         })
 
-        test("gtag calls fetch with appropriate values", async ({skip}) => {
+        test("gtag calls fetch with appropriate values", async ({ skip }) => {
             skip(server.browser == "firefox", "Firefox blocks Google Analytics")
             PreferencesSystem.setGlobalPreference("ReportAnalytics", true)
 
             const initialParams = mockRequestParametersHandle()
 
-            const gtagSpy:Mock<NonNullable<typeof window.gtag>> = vi.spyOn(window, "gtag")
+            const gtagSpy: Mock<NonNullable<typeof window.gtag>> = vi.spyOn(window, "gtag")
             const system = new AnalyticsSystem()
             expect(gtagSpy).toHaveBeenCalled()
             await initialParams.then(params => {
@@ -101,14 +100,12 @@ describe("Analytics", () => {
 
         test("gtag propagates to dataLayer", () => {
             const initialSize = window.dataLayer!.length
-            window.gtag!("event", "test", {a:2})
-            expect(window.dataLayer!.length).toBe(initialSize+1)
-            const lastDatalayerItem = window.dataLayer![window.dataLayer!.length-1]
+            window.gtag!("event", "test", { a: 2 })
+            expect(window.dataLayer!.length).toBe(initialSize + 1)
+            const lastDatalayerItem = window.dataLayer![window.dataLayer!.length - 1]
             expect(lastDatalayerItem[0]).toBe("event")
             expect(lastDatalayerItem[1]).toBe("test")
-            expect(lastDatalayerItem[2]).toStrictEqual(expect.objectContaining({a:2}))
+            expect(lastDatalayerItem[2]).toStrictEqual(expect.objectContaining({ a: 2 }))
         })
     })
-
-
 })

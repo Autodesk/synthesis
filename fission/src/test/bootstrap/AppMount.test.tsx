@@ -1,8 +1,7 @@
-import { afterAll, assert, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest"
 import { server } from "@vitest/browser/context"
-
-import { cleanup, render, RenderResult } from "vitest-browser-react"
 import { ReactElement } from "react"
+import { afterAll, assert, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest"
+import { cleanup, RenderResult, render } from "vitest-browser-react"
 import World from "@/systems/World.ts"
 
 const { readFile } = server.commands
@@ -32,7 +31,7 @@ describe("React Mounting", async () => {
     })
 
     test("Static stylesheets load", async () => {
-        await vi.waitUntil(() => document.styleSheets.length >= 2, {timeout:10000, interval:200})
+        await vi.waitUntil(() => document.styleSheets.length >= 2, { timeout: 10000, interval: 200 })
 
         expect(document.styleSheets.length).toBe(2)
         const iterable = document.fonts.values()
@@ -59,7 +58,7 @@ describe("React Mounting", async () => {
         expect(window.convertAuthToken).toBeDefined()
         expectTypeOf(window.convertAuthToken).toBeFunction()
         expect(window.gtag).toBeDefined()
-        expectTypeOf(window.gtag).toBeFunction()
+        expectTypeOf(window.gtag!).toBeFunction()
         await annotate("expected global functions mount")
 
         // assorted style rules from index.css
