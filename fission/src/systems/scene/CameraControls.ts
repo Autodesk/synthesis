@@ -8,6 +8,8 @@ import ScreenInteractionHandler, {
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import World from "../World"
 
 export type CameraControlsType = "Orbit"
 
@@ -143,6 +145,43 @@ export class CustomOrbitControls extends CameraControls {
         this._interactionHandler.interactionMove = e => this.interactionMove(e)
     }
 
+    /**
+     * Finds a suitable fallback focus target when the current focus is no longer available.
+     * Prioritizes robots first, then fields, then any other MirabufSceneObject.
+     */
+    private findFallbackFocus(mirabufObjects?: MirabufSceneObject[]): MirabufSceneObject | undefined {
+        if (!mirabufObjects) {
+            const sceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
+            mirabufObjects = sceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+        }
+
+        const robots = mirabufObjects.filter(obj => obj.miraType === MiraType.ROBOT)
+        const fields = mirabufObjects.filter(obj => obj.miraType === MiraType.FIELD)
+
+        return robots[0] || fields[0] || mirabufObjects[0]
+    }
+
+    /**
+     * Validates that the current focus provider still exists in the scene.
+     * If not, automatically finds a suitable replacement.
+     */
+    private validateFocusProvider(): void {
+        if (!World.sceneRenderer?.sceneObjects) {
+            return
+        }
+
+        const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
+        const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+
+        if (this._focusProvider) {
+            if (!mirabufObjects.includes(this._focusProvider)) {
+                this._focusProvider = this.findFallbackFocus(mirabufObjects)
+            }
+        } else {
+            this._focusProvider = this.findFallbackFocus(mirabufObjects)
+        }
+    }
+
     public interactionEnd(end: InteractionEnd) {
         /**
          * If Pointer is already down, and the button that is being
@@ -245,6 +284,8 @@ export class CustomOrbitControls extends CameraControls {
 
     public update(deltaT: number): void {
         deltaT = Math.max(1.0 / 60.0, Math.min(1 / 144.0, deltaT))
+
+        this.validateFocusProvider()
 
         if (this.enabled) this._focusProvider?.loadFocusTransform(this._focus)
 
