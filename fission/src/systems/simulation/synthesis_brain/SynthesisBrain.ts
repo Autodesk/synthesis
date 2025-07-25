@@ -3,6 +3,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
+import { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
 import SwerveDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SwerveDriveBehavior.ts"
 import World from "@/systems/World"
@@ -27,9 +28,9 @@ class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
 
     private _behaviors: Behavior[] = []
-    private _simLayer: SimulationLayer
-    private _assemblyName: string
-    private _brainIndex: number
+    private readonly _simLayer: SimulationLayer
+    private readonly _assemblyName: string
+    private readonly _brainIndex: number
     private _assembly: MirabufSceneObject
     public driveType: DriveType = DriveType.ARCADE
 
@@ -50,9 +51,7 @@ class SynthesisBrain extends Brain {
     /** @returns {string} The name of the input scheme attached to this brain. */
     public get inputSchemeName(): string {
         const scheme = InputSystem.brainIndexSchemeMap.get(this._brainIndex)
-        if (scheme == undefined) return "Not Configured"
-
-        return scheme.schemeName
+        return scheme?.schemeName ?? "Not Configured"
     }
 
     /** @returns {number} The unique index used to identify this brain. */
@@ -62,29 +61,29 @@ class SynthesisBrain extends Brain {
 
     public configureDriveBehavior(driveType: DriveType) {
         this.driveType = driveType
-        const existing = this._behaviors.find((behavior: Behavior) => behavior instanceof SkidSteerDriveBehavior)
-        if (existing == null) {
-            console.error("Can't find drive behavior!")
+        let existingIndex = this._behaviors.findIndex((behavior: Behavior) => behavior instanceof DriveBehavior)
+
+        if (existingIndex === -1) {
+            existingIndex = this._behaviors.length
+        }
+        const existing = this._behaviors[existingIndex]
+        if (driveType === DriveType.SWERVE) {
+            if (existing instanceof SwerveDriveBehavior) return
+            this._behaviors[existingIndex] = this.createSwerveDrivetrain(this._isSwerve().hinges)
             return
         }
-        existing.setIsArcade(driveType == DriveType.ARCADE)
+        if (existing instanceof SkidSteerDriveBehavior) {
+            existing.setIsArcade(driveType == DriveType.ARCADE)
+        } else {
+            this._behaviors[existingIndex] = this.createSkidSteerDriveBehavior(driveType == DriveType.ARCADE)
+        }
     }
 
     public configure(): void {
         this._behaviors = []
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (this._assembly.mechanism.controllable) {
-            switch (this.driveType) {
-                case DriveType.ARCADE:
-                    this.configureSkidSteerDriveBehavior(true)
-                    break
-                case DriveType.TANK:
-                    this.configureSkidSteerDriveBehavior(false)
-                    break
-                case DriveType.SWERVE:
-                    this.configureSwerveDrivetrain(this.isSwerve().hinges)
-                    break
-            }
+            this.configureDriveBehavior(this.driveType)
             this.configureArmBehaviors()
             this.configureElevatorBehaviors()
             this.configureGamepieceManipBehavior()
@@ -96,7 +95,6 @@ class SynthesisBrain extends Brain {
     /**
      * @param assembly
      * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
-     * @param driveType
      */
     public constructor(assembly: MirabufSceneObject, assemblyName: string) {
         super(assembly.mechanism, "synthesis")
@@ -134,7 +132,7 @@ class SynthesisBrain extends Brain {
         InputSystem.brainIndexSchemeMap.delete(this._brainIndex)
     }
 
-    private static distance = (a: Jolt.Vec3, b: Jolt.Vec3) => {
+    private static distance(a: Jolt.Vec3, b: Jolt.Vec3) {
         const dx = a.GetX() - b.GetX()
         const dy = a.GetY() - b.GetY()
         const dz = a.GetZ() - b.GetZ()
@@ -143,7 +141,7 @@ class SynthesisBrain extends Brain {
     }
 
     /** Creates, configures, and pushes a swerve behavior */
-    private configureSwerveDrivetrain(hingeDrivers: HingeDriver[]) {
+    private createSwerveDrivetrain(hingeDrivers: HingeDriver[]) {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
@@ -206,20 +204,18 @@ class SynthesisBrain extends Brain {
             sortedWheels.push(key)
             sortedHinges.push(value)
         }
-        this._behaviors.push(
-            new SwerveDriveBehavior(
-                sortedWheels,
-                sortedHinges,
-                wheelStimuli,
-                hingeStimuli,
-                this._brainIndex,
-                this._assemblyName
-            )
+        return new SwerveDriveBehavior(
+            sortedWheels,
+            sortedHinges,
+            wheelStimuli,
+            hingeStimuli,
+            this._brainIndex,
+            this._assemblyName
         )
     }
 
     /** Detects if a robot is swerve, and if so returns the relevant hinges. */
-    private isSwerve: () => { inSwerve: boolean; hinges: HingeDriver[] } = () => {
+    private _isSwerve: () => { inSwerve: boolean; hinges: HingeDriver[] } = () => {
         // All hinges
         const hingeDrivers: HingeDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof HingeDriver
@@ -254,7 +250,7 @@ class SynthesisBrain extends Brain {
         return { inSwerve: swerveHinges.length == wheelDrivers.length, hinges: swerveHinges }
     }
     /** Creates an instance of ArcadeDriveBehavior and automatically configures it. */
-    private configureSkidSteerDriveBehavior(isArcade: boolean) {
+    private createSkidSteerDriveBehavior(isArcade: boolean) {
         const wheelDrivers: WheelDriver[] = this._simLayer.drivers.filter(
             driver => driver instanceof WheelDriver
         ) as WheelDriver[]
@@ -295,8 +291,13 @@ class SynthesisBrain extends Brain {
             }
         }
 
-        this._behaviors.push(
-            new SkidSteerDriveBehavior(leftWheels, rightWheels, leftStimuli, rightStimuli, this._brainIndex, isArcade)
+        return new SkidSteerDriveBehavior(
+            leftWheels,
+            rightWheels,
+            leftStimuli,
+            rightStimuli,
+            this._brainIndex,
+            isArcade
         )
     }
 

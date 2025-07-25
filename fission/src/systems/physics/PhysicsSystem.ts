@@ -14,7 +14,7 @@ import {
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
-import { mirabuf } from "../../proto/mirabuf"
+import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import WorldSystem from "../WorldSystem"
 import {
@@ -77,8 +77,8 @@ const DEFAULT_FRICTION = 0.7
 // Temporary workaround to reduce visible levitation of robots by minimizing suspension.
 // Setting these values to 0 causes physics issues (e.g., ground collisionn problems).
 // Some robots still float slightly, assuming this is dwue to different export conditions.
-const SUSPENSION_MIN_FACTOR = 1 // TODO: fix this soon
-const SUSPENSION_MAX_FACTOR = 1
+const SUSPENSION_MIN_FACTOR = 0.0001
+const SUSPENSION_MAX_FACTOR = 0.0001
 
 const DEFAULT_PHYSICAL_MATERIAL_KEY = "default"
 

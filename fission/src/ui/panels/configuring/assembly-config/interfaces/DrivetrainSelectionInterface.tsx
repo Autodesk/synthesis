@@ -12,7 +12,7 @@ const DrivetrainSelectionInterface: React.FC<DrivetrainSelectionProps> = ({ sele
         <>
             <Dropdown // TODO: disable/hide when wpilib brain selected
                 label="Drivetrain Type"
-                options={[DriveType.TANK, DriveType.ARCADE]}
+                options={[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE]}
                 defaultValue={(selectedAssembly.brain as SynthesisBrain | undefined)?.driveType ?? DriveType.ARCADE}
                 onSelect={val => {
                     if (selectedAssembly.brain?.brainType == "synthesis") {

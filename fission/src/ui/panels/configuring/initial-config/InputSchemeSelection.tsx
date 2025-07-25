@@ -124,7 +124,7 @@ const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex,
                 <SectionDivider />
                 <Dropdown
                     label="Drivetrain Type"
-                    options={[DriveType.TANK, DriveType.ARCADE]}
+                    options={[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE]}
                     defaultValue={robotDriveType}
                     onSelect={val => {
                         const brain = SynthesisBrain.brainIndexMap.get(brainIndex)

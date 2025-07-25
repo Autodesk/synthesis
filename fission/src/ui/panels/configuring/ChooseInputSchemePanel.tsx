@@ -21,6 +21,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return assembly?.miraType == MiraType.ROBOT ? assembly : undefined
     }, [])
 
+    // biome-ignore lint/correctness/useExhaustiveDependencies: Can't use close panel
     useEffect(() => {
         closePanel("import-mirabuf")
         closePanel("configure")
@@ -47,7 +48,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             setSelectedConfigurationType(ConfigurationType.INPUTS)
             setSelectedScheme(scheme)
         }
-    }, [closePanel, targetAssembly])
+    }, [targetAssembly])
 
     const brainIndex = useMemo(() => {
         return SynthesisBrain.getBrainIndex(targetAssembly)

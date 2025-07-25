@@ -3,7 +3,6 @@ import * as THREE from "three"
 import { Mesh } from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import InputSystem from "@/systems/input/InputSystem.ts"
-import Behavior from "@/systems/simulation/behavior/Behavior.ts"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
 import World from "@/systems/World.ts"
@@ -18,8 +17,9 @@ import Driver, { DriverControlMode } from "../../../driver/Driver.ts"
 import HingeDriver from "../../../driver/HingeDriver.ts"
 import HingeStimulus from "../../../stimulus/HingeStimulus.ts"
 import Stimulus from "../../../stimulus/Stimulus.ts"
+import {DriveBehavior} from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts";
 
-class SwerveDriveBehavior extends Behavior {
+class SwerveDriveBehavior extends DriveBehavior {
     private _wheels: WheelDriver[]
     private _hinges: HingeDriver[]
     private _brainIndex: number
@@ -47,7 +47,7 @@ class SwerveDriveBehavior extends Behavior {
         this._assemblyName = assemblyName
 
         hinges.forEach(h => {
-            h.constraint.SetLimits(-Infinity, Infinity)
+            // h.constraint.SetLimits(-Math.PI, Math.PI)
             // h.constraint.SetLimits(0, 0)
             h.controlMode = DriverControlMode.POSITION
         })
@@ -178,6 +178,14 @@ class SwerveDriveBehavior extends Behavior {
                 new THREE.Vector3(),
                 World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition()
             )
+            this._wheels.forEach((wheel,i) => {this._debugVector(
+                "wheel" + i,
+                0x0000ff,
+                new THREE.Vector3(),
+                wheel.constraint
+                    .GetWheelWorldTransform(0, new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(0, 1, 0))
+                    .GetTranslation()
+            )})
             return
         } else {
             console.debug("==================")
@@ -230,10 +238,10 @@ class SwerveDriveBehavior extends Behavior {
 
             const radius = convertJoltVec3ToThreeVector3(driver.worldAnchor).sub(com)
 
-            const driverAxis = convertJoltVec3ToThreeVector3(driver.worldAxis)
+            // const driverAxis = convertJoltVec3ToThreeVector3(driver.worldAxis)
 
             // Remove axis component of radius
-            radius.sub(driverAxis.multiplyScalar(driverAxis.dot(radius)))
+            // radius.sub(driverAxis.multiplyScalar(driverAxis.dot(radius)))
 
             velocities[i] = chassisAngularVelocity.clone().cross(radius).add(chassisVelocity)
             if (velocities[i].length() > maxVelocity.length()) maxVelocity = velocities[i]
