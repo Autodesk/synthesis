@@ -1,36 +1,33 @@
-import { Box, Divider, styled, IconButton, Tooltip } from "@mui/material"
-import Label, { LabelSize } from "./Label"
-import Button, { ButtonProps, ButtonSize } from "./Button"
-import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
-import { HiDownload } from "react-icons/hi"
-import { AiOutlineInfoCircle } from "react-icons/ai"
-import { BiRefresh } from "react-icons/bi"
-import { AiFillWarning } from "react-icons/ai"
-import { BsCodeSquare } from "react-icons/bs"
-import { GiSteeringWheel } from "react-icons/gi"
-import { AiOutlineDoubleRight } from "react-icons/ai"
-import { GrConnect } from "react-icons/gr"
 import InfoIcon from "@mui/icons-material/Info"
-
+import { Box, Divider, IconButton, styled, Tooltip } from "@mui/material"
+import { AiFillWarning, AiOutlineDoubleRight, AiOutlineInfoCircle } from "react-icons/ai"
+import { BiRefresh } from "react-icons/bi"
+import { BsCodeSquare } from "react-icons/bs"
 import {
+    FaAngleRight,
+    FaArrowLeft,
+    FaBasketball,
+    FaBug,
+    FaCar,
+    FaChessBoard,
+    FaFileImport,
+    FaGamepad,
     FaGear,
     FaMagnifyingGlass,
-    FaPlus,
-    FaGamepad,
-    FaBasketball,
-    FaFileImport,
-    FaWrench,
-    FaScrewdriverWrench,
-    FaQuestion,
-    FaXmark,
-    FaChessBoard,
-    FaCar,
-    FaArrowLeft,
     FaMinus,
-    FaBug,
-    FaAngleRight,
+    FaPlus,
+    FaQuestion,
+    FaScrewdriverWrench,
+    FaWrench,
+    FaXmark,
 } from "react-icons/fa6"
+import { GiSteeringWheel } from "react-icons/gi"
+import { GrConnect } from "react-icons/gr"
+import { HiDownload } from "react-icons/hi"
+import { IoCheckmark, IoPencil, IoPeople, IoTrashBin } from "react-icons/io5"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
+import Button, { ButtonProps, ButtonSize } from "./Button"
+import Label, { LabelSize } from "./Label"
 
 export class SynthesisIcons {
     /** Regular icons: used for panels, modals, and main hud buttons */

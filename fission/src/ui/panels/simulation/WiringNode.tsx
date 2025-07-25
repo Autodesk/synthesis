@@ -1,7 +1,7 @@
 import { Connection, Edge, Handle, NodeProps, Position } from "@xyflow/react"
-import { handleInfoDisplayCompare, SimConfig, SimConfigData, HandleInfo, NORA_TYPES_COLORS } from "./SimConfigShared"
 import React, { useCallback, useMemo } from "react"
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
+import { HandleInfo, handleInfoDisplayCompare, NORA_TYPES_COLORS, SimConfig, SimConfigData } from "./SimConfigShared"
 
 const WiringNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
     const robotInput = data["input"] as HandleInfo[] | undefined

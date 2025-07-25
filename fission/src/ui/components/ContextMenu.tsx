@@ -1,8 +1,8 @@
 import { Box } from "@mui/material"
 import { useEffect, useState } from "react"
-import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
 import Button, { ButtonSize } from "./Button"
+import { ContextData, ContextSupplierEvent } from "./ContextMenuData"
 import Label, { LabelSize } from "./Label"
 import { SectionDivider } from "./StyledComponents"
 

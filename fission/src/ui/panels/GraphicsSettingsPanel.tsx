@@ -1,13 +1,13 @@
-import Panel, { PanelPropsImpl } from "../components/Panel"
-import { SectionDivider, SectionLabel, Spacer, SynthesisIcons } from "../components/StyledComponents"
+import { Box } from "@mui/material"
+import { useState } from "react"
 import Checkbox from "@/components/Checkbox"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { LabelSize } from "../components/Label"
 import World from "@/systems/World"
 import Slider from "@/ui/components/Slider"
-import { useState } from "react"
 import Button from "../components/Button"
-import { Box } from "@mui/material"
+import { LabelSize } from "../components/Label"
+import Panel, { PanelPropsImpl } from "../components/Panel"
+import { SectionDivider, SectionLabel, Spacer, SynthesisIcons } from "../components/StyledComponents"
 
 const MIN_LIGHT_INTENSITY = 1
 const MAX_LIGHT_INTENSITY = 10

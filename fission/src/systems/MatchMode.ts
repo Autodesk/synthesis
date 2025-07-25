@@ -1,10 +1,10 @@
-import SimulationSystem from "./simulation/SimulationSystem"
-import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { SoundPlayer } from "./sound/SoundPlayer"
 import beep from "@/assets/sound-files/beep.wav"
-import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
+import MatchStart from "@/assets/sound-files/MatchStart.wav"
+import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import SimulationSystem from "./simulation/SimulationSystem"
+import { SoundPlayer } from "./sound/SoundPlayer"
 
 export enum MatchModeType {
     SANDBOX = 0,

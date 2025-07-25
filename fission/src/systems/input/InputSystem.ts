@@ -1,11 +1,11 @@
+import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
+import MatchMode, { MatchModeType } from "@/systems/MatchMode"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import World from "@/systems/World.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
-import MatchMode, { MatchModeType } from "@/systems/MatchMode"
-import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import World from "@/systems/World.ts";
 
 export type ModifierState = Readonly<{
     alt: boolean
@@ -24,6 +24,7 @@ const inputDriveTypeAssociations: Partial<Record<InputName, DriveType>> = {
     tankRight: DriveType.TANK,
 }
 
+// biome-ignore lint/style/useNamingConvention: unused variable for typing
 export type KeyDescriptor = (string & { __: "" }) | null // prevent strings from being assigned without explicit casting
 
 const LOG_GAMEPAD_EVENTS = false
@@ -338,9 +339,12 @@ class InputSystem extends WorldSystem {
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
 
-    public static setBrainIndexSchemeMapping(index:number, scheme:InputScheme) {
+    public static setBrainIndexSchemeMapping(index: number, scheme: InputScheme) {
         InputSystem.brainIndexSchemeMap.set(index, scheme)
-        World.analyticsSystem?.event("Scheme Applied", {isCustomized:scheme.customized, schemeName:scheme.schemeName})
+        World.analyticsSystem?.event("Scheme Applied", {
+            isCustomized: scheme.customized,
+            schemeName: scheme.schemeName,
+        })
     }
 
     constructor() {

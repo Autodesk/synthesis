@@ -1,4 +1,4 @@
-import { test, expect, describe } from "vitest"
+import { describe, expect, test } from "vitest"
 import * as Random from "../../util/Random"
 
 describe("Random Number Generator Tests", () => {

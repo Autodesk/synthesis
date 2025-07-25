@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
-import Label, { LabelSize } from "./Label"
-import { hasSimBrain, isConnected } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { FaCheck, FaXmark } from "react-icons/fa6"
+import { hasSimBrain, isConnected } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import Label, { LabelSize } from "./Label"
 
 const WPILibConnectionStatus: React.FC = () => {
     const [status, setStatus] = useState<boolean>(false)

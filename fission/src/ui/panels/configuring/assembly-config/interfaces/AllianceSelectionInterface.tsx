@@ -1,8 +1,8 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
+import React, { useState } from "react"
 import Button from "@/components/Button"
 import Label from "@/components/Label"
-import React, { useState } from "react"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 
 type AllianceSelectionInterfaceProps = {
     selectedAssembly: MirabufSceneObject

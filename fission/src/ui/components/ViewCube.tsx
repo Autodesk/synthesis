@@ -1,9 +1,9 @@
+import { Box } from "@mui/material"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import * as THREE from "three"
-import { Box } from "@mui/material"
-import World from "@/systems/World"
-import { CustomOrbitControls } from "@/systems/scene/CameraControls"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import World from "@/systems/World"
 
 interface ViewCubeProps {
     size?: number

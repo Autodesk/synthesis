@@ -1,7 +1,7 @@
 import React, { ReactNode, useState } from "react"
-import { addGlobalFunc } from "@/util/dom"
 import { RgbaColor } from "react-colorful"
-import { ColorName, Themes, Theme, ThemeContext, defaultThemeName, colorNameToProp } from "./helpers/UseThemeHelpers"
+import { addGlobalFunc } from "@/util/dom"
+import { ColorName, colorNameToProp, defaultThemeName, Theme, ThemeContext, Themes } from "./helpers/UseThemeHelpers"
 
 type ThemeProviderProps = {
     themes: Themes

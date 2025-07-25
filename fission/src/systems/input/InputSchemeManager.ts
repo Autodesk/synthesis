@@ -1,9 +1,9 @@
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import { random } from "@/util/Random"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import DefaultInputs from "./DefaultInputs"
 import InputSystem, { AxisInput, ButtonInput, Input, KeyDescriptor } from "./InputSystem"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 
 export type InputScheme = {
     schemeName: string
@@ -21,7 +21,11 @@ export enum InputSchemeUseType {
     AVAILABLE, // no overlap and not bound
 }
 
-export type InputSchemeAvailability = { scheme: InputScheme; status: InputSchemeUseType; conflicts_with_names?: string }
+export type InputSchemeAvailability = {
+    scheme: InputScheme
+    status: InputSchemeUseType
+    conflictingSchemeNames?: string
+}
 
 class InputSchemeManager {
     // References to the current custom schemes to avoid parsing every time they are requested
@@ -135,7 +139,7 @@ class InputSchemeManager {
                 result[scheme.schemeName] ??= {
                     scheme,
                     status: InputSchemeUseType.CONFLICT,
-                    conflicts_with_names: [...new Set(conflictingSchemes)].join(", "),
+                    conflictingSchemeNames: [...new Set(conflictingSchemes)].join(", "),
                 }
             } else {
                 result[scheme.schemeName] = { scheme, status: InputSchemeUseType.AVAILABLE }

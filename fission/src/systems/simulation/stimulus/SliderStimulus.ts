@@ -1,8 +1,8 @@
 import Jolt from "@azaleacolburn/jolt-physics"
-import EncoderStimulus from "./EncoderStimulus"
 import { mirabuf } from "@/proto/mirabuf"
+import { NoraNumber2, NoraTypes } from "../Nora"
+import EncoderStimulus from "./EncoderStimulus"
 import { StimulusID } from "./Stimulus"
-import { NoraTypes, NoraNumber2 } from "../Nora"
 
 class SliderStimulus extends EncoderStimulus {
     private _slider: Jolt.SliderConstraint
