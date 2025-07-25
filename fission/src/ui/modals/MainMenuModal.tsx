@@ -2,9 +2,9 @@ import { Button, Stack } from "@mui/material"
 import type React from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type { ModalImplProps } from "../components/Modal"
-import { CloseType, useUIContext } from "../UIProvider"
+import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 import { useEffect, useLayoutEffect } from "react"
-import { useStateContext } from "../StateProvider"
+import { useStateContext } from "../helpers/StateProviderHelpers"
 
 const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback: () => void }> = ({
     modal,

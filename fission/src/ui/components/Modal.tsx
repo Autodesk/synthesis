@@ -1,7 +1,7 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
 import React, { useEffect, useState, type ReactElement } from "react"
-import type { Modal as ModalType, Panel as PanelType } from "../UIProvider"
-import { CloseType, useUIContext } from "../UIProvider"
+import type { Modal as ModalType, Panel as PanelType } from "../helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 
 export type ModalImplProps<T> = Partial<{
     modal: ModalType<T>

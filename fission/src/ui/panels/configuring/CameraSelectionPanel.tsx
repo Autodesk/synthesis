@@ -6,7 +6,7 @@ import World from "@/systems/World"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
-import { useUIContext } from "@/ui/UIProvider"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { PanelImplProps } from "@/ui/components/Panel"
 
 interface OrbitSettingsProps {

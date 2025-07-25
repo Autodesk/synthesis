@@ -1,4 +1,4 @@
-import type { AddToastFn, OpenModalFn, OpenPanelFn } from "../UIProvider"
+import type { AddToastFn, OpenModalFn, OpenPanelFn } from "../helpers/UIProviderHelpers"
 
 /**
  * This is where all the global references to the Global UI controls are located.

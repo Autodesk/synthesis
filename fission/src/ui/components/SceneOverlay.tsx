@@ -10,7 +10,7 @@ import {
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ViewCube from "./ViewCube"
 import Label from "./Label"
-import { useStateContext } from "../StateProvider"
+import { useStateContext } from "../helpers/StateProviderHelpers"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 

@@ -1,43 +1,8 @@
-import type { InputScheme } from "@/systems/input/InputSchemeManager"
 import type React from "react"
-import { createContext, type ReactNode, useContext, useMemo, useState } from "react"
+import {  useMemo, useState } from "react"
+import type { InputScheme } from "@/systems/input/InputSchemeManager"
+import { StateContext, StateProviderProps } from "./helpers/StateProviderHelpers"
 import { ConfigurationType, ConfigurePanelSettings } from "./panels/configuring/assembly-config/ConfigurePanel"
-
-interface StateProviderProps {
-    children: ReactNode
-}
-
-interface AppState {
-    // ImportMirabufPanel
-    unconfirmedImport: boolean
-    setUnconfirmedImport: (_state: boolean) => void
-    // ConfigureInputs stuff
-    selectedScheme?: InputScheme
-    setSelectedScheme: (_scheme: InputScheme) => void
-    // Configure Panel
-    configurePanelSettings?: ConfigurePanelSettings
-    setConfigurePanelSettings: (_settings?: ConfigurePanelSettings) => void
-    configurationType: ConfigurationType
-    setConfigurationType: (_type: ConfigurationType) => void
-    // View Cube
-    isMainMenuOpen: boolean
-    setIsMainMenuOpen: (_state: boolean) => void
-}
-
-export const StateContext = createContext<AppState>({
-    unconfirmedImport: false,
-    setUnconfirmedImport: () => {},
-    selectedScheme: undefined,
-    setSelectedScheme: () => {},
-    configurePanelSettings: undefined,
-    setConfigurePanelSettings: () => {},
-    configurationType: "ROBOTS",
-    setConfigurationType: () => {},
-    isMainMenuOpen: true,
-    setIsMainMenuOpen: () => {},
-})
-
-export const useStateContext = () => useContext(StateContext)
 
 export const StateProvider: React.FC<StateProviderProps> = ({ children }) => {
     const [unconfirmedImport, setUnconfirmedImport] = useState<boolean>(false)

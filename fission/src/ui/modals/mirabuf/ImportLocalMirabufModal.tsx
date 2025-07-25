@@ -7,7 +7,7 @@ import Label from "@/ui/components/Label"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
-import { CloseType, useUIContext } from "@/ui/UIProvider"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { Button, Stack, styled, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
 import { type ChangeEvent, useEffect, useState } from "react"
 

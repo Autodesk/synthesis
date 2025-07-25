@@ -4,7 +4,7 @@ import { Box, Button, Checkbox, FormControlLabel, Slider, Stack, Typography } fr
 import type React from "react"
 import { useEffect, useState } from "react"
 import { PanelImplProps } from "../components/Panel"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 import StatefulSlider from "../components/StatefulSlider"
 import StatefulCheckbox from "../components/StatefulCheckbox"
 import Label from "../components/Label"

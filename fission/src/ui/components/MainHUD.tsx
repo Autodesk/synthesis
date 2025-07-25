@@ -11,7 +11,7 @@ import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel"
 import DebugPanel from "../panels/DebugPanel"
 import ImportMirabufPanel from "../panels/mirabuf/ImportMirabufPanel"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 import { setAddToast, setOpenModal, setOpenPanel } from "./GlobalUIControls"
 import { SynthesisIcons } from "./StyledComponents"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
@@ -21,7 +21,7 @@ import SettingsModal from "../modals/configuring/SettingsModal"
 import APSManagementModal from "../modals/APSManagementModal"
 import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
-import { useThemeContext } from "../ThemeProvider"
+import { useThemeContext } from "../helpers/ThemeProviderHelpers"
 
 type ButtonProps = {
     value: string

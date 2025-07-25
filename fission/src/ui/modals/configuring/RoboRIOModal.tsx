@@ -1,7 +1,7 @@
 import { Button, FormControlLabel } from "@mui/material"
 import type React from "react"
 import type { ModalImplProps } from "@/ui/components/Modal"
-import { useUIContext } from "@/ui/UIProvider"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import RCCreateDeviceModal from "./rio-config/RCCreateDeviceModal"
 import { useEffect } from "react"
 

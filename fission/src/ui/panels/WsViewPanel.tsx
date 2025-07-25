@@ -22,7 +22,7 @@ import {
 } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
 import { PanelImplProps } from "../components/Panel"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 
 const TABLE_UPDATE_INTERVAL = 250
 

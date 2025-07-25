@@ -2,7 +2,7 @@ import { MenuItem, Select } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import type { ModalImplProps } from "@/ui/components/Modal"
-import { useUIContext } from "@/ui/UIProvider"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 
 type DrivetrainType = "None" | "Tank" | "Arcade" | "Swerve"
 

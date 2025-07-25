@@ -5,7 +5,7 @@ import { Box, Button, Divider, Typography } from "@mui/material"
 import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAME_TIME } from "@/systems/MatchMode"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs"
-import { CloseType, OpenModalFn, useUIContext } from "@/ui/UIProvider"
+import { CloseType, OpenModalFn, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { Stack } from "@mui/system"
 import Label from "@/ui/components/Label"
 

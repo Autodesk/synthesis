@@ -3,7 +3,7 @@ import type React from "react"
 import { useEffect, useState } from "react"
 import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
 import Label from "../components/Label"
-import { useUIContext } from "../UIProvider"
+import { useUIContext } from "../helpers/UIProviderHelpers"
 import { PanelImplProps } from "../components/Panel"
 
 const RobotSwitchPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {

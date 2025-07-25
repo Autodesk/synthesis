@@ -1,32 +1,8 @@
 import type { PaletteMode } from "@mui/material"
 import { createTheme, ThemeProvider as MUIThemeProvider } from "@mui/material/styles"
 import type React from "react"
-import { createContext, type ReactNode, useCallback, useContext, useEffect, useMemo, useState } from "react"
-
-interface ThemeProviderProps {
-	children: ReactNode;
-}
-
-interface StoredTheme {
-	mode: PaletteMode;
-	primary: {
-		main: string;
-	};
-	secondary: {
-		main: string;
-	};
-}
-
-export const ThemeContext = createContext({
-    mode: "dark",
-    setColorMode: (_mode: PaletteMode) => {},
-    setPrimaryColor: (_color: string) => {},
-    setSecondaryColor: (_color: string) => {},
-    primaryColor: "",
-    secondaryColor: "",
-})
-
-export const useThemeContext = () => useContext(ThemeContext)
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { StoredTheme, ThemeContext, ThemeProviderProps } from "./helpers/ThemeProviderHelpers"
 
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const loadTheme = useCallback(() => {
@@ -42,7 +18,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     }, [])
 
 	const [themeOptions, setThemeOptions] = useState<StoredTheme>(loadTheme());
-	const [mode, setColorMode] = useState<PaletteMode>(themeOptions.mode ?? "dark");
+	const [mode, setMode] = useState<PaletteMode>(themeOptions.mode ?? "dark");
 	const [primaryColor, setPrimaryColor] = useState(themeOptions.primary?.main ?? "#90caf9");
 	const [secondaryColor, setSecondaryColor] = useState(themeOptions.secondary?.main ?? "#ce93d8");
 
@@ -88,7 +64,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
 
 	const themeContextValue = useMemo(
 		() => ({
-            setColorMode,
+            setMode,
 			setPrimaryColor,
 			setSecondaryColor,
 			mode,

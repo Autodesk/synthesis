@@ -6,7 +6,7 @@ import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import WiringPanel from "@/ui/panels/simulation/WiringPanel"
-import { CloseType, useUIContext } from "@/ui/UIProvider"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 type SimulationInterfaceProps = {
