@@ -20,9 +20,10 @@ import MatchMode, { MatchModeType } from "@/systems/MatchMode"
 
 export enum ContactType {
     ROBOT_ENTERS = "Robot Enters",
+    ANY_ROBOT_INSIDE = "Collision with Any Robot Inside",
     BOTH_ROBOTS_INSIDE = "Collision with Both Robots Inside",
-    OPPONENT_ROBOT_INSIDE = "Collision with Opponent Robot Inside",
-    ALLY_ROBOT_INSIDE = "Collision with Ally Robot Inside",
+    RED_ROBOT_INSIDE = "Collision with Red Robot Inside",
+    BLUE_ROBOT_INSIDE = "Collision with Blue Robot Inside",
 }
 
 class ProtectedZoneSceneObject extends SceneObject {
@@ -259,7 +260,6 @@ class ProtectedZoneSceneObject extends SceneObject {
         if (Date.now() - this._lastRobotCollisionTime < 500) return
 
         let shouldPenalize = false
-        let robotToPenalize: MirabufSceneObject | undefined
 
         // Find the robot that has the opposite alliance from the zone
         const opposingRobot = [collisionObjectBody1, collisionObjectBody2].find(
@@ -271,35 +271,42 @@ class ProtectedZoneSceneObject extends SceneObject {
                 // Penalize opposing robot if both robots are inside the zone and colliding
                 if (this.isRobotInside(collisionObjectBody1) && this.isRobotInside(collisionObjectBody2)) {
                     shouldPenalize = true
-                    robotToPenalize = opposingRobot
                 }
                 break
 
-            case ContactType.OPPONENT_ROBOT_INSIDE:
-                // Penalize if the opposing robot is inside when collision occurs
-                if (this.isRobotInside(opposingRobot)) {
+            case ContactType.ANY_ROBOT_INSIDE:
+                // Penalize if any robot is inside the zone when collision occurs
+                if (this.isRobotInside(collisionObjectBody1) || this.isRobotInside(collisionObjectBody2)) {
                     shouldPenalize = true
-                    robotToPenalize = opposingRobot
                 }
                 break
 
-            case ContactType.ALLY_ROBOT_INSIDE: {
-                // Penalize opposing robot if an ally robot is inside when collision occurs
-                const allyRobot = [collisionObjectBody1, collisionObjectBody2].find(
-                    robot => robot.alliance === this._prefs?.alliance
+            case ContactType.RED_ROBOT_INSIDE:
+                // Penalize if the red robot is inside the zone when collision occurs
+                const redRobot = [collisionObjectBody1, collisionObjectBody2].find(
+                    robot => robot.alliance === "red"
                 )
-                if (allyRobot && this.isRobotInside(allyRobot)) {
+                if (redRobot && this.isRobotInside(redRobot)) {
                     shouldPenalize = true
-                    robotToPenalize = opposingRobot
+                }
+                break
+
+            case ContactType.BLUE_ROBOT_INSIDE: {
+                // Penalize if the blue robot is inside the zone when collision occurs
+                const blueRobot = [collisionObjectBody1, collisionObjectBody2].find(
+                    robot => robot.alliance === "blue"
+                )
+                if (blueRobot && this.isRobotInside(blueRobot)) {
+                    shouldPenalize = true
                 }
                 break
             }
         }
 
-        if (shouldPenalize && robotToPenalize) {
+        if (shouldPenalize) {
             this._lastRobotCollisionTime = Date.now()
             SimulationSystem.robotPenalty(
-                robotToPenalize,
+                opposingRobot,
                 this._prefs?.penaltyPoints ?? 0,
                 `Contact penalty in protected zone`
             )

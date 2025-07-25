@@ -187,34 +187,43 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
 
-    test("HandleContactPenalty opponent robot inside", () => {
+    test("HandleContactPenalty any robot inside", () => {
         const instance = createProtectedZoneInstance({
-            contactType: ContactType.OPPONENT_ROBOT_INSIDE,
+            contactType: ContactType.ANY_ROBOT_INSIDE,
         })
 
         instance["zoneCollision"](blueRobotBodyId)
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
 
-    test("HandleContactPenalty ally robot inside", () => {
+    test("HandleContactPenalty blue robot inside", () => {
         const instance = createProtectedZoneInstance({
-            contactType: ContactType.ALLY_ROBOT_INSIDE,
+            contactType: ContactType.BLUE_ROBOT_INSIDE,
+        })
+
+        instance["zoneCollision"](blueRobotBodyId)
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+    })
+
+    test("HandleContactPenalty red robot inside", () => {
+        const instance = createProtectedZoneInstance({
+            contactType: ContactType.RED_ROBOT_INSIDE,
         })
 
         instance["zoneCollision"](redRobotBodyId)
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
 
     test("HandleContactPenalty doesn't penalize if not all robots are inside", () => {
@@ -229,9 +238,20 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("HandleContactPenalty doesn't penalize if contact type is ally and ally is not inside", () => {
+    test("HandleContactPenalty doesn't penalize if contact type is any and no robots are inside", () => {
         const instance = createProtectedZoneInstance({
-            contactType: ContactType.ALLY_ROBOT_INSIDE,
+            contactType: ContactType.ANY_ROBOT_INSIDE,
+        })
+
+
+        instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
+
+        expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
+    })
+
+    test("HandleContactPenalty doesn't penalize if contact type is red and red is not inside", () => {
+        const instance = createProtectedZoneInstance({
+            contactType: ContactType.RED_ROBOT_INSIDE,
         })
 
         instance["zoneCollision"](blueRobotBodyId)
@@ -241,9 +261,9 @@ describe("ProtectedZoneSceneObject", () => {
         expect(vi.mocked(SimulationSystem.robotPenalty)).not.toHaveBeenCalled()
     })
 
-    test("HandleContactPenalty doesn't penalize if contact type is opponent and opponent is not inside", () => {
+    test("HandleContactPenalty doesn't penalize if contact type is blue and blue is not inside", () => {
         const instance = createProtectedZoneInstance({
-            contactType: ContactType.OPPONENT_ROBOT_INSIDE,
+            contactType: ContactType.BLUE_ROBOT_INSIDE,
         })
 
         instance["zoneCollision"](redRobotBodyId)
