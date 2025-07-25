@@ -7,11 +7,11 @@ import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
 
 export enum MatchModeType {
-    SANDBOX = 0,
-    AUTONOMOUS = 1,
-    TELEOP = 2,
-    ENDGAME = 3,
-    MATCH_ENDED = 4,
+    SANDBOX = "Sandbox",
+    AUTONOMOUS = "Autonomous",
+    TELEOP = "Teleop",
+    ENDGAME = "Endgame",
+    MATCH_ENDED = "Match Ended",
 }
 
 // Default match mode timing values

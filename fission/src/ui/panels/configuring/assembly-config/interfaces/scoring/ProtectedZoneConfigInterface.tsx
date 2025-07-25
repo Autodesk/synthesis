@@ -24,6 +24,15 @@ import ProtectedZoneSceneObject, { ContactType } from "@/mirabuf/ProtectedZoneSc
 import Dropdown from "@/ui/components/Dropdown"
 import { MatchModeType } from "@/systems/MatchMode"
 
+const MATCH_MODE_OPTIONS: MatchModeType[] = [
+    MatchModeType.SANDBOX,
+    MatchModeType.AUTONOMOUS,
+    MatchModeType.TELEOP,
+    MatchModeType.ENDGAME,
+]
+
+const CONTACT_TYPE_OPTIONS = Object.values(ContactType)
+
 /**
  * Saves ejector configuration to selected field.
  *
@@ -271,45 +280,11 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             {/** Determines during what game state the protected zone is active */}
             <Dropdown
                 label="Active During"
-                options={["Sandbox", "Autonomous", "Teleop", "Endgame"]}
+                options={MATCH_MODE_OPTIONS}
                 onSelect={(selectedOptions: string[]) => {
-                    const matchModes: MatchModeType[] = []
-                    selectedOptions.forEach(option => {
-                        switch (option) {
-                            case "Sandbox":
-                                matchModes.push(MatchModeType.SANDBOX)
-                                break
-                            case "Autonomous":
-                                matchModes.push(MatchModeType.AUTONOMOUS)
-                                break
-                            case "Teleop":
-                                matchModes.push(MatchModeType.TELEOP)
-                                break
-                            case "Endgame":
-                                matchModes.push(MatchModeType.ENDGAME)
-                                break
-                            default:
-                                break
-                        }
-                    })
-                    setActiveDuring(matchModes)
+                    setActiveDuring(selectedOptions as MatchModeType[])
                 }}
-                defaultValue={activeDuring
-                    .map(mode => {
-                        switch (mode) {
-                            case MatchModeType.SANDBOX:
-                                return "Sandbox"
-                            case MatchModeType.AUTONOMOUS:
-                                return "Autonomous"
-                            case MatchModeType.TELEOP:
-                                return "Teleop"
-                            case MatchModeType.ENDGAME:
-                                return "Endgame"
-                            default:
-                                return ""
-                        }
-                    })
-                    .filter(val => val !== "")}
+                defaultValue={activeDuring}
                 maxWidth="15rem"
                 multiSelect={true}
                 textAlign="left"
@@ -318,44 +293,11 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             {/** Determines what type of contact is required for the penalty to apply */}
             <Dropdown
                 label="Contact Type"
-                options={[
-                    "Robot Enters",
-                    "Collision with Both Robots Inside",
-                    "Collision with Opponent Robot Inside",
-                    "Collision with Ally Robot Inside",
-                ]}
+                options={CONTACT_TYPE_OPTIONS}
                 onSelect={(selectedOption: string) => {
-                    switch (selectedOption) {
-                        case "Robot Enters":
-                            setContactType(ContactType.ROBOT_ENTERS)
-                            break
-                        case "Collision with Both Robots Inside":
-                            setContactType(ContactType.BOTH_ROBOTS_INSIDE)
-                            break
-                        case "Collision with Opponent Robot Inside":
-                            setContactType(ContactType.OPPONENT_ROBOT_INSIDE)
-                            break
-                        case "Collision with Ally Robot Inside":
-                            setContactType(ContactType.ALLY_ROBOT_INSIDE)
-                            break
-                        default:
-                            break
-                    }
+                    setContactType(selectedOption as ContactType)
                 }}
-                defaultValue={(() => {
-                    switch (contactType) {
-                        case ContactType.ROBOT_ENTERS:
-                            return "Robot Enters"
-                        case ContactType.BOTH_ROBOTS_INSIDE:
-                            return "Collision with Both Robots Inside"
-                        case ContactType.OPPONENT_ROBOT_INSIDE:
-                            return "Collision with Opponent Robot Inside"
-                        case ContactType.ALLY_ROBOT_INSIDE:
-                            return "Collision with Ally Robot Inside"
-                        default:
-                            return "Robot Enters"
-                    }
-                })()}
+                defaultValue={contactType}
                 textAlign="left"
             />
 

@@ -47,15 +47,15 @@ vi.mock("@/systems/simulation/SimulationSystem", () => ({
 
 vi.mock("@/systems/MatchMode", () => ({
     MatchModeType: {
-        SANDBOX: 0,
-        AUTONOMOUS: 1,
-        TELEOP: 2,
-        ENDGAME: 3,
-        MATCH_ENDED: 4,
+        SANDBOX: "Sandbox",
+        AUTONOMOUS: "Autonomous",
+        TELEOP: "Teleop",
+        ENDGAME: "Endgame",
+        MATCH_ENDED: "Match Ended",
     },
     default: {
         getInstance: vi.fn(() => ({
-            getMatchModeType: vi.fn(() => MatchModeType.TELEOP),
+            getMatchModeType: vi.fn(() => "Teleop"),
         })),
     },
 }))
@@ -122,8 +122,7 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["zoneCollision"](blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledTimes(1)
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
     })
 
     test("ZoneCollision does not penalize same alliance robot", () => {
