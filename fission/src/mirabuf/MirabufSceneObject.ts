@@ -11,7 +11,7 @@ import {
 } from "@/util/TypeConversions"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { BodyAssociate, LAYER_GENERAL_DYNAMIC, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import Mechanism from "@/systems/physics/Mechanism"
 import {
     Alliance,
@@ -850,7 +850,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private recordRobotCollision(collision: Jolt.BodyID) {
         const objectCollidedWith = <RigidNodeAssociate>World.physicsSystem.getBodyAssociation(collision)
-        if (objectCollidedWith && objectCollidedWith.isGamePiece) {
+        const inGPLayer = World.physicsSystem.getBody(collision).GetObjectLayer() === LAYER_GENERAL_DYNAMIC
+        if (objectCollidedWith && (objectCollidedWith.isGamePiece || inGPLayer)) {
             objectCollidedWith.robotLastInContactWith = this
         }
     }
