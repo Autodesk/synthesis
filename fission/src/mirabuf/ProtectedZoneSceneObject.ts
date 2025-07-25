@@ -283,9 +283,7 @@ class ProtectedZoneSceneObject extends SceneObject {
 
             case ContactType.RED_ROBOT_INSIDE:
                 // Penalize if the red robot is inside the zone when collision occurs
-                const redRobot = [collisionObjectBody1, collisionObjectBody2].find(
-                    robot => robot.alliance === "red"
-                )
+                const redRobot = [collisionObjectBody1, collisionObjectBody2].find(robot => robot.alliance === "red")
                 if (redRobot && this.isRobotInside(redRobot)) {
                     shouldPenalize = true
                 }
@@ -293,9 +291,7 @@ class ProtectedZoneSceneObject extends SceneObject {
 
             case ContactType.BLUE_ROBOT_INSIDE: {
                 // Penalize if the blue robot is inside the zone when collision occurs
-                const blueRobot = [collisionObjectBody1, collisionObjectBody2].find(
-                    robot => robot.alliance === "blue"
-                )
+                const blueRobot = [collisionObjectBody1, collisionObjectBody2].find(robot => robot.alliance === "blue")
                 if (blueRobot && this.isRobotInside(blueRobot)) {
                     shouldPenalize = true
                 }

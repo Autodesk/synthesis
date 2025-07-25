@@ -1,8 +1,8 @@
 import { Vector3Tuple } from "three"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import { InputScheme } from "../input/InputSchemeManager"
-import { MatchModeType } from "../MatchMode"
 import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
+import { MatchModeType } from "@/systems/match_mode/MatchMode"
 
 /** Names of all global preferences. */
 

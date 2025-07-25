@@ -122,7 +122,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["zoneCollision"](blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("ZoneCollision does not penalize same alliance robot", () => {
@@ -187,7 +191,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("HandleContactPenalty any robot inside", () => {
@@ -199,7 +207,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("HandleContactPenalty blue robot inside", () => {
@@ -211,7 +223,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("HandleContactPenalty red robot inside", () => {
@@ -223,7 +239,11 @@ describe("ProtectedZoneSceneObject", () => {
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
-        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(blueRobot, 5, expect.any(String))
+        expect(vi.mocked(SimulationSystem.robotPenalty)).toHaveBeenCalledExactlyOnceWith(
+            blueRobot,
+            5,
+            expect.any(String)
+        )
     })
 
     test("HandleContactPenalty doesn't penalize if not all robots are inside", () => {
@@ -242,7 +262,6 @@ describe("ProtectedZoneSceneObject", () => {
         const instance = createProtectedZoneInstance({
             contactType: ContactType.ANY_ROBOT_INSIDE,
         })
-
 
         instance["handleContactPenalty"](redRobotBodyId, blueRobotBodyId)
 
