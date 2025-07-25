@@ -38,7 +38,7 @@ export function isNoraDeconstructable(type: NoraTypes): boolean {
 
 const averageFuncMap: { [k in NoraTypes]: ((...many: NoraType[]) => NoraType) | undefined } = {
     [NoraTypes.NUMBER]: function (...many: NoraType[]): NoraType {
-        return many.reduce<NoraNumber>((prev, next) => (prev += next as NoraNumber), 0)
+        return many.reduce<NoraNumber>((prev, next) => prev + (next as NoraNumber), 0)
     },
     [NoraTypes.NUMBER2]: undefined,
     [NoraTypes.NUMBER3]: undefined,

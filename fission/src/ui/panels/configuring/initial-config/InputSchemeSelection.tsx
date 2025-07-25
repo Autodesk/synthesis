@@ -1,3 +1,8 @@
+import { Box, Tooltip } from "@mui/material"
+import React, { ReactElement, useEffect, useReducer, useState } from "react"
+import Dropdown from "@/components/Dropdown.tsx"
+import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
+import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager, {
     InputScheme,
@@ -6,6 +11,8 @@ import InputSchemeManager, {
 } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import { LabelSize } from "@/ui/components/Label"
 import {
     AddButtonInteractiveColor,
@@ -16,15 +23,8 @@ import {
     SectionLabel,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import { Box, Tooltip } from "@mui/material"
-import React, { ReactElement, useEffect, useReducer, useState } from "react"
-import { ConfigurationType, setSelectedConfigurationType } from "@/panels/configuring/assembly-config/ConfigurationType"
-import { setSelectedScheme } from "@/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
-import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
-import Dropdown from "@/components/Dropdown.tsx"
+import InputSchemeSelectionProps from "./InputSchemeSelectionProps"
 
 const InputSchemeSelection: React.FC<InputSchemeSelectionProps> = ({ brainIndex, onSelect, onEdit, onCreateNew }) => {
     const [_, update] = useReducer(x => !x, false)

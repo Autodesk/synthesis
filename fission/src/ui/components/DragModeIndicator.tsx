@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
-import Label, { LabelSize } from "./Label"
 import { FaHandPaper } from "react-icons/fa"
 import { globalAddToast } from "./GlobalUIControls"
+import Label, { LabelSize } from "./Label"
 
 const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)

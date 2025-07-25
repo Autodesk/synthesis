@@ -1,4 +1,4 @@
-import { test, expect, describe } from "vitest"
+import { describe, expect, test } from "vitest"
 
 import Queue from "../../util/Queue"
 import { random } from "../../util/Random"

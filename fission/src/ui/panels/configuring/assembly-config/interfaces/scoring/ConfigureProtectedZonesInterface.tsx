@@ -1,13 +1,13 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import { Box } from "@mui/material"
 import React, { useState } from "react"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import { LabelSize } from "@/ui/components/Label"
+import { ButtonIcon, SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import ManageProtectedZonesInterface from "./ManageProtectedZonesInterface"
 import ZoneConfigInterface from "./ProtectedZoneConfigInterface"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { Box } from "@mui/material"
-import { ButtonIcon, SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { LabelSize } from "@/ui/components/Label"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 
 const protectedZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return

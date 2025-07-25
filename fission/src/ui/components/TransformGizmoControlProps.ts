@@ -1,8 +1,8 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
 import { SxProps, Theme } from "@mui/material"
 import { MutableRefObject } from "react"
 import * as THREE from "three"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
 
 interface TransformGizmoControlProps {
     defaultMesh?: THREE.Mesh

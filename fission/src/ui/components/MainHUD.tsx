@@ -1,20 +1,20 @@
-import React, { useEffect, useState } from "react"
-import { FaXmark } from "react-icons/fa6"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { motion } from "framer-motion"
-import logo from "@/assets/autodesk_logo.png"
-import { useToastContext } from "@/ui/ToastContext"
-import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
-import UserIcon from "./UserIcon"
-import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
 import { Button } from "@mui/base"
 import { Box } from "@mui/material"
 import { TouchControlsEvent, TouchControlsEventKeys } from "./TouchControls"
 import { setAddToast } from "./GlobalUIControls"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import MatchMode, { MatchStateChangeEvent } from "@/systems/MatchMode"
+import MatchMode, { MatchStateChangeEvent } from "@/systems/match_mode/MatchMode"
+import { motion } from "framer-motion"
+import React, { useEffect, useState } from "react"
+import { FaXmark } from "react-icons/fa6"
+import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
+import logo from "@/assets/autodesk_logo.png"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import { useToastContext } from "@/ui/ToastContext"
+import { ButtonIcon, SynthesisIcons } from "./StyledComponents"
+import UserIcon from "./UserIcon"
 
 type ButtonProps = {
     value: string
@@ -31,7 +31,9 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
             {...SoundPlayer.buttonSoundEffects()}
             className={`relative flex flex-row
                 cursor-pointer
-                bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${larger ? "justify-center" : ""}
+                bg-background w-full m-auto px-2 py-1 text-main-text border-none rounded-md ${
+                    larger ? "justify-center" : ""
+                }
                 items-center hover:brightness-105 focus:outline-0 focus-visible:outline-0
                 transform
                 transition-transform
@@ -42,7 +44,12 @@ const MainHUDButton: React.FC<ButtonProps> = ({ value, icon, onClick, larger }) 
             {!larger && <span className="absolute left-3 text-main-hud-icon">{icon}</span>}
             <span
                 className={`px-2 ${larger ? "py-2" : "py-0.5 ml-6"} text-main-text cursor-pointer`}
-                style={{ userSelect: "none", MozUserSelect: "none", msUserSelect: "none", WebkitUserSelect: "none" }}
+                style={{
+                    userSelect: "none",
+                    MozUserSelect: "none",
+                    msUserSelect: "none",
+                    WebkitUserSelect: "none",
+                }}
             >
                 {value}
             </span>

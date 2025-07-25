@@ -1,6 +1,6 @@
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import { InputScheme } from "./InputSchemeManager"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import { AxisInput, ButtonInput, ModifierState } from "./InputSystem"
 
 type InputSupplier = () => InputScheme

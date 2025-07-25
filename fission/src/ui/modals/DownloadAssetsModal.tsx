@@ -1,8 +1,8 @@
 import React from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import Stack, { StackDirection } from "@/components/Stack"
 import Label, { LabelSize } from "@/components/Label"
 import LabeledButton, { LabelPlacement } from "@/components/LabeledButton"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
+import Stack, { StackDirection } from "@/components/Stack"
 import { SynthesisIcons } from "../components/StyledComponents"
 
 const DownloadAssetsModal: React.FC<ModalPropsImpl> = ({ modalId }) => (

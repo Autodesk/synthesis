@@ -1,8 +1,8 @@
 import { Panel as FlowPanel, useReactFlow } from "@xyflow/react"
 import React, { PropsWithChildren } from "react"
-import { FlowControlsProps } from "./SimConfigShared"
-import { MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
 import { FaPlus } from "react-icons/fa6"
+import { MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
+import { FlowControlsProps } from "./SimConfigShared"
 
 const FlowControlButton: React.FC<PropsWithChildren<{ onClick?: () => void }>> = ({ onClick, children }) => {
     return (

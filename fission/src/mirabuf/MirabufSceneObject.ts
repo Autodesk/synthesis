@@ -1,49 +1,49 @@
-import { mirabuf } from "@/proto/mirabuf"
-import SceneObject from "../systems/scene/SceneObject"
-import MirabufInstance from "./MirabufInstance"
-import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
-import World from "@/systems/World"
 import Jolt from "@azaleacolburn/jolt-physics"
-import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { mirabuf } from "@/proto/mirabuf"
+import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import Mechanism from "@/systems/physics/Mechanism"
+import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     Alliance,
-    Station,
     EjectorPreferences,
     FieldPreferences,
     IntakePreferences,
     ProtectedZonePreferences,
     ScoringZonePreferences,
+    Station,
 } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { MiraType } from "./MirabufLoader"
-import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
-import EjectableSceneObject from "./EjectableSceneObject"
-import Brain from "@/systems/simulation/Brain"
-import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
-import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
-import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { CustomOrbitControls } from "@/systems/scene/CameraControls"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import {
-    ConfigMode,
-    setNextConfigurePanelSettings,
-} from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
+import Brain from "@/systems/simulation/Brain"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import World from "@/systems/World"
+import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import {
     ConfigurationType,
     setSelectedConfigurationType,
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
+import {
+    ConfigMode,
+    setNextConfigurePanelSettings,
+} from "@/ui/panels/configuring/assembly-config/ConfigurePanelControls"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
-import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
+import SceneObject from "../systems/scene/SceneObject"
+import EjectableSceneObject from "./EjectableSceneObject"
 import FieldMiraEditor from "./FieldMiraEditor"
+import IntakeSensorSceneObject from "./IntakeSensorSceneObject"
+import MirabufInstance from "./MirabufInstance"
+import { MiraType } from "./MirabufLoader"
+import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
+import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
+import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 const DEBUG_BODIES = false
 
@@ -630,6 +630,101 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         return box
+    }
+
+    /**
+     * Gets the maximum dimensions (length, width, height) of the mirabuf object.
+     *
+     * @returns An object containing the width (x), height (y), and depth (z) dimensions in meters.
+     */
+    public getDimensions(): { width: number; height: number; depth: number } {
+        const boundingBox = this.computeBoundingBox()
+        const size = new THREE.Vector3()
+        boundingBox.getSize(size)
+
+        return {
+            width: size.x,
+            height: size.y,
+            depth: size.z,
+        }
+    }
+
+    /**
+     * Calculates the robot's dimensions as if it had no rotation applied.
+     *
+     * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
+     */
+    public getDimensionsWithoutRotation(): { width: number; height: number; depth: number } {
+        const rootNodeId = this.getRootNodeId()
+        if (!rootNodeId) {
+            console.warn("No root node found for robot, using regular dimensions")
+            return this.getDimensions()
+        }
+
+        const rootBody = World.physicsSystem.getBody(rootNodeId)
+        const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
+
+        const rootPosition = new THREE.Vector3()
+        const rootRotation = new THREE.Quaternion()
+        const rootScale = new THREE.Vector3()
+        rootTransform.decompose(rootPosition, rootRotation, rootScale)
+
+        // Create inverse rotation matrix to "undo" the robot's rotation
+        const inverseRotation = new THREE.Matrix4().makeRotationFromQuaternion(rootRotation.clone().invert())
+
+        const unrotatedBox = new THREE.Box3()
+
+        this._mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
+            const bodyId = this._mechanism.getBodyByNodeId(rigidNode.id)
+            if (!bodyId) return
+
+            const body = World.physicsSystem.getBody(bodyId)
+            const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+
+            const shape = body.GetShape()
+            const scale = new JOLT.Vec3(1, 1, 1)
+            const triangleContext = new JOLT.ShapeGetTriangles(
+                shape,
+                JOLT.AABox.prototype.sBiggest(),
+                shape.GetCenterOfMass(),
+                JOLT.Quat.prototype.sIdentity(),
+                scale
+            )
+
+            try {
+                const vertices = new Float32Array(
+                    JOLT.HEAP32.buffer,
+                    triangleContext.GetVerticesData(),
+                    triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
+                )
+
+                for (let i = 0; i < vertices.length; i += 3) {
+                    const vertex = new THREE.Vector3(vertices[i], vertices[i + 1], vertices[i + 2])
+
+                    vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
+
+                    unrotatedBox.expandByPoint(vertex)
+                }
+            } finally {
+                JOLT.destroy(triangleContext)
+                JOLT.destroy(scale)
+            }
+        })
+
+        // Fallback if no vertices were processed
+        if (unrotatedBox.isEmpty()) {
+            console.warn("Could not process physics shapes, using regular dimensions")
+            return this.getDimensions()
+        }
+
+        const unrotatedSize = new THREE.Vector3()
+        unrotatedBox.getSize(unrotatedSize)
+
+        return {
+            width: unrotatedSize.x,
+            height: unrotatedSize.y,
+            depth: unrotatedSize.z,
+        }
     }
 
     /**
