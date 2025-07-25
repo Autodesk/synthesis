@@ -3,6 +3,7 @@ import { mirabuf } from "@/proto/mirabuf"
 import { globalAddToast } from "@/components/GlobalUIControls"
 import World from "@/systems/World"
 import Pako from "pako"
+import { clean } from "@/util/Utility"
 
 const MIRABUF_LOCALSTORAGE_GENERATION_KEY = "Synthesis Nonce Key"
 const MIRABUF_LOCALSTORAGE_GENERATION = "4543246"
@@ -45,9 +46,9 @@ const dirNameMap = new Map([
     [MiraType.PIECE, piecesDirName],
 ])
 
-export let backUpRobots: MapCache = {}
-export let backUpFields: MapCache = {}
-export let backUpPieces: MapCache = {}
+export const backUpRobots: MapCache = {}
+export const backUpFields: MapCache = {}
+export const backUpPieces: MapCache = {}
 
 export const backUpMap = new Map([
     [MiraType.ROBOT, backUpRobots],
@@ -88,9 +89,9 @@ export const canOPFS = await (async () => {
         window.localStorage.setItem(fieldsDirName, "{}")
         window.localStorage.setItem(piecesDirName, "{}")
 
-        backUpRobots = {}
-        backUpFields = {}
-        backUpPieces = {}
+        clean(backUpRobots)
+        clean(backUpFields)
+        clean(backUpPieces)
 
         return false
     }
@@ -461,9 +462,9 @@ class MirabufCachingService {
         window.localStorage.setItem(robotsDirName, "{}")
         window.localStorage.setItem(fieldsDirName, "{}")
 
-        backUpRobots = {}
-        backUpFields = {}
-        backUpPieces = {}
+        clean(backUpRobots)
+        clean(backUpFields)
+        clean(backUpPieces)
     }
 
     /**
