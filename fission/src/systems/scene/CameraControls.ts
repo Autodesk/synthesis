@@ -168,8 +168,8 @@ export class CustomOrbitControls extends CameraControls {
     private validateFocusProvider(): void {
         const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
         const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
-        
-        if (this._focusProvider) {            
+
+        if (this._focusProvider) {
             if (!mirabufObjects.includes(this._focusProvider)) {
                 this._focusProvider = this.findFallbackFocus(mirabufObjects)
             }
