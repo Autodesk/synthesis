@@ -1,5 +1,5 @@
 import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
-import MatchMode, { MatchModeType } from "@/systems/MatchMode"
+import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import World from "@/systems/World.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
