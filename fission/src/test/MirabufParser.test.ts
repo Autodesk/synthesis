@@ -1,7 +1,7 @@
-import { describe, test, expect } from "vitest"
-import { mirabuf } from "../proto/mirabuf"
-import MirabufParser, { RigidNodeReadOnly } from "../mirabuf/MirabufParser"
+import { describe, expect, test } from "vitest"
 import MirabufCachingService, { MiraType } from "../mirabuf/MirabufLoader"
+import MirabufParser, { RigidNodeReadOnly } from "../mirabuf/MirabufParser"
+import { mirabuf } from "../proto/mirabuf"
 
 describe("Mirabuf Parser Tests", () => {
     test("Generate Rigid Nodes (Dozer_v9.mira)", async () => {

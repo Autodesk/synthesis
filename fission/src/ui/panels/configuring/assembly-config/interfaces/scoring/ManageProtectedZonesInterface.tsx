@@ -1,15 +1,15 @@
+import { Box } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import Label, { LabelSize } from "@/components/Label"
 import ScrollView from "@/components/ScrollView"
 import Stack, { StackDirection } from "@/components/Stack"
-import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { Box } from "@mui/material"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
 import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import World from "@/systems/World"
+import { AddButtonInteractiveColor, DeleteButton, EditButton } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 
 const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return

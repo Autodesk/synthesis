@@ -1,5 +1,6 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import * as THREE from "three"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import ScreenInteractionHandler, {
     InteractionEnd,
     InteractionMove,
@@ -7,7 +8,6 @@ import ScreenInteractionHandler, {
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 
 export type CameraControlsType = "Orbit"
 

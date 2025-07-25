@@ -1,10 +1,10 @@
+import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
+import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
-import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
-import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 
 export type ModifierState = Readonly<{
     alt: boolean

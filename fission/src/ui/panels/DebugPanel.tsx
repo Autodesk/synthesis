@@ -1,21 +1,21 @@
-import Panel, { PanelPropsImpl } from "../components/Panel"
-import Button from "../components/Button"
-import World from "@/systems/World"
-import { ToastType } from "../ToastContext"
-import { random } from "@/util/Random"
+import { Box, styled } from "@mui/material"
+import APS from "@/aps/APS"
 import MirabufCachingService, {
     backUpFields as hashedMiraFields,
     backUpRobots as hashedMiraRobots,
     MiraType,
 } from "@/mirabuf/MirabufLoader"
-import { Box, styled } from "@mui/material"
-import { usePanelControlContext } from "../helpers/UsePanelManager"
-import APS from "@/aps/APS"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import Label from "../components/Label"
-import { colorNameToVar } from "../helpers/UseThemeHelpers"
-import { SynthesisIcons } from "../components/StyledComponents"
+import World from "@/systems/World"
+import { random } from "@/util/Random"
+import Button from "../components/Button"
 import { globalAddToast } from "../components/GlobalUIControls"
+import Label from "../components/Label"
+import Panel, { PanelPropsImpl } from "../components/Panel"
+import { SynthesisIcons } from "../components/StyledComponents"
+import { usePanelControlContext } from "../helpers/UsePanelManager"
+import { colorNameToVar } from "../helpers/UseThemeHelpers"
+import { ToastType } from "../ToastContext"
 
 const LabelStyled = styled(Label)({
     fontWeight: 700,

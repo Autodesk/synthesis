@@ -1,12 +1,11 @@
 import * as THREE from "three"
-
+import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
+import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
+import InputSystem from "./input/InputSystem"
 import PhysicsSystem from "./physics/PhysicsSystem"
+import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
 import SimulationSystem from "./simulation/SimulationSystem"
-import InputSystem from "./input/InputSystem"
-import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
-import DragModeSystem from "./scene/DragModeSystem"
-import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
 import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
 
 class World {

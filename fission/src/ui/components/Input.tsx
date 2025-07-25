@@ -1,6 +1,6 @@
+import { Input as BaseInput } from "@mui/base/Input"
 import React from "react"
 import Label, { LabelSize } from "./Label"
-import { Input as BaseInput } from "@mui/base/Input"
 
 type InputProps = {
     placeholder: string

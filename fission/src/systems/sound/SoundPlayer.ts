@@ -1,10 +1,10 @@
-import PreferencesSystem from "../preferences/PreferencesSystem"
-import { clamp } from "@/util/Utility"
-import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
-import clickdownSound from "@/assets/sound-files/clickdown.wav"
-import clickupSound from "@/assets/sound-files/clickup.wav"
 import checkdownSound from "@/assets/sound-files/checkdown.wav"
 import checkupSound from "@/assets/sound-files/checkup.wav"
+import clickdownSound from "@/assets/sound-files/clickdown.wav"
+import clickupSound from "@/assets/sound-files/clickup.wav"
+import dropdownMenuSound from "@/assets/sound-files/DullClick.wav"
+import { clamp } from "@/util/Utility"
+import PreferencesSystem from "../preferences/PreferencesSystem"
 
 const preloadSounds = [dropdownMenuSound, clickdownSound, clickupSound, checkdownSound, checkupSound]
 type SoundEffect = {
@@ -73,6 +73,8 @@ export class SoundPlayer {
         const volume = PreferencesSystem.getGlobalPreference("MuteAllSound")
             ? 0
             : clamp(PreferencesSystem.getGlobalPreference("SFXVolume") / 100, 0, 1)
-        SoundPlayer._audioElements.forEach(audio => (audio.volume = volume))
+        SoundPlayer._audioElements.forEach(audio => {
+            audio.volume = volume
+        })
     }
 }

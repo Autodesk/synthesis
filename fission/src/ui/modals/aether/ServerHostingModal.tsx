@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label from "@/components/Label"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Stack, { StackDirection } from "@/components/Stack"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
@@ -30,7 +30,7 @@ const ServerHostingModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Label>Waiting for clients...</Label>
             ) : (
                 clients.map(c => (
-                    <Stack direction={StackDirection.HORIZONTAL}>
+                    <Stack key={c.name} direction={StackDirection.HORIZONTAL}>
                         <Label>{c.name}</Label>
                         <Label>{c.ping}ms</Label>
                     </Stack>

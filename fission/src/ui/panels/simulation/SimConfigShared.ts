@@ -1,11 +1,16 @@
+import { XYPosition } from "@xyflow/react"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
 import {
     deconstructNoraType,
     hasNoraAverageFunc,
-    noraAverageFunc,
     NoraType,
     NoraTypes,
+    noraAverageFunc,
 } from "@/systems/simulation/Nora"
+import { SimulationLayer } from "@/systems/simulation/SimulationSystem"
 import Stimulus, { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
+import { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
 import {
     getSimMap,
     receiverTypeMap,
@@ -18,12 +23,7 @@ import {
 } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import { random } from "@/util/Random"
-import { XYPosition } from "@xyflow/react"
 import WiringNode from "./WiringNode"
-import { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
-import { SimulationLayer } from "@/systems/simulation/SimulationSystem"
-import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
     [NoraTypes.NUMBER]: "#5f60ff",
