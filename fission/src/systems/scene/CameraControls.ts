@@ -149,9 +149,11 @@ export class CustomOrbitControls extends CameraControls {
      * Finds a suitable fallback focus target when the current focus is no longer available.
      * Prioritizes robots first, then fields, then any other MirabufSceneObject.
      */
-    private findFallbackFocus(): MirabufSceneObject | undefined {
-        const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
-        const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+    private findFallbackFocus(mirabufObjects?: MirabufSceneObject[]): MirabufSceneObject | undefined {
+        if (!mirabufObjects) {
+            const sceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
+            mirabufObjects = sceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+        }
 
         const robots = mirabufObjects.filter(obj => obj.miraType === MiraType.ROBOT)
         const fields = mirabufObjects.filter(obj => obj.miraType === MiraType.FIELD)
@@ -164,9 +166,15 @@ export class CustomOrbitControls extends CameraControls {
      * If not, automatically finds a suitable replacement.
      */
     private validateFocusProvider(): void {
-        if (this._focusProvider) {
-            const fallbackFocus = this.findFallbackFocus()
-            this._focusProvider = fallbackFocus
+        const allSceneObjects = Array.from(World.sceneRenderer.sceneObjects.values())
+        const mirabufObjects = allSceneObjects.filter(obj => obj instanceof MirabufSceneObject) as MirabufSceneObject[]
+        
+        if (this._focusProvider) {            
+            if (!mirabufObjects.includes(this._focusProvider)) {
+                this._focusProvider = this.findFallbackFocus(mirabufObjects)
+            }
+        } else {
+            this._focusProvider = this.findFallbackFocus(mirabufObjects)
         }
     }
 
