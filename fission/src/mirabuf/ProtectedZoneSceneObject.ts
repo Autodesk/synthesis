@@ -15,7 +15,7 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MiraType } from "./MirabufLoader"
-import MatchMode, { MatchModeType } from "@/systems/MatchMode"
+import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
 
 export enum ContactType {
     ROBOT_ENTERS = "Robot Enters",

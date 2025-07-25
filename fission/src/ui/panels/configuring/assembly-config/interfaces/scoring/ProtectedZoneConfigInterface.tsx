@@ -22,7 +22,7 @@ import {
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import Dropdown from "@/ui/components/Dropdown"
-import { MatchModeType } from "@/systems/MatchMode"
+import { MatchModeType } from "@/systems/match_mode/MatchMode"
 
 const MATCH_MODE_OPTIONS: MatchModeType[] = [
     MatchModeType.SANDBOX,
