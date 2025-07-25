@@ -45,6 +45,7 @@ class Parser:
 
     @timed
     def export(self) -> None:
+        getLogger().info(f"Exporting with options {self.exporterOptions}")
         app = adsk.core.Application.get()
         design: adsk.fusion.Design = app.activeDocument.design
 
