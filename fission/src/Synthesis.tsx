@@ -7,7 +7,6 @@ import ServerHostingModal from "@/modals/aether/ServerHostingModal"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
 import ChooseSingleplayerModeModal from "@/modals/configuring/ChooseSingleplayerModeModal"
 import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
-import DrivetrainModal from "@/modals/configuring/DrivetrainModal"
 import PracticeSettingsModal from "@/modals/configuring/PracticeSettingsModal"
 import RoboRIOModal from "@/modals/configuring/RoboRIOModal"
 import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
@@ -214,7 +213,6 @@ const initialModals = [
     <ViewModal key="view" modalId="view" />,
     <DownloadAssetsModal key="download-assets" modalId="download-assets" />,
     <RoboRIOModal key="roborio" modalId="roborio" />,
-    <DrivetrainModal key="drivetrain" modalId="drivetrain" />,
     <ThemeEditorModal key="theme-editor" modalId="theme-editor" />,
     <ExitSynthesisModal key="exit-synthesis" modalId="exit-synthesis" />,
     <MatchResultsModal key="match-results" modalId="match-results" />,

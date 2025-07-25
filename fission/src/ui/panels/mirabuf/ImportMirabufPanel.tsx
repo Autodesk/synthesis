@@ -86,8 +86,8 @@ function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
         canOPFS ? MirabufCachingService.getCacheMap(miraType) : miraType == MiraType.ROBOT ? backUpRobots : backUpFields
     )
 }
-
-function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
+// todo: undo
+export function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
     // If spawning a field, then remove all other fields
     if (type == MiraType.FIELD) {
         World.sceneRenderer.removeAllFields()
