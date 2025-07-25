@@ -1,6 +1,6 @@
 import React, { ReactNode } from "react"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 
 export type OpenLocation =
     | "top-left"

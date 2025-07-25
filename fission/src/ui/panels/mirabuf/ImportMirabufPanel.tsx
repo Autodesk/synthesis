@@ -1,6 +1,5 @@
+import { Box } from "@mui/material"
 import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
-import type manifestFile from "../../../../public/Downloadables/Mira/manifest.json"
-import { LabelSize } from "@/components/Label"
 import {
     Data,
     getMirabufFiles,
@@ -9,6 +8,7 @@ import {
     MirabufFilesUpdateEvent,
     requestMirabufFiles,
 } from "@/aps/APSDataManagement"
+import { LabelSize } from "@/components/Label"
 import MirabufCachingService, {
     backUpFields,
     backUpRobots,
@@ -17,14 +17,15 @@ import MirabufCachingService, {
     MirabufRemoteInfo,
     MiraType,
 } from "@/mirabuf/MirabufLoader"
-import World from "@/systems/World"
-import { useTooltipControlContext } from "@/ui/TooltipContext"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { Box } from "@mui/material"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import TaskStatus from "@/util/TaskStatus"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import World from "@/systems/World"
+import Button from "@/ui/components/Button"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
     DeleteButton,
     PositiveButton,
@@ -33,13 +34,12 @@ import {
     SectionLabel,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
-import Button from "@/ui/components/Button"
-import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
-import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import { useTooltipControlContext } from "@/ui/TooltipContext"
+import TaskStatus from "@/util/TaskStatus"
+import type manifestFile from "../../../../public/Downloadables/Mira/manifest.json"
 
 interface ItemCardProps {
     id: string
@@ -112,7 +112,8 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                     }
                 })
 
-                if (!info.name) await MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
+                if (!info.name)
+                    await MirabufCachingService.cacheInfo(info.cacheKey, type, assembly.info?.name ?? undefined)
             } else {
                 progressHandle.fail()
                 console.error("Failed to spawn robot")
@@ -164,6 +165,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
     }, [])
 
+    // biome-ignore lint: things break if we don't add the closePanel dep
     useLayoutEffect(() => {
         if (mirabufPanelState.hasUnconfirmedImport) {
             closePanel("import-mirabuf")
@@ -171,48 +173,49 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             return
         }
         closePanel("configure")
-    }, [closePanel])
+    }, [])
 
     // Get Default Mirabuf Data, Load into manifest.
     useEffect(() => {
-            fetch(`/api/mira/manifest.json`)
-                .then(x => x.json())
-                .then(x => x as typeof manifestFile)
-                .then(x => {
-                    const map = MirabufCachingService.getCacheMap(MiraType.ROBOT)
-                    const robots: MirabufRemoteInfo[] = []
-                    for (const src of x["robots"]) {
-                        if (typeof src == "string") {
-                            const str = `/api/mira/robots/${src}`
+        fetch(`/api/mira/manifest.json`)
+            .then(x => x.json())
+            .then(x => x as typeof manifestFile)
+            .then(x => {
+                const map = MirabufCachingService.getCacheMap(MiraType.ROBOT)
+                const robots: MirabufRemoteInfo[] = []
+                for (const src of x["robots"]) {
+                    if (typeof src == "string") {
+                        const str = `/api/mira/robots/${src}`
+                        if (!map[str]) robots.push({ displayName: src, src: str })
+                    } else {
+                        if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
+                    }
+                }
+                if (import.meta.env.DEV) {
+                    for (const src of x["private"]) {
+                        if (typeof src === "string") {
+                            const str = `/api/mira/private/${src}`
                             if (!map[str]) robots.push({ displayName: src, src: str })
                         } else {
                             if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
                         }
                     }
-                    if (import.meta.env.DEV) {
-                        for (const src of x["private"]) {
-                            if (typeof src === "string") {
-                                const str = `/api/mira/private/${src}`
-                                if (!map[str]) robots.push({ displayName: src, src: str })
-                            } else {
-                                if (!map[src["src"]]) robots.push({ displayName: src["displayName"], src: src["src"] })
-                            }
-                        }
+                }
+                const fields: MirabufRemoteInfo[] = []
+                for (const src of x["fields"]) {
+                    if (typeof src == "string") {
+                        const str = `/api/mira/fields/${src}`
+                        if (!map[str]) fields.push({ displayName: src, src: str })
+                    } else {
+                        if (!map[src["src"]]) fields.push({ displayName: src["displayName"], src: src["src"] })
                     }
-                    const fields: MirabufRemoteInfo[] = []
-                    for (const src of x["fields"]) {
-                        if (typeof src == "string") {
-                            const str = `/api/mira/fields/${src}`
-                            if (!map[str]) fields.push({ displayName: src, src: str })
-                        } else {
-                            if (!map[src["src"]]) fields.push({ displayName: src["displayName"], src: src["src"] })
-                        }
-                    }
-                    setManifest({
-                        robots,
-                        fields,
-                    })
-                }).catch(console.log)
+                }
+                setManifest({
+                    robots,
+                    fields,
+                })
+            })
+            .catch(console.log)
     }, [])
 
     // Select a mirabuf assembly from the cache.
@@ -257,7 +260,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         const status = new ProgressHandle(info.displayName)
         status.update("Downloading from Synthesis...", 0.05)
 
-        MirabufCachingService.cacheRemote(info.src, type, info.displayName)
+        MirabufCachingService.cacheRemote(info.src, type)
             .then(cacheInfo => {
                 if (cacheInfo) {
                     status.done()

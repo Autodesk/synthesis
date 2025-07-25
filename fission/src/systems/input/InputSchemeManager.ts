@@ -1,9 +1,9 @@
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 import { random } from "@/util/Random"
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import DefaultInputs from "./DefaultInputs"
 import InputSystem, { AxisInput, ButtonInput, Input, KeyDescriptor } from "./InputSystem"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain.ts"
 
 export type InputScheme = {
     schemeName: string
@@ -21,7 +21,7 @@ export enum InputSchemeUseType {
     AVAILABLE, // no overlap and not bound
 }
 
-export type InputSchemeAvailability = { scheme: InputScheme; status: InputSchemeUseType }
+export type InputSchemeAvailability = { scheme: InputScheme; status: InputSchemeUseType; conflicts_with_names?: string }
 
 class InputSchemeManager {
     // References to the current custom schemes to avoid parsing every time they are requested
@@ -96,13 +96,7 @@ class InputSchemeManager {
 
         // Add default schemes if they have not been customized
         this.defaultInputSchemes.forEach(defaultScheme => {
-            if (
-                allSchemes.some(s => {
-                    return s.schemeName === defaultScheme.schemeName
-                })
-            )
-                return
-
+            if (allSchemes.some(s => s.schemeName === defaultScheme.schemeName)) return
             allSchemes.push(defaultScheme)
         })
 
@@ -114,27 +108,39 @@ class InputSchemeManager {
         const allSchemes = this.allInputSchemes
 
         // Remove schemes that have conflicts
-        const usedKeyMap = new Set<KeyDescriptor>()
+        const usedKeyMap = new Map<KeyDescriptor, string[]>()
         const result: Record<string, InputSchemeAvailability> = {}
         for (const scheme of InputSystem.brainIndexSchemeMap.values()) {
             result[scheme.schemeName] = { scheme, status: InputSchemeUseType.IN_USE }
             scheme?.inputs?.forEach(input => {
-                input.keysUsed.forEach(key => {
-                    if (key != null) {
-                        usedKeyMap.add(key)
-                    }
-                })
+                input.keysUsed
+                    .filter(key => key != null)
+                    .forEach(key => {
+                        const entry = usedKeyMap.get(key)
+                        if (entry != null) {
+                            entry.push(scheme.schemeName)
+                        } else {
+                            usedKeyMap.set(key, [scheme.schemeName])
+                        }
+                    })
             })
         }
 
         allSchemes.forEach(scheme => {
-            if (scheme.inputs.some(input => input.keysUsed.some(k => usedKeyMap.has(k)))) {
-                result[scheme.schemeName] ??= { scheme, status: InputSchemeUseType.CONFLICT }
+            const conflictingSchemes = scheme.inputs.flatMap(input =>
+                input.keysUsed.flatMap(key => usedKeyMap.get(key) ?? [])
+            )
+            console.log(conflictingSchemes)
+            if (conflictingSchemes.length > 0) {
+                result[scheme.schemeName] ??= {
+                    scheme,
+                    status: InputSchemeUseType.CONFLICT,
+                    conflicts_with_names: [...new Set(conflictingSchemes)].join(", "),
+                }
             } else {
                 result[scheme.schemeName] = { scheme, status: InputSchemeUseType.AVAILABLE }
             }
         })
-        console.log(result)
         return Object.values(result)
     }
 

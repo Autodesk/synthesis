@@ -1,15 +1,15 @@
+import { alpha, Box, Button as MUIButton, styled } from "@mui/material"
 import React, { useCallback, useEffect, useReducer, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import Label, { LabelSize } from "@/ui/components/Label"
-import { Box, Button as MUIButton, styled, alpha } from "@mui/material"
-import Button, { ButtonSize } from "@/ui/components/Button"
-import { defaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
+import { defaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
+import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
+import Button, { ButtonSize } from "@/ui/components/Button"
+import Label, { LabelSize } from "@/ui/components/Label"
 import { SectionLabel, Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
 
 /** Grey label for a child behavior name */
 const ChildLabelStyled = styled(Label)({
@@ -21,14 +21,14 @@ const ChildLabelStyled = styled(Label)({
 
 /** A button used to select a parent behavior. Appears at a grey outline when the 'set' button is pressed on a different behavior */
 const CustomButton = styled(MUIButton)({
-    "borderStyle": "solid",
-    "borderWidth": "1px",
-    "transition": "border-color 0.3s ease",
+    borderStyle: "solid",
+    borderWidth: "1px",
+    transition: "border-color 0.3s ease",
     "&:hover": {
         borderColor: "white",
     },
-    "position": "relative",
-    "overflow": "hidden",
+    position: "relative",
+    overflow: "hidden",
     "& .MuiTouchRipple-root span": {
         backgroundColor: alpha("#ffffff", 0.3), // Set your desired ripple color here
         animationDuration: "300ms",

@@ -1,25 +1,25 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { FaInfinity, FaRobot } from "react-icons/fa6"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import World from "@/systems/World"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import Label from "@/ui/components/Label"
-import Button from "@/ui/components/Button"
 import Jolt from "@azaleacolburn/jolt-physics"
+import { styled } from "@mui/system"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
+import { FaInfinity, FaRobot } from "react-icons/fa6"
+import * as THREE from "three"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import World from "@/systems/World"
+import Button from "@/ui/components/Button"
+import Input from "@/ui/components/Input"
+import Label from "@/ui/components/Label"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeQuaternionToJoltQuat,
     convertThreeVector3ToJoltRVec3,
 } from "@/util/TypeConversions"
-import * as THREE from "three"
-import { AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { styled } from "@mui/system"
-import Input from "@/ui/components/Input"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 type StagingProps = {
     state: "Staging"
@@ -51,10 +51,10 @@ type BodyCapture = {
 const AUTO_TEST_PAUSE_REF = "auto-testing"
 
 export const BlueAllianceToggleButton = styled(ToggleButton)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": "#5f60ff",
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: "#5f60ff",
     "&.Mui-selected": {
         color: "black",
         backgroundImage: `linear-gradient(to right, #5f60ff, #5f60ff)`,
@@ -91,10 +91,10 @@ export const BlueAllianceToggleButton = styled(ToggleButton)({
 })
 
 export const RedAllianceToggleButton = styled(ToggleButton)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": "#d74e26",
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: "#d74e26",
     "&.Mui-selected": {
         color: "black",
         backgroundImage: `linear-gradient(to right, #d74e26, #d74e26)`,
@@ -321,8 +321,7 @@ const AutoTestPanel: React.FC<PanelPropsImpl> = ({ panelId, sidePadding }) => {
 
     useEffect(() => {
         closePanel("configure")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [closePanel])
 
     return (
         <Panel

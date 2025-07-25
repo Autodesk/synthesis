@@ -1,36 +1,36 @@
+import { MouseEvent, useEffect, useMemo, useReducer, useRef, useState } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
+import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import InputSystem from "@/systems/input/InputSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
+import Button from "@/ui/components/Button"
 import Label from "@/ui/components/Label"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { MouseEvent, useEffect, useMemo, useReducer, useRef, useState } from "react"
-import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
-import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
-import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
-import InputSystem from "@/systems/input/InputSystem"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import Button from "@/ui/components/Button"
-import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
-import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
-import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
-import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { ConfigurationSavedEvent } from "./ConfigurationSavedEvent"
 import { ConfigurationType, getConfigurationType, setSelectedConfigurationType } from "./ConfigurationType"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { ConfigMode, popConfigurePanelSettings } from "./ConfigurePanelControls"
-import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
-import SimulationInterface from "./interfaces/SimulationInterface"
-import DrivetrainSelectionInterface from "@/panels/configuring/assembly-config/interfaces/DrivetrainSelectionInterface.tsx"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import AllianceSelectionInterface from "./interfaces/AllianceSelectionInterface"
-import { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import BrainSelectionInterface from "./interfaces/BrainSelectionInterface"
+import ConfigureGamepiecePickupInterface from "./interfaces/ConfigureGamepiecePickupInterface"
+import ConfigureShotTrajectoryInterface from "./interfaces/ConfigureShotTrajectoryInterface"
+import ConfigureSubsystemsInterface from "./interfaces/ConfigureSubsystemsInterface"
+import ChangeInputsInterface from "./interfaces/inputs/ConfigureInputsInterface"
+import ConfigureSchemeInterface from "./interfaces/inputs/ConfigureSchemeInterface"
+import SequentialBehaviorsInterface from "./interfaces/SequentialBehaviorsInterface"
+import SimulationInterface from "./interfaces/SimulationInterface"
+import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
+import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 
 /** Option for selecting a robot of field */
 class AssemblySelectionOption extends SelectMenuOption {
@@ -65,22 +65,20 @@ const AssemblySelection: React.FC<ConfigurationSelectionProps> = ({
     pendingDeletes,
 }) => {
     // Update is used when a robot or field is deleted to update the select menu
-    const [u, update] = useReducer(x => !x, false)
+    const [_u, update] = useReducer(x => !x, false)
     const { openPanel } = usePanelControlContext()
 
     const robots = useMemo(() => {
         return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.ROBOT)
             .filter(x => !pendingDeletes.includes(x.id))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u, pendingDeletes])
+    }, [pendingDeletes])
 
     const fields = useMemo(() => {
         return [...World.sceneRenderer.sceneObjects.values()]
             .filter(x => x instanceof MirabufSceneObject && x.miraType === MiraType.FIELD)
             .filter(x => !pendingDeletes.includes(x.id))
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [u, pendingDeletes])
+    }, [pendingDeletes])
 
     const options = useMemo(() => {
         const list = configurationType == ConfigurationType.ROBOT ? robots : fields
@@ -354,6 +352,7 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
+    // biome-ignore lint: Making closePanel a dep causes a depth exceeded error
     useEffect(() => {
         const allSchemes = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
@@ -377,7 +376,6 @@ const ConfigurePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         }
 
         closePanel("choose-scheme")
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     return (

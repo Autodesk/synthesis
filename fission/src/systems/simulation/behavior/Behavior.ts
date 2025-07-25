@@ -4,7 +4,7 @@ import Stimulus from "@/systems/simulation/stimulus/Stimulus"
 export enum DriveType {
     ARCADE = "Arcade",
     TANK = "Tank",
-    SWERVE = "Swerve",
+    SWERVE = "Swerve"
 }
 
 abstract class Behavior {

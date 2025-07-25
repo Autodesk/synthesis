@@ -1,6 +1,6 @@
 import { Panel as FlowPanel } from "@xyflow/react"
-import { CustomTooltip, RefreshButton } from "@/ui/components/StyledComponents"
 import React from "react"
+import { CustomTooltip, RefreshButton } from "@/ui/components/StyledComponents"
 
 const FlowInfo: React.FC<{ reset: () => void }> = ({ reset }) => {
     return (

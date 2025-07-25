@@ -1,17 +1,21 @@
+import InputSystem from "@/systems/input/InputSystem.ts"
+import Behavior from "@/systems/simulation/behavior/Behavior.ts"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
-import Behavior from "@/systems/simulation/behavior/Behavior.ts"
 import { clamp } from "@/util/Utility.ts"
-import InputSystem from "@/systems/input/InputSystem.ts"
 
 class SkidSteerDriveBehavior extends Behavior {
     private readonly _leftWheels: WheelDriver[]
     private readonly _rightWheels: WheelDriver[]
     private readonly _brainIndex: number
-    private readonly _isArcade: boolean
+    private _isArcade: boolean
 
     public get wheels(): WheelDriver[] {
         return this._leftWheels.concat(this._rightWheels)
+    }
+
+    public setIsArcade(isArcade: boolean) {
+        this._isArcade = isArcade
     }
 
     public constructor(
@@ -34,9 +38,12 @@ class SkidSteerDriveBehavior extends Behavior {
     protected driveSpeeds(leftInput: number, rightInput: number) {
         const leftDirection = clamp(leftInput, -1, 1)
         const rightDirection = clamp(rightInput, -1, 1)
-
-        this._leftWheels.forEach(wheel => (wheel.accelerationDirection = leftDirection))
-        this._rightWheels.forEach(wheel => (wheel.accelerationDirection = rightDirection))
+        this._leftWheels.forEach(wheel => {
+            wheel.accelerationDirection = leftDirection
+        })
+        this._rightWheels.forEach(wheel => {
+            wheel.accelerationDirection = rightDirection
+        })
     }
 
     private arcadeUpdate() {

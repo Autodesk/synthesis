@@ -1,18 +1,18 @@
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import { InputScheme } from "./InputSchemeManager"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import { AxisInput, ButtonInput, ModifierState } from "./InputSystem"
 
 type InputSupplier = () => InputScheme
 /** The purpose of this class is to store any defaults related to the input system. */
 class DefaultInputs {
     static ernie: InputSupplier = () => {
-        const negativeModifierKeys: () => ModifierState = () => ({
+        const negativeModifierKeys: ModifierState = {
             ctrl: false,
             alt: false,
             shift: true,
             meta: false,
-        })
+        }
         return {
             schemeName: "Ernie",
             descriptiveName: "WASD",
@@ -31,11 +31,11 @@ class DefaultInputs {
                 ButtonInput.onKeyboard("intake", "KeyE"),
                 ButtonInput.onKeyboard("eject", "KeyQ"),
 
-                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys()),
-                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys()),
-                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", negativeModifierKeys()),
-                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", negativeModifierKeys()),
-                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", negativeModifierKeys()),
+                AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 3", "Digit3", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 4", "Digit4", negativeModifierKeys),
+                AxisInput.onKeyboardSingleKey("joint 5", "Digit5", negativeModifierKeys),
                 AxisInput.unbound("joint 6"),
                 AxisInput.unbound("joint 7"),
                 AxisInput.unbound("joint 8"),

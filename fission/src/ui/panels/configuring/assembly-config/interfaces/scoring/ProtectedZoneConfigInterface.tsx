@@ -1,27 +1,27 @@
+import Jolt from "@azaleacolburn/jolt-physics"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import Input from "@/components/Input"
+import * as THREE from "three"
 import Button from "@/components/Button"
 import Checkbox from "@/components/Checkbox"
+import Input from "@/components/Input"
 import NumberInput from "@/components/NumberInput"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SelectButton from "@/ui/components/SelectButton"
-import Jolt from "@azaleacolburn/jolt-physics"
-import * as THREE from "three"
+import { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+import SelectButton from "@/ui/components/SelectButton"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
 
 /**
  * Saves ejector configuration to selected field.
@@ -167,7 +167,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             new THREE.BoxGeometry(1, 1, 1),
             selectedZone.alliance == "blue" ? blueMaterial : redMaterial
         )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedZone, selectedZone.alliance, blueMaterial, redMaterial])
 
     /** Creates TransformGizmoControl component and sets up target mesh. */

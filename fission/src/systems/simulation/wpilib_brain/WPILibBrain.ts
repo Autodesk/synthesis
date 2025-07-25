@@ -1,19 +1,17 @@
-import Brain from "../Brain"
-
-import Lazy from "@/util/Lazy.ts"
-import WPILibWSWorker from "./WPILibWSWorker?worker"
-import { SimulationLayer } from "../SimulationSystem"
-import World from "@/systems/World"
-
-import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
-import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
-import { random } from "@/util/Random"
-import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
-import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
-import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import World from "@/systems/World"
+import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
+import Lazy from "@/util/Lazy.ts"
+import { random } from "@/util/Random"
+import Brain from "../Brain"
+import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
+import { SimulationLayer } from "../SimulationSystem"
+import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
+import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
+import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
+import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
+import WPILibWSWorker from "./WPILibWSWorker?worker"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
 
@@ -521,7 +519,7 @@ worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     } else {
         try {
             data = JSON.parse(eventData.data)
-        } catch (e) {
+        } catch (_e) {
             console.error(`Failed to parse data:\n${JSON.stringify(eventData.data)}`)
             return
         }

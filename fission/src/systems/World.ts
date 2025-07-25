@@ -1,12 +1,12 @@
 import * as THREE from "three"
-
+import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
+import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
+import InputSystem from "./input/InputSystem"
+import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
 import PhysicsSystem from "./physics/PhysicsSystem"
+import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
 import SimulationSystem from "./simulation/SimulationSystem"
-import InputSystem from "./input/InputSystem"
-import AnalyticsSystem, { AccumTimes } from "./analytics/AnalyticsSystem"
-import DragModeSystem from "./scene/DragModeSystem"
-import { PerformanceMonitoringSystem } from "@/systems/PerformanceMonitor.ts"
 
 class World {
     private static _isAlive: boolean = false
@@ -117,6 +117,8 @@ class World {
 
         World._analyticsSystem?.update(this._currentDeltaT)
         World._performanceMonitorSystem?.update(this._currentDeltaT)
+
+        RobotDimensionTracker.update(World._sceneRenderer)
     }
 
     public static get currentDeltaT(): number {

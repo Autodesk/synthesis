@@ -3,7 +3,7 @@ name: Fission - Build
 on:
   workflow_dispatch: {}
   pull_request:
-    branches: [ prod, dev ]
+    branches: [prod, dev]
 
 jobs:
   buildFission:
@@ -12,16 +12,16 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
-      - name: JavaScript Setup
-        uses: actions/setup-node@v4
+      - name: Bun Runtime Setup
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
+          bun-version: latest
 
       - name: Cache Node Dependencies
         uses: actions/cache@v3
         with:
           key: "${{runner.os}}-npm-fission-${{hashFiles('fission/package.json')}}"
-          path: 'fission/node_modules'
+          path: "fission/node_modules"
           restore-keys: |
             ${{runner.os}}-npm-fission-
             ${{runner.os}}-npm
@@ -29,9 +29,9 @@ jobs:
       - name: Install Dependencies
         run: |
           cd fission
-          npm install
+          bun install
 
       - name: Build Fission
         run: |
           cd fission
-          npm run build && echo "Build Passed" || (echo "Build Failed" && exit 1)
+          bun run build && echo "Build Passed" || (echo "Build Failed" && exit 1)

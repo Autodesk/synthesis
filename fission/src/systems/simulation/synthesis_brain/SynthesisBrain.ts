@@ -1,27 +1,27 @@
-import Brain from "../Brain"
-import Behavior, { DriveType } from "../behavior/Behavior"
-import World from "@/systems/World"
-import WheelDriver from "../driver/WheelDriver"
-import WheelRotationStimulus from "../stimulus/WheelStimulus"
-import { SimulationLayer } from "../SimulationSystem"
 import Jolt from "@azaleacolburn/jolt-physics"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import HingeDriver from "../driver/HingeDriver"
-import HingeStimulus from "../stimulus/HingeStimulus"
-import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
-import SliderDriver from "../driver/SliderDriver"
-import SliderStimulus from "../stimulus/SliderStimulus"
-import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import InputSystem from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { defaultSequentialConfig } from "@/systems/preferences/PreferenceTypes"
-import InputSystem from "@/systems/input/InputSystem"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import IntakeDriver from "../driver/IntakeDriver"
-import EjectorDriver from "../driver/EjectorDriver"
-import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
-import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
 import SkidSteerDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SkidSteerDriveBehavior.ts"
 import SwerveDriveBehavior from "@/systems/simulation/behavior/synthesis/drive/SwerveDriveBehavior.ts"
+import World from "@/systems/World"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertJoltVec3ToJoltRVec3 } from "@/util/TypeConversions"
+import Brain from "../Brain"
+import Behavior, { DriveType } from "../behavior/Behavior"
+import GamepieceManipBehavior from "../behavior/synthesis/GamepieceManipBehavior"
+import GenericArmBehavior from "../behavior/synthesis/GenericArmBehavior"
+import GenericElevatorBehavior from "../behavior/synthesis/GenericElevatorBehavior"
+import EjectorDriver from "../driver/EjectorDriver"
+import HingeDriver from "../driver/HingeDriver"
+import IntakeDriver from "../driver/IntakeDriver"
+import SliderDriver from "../driver/SliderDriver"
+import WheelDriver from "../driver/WheelDriver"
+import { SimulationLayer } from "../SimulationSystem"
+import HingeStimulus from "../stimulus/HingeStimulus"
+import SliderStimulus from "../stimulus/SliderStimulus"
+import WheelRotationStimulus from "../stimulus/WheelStimulus"
 
 class SynthesisBrain extends Brain {
     public static brainIndexMap = new Map<number, SynthesisBrain>()
@@ -60,12 +60,21 @@ class SynthesisBrain extends Brain {
         return this._brainIndex
     }
 
-    public configure(driveType: DriveType): void {
+    public configureDriveBehavior(driveType: DriveType) {
         this.driveType = driveType
+        const existing = this._behaviors.find((behavior: Behavior) => behavior instanceof SkidSteerDriveBehavior)
+        if (existing == null) {
+            console.error("Can't find drive behavior!")
+            return
+        }
+        existing.setIsArcade(driveType == DriveType.ARCADE)
+    }
+
+    public configure(): void {
         this._behaviors = []
         // Only adds controls to mechanisms that are controllable (ignores fields)
         if (this._assembly.mechanism.controllable) {
-            switch (driveType) {
+            switch (this.driveType) {
                 case DriveType.ARCADE:
                     this.configureSkidSteerDriveBehavior(true)
                     break
@@ -89,7 +98,7 @@ class SynthesisBrain extends Brain {
      * @param assemblyName The name of the assembly that corresponds to the mechanism used for identification.
      * @param driveType
      */
-    public constructor(assembly: MirabufSceneObject, assemblyName: string, driveType: DriveType = DriveType.ARCADE) {
+    public constructor(assembly: MirabufSceneObject, assemblyName: string) {
         super(assembly.mechanism, "synthesis")
         this._assembly = assembly
         this._simLayer = World.simulationSystem.getSimulationLayer(assembly.mechanism)!
@@ -104,7 +113,7 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        this.configure(driveType)
+        this.configure()
     }
 
     public enable(): void {}

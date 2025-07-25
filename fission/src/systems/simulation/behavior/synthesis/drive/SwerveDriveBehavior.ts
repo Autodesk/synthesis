@@ -1,23 +1,23 @@
-import WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
-import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
-import Behavior from "@/systems/simulation/behavior/Behavior.ts"
-import InputSystem from "@/systems/input/InputSystem.ts"
-import HingeDriver from "../../../driver/HingeDriver.ts"
-import Driver, { DriverControlMode } from "../../../driver/Driver.ts"
-import HingeStimulus from "../../../stimulus/HingeStimulus.ts"
-import Stimulus from "../../../stimulus/Stimulus.ts"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
-import World from "@/systems/World.ts"
-import { joltVec3ToString, threeQuaternionToString, threeVector3ToString } from "@/util/debug/DebugPrint.ts"
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { Mesh } from "three"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
+import InputSystem from "@/systems/input/InputSystem.ts"
+import Behavior from "@/systems/simulation/behavior/Behavior.ts"
+import WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
+import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
+import World from "@/systems/World.ts"
+import { joltVec3ToString, threeQuaternionToString, threeVector3ToString } from "@/util/debug/DebugPrint.ts"
+import JOLT from "@/util/loading/JoltSyncLoader.ts"
 import {
     convertJoltQuatToThreeQuaternion,
     convertJoltVec3ToThreeVector3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
-import Jolt from "@azaleacolburn/jolt-physics"
-import JOLT from "@/util/loading/JoltSyncLoader.ts"
+import Driver, { DriverControlMode } from "../../../driver/Driver.ts"
+import HingeDriver from "../../../driver/HingeDriver.ts"
+import HingeStimulus from "../../../stimulus/HingeStimulus.ts"
+import Stimulus from "../../../stimulus/Stimulus.ts"
 
 class SwerveDriveBehavior extends Behavior {
     private _wheels: WheelDriver[]

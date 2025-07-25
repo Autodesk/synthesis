@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useContext, createContext, ReactElement, ReactNode } from "react"
+import { createContext, ReactElement, ReactNode, useCallback, useContext, useEffect, useState } from "react"
 
 export type ModalInstance = {
     id: string
@@ -79,7 +79,7 @@ export const useModalManager = (modals: ReactElement[]) => {
                 onClose: () => {},
             })
         })
-    }, [modals, closeModal, openModal, registerModal])
+    }, [modals, registerModal])
 
     return {
         modalDictionary,

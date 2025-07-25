@@ -1,17 +1,17 @@
 import React, { useState } from "react"
+import Dropdown from "@/components/Dropdown.tsx"
 import Input from "@/components/Input"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import DefaultInputs from "@/systems/input/DefaultInputs"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import {
     ConfigurationType,
     setSelectedConfigurationType,
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
-import Dropdown from "@/components/Dropdown.tsx"
-import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
+import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 
 const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openPanel } = usePanelControlContext()
@@ -39,7 +39,7 @@ const NewInputSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <Input label="Name" placeholder="" defaultValue={name} onInput={setName} />
             <Dropdown
                 label="Drive Type"
-                options={[DriveType.TANK, DriveType.ARCADE, DriveType.SWERVE]}
+                options={[DriveType.TANK, DriveType.ARCADE]}
                 defaultValue={type}
                 onSelect={setType}
             />

@@ -6,8 +6,8 @@
  * in the 3D scene.
  */
 
-import { DOMUnitExpression } from "@/util/Units"
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react"
+import { DOMUnitExpression } from "@/util/Units"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
 
 const DEBUG_EDGE_CONTROL_LINES = false
@@ -481,7 +481,7 @@ export class Graph {
 const GraphComp: React.FC<{ graph: Graph }> = ({ graph }) => {
     const svgRef = useRef<SVGSVGElement | null>(null)
 
-    const [renderHook, forceRenderer] = useReducer(x => !x, false)
+    const [_renderHook, forceRenderer] = useReducer(x => !x, false)
 
     useEffect(() => {
         const anim = () => {
@@ -502,23 +502,28 @@ const GraphComp: React.FC<{ graph: Graph }> = ({ graph }) => {
         return svgRef.current != null ? (
             <>
                 {graph.modules.map(x => (
-                    <ModuleComp module={x} element={svgRef.current!} />
+                    <ModuleComp key={x.id} module={x} element={svgRef.current!} />
                 ))}
                 {[...graph.edges.values()].map(x => (
-                    <EdgeComp from={x.from} to={x.to} graph={graph} element={svgRef.current!} />
+                    <EdgeComp
+                        key={x.from + "" + x.to}
+                        from={x.from}
+                        to={x.to}
+                        graph={graph}
+                        element={svgRef.current!}
+                    />
                 ))}
                 {[...graph.juncts.values()].map(x => (
-                    <JunctionComp junct={x} element={svgRef.current!} />
+                    <JunctionComp key={x.id} junct={x} element={svgRef.current!} />
                 ))}
                 {[...graph.nodes.values()].map(x => (
-                    <NodeComp node={x} graph={graph} element={svgRef.current!} />
+                    <NodeComp key={x.id} node={x} graph={graph} element={svgRef.current!} />
                 ))}
             </>
         ) : (
             <></>
         )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [renderHook, graph])
+    }, [graph])
 
     return (
         <svg ref={svgRef} className="flex grow w-full">

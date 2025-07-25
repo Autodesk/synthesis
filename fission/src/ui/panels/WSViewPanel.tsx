@@ -3,8 +3,6 @@
  * make debugging signal data easier.
  */
 
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import {
     Box,
     Stack,
@@ -18,9 +16,11 @@ import {
     Typography,
 } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
+import { SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import Button from "../components/Button"
 import Dropdown from "../components/Dropdown"
 import Input from "../components/Input"
-import Button from "../components/Button"
 import { SynthesisIcons } from "../components/StyledComponents"
 
 const TABLE_UPDATE_INTERVAL = 250
@@ -120,7 +120,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         setSelectedDevice(undefined)
-    }, [selectedType])
+    }, [])
 
     useEffect(() => {
         const func = () => {
@@ -131,7 +131,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => {
             clearTimeout(id)
         }
-    }, [updateTable])
+    }, [])
 
     return (
         <Panel

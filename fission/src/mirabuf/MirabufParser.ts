@@ -1,7 +1,7 @@
 import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
-import { convertMirabufTransformToThreeMatrix } from "@/util/TypeConversions"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { convertMirabufTransformToThreeMatrix } from "@/util/TypeConversions"
 
 export type RigidNodeId = string
 
@@ -40,7 +40,7 @@ class MirabufParser {
     private _groundedNode: RigidNode | undefined
 
     public get errors() {
-        return new Array(...this._errors)
+        return [...this._errors]
     }
     public get maxErrorSeverity() {
         return Math.max(...this._errors.map(x => x[0]))
@@ -75,7 +75,7 @@ class MirabufParser {
 
     public constructor(assembly: mirabuf.Assembly, progressHandle?: ProgressHandle) {
         this._assembly = assembly
-        this._errors = new Array<ParseError>()
+        this._errors = []
         this._globalTransforms = new Map()
 
         progressHandle?.update("Parsing assembly...", 0.3)
@@ -128,7 +128,7 @@ class MirabufParser {
                 const inst = assembly.data?.parts?.partInstances?.[part]
                 if (!inst?.partDefinitionReference) return
                 const def = assembly.data?.parts?.partDefinitions?.[inst.partDefinitionReference!]
-                rn.mass += def?.massOverride ? def.massOverride : def?.physicalData?.mass ?? 0
+                rn.mass += def?.massOverride ? def.massOverride : (def?.physicalData?.mass ?? 0)
             })
         })
 
@@ -459,7 +459,7 @@ export class Graph {
     }
 
     public addNode(node: string) {
-        if (!this._adjacencyMap.has(node)) this._adjacencyMap.set(node, new Array<string>())
+        if (!this._adjacencyMap.has(node)) this._adjacencyMap.set(node, [])
     }
 
     public addEdgeUndirected(nodeA: string, nodeB: string) {

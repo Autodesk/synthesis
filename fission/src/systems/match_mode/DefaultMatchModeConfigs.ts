@@ -1,4 +1,5 @@
 import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import { convertFeetToMeters } from "@/util/UnitConversions"
 
 /** The purpose of this class is to store any defaults related to match mode configurations. */
 class DefaultMatchModeConfigs {
@@ -10,6 +11,9 @@ class DefaultMatchModeConfigs {
             autonomousTime: 15,
             teleopTime: 135,
             endgameTime: 20,
+            ignoreRotation: true,
+            maxHeight: Infinity,
+            heightPenalty: 0,
         }
     }
 
@@ -21,6 +25,9 @@ class DefaultMatchModeConfigs {
             autonomousTime: 15,
             teleopTime: 135,
             endgameTime: 20,
+            ignoreRotation: true,
+            maxHeight: convertFeetToMeters(4),
+            heightPenalty: 2,
         }
     }
 
@@ -32,6 +39,9 @@ class DefaultMatchModeConfigs {
             autonomousTime: 15,
             teleopTime: 135,
             endgameTime: 30,
+            ignoreRotation: true,
+            maxHeight: convertFeetToMeters(6.5),
+            heightPenalty: 5,
         }
     }
 
@@ -43,6 +53,9 @@ class DefaultMatchModeConfigs {
             autonomousTime: 5,
             teleopTime: 15,
             endgameTime: 5,
+            ignoreRotation: true,
+            maxHeight: Infinity,
+            heightPenalty: 0,
         }
     }
 

@@ -1,10 +1,11 @@
-import SimulationSystem from "./simulation/SimulationSystem"
-import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { SoundPlayer } from "./sound/SoundPlayer"
 import beep from "@/assets/sound-files/beep.wav"
-import MatchStart from "@/assets/sound-files/MatchStart.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
+import MatchStart from "@/assets/sound-files/MatchStart.wav"
+import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import SimulationSystem from "../simulation/SimulationSystem"
+import { SoundPlayer } from "../sound/SoundPlayer"
+import RobotDimensionTracker from "./RobotDimensionTracker"
 
 export enum MatchModeType {
     SANDBOX = 0,
@@ -17,13 +18,19 @@ export enum MatchModeType {
 export const DEFAULT_AUTONOMOUS_TIME = 15
 export const DEFAULT_TELEOP_TIME = 135
 export const DEFAULT_ENDGAME_TIME = 20
+export const DEFAULT_IGNORE_ROTATION = true
+export const DEFAULT_MAX_HEIGHT = Infinity
+export const DEFAULT_HEIGHT_PENALTY = 2
 
 class MatchMode {
     private static _instance: MatchMode
-    private _matchEnabled: boolean = false
     private _endgame: boolean = false
     private _matchModeType: MatchModeType = MatchModeType.SANDBOX
 
+    private setMatchModeType(val: MatchModeType) {
+        this._matchModeType = val
+        new MatchStateChangeEvent(val).dispatch()
+    }
     private _initialTime: number = 0
     private _timeLeft: number = 0
     private _intervalId: number | null = null
@@ -36,6 +43,9 @@ class MatchMode {
         autonomousTime: DEFAULT_AUTONOMOUS_TIME,
         teleopTime: DEFAULT_TELEOP_TIME,
         endgameTime: DEFAULT_ENDGAME_TIME,
+        ignoreRotation: DEFAULT_IGNORE_ROTATION,
+        maxHeight: DEFAULT_MAX_HEIGHT,
+        heightPenalty: DEFAULT_HEIGHT_PENALTY,
     }
 
     private constructor() {}
@@ -47,6 +57,7 @@ class MatchMode {
 
     setMatchModeConfig(config: MatchModeConfig) {
         this._matchModeConfig = config
+        RobotDimensionTracker.setConfigValues(config.ignoreRotation, config.maxHeight, config.heightPenalty)
     }
 
     startTimer(duration: number, functionCall: () => void, updateTimeLeft: boolean = true) {
@@ -77,7 +88,7 @@ class MatchMode {
 
     autonomousModeStart(openModal: (modalName: string) => void) {
         SoundPlayer.play(MatchStart)
-        this._matchModeType = MatchModeType.AUTONOMOUS
+        this.setMatchModeType(MatchModeType.AUTONOMOUS)
         this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd(openModal))
     }
 
@@ -88,7 +99,7 @@ class MatchMode {
 
     teleopModeStart(openModal: (modalName: string) => void) {
         SoundPlayer.play(MatchResume)
-        this._matchModeType = MatchModeType.TELEOP
+        this.setMatchModeType(MatchModeType.TELEOP)
         this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded(openModal))
     }
 
@@ -98,7 +109,6 @@ class MatchMode {
     }
 
     start(openModal: (modalName: string) => void) {
-        this._matchEnabled = true
         this.autonomousModeStart(openModal)
         SimulationSystem.resetScores()
     }
@@ -106,14 +116,12 @@ class MatchMode {
     matchEnded(openModal: (modalName: string) => void) {
         SoundPlayer.play(MatchEnd)
         clearInterval(this._intervalId as number)
-        this._matchEnabled = false
-        this._matchModeType = MatchModeType.MATCH_ENDED
+        this.setMatchModeType(MatchModeType.MATCH_ENDED)
         if (openModal) openModal("match-results")
     }
 
     sandboxModeStart() {
-        this._matchEnabled = false
-        this._matchModeType = MatchModeType.SANDBOX
+        this.setMatchModeType(MatchModeType.SANDBOX)
         clearInterval(this._intervalId as number)
         this._initialTime = 0
         this._timeLeft = 0
@@ -122,7 +130,7 @@ class MatchMode {
     }
 
     isMatchEnabled(): boolean {
-        return this._matchEnabled
+        return !(this._matchModeType == MatchModeType.SANDBOX || this._matchModeType == MatchModeType.MATCH_ENDED)
     }
 
     isEndgame(): boolean {
@@ -156,5 +164,27 @@ export class UpdateTimeLeft extends Event {
 
     public static removeListener(func: (e: UpdateTimeLeft) => void) {
         window.removeEventListener(UpdateTimeLeft.EVENT_KEY, func as (e: Event) => void)
+    }
+}
+
+export class MatchStateChangeEvent extends Event {
+    public static readonly EVENT_KEY = "MatchEnd"
+
+    public readonly matchModeType: MatchModeType
+    constructor(matchModeType: MatchModeType) {
+        super(MatchStateChangeEvent.EVENT_KEY)
+        this.matchModeType = matchModeType
+    }
+
+    public dispatch(): void {
+        window.dispatchEvent(this)
+    }
+
+    public static addListener(func: (e: MatchStateChangeEvent) => void) {
+        window.addEventListener(MatchStateChangeEvent.EVENT_KEY, func as (e: Event) => void)
+    }
+
+    public static removeListener(func: (e: MatchStateChangeEvent) => void) {
+        window.removeEventListener(MatchStateChangeEvent.EVENT_KEY, func as (e: Event) => void)
     }
 }

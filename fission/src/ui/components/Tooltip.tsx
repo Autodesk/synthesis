@@ -1,5 +1,5 @@
-import { TooltipControl, TooltipType } from "@/ui/TooltipContext"
 import { FaCircleInfo } from "react-icons/fa6"
+import { TooltipControl, TooltipType } from "@/ui/TooltipContext"
 import Label, { LabelSize } from "./Label"
 import Stack, { StackDirection } from "./Stack"
 

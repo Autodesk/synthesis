@@ -1,9 +1,9 @@
+import Jolt from "@azaleacolburn/jolt-physics"
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import Button, { ButtonSize } from "./Button"
-import Stack, { StackDirection } from "./Stack"
 import World from "@/systems/World"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
-import Jolt from "@azaleacolburn/jolt-physics"
+import Button, { ButtonSize } from "./Button"
+import Stack, { StackDirection } from "./Stack"
 import { LabelWithTooltip } from "./StyledComponents"
 
 // raycasting constants
@@ -46,7 +46,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, value, pl
                 }
             }
         },
-        [setSelecting, onSelect]
+        [onSelect]
     )
 
     useEffect(() => {
