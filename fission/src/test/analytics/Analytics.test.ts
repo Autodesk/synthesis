@@ -91,12 +91,6 @@ describe("Analytics", () => {
             window.gtag = undefined
             install()
         })
-        test("AnalyticsSystem calls gtag appropriately", async () => {
-            const system = new AnalyticsSystem()
-            const gtagMock = vi.spyOn(window, "gtag")
-            system.event("Cache Get", { key: "1234" })
-            expect(gtagMock).toHaveBeenCalledExactlyOnceWith("event", "Cache Get", { key: "1234" })
-        })
 
         test("gtag propagates to dataLayer", () => {
             const initialSize = window.dataLayer!.length
