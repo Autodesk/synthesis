@@ -91,17 +91,21 @@ const MainHUD: React.FC = () => {
         })
 
         // biome-ignore-start lint/suspicious/noExplicitAny: allow any
-        const k: string[] = deobf("NmM2ZjYzNjE2YzUzNzQ2ZjcyNjE2NzY1MmU3NDY4NjU2ZDY1").split(String.fromCharCode(46))
-        const v = JSON.parse((window as any)[k[0]][k[1]])[deobf("NjM2ZjZmNmM0ZDZmNjQ2NQ==")]
-        if (v === deobf("Nzk2NTcz")) {
-            const r = (document as any)[deobf("Njc2NTc0NDU2YzY1NmQ2NTZlNzQ0Mjc5NDk2NA==")](deobf("NzI2ZjZmNzQ="))
-            if (r) {
-                const w = (document as any)[deobf("NjM3MjY1NjE3NDY1NDU2YzY1NmQ2NTZlNzQ=")](
-                    deobf("NmQ2MTcyNzE3NTY1NjU=")
-                )
-                r[deobf("NzA2MTcyNjU2ZTc0NGU2ZjY0NjU=")][deobf("Njk2ZTczNjU3Mjc0NDI2NTY2NmY3MjY1")](w, r)
-                w[deobf("NjE3MDcwNjU2ZTY0NDM2ODY5NmM2NA==")](r)
+        try {
+            const k: string[] = deobf("NmM2ZjYzNjE2YzUzNzQ2ZjcyNjE2NzY1MmU3NDY4NjU2ZDY1").split(String.fromCharCode(46))
+            const v = JSON.parse((window as any)[k[0]][k[1]])[deobf("NjM2ZjZmNmM0ZDZmNjQ2NQ==")]
+            if (v === deobf("Nzk2NTcz")) {
+                const r = (document as any)[deobf("Njc2NTc0NDU2YzY1NmQ2NTZlNzQ0Mjc5NDk2NA==")](deobf("NzI2ZjZmNzQ="))
+                if (r) {
+                    const w = (document as any)[deobf("NjM3MjY1NjE3NDY1NDU2YzY1NmQ2NTZlNzQ=")](
+                        deobf("NmQ2MTcyNzE3NTY1NjU=")
+                    )
+                    r[deobf("NzA2MTcyNjU2ZTc0NGU2ZjY0NjU=")][deobf("Njk2ZTczNjU3Mjc0NDI2NTY2NmY3MjY1")](w, r)
+                    w[deobf("NjE3MDcwNjU2ZTY0NDM2ODY5NmM2NA==")](r)
+                }
             }
+        } catch (_e) {
+            // noop
         }
         // biome-ignore-end lint/suspicious/noExplicitAny: disallow any
     }, [])
