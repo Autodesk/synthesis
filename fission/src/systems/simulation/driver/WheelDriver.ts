@@ -64,9 +64,9 @@ class WheelDriver extends Driver {
         this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
     }
 
-    public setLateralFriction(friction: number) {
+    public setFriction(friction: number) {
         this._wheel.set_mCombinedLateralFriction(friction)
-        // this._wheel.set_mCombinedLongitudinalFriction(friction)
+        this._wheel.set_mCombinedLongitudinalFriction(friction)
     }
 
     public setSteeringAngle(angle: number) {

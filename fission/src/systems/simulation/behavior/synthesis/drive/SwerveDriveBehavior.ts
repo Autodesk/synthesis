@@ -3,6 +3,7 @@ import * as THREE from "three"
 import { Mesh } from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject.ts"
 import InputSystem from "@/systems/input/InputSystem.ts"
+import { DriveBehavior } from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver.ts"
 import WheelRotationStimulus from "@/systems/simulation/stimulus/WheelStimulus.ts"
 import World from "@/systems/World.ts"
@@ -11,13 +12,11 @@ import JOLT from "@/util/loading/JoltSyncLoader.ts"
 import {
     convertJoltQuatToThreeQuaternion,
     convertJoltVec3ToThreeVector3,
-    convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions.ts"
 import Driver, { DriverControlMode } from "../../../driver/Driver.ts"
 import HingeDriver from "../../../driver/HingeDriver.ts"
 import HingeStimulus from "../../../stimulus/HingeStimulus.ts"
 import Stimulus from "../../../stimulus/Stimulus.ts"
-import {DriveBehavior} from "@/systems/simulation/behavior/synthesis/drive/DriveBehavior.ts";
 
 class SwerveDriveBehavior extends DriveBehavior {
     private _wheels: WheelDriver[]
@@ -51,9 +50,6 @@ class SwerveDriveBehavior extends DriveBehavior {
             // h.constraint.SetLimits(0, 0)
             h.controlMode = DriverControlMode.POSITION
         })
-        // this._wheels.forEach(w => {
-        //     // w.setLateralFriction(0)
-        // })
     }
 
     /** @returns true if the difference between a and b is within acceptanceDelta */
@@ -171,21 +167,22 @@ class SwerveDriveBehavior extends DriveBehavior {
                 w.accelerationDirection = 0
                 // w.getWheel().SetAngularVelocity(0)
             })
-            this._wheels.forEach(w => console.log(w.getWheel().GetAngularVelocity()))
             this._debugVector(
                 "linearVelocity",
                 0x00ffff,
                 new THREE.Vector3(),
                 World.physicsSystem.getBody(rootNodeId).GetCenterOfMassPosition()
             )
-            this._wheels.forEach((wheel,i) => {this._debugVector(
-                "wheel" + i,
-                0x0000ff,
-                new THREE.Vector3(),
-                wheel.constraint
-                    .GetWheelWorldTransform(0, new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(0, 1, 0))
-                    .GetTranslation()
-            )})
+            this._wheels.forEach((wheel, i) => {
+                this._debugVector(
+                    "wheel" + i,
+                    0x0000ff,
+                    new THREE.Vector3(),
+                    wheel.constraint
+                        .GetWheelWorldTransform(0, new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(0, 1, 0))
+                        .GetTranslation()
+                )
+            })
             return
         } else {
             console.debug("==================")
@@ -272,15 +269,25 @@ class SwerveDriveBehavior extends DriveBehavior {
             console.debug(`Forward [${i}]: ${joltVec3ToString(this._wheels[i].getWheel().GetSettings().mWheelForward)}`)
 
             //console.log(angle)
+            const joltWheel = this._wheels[i].getWheel()
             this._hinges[i].targetAngle = angle
-            this._wheels[i]
-                .getWheel()
-                .GetSettings()
-                .set_mWheelForward(convertThreeVector3ToJoltVec3(velocities[i].clone().normalize()))
-            const wheelVector = convertJoltVec3ToThreeVector3(this._wheels[i].getWheel().GetSettings().mWheelForward)
+            if (SwerveDriveBehavior.withinTolerance(this._hinges[i].targetAngle, angle, 0.05)) {
+                this._wheels[i].setFriction(0)
+            } else {
+                this._wheels[i].setFriction(1)
+            }
+            joltWheel.SetSteerAngle(angle)
+
+            // convertThreeVector3ToJoltVec3(velocities[i].clone().normalize())
+            const wheelVector = robotForward
+                .clone()
+                .applyAxisAngle(
+                    convertJoltVec3ToThreeVector3(joltWheel.GetSettings().mWheelUp),
+                    joltWheel.GetSteerAngle()
+                )
             this._debugVector(
                 "wheel" + i,
-                0x0000ff,
+                joltWheel.get_mCombinedLateralFriction() > 0 ? 0x0000ff : 0x00ff00,
                 wheelVector,
                 this._wheels[i].constraint
                     .GetWheelWorldTransform(0, new JOLT.Vec3(1, 0, 0), new JOLT.Vec3(0, 1, 0))
