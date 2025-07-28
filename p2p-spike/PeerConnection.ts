@@ -19,7 +19,7 @@ class PeerConnection {
     this.peer = new Peer(this.clientId, {
       host: "localhost",
       port: 9000,
-      path: "/",
+      path: "/connect",
     });
     this.initialization = { ...initialization, clientId: this.clientId };
     this.handlePeerMessage = handlePeerMessage;
