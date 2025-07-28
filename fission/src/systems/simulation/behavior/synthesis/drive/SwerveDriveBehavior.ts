@@ -17,6 +17,7 @@ import Driver, { DriverControlMode } from "../../../driver/Driver.ts"
 import HingeDriver from "../../../driver/HingeDriver.ts"
 import HingeStimulus from "../../../stimulus/HingeStimulus.ts"
 import Stimulus from "../../../stimulus/Stimulus.ts"
+import Vec3 = Jolt.Vec3;
 
 class SwerveDriveBehavior extends DriveBehavior {
     private _wheels: WheelDriver[]
@@ -183,8 +184,10 @@ class SwerveDriveBehavior extends DriveBehavior {
                         .GetTranslation()
                 )
             })
+            World.physicsSystem.enablePhysicsForBody(rootNodeId)
             return
         } else {
+
             console.debug("==================")
             console.debug(`Input: ${forward.toFixed(1)}, ${strafe.toFixed(1)}, ${turn.toFixed(1)}`)
         }
@@ -264,18 +267,21 @@ class SwerveDriveBehavior extends DriveBehavior {
             const xComponent: number = robotRight.dot(velocities[i])
             const angle: number = Math.atan2(xComponent, yComponent)
 
+
+            const joltWheel = this._wheels[i].getWheel()
             console.debug(`Speed [${i}]: ${speed} (${xComponent.toFixed(3)}, ${yComponent.toFixed(3)})`)
             console.debug(`Angle [${i}]: ${angle.toFixed(3)}`)
-            console.debug(`Forward [${i}]: ${joltVec3ToString(this._wheels[i].getWheel().GetSettings().mWheelForward)}`)
+            // console.debug(`Friction [${i}]: ${joltWheel.get_mCombinedLateralFriction()}`)
 
             //console.log(angle)
-            const joltWheel = this._wheels[i].getWheel()
+            // this._hinges[i].constraint.Set(0)
             this._hinges[i].targetAngle = angle
             if (SwerveDriveBehavior.withinTolerance(this._hinges[i].targetAngle, angle, 0.05)) {
-                this._wheels[i].setFriction(0)
+                this._wheels[i].setFrictionEnabled(false, false)
             } else {
-                this._wheels[i].setFriction(1)
+                this._wheels[i].setFrictionEnabled(false, false)
             }
+
             joltWheel.SetSteerAngle(angle)
 
             // convertThreeVector3ToJoltVec3(velocities[i].clone().normalize())
@@ -320,6 +326,7 @@ class SwerveDriveBehavior extends DriveBehavior {
                 opacity: 0.1,
                 wireframe: true,
             })
+
             material.depthTest = false
             this._lines[id] = []
             for (let i = 0; i < 10; i++) {
@@ -332,7 +339,8 @@ class SwerveDriveBehavior extends DriveBehavior {
         let outVector = new THREE.Vector3().copy(base)
         for (let i = 0; i < 10; i++) {
             outVector = outVector.add(vec2)
-            this._lines[id][i].position.copy(outVector)
+            this._lines[id][i].position.copy(outVector);
+            (this._lines[id][i].material as THREE.MeshBasicMaterial).color.set(color)
         }
     }
 }

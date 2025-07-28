@@ -4,6 +4,7 @@ import JOLT from "@/util/loading/JoltSyncLoader"
 import { NoraNumber, NoraTypes } from "../Nora"
 import { SimType } from "../wpilib_brain/WPILibBrain"
 import Driver, { DriverID } from "./Driver"
+import LinearCurve = Jolt.LinearCurve;
 
 const LATERIAL_FRICTION = 1.0
 const LONGITUDINAL_FRICTION = 1.0
@@ -14,6 +15,10 @@ class WheelDriver extends Driver {
     public deviceType?: SimType
     public device?: string
     private _reversed: boolean
+
+    private normalFrictionLong:LinearCurve
+    private normalFrictionLat:LinearCurve
+    private noFriction:LinearCurve
 
     public accelerationDirection: number = 0.0
     private _prevVel: number = 0.0
@@ -60,13 +65,17 @@ class WheelDriver extends Driver {
         this.deviceType = deviceType
         this.device = device
         this._wheel = JOLT.castObject(this._constraint.GetWheel(0), JOLT.WheelWV)
-        this._wheel.set_mCombinedLateralFriction(LATERIAL_FRICTION)
-        this._wheel.set_mCombinedLongitudinalFriction(LONGITUDINAL_FRICTION)
+        this.normalFrictionLong = this._wheel.GetSettings().get_mLongitudinalFriction()
+        this.normalFrictionLat = this._wheel.GetSettings().get_mLateralFriction()
+        this.noFriction = new JOLT.LinearCurve()
+        this.noFriction.AddPoint(0, 0)
+        this.noFriction.AddPoint(10000, 0)
     }
 
-    public setFriction(friction: number) {
-        this._wheel.set_mCombinedLateralFriction(friction)
-        this._wheel.set_mCombinedLongitudinalFriction(friction)
+
+    public setFrictionEnabled(enabledLong:boolean, enabledLat:boolean=enabledLong) {
+        this._wheel.GetSettings().set_mLongitudinalFriction(enabledLong ? this.normalFrictionLong : this.noFriction)
+        this._wheel.GetSettings().set_mLateralFriction(enabledLat ? this.normalFrictionLat : this.noFriction)
     }
 
     public setSteeringAngle(angle: number) {

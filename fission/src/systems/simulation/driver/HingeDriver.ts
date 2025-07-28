@@ -117,6 +117,7 @@ class HingeDriver extends Driver {
         }
     }
 
+
     public getReceiverType(): NoraTypes {
         return NoraTypes.NUMBER
     }
