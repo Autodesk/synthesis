@@ -162,7 +162,9 @@ function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                                 label={`${handle.displayName}`}
                                 key={handle.id}
                                 checked={handle.enabled}
-                                onClick={checked => (handle.enabled = checked)}
+                                onClick={checked => {
+                                    handle.enabled = checked
+                                }}
                             />
                         ))}
                     </ScrollView>
@@ -175,7 +177,9 @@ function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                                 label={`${handle.displayName}`}
                                 key={handle.id}
                                 checked={handle.enabled}
-                                onClick={checked => (handle.enabled = checked)}
+                                onClick={checked => {
+                                    handle.enabled = checked
+                                }}
                             />
                         ))}
                     </ScrollView>
