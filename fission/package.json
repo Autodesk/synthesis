@@ -1,17 +1,20 @@
 {
   "name": "synthesis-fission",
   "private": false,
-  "version": "0.0.1",
+  "version": "7.1.0",
   "type": "module",
+  "main": ".vite/build/main.cjs",
+  "author": "Autodesk",
+  "description": "Synthesis Fission",
   "scripts": {
     "init": "(bun run assetpack && bun run playwright:install) || (npm run assetpack && npm run playwright:install)",
     "host": "vite --open --host",
     "dev": "vite --open",
+    "test": "vitest",
     "build": "tsc && vite build",
     "build:prod": "tsc && vite build --base=/fission/ --outDir dist/prod",
     "build:dev": "tsc && vite build --base=/fission-closed/ --outDir dist/dev",
     "preview": "vite preview --base=/fission/",
-    "test": "vitest",
     "lint": "bunx --bun biome lint",
     "lint:fix": "bunx --bun biome lint --fix",
     "fmt": "bunx --bun biome format src",
@@ -19,7 +22,11 @@
     "style": "bun run fmt && bun run lint",
     "style:fix": "bun run fmt:fix && bun run lint:fix",
     "assetpack": "git lfs pull && tar -xf public/assetpack.zip -C public/",
-    "playwright:install": "bun x playwright install"
+    "playwright:install": "bun x playwright install",
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish"
   },
   "dependencies": {
     "@azaleacolburn/jolt-physics": "^0.31.2",
@@ -45,7 +52,8 @@
     "react-icons": "^4.12.0",
     "three": "^0.178.0",
     "typescript-cookie": "^1.0.6",
-    "vitest-browser-react": "^1.0.0"
+    "vitest-browser-react": "^1.0.0",
+    "electron-squirrel-startup": "^1.0.1"
   },
   "devDependencies": {
     "@emotion/react": "^11.14.0",
@@ -84,7 +92,17 @@
     "vite": "^6.3.5",
     "vite-plugin-glsl": "^1.5.0",
     "vite-plugin-singlefile": "^0.13.5",
-    "vitest": "^3.2.4"
+    "vitest": "^3.2.4",
+    "@electron-forge/cli": "^7.8.1",
+    "@electron-forge/maker-deb": "^7.8.1",
+    "@electron-forge/maker-rpm": "^7.8.1",
+    "@electron-forge/maker-squirrel": "^7.8.1",
+    "@electron-forge/maker-zip": "^7.8.1",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.8.1",
+    "@electron-forge/plugin-fuses": "^7.8.1",
+    "@electron-forge/plugin-vite": "^7.8.1",
+    "@electron/fuses": "^1.8.0",
+    "electron": "^37.2.4"
   },
   "license": "Apache-2.0",
   "repository": {
