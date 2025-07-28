@@ -1,9 +1,9 @@
-import WorldSystem from "@/systems/WorldSystem.ts"
 import { globalAddToast, globalOpenPanel } from "@/components/GlobalUIControls.ts"
-import World from "@/systems/World.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import GraphicsSettingsPanel from "@/ui/panels/GraphicsSettingsPanel"
 import React from "react"
+import World from "@/systems/World.ts"
+import WorldSystem from "@/systems/WorldSystem.ts"
 
 export class PerformanceMonitoringSystem extends WorldSystem {
     isCritical: boolean = false

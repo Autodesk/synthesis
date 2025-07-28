@@ -6,7 +6,6 @@ import { FaXmark } from "react-icons/fa6"
 import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import logo from "@/assets/autodesk_logo.png"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import MatchMode from "@/systems/MatchMode"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import ConfigurePanel from "../panels/configuring/assembly-config/ConfigurePanel"
 import DebugPanel from "../panels/DebugPanel"
@@ -21,7 +20,7 @@ import SettingsModal from "../modals/configuring/SettingsModal"
 import APSManagementModal from "../modals/APSManagementModal"
 import DeveloperToolPanel from "../panels/DeveloperToolPanel"
 import MatchModeConfigPanel from "../panels/configuring/MatchModeConfigPanel"
-import { useThemeContext } from "../helpers/ThemeProviderHelpers"
+import MatchMode from "@/systems/match_mode/MatchMode"
 
 type ButtonProps = {
     value: string
@@ -83,6 +82,7 @@ const MainHUD: React.FC = () => {
     setOpenModal(openModal)
 
     const [userInfo, setUserInfo] = useState(APS.userInfo)
+    const [matchModeRunning, setMatchModeRunning] = useState(MatchMode.getInstance().isMatchEnabled())
 
     useEffect(() => {
         document.addEventListener(APS_USER_INFO_UPDATE_EVENT, () => {
@@ -103,6 +103,12 @@ const MainHUD: React.FC = () => {
             }
         }
         // biome-ignore-end lint/suspicious/noExplicitAny: disallow any
+    }, [])
+
+    useEffect(() => {
+        MatchStateChangeEvent.addListener(() => {
+            setMatchModeRunning(MatchMode.getInstance().isMatchEnabled())
+        })
     }, [])
 
     return (

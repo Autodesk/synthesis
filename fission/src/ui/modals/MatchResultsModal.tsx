@@ -1,6 +1,6 @@
 import { Button, Stack, styled, Typography } from "@mui/material"
 import type React from "react"
-import MatchMode from "@/systems/MatchMode"
+import MatchMode from "@/systems/match_mode/MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import type { ModalImplProps } from "../components/Modal"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"

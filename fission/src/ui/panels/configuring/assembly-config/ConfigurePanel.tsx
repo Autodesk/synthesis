@@ -28,6 +28,8 @@ import SimulationInterface from "./interfaces/SimulationInterface"
 import ConfigureProtectedZonesInterface from "./interfaces/scoring/ConfigureProtectedZonesInterface"
 import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScoringZonesInterface"
 import Label from "@/ui/components/Label"
+import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 const CONFIG_OPTS = ["ROBOTS", "FIELDS", "INPUTS"] as const
 export type ConfigurationType = (typeof CONFIG_OPTS)[number]
@@ -123,6 +125,8 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
             return <BrainSelectionInterface selectedAssembly={assembly} />
         case ConfigMode.ALLIANCE:
             return <AllianceSelectionInterface selectedAssembly={assembly} />
+        case ConfigMode.DRIVETRAIN:
+            return <DrivetrainSelectionInterface selectedAssembly={assembly} />
         default:
             throw new Error(`Config mode ${configMode} has no associated interface`)
     }

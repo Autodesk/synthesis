@@ -1,7 +1,7 @@
+import React, { useCallback, useEffect, useRef, useState } from "react"
+import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
 import { Checkbox, Divider, FormControlLabel, Stack } from "@mui/material"
-import type React from "react"
-import { useCallback, useEffect, useRef, useState } from "react"
 import EditInputInterface from "./EditInputInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 
@@ -10,8 +10,8 @@ interface ConfigSchemeProps {
 }
 
 const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme }) => {
-    const [useGamepad, setUseGamepad] = useState<boolean>(selectedScheme.usesGamepad)
-    const [useTouchControls, setUseTouchControls] = useState<boolean>(selectedScheme.usesTouchControls)
+    const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
+    const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
 
     const saveEvent = useCallback(() => {

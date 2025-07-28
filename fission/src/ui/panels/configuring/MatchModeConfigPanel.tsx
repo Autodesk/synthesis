@@ -2,20 +2,57 @@ import { PanelImplProps } from "@/ui/components/Panel"
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
 import { SynthesisIcons, PositiveButton, NegativeButton } from "@/ui/components/StyledComponents"
 import { Box, Button, Divider, Typography } from "@mui/material"
-import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAME_TIME } from "@/systems/MatchMode"
+import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAME_TIME, DEFAULT_HEIGHT_PENALTY, DEFAULT_IGNORE_ROTATION, DEFAULT_MAX_HEIGHT } from "@/systems/match_mode/MatchMode"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import DefaultMatchModeConfigs from "@/systems/DefaultMatchModeConfigs"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { CloseType, OpenModalFn, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { Stack } from "@mui/system"
 import Label from "@/ui/components/Label"
 
+/**
+ * Configuration for match mode rules and timing.
+ *
+ * This interface defines the rules and timing for competitive matches,
+ * including autonomous/teleop periods, robot height restrictions, and penalties.
+ */
 export interface MatchModeConfig {
-    id: string // Required
-    name: string // Required
-    isDefault: boolean // Track if this is a default config (auto-filled)
-    autonomousTime: number // Optional, defaults to 15
-    teleopTime: number // Optional, defaults to 135
-    endgameTime: number // Optional, defaults to 20
+    /** Unique identifier for this match mode configuration */
+    id: string
+
+    /** Human-readable name for this match mode configuration */
+    name: string
+
+    /** Whether this is a built-in default configuration (cannot be deleted) */
+    isDefault: boolean
+
+    /** Duration of autonomous period in seconds (default: 15) */
+    autonomousTime: number
+
+    /** Duration of teleoperated period in seconds (default: 135) */
+    teleopTime: number
+
+    /** Duration of endgame period in seconds (default: 20) */
+    endgameTime: number
+
+    /**
+     * Whether to ignore robot rotation when calculating height violations.
+     * If true, the height limit will be calculated relative to the base of the robot, rather than the base of the field
+     * (default: true)
+     */
+    ignoreRotation: boolean
+
+    /**
+     * Maximum allowed robot height in meters (stored internally).
+     * User input is in feet but converted to meters during config processing.
+     * Set to Infinity for no height limit. (default: Infinity)
+     */
+    maxHeight: number
+
+    /**
+     * Points to penalize for height violations (default: 2).
+     * Applied each time a robot exceeds maxHeight after cooldown period.
+     */
+    heightPenalty: number
 }
 
 function matchConfigSelected(config: MatchModeConfig, openModal: OpenModalFn) {
@@ -151,6 +188,9 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             { id: "autonomousTime", expectedType: "number", required: false },
             { id: "teleopTime", expectedType: "number", required: false },
             { id: "endgameTime", expectedType: "number", required: false },
+            { id: "ignoreRotation", expectedType: "boolean", required: false },
+            { id: "maxHeight", expectedType: "number", required: false },
+            { id: "heightPenalty", expectedType: "number", required: false },
         ]
 
         const typeError = (id: string, expectedType?: string) => {
@@ -192,6 +232,12 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : DEFAULT_AUTONOMOUS_TIME,
             teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : DEFAULT_TELEOP_TIME,
             endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : DEFAULT_ENDGAME_TIME,
+            ignoreRotation:
+                typeof configObj.ignoreRotation === "boolean" ? configObj.ignoreRotation : DEFAULT_IGNORE_ROTATION,
+            maxHeight:
+                typeof configObj.maxHeight === "number" ? convertFeetToMeters(configObj.maxHeight) : DEFAULT_MAX_HEIGHT,
+            heightPenalty:
+                typeof configObj.heightPenalty === "number" ? configObj.heightPenalty : DEFAULT_HEIGHT_PENALTY,
         }
 
         return normalizedConfig
@@ -238,9 +284,9 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             const customConfigs = [...matchModeConfigs.filter(c => !c.isDefault), normalizedConfig]
             window.localStorage.setItem("match-mode-configs", JSON.stringify(customConfigs))
 
-            globalAddToast("info", `Match Mode Config Added\nSuccessfully added "${normalizedConfig.name}"`)
-        } catch (error) {
-            globalAddToast("error", "Invalid JSON File\nThe file is not valid JSON or could not be read")
+            globalAddToast("info", "Match Mode Config Added", `Successfully added "${normalizedConfig.name}"`)
+        } catch (_error) {
+            globalAddToast("error", "Invalid JSON File", "The file is not valid JSON or could not be read")
         }
     }
 

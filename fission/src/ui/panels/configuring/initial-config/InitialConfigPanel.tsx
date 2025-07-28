@@ -22,6 +22,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { setSelectedScheme, setUnconfirmedImport, setConfigurationType } = useStateContext()
     const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
+    const [station, setStation] = useState<Station>(1)
 
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 

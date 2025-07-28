@@ -1,18 +1,19 @@
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import WorldSystem from "../WorldSystem"
-import World from "../World"
-import JOLT from "@/util/loading/JoltSyncLoader"
-import { convertThreeVector3ToJoltVec3, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import InputSystem from "@/systems/input/InputSystem.ts"
+import JOLT from "@/util/loading/JoltSyncLoader"
+import { convertJoltVec3ToThreeVector3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
+import World from "../World"
+import WorldSystem from "../WorldSystem"
+import { CustomOrbitControls, SphericalCoords } from "./CameraControls"
 import {
-    InteractionStart,
-    InteractionMove,
     InteractionEnd,
+    InteractionMove,
+    InteractionStart,
     PRIMARY_MOUSE_INTERACTION,
 } from "./ScreenInteractionHandler"
-import { CustomOrbitControls, SphericalCoords } from "./CameraControls"
-import Jolt from "@azaleacolburn/jolt-physics"
-import { MiraType } from "@/mirabuf/MirabufLoader"
 
 interface DragTarget {
     bodyId: Jolt.BodyID
@@ -59,6 +60,7 @@ class DragModeSystem extends WorldSystem {
         // Precision and sensitivity
         MINIMUM_DISTANCE_THRESHOLD: 0.02, // Minimum distance to apply forces (smaller = more precision)
         WHEEL_SCROLL_SENSITIVITY: -0.01, // Mouse wheel scroll sensitivity for Z-axis
+        ROTATION_SPEED: 200.0, // speed of arrow key rotation. lower = more precise, higher = more
     } as const
 
     private _enabled: boolean = false
@@ -564,25 +566,19 @@ class DragModeSystem extends WorldSystem {
             const joltForce = convertThreeVector3ToJoltVec3(forceNeeded)
             body.AddForce(joltForce)
 
-            // Calculate torque to simulate force applied at the drag point
-            // Use the current world offset (which rotates with the body)
-            const leverArm = currentWorldOffset // vector from COM to drag point in world coordinates
-            const torque = leverArm.cross(forceNeeded) // Cross product gives us the torque
-            const joltTorque = convertThreeVector3ToJoltVec3(torque)
-            body.AddTorque(joltTorque)
-
-            // Reduce angular damping since we want the natural rotation from the applied force
-            const angularVel = body.GetAngularVelocity()
-            const angularDampingStrength = Math.min(
-                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_DAMPING_BASE,
-                DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_DAMPING_MAX
+            const yawRotation = new JOLT.Vec3(
+                0,
+                DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
+                    (InputSystem.isKeyPressed("ArrowRight") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowLeft") ? 1 : 0)),
+                0
             )
-            const angularDampingTorque = new JOLT.Vec3(
-                -angularVel.GetX() * angularDampingStrength,
-                -angularVel.GetY() * angularDampingStrength,
-                -angularVel.GetZ() * angularDampingStrength
+            const cameraVector = World.sceneRenderer.mainCamera.getWorldDirection(new THREE.Vector3(0, 0, 0))
+            const pitchRotation = new JOLT.Vec3(cameraVector.z, 0, -cameraVector.x).Mul(
+                DragModeSystem.DRAG_FORCE_CONSTANTS.ROTATION_SPEED *
+                    (InputSystem.isKeyPressed("ArrowUp") ? 1 : 0 - (InputSystem.isKeyPressed("ArrowDown") ? 1 : 0))
             )
-            body.AddTorque(angularDampingTorque)
+            body.AddTorque(yawRotation)
+            body.AddTorque(pitchRotation)
         } else {
             // When close to target, apply braking forces and gravity compensation
             const currentVel = body.GetLinearVelocity()
@@ -602,21 +598,9 @@ class DragModeSystem extends WorldSystem {
                 const gravityCompensationY = mass * DragModeSystem.DRAG_FORCE_CONSTANTS.GRAVITY_MAGNITUDE
                 brakingForce.SetY(brakingForce.GetY() + gravityCompensationY)
             }
-
             body.AddForce(brakingForce)
-
-            const angularVel = body.GetAngularVelocity()
-            const angularBrakingStrength = Math.min(
-                mass * DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_BRAKING_BASE,
-                DragModeSystem.DRAG_FORCE_CONSTANTS.ANGULAR_BRAKING_MAX
-            )
-            const angularBrakingTorque = new JOLT.Vec3(
-                -angularVel.GetX() * angularBrakingStrength,
-                -angularVel.GetY() * angularBrakingStrength,
-                -angularVel.GetZ() * angularBrakingStrength
-            )
-            body.AddTorque(angularBrakingTorque)
         }
+        body.SetAngularVelocity(new JOLT.Vec3())
     }
 
     private handleWheelDuringDrag(event: WheelEvent): void {

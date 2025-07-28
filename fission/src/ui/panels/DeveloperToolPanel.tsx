@@ -273,7 +273,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                             {keys.length === 0 && <li className="text-gray-400 italic">No devtool data</li>}
                             {keys.map(key => (
                                 <li key={key} className="mb-1">
-                                    <button
+                                    <Button
                                         onClick={() => setSelectedKey(key as DevtoolKey)}
                                         className={`
                             w-full whitespace-normal break-words text-left
@@ -286,7 +286,7 @@ const DeveloperToolPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                             `}
                                     >
                                         {key}
-                                    </button>
+                                    </Button>
                                 </li>
                             ))}
                         </ul>

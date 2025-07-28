@@ -1,5 +1,7 @@
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import World from "@/systems/World"
+import { XYPosition } from "@xyflow/react"
+import Driver, { DriverType } from "@/systems/simulation/driver/Driver"
 import {
     type NoraType,
     NoraTypes,
@@ -8,8 +10,6 @@ import {
     noraAverageFunc,
 } from "@/systems/simulation/Nora"
 import type { SimulationLayer } from "@/systems/simulation/SimulationSystem"
-import type Driver from "@/systems/simulation/driver/Driver"
-import type { DriverType } from "@/systems/simulation/driver/Driver"
 import type Stimulus from "@/systems/simulation/stimulus/Stimulus"
 import type { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import type { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
@@ -24,7 +24,6 @@ import {
     supplierTypeMap,
 } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { random } from "@/util/Random"
-import type { XYPosition } from "@xyflow/react"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {

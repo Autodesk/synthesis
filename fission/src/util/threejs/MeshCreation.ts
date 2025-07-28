@@ -1,7 +1,7 @@
-import JOLT from "../loading/JoltSyncLoader.ts"
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import { convertJoltVec3ToThreeVector3, convertJoltQuatToThreeQuaternion } from "../TypeConversions.ts"
+import JOLT from "../loading/JoltSyncLoader.ts"
+import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "../TypeConversions.ts"
 
 export const LAYER_NOT_MOVING = 0
 export const LAYER_MOVING = 1

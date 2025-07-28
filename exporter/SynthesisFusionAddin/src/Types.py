@@ -104,19 +104,19 @@ def encodeNestedObjects(obj: Any) -> Any:
         return obj
 
 
-def makeObjectFromJson(objType: type, data: Any) -> Any:
+# This function was previously taking type(field.type) instead of just field.type, but it didn't seem to be able to deal with lists like that, and this version does seem to be working in all the places where it's used
+def makeObjectFromJson(objType: type[Any] | str | Any, data: Any) -> Any:
     if isinstance(objType, EnumType):
         return objType(data)
-    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES):
+    elif isinstance(objType, PRIMITIVES) or isinstance(data, PRIMITIVES) or get_origin(objType) is dict:
         return data
     elif get_origin(objType) is list:
         return [makeObjectFromJson(get_args(objType)[0], item) for item in data]
-
     obj = objType()
-    assert is_dataclass(obj) and isinstance(data, dict), "Found unsupported type to decode."
+    assert is_dataclass(obj) and isinstance(data, dict), f"Found unsupported type to decode. {objType} {data}"
     for field in fields(obj):
         if field.name in data:
-            setattr(obj, field.name, makeObjectFromJson(type(field.type), data[field.name]))
+            setattr(obj, field.name, makeObjectFromJson(field.type, data[field.name]))
         else:
             setattr(obj, field.name, field.default_factory if field.default_factory is not MISSING else field.default)
 
@@ -182,7 +182,7 @@ class OString:
         else:
             raise OSError(2, "No Operating System Recognized", f"{osName}")
 
-    def AssertEquals(self, comparing: object) -> bool:
+    def assertEquals(self, comparing: object) -> bool:
         """Compares the two OString objects
 
         Args:
@@ -236,7 +236,7 @@ class OString:
             return cls(path, file)
 
     @classmethod
-    def LocalPath(cls, fileName: str) -> object:
+    def localPath(cls, fileName: str) -> object:
         """Gets the local path in the absolute form for this file
 
         Args:
@@ -249,7 +249,7 @@ class OString:
         return cls(path.split(os.sep), fileName)
 
     @classmethod
-    def AddinPath(cls, fileName: str) -> object:
+    def addinPath(cls, fileName: str) -> object:
         """Gets the local path in the absolute form for this file
 
         Args:
@@ -262,7 +262,7 @@ class OString:
         return cls(path, fileName)
 
     @classmethod
-    def AppDataPath(cls, fileName: str) -> object:
+    def appDataPath(cls, fileName: str) -> object:
         """Attempts to generate a file path in the Appdata Directory listed below
 
          Used by TempPath in the windows environment
@@ -281,7 +281,7 @@ class OString:
         return None
 
     @classmethod
-    def ThumbnailPath(cls, fileName: str) -> object:
+    def thumbnailPath(cls, fileName: str) -> object:
         # this is src
         src = pathlib.Path(__file__).parent.parent
         res = os.path.join(src, "Resources", "Icons")
@@ -289,7 +289,7 @@ class OString:
         return cls(res, fileName)
 
     @classmethod
-    def TempPath(cls, fileName: str) -> object:
+    def tempPath(cls, fileName: str) -> object:
         """Find a temporary path that will work on any OS to write a file to and read from
 
         Args:
@@ -301,7 +301,7 @@ class OString:
         _os = cls._os()
 
         if _os == "Windows":
-            return cls.AppDataPath(fileName)
+            return cls.appDataPath(fileName)
         elif _os == "Darwin":
             baseFile = pathlib.Path(__file__).parent.parent.parent
             path = os.path.join(baseFile, "TemporaryOutput")

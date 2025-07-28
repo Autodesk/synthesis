@@ -166,7 +166,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             new THREE.BoxGeometry(1, 1, 1),
             selectedZone.alliance === "blue" ? blueMaterial : redMaterial
         )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selectedZone, selectedZone.alliance, blueMaterial, redMaterial])
 
     /** Creates TransformGizmoControl component and sets up target mesh. */

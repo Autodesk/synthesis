@@ -1,5 +1,5 @@
-import { fireEvent, getByText, render, act } from "@testing-library/react"
-import { assert, afterEach, beforeEach, describe, test, vi } from "vitest"
+import { act, fireEvent, getByText, render } from "@testing-library/react"
+import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
 import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 import { UIProvider } from "@/ui/UIProvider"
 

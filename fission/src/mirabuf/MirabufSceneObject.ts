@@ -1,32 +1,29 @@
-import type Jolt from "@azaleacolburn/jolt-physics"
-import React from "react"
+import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
-import type { mirabuf } from "@/proto/mirabuf"
+import { mirabuf } from "@/proto/mirabuf"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
-import type Mechanism from "@/systems/physics/Mechanism"
-import { BodyAssociate, type LayerReserve } from "@/systems/physics/PhysicsSystem"
+import Mechanism from "@/systems/physics/Mechanism"
+import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import type {
+import {
     Alliance,
     EjectorPreferences,
     FieldPreferences,
     IntakePreferences,
     ProtectedZonePreferences,
     ScoringZonePreferences,
+    Station,
 } from "@/systems/preferences/PreferenceTypes"
-import type { CustomOrbitControls } from "@/systems/scene/CameraControls"
-import type GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import type Brain from "@/systems/simulation/Brain"
-import type { SimConfigData } from "@/systems/simulation/SimConfigShared"
+import { CustomOrbitControls } from "@/systems/scene/CameraControls"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
+import Brain from "@/systems/simulation/Brain"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
-import type { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
+import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
 import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import type { ProgressHandle } from "@/ui/components/ProgressNotificationData"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
-import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
-import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import SceneObject from "../systems/scene/SceneObject"
@@ -38,6 +35,9 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import { SimConfigData } from "@/systems/simulation/SimConfigShared"
+import React from "react"
+import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 
 const DEBUG_BODIES = false
 
@@ -102,6 +102,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _mechanism: Mechanism
     private _brain: Brain | undefined
     private _alliance: Alliance | undefined
+    private _station: Station | undefined
 
     private _debugBodies: Map<string, RnDebugMeshes> | null
     private _physicsLayerReserve: LayerReserve | undefined
@@ -193,6 +194,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         return this._alliance
     }
 
+    public get station() {
+        return this._station
+    }
+
     public set brain(brain: Brain | undefined) {
         this._brain = brain
         const simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
@@ -201,6 +206,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     public set alliance(alliance: Alliance | undefined) {
         this._alliance = alliance
+    }
+
+    public set station(station: Station | undefined) {
+        this._station = station
     }
 
     public get cacheId() {
@@ -382,7 +391,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
         this._debugBodies?.clear()
         this._physicsLayerReserve?.release()
-        this._centerOfMassIndicator?.geometry?.dispose()
+        if (this._centerOfMassIndicator) {
+            World.sceneRenderer.scene.remove(this._centerOfMassIndicator)
+            this._centerOfMassIndicator = undefined
+        }
+
         if (this._brain && this._brain instanceof SynthesisBrain) {
             this._brain.clearControls()
         }
@@ -644,6 +657,101 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         return box
+    }
+
+    /**
+     * Gets the maximum dimensions (length, width, height) of the mirabuf object.
+     *
+     * @returns An object containing the width (x), height (y), and depth (z) dimensions in meters.
+     */
+    public getDimensions(): { width: number; height: number; depth: number } {
+        const boundingBox = this.computeBoundingBox()
+        const size = new THREE.Vector3()
+        boundingBox.getSize(size)
+
+        return {
+            width: size.x,
+            height: size.y,
+            depth: size.z,
+        }
+    }
+
+    /**
+     * Calculates the robot's dimensions as if it had no rotation applied.
+     *
+     * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
+     */
+    public getDimensionsWithoutRotation(): { width: number; height: number; depth: number } {
+        const rootNodeId = this.getRootNodeId()
+        if (!rootNodeId) {
+            console.warn("No root node found for robot, using regular dimensions")
+            return this.getDimensions()
+        }
+
+        const rootBody = World.physicsSystem.getBody(rootNodeId)
+        const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
+
+        const rootPosition = new THREE.Vector3()
+        const rootRotation = new THREE.Quaternion()
+        const rootScale = new THREE.Vector3()
+        rootTransform.decompose(rootPosition, rootRotation, rootScale)
+
+        // Create inverse rotation matrix to "undo" the robot's rotation
+        const inverseRotation = new THREE.Matrix4().makeRotationFromQuaternion(rootRotation.clone().invert())
+
+        const unrotatedBox = new THREE.Box3()
+
+        this._mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
+            const bodyId = this._mechanism.getBodyByNodeId(rigidNode.id)
+            if (!bodyId) return
+
+            const body = World.physicsSystem.getBody(bodyId)
+            const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+
+            const shape = body.GetShape()
+            const scale = new JOLT.Vec3(1, 1, 1)
+            const triangleContext = new JOLT.ShapeGetTriangles(
+                shape,
+                JOLT.AABox.prototype.sBiggest(),
+                shape.GetCenterOfMass(),
+                JOLT.Quat.prototype.sIdentity(),
+                scale
+            )
+
+            try {
+                const vertices = new Float32Array(
+                    JOLT.HEAP32.buffer,
+                    triangleContext.GetVerticesData(),
+                    triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
+                )
+
+                for (let i = 0; i < vertices.length; i += 3) {
+                    const vertex = new THREE.Vector3(vertices[i], vertices[i + 1], vertices[i + 2])
+
+                    vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
+
+                    unrotatedBox.expandByPoint(vertex)
+                }
+            } finally {
+                JOLT.destroy(triangleContext)
+                JOLT.destroy(scale)
+            }
+        })
+
+        // Fallback if no vertices were processed
+        if (unrotatedBox.isEmpty()) {
+            console.warn("Could not process physics shapes, using regular dimensions")
+            return this.getDimensions()
+        }
+
+        const unrotatedSize = new THREE.Vector3()
+        unrotatedBox.getSize(unrotatedSize)
+
+        return {
+            width: unrotatedSize.x,
+            height: unrotatedSize.y,
+            depth: unrotatedSize.z,
+        }
     }
 
     /**

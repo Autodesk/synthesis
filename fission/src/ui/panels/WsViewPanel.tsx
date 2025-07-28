@@ -122,7 +122,7 @@ const WSViewPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     useEffect(() => {
         setSelectedDevice(undefined)
-    }, [selectedType])
+    }, [])
 
     useEffect(() => {
         const func = () => {
@@ -133,7 +133,7 @@ const WSViewPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         return () => {
             clearTimeout(id)
         }
-    }, [updateTable])
+    }, [])
 
     useEffect(() => {
         configureScreen(panel!, { title: "WS View Panel" }, {})

@@ -50,10 +50,10 @@ type BodyCapture = {
 const AUTO_TEST_PAUSE_REF = "auto-testing"
 
 export const BlueAllianceToggleButton = styled(ToggleButton)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": "#5f60ff",
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: "#5f60ff",
     "&.Mui-selected": {
         color: "black",
         backgroundImage: "linear-gradient(to right, #5f60ff, #5f60ff)",
@@ -90,10 +90,10 @@ export const BlueAllianceToggleButton = styled(ToggleButton)({
 })
 
 export const RedAllianceToggleButton = styled(ToggleButton)({
-    "borderColor": "transparent",
-    "fontFamily": "Artifakt",
-    "fontWeight": 700,
-    "color": "#d74e26",
+    borderColor: "transparent",
+    fontFamily: "Artifakt",
+    fontWeight: 700,
+    color: "#d74e26",
     "&.Mui-selected": {
         color: "black",
         backgroundImage: "linear-gradient(to right, #d74e26, #d74e26)",

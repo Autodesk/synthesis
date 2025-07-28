@@ -1,35 +1,34 @@
-import * as THREE from "three"
-import WorldSystem from "../WorldSystem"
-import SceneObject from "./SceneObject"
-import GizmoSceneObject from "./GizmoSceneObject"
+import Jolt from "@azaleacolburn/jolt-physics"
 import { EdgeDetectionMode, EffectComposer, EffectPass, RenderPass, SMAAEffect } from "postprocessing"
+import * as THREE from "three"
+import { CSM } from "three/examples/jsm/csm/CSM.js"
+import autodeskLogo from "@/assets/autodesk_symbol.png"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import fragmentShader from "@/shaders/fragment.glsl"
 import vertexShader from "@/shaders/vertex.glsl"
-import Jolt from "@azaleacolburn/jolt-physics"
 import { CameraControls, CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
-import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
-
-import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
-import PreferencesSystem from "../preferences/PreferencesSystem"
-import { CSM } from "three/examples/jsm/csm/CSM.js"
-import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
-import { GraphicsPreferences } from "../preferences/PreferenceTypes"
-import World from "../World"
-import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
 import { ContextData, ContextSupplierEvent } from "@/ui/components/ContextMenuData"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import { MiraType } from "@/mirabuf/MirabufLoader"
-import autodeskLogo from "@/assets/autodesk_symbol.png"
-import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
+import { PixelSpaceCoord, SceneOverlayEvent, SceneOverlayEventKey } from "@/ui/components/SceneOverlayEvents"
+import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
+import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
+import PreferencesSystem from "../preferences/PreferencesSystem"
+import { GraphicsPreferences } from "../preferences/PreferenceTypes"
+import World from "../World"
+import WorldSystem from "../WorldSystem"
+import GizmoSceneObject from "./GizmoSceneObject"
+import SceneObject from "./SceneObject"
+import ScreenInteractionHandler, { InteractionEnd } from "./ScreenInteractionHandler"
 import React from "react"
+import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 
 const CLEAR_COLOR = 0x121212
 const GROUND_COLOR = 0xfffef0
 
 const STANDARD_ASPECT = 16.0 / 9.0
-const STANDARD_CAMERA_FOV_X = 110.0
-const STANDARD_CAMERA_FOV_Y = STANDARD_CAMERA_FOV_X / STANDARD_ASPECT
+export const STANDARD_CAMERA_FOV_X = 110.0
+export const STANDARD_CAMERA_FOV_Y = STANDARD_CAMERA_FOV_X / STANDARD_ASPECT
 
 const textureLoader = new THREE.TextureLoader()
 

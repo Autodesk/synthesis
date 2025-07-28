@@ -21,16 +21,13 @@ const RobotSwitchPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             <form>
                 <fieldset>
                     {robots.map((name: string, i: number) => (
-                        <FormControlLabel
+                        // fixme: new checkbox
+                        <StatefulCheckbox
                             label={name}
-                            control={
-                                <Radio
-                                    checked={i === selected}
-                                    className="whitespace-nowrap"
-                                    onChange={() => setSelected(i)}
-                                    key={name}
-                                />
-                            }
+                            checked={i == selected}
+                            className="whitespace-nowrap"
+                            onClick={() => setSelected(i)}
+                            key={i}
                         />
                     ))}
                 </fieldset>

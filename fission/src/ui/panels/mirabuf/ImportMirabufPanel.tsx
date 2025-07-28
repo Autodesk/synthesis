@@ -177,6 +177,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
         }
     }, [])
 
+    // biome-ignore lint: things break if we don't add the closePanel dep
     useLayoutEffect(() => {
         if (unconfirmedImport) {
             addToast("warning", "You're already importing a model!", "Confirm that one before importing another.")
@@ -185,7 +186,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
         }
         // TODO: validate behaviour
         if (parent) closePanel(parent.id, CloseType.Cancel)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
     // Get Default Mirabuf Data, Load into manifest.
@@ -312,7 +312,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                         },
                     })
                 ),
-        [cachedRobots, selectCache, setCachedRobots]
+        [cachedRobots, selectCache]
     )
 
     // Generate Item cards for cached fields.
@@ -337,7 +337,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                         },
                     })
                 ),
-        [cachedFields, selectCache, setCachedFields]
+        [cachedFields, selectCache]
     )
 
     // Generate Item cards for remote robots.
@@ -381,7 +381,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
     }, [manifest?.fields, cachedFields, selectRemote])
 
     function downloadAllRemote(cached: MirabufCacheInfo[]): () => void {
-        // eslint-disable-next-line react-hooks/rules-of-hooks
+        // biome-ignore lint: Returning a callback is fine to avoid repeating ourselves
         return useCallback(() => {
             const miraType: MiraType | undefined = cached[0]?.miraType
             const property = miraType === MiraType.ROBOT ? "robots" : "fields"
@@ -392,7 +392,6 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 .forEach(path => cacheRemoteOnly(path, miraType))
 
             if (panel) closePanel(panel.id, CloseType.Cancel)
-            // eslint-disable-next-line react-hooks/exhaustive-deps
         }, [manifest, cached, cacheRemoteOnly, closePanel, panel])
     }
 

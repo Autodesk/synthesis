@@ -12,8 +12,13 @@ const saveSetAlliance = (alliance: Alliance, assembly: MirabufSceneObject) => {
     assembly.alliance = alliance
 }
 
-export default function AllianceSelectionInterface({ selectedAssembly }: AllianceSelectionInterfaceProps) {
+const saveSetStation = (station: Station, assembly: MirabufSceneObject) => {
+    assembly.station = station
+}
+
+const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({ selectedAssembly }) => {
     const [alliance, setAlliance] = useState<Alliance>(selectedAssembly.alliance ?? "red")
+    const [station, setStation] = useState<Station>(selectedAssembly.station ?? 1)
 
     return (
         <Stack gap={2}>
@@ -66,3 +71,5 @@ export default function AllianceSelectionInterface({ selectedAssembly }: Allianc
         </Stack>
     )
 }
+
+export default AllianceSelectionInterface

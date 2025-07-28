@@ -1,7 +1,7 @@
-import { RigidNodeReadOnly } from "@/mirabuf/MirabufParser"
-import { mirabuf } from "@/proto/mirabuf"
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import { RigidNodeReadOnly } from "@/mirabuf/MirabufParser"
+import { mirabuf } from "@/proto/mirabuf"
 
 export function printRigidNodeParts(nodes: RigidNodeReadOnly[], mira: mirabuf.Assembly) {
     nodes.forEach(x => {
@@ -37,6 +37,10 @@ export function mirabufVector3ToString(v: mirabuf.Vector3, units: number = 3) {
 
 export function threeVector3ToString(v: THREE.Vector3, units: number = 3) {
     return `(${v.x.toFixed(units)}, ${v.y.toFixed(units)}, ${v.z.toFixed(units)})`
+}
+
+export function threeQuaternionToString(v: THREE.Quaternion, units: number = 3) {
+    return `(${v.x.toFixed(units)}, ${v.y.toFixed(units)}, ${v.z.toFixed(units)}, ${v.w.toFixed(units)})`
 }
 
 export function joltVec3ToString(v: Jolt.Vec3 | Jolt.RVec3, units: number = 3) {

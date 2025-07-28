@@ -73,7 +73,7 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 <>
                     {Spacer(0, 10)}
                     {/*DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")&*/}
-                    <Button color="error" onClick={onDelete !== undefined ? onDelete : () => {}}>
+                    <Button color="error" onClick={onDelete !== undefined ? onDelete : () => {}} id="select-menu-delete-button">
                         {SynthesisIcons.DELETE_LARGE}
                     </Button>
                 </>
@@ -191,7 +191,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                         )}
                         {/** Add button */}
                         {onAddClicked && (
-                            <Button variant="outlined" color="success" onClick={onAddClicked}>
+                            <Button variant="outlined" color="success" onClick={onAddClicked} id="select-menu-add-button">
                                 {SynthesisIcons.ADD_LARGE}
                             </Button>
                         )}

@@ -1,4 +1,4 @@
-import { describe, test, expect, beforeEach, vi, afterEach } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 // Mock all the system dependencies before importing World
 vi.mock("@/systems/physics/PhysicsSystem", () => ({
@@ -6,12 +6,15 @@ vi.mock("@/systems/physics/PhysicsSystem", () => ({
         update: vi.fn(),
         destroy: vi.fn(),
     })),
+    getLastDeltaT: vi.fn(() => 0.016),
+    BodyAssociate: vi.fn(),
 }))
 
 vi.mock("@/systems/scene/SceneRenderer", () => ({
     default: vi.fn(() => ({
         update: vi.fn(),
         destroy: vi.fn(),
+        sceneObjects: new Map(),
     })),
 }))
 

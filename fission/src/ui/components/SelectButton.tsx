@@ -1,7 +1,7 @@
+import Jolt from "@azaleacolburn/jolt-physics"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import World from "@/systems/World"
 import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
-import Jolt from "@azaleacolburn/jolt-physics"
 import { LabelWithTooltip } from "./StyledComponents"
 import { Button, Stack } from "@mui/material"
 
@@ -44,7 +44,7 @@ const SelectButton: React.FC<SelectButtonProps> = ({ value, color, placeholder, 
                 }
             }
         },
-        [setSelecting, onSelect]
+        [onSelect]
     )
 
     useEffect(() => {

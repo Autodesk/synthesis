@@ -1,9 +1,8 @@
 import { styled, Typography } from "@mui/material"
 import { Box } from "@mui/system"
-import { useEffect, useReducer, useState } from "react"
-import { ProgressHandle, ProgressHandleStatus, ProgressEvent } from "./ProgressNotificationData"
+import React, { useEffect, useReducer, useState } from "react"
 import { easeOutQuad } from "@/util/EasingFunctions"
-import React from "react"
+import { ProgressEvent, ProgressHandle, ProgressHandleStatus } from "./ProgressNotificationData"
 
 interface ProgressData {
     lastValue: number
@@ -42,8 +41,7 @@ function useInterp(elapse: number, progressData: ProgressData): number {
             clearTimeout(timeout)
             clearInterval(interval)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [progressData])
+    }, [progressData, elapse])
 
     return value
 }
@@ -136,7 +134,7 @@ const ProgressNotifications: React.FC = () => {
         return () => {
             ProgressEvent.removeListener(onHandleUpdate)
         }
-    }, [updateProgressElements])
+    }, [])
 
     return (
         <Box

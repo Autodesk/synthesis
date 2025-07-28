@@ -12,7 +12,6 @@ import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import SubsystemRowInterface from "./SubsystemRowInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 
 class ConfigModeSelectionOption extends SelectMenuOption {
