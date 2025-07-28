@@ -1,4 +1,4 @@
-import { Button, Divider, IconButton, Stack, Typography } from "@mui/material"
+import { Button, Divider, IconButton, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { CustomTooltip, Spacer, SynthesisIcons } from "./StyledComponents"
@@ -73,7 +73,11 @@ const OptionCard: React.FC<OptionCardProps> = ({ value, index, onSelected, onDel
                 <>
                     {Spacer(0, 10)}
                     {/*DeleteButton(onDelete !== undefined ? onDelete : () => {}, "select-menu-delete-button")&*/}
-                    <Button color="error" onClick={onDelete !== undefined ? onDelete : () => {}} id="select-menu-delete-button">
+                    <Button
+                        color="error"
+                        onClick={onDelete !== undefined ? onDelete : () => {}}
+                        id="select-menu-delete-button"
+                    >
                         {SynthesisIcons.DELETE_LARGE}
                     </Button>
                 </>
@@ -191,7 +195,12 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                         )}
                         {/** Add button */}
                         {onAddClicked && (
-                            <Button variant="outlined" color="success" onClick={onAddClicked} id="select-menu-add-button">
+                            <Button
+                                variant="outlined"
+                                color="success"
+                                onClick={onAddClicked}
+                                id="select-menu-add-button"
+                            >
                                 {SynthesisIcons.ADD_LARGE}
                             </Button>
                         )}

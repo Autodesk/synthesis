@@ -1,6 +1,6 @@
 import World from "@/systems/World"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { Box, Button, Checkbox, FormControlLabel, Slider, Stack, Typography } from "@mui/material"
+import { Box, Button, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { PanelImplProps } from "../components/Panel"

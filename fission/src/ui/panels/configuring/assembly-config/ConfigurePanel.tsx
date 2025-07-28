@@ -1,4 +1,4 @@
-import { Button, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import type React from "react"
 import { useEffect, useMemo, useRef, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"

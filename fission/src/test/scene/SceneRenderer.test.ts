@@ -5,7 +5,6 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import SceneObject from "@/systems/scene/SceneObject"
 import SceneRenderer, { STANDARD_CAMERA_FOV_X, STANDARD_CAMERA_FOV_Y } from "@/systems/scene/SceneRenderer"
-import { Theme } from "@/ui/helpers/UseThemeHelpers"
 import JOLT from "@/util/loading/JoltSyncLoader"
 
 interface MockSceneObject {

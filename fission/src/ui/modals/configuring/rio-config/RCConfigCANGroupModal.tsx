@@ -1,4 +1,4 @@
-import { Box, Checkbox, FormControlLabel, Stack, TextField, Typography } from "@mui/material"
+import { Box, Stack, TextField } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"

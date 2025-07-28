@@ -12,7 +12,12 @@ export function clamp(num: number, min: number, max: number): number {
 }
 
 export function deobf(s: string) {
-    return decodeURIComponent('%' + atob(s).match(/.{1,2}/g)!.join('%'))
+    return decodeURIComponent(
+        "%" +
+            atob(s)
+                .match(/.{1,2}/g)!
+                .join("%")
+    )
 }
 
 export function findListDifference<T>(previousList: T[], currentList: T[]): { added: T[]; removed: T[] } {
@@ -21,4 +26,3 @@ export function findListDifference<T>(previousList: T[], currentList: T[]): { ad
 
     return { added, removed }
 }
-

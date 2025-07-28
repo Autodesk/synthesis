@@ -44,8 +44,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
             }
             setConfigurationType("INPUTS")
-            if (scheme)
-                setSelectedScheme(scheme)
+            if (scheme) setSelectedScheme(scheme)
         }
     }, [closePanel, targetAssembly])
 

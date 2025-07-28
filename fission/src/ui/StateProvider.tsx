@@ -1,5 +1,5 @@
 import type React from "react"
-import {  useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 import type { InputScheme } from "@/systems/input/InputSchemeManager"
 import { StateContext, StateProviderProps } from "./helpers/StateProviderHelpers"
 import { ConfigurationType, ConfigurePanelSettings } from "./panels/configuring/assembly-config/ConfigurePanel"

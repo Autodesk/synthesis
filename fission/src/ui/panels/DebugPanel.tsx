@@ -1,4 +1,4 @@
-import { Box, Button, Stack, Typography } from "@mui/material"
+import { Box, Button, Stack } from "@mui/material"
 import type React from "react"
 import APS from "@/aps/APS"
 import MirabufCachingService, {
@@ -17,7 +17,7 @@ import WsViewPanel from "./WsViewPanel"
 import Label from "../components/Label"
 import { useEffect } from "react"
 
-function ToggleDragMode() {
+function toggleDragMode() {
     const dragSystem = World.dragModeSystem
     if (dragSystem) {
         dragSystem.enabled = !dragSystem.enabled
@@ -64,7 +64,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     Toasts
                 </Button>
                 <Button onClick={() => openPanel(<PokerPanel />, panel)}>The Poker</Button>
-                <Button onClick={ToggleDragMode} className="w-full">
+                <Button onClick={toggleDragMode} className="w-full">
                     Toggle Drag Mode
                 </Button>
                 <Button onClick={() => PreferencesSystem.clearPreferences()} className="w-full">

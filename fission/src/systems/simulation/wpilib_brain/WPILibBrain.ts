@@ -1,8 +1,6 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-// import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
-import { SimConfig } from "@/ui/panels/simulation/SimConfigShared"
 import Lazy from "@/util/Lazy.ts"
 import { random } from "@/util/Random"
 import Brain from "../Brain"

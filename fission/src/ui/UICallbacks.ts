@@ -1,9 +1,7 @@
-/**
- * Holds
- */
 export class UICallback<T extends unknown[], U> extends Function {
     private _userDefinedFunc?: (...args: T) => U
     private _defaultFunc?: (...args: T) => U
+    // biome-ignore lint/style/useNamingConvention: used in the code returned in the constructor
     private __self__: UICallback<T, U>
 
     constructor() {

@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Typography } from "@mui/material"
+import { Box, Button, Divider } from "@mui/material"
 import { useEffect, useState } from "react"
 import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
 import Label from "./Label"

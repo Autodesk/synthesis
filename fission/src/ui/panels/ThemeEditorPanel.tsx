@@ -1,6 +1,6 @@
 import { randomColor } from "@/util/Random"
 import { useThemeContext } from "../helpers/ThemeProviderHelpers"
-import { Box, Button, FormControlLabel, Stack, Switch, TextField, Typography } from "@mui/material"
+import { Box, Button, Stack, TextField } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"

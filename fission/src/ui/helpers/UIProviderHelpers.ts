@@ -1,6 +1,6 @@
 import { VariantType } from "notistack"
 import { createContext, ReactElement, ReactNode, useContext } from "react"
-import { UICallback } from "./UICallbacks"
+import { UICallback } from "../UICallbacks"
 
 export enum CloseType {
     Accept = 0,

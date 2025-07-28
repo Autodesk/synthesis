@@ -7,7 +7,7 @@ import { StoredTheme, ThemeContext, ThemeProviderProps } from "./helpers/ThemePr
 export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     const loadTheme = useCallback(() => {
         const themeObj = localStorage.getItem("theme") ?? "{}"
-        let json: StoredTheme;
+        let json: StoredTheme
         try {
             json = JSON.parse(themeObj)
         } catch (_e) {
@@ -17,66 +17,66 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
         return json
     }, [])
 
-	const [themeOptions, setThemeOptions] = useState<StoredTheme>(loadTheme());
-	const [mode, setMode] = useState<PaletteMode>(themeOptions.mode ?? "dark");
-	const [primaryColor, setPrimaryColor] = useState(themeOptions.primary?.main ?? "#90caf9");
-	const [secondaryColor, setSecondaryColor] = useState(themeOptions.secondary?.main ?? "#ce93d8");
+    const [themeOptions, setThemeOptions] = useState<StoredTheme>(loadTheme())
+    const [mode, setMode] = useState<PaletteMode>(themeOptions.mode ?? "dark")
+    const [primaryColor, setPrimaryColor] = useState(themeOptions.primary?.main ?? "#90caf9")
+    const [secondaryColor, setSecondaryColor] = useState(themeOptions.secondary?.main ?? "#ce93d8")
 
-	useEffect(() => {
-		localStorage.setItem("theme", JSON.stringify(themeOptions));
-	}, [themeOptions]);
+    useEffect(() => {
+        localStorage.setItem("theme", JSON.stringify(themeOptions))
+    }, [themeOptions])
 
-	const theme = useMemo(
-		() =>
-			createTheme({
-				palette: {
-					mode,
-					primary: {
-						main: primaryColor,
-					},
-					secondary: {
-						main: secondaryColor,
-					},
-				},
-				components: {
-					MuiButton: {
-						defaultProps: {
-							variant: "contained",
-						},
-					},
-				},
-			}),
-		[mode, primaryColor, secondaryColor],
-	);
+    const theme = useMemo(
+        () =>
+            createTheme({
+                palette: {
+                    mode,
+                    primary: {
+                        main: primaryColor,
+                    },
+                    secondary: {
+                        main: secondaryColor,
+                    },
+                },
+                components: {
+                    MuiButton: {
+                        defaultProps: {
+                            variant: "contained",
+                        },
+                    },
+                },
+            }),
+        [mode, primaryColor, secondaryColor]
+    )
 
-	useEffect(() => {
-		setThemeOptions({
+    useEffect(() => {
+        setThemeOptions({
             ...themeOptions,
-			mode,
-			primary: {
-				main: primaryColor,
-			},
-			secondary: {
-				main: secondaryColor,
-			},
-		});
-	}, [mode, primaryColor, secondaryColor]);
+            mode,
+            primary: {
+                main: primaryColor,
+            },
+            secondary: {
+                main: secondaryColor,
+            },
+        })
+    }, [mode, primaryColor, secondaryColor])
 
-	const themeContextValue = useMemo(
-		() => ({
+    const themeContextValue = useMemo(
+        () => ({
             setMode,
-			setPrimaryColor,
-			setSecondaryColor,
-			mode,
-			primaryColor,
-			secondaryColor,
-		}),
-		[mode, primaryColor, secondaryColor],
-	);
+            setPrimaryColor,
+            setSecondaryColor,
+            mode,
+            primaryColor,
+            secondaryColor,
+        }),
+        [mode, primaryColor, secondaryColor]
+    )
 
-	return (
-		<ThemeContext.Provider value={themeContextValue}>
-			<MUIThemeProvider theme={theme}>{children}</MUIThemeProvider>
-		</ThemeContext.Provider>
-	);
-};
+    return (
+        <ThemeContext.Provider value={themeContextValue}>
+            <MUIThemeProvider theme={theme}>{children}</MUIThemeProvider>
+        </ThemeContext.Provider>
+    )
+}

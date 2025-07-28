@@ -1,7 +1,7 @@
 import type React from "react"
 import type { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
 import { useCallback, useEffect, useState } from "react"
-import { Checkbox, FormControlLabel, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 import World from "@/systems/World"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"

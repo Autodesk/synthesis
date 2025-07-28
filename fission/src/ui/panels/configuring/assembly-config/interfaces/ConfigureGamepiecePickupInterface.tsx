@@ -1,6 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
 import { Switch } from "@mui/base/Switch"
-import { Button, FormControlLabel, Slider, Stack, Typography } from "@mui/material"
+import { Button, Stack } from "@mui/material"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"

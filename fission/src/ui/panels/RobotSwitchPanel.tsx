@@ -1,4 +1,4 @@
-import { Button, Stack, Typography } from "@mui/material"
+import { Button, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"

@@ -1,4 +1,4 @@
-import { Box, Button, Checkbox, Divider, FormControlLabel, MenuItem, Select, Stack, Typography } from "@mui/material"
+import { Box, Button, Divider, MenuItem, Select, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import InputSystem, {
@@ -215,7 +215,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     }}
                 >
                     {gamepadAxes.map(axis => (
-                        <MenuItem value={axis}>{axis}</MenuItem>
+                        <MenuItem key={`axis-${axis}`} value={axis}>{axis}</MenuItem>
                     ))}
                 </Select>
             </Stack>
@@ -281,7 +281,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     }}
                 >
                     {touchControlsAxes.map(axis => (
-                        <MenuItem value={axis}>{axis}</MenuItem>
+                        <MenuItem key={`touch-axis-${axis}`} value={axis}>{axis}</MenuItem>
                     ))}
                 </Select>
             </Stack>

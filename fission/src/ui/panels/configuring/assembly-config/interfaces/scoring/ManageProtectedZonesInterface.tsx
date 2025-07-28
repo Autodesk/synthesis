@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material"
+import { Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"

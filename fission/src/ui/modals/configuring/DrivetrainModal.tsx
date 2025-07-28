@@ -17,7 +17,7 @@ const DrivetrainModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     return (
         <Select label="Type" value={drivetrain} onChange={e => setDrivetrain(e.target.value as DrivetrainType)}>
             {["None", "Tank", "Arcade", "Swerve"].map(opt => (
-                <MenuItem value={opt}>{opt}</MenuItem>
+                <MenuItem key={`drive-type-${opt}`} value={opt}>{opt}</MenuItem>
             ))}
         </Select>
     )

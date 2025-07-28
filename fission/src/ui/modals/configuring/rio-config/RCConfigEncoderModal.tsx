@@ -1,4 +1,4 @@
-import { MenuItem, Select, TextField, Typography } from "@mui/material"
+import { MenuItem, Select, TextField } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -57,12 +57,12 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             <TextField placeholder="..." className="w-full" onChange={e => setName(e.target.value)} />
             <Select label="CAN Encoders" onChange={e => setSelectedDevice(e.target.value as string)}>
                 {devices.map(d => (
-                    <MenuItem value={d[0]}>{d[0]}</MenuItem>
+                    <MenuItem key={`encoder-type-${d[0]}`} value={d[0]}>{d[0]}</MenuItem>
                 ))}
             </Select>
             <Select label="Stimuli" onChange={e => setSelectedStimulus(stimMap.get(e.target.value as string))}>
                 {[...stimMap.keys()].map(s => (
-                    <MenuItem value={s}>{s}</MenuItem>
+                    <MenuItem key={`stim-type-${s}`} value={s}>{s}</MenuItem>
                 ))}
             </Select>
         </>

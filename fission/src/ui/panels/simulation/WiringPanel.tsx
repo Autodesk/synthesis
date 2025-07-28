@@ -1,4 +1,4 @@
-import { Button, Checkbox, FormControlLabel, Grid, Stack, Typography } from "@mui/material"
+import { Button, Checkbox, Grid, Stack } from "@mui/material"
 import {
     type Connection,
     type FinalConnectionState,
@@ -54,7 +54,7 @@ type NodeType = ComponentType<
 const nodeTypes: Record<string, NodeType> = [WiringNode].reduce<{
     [k: string]: NodeType
 }>((prev, next) => {
-    prev[next.name] = next
+    prev[next.name] = next as NodeType
     return prev
 }, {})
 
@@ -140,7 +140,7 @@ function generateGraph(
     return [[...nodes.values()], edges]
 }
 
-function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const simOut: HandleInfo[] = []
     const simIn: HandleInfo[] = []
     for (const [_k, v] of Object.entries(simConfig.handles)) {
@@ -186,7 +186,7 @@ function SimIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     )
 }
 
-function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
+function RobotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
     const [canEncoders, canMotors, pwmDevices, accelerometers] = useMemo(() => {
         const canEncoders: JSX.Element[] = []
         const canMotors: JSX.Element[] = []
@@ -194,7 +194,7 @@ function RobotIOComponent({ setConfigState, simConfig }: ConfigComponentProps) {
         const accelerometers: JSX.Element[] = []
 
         for (const [_k, v] of Object.entries(simConfig.handles)) {
-            if (v.nodeId !== NODE_ID_ROBOT_IO) return
+            if (v.nodeId !== NODE_ID_ROBOT_IO) return []
 
             /* label=`${v.displayName}` */
             const checkbox = (
@@ -418,14 +418,14 @@ const WiringPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         </ReactFlowProvider>
                     )}
                     {configState === "robotIO" && (
-                        <RobotIOComponent
+                        <RobotIoComponent
                             simConfig={simConfig}
                             selectedAssembly={selectedAssembly}
                             setConfigState={setConfigState}
                         />
                     )}
                     {configState === "simIO" && (
-                        <SimIOComponent
+                        <SimIoComponent
                             simConfig={simConfig}
                             selectedAssembly={selectedAssembly}
                             setConfigState={setConfigState}

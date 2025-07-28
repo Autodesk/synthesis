@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
-import { Checkbox, Divider, FormControlLabel, Stack } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
 import EditInputInterface from "./EditInputInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 

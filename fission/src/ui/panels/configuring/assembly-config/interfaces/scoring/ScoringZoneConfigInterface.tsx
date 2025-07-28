@@ -18,7 +18,7 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Button, Checkbox, FormControlLabel, TextField } from "@mui/material"
+import { Button, TextField } from "@mui/material"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 
 /**

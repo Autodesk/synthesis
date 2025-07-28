@@ -1,5 +1,4 @@
-import { Switch, Tooltip } from "@mui/material"
-import { Stack, Typography } from "@mui/material"
+import { Switch, Stack } from "@mui/material"
 import React from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import { LabelWithTooltip } from "./StyledComponents"

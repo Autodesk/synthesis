@@ -1,5 +1,5 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Button, TextField, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import { Button, TextField, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import { Stack, styled } from "@mui/system"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"

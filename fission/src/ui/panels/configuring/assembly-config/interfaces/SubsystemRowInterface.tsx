@@ -1,4 +1,4 @@
-import { Checkbox, Divider, FormControlLabel, Slider, Stack, Typography } from "@mui/material"
+import { Divider, Stack } from "@mui/material"
 import { useCallback, useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"

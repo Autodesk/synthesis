@@ -7,7 +7,7 @@ import {
 } from "@/systems/simulation/SimConfigShared"
 import Label from "@/ui/components/Label"
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
-import { Stack, Typography } from "@mui/material"
+import { Stack } from "@mui/material"
 import { type Connection, type Edge, Handle, type NodeProps, Position } from "@xyflow/react"
 import { useCallback, useMemo } from "react"
 

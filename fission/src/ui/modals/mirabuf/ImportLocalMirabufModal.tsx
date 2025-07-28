@@ -8,7 +8,7 @@ import type { ModalImplProps } from "@/ui/components/Modal"
 import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialConfigPanel"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import { Button, Stack, styled, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material"
+import { Button, Stack, styled, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import { type ChangeEvent, useEffect, useState } from "react"
 
 const VisuallyHiddenInput = styled("input")({

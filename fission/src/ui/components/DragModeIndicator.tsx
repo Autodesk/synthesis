@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react"
 import { FaHandPaper } from "react-icons/fa"
 import { globalAddToast } from "./GlobalUIControls"
-import { Typography } from "@mui/material"
 import Label from "./Label"
 
 const DragModeIndicator: React.FC = () => {

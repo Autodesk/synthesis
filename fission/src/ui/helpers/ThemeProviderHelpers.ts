@@ -6,13 +6,13 @@ export interface ThemeProviderProps {
 }
 
 export interface StoredTheme {
-	mode: PaletteMode;
-	primary: {
-		main: string;
-	};
-	secondary: {
-		main: string;
-	};
+    mode: PaletteMode
+    primary: {
+        main: string
+    }
+    secondary: {
+        main: string
+    }
 }
 
 export const ThemeContext = createContext({

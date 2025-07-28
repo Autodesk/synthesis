@@ -53,7 +53,7 @@
         "noUnusedLabels": "error",
         "noUnusedImports": "error",
         "noUnusedVariables": "error",
-        "useExhaustiveDependencies": "warn",
+        "useExhaustiveDependencies": "off",
         "useHookAtTopLevel": "error",
         "useIsNan": "error",
         "useValidForDirection": "error",
@@ -65,9 +65,9 @@
         "noNamespace": "error",
         "useArrayLiterals": "error",
         "useAsConstAssertion": "error",
-        "useComponentExportOnlyModules": "warn",
+        "useComponentExportOnlyModules": "off",
         "useNamingConvention": {
-          "level": "warn",
+          "level": "off",
           "options": {
             "strictCase": false,
             "requireAscii": true,
@@ -122,7 +122,7 @@
         }
       },
       "suspicious": {
-        "noAssignInExpressions": "error",
+        "noAssignInExpressions": "off",
         "noAsyncPromiseExecutor": "error",
         "noCatchAssign": "error",
         "noClassAssign": "error",

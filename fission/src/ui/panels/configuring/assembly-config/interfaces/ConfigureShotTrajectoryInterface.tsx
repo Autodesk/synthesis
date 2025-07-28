@@ -18,7 +18,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Button, FormControlLabel, Slider, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
+import { Button, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import StatefulSlider from "@/ui/components/StatefulSlider"
 
 // slider constants

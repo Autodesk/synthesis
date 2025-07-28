@@ -38,6 +38,7 @@ import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import React from "react"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
+import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 
 const DEBUG_BODIES = false
 

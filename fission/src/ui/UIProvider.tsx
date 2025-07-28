@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid"
 import { UICallback } from "./UICallbacks"
 import {
     CloseType,
-    ConfigureScreenFn, 
+    ConfigureScreenFn,
     Modal,
     ModalProps,
     OpenModalFn,
@@ -16,7 +16,7 @@ import {
     PanelProps,
     UIContext,
     UIScreen,
-    UIScreenCallbacks
+    UIScreenCallbacks,
 } from "./helpers/UIProviderHelpers"
 
 export type UIProviderProps = {

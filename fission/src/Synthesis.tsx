@@ -1,6 +1,6 @@
 import { AnimatePresence } from "framer-motion"
 import { SnackbarProvider } from "notistack"
-import { useCallback, useContext, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import MainHUD from "@/components/MainHUD"
 import Scene from "@/components/Scene.tsx"
 import World from "@/systems/World.ts"
@@ -16,7 +16,7 @@ import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
-import { UIContext, UIProvider } from "./ui/UIProvider.tsx"
+import { UIProvider } from "./ui/UIProvider.tsx"
 import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
 
 function Synthesis() {

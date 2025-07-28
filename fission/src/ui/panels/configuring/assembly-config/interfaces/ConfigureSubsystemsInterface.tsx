@@ -13,6 +13,7 @@ import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisB
 import World from "@/systems/World"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import SubsystemRowInterface from "./SubsystemRowInterface"
 
 class ConfigModeSelectionOption extends SelectMenuOption {
     driver: Driver

@@ -1,13 +1,21 @@
 import { PanelImplProps } from "@/ui/components/Panel"
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
 import { SynthesisIcons, PositiveButton, NegativeButton } from "@/ui/components/StyledComponents"
-import { Box, Button, Divider, Typography } from "@mui/material"
-import MatchMode, { DEFAULT_AUTONOMOUS_TIME, DEFAULT_TELEOP_TIME, DEFAULT_ENDGAME_TIME, DEFAULT_HEIGHT_PENALTY, DEFAULT_IGNORE_ROTATION, DEFAULT_MAX_HEIGHT } from "@/systems/match_mode/MatchMode"
+import { Box, Button, Divider } from "@mui/material"
+import MatchMode, {
+    DEFAULT_AUTONOMOUS_TIME,
+    DEFAULT_TELEOP_TIME,
+    DEFAULT_ENDGAME_TIME,
+    DEFAULT_HEIGHT_PENALTY,
+    DEFAULT_IGNORE_ROTATION,
+    DEFAULT_MAX_HEIGHT,
+} from "@/systems/match_mode/MatchMode"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { CloseType, OpenModalFn, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { Stack } from "@mui/system"
 import Label from "@/ui/components/Label"
+import { convertFeetToMeters } from "@/util/UnitConversions"
 
 /**
  * Configuration for match mode rules and timing.

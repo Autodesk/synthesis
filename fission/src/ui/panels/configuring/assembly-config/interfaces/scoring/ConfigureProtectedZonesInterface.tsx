@@ -1,4 +1,4 @@
-import { Box, Button, Divider, Stack, Typography } from "@mui/material"
+import { Box, Button, Divider, Stack } from "@mui/material"
 import type React from "react"
 import { useState } from "react"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
