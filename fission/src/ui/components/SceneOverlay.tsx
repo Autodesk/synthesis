@@ -33,7 +33,7 @@ const SceneOverlay: React.FC = () => {
                     position: "absolute",
                     left: x.position[0],
                     top: x.position[1],
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    backgroundColor: x.getCSSColor(),
                     borderRadius: "8px",
                     padding: "8px",
                     whiteSpace: "nowrap",
