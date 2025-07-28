@@ -9,22 +9,7 @@ import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import React from "react"
 import RobotDimensionTracker from "./RobotDimensionTracker"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
-
-export enum MatchModeType {
-    SANDBOX = "Sandbox",
-    AUTONOMOUS = "Autonomous",
-    TELEOP = "Teleop",
-    ENDGAME = "Endgame",
-    MATCH_ENDED = "Match Ended",
-}
-
-// Default match mode timing values
-export const DEFAULT_AUTONOMOUS_TIME = 15
-export const DEFAULT_TELEOP_TIME = 135
-export const DEFAULT_ENDGAME_TIME = 20
-export const DEFAULT_IGNORE_ROTATION = true
-export const DEFAULT_MAX_HEIGHT = Infinity
-export const DEFAULT_HEIGHT_PENALTY = 2
+import { DEFAULT_AUTONOMOUS_TIME, DEFAULT_ENDGAME_TIME, DEFAULT_HEIGHT_PENALTY, DEFAULT_IGNORE_ROTATION, DEFAULT_MAX_HEIGHT, DEFAULT_TELEOP_TIME, MatchModeType } from "./MatchModeTypes"
 
 class MatchMode {
     private static _instance: MatchMode

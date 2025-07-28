@@ -2,14 +2,15 @@ import { PanelImplProps } from "@/ui/components/Panel"
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
 import { SynthesisIcons, PositiveButton, NegativeButton } from "@/ui/components/StyledComponents"
 import { Box, Button, Divider } from "@mui/material"
-import MatchMode, {
+import MatchMode from "@/systems/match_mode/MatchMode"
+import {
     DEFAULT_AUTONOMOUS_TIME,
     DEFAULT_TELEOP_TIME,
     DEFAULT_ENDGAME_TIME,
     DEFAULT_HEIGHT_PENALTY,
     DEFAULT_IGNORE_ROTATION,
     DEFAULT_MAX_HEIGHT,
-} from "@/systems/match_mode/MatchMode"
+} from "@/systems/match_mode/MatchModeTypes"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
 import { CloseType, OpenModalFn, useUIContext } from "@/ui/helpers/UIProviderHelpers"

@@ -9,7 +9,7 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
-import type { ConfigurationType } from "../ConfigurePanel"
+import { ConfigurationType } from "../ConfigTypes"
 
 interface AssemblySelectionProps {
     configurationType: ConfigurationType

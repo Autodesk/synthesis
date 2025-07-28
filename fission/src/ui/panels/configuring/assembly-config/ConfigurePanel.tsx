@@ -4,8 +4,8 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { setSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import InputSchemeManager, { type InputScheme } from "@/systems/input/InputSchemeManager"
-import InputSystem from "@/systems/input/InputSystem"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import InputSystem, { InputScheme } from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { FieldPreferences, MotorPreferences, RobotPreferences } from "@/systems/preferences/PreferenceTypes"
 import type SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
@@ -30,28 +30,11 @@ import ConfigureScoringZonesInterface from "./interfaces/scoring/ConfigureScorin
 import Label from "@/ui/components/Label"
 import DrivetrainSelectionInterface from "./interfaces/DrivetrainSelectionInterface"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-
-const CONFIG_OPTS = ["ROBOTS", "FIELDS", "INPUTS"] as const
-export type ConfigurationType = (typeof CONFIG_OPTS)[number]
+import { ConfigMode, CONFIG_OPTS } from "./ConfigTypes"
 
 export interface ConfigurePanelSettings {
     configMode?: ConfigMode
     selectedAssembly: MirabufSceneObject
-}
-
-export enum ConfigMode {
-    SUBSYSTEMS,
-    EJECTOR,
-    INTAKE,
-    CONTROLS,
-    SEQUENTIAL,
-    SCORING_ZONES,
-    PROTECTED_ZONES,
-    MOVE,
-    SIM,
-    BRAIN,
-    DRIVETRAIN,
-    ALLIANCE,
 }
 
 interface ConfigInterfaceProps<T> {

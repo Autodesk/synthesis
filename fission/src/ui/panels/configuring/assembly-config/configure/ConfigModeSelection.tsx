@@ -1,6 +1,6 @@
 import type React from "react"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
-import type { ConfigMode } from "../ConfigurePanel"
+import { ConfigMode } from "../ConfigTypes"
 
 export class ConfigModeSelectionOption extends SelectMenuOption {
     configMode: ConfigMode

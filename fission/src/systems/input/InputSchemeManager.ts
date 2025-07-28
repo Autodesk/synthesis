@@ -7,30 +7,12 @@ import InputSystem, {
 	AxisInput,
 	ButtonInput,
 	Input,
+	InputScheme,
+	InputSchemeAvailability,
+	InputSchemeUseType,
 	KeyDescriptor,
 } from './InputSystem';
 
-export type InputScheme = {
-	schemeName: string;
-	descriptiveName: string;
-	customized: boolean;
-	usesGamepad: boolean;
-	usesTouchControls: boolean;
-	supportedDrivetrains: DriveType[];
-	inputs: Input[];
-};
-
-export enum InputSchemeUseType {
-	IN_USE, // bound to a robot
-	CONFLICT, // has keys overlapping with a bound scheme
-	AVAILABLE, // no overlap and not bound
-}
-
-export type InputSchemeAvailability = {
-	scheme: InputScheme;
-	status: InputSchemeUseType;
-	conflicts_with_names?: string;
-};
 
 class InputSchemeManager {
 	// References to the current custom schemes to avoid parsing every time they are requested

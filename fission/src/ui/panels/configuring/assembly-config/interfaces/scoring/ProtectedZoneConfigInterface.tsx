@@ -16,10 +16,10 @@ import {
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import { MatchModeType } from "@/systems/match_mode/MatchMode"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import { Button, MenuItem, Select, Stack, TextField } from "@mui/material"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 
 const MATCH_MODE_OPTIONS: MatchModeType[] = [
 	MatchModeType.SANDBOX,

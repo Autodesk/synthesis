@@ -1,7 +1,6 @@
 import { DriveType } from '@/systems/simulation/behavior/Behavior.ts';
 import { TouchControlsAxes } from '@/ui/components/TouchControls';
-import { InputScheme } from './InputSchemeManager';
-import { AxisInput, ButtonInput, ModifierState } from './InputSystem';
+import { AxisInput, ButtonInput, InputScheme, ModifierState } from './InputSystem';
 
 type InputSupplier = () => InputScheme;
 /** The purpose of this class is to store any defaults related to the input system. */

@@ -1,23 +1,10 @@
 import { KeyCode } from '@/systems/input/KeyboardTypes.ts';
-import MatchMode, { MatchModeType } from '@/systems/match_mode/MatchMode';
+import MatchMode from '@/systems/match_mode/MatchMode';
 import { DriveType } from '@/systems/simulation/behavior/Behavior.ts';
 import { TouchControlsAxes } from '@/ui/components/TouchControls';
 import Joystick from '../scene/Joystick';
 import WorldSystem from '../WorldSystem';
-import { InputScheme } from './InputSchemeManager';
-
-export type ModifierState = Readonly<{
-	alt: boolean;
-	ctrl: boolean;
-	shift: boolean;
-	meta: boolean;
-}>;
-export const EMPTY_MODIFIER_STATE: ModifierState = {
-	ctrl: false,
-	alt: false,
-	shift: false,
-	meta: false,
-};
+import { MatchModeType } from '../match_mode/MatchModeTypes';
 
 export type InputName =
 	| 'arcadeDrive'
@@ -27,6 +14,42 @@ export type InputName =
 	| 'intake'
 	| 'eject'
 	| `joint ${number}`;
+
+export type ModifierState = Readonly<{
+	alt: boolean;
+	ctrl: boolean;
+	shift: boolean;
+	meta: boolean;
+}>;
+
+export type InputScheme = {
+	schemeName: string;
+	descriptiveName: string;
+	customized: boolean;
+	usesGamepad: boolean;
+	usesTouchControls: boolean;
+	supportedDrivetrains: DriveType[];
+	inputs: Input[];
+};
+
+export enum InputSchemeUseType {
+	IN_USE, // bound to a robot
+	CONFLICT, // has keys overlapping with a bound scheme
+	AVAILABLE, // no overlap and not bound
+}
+
+export type InputSchemeAvailability = {
+	scheme: InputScheme;
+	status: InputSchemeUseType;
+	conflicts_with_names?: string;
+};
+
+export const EMPTY_MODIFIER_STATE: ModifierState = {
+	ctrl: false,
+	alt: false,
+	shift: false,
+	meta: false,
+};
 
 const inputDriveTypeAssociations: Partial<Record<InputName, DriveType>> = {
 	arcadeDrive: DriveType.ARCADE,

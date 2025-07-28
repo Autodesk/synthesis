@@ -1,12 +1,7 @@
 import { Box, Button, Divider, MenuItem, Select, Stack, Tooltip } from "@mui/material"
 import { ReactElement, useEffect, useReducer, useState } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
-import InputSchemeManager, {
-    InputSchemeAvailability,
-    InputSchemeUseType,
-    type InputScheme,
-} from "@/systems/input/InputSchemeManager"
-import InputSystem from "@/systems/input/InputSystem"
+import InputSystem, { InputScheme, InputSchemeAvailability, InputSchemeUseType } from "@/systems/input/InputSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { DeleteButton, EditButton, PositiveButton, SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
@@ -14,6 +9,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import { TouchControlsEvent, TouchControlsEventKeys } from "@/ui/components/TouchControls"
 import Label from "@/ui/components/Label"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 
 interface InputSchemeSelectionProps {
     brainIndex: number

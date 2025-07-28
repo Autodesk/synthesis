@@ -15,7 +15,7 @@ import {
 } from "@/util/TypeConversions"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MiraType } from "./MirabufLoader"
-import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
+import MatchMode from "@/systems/match_mode/MatchMode"
 
 export enum ContactType {
     ROBOT_ENTERS = "Opponent Robot Enters",
@@ -25,6 +25,7 @@ export enum ContactType {
     BLUE_ROBOT_INSIDE = "Collision with Blue Robot Inside",
 }
 import MirabufSceneObject, { RigidNodeAssociate } from "./MirabufSceneObject"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 
 class ProtectedZoneSceneObject extends SceneObject {
     // Colors
