@@ -17,7 +17,3 @@ export function findListDifference<T>(previousList: T[], currentList: T[]): { ad
 
     return { added, removed }
 }
-
-export function clean<V>(cache: { [k: string]: V }) {
-    Object.keys(cache).forEach(key => delete cache[key])
-}
