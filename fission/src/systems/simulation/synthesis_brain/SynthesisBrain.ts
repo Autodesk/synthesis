@@ -116,12 +116,12 @@ class SynthesisBrain extends Brain {
         this._assembly.ejectorActive = InputSystem.getInput("eject", this._brainIndex) > 0.5
         this._assembly.intakeActive = InputSystem.getInput("intake", this._brainIndex) > 0.5
 
-        // Handle unstick 
+        // Handle unstick
         const unstickPressed = InputSystem.getInput("unstick", this._brainIndex) === 1
         if (unstickPressed && !this._prevUnstickPressed) {
             this.applyUnstickForce()
         }
-        
+
         this._prevUnstickPressed = unstickPressed
     }
 
@@ -142,7 +142,7 @@ class SynthesisBrain extends Brain {
         }
 
         const unstickForce = new JOLT.Vec3(0, PreferencesSystem.getRobotPreferences(this._assemblyName).unstickForce, 0)
-        body.AddForce(unstickForce)        
+        body.AddForce(unstickForce)
     }
 
     public disable(): void {

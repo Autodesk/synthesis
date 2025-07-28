@@ -133,6 +133,7 @@ describe("Preference System Robot/Field", () => {
             },
             driveVelocity: 3,
             driveAcceleration: 6,
+            unstickForce: 8000,
         }
         const robotPreferences2: RobotPreferences = {
             inputsSchemes: [],
@@ -153,6 +154,7 @@ describe("Preference System Robot/Field", () => {
             },
             driveVelocity: 1.5,
             driveAcceleration: 8,
+            unstickForce: 10000,
         }
 
         PreferencesSystem.setRobotPreferences("RobotPreferences1", robotPreferences1)
