@@ -18,7 +18,7 @@ import { MiraType } from "./MirabufLoader"
 import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
 
 export enum ContactType {
-    ROBOT_ENTERS = "Robot Enters",
+    ROBOT_ENTERS = "Opponent Robot Enters",
     ANY_ROBOT_INSIDE = "Collision with Any Robot Inside",
     BOTH_ROBOTS_INSIDE = "Collision with Both Robots Inside",
     RED_ROBOT_INSIDE = "Collision with Red Robot Inside",
