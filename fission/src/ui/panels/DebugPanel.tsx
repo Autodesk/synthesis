@@ -1,10 +1,6 @@
 import { Box, styled } from "@mui/material"
 import APS from "@/aps/APS"
-import MirabufCachingService, {
-    backUpFields as hashedMiraFields,
-    backUpRobots as hashedMiraRobots,
-    MiraType,
-} from "@/mirabuf/MirabufLoader"
+import MirabufCachingService, { backUpMap, MiraType } from "@/mirabuf/MirabufLoader"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import World from "@/systems/World"
 import { random } from "@/util/Random"
@@ -107,8 +103,8 @@ const DebugPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                         onClick={() => {
                             console.log(MirabufCachingService.getCacheMap(MiraType.ROBOT))
                             console.log(MirabufCachingService.getCacheMap(MiraType.FIELD))
-                            console.log(hashedMiraRobots)
-                            console.log(hashedMiraFields)
+                            console.log(backUpMap[MiraType.ROBOT])
+                            console.log(backUpMap[MiraType.FIELD])
                         }}
                         className="w-full"
                     />

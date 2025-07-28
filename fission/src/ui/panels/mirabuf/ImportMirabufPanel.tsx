@@ -82,7 +82,7 @@ export type MiraManifest = {
 }
 
 function getCacheInfo(miraType: MiraType): MirabufCacheInfo[] {
-    return Object.values(canOPFS ? MirabufCachingService.getCacheMap(miraType) : backUpMap.get(miraType)!)
+    return Object.values(canOPFS ? MirabufCachingService.getCacheMap(miraType) : backUpMap[miraType])
 }
 
 function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?: ProgressHandle) {
