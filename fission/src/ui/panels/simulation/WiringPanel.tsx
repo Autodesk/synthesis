@@ -6,11 +6,11 @@ import {
     type Node as FlowNode,
     ReactFlow,
     ReactFlowProvider,
+    NodeProps,
     useEdgesState,
     useNodesState,
     useReactFlow,
 } from "@xyflow/react"
-import type { NodeProps } from "postcss"
 import type React from "react"
 import { type ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
