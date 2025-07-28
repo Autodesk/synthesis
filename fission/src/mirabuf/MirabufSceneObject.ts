@@ -526,6 +526,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     /** Updates the position of the nametag relative to the robots position */
     private updateNameTag() {
         if (this._nameTag && PreferencesSystem.getGlobalPreference("RenderSceneTags")) {
+            this._nameTag.color = this._alliance
             const boundingBox = this.computeBoundingBox()
             this._nameTag.position = World.sceneRenderer.worldToPixelSpace(
                 new THREE.Vector3(
