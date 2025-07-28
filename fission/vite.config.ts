@@ -1,7 +1,6 @@
 import fs from "node:fs/promises"
 import basicSsl from "@vitejs/plugin-basic-ssl"
 import react from "@vitejs/plugin-react-swc"
-import git from "git-rev-sync"
 import * as path from "path"
 import { loadEnv, ProxyOptions } from "vite"
 import glsl from "vite-plugin-glsl"
@@ -48,7 +47,7 @@ const localAssetsExist = await fs
     .catch(() => false)
 
 // https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
+export default defineConfig(async ({ mode }) => {
     process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
     const useLocalAssets = localAssetsExist && (mode === "test" || process.env.NODE_ENV == "development")
@@ -98,7 +97,7 @@ export default defineConfig(({ mode }) => {
             ],
         },
         define: {
-            GIT_COMMIT: JSON.stringify(git.short("..")),
+            GIT_COMMIT: JSON.stringify(await getCommitHash()),
         },
         test: {
             setupFiles: ["src/test/TestSetup.browser.ts"],
@@ -140,3 +139,18 @@ export default defineConfig(({ mode }) => {
         },
     }
 })
+
+
+async function getCommitHash() {
+    try {
+        const rev = (await fs.readFile('../.git/HEAD')).toString().trim();
+        if (rev.indexOf(':') === -1) {
+            return rev;
+        } else {
+            return (await fs.readFile('../.git/' + rev.substring(5))).toString().trim();
+        }
+    } catch (e) {
+        console.warn("Could not get git hash", e)
+        return "unknown"
+    }
+}
