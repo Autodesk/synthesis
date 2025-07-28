@@ -75,7 +75,7 @@ describe("MirabufLoader", () => {
             Object.defineProperty(navigator.storage, "getDirectory", {
                 value: vi.fn(async () => ({
                     getDirectoryHandle: vi.fn(async () => ({
-                        name: "Robots",
+                        name: "robot",
                         getFileHandle: vi.fn(async () => ({
                             createWritable: vi.fn(async () => ({
                                 write: vi.fn(),
@@ -156,7 +156,7 @@ describe("MirabufLoader", () => {
 
         localStorageMock["Synthesis Nonce Key"] = "4543246"
         const map = { [key]: { id, miraType, cacheKey: key } }
-        localStorageMock["Robots"] = JSON.stringify(map)
+        localStorageMock["robot"] = JSON.stringify(map)
         backUpMap[miraType][id] = {
             id,
             miraType,
@@ -170,7 +170,7 @@ describe("MirabufLoader", () => {
 
         expect(result).toBe(true)
 
-        const updatedMap = JSON.parse(localStorageMock["Robots"])
+        const updatedMap = JSON.parse(localStorageMock["robot"])
         expect(updatedMap[key].name).toBe(name)
         expect(updatedMap[key].thumbnailStorageID).toBe(thumbnailStorageID)
         expect(updatedMap[key].id).toBe(id)
