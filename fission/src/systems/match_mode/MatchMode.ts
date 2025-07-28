@@ -8,10 +8,11 @@ import RobotDimensionTracker from "./RobotDimensionTracker"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
 
 export enum MatchModeType {
-    SANDBOX = 0,
-    AUTONOMOUS = 1,
-    TELEOP = 2,
-    MATCH_ENDED = 3,
+    SANDBOX = "Sandbox",
+    AUTONOMOUS = "Autonomous",
+    TELEOP = "Teleop",
+    ENDGAME = "Endgame",
+    MATCH_ENDED = "Match Ended",
 }
 
 // Default match mode timing values
@@ -105,6 +106,7 @@ class MatchMode {
 
     endgameStart() {
         SoundPlayer.play(beep)
+        this._matchModeType = MatchModeType.ENDGAME
         this._endgame = true
     }
 
