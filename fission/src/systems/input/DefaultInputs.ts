@@ -26,6 +26,7 @@ class DefaultInputs {
 
                 ButtonInput.onKeyboard("intake", "KeyE"),
                 ButtonInput.onKeyboard("eject", "KeyQ"),
+                ButtonInput.onKeyboard("unstick", "Space"),
 
                 AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys),
@@ -61,6 +62,7 @@ class DefaultInputs {
 
                 ButtonInput.onKeyboard("intake", "KeyE"),
                 ButtonInput.onKeyboard("eject", "KeyQ"),
+                ButtonInput.onKeyboard("unstick", "Space"),
 
                 AxisInput.onKeyboardSingleKey("joint 1", "Digit1", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 2", "Digit2", negativeModifierKeys),
@@ -96,6 +98,7 @@ class DefaultInputs {
 
                 ButtonInput.onKeyboard("intake", "Semicolon"),
                 ButtonInput.onKeyboard("eject", "KeyL"),
+                ButtonInput.onKeyboard("unstick", "KeyK"),
 
                 AxisInput.onKeyboardSingleKey("joint 1", "Slash", negativeModifierKeys),
                 AxisInput.onKeyboardSingleKey("joint 2", "Period", negativeModifierKeys),
@@ -127,6 +130,7 @@ class DefaultInputs {
 
                 ButtonInput.onGamepad("intake", 4),
                 ButtonInput.onGamepad("eject", 5),
+                ButtonInput.onGamepad("unstick", 6),
 
                 AxisInput.onGamepadButtons("joint 1", 3, 0),
                 AxisInput.onGamepadButtons("joint 2", 1, 2),
@@ -157,6 +161,7 @@ class DefaultInputs {
 
                 ButtonInput.onGamepad("intake", 4),
                 ButtonInput.onGamepad("eject", 5),
+                ButtonInput.onGamepad("unstick", 6),
 
                 AxisInput.onGamepadButtons("joint 1", 12, 13),
                 AxisInput.onGamepadButtons("joint 2", 15, 14),
@@ -186,6 +191,7 @@ class DefaultInputs {
 
                 ButtonInput.onGamepad("intake", 4),
                 ButtonInput.onGamepad("eject", 5),
+                ButtonInput.onGamepad("unstick", 6),
 
                 AxisInput.onGamepadButtons("joint 1", 3, 0),
                 AxisInput.onGamepadButtons("joint 2", 1, 2),
@@ -254,6 +260,7 @@ class DefaultInputs {
 
                 ButtonInput.unbound("intake"),
                 ButtonInput.unbound("eject"),
+                ButtonInput.unbound("unstick"),
 
                 AxisInput.unbound("joint 1"),
                 AxisInput.unbound("joint 2"),

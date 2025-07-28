@@ -14,7 +14,7 @@ export type ModifierState = Readonly<{
 }>
 export const EMPTY_MODIFIER_STATE: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
 
-export type InputName = "arcadeDrive" | "arcadeTurn" | "tankLeft" | "tankRight" | "intake" | "eject" | `joint ${number}`
+export type InputName = "arcadeDrive" | "arcadeTurn" | "tankLeft" | "tankRight" | "intake" | "eject" | "unstick" | `joint ${number}`
 
 const inputDriveTypeAssociations: Partial<Record<InputName, DriveType>> = {
     arcadeDrive: DriveType.ARCADE,
