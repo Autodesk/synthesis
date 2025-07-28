@@ -55,8 +55,7 @@ class ProtectedZoneSceneObject extends SceneObject {
     private _prefs?: ProtectedZonePreferences
     private _joltBodyId?: Jolt.BodyID
     private _mesh?: THREE.Mesh
-    private _collision?: (event: OnContactAddedEvent) => void
-    private _collisionPersisted?: (event: OnContactPersistedEvent) => void
+    private _collision?: (event: OnContactAddedEvent | OnContactPersistedEvent) => void
     private _collisionRemoved?: (event: OnContactRemovedEvent) => void
 
     private _robotsInside: Map<MirabufSceneObject, number> = new Map()
@@ -74,7 +73,7 @@ class ProtectedZoneSceneObject extends SceneObject {
 
     private isRobotInside(robot: MirabufSceneObject): boolean {
         const timeInside = this._robotsInside.get(robot) ?? 0
-        return Date.now() - timeInside < 500
+        return Date.now() - timeInside < 100
     }
 
     public constructor(parentAssembly: MirabufSceneObject, index: number, render?: boolean) {
@@ -127,8 +126,8 @@ class ProtectedZoneSceneObject extends SceneObject {
                     this._mesh?.scale.set(props.scale.x, props.scale.y, props.scale.z)
                 }
 
-                // Detect when something enters the zone
-                this._collision = (event: OnContactAddedEvent) => {
+                // Detect when something enters or persists in the zone
+                this._collision = (event: OnContactAddedEvent | OnContactPersistedEvent) => {
                     const body1 = event.message.body1
                     const body2 = event.message.body2
 
@@ -143,19 +142,7 @@ class ProtectedZoneSceneObject extends SceneObject {
                     this.handleContactPenalty(body1, body2)
                 }
                 OnContactAddedEvent.addListener(this._collision)
-
-                // Detects when something persists in the zone
-                this._collisionPersisted = (event: OnContactPersistedEvent) => {
-                    const body1 = event.message.body1
-                    const body2 = event.message.body2
-
-                    if (body1.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollision(body2)
-                    } else if (body2.GetIndexAndSequenceNumber() == this._joltBodyId?.GetIndexAndSequenceNumber()) {
-                        this.zoneCollision(body1)
-                    }
-                }
-                OnContactPersistedEvent.addListener(this._collisionPersisted)
+                OnContactPersistedEvent.addListener(this._collision)
 
                 // Detects when something leaves the zone
                 this._collisionRemoved = (event: OnContactRemovedEvent) => {
@@ -216,7 +203,10 @@ class ProtectedZoneSceneObject extends SceneObject {
             }
         }
 
-        if (this._collision) OnContactAddedEvent.removeListener(this._collision)
+        if (this._collision) {
+            OnContactAddedEvent.removeListener(this._collision)
+            OnContactPersistedEvent.removeListener(this._collision)
+        }
         if (this._collisionRemoved) OnContactRemovedEvent.removeListener(this._collisionRemoved)
     }
 
