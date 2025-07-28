@@ -9,7 +9,15 @@ import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import React from "react"
 import RobotDimensionTracker from "./RobotDimensionTracker"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
-import { DEFAULT_AUTONOMOUS_TIME, DEFAULT_ENDGAME_TIME, DEFAULT_HEIGHT_PENALTY, DEFAULT_IGNORE_ROTATION, DEFAULT_MAX_HEIGHT, DEFAULT_TELEOP_TIME, MatchModeType } from "./MatchModeTypes"
+import {
+    DEFAULT_AUTONOMOUS_TIME,
+    DEFAULT_ENDGAME_TIME,
+    DEFAULT_HEIGHT_PENALTY,
+    DEFAULT_IGNORE_ROTATION,
+    DEFAULT_MAX_HEIGHT,
+    DEFAULT_TELEOP_TIME,
+    MatchModeType,
+} from "./MatchModeTypes"
 
 class MatchMode {
     private static _instance: MatchMode

@@ -13,4 +13,3 @@ export const DEFAULT_ENDGAME_TIME = 20
 export const DEFAULT_IGNORE_ROTATION = true
 export const DEFAULT_MAX_HEIGHT = Infinity
 export const DEFAULT_HEIGHT_PENALTY = 2
-

@@ -57,12 +57,16 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             <TextField placeholder="..." className="w-full" onChange={e => setName(e.target.value)} />
             <Select label="CAN Encoders" onChange={e => setSelectedDevice(e.target.value as string)}>
                 {devices.map(d => (
-                    <MenuItem key={`encoder-type-${d[0]}`} value={d[0]}>{d[0]}</MenuItem>
+                    <MenuItem key={`encoder-type-${d[0]}`} value={d[0]}>
+                        {d[0]}
+                    </MenuItem>
                 ))}
             </Select>
             <Select label="Stimuli" onChange={e => setSelectedStimulus(stimMap.get(e.target.value as string))}>
                 {[...stimMap.keys()].map(s => (
-                    <MenuItem key={`stim-type-${s}`} value={s}>{s}</MenuItem>
+                    <MenuItem key={`stim-type-${s}`} value={s}>
+                        {s}
+                    </MenuItem>
                 ))}
             </Select>
         </>

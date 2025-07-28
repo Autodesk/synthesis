@@ -167,7 +167,9 @@ const WSViewPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             <Stack>
                 <Select value={selectedType} onChange={e => setSelectedType(e.target.value as SimType)}>
                     {["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro"].map(t => (
-                        <MenuItem key={`device-type-${t}`} value={t}>{t}</MenuItem>
+                        <MenuItem key={`device-type-${t}`} value={t}>
+                            {t}
+                        </MenuItem>
                     ))}
                 </Select>
                 {/* {deviceSelect} */}
@@ -180,7 +182,9 @@ const WSViewPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                             onChange={e => setSelectedValueType(e.target.value as ValueType)}
                         >
                             {["string", "number", "object", "boolean"].map(t => (
-                                <MenuItem key={`value-type-${t}`} value={t}>{t}</MenuItem>
+                                <MenuItem key={`value-type-${t}`} value={t}>
+                                    {t}
+                                </MenuItem>
                             ))}
                         </Select>
                         <Button

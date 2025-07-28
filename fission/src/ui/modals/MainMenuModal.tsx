@@ -3,7 +3,7 @@ import type React from "react"
 import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import type { ModalImplProps } from "../components/Modal"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
-import {  useLayoutEffect } from "react"
+import { useLayoutEffect } from "react"
 import { useStateContext } from "../helpers/StateProviderHelpers"
 
 const MainMenuModal: React.FC<ModalImplProps<void> & { startSingleplayerCallback: () => void }> = ({

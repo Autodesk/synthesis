@@ -215,7 +215,9 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     }}
                 >
                     {gamepadAxes.map(axis => (
-                        <MenuItem key={`axis-${axis}`} value={axis}>{axis}</MenuItem>
+                        <MenuItem key={`axis-${axis}`} value={axis}>
+                            {axis}
+                        </MenuItem>
                     ))}
                 </Select>
             </Stack>
@@ -281,7 +283,9 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     }}
                 >
                     {touchControlsAxes.map(axis => (
-                        <MenuItem key={`touch-axis-${axis}`} value={axis}>{axis}</MenuItem>
+                        <MenuItem key={`touch-axis-${axis}`} value={axis}>
+                            {axis}
+                        </MenuItem>
                     ))}
                 </Select>
             </Stack>
