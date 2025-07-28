@@ -41,9 +41,12 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
     const [force, setForce] = useState<number>(
         ((driver as SliderDriver) || (driver as HingeDriver) || (driver as WheelDriver)).maxForce
     )
+    const [unstickForce, setUnstickForce] = useState<number>(
+        PreferencesSystem.getRobotPreferences(robot.assemblyName).unstickForce
+    )
 
     const onChange = useCallback(
-        (vel: number, force: number) => {
+        (vel: number, force: number, unstick: number) => {
             if (driver instanceof WheelDriver) {
                 const wheelDrivers = robot?.mechanism
                     ? World.simulationSystem
@@ -81,6 +84,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                 ;((driver as SliderDriver) || (driver as HingeDriver)).maxForce = force
             }
 
+            PreferencesSystem.getRobotPreferences(robot.assemblyName).unstickForce = unstick
             PreferencesSystem.savePreferences()
         },
         [driver, robot.mechanism, robot.assemblyName]
@@ -101,7 +105,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                         format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                         onChange={(_, velocity: number | number[]) => {
                             setVelocity(velocity as number)
-                            onChange(velocity as number, force)
+                            onChange(velocity as number, force, unstickForce)
                         }}
                         step={0.01}
                     />
@@ -115,7 +119,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                                 format={{ minimumFractionDigits: 2, maximumFractionDigits: 2 }}
                                 onChange={(_, force: number | number[]) => {
                                     setForce(force as number)
-                                    onChange(velocity, force as number)
+                                    onChange(velocity, force as number, unstickForce)
                                 }}
                                 step={0.01}
                             />
@@ -130,6 +134,17 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                             }}
                         />
                     )}
+                    <Slider
+                        min={0}
+                        max={15000}
+                        value={unstickForce}
+                        label="Unstick Force"
+                        onChange={(_, value: number | number[]) => {
+                            setUnstickForce(value as number)
+                            onChange(velocity, force, value as number)
+                        }}
+                        step={100}
+                    />
                 </Stack>
             </Box>
             <SectionDivider />

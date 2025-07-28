@@ -141,10 +141,8 @@ class SynthesisBrain extends Brain {
             return
         }
 
-        const unstickForce = new JOLT.Vec3(0, 8000, 0)
-        body.AddForce(unstickForce)
-        
-        console.log("Unstick force applied to robot")
+        const unstickForce = new JOLT.Vec3(0, PreferencesSystem.getRobotPreferences(this._assemblyName).unstickForce, 0)
+        body.AddForce(unstickForce)        
     }
 
     public disable(): void {
