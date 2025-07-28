@@ -1,8 +1,9 @@
 import type React from "react"
 import { useMemo, useState } from "react"
-import type { InputScheme } from "@/systems/input/InputSchemeManager"
+import type { InputScheme } from "@/systems/input/InputSystem"
 import { StateContext, StateProviderProps } from "./helpers/StateProviderHelpers"
-import { ConfigurationType, ConfigurePanelSettings } from "./panels/configuring/assembly-config/ConfigurePanel"
+import { ConfigurePanelSettings } from "./panels/configuring/assembly-config/ConfigurePanel"
+import { ConfigurationType } from "./panels/configuring/assembly-config/ConfigTypes"
 
 export const StateProvider: React.FC<StateProviderProps> = ({ children }) => {
     const [unconfirmedImport, setUnconfirmedImport] = useState<boolean>(false)

@@ -6,7 +6,7 @@ import {
     MotorPreferences,
     RobotPreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import { MatchModeType } from "@/systems/match_mode/MatchMode"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
 
 describe("Preferences System Global Values", () => {

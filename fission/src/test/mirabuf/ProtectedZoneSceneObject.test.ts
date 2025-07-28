@@ -3,7 +3,7 @@ import ProtectedZoneSceneObject, { ContactType } from "../../mirabuf/ProtectedZo
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { createBodyMock } from "../mocks/jolt"
-import { MatchModeType } from "@/systems/match_mode/MatchMode"
+import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"

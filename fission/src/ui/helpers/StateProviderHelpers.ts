@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useContext } from "react"
-import { InputScheme } from "@/systems/input/InputSchemeManager"
-import { ConfigurationType, ConfigurePanelSettings } from "../panels/configuring/assembly-config/ConfigurePanel"
+import { InputScheme } from "@/systems/input/InputSystem"
+import { ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
+import { ConfigurePanelSettings } from "../panels/configuring/assembly-config/ConfigurePanel"
 
 export interface StateProviderProps {
     children: ReactNode

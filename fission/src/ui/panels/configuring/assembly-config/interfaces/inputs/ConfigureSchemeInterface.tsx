@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import { Divider, Stack } from "@mui/material"
 import EditInputInterface from "./EditInputInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
+import { Input, InputScheme } from "@/systems/input/InputSystem"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme
@@ -79,7 +80,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
 
             {/* Scroll view for inputs */}
             <Stack ref={scrollRef} gap={2}>
-                {selectedScheme.inputs.map(i => {
+                {selectedScheme.inputs.map((i: Input) => {
                     return (
                         <EditInputInterface
                             key={i.inputName}
