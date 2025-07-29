@@ -16,6 +16,7 @@ import {
     UIContext,
     type UIScreen,
     type UIScreenCallbacks,
+    UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
 
@@ -29,23 +30,33 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
     const { enqueueSnackbar } = useSnackbar()
 
+    const DEFAULT_PROPS = {
+        hideAccept: false,
+        hideCancel: false,
+        acceptText: "Accept",
+        cancelText: "Cancel",
+    } as UIScreenProps
+
+    const DEFAULT_PANEL_PROPS = {
+        ...DEFAULT_PROPS,
+        position: "center"
+    } as PanelProps
+
     const openModal: OpenModalFn = useCallback(
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: Omit<ModalProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = {
-                hideAccept: false,
-                hideCancel: false,
-                acceptText: "Accept",
-                cancelText: "Cancel",
-            }
+            props: Omit<ModalProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS,
         ) => {
             const id = uuidv4()
             const newModal = {
                 id,
                 parent,
                 content,
-                props,
+                props: {
+                    ...DEFAULT_PROPS,
+                    ...props,
+                }
             } as Modal<T>
             modal?.onClose?.(CloseType.Overwrite)
 
@@ -73,20 +84,17 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: Omit<PanelProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = {
-                hideAccept: false,
-                hideCancel: false,
-                acceptText: "Accept",
-                cancelText: "Cancel",
-                position: "center",
-            }
+            props: Omit<PanelProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PANEL_PROPS
         ) => {
             const id = uuidv4()
             const panel = {
                 id,
                 parent,
                 content,
-                props,
+                props: {
+                    ...DEFAULT_PANEL_PROPS,
+                    ...props
+                },
             } as Panel<T>
 
             panel.props.configured = false
