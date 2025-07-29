@@ -1,8 +1,8 @@
-import { fireEvent, getByText, render, act } from "@testing-library/react"
-import { assert, afterEach, beforeEach, describe, test, vi } from "vitest"
-import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { PanelControlProvider } from "@/ui/PanelContext"
+import { act, fireEvent, getByText, render } from "@testing-library/react"
+import { afterEach, assert, beforeEach, describe, test, vi } from "vitest"
 import { ModalControlProvider } from "@/ui/ModalContext"
+import { PanelControlProvider } from "@/ui/PanelContext"
+import MatchModeConfigPanel from "@/ui/panels/configuring/MatchModeConfigPanel"
 
 describe("MatchModeConfigPanel", () => {
     // Mock console methods to suppress output during tests

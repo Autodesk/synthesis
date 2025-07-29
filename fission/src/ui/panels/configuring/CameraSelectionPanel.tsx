@@ -1,11 +1,11 @@
+import React, { useCallback, useEffect, useState } from "react"
+import { AiOutlineCamera } from "react-icons/ai"
 import { CameraControlsType, CustomOrbitControls } from "@/systems/scene/CameraControls"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Checkbox from "@/ui/components/Checkbox"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import React, { useCallback, useEffect, useState } from "react"
-import { AiOutlineCamera } from "react-icons/ai"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 
 interface OrbitSettingsProps {
     controls: CustomOrbitControls

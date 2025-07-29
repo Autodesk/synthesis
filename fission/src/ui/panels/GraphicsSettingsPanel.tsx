@@ -1,26 +1,34 @@
-import Panel, { PanelPropsImpl } from "../components/Panel"
-import { SectionDivider, SectionLabel, SynthesisIcons } from "../components/StyledComponents"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { LabelSize } from "../components/Label"
-import World from "@/systems/World"
-import Slider from "@/ui/components/Slider"
-import { useState } from "react"
-import Dropdown from "@/ui/components/Dropdown"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import Button from "../components/Button"
-import { autoOptimizeGraphics, GRAPHICS_PRESETS, GraphicsPreset } from "../helpers/GraphicsSettings"
-import StatefulCheckbox from "../components/StatefulCheckbox"
+import { useState } from "react";
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem";
+import World from "@/systems/World";
+import Slider from "@/ui/components/Slider";
+import Dropdown from "@/ui/components/Dropdown";
+import { globalAddToast } from "@/ui/components/GlobalUIControls";
+import {
+    autoOptimizeGraphics,
+    GRAPHICS_PRESETS,
+    GraphicsPreset,
+} from "../helpers/GraphicsSettings";
+import StatefulCheckbox from "../components/StatefulCheckbox";
+import Button from "../components/Button";
+import { LabelSize } from "../components/Label";
+import Panel, { PanelPropsImpl } from "../components/Panel";
+import {
+    SectionDivider,
+    SectionLabel,
+    SynthesisIcons,
+} from "../components/StyledComponents";
 
-const MIN_LIGHT_INTENSITY = 1
-const MAX_LIGHT_INTENSITY = 10
+const MIN_LIGHT_INTENSITY = 1;
+const MAX_LIGHT_INTENSITY = 10;
 
-const MIN_MAX_FAR = 10
-const MAX_MAX_FAR = 40
+const MIN_MAX_FAR = 10;
+const MAX_MAX_FAR = 40;
 
-const MIN_CASCADES = 3
-const MAX_CASCADES = 8
+const MIN_CASCADES = 3;
+const MAX_CASCADES = 8;
 
-const MIN_SHADOW_MAP_SIZE = 1024
+const MIN_SHADOW_MAP_SIZE = 1024;
 
 const detectCurrentPreset = (
     lightIntensity: number,
@@ -30,7 +38,9 @@ const detectCurrentPreset = (
     shadowMapSize: number,
     antiAliasing: boolean
 ): string => {
-    for (const [presetName, presetSettings] of Object.entries(GRAPHICS_PRESETS)) {
+    for (const [presetName, presetSettings] of Object.entries(
+        GRAPHICS_PRESETS
+    )) {
         if (
             presetSettings.lightIntensity === lightIntensity &&
             presetSettings.fancyShadows === fancyShadows &&
@@ -39,23 +49,37 @@ const detectCurrentPreset = (
             presetSettings.shadowMapSize === shadowMapSize &&
             presetSettings.antiAliasing === antiAliasing
         ) {
-            return presetName
+            return presetName;
         }
     }
-    return "Custom"
-}
+    return "Custom";
+};
 
-const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
-    const [reload, setReload] = useState<boolean>(false)
+const GraphicsSettings: React.FC<PanelPropsImpl> = ({
+    panelId,
+    openLocation,
+    sidePadding,
+}) => {
+    const [reload, setReload] = useState<boolean>(false);
 
     const [lightIntensity, setLightIntensity] = useState<number>(
         PreferencesSystem.getGraphicsPreferences().lightIntensity
-    )
-    const [fancyShadows, setFancyShadows] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().fancyShadows)
-    const [maxFar, setMaxFar] = useState<number>(PreferencesSystem.getGraphicsPreferences().maxFar)
-    const [cascades, setCascades] = useState<number>(PreferencesSystem.getGraphicsPreferences().cascades)
-    const [shadowMapSize, setShadowMapSize] = useState<number>(PreferencesSystem.getGraphicsPreferences().shadowMapSize)
-    const [antiAliasing, setAntiAliasing] = useState<boolean>(PreferencesSystem.getGraphicsPreferences().antiAliasing)
+    );
+    const [fancyShadows, setFancyShadows] = useState<boolean>(
+        PreferencesSystem.getGraphicsPreferences().fancyShadows
+    );
+    const [maxFar, setMaxFar] = useState<number>(
+        PreferencesSystem.getGraphicsPreferences().maxFar
+    );
+    const [cascades, setCascades] = useState<number>(
+        PreferencesSystem.getGraphicsPreferences().cascades
+    );
+    const [shadowMapSize, setShadowMapSize] = useState<number>(
+        PreferencesSystem.getGraphicsPreferences().shadowMapSize
+    );
+    const [antiAliasing, setAntiAliasing] = useState<boolean>(
+        PreferencesSystem.getGraphicsPreferences().antiAliasing
+    );
 
     const initialPreset = detectCurrentPreset(
         PreferencesSystem.getGraphicsPreferences().lightIntensity,
@@ -64,10 +88,10 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
         PreferencesSystem.getGraphicsPreferences().cascades,
         PreferencesSystem.getGraphicsPreferences().shadowMapSize,
         PreferencesSystem.getGraphicsPreferences().antiAliasing
-    )
+    );
 
-    const [selectedPreset, setSelectedPreset] = useState<string>(initialPreset)
-    const [dropdownKey, setDropdownKey] = useState<number>(0)
+    const [selectedPreset, setSelectedPreset] = useState<string>(initialPreset);
+    const [dropdownKey, setDropdownKey] = useState<number>(0);
 
     const updatePresetFromSettings = (
         newLightIntensity: number,
@@ -84,28 +108,28 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
             newCascades,
             newShadowMapSize,
             newAntiAliasing
-        )
+        );
         if (detectedPreset !== selectedPreset) {
-            setSelectedPreset(detectedPreset)
-            setDropdownKey(prev => prev + 1)
+            setSelectedPreset(detectedPreset);
+            setDropdownKey((prev) => prev + 1);
         }
-    }
+    };
 
     const applyPreset = (preset: GraphicsPreset) => {
-        const settings = GRAPHICS_PRESETS[preset]
-        const previousAntiAliasing = antiAliasing
+        const settings = GRAPHICS_PRESETS[preset];
+        const previousAntiAliasing = antiAliasing;
 
-        setLightIntensity(settings.lightIntensity)
-        setFancyShadows(settings.fancyShadows)
-        setMaxFar(settings.maxFar)
-        setCascades(settings.cascades)
-        setShadowMapSize(settings.shadowMapSize)
-        setAntiAliasing(settings.antiAliasing)
-        setSelectedPreset(preset)
-        setDropdownKey(prev => prev + 1)
+        setLightIntensity(settings.lightIntensity);
+        setFancyShadows(settings.fancyShadows);
+        setMaxFar(settings.maxFar);
+        setCascades(settings.cascades);
+        setShadowMapSize(settings.shadowMapSize);
+        setAntiAliasing(settings.antiAliasing);
+        setSelectedPreset(preset);
+        setDropdownKey((prev) => prev + 1);
 
-        World.sceneRenderer.setLightIntensity(settings.lightIntensity)
-        World.sceneRenderer.changeLighting(settings.fancyShadows)
+        World.sceneRenderer.setLightIntensity(settings.lightIntensity);
+        World.sceneRenderer.changeLighting(settings.fancyShadows);
 
         if (settings.fancyShadows) {
             World.sceneRenderer.changeCSMSettings({
@@ -115,25 +139,36 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                 cascades: settings.cascades,
                 shadowMapSize: settings.shadowMapSize,
                 antiAliasing: settings.antiAliasing,
-            })
+            });
         }
 
         if (previousAntiAliasing !== settings.antiAliasing) {
-            setReload(true)
+            setReload(true);
             globalAddToast?.(
                 "info",
                 "Refresh Required",
                 "Anti-aliasing has been changed. Please refresh the page to see the effects."
-            )
+            );
         }
-    }
+    };
 
     const handleAntiAliasingChange = (checked: boolean) => {
-        setAntiAliasing(checked)
-        setReload(true)
-        updatePresetFromSettings(lightIntensity, fancyShadows, maxFar, cascades, shadowMapSize, checked)
-        globalAddToast?.("info", "Refresh Required", "Please refresh the page to see the anti-aliasing changes.")
-    }
+        setAntiAliasing(checked);
+        setReload(true);
+        updatePresetFromSettings(
+            lightIntensity,
+            fancyShadows,
+            maxFar,
+            cascades,
+            shadowMapSize,
+            checked
+        );
+        globalAddToast?.(
+            "info",
+            "Refresh Required",
+            "Please refresh the page to see the anti-aliasing changes."
+        );
+    };
 
     return (
         <Panel
@@ -143,24 +178,33 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
             openLocation={openLocation}
             sidePadding={sidePadding}
             onAccept={() => {
-                PreferencesSystem.getGraphicsPreferences().fancyShadows = fancyShadows
-                PreferencesSystem.getGraphicsPreferences().lightIntensity = lightIntensity
-                PreferencesSystem.getGraphicsPreferences().maxFar = maxFar
-                PreferencesSystem.getGraphicsPreferences().cascades = cascades
-                PreferencesSystem.getGraphicsPreferences().shadowMapSize = shadowMapSize
-                PreferencesSystem.getGraphicsPreferences().antiAliasing = antiAliasing
+                PreferencesSystem.getGraphicsPreferences().fancyShadows =
+                    fancyShadows;
+                PreferencesSystem.getGraphicsPreferences().lightIntensity =
+                    lightIntensity;
+                PreferencesSystem.getGraphicsPreferences().maxFar = maxFar;
+                PreferencesSystem.getGraphicsPreferences().cascades = cascades;
+                PreferencesSystem.getGraphicsPreferences().shadowMapSize =
+                    shadowMapSize;
+                PreferencesSystem.getGraphicsPreferences().antiAliasing =
+                    antiAliasing;
 
-                PreferencesSystem.savePreferences()
+                PreferencesSystem.savePreferences();
 
-                if (reload) window.location.reload()
+                if (reload) window.location.reload();
             }}
             onCancel={() => {
-                World.sceneRenderer.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
+                World.sceneRenderer.changeLighting(
+                    PreferencesSystem.getGraphicsPreferences().fancyShadows
+                );
             }}
         >
             <div className="flex overflow-y-auto flex-col gap-2 bg-background-secondary rounded-md p-2 min-w-[22vw]">
                 <div className="flex items-center justify-center mt-1 mb-0.5 mx-[5%]">
-                    <SectionLabel size={LabelSize.MEDIUM} className="text-center">
+                    <SectionLabel
+                        size={LabelSize.MEDIUM}
+                        className="text-center"
+                    >
                         Graphics Presets
                     </SectionLabel>
                 </div>
@@ -170,10 +214,14 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     options={["Fast", "Balanced", "Fancy", "Custom"]}
                     defaultValue={selectedPreset}
                     onSelect={(value: string) => {
-                        if (value === "Fast" || value === "Balanced" || value === "Fancy") {
-                            applyPreset(value as GraphicsPreset)
+                        if (
+                            value === "Fast" ||
+                            value === "Balanced" ||
+                            value === "Fancy"
+                        ) {
+                            applyPreset(value as GraphicsPreset);
                         } else if (value === "Custom") {
-                            setSelectedPreset("Custom")
+                            setSelectedPreset("Custom");
                         }
                     }}
                     className="mb-2"
@@ -181,8 +229,8 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                 <Button
                     value="Auto Optimize"
                     onClick={() => {
-                        const preset = autoOptimizeGraphics("short")
-                        applyPreset(preset)
+                        const preset = autoOptimizeGraphics("short");
+                        applyPreset(preset);
                     }}
                     className="mb-2 w-full"
                 />
@@ -194,20 +242,34 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     label="Light Intensity"
                     format={{ maximumFractionDigits: 2 }}
                     onChange={(_, value: number | number[]) => {
-                        const newValue = value as number
-                        setLightIntensity(newValue)
-                        World.sceneRenderer.setLightIntensity(newValue)
-                        updatePresetFromSettings(newValue, fancyShadows, maxFar, cascades, shadowMapSize, antiAliasing)
+                        const newValue = value as number;
+                        setLightIntensity(newValue);
+                        World.sceneRenderer.setLightIntensity(newValue);
+                        updatePresetFromSettings(
+                            newValue,
+                            fancyShadows,
+                            maxFar,
+                            cascades,
+                            shadowMapSize,
+                            antiAliasing
+                        );
                     }}
                     step={0.25}
                 />
                 <StatefulCheckbox
                     label="Fancy Shadows"
                     checked={fancyShadows}
-                    onClick={checked => {
-                        setFancyShadows(checked)
-                        World.sceneRenderer.changeLighting(checked)
-                        updatePresetFromSettings(lightIntensity, checked, maxFar, cascades, shadowMapSize, antiAliasing)
+                    onClick={(checked) => {
+                        setFancyShadows(checked);
+                        World.sceneRenderer.changeLighting(checked);
+                        updatePresetFromSettings(
+                            lightIntensity,
+                            checked,
+                            maxFar,
+                            cascades,
+                            shadowMapSize,
+                            antiAliasing
+                        );
                     }}
                     tooltipText="Cascading shadows implementation"
                 />
@@ -219,8 +281,8 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             value={maxFar}
                             label="Max Far"
                             onChange={(_, value: number | number[]) => {
-                                const newValue = value as number
-                                setMaxFar(newValue)
+                                const newValue = value as number;
+                                setMaxFar(newValue);
                                 World.sceneRenderer.changeCSMSettings({
                                     maxFar: newValue,
 
@@ -229,7 +291,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                                     cascades: cascades,
                                     shadowMapSize: shadowMapSize,
                                     antiAliasing: antiAliasing,
-                                })
+                                });
                                 updatePresetFromSettings(
                                     lightIntensity,
                                     fancyShadows,
@@ -237,7 +299,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                                     cascades,
                                     shadowMapSize,
                                     antiAliasing
-                                )
+                                );
                             }}
                             step={1}
                         />
@@ -247,8 +309,8 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                             value={cascades}
                             label="Cascade Count"
                             onChange={(_, value: number | number[]) => {
-                                const newValue = value as number
-                                setCascades(newValue)
+                                const newValue = value as number;
+                                setCascades(newValue);
                                 World.sceneRenderer.changeCSMSettings({
                                     cascades: newValue,
 
@@ -257,7 +319,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                                     fancyShadows: fancyShadows,
                                     shadowMapSize: shadowMapSize,
                                     antiAliasing: antiAliasing,
-                                })
+                                });
                                 updatePresetFromSettings(
                                     lightIntensity,
                                     fancyShadows,
@@ -265,18 +327,21 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                                     newValue,
                                     shadowMapSize,
                                     antiAliasing
-                                )
+                                );
                             }}
                             step={1}
                         />
                         <Slider
                             min={MIN_SHADOW_MAP_SIZE}
-                            max={World.sceneRenderer.renderer.capabilities.maxTextureSize}
+                            max={
+                                World.sceneRenderer.renderer.capabilities
+                                    .maxTextureSize
+                            }
                             value={shadowMapSize}
                             label="Shadow Map Size"
                             onChange={(_, value: number | number[]) => {
-                                const newValue = value as number
-                                setShadowMapSize(newValue)
+                                const newValue = value as number;
+                                setShadowMapSize(newValue);
                                 World.sceneRenderer.changeCSMSettings({
                                     shadowMapSize: newValue,
                                     maxFar: maxFar,
@@ -284,7 +349,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                                     fancyShadows: fancyShadows,
                                     cascades: cascades,
                                     antiAliasing: antiAliasing,
-                                })
+                                });
                                 updatePresetFromSettings(
                                     lightIntensity,
                                     fancyShadows,
@@ -292,7 +357,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                                     cascades,
                                     newValue,
                                     antiAliasing
-                                )
+                                );
                             }}
                             step={1024}
                         />
@@ -301,7 +366,10 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                     <></>
                 )}
                 <div className="flex items-center justify-center mt-1 mb-0.5 mx-[5%]">
-                    <SectionLabel size={LabelSize.MEDIUM} className="text-center">
+                    <SectionLabel
+                        size={LabelSize.MEDIUM}
+                        className="text-center"
+                    >
                         Requires Browser Refresh
                     </SectionLabel>
                 </div>
@@ -314,7 +382,7 @@ const GraphicsSettings: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
                 />
             </div>
         </Panel>
-    )
-}
+    );
+};
 
-export default GraphicsSettings
+export default GraphicsSettings;

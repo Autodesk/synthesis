@@ -1,8 +1,7 @@
-import { afterAll, assert, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest"
 import { server } from "@vitest/browser/context"
-
-import { cleanup, render, RenderResult } from "vitest-browser-react"
 import { ReactElement } from "react"
+import { afterAll, assert, beforeEach, describe, expect, expectTypeOf, test, vi } from "vitest"
+import { cleanup, RenderResult, render } from "vitest-browser-react"
 import World from "@/systems/World.ts"
 
 const { readFile } = server.commands

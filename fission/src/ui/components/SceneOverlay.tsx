@@ -1,5 +1,8 @@
 import { Box } from "@mui/material"
 import React, { useEffect, useReducer, useState } from "react"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import Label, { LabelSize } from "./Label"
 import {
     SceneOverlayEvent,
     SceneOverlayEventKey,
@@ -7,10 +10,7 @@ import {
     SceneOverlayTagEvent,
     SceneOverlayTagEventKey,
 } from "./SceneOverlayEvents"
-import Label, { LabelSize } from "./Label"
 import ViewCube from "./ViewCube"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 const tagMap = new Map<number, SceneOverlayTag>()
 
@@ -38,7 +38,7 @@ const SceneOverlay: React.FC = () => {
                     position: "absolute",
                     left: x.position[0],
                     top: x.position[1],
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    backgroundColor: x.getCSSColor(),
                     borderRadius: "8px",
                     padding: "8px",
                     whiteSpace: "nowrap",

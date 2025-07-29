@@ -28,7 +28,9 @@ class Queue<T> {
         if (this._head) {
             retVal = this._head.value
             this._head = this._head.next
-            !this._head && (this._tail = undefined)
+            if (!this._head) {
+                this._tail = undefined
+            }
             this._size--
         }
         return retVal
