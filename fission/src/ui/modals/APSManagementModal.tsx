@@ -10,11 +10,11 @@ const APSManagementModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { configureScreen } = useUIContext()
     const [userInfo, _] = useState(APS.userInfo)
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             APS.logout()
         }
 
-        configureScreen(modal!, { title: userInfo?.name ?? "Not signed in", acceptText: "Logout" }, { onAccept })
+        configureScreen(modal!, { title: userInfo?.name ?? "Not signed in", acceptText: "Logout" }, { onBeforeAccept })
     }, [modal, userInfo?.name])
 
     return (

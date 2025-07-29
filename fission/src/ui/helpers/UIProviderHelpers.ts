@@ -9,7 +9,7 @@ export enum CloseType {
 }
 
 export interface UIScreenCallbacks<T> {
-    onClose?: () => void
+    onClose?: (closeType: CloseType) => void
     onCancel?: () => void
     onBeforeAccept?: () => T
     onAccept?: (arg: T) => void
@@ -21,7 +21,6 @@ export interface UIScreenCallbacks<T> {
 export interface UIScreenProps {
     configured: boolean
     title?: string
-    htmlProps?: string
     hideCancel?: boolean
     hideAccept?: boolean
     cancelText?: string
@@ -50,7 +49,7 @@ export interface PanelProps extends UIScreenProps {
  */
 export interface UIScreen<T> {
     id: string
-    parent: UIScreen<unknown>
+    parent?: UIScreen<unknown>
     content: ReactElement
     props: ModalProps | PanelProps
     onClose: UICallback<[CloseType], void>
@@ -96,9 +95,9 @@ export type ConfigureScreenFn = <T extends UIScreen<any>>(
     screen: T,
     props: T extends Panel<infer _> ? Partial<Omit<PanelProps, "configured">> : Partial<Omit<ModalProps, "configured">>,
     callbacks: T extends Modal<infer S>
-        ? Omit<Partial<UIScreenCallbacks<S>>, "onBeforeAccept">
+        ? Omit<Partial<UIScreenCallbacks<S>>, "onAccept">
         : T extends Panel<infer S>
-          ? Omit<Partial<UIScreenCallbacks<S>>, "onBeforeAccept">
+          ? Omit<Partial<UIScreenCallbacks<S>>, "onAccept">
           : never
 ) => void
 
@@ -117,8 +116,8 @@ export const UIContext = createContext<UIContextProps>({
     panels: [],
     openModal: (_content, _parent, _props = { hideAccept: false, hideCancel: false }) => "",
     openPanel: (_content, _parent, _props = { hideAccept: false, hideCancel: false, position: "center" }) => "",
-    closeModal: () => {},
-    closePanel: _id => {},
+    closeModal: (_closeType) => {},
+    closePanel: (_id, _closeType) => {},
     addToast: (_variant, ..._msg) => "",
     configureScreen: (_screen, _props) => {},
 })

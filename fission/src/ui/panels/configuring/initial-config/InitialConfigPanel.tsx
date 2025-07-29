@@ -76,7 +76,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             panel!,
             { title: "Assembly Setup", acceptText: "Finish", cancelText: "Remove" },
             {
-                onAccept: closeFinish,
+                onBeforeAccept: closeFinish,
                 onCancel: closeDelete,
                 onClose: () => {
                     setUnconfirmedImport(false)

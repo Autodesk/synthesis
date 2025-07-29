@@ -29,7 +29,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             SoundPlayer.changeVolume()
         }
 
-        configureScreen(modal!, { title: "Settings", allowClickAway: false }, { onAccept: save, onCancel })
+        configureScreen(modal!, { title: "Settings", allowClickAway: false }, { onBeforeAccept: save, onCancel })
     }, [modal, save])
 
     const writePreference = <K extends GlobalPreference>(pref: K, value: GlobalPreferences[K]) => {

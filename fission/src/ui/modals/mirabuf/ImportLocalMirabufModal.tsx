@@ -40,7 +40,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     useEffect(() => {
         const onCancel = () => openPanel(<ImportMirabufPanel />, undefined)
 
-        const onAccept = async () => {
+        const onBeforeAccept = async () => {
             if (selectedFile && miraType !== undefined) {
                 const hashBuffer = await selectedFile.arrayBuffer()
                 World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_SPAWNING)
@@ -66,7 +66,7 @@ const ImportLocalMirabufModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
         configureScreen(
             modal!,
             { title: "Import from File", hideAccept: selectedFile === undefined || miraType === undefined },
-            { onAccept, onCancel }
+            { onBeforeAccept, onCancel }
         )
     }, [selectedFile, miraType, openPanel, modal])
 

@@ -11,7 +11,7 @@ import {
 
 export type PanelImplProps<T> = Partial<{
     panel: PanelType<T>
-    parent: PanelType<T> | ModalType<T>
+    parent?: PanelType<T> | ModalType<T>
 }>
 
 interface PanelElementProps<T> {

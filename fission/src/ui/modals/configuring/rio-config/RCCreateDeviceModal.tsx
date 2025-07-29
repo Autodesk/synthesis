@@ -18,7 +18,7 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const [type, setType] = useState<DeviceType>("PWM")
 
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             console.log(type)
             const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(
                 x => x[1] instanceof MirabufSceneObject
@@ -46,7 +46,7 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
         }
         const onCancel = () => openModal(<RoboRIOModal />, modal)
 
-        configureScreen(modal!, { title: "Create Device", acceptText: "Next" }, { onAccept, onCancel })
+        configureScreen(modal!, { title: "Create Device", acceptText: "Next" }, { onBeforeAccept, onCancel })
     }, [])
 
     return (

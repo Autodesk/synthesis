@@ -43,13 +43,13 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const [selectedStimulus, setSelectedStimulus] = useState<EncoderStimulus | undefined>(stimuli[0])
 
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             if (selectedDevice && selectedStimulus && brain)
                 brain.addSimInput(new SimEncoderInput(selectedDevice, selectedStimulus))
         }
         const onCancel = () => openModal(<RoboRIOModal />, modal)
 
-        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onAccept, onCancel })
+        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
     }, [brain, selectedDevice, selectedStimulus, openModal, modal])
 
     return (

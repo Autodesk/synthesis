@@ -39,7 +39,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
         .reverse()
 
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             if (brain) {
                 brain.addSimOutput(new CANOutputGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
@@ -49,7 +49,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             openModal(<RoboRIOModal />, modal)
         }
 
-        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onAccept, onCancel })
+        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
     }, [brain, name, checkedPorts, checkedDrivers, openModal, modal])
 
     return (

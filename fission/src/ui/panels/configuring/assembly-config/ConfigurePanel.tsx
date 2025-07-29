@@ -161,8 +161,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     }, [])
 
     useEffect(() => {
-        const onAccept = () => {
-            console.log(pendingDeletes)
+        const onBeforeAccept = () => {
             pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
             setPendingDeletes([])
 
@@ -203,7 +202,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         configureScreen(
             panel!,
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
-            { onAccept, onCancel }
+            { onBeforeAccept, onCancel }
         )
     }, [configurePanelSettings, configurationType, selectedAssembly, pendingDeletes])
 

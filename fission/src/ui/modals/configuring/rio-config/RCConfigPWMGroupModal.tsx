@@ -40,7 +40,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     }
 
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             if (brain) {
                 brain.addSimOutput(new PWMOutputGroup(name, checkedPorts, checkedDrivers))
                 console.log(name, checkedPorts, checkedDrivers)
@@ -50,7 +50,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             openModal(<RoboRIOModal />, modal)
         }
 
-        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onAccept, onCancel })
+        configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })
     }, [brain, name, checkedPorts, checkedDrivers, openModal, modal])
 
     return (

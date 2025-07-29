@@ -11,11 +11,11 @@ const ViewModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const [view, setView] = useState<ViewType>("Orbit")
 
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             console.log("Selected view:", view)
         }
 
-        configureScreen(modal!, { title: "Camera View" }, { onAccept })
+        configureScreen(modal!, { title: "Camera View" }, { onBeforeAccept })
     }, [modal, view])
 
     return (

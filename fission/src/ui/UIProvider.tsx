@@ -4,20 +4,20 @@ import type React from "react"
 import type { ReactElement, ReactNode } from "react"
 import { useCallback, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
-import { UICallback } from "./UICallbacks"
 import {
     CloseType,
-    ConfigureScreenFn,
-    Modal,
-    ModalProps,
-    OpenModalFn,
-    OpenPanelFn,
-    Panel,
-    PanelProps,
+    type ConfigureScreenFn,
+    type Modal,
+    type ModalProps,
+    type OpenModalFn,
+    type OpenPanelFn,
+    type Panel,
+    type PanelProps,
     UIContext,
-    UIScreen,
-    UIScreenCallbacks,
+    type UIScreen,
+    type UIScreenCallbacks,
 } from "./helpers/UIProviderHelpers"
+import { UICallback } from "./UICallbacks"
 
 export type UIProviderProps = {
     children?: ReactNode
@@ -33,7 +33,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: Omit<ModalProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onAccept"> = {
+            props: Omit<ModalProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = {
                 hideAccept: false,
                 hideCancel: false,
                 acceptText: "Accept",
@@ -57,8 +57,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             newModal.onClose = new UICallback()
             if (props.onClose) newModal.onClose.setUserDefinedFunc(props.onClose)
 
-            newModal.onBeforeAccept = new UICallback()
-            if (props.onBeforeAccept) newModal.onBeforeAccept.setUserDefinedFunc(props.onBeforeAccept)
+            newModal.onAccept = new UICallback()
+            if (props.onAccept) newModal.onAccept.setUserDefinedFunc(props.onAccept)
 
             newModal.onCancel = new UICallback()
             if (props.onCancel) newModal.onCancel.setUserDefinedFunc(props.onCancel)
@@ -73,7 +73,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: Omit<PanelProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onAccept"> = {
+            props: Omit<PanelProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = {
                 hideAccept: false,
                 hideCancel: false,
                 acceptText: "Accept",
@@ -97,8 +97,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
             panel.onClose = new UICallback()
             if (props.onClose) panel.onClose.setUserDefinedFunc(props.onClose)
 
-            panel.onBeforeAccept = new UICallback()
-            if (props.onBeforeAccept) panel.onBeforeAccept.setUserDefinedFunc(props.onBeforeAccept)
+            panel.onAccept = new UICallback()
+            if (props.onAccept) panel.onAccept.setUserDefinedFunc(props.onAccept)
 
             panel.onCancel = new UICallback()
             if (props.onCancel) panel.onCancel.setUserDefinedFunc(props.onCancel)
@@ -172,7 +172,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
         screen.props.configured = true
 
-        if (callbacks.onAccept) screen.onAccept.setDefaultFunc(callbacks.onAccept)
+        if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
         if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
         if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
     }

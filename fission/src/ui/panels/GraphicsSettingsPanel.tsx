@@ -34,7 +34,7 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     // TODO: save preferences on accept, reload if needed
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             PreferencesSystem.getGraphicsPreferences().fancyShadows = fancyShadows
             PreferencesSystem.getGraphicsPreferences().lightIntensity = lightIntensity
             PreferencesSystem.getGraphicsPreferences().maxFar = maxFar
@@ -50,7 +50,7 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             World.sceneRenderer.changeLighting(PreferencesSystem.getGraphicsPreferences().fancyShadows)
         }
 
-        configureScreen(panel!, { title: "Graphics Settings", position: "left" }, { onAccept, onCancel })
+        configureScreen(panel!, { title: "Graphics Settings", position: "left" }, { onBeforeAccept, onCancel })
     }, [fancyShadows, lightIntensity, maxFar, cascades, shadowMapSize, antiAliasing, reload])
 
     return (

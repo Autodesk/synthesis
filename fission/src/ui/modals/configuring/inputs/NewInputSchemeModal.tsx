@@ -17,7 +17,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const [type, setType] = useState<DriveType>(DriveType.ARCADE)
 
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             const scheme = DefaultInputs.newBlankScheme(type)
             scheme.schemeName = name
 
@@ -28,7 +28,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             setSelectedScheme(scheme)
             openPanel(<ConfigurePanel />, modal)
         }
-        configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onAccept })
+        configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onBeforeAccept })
     }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])
 
     return (

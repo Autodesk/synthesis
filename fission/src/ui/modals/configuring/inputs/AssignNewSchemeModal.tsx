@@ -16,7 +16,7 @@ const AssignNewSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
 
     useEffect(() => {
-        const onAccept = () => {
+        const onBeforeAccept = () => {
             const scheme = InputSystem.brainIndexSchemeMap.get(SynthesisBrain.brainIndexMap.size - 1)
 
             if (scheme === undefined) return
@@ -31,7 +31,7 @@ const AssignNewSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             openPanel(<ConfigurePanel />, modal)
         }
 
-        configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onAccept })
+        configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onBeforeAccept })
     }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])
 
     return <TextField label="Name" placeholder="" defaultValue={name} onChange={e => setName(e.target.value)} />
