@@ -131,6 +131,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const originalInputSchemes = useRef<InputScheme[] | null>(null)
 
     useEffect(() => {
+        console.log(pendingDeletes)
+    }, [pendingDeletes])
+
+    useEffect(() => {
         const allSchemes: InputScheme[] = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
 
@@ -158,6 +162,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     useEffect(() => {
         const onAccept = () => {
+            console.log(pendingDeletes)
             pendingDeletes.forEach(id => World.sceneRenderer.removeSceneObject(id))
             setPendingDeletes([])
 
@@ -200,7 +205,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
             { onAccept, onCancel }
         )
-    }, [])
+    }, [configurePanelSettings, configurationType, selectedAssembly, pendingDeletes])
 
     const modes = useMemo(() => {
         switch (configurationType) {
@@ -301,6 +306,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         selectedAssembly={selectedAssembly}
                         onStageDelete={opt => {
                             const id = (opt as AssemblySelectionOption).assemblyObject.id
+                            console.log(id)
                             setPendingDeletes(prev => [...prev, id])
                         }}
                         pendingDeletes={pendingDeletes}
