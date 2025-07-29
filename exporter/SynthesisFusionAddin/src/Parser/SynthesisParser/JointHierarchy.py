@@ -1,6 +1,7 @@
 import enum
 import sys
 from logging import ERROR
+from os import error
 from typing import Any, Iterator, cast
 
 import adsk.core
@@ -221,7 +222,7 @@ class JointParser:
         self.grounded = searchForGrounded(design.rootComponent)
 
         if self.grounded is None:
-            message = "These is no grounded component in this assembly, aborting kinematic export."
+            message = "There is not a grounded component in this assembly, aborting kinematic export."
             gm.ui.messageBox(message)
             _____: Err[None] = Err(message, ErrorSeverity.Fatal)
             raise RuntimeError()
@@ -522,12 +523,11 @@ def buildJointPartHierarchy(
 
         return Ok(None)
 
-    # I'm fairly certain bubbling this back up is the way to go
-    except Warning:
-        return Err(
-            "Instantiation of the JointParser failed, likely due to a lack of a grounded component in the assembly",
-            ErrorSeverity.Fatal,
-        )
+    # I'm fairly certain bubbling this back up is the way to go <- Actually it's ugly but doesn't really matter and there isn't a better option
+    except:
+        progressDialog.progressDialog.hide()
+        # We don't want two errors to pop up, we exit to prevent dealing with two error messages for the same issue and with re-exporting an empty file
+        sys.exit(1)
 
 
 def populateJoint(simNode: SimulationNode, joints: joint_pb2.Joints, progressDialog: PDMessage) -> Result[None]:
