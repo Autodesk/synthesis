@@ -3,14 +3,19 @@ import { MiraType } from "@/mirabuf/MirabufLoader"
 import SceneRenderer from "../scene/SceneRenderer"
 import MatchMode from "./MatchMode"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import World from "@/systems/World"
 
 const BUFFER_HEIGHT = 0.1
+const SIDE_BUFFER = 0.1
 
 class RobotDimensionTracker {
     private static _robotLastFramePenalty: Map<number, boolean> = new Map()
     private static _ignoreRotation: boolean = true
     private static _maxHeight: number = Infinity
     private static _heightPenalty: number = 0
+    private static _robotSize: Map<number, { width: number; depth: number }> = new Map()
+    private static _sideMaxExtension: number = 0
+    private static _sidePenalty: number = 0
 
     public static setConfigValues(ignoreRotation: boolean, maxHeight: number, heightPenalty: number) {
         this._ignoreRotation = ignoreRotation
@@ -33,9 +38,33 @@ class RobotDimensionTracker {
                     SimulationSystem.robotPenalty(robot, this._heightPenalty, "Height Expansion Limit")
                 }
                 this._robotLastFramePenalty.set(robot.id, true)
-            } else {
-                this._robotLastFramePenalty.set(robot.id, false)
+                return
             }
+
+            const startingRobotSize = this._robotSize.get(robot.id) ?? { width: 0, depth: 0 }
+            if (dimensions.width > startingRobotSize.width + this._sideMaxExtension + SIDE_BUFFER || dimensions.depth > startingRobotSize.depth + this._sideMaxExtension + SIDE_BUFFER) {
+                if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
+                    SimulationSystem.robotPenalty(robot, this._sidePenalty, "Side Expansion Limit")
+                }
+                this._robotLastFramePenalty.set(robot.id, true)
+                return
+            }
+            console.log(this._robotLastFramePenalty.get(robot.id))
+
+            this._robotLastFramePenalty.set(robot.id, false)
+        })
+    }
+
+    public static matchStart(): void {
+        this._robotSize.clear()
+        this._robotLastFramePenalty.clear()
+
+        const robots = [...World.sceneRenderer.sceneObjects.values()].filter(
+            (obj): obj is MirabufSceneObject => obj instanceof MirabufSceneObject && obj.miraType === MiraType.ROBOT
+        )
+
+        robots.forEach(robot => {
+            this._robotSize.set(robot.id, robot.getDimensions())
         })
     }
 }

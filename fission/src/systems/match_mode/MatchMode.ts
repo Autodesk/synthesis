@@ -113,6 +113,7 @@ class MatchMode {
     start(openModal: (modalName: string) => void) {
         this.autonomousModeStart(openModal)
         SimulationSystem.resetScores()
+        RobotDimensionTracker.matchStart()
     }
 
     matchEnded(openModal: (modalName: string) => void) {
