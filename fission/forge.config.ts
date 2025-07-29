@@ -24,7 +24,6 @@ const config: ForgeConfig = {
     new VitePlugin({
       build: [
         {
-          // `entry` is just an alias for `build.lib.entry` in the corresponding file of `config`.
           entry: "src/main.ts",
           config: "electron/vite.main.config.ts",
           target: "main",
