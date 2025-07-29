@@ -180,7 +180,7 @@ const ImportMirabufPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             // Detect if we're running in electron and use direct remote URL
             const isElectron = window.electronAPI != null
             const baseUrl = isElectron ? "https://synthesis.autodesk.com" : ""
-            
+
             fetch(`${baseUrl}/api/mira/manifest.json`)
                 .then(x => x.json())
                 .then(x => {
