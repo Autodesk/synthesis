@@ -1,40 +1,43 @@
-import { Box } from "@mui/material"
-import React, { useState } from "react"
-import Button from "@/components/Button"
-import Checkbox from "@/components/Checkbox"
-import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import Label, { LabelSize } from "@/components/Label"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import Slider from "@/ui/components/Slider"
-import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import { Box } from "@mui/material";
+import React, { useState } from "react";
+import Button from "@/components/Button";
+import Checkbox from "@/components/Checkbox";
+import { globalAddToast } from "@/components/GlobalUIControls.ts";
+import Label, { LabelSize } from "@/components/Label";
+import Modal, { ModalPropsImpl } from "@/components/Modal";
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem";
+import { SoundPlayer } from "@/systems/sound/SoundPlayer";
+import Slider from "@/ui/components/Slider";
+import { Spacer, SynthesisIcons } from "@/ui/components/StyledComponents";
+import { useModalControlContext } from "@/ui/helpers/UseModalManager";
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager";
 
 const StatefulSlider: React.FC<
-    Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & { defaultValue: number; onChange: (val: number) => void }
-> = props => {
-    const [value, setValue] = useState(props.defaultValue)
+    Omit<Parameters<typeof Slider>[0], "value" | "onChange"> & {
+        defaultValue: number;
+        onChange: (val: number) => void;
+    }
+> = (props) => {
+    const [value, setValue] = useState(props.defaultValue);
     return (
         <Slider
             {...props}
             value={value}
             onChange={(_, value) => {
-                setValue(value as number)
-                props.onChange?.(value as number)
+                setValue(value as number);
+                props.onChange?.(value as number);
             }}
         ></Slider>
-    )
-}
+    );
+};
 const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
-    const { closeModal } = useModalControlContext()
-    const { openPanel } = usePanelControlContext()
+    const { closeModal } = useModalControlContext();
+    const { openPanel } = usePanelControlContext();
     const save = () => {
-        SoundPlayer.changeVolume()
-        PreferencesSystem.savePreferences()
-        globalAddToast("info", "Settings Saved", "")
-    }
+        SoundPlayer.changeVolume();
+        PreferencesSystem.savePreferences();
+        globalAddToast("info", "Settings Saved", "");
+    };
     return (
         <Modal
             name="Settings"
@@ -42,8 +45,8 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             modalId={modalId}
             onAccept={save}
             onCancel={() => {
-                PreferencesSystem.revertPreferences()
-                SoundPlayer.changeVolume()
+                PreferencesSystem.revertPreferences();
+                SoundPlayer.changeVolume();
             }}
             allowClickAway={false}
         >
@@ -52,9 +55,9 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                     <Button
                         value="Graphics Settings"
                         onClick={() => {
-                            openPanel("graphics-settings")
-                            closeModal()
-                            save()
+                            openPanel("graphics-settings");
+                            closeModal();
+                            // save()
                         }}
                     />
                 </Box>
@@ -95,10 +98,17 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <StatefulSlider
                     min={0.1}
                     max={2.0}
-                    defaultValue={PreferencesSystem.getGlobalPreference("SceneRotationSensitivity")}
+                    defaultValue={PreferencesSystem.getGlobalPreference(
+                        "SceneRotationSensitivity"
+                    )}
                     label={"Scene Rotation Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
-                    onChange={value => PreferencesSystem.setGlobalPreference("SceneRotationSensitivity", value)}
+                    onChange={(value) =>
+                        PreferencesSystem.setGlobalPreference(
+                            "SceneRotationSensitivity",
+                            value
+                        )
+                    }
                     step={0.1}
                     tooltipText="Controls how fast the scene rotates when dragging with the mouse."
                 />
@@ -106,18 +116,30 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <StatefulSlider
                     min={0.06}
                     max={6.0}
-                    defaultValue={PreferencesSystem.getGlobalPreference("ViewCubeRotationSensitivity")}
+                    defaultValue={PreferencesSystem.getGlobalPreference(
+                        "ViewCubeRotationSensitivity"
+                    )}
                     label={"ViewCube Rotation Sensitivity"}
                     format={{ maximumFractionDigits: 2 }}
-                    onChange={value => PreferencesSystem.setGlobalPreference("ViewCubeRotationSensitivity", value)}
+                    onChange={(value) =>
+                        PreferencesSystem.setGlobalPreference(
+                            "ViewCubeRotationSensitivity",
+                            value
+                        )
+                    }
                     step={0.06}
                     tooltipText="Controls how fast the view changes when dragging on the view cube."
                 />
                 <Checkbox
                     label="Show View Cube"
-                    defaultState={PreferencesSystem.getGlobalPreference("ShowViewCube")}
-                    onClick={checked => {
-                        PreferencesSystem.setGlobalPreference("ShowViewCube", checked)
+                    defaultState={PreferencesSystem.getGlobalPreference(
+                        "ShowViewCube"
+                    )}
+                    onClick={(checked) => {
+                        PreferencesSystem.setGlobalPreference(
+                            "ShowViewCube",
+                            checked
+                        );
                     }}
                     tooltipText="Show the view cube in the top-right corner for quick camera orientation changes."
                 />
@@ -126,76 +148,133 @@ const SettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 <Box display="flex" flexDirection={"column"}>
                     <Checkbox
                         label="Report Analytics"
-                        defaultState={PreferencesSystem.getGlobalPreference("ReportAnalytics")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("ReportAnalytics", checked)}
+                        defaultState={PreferencesSystem.getGlobalPreference(
+                            "ReportAnalytics"
+                        )}
+                        onClick={(checked) =>
+                            PreferencesSystem.setGlobalPreference(
+                                "ReportAnalytics",
+                                checked
+                            )
+                        }
                         tooltipText="Record user data such as what robots are spawned and how they are configured. No personal data will be collected."
                     />
                     <Checkbox
                         label="Realistic Subsystem Gravity"
-                        defaultState={PreferencesSystem.getGlobalPreference("SubsystemGravity")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("SubsystemGravity", checked)}
+                        defaultState={PreferencesSystem.getGlobalPreference(
+                            "SubsystemGravity"
+                        )}
+                        onClick={(checked) =>
+                            PreferencesSystem.setGlobalPreference(
+                                "SubsystemGravity",
+                                checked
+                            )
+                        }
                         tooltipText="Allows you to set a target torque or force for subsystems and joints. If not properly configured, joints may not be able to resist gravity or may not behave as intended."
                     />
                     <Checkbox
                         label="Show Score Zones"
-                        defaultState={PreferencesSystem.getGlobalPreference("RenderScoringZones")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("RenderScoringZones", checked)}
+                        defaultState={PreferencesSystem.getGlobalPreference(
+                            "RenderScoringZones"
+                        )}
+                        onClick={(checked) =>
+                            PreferencesSystem.setGlobalPreference(
+                                "RenderScoringZones",
+                                checked
+                            )
+                        }
                         tooltipText="If disabled, scoring zones will not be visible but will continue to function the same."
                     />
                     <Checkbox
                         label="Show Protected Zones"
-                        defaultState={PreferencesSystem.getGlobalPreference("RenderProtectedZones")}
-                        onClick={checked => {
-                            PreferencesSystem.setGlobalPreference("RenderProtectedZones", checked)
+                        defaultState={PreferencesSystem.getGlobalPreference(
+                            "RenderProtectedZones"
+                        )}
+                        onClick={(checked) => {
+                            PreferencesSystem.setGlobalPreference(
+                                "RenderProtectedZones",
+                                checked
+                            );
                         }}
                         tooltipText="If disabled, protected zones will not be visible but will continue to function the same."
                     />
                     <Checkbox
                         label="Show Scene Tags"
-                        defaultState={PreferencesSystem.getGlobalPreference("RenderSceneTags")}
-                        onClick={checked => {
-                            PreferencesSystem.setGlobalPreference("RenderSceneTags", checked)
+                        defaultState={PreferencesSystem.getGlobalPreference(
+                            "RenderSceneTags"
+                        )}
+                        onClick={(checked) => {
+                            PreferencesSystem.setGlobalPreference(
+                                "RenderSceneTags",
+                                checked
+                            );
                         }}
                         tooltipText="Name tags above robot."
                     />
                     <Checkbox
                         label="Show Scoreboard"
-                        defaultState={PreferencesSystem.getGlobalPreference("RenderScoreboard")}
-                        onClick={checked => {
-                            PreferencesSystem.setGlobalPreference("RenderScoreboard", checked)
+                        defaultState={PreferencesSystem.getGlobalPreference(
+                            "RenderScoreboard"
+                        )}
+                        onClick={(checked) => {
+                            PreferencesSystem.setGlobalPreference(
+                                "RenderScoreboard",
+                                checked
+                            );
                             if (checked) {
-                                openPanel("scoreboard")
+                                openPanel("scoreboard");
                             }
                         }}
                     />
 
                     <Checkbox
                         label="Show Centers of Mass"
-                        defaultState={PreferencesSystem.getGlobalPreference("ShowCenterOfMassIndicators")}
-                        onClick={checked => {
-                            PreferencesSystem.setGlobalPreference("ShowCenterOfMassIndicators", checked)
+                        defaultState={PreferencesSystem.getGlobalPreference(
+                            "ShowCenterOfMassIndicators"
+                        )}
+                        onClick={(checked) => {
+                            PreferencesSystem.setGlobalPreference(
+                                "ShowCenterOfMassIndicators",
+                                checked
+                            );
                         }}
-                        tooltipText={"Show a purple dot to indicate the center of mass of each robot in frame"}
+                        tooltipText={
+                            "Show a purple dot to indicate the center of mass of each robot in frame"
+                        }
                     />
                     <Checkbox
                         label="Mute All Sound"
-                        defaultState={PreferencesSystem.getGlobalPreference("MuteAllSound")}
-                        onClick={checked => PreferencesSystem.setGlobalPreference("MuteAllSound", checked)}
+                        defaultState={PreferencesSystem.getGlobalPreference(
+                            "MuteAllSound"
+                        )}
+                        onClick={(checked) =>
+                            PreferencesSystem.setGlobalPreference(
+                                "MuteAllSound",
+                                checked
+                            )
+                        }
                     />
                     <StatefulSlider
                         min={0}
                         max={100}
-                        defaultValue={PreferencesSystem.getGlobalPreference("SFXVolume")}
+                        defaultValue={PreferencesSystem.getGlobalPreference(
+                            "SFXVolume"
+                        )}
                         label={"SFX Volume"}
                         format={{ maximumFractionDigits: 2 }}
-                        onChange={value => PreferencesSystem.setGlobalPreference("SFXVolume", value)}
+                        onChange={(value) =>
+                            PreferencesSystem.setGlobalPreference(
+                                "SFXVolume",
+                                value
+                            )
+                        }
                         tooltipText="Volume of sound effects (%)."
                     />
                     {Spacer(8)}
                 </Box>
             </div>
         </Modal>
-    )
-}
+    );
+};
 
-export default SettingsModal
+export default SettingsModal;

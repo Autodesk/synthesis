@@ -15,11 +15,11 @@ export const GRAPHICS_PRESETS: Record<
     }
 > = {
     Fast: {
-        lightIntensity: 3,
+        lightIntensity: 3.5,
         fancyShadows: false,
         maxFar: 20,
         cascades: 3,
-        shadowMapSize: 0,
+        shadowMapSize: 1024,
         antiAliasing: false,
     },
     Balanced: {
