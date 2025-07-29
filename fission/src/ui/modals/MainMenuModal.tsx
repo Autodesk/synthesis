@@ -1,15 +1,18 @@
 import React from "react"
 import Button from "@/components/Button.tsx"
-import { globalAddToast } from "@/components/GlobalUIControls.ts"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { SynthesisIcons } from "../components/StyledComponents"
-import { useModalControlContext } from "../helpers/UseModalManager"
+import Modal, {ModalPropsImpl} from "@/components/Modal"
+import {SynthesisIcons} from "../components/StyledComponents"
+import {useModalControlContext} from "../helpers/UseModalManager"
 
-const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () => void }> = ({
-    modalId,
-    startSingleplayerCallback,
-}) => {
-    const { closeModal } = useModalControlContext()
+const MainMenuModal: React.FC<ModalPropsImpl & {
+    startSingleplayerCallback: () => void,
+    startMultiplayerCallback: () => void
+}> = ({
+          modalId,
+          startSingleplayerCallback,
+          startMultiplayerCallback
+      }) => {
+    const {closeModal} = useModalControlContext()
 
     return (
         <Modal
@@ -33,7 +36,8 @@ const MainMenuModal: React.FC<ModalPropsImpl & { startSingleplayerCallback: () =
                 <Button
                     value={"Multiplayer"}
                     onClick={() => {
-                        globalAddToast("error", "Not Supported", "Multiplayer is not yet supported. Come back soon!")
+                        closeModal()
+                        startMultiplayerCallback()
                     }}
                     className="w-full mt-1 mb-3"
                 />
