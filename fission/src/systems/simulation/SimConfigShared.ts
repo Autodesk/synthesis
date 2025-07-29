@@ -13,11 +13,7 @@ import type { SimulationLayer } from "@/systems/simulation/SimulationSystem"
 import type Stimulus from "@/systems/simulation/stimulus/Stimulus"
 import type { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import type { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
-import {
-    receiverTypeMap,
-    supplierTypeMap,
-    getSimMap,
-} from "@/systems/simulation/wpilib_brain/WPILibState"
+import { receiverTypeMap, supplierTypeMap, getSimMap } from "@/systems/simulation/wpilib_brain/WPILibState"
 import { random } from "@/util/Random"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
 import { SimType } from "./wpilib_brain/WPILibTypes"

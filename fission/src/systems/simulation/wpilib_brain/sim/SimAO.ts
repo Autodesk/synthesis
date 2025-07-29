@@ -1,5 +1,5 @@
-import { SimType } from "../WPILibTypes";
-import SimGeneric from "./SimGeneric";
+import { SimType } from "../WPILibTypes"
+import SimGeneric from "./SimGeneric"
 
 export default class SimAO {
     constructor() {}

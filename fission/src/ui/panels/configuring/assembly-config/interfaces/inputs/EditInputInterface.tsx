@@ -2,10 +2,7 @@ import { Box, Button, Divider, MenuItem, Select, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import InputSystem from "@/systems/input/InputSystem"
-import {
-    EMPTY_MODIFIER_STATE,
-    type ModifierState,
-} from "@/systems/input/InputTypes"
+import { EMPTY_MODIFIER_STATE, type ModifierState } from "@/systems/input/InputTypes"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import type { KeyCode } from "@/systems/input/KeyboardTypes"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"

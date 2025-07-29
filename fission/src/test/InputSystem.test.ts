@@ -6,7 +6,7 @@ import {
     EMPTY_MODIFIER_STATE,
     type InputName,
     type KeyDescriptor,
-    type ModifierState
+    type ModifierState,
 } from "@/systems/input/InputTypes"
 import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"

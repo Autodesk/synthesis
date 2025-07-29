@@ -32,29 +32,30 @@ describe("MatchModeConfigPanel", () => {
         console.warn = originalConsoleWarn
         console.log = originalConsoleLog
 
-        if (container)
-            container.remove()
+        if (container) container.remove()
     })
 
     function createTestContainer() {
         // Create mock context provider
         const panel = {
             id: "match-mode",
-            content: (<MatchModeConfigPanel />),
+            content: <MatchModeConfigPanel />,
             props: {
                 type: "panel" as const,
                 configured: true,
-                position: "center" as PanelPosition
+                position: "center" as PanelPosition,
             },
             parent: {} as UIScreen<unknown>,
             onClose: new UICallback<[CloseType], void>(),
             onCancel: new UICallback<[void], void>(),
             onAccept: new UICallback<[unknown], void>(),
-            onBeforeAccept: new UICallback<[void], unknown>()
+            onBeforeAccept: new UICallback<[void], unknown>(),
         }
         return render(
             <UIProvider>
-                <Panel panel={panel} parent={undefined}>{panel.content}</Panel>
+                <Panel panel={panel} parent={undefined}>
+                    {panel.content}
+                </Panel>
             </UIProvider>
         ).container
     }

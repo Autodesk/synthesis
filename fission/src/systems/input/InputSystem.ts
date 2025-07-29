@@ -2,7 +2,7 @@ import type { KeyCode } from "@/systems/input/KeyboardTypes.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
-import type { InputName, InputScheme,  ModifierState } from "./InputTypes"
+import type { InputName, InputScheme, ModifierState } from "./InputTypes"
 import Input from "./inputs/Input"
 
 const LOG_GAMEPAD_EVENTS = false

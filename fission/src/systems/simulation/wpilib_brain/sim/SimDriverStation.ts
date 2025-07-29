@@ -25,4 +25,3 @@ export default class SimDriverStation {
         SimGeneric.set<string>(SimType.DRIVERS_STATION, "", ">station", station)
     }
 }
-

@@ -14,7 +14,6 @@ import { SimGyroInput } from "./sim/SimGyro"
 import { type DeviceData, SimMapUpdateEvent, SimType, type WSMessage, worker } from "./WPILibTypes"
 import { getSimBrain, getSimMap, setConnected, setSimBrain } from "./WPILibState"
 
-
 worker.getValue().addEventListener("message", (eventData: MessageEvent) => {
     let data: WSMessage | undefined
 

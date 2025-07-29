@@ -291,34 +291,34 @@ describe("SceneRenderer", () => {
     })
 
     // describe("Skybox", () => {
-        // TODO:
-        // test("should update skybox colors", () => {
-        //     const mockTheme: Partial<Theme> = {
-        //         Background: {
-        //             color: {
-        //                 r: 0.5,
-        //                 g: 0.7,
-        //                 b: 0.9,
-        //                 a: 1.0,
-        //             },
-        //             above: [],
-        //         },
-        //     }
-        //
-        //     sceneRenderer.updateSkyboxColors(mockTheme as unknown as Theme)
-        //
-        //     // Find the skybox in the scene
-        //     const skybox = sceneRenderer.scene.children.find(
-        //         child =>
-        //             child instanceof THREE.Mesh &&
-        //             child.material instanceof THREE.ShaderMaterial &&
-        //             child.geometry instanceof THREE.SphereGeometry
-        //     ) as THREE.Mesh<THREE.SphereGeometry, THREE.ShaderMaterial>
-        //
-        //     expect(skybox.material.uniforms.rColor.value).toBe(0.5)
-        //     expect(skybox.material.uniforms.gColor.value).toBe(0.7)
-        //     expect(skybox.material.uniforms.bColor.value).toBe(0.9)
-        // })
+    // TODO:
+    // test("should update skybox colors", () => {
+    //     const mockTheme: Partial<Theme> = {
+    //         Background: {
+    //             color: {
+    //                 r: 0.5,
+    //                 g: 0.7,
+    //                 b: 0.9,
+    //                 a: 1.0,
+    //             },
+    //             above: [],
+    //         },
+    //     }
+    //
+    //     sceneRenderer.updateSkyboxColors(mockTheme as unknown as Theme)
+    //
+    //     // Find the skybox in the scene
+    //     const skybox = sceneRenderer.scene.children.find(
+    //         child =>
+    //             child instanceof THREE.Mesh &&
+    //             child.material instanceof THREE.ShaderMaterial &&
+    //             child.geometry instanceof THREE.SphereGeometry
+    //     ) as THREE.Mesh<THREE.SphereGeometry, THREE.ShaderMaterial>
+    //
+    //     expect(skybox.material.uniforms.rColor.value).toBe(0.5)
+    //     expect(skybox.material.uniforms.gColor.value).toBe(0.7)
+    //     expect(skybox.material.uniforms.bColor.value).toBe(0.9)
+    // })
     // })
 
     describe("Gizmo Management", () => {

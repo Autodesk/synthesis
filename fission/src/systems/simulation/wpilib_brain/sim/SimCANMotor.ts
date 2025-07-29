@@ -1,6 +1,14 @@
 import type { SimSupplier } from "../SimDataFlow"
 import { supplierTypeMap } from "../WPILibState"
-import { CANMOTOR_BRAKE_MODE, CANMOTOR_BUS_VOLTAGE, CANMOTOR_MOTOR_CURRENT, CANMOTOR_NEUTRAL_DEADBAND, CANMOTOR_PERCENT_OUTPUT, CANMOTOR_SUPPLY_CURRENT, SimType } from "../WPILibTypes"
+import {
+    CANMOTOR_BRAKE_MODE,
+    CANMOTOR_BUS_VOLTAGE,
+    CANMOTOR_MOTOR_CURRENT,
+    CANMOTOR_NEUTRAL_DEADBAND,
+    CANMOTOR_PERCENT_OUTPUT,
+    CANMOTOR_SUPPLY_CURRENT,
+    SimType,
+} from "../WPILibTypes"
 import SimDriverStation from "./SimDriverStation"
 import SimGeneric from "./SimGeneric"
 
