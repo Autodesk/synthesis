@@ -1,6 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from "react"
+import React, { useCallback, useEffect, useReducer, useRef, useState } from "react"
+import Button from "@/components/Button.tsx"
 import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
 import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import { AxisInput } from "@/systems/input/InputSystem.ts"
 import { SectionDivider } from "@/ui/components/StyledComponents"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
 import EditInputInterface from "./EditInputInterface"
@@ -14,7 +16,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     const [useGamepad, setUseGamepad] = useState(selectedScheme.usesGamepad)
     const [useTouchControls, setUseTouchControls] = useState(selectedScheme.usesTouchControls)
     const scrollRef = useRef<HTMLDivElement>(null)
-
+    const [_, update] = useReducer(x => !x, false)
     const saveEvent = useCallback(() => {
         InputSchemeManager.saveSchemes()
     }, [])
@@ -93,6 +95,22 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                         />
                     )
                 })}
+                {
+                    <Button
+                        value={"Add Joint Control"}
+                        onClick={() => {
+                            const jointIndex =
+                                Math.max(
+                                    0,
+                                    ...selectedScheme.inputs
+                                        .map(input => parseInt(input.inputName.replace("joint ", "")))
+                                        .filter(val => !isNaN(val))
+                                ) + 1
+                            selectedScheme.inputs.push(AxisInput.unbound(`joint ${jointIndex}`))
+                            update()
+                        }}
+                    />
+                }
             </div>
         </>
     )
