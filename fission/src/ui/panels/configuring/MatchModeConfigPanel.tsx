@@ -15,7 +15,8 @@ import MatchMode, {
     DEFAULT_ENDGAME_TIME,
     DEFAULT_IGNORE_ROTATION,
     DEFAULT_MAX_HEIGHT,
-    DEFAULT_HEIGHT_PENALTY,
+    DEFAULT_EXTENSION_PENALTY,
+    DEFAULT_SIDE_MAX_EXTENSION,
 } from "@/systems/match_mode/MatchMode"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import Button from "@/ui/components/Button"
@@ -64,10 +65,17 @@ export interface MatchModeConfig {
     maxHeight: number
 
     /**
-     * Points to penalize for height violations (default: 2).
+     * Points to penalize for extension violations (default: 2).
      * Applied each time a robot exceeds maxHeight after cooldown period.
      */
-    heightPenalty: number
+    extensionPenalty: number
+
+    /**
+     * Maximum allowed robot side extension in meters
+     * User input is in feet but converted to meters during config processing.
+     * Set to Infinity for no side extension limit. (default: Infinity)
+     */
+    sideMaxExtension: number
 }
 
 function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
@@ -207,7 +215,8 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             { id: "endgameTime", expectedType: "number", required: false },
             { id: "ignoreRotation", expectedType: "boolean", required: false },
             { id: "maxHeight", expectedType: "number", required: false },
-            { id: "heightPenalty", expectedType: "number", required: false },
+            { id: "extensionPenalty", expectedType: "number", required: false },
+            { id: "sideMaxExtension", expectedType: "number", required: false },
         ]
 
         const typeError = (id: string, expectedType?: string) => {
@@ -253,8 +262,12 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
                 typeof configObj.ignoreRotation === "boolean" ? configObj.ignoreRotation : DEFAULT_IGNORE_ROTATION,
             maxHeight:
                 typeof configObj.maxHeight === "number" ? convertFeetToMeters(configObj.maxHeight) : DEFAULT_MAX_HEIGHT,
-            heightPenalty:
-                typeof configObj.heightPenalty === "number" ? configObj.heightPenalty : DEFAULT_HEIGHT_PENALTY,
+            extensionPenalty:
+                typeof configObj.extensionPenalty === "number" ? configObj.extensionPenalty : DEFAULT_EXTENSION_PENALTY,
+            sideMaxExtension:
+                typeof configObj.sideMaxExtension === "number"
+                    ? convertFeetToMeters(configObj.sideMaxExtension)
+                    : DEFAULT_SIDE_MAX_EXTENSION,
         }
 
         return normalizedConfig

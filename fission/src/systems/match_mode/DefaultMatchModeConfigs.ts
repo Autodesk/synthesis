@@ -13,7 +13,7 @@ class DefaultMatchModeConfigs {
             endgameTime: 20,
             ignoreRotation: true,
             maxHeight: Infinity,
-            heightPenalty: 0,
+            extensionPenalty: 0,
         }
     }
 
@@ -27,7 +27,7 @@ class DefaultMatchModeConfigs {
             endgameTime: 20,
             ignoreRotation: true,
             maxHeight: convertFeetToMeters(4),
-            heightPenalty: 2,
+            extensionPenalty: 2,
         }
     }
 
@@ -41,7 +41,7 @@ class DefaultMatchModeConfigs {
             endgameTime: 30,
             ignoreRotation: true,
             maxHeight: convertFeetToMeters(6.5),
-            heightPenalty: 5,
+            extensionPenalty: 5,
         }
     }
 
@@ -55,7 +55,7 @@ class DefaultMatchModeConfigs {
             endgameTime: 5,
             ignoreRotation: true,
             maxHeight: Infinity,
-            heightPenalty: 0,
+            extensionPenalty: 0,
         }
     }
 

@@ -12,15 +12,20 @@ class RobotDimensionTracker {
     private static _robotLastFramePenalty: Map<number, boolean> = new Map()
     private static _ignoreRotation: boolean = true
     private static _maxHeight: number = Infinity
-    private static _heightPenalty: number = 0
+    private static _extensionPenalty: number = 0
     private static _robotSize: Map<number, { width: number; depth: number }> = new Map()
     private static _sideMaxExtension: number = 0
-    private static _sidePenalty: number = 0
 
-    public static setConfigValues(ignoreRotation: boolean, maxHeight: number, heightPenalty: number) {
+    public static setConfigValues(
+        ignoreRotation: boolean,
+        maxHeight: number,
+        extensionPenalty: number,
+        sideMaxExtension: number
+    ) {
         this._ignoreRotation = ignoreRotation
         this._maxHeight = maxHeight
-        this._heightPenalty = heightPenalty
+        this._extensionPenalty = extensionPenalty
+        this._sideMaxExtension = sideMaxExtension
     }
 
     public static update(sceneRenderer: SceneRenderer): void {
@@ -35,21 +40,23 @@ class RobotDimensionTracker {
 
             if (dimensions.height > this._maxHeight + BUFFER_HEIGHT) {
                 if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
-                    SimulationSystem.robotPenalty(robot, this._heightPenalty, "Height Expansion Limit")
+                    SimulationSystem.robotPenalty(robot, this._extensionPenalty, "Height Expansion Limit")
                 }
                 this._robotLastFramePenalty.set(robot.id, true)
                 return
             }
 
             const startingRobotSize = this._robotSize.get(robot.id) ?? { width: 0, depth: 0 }
-            if (dimensions.width > startingRobotSize.width + this._sideMaxExtension + SIDE_BUFFER || dimensions.depth > startingRobotSize.depth + this._sideMaxExtension + SIDE_BUFFER) {
+            if (
+                dimensions.width > startingRobotSize.width + this._sideMaxExtension + SIDE_BUFFER ||
+                dimensions.depth > startingRobotSize.depth + this._sideMaxExtension + SIDE_BUFFER
+            ) {
                 if (!(this._robotLastFramePenalty.get(robot.id) ?? false)) {
-                    SimulationSystem.robotPenalty(robot, this._sidePenalty, "Side Expansion Limit")
+                    SimulationSystem.robotPenalty(robot, this._extensionPenalty, "Side Expansion Limit")
                 }
                 this._robotLastFramePenalty.set(robot.id, true)
                 return
             }
-            console.log(this._robotLastFramePenalty.get(robot.id))
 
             this._robotLastFramePenalty.set(robot.id, false)
         })
