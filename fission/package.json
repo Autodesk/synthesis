@@ -5,7 +5,7 @@
   "type": "module",
   "main": ".vite/build/main.cjs",
   "author": "Autodesk",
-  "description": "Synthesis Fission",
+  "description": "Synthesis",
   "scripts": {
     "init": "(bun run assetpack && bun run playwright:install) || (npm run assetpack && npm run playwright:install)",
     "host": "vite --open --host",

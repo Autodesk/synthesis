@@ -19,6 +19,7 @@ const createWindow = () => {
             nodeIntegration: false,
             contextIsolation: true,
         },
+        icon: path.resolve(__dirname, "assets/icons/synthesis-logo.png"),
     })
 
     // and load the index.html of the app.

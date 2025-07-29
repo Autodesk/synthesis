@@ -6,16 +6,20 @@ import { MakerRpm } from "@electron-forge/maker-rpm"
 import { VitePlugin } from "@electron-forge/plugin-vite"
 import { FusesPlugin } from "@electron-forge/plugin-fuses"
 import { FuseV1Options, FuseVersion } from "@electron/fuses"
+import path from "path"
 
 const config: ForgeConfig = {
   packagerConfig: {
     asar: true,
-    name: "Synthesis Fission",
-    executableName: "synthesis-fission",
+    name: "Synthesis",
+    executableName: "Synthesis",
+    icon: path.resolve(__dirname, "src/assets/icons/synthesis-logo"),
   },
   rebuildConfig: {},
   makers: [
-    new MakerSquirrel({}),
+    new MakerSquirrel({
+      setupIcon: path.resolve(__dirname, "src/assets/icons/synthesis-logo.ico"),
+    }),
     new MakerZIP({}, ["darwin"]),
     new MakerRpm({}),
     new MakerDeb({}),
