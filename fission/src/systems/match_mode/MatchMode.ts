@@ -21,7 +21,8 @@ export const DEFAULT_TELEOP_TIME = 135
 export const DEFAULT_ENDGAME_TIME = 20
 export const DEFAULT_IGNORE_ROTATION = true
 export const DEFAULT_MAX_HEIGHT = Infinity
-export const DEFAULT_EXTENSION_PENALTY = 2
+export const DEFAULT_HEIGHT_LIMIT_PENALTY = 2
+export const DEFAULT_SIDE_EXTENSION_PENALTY = 2
 export const DEFAULT_SIDE_MAX_EXTENSION = Infinity
 
 class MatchMode {
@@ -47,7 +48,8 @@ class MatchMode {
         endgameTime: DEFAULT_ENDGAME_TIME,
         ignoreRotation: DEFAULT_IGNORE_ROTATION,
         maxHeight: DEFAULT_MAX_HEIGHT,
-        extensionPenalty: DEFAULT_EXTENSION_PENALTY,
+        heightLimitPenalty: DEFAULT_HEIGHT_LIMIT_PENALTY,
+        sideExtensionPenalty: DEFAULT_SIDE_EXTENSION_PENALTY,
         sideMaxExtension: DEFAULT_SIDE_MAX_EXTENSION,
     }
 
@@ -63,7 +65,8 @@ class MatchMode {
         RobotDimensionTracker.setConfigValues(
             config.ignoreRotation,
             config.maxHeight,
-            config.extensionPenalty,
+            config.heightLimitPenalty,
+            config.sideExtensionPenalty,
             config.sideMaxExtension
         )
     }
