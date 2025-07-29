@@ -1,6 +1,10 @@
 #include "parser.h"
 
 #include "assembly.pb.h"
+#include "components.h"
+#include "materials.h"
+#include "joints.h"
+#include "types.pb.h"
 
 #include <Core/Application/Document.h>
 #include <Core/Application/Product.h>
@@ -9,11 +13,9 @@
 #include <Fusion/Components/Component.h>
 #include <Fusion/Fusion/Design.h>
 #include <Fusion/Fusion/FusionDocument.h>
-
-#include "materials.h"
-#include "components.h"
-
 #include <google/protobuf/util/json_util.h>
+
+#include <fstream>
 
 void export_design(const GlobalContext& gctx) {
     assert(gctx.isValid());
@@ -41,23 +43,46 @@ void export_design(const GlobalContext& gctx) {
     gctx.app->userInterface()->messageBox("Mapping materials...");
 
     auto appearances = design->appearances();
-    auto materials = design->materials();
+    auto materials   = design->materials();
     assembly.mutable_data()->mutable_materials()->CopyFrom(map_all_materials(appearances, materials));
 
     gctx.app->userInterface()->messageBox("Mapping components...");
     auto components = design->allComponents();
     assembly.mutable_data()->mutable_parts()->CopyFrom(map_all_parts(components, assembly.data().materials()));
 
+    gctx.app->userInterface()->messageBox("Mapping root node...");
+
+    mirabuf::Node root_node = parse_component_root(design->rootComponent(), assembly.mutable_data()->mutable_parts());
+    assembly.mutable_design_hierarchy()->mutable_nodes()->Add()->CopyFrom(root_node);
+
+    gctx.app->userInterface()->messageBox("Mapping joints...");
+    const auto [joints, signals] = populate_joints(design);
+
+    assembly.mutable_data()->mutable_joints()->CopyFrom(joints);
+    assembly.mutable_data()->mutable_signals()->CopyFrom(signals);
+
     gctx.app->userInterface()->messageBox("Done");
 
     // Print assembly as JSON
     std::string json_output;
     auto _ = google::protobuf::util::MessageToJsonString(assembly, &json_output);
+
+    std::string path = std::getenv("HOME") + std::string("/Desktop/assembly_debug.json");
+
+    // std::ofstream output_file("~/Documents/Repos/synthesis/isotope/build/assembly.json");
+    std::ofstream output_file(path);
+    if (!output_file.is_open()) {
+        gctx.app->userInterface()->messageBox("Failed to open output file for writing.");
+        return;
+    }
+
+    output_file << json_output;
+    output_file.close();
+
     gctx.app->userInterface()->messageBox("Exported assembly:\n" + json_output);
 }
 
 void map_rigid_groups();
-void parse_component_roots();
 void populate_joints();
 void create_joint_graph();
 void build_joint_part_hierarchy();

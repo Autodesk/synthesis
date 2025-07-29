@@ -1,19 +1,23 @@
 #include "config_command.h"
 
-#include <Core/UserInterface/CommandCreatedEventArgs.h>
+#include "parser.h"
+
 #include <Core/UserInterface/Command.h>
+#include <Core/UserInterface/CommandCreatedEventArgs.h>
 #include <Core/UserInterface/CommandEvent.h>
 
 void ConfigureCommandCreatedHandler::notify(const adsk::core::Ptr<adsk::core::CommandCreatedEventArgs>& args) {
+    assert(this->gctx.isValid());
     adsk::core::Ptr<adsk::core::Command> command = args->command();
     if (!command || !command->isValid()) {
-        gctx->ui->messageBox("Invalid command in ConfigureCommandCreatedHandler.");
+        this->gctx.ui->messageBox("Invalid command in ConfigureCommandCreatedHandler.");
         return;
     }
 
-    command->execute()->add(new ConfigureCommandExecutedHandler(gctx));
+    command->execute()->add(new ConfigureCommandExecutedHandler(this->gctx));
 }
 
 void ConfigureCommandExecutedHandler::notify(const adsk::core::Ptr<adsk::core::CommandEventArgs>& eventArgs) {
-    gctx->ui->messageBox("Configure command executed successfully.");
+    assert(this->gctx.isValid());
+    export_design(this->gctx);
 }
