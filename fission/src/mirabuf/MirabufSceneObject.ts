@@ -655,7 +655,11 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
      *
      * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
      */
-    public getDimensionsWithoutRotation(): { width: number; height: number; depth: number } {
+    public getDimensionsWithoutRotation(): {
+        width: number
+        height: number
+        depth: number
+    } {
         const rootNodeId = this.getRootNodeId()
         if (!rootNodeId) {
             console.warn("No root node found for robot, using regular dimensions")
@@ -821,7 +825,10 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     }
 
     public getSupplierData(): ContextData {
-        const data: ContextData = { title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field", items: [] }
+        const data: ContextData = {
+            title: this.miraType == MiraType.ROBOT ? "A Robot" : "A Field",
+            items: [],
+        }
 
         data.items.push(
             {
@@ -912,6 +919,8 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             objectCollidedWith.robotLastInContactWith = this
         }
     }
+
+    public getMultiplayerData(): MultiplayerObjectData {}
 }
 
 export async function createMirabuf(
