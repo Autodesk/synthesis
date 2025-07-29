@@ -82,7 +82,7 @@ class PeerConnection {
     }
 
     // Called by the host, initializes the world with some defined set of objects, robots can be spawned in later
-    initWorld(physicsSystem: PhysicsSystem) {
+    async initWorld(physicsSystem: PhysicsSystem) {
         const sceneObjects: InitMultiplayerObjectData[] = [...World.sceneRenderer.sceneObjects.entries()]
             .filter(
                 (sceneObjectPair): sceneObjectPair is [number, MirabufSceneObject] =>
@@ -94,11 +94,10 @@ class PeerConnection {
                     sceneObject,
                 }
             })
-        const message: Message = {
-            type: "init",
-            data: { physicsSystem, objects: sceneObjects },
-        }
-        this.connections.forEach(c => c.send(message))
+        await this.broadcast({
+          type: "init",
+          data: { physicsSystem, objects: sceneObjects },
+        })
     }
 
     setupConnectionHandlers(conn: DataConnection) {
