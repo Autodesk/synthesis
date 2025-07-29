@@ -1,93 +1,139 @@
 import Peer, { DataConnection } from "peerjs";
-import type { InitData, Message } from "./types";
+import type {
+  ClientInfo as ClientInfo,
+  InitMultiplayerObjectData,
+  Message,
+} from "./types";
+import PhysicsSystem from "../physics/PhysicsSystem";
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject";
+import World from "../World";
+import { PORT } from "../../../../multiplayer/server";
 
 class PeerConnection {
-  peer: Peer;
-  connection?: DataConnection;
-  clientId: string;
+  serverConnection: Peer;
+  connections: DataConnection[] = [];
+
+  info: ClientInfo;
+  isHost: boolean;
   connected: boolean = false;
   otherPeers: string[] = [];
-  initialization: InitData;
+
   handlePeerMessage: (data: Message) => void;
 
   constructor(
     handlePeerMessage: (data: Message) => void,
-    initialization: Omit<InitData, "clientId">,
+    displayName: string = generateId("guest"),
+    isHost: boolean = false,
   ) {
-    this.clientId = this.generateClientId();
-    this.peer = new Peer(this.clientId, {
-      host: "localhost",
-      port: 9000,
+    this.isHost = isHost;
+    this.info = { clientId: generateId("client"), displayName };
+    this.serverConnection = new Peer(this.info.clientId, {
+      host: window.location.hostname,
+      port: PORT,
       path: "/connect",
     });
-    this.initialization = { ...initialization, clientId: this.clientId };
+
     this.handlePeerMessage = handlePeerMessage;
 
-    this.peer.on("open", (id: string) => {
+    this.serverConnection.on("open", (id: string) => {
       console.log(`Client connected: ID - ${id}`);
       this.connectToPeer(); // Replace 'some-peer-id' with the actual peer ID
     });
 
-    this.peer.on("connection", (conn) => {
-      this.connection = conn;
+    this.serverConnection.on("connection", (conn) => {
+      this.connections.push(conn);
       this.setupConnectionHandlers();
     });
   }
 
   connectToPeer() {
-    this.peer.listAllPeers((peers) => {
+    this.serverConnection.listAllPeers((peers) => {
       console.log(`Peers: ${peers}`);
       peers
-        .filter((peer) => peer !== this.clientId)
+        .filter((peer) => peer !== this.info.clientId)
         .forEach((peer) => this.otherPeers.push(peer as string));
       if (this.otherPeers.length > 0)
-        this.connection = this.peer.connect(this.otherPeers[0]!);
-      console.log(`Connection: ${this.connection?.peer}`);
+        this.connections.push(
+          this.serverConnection.connect(this.otherPeers[0]!),
+        );
+      console.log(
+        `Connections: ${this.connections?.map((c) => c.connectionId)}`,
+      );
       this.setupConnectionHandlers();
     });
   }
 
+  // Called by the host, initializes the world with some defined set of objects, robots can be spawned in later
+  initWorld(physicsSystem: PhysicsSystem) {
+    const sceneObjects: InitMultiplayerObjectData[] = [
+      ...World.sceneRenderer.sceneObjects.entries(),
+    ]
+      .filter(
+        (sceneObjectPair): sceneObjectPair is [number, MirabufSceneObject] =>
+          sceneObjectPair[1] instanceof MirabufSceneObject,
+      )
+      .map(([key, sceneObject]) => {
+        return {
+          key,
+          sceneObject,
+        };
+      });
+    const message: Message = {
+      type: "init",
+      data: { physicsSystem, objects: sceneObjects },
+    };
+    this.connections.forEach((c) => c.send(message));
+  }
+
   setupConnectionHandlers() {
-    if (!this.connection) return;
+    if (this.connections.length === 0) return;
 
-    this.connection.on("open", () => {
-      this.connected = true;
-      console.log("Connection opened");
-      this.send({ type: "init", data: this.initialization });
-    });
+    this.connections.forEach((connection) => {
+      connection.on("open", () => {
+        this.connected = true;
+        console.log("Connection opened");
+        this.emit({ type: "info", data: this.info });
+      });
 
-    this.connection.on("data", (data: any) => {
-      this.handlePeerMessage(data);
-    });
+      connection.on("data", (data: unknown) => {
+        this.handlePeerMessage(data as Message);
+      });
 
-    this.connection.on("close", () => {
-      this.connected = false;
-      this.handlePeerMessage({ type: "robotLeft", data: { robotId: "" } });
-      console.log("Connection closed");
-    });
+      connection.on("close", () => {
+        this.connected = false;
+        this.handlePeerMessage({
+          type: "robotLeft",
+          data: { sceneObjectKey: 0 }, // TODO Get actual sceneObjectKey
+        });
+        console.log("Connection closed");
+      });
 
-    // this.connection.on("disconnected", () => {
-    //   this.handlePeerMessage({ type: "robotLeft", data: { robotId: "" } });
-    // })
+      // this.connection.on("disconnected", () => {
+      //   this.handlePeerMessage({ type: "robotLeft", data: { robotId: "" } });
+      // })
 
-    this.connection.on("error", (err: Error) => {
-      console.error("Connection error:", err);
+      connection.on("error", (err: Error) => {
+        console.error("Connection error:", err);
+      });
     });
   }
 
-  send(message: Message) {
-    if (!this.connection || !this.connected) return;
-    this.connection.send(message);
+  emit(message: Message) {
+    this.connections.forEach((connection) => connection.send(message));
   }
 
-  generateClientId(): string {
-    return generateId("client");
+  send(message: Message, clientId: string) {
+    if (this.connections.length === 0 || !this.connected) return;
+    const connection = this.connections.find(
+      (conn) => conn.connectionId === clientId,
+    );
+    if (!connection) return;
+
+    connection.send(message);
   }
 
-  getOtherPeerId(): string | null {
-    if (!this.connection) return null;
-
-    return this.connection.peer;
+  getOtherPeerIds(): string[] {
+    return this.connections.map((c) => c.peer);
   }
 }
 
