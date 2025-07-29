@@ -3,8 +3,8 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import ProtectedZoneSceneObject, { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
@@ -20,6 +20,7 @@ import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import { Button, MenuItem, Select, Stack, TextField } from "@mui/material"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { ContactType } from "@/mirabuf/ZoneTypes"
 
 const MATCH_MODE_OPTIONS: MatchModeType[] = [
     MatchModeType.SANDBOX,

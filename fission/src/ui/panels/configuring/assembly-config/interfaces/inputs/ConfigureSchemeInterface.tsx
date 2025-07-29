@@ -4,7 +4,8 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import { Divider, Stack } from "@mui/material"
 import EditInputInterface from "./EditInputInterface"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Input, InputScheme } from "@/systems/input/InputSystem"
+import type Input from "@/systems/input/inputs/Input"
+import type { InputScheme } from "@/systems/input/InputTypes"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme

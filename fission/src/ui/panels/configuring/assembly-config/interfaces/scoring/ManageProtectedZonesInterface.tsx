@@ -2,8 +2,7 @@ import { Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsTypes"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import type { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
 import World from "@/systems/World"
@@ -11,6 +10,7 @@ import { AddButton, DeleteButton, EditButton } from "@/ui/components/StyledCompo
 import ScrollView from "@/ui/components/ScrollView"
 import Label from "@/ui/components/Label"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
+import { ContactType } from "@/mirabuf/ZoneTypes"
 
 const saveZones = (zones: ProtectedZonePreferences[] | undefined, field: MirabufSceneObject | undefined) => {
     if (!zones || !field) return

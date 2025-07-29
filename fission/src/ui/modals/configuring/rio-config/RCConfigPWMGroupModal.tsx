@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react"
-import WPILibBrain, { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibState"
 import { PWMOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import World from "@/systems/World"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"

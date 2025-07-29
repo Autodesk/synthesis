@@ -1,5 +1,5 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
-import ProtectedZoneSceneObject, { ContactType } from "../../mirabuf/ProtectedZoneSceneObject"
+import ProtectedZoneSceneObject from "../../mirabuf/ProtectedZoneSceneObject"
 import MirabufSceneObject from "../../mirabuf/MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
 import { createBodyMock } from "../mocks/jolt"
@@ -7,6 +7,7 @@ import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import { ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import { ContactType } from "@/mirabuf/ZoneTypes"
 
 const mockPhysicsSystem = {
     createSensor: vi.fn(),

@@ -33,7 +33,7 @@ import FlowInfo from "@/ui/components/simulation/FlowInfo"
 import { useUIContext } from "../../helpers/UIProviderHelpers"
 import WiringNode from "./WiringNode"
 import ScrollView from "@/ui/components/ScrollView"
-import { PanelImplProps } from "@/ui/components/Panel"
+import type { PanelImplProps } from "@/ui/components/Panel"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 import Label from "@/ui/components/Label"
 

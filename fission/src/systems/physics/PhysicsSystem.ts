@@ -1,7 +1,8 @@
-import Jolt from "@azaleacolburn/jolt-physics"
+import type Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import JOLT from "@/util/loading/JoltSyncLoader"
-import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
+import type MirabufParser from "../../mirabuf/MirabufParser"
+import { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, type RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import { mirabuf } from "../../proto/mirabuf"
 import {
     convertJoltRVec3ToJoltVec3,
@@ -18,21 +19,16 @@ import {
 import PreferencesSystem from "../preferences/PreferencesSystem"
 import WorldSystem from "../WorldSystem"
 import {
-    CurrentContactData,
+    type CurrentContactData,
     OnContactAddedEvent,
     OnContactPersistedEvent,
     OnContactRemovedEvent,
-    OnContactValidateData,
+    type OnContactValidateData,
     OnContactValidateEvent,
-    PhysicsEvent,
+    type PhysicsEvent,
 } from "./ContactEvents"
 import Mechanism from "./Mechanism"
-
-export type JoltBodyIndexAndSequence = number
-
-export const PAUSE_REF_ASSEMBLY_SPAWNING = "assembly-spawning"
-export const PAUSE_REF_ASSEMBLY_CONFIG = "assembly-config"
-export const PAUSE_REF_ASSEMBLY_MOVE = "assembly-move"
+import type { JoltBodyIndexAndSequence } from "./PhysicsTypes"
 
 /**
  * Layers used for determining enabled/disabled collisions.

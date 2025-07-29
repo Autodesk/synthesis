@@ -4,8 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
-import InputSystem, { InputSchemeUseType } from "@/systems/input/InputSystem"
-import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
+import InputSystem from "@/systems/input/InputSystem"
+import { InputSchemeUseType } from "@/systems/input/InputTypes"
+import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsTypes"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
@@ -34,7 +35,6 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         }
     }, [])
 
-    // TODO: unconfirmed import
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
             setConfigurationType("ROBOTS")

@@ -290,7 +290,7 @@ describe("SceneRenderer", () => {
         })
     })
 
-    describe("Skybox", () => {
+    // describe("Skybox", () => {
         // TODO:
         // test("should update skybox colors", () => {
         //     const mockTheme: Partial<Theme> = {
@@ -319,7 +319,7 @@ describe("SceneRenderer", () => {
         //     expect(skybox.material.uniforms.gColor.value).toBe(0.7)
         //     expect(skybox.material.uniforms.bColor.value).toBe(0.9)
         // })
-    })
+    // })
 
     describe("Gizmo Management", () => {
         test("should register gizmos with parents", () => {

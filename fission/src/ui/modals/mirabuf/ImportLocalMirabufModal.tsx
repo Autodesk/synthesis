@@ -1,6 +1,6 @@
 import MirabufCachingService, { MiraType } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Label from "@/ui/components/Label"

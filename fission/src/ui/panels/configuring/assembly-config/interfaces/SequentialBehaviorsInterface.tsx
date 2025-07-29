@@ -84,7 +84,6 @@ const BehaviorCard: React.FC<BehaviorCardProps> = ({
                         onSetPressed()
                         update()
                     }}
-                    // TODO: theme
                     sx={hasChild ? { bgcolor: "background.primary", "&:hover": { filter: "brightness(100%)" } } : {}}
                 >
                     {lookingForParent === behavior || behavior.parentJointIndex !== undefined

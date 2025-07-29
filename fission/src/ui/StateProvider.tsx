@@ -1,6 +1,6 @@
 import type React from "react"
 import { useMemo, useState } from "react"
-import type { InputScheme } from "@/systems/input/InputSystem"
+import type { InputScheme } from "@/systems/input/InputTypes"
 import { StateContext, StateProviderProps } from "./helpers/StateProviderHelpers"
 import { ConfigurePanelSettings } from "./panels/configuring/assembly-config/ConfigurePanel"
 import { ConfigurationType } from "./panels/configuring/assembly-config/ConfigTypes"

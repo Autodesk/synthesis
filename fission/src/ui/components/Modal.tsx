@@ -32,7 +32,6 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
             }}
         >
             <Card
-                // TODO: come up with a better solution than this
                 sx={{
                     display: modal.props.configured ? "" : "none",
                     position: "absolute",

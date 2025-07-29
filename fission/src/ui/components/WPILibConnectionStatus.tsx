@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react"
 import { FaCheck, FaXmark } from "react-icons/fa6"
-import { hasSimBrain, isConnected } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { hasSimBrain, getIsConnected } from "@/systems/simulation/wpilib_brain/WPILibState"
 import Label from "@/ui/components/Label"
 
 const WPILibConnectionStatus: React.FC = () => {
@@ -10,7 +10,7 @@ const WPILibConnectionStatus: React.FC = () => {
     useEffect(() => {
         const handle = setInterval(() => {
             setEnabled(hasSimBrain())
-            setStatus(isConnected)
+            setStatus(getIsConnected())
         }, 500)
         return () => clearInterval(handle)
     }, [])

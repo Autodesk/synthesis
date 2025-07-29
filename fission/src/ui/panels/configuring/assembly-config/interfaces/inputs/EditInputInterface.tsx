@@ -1,17 +1,18 @@
 import { Box, Button, Divider, MenuItem, Select, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import InputSystem, {
-    AxisInput,
-    ButtonInput,
+import InputSystem from "@/systems/input/InputSystem"
+import {
     EMPTY_MODIFIER_STATE,
-    type Input,
     type ModifierState,
-} from "@/systems/input/InputSystem"
+} from "@/systems/input/InputTypes"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
-import { KeyCode } from "@/systems/input/KeyboardTypes"
+import type { KeyCode } from "@/systems/input/KeyboardTypes"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 import Label from "@/ui/components/Label"
+import ButtonInput from "@/systems/input/inputs/ButtonInput"
+import AxisInput from "@/systems/input/inputs/AxisInput"
+import Input from "@/systems/input/inputs/Input"
 
 // Converts camelCase to Title Case for the inputs modal
 const toTitleCase = (camelCase: string) => {

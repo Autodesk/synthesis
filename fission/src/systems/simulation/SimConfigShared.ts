@@ -14,17 +14,17 @@ import type Stimulus from "@/systems/simulation/stimulus/Stimulus"
 import type { StimulusType } from "@/systems/simulation/stimulus/Stimulus"
 import type { SimFlow, SimReceiver, SimSupplier } from "@/systems/simulation/wpilib_brain/SimDataFlow"
 import {
-    SimAccel,
-    SimCANEncoder,
-    SimCANMotor,
-    SimPWM,
-    getSimMap,
     receiverTypeMap,
     supplierTypeMap,
-} from "@/systems/simulation/wpilib_brain/WPILibBrain"
+    getSimMap,
+} from "@/systems/simulation/wpilib_brain/WPILibState"
 import { random } from "@/util/Random"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
 import { SimType } from "./wpilib_brain/WPILibTypes"
+import SimAccel from "./wpilib_brain/sim/SimAccel"
+import SimCANEncoder from "./wpilib_brain/sim/SimCANEncoder"
+import SimCANMotor from "./wpilib_brain/sim/SimCANMotor"
+import SimPWM from "./wpilib_brain/sim/SimPWM"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
     [NoraTypes.NUMBER]: "#5f60ff",

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react"
 import * as THREE from "three"
 import InputSystem from "@/systems/input/InputSystem"
-import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
+import GizmoSceneObject, { type GizmoMode } from "@/systems/scene/GizmoSceneObject"
 import { Button, ToggleButton, ToggleButtonGroup } from "@mui/material"
 import World from "@/systems/World"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"

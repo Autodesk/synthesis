@@ -30,7 +30,7 @@ import MirabufCachingService, {
     MiraType,
 } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsTypes"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import { globalOpenPanel } from "@/ui/components/GlobalUIControls"
@@ -184,7 +184,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
             closePanel(panel!.id, CloseType.Cancel)
             return
         }
-        // TODO: validate behaviour
+
         if (parent) closePanel(parent.id, CloseType.Cancel)
     }, [])
 

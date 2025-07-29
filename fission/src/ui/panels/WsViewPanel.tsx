@@ -3,7 +3,7 @@
  * make debugging signal data easier.
  */
 
-import { SimGeneric } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import SimGeneric from "@/systems/simulation/wpilib_brain/sim/SimGeneric"
 import {
     Box,
     Button,
