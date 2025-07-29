@@ -2,7 +2,8 @@ import Driver from "../driver/Driver"
 import HingeDriver from "../driver/HingeDriver"
 import SliderDriver from "../driver/SliderDriver"
 import WheelDriver from "../driver/WheelDriver"
-import { SimAO, SimCAN, SimDIO, SimPWM, SimType } from "./WPILibBrain"
+import { SimAO, SimCAN, SimDIO, SimPWM } from "./WPILibBrain"
+import { SimType } from "./WPILibTypes"
 
 export abstract class SimOutput {
     constructor(protected _name: string) {}

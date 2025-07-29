@@ -5,7 +5,7 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import type Driver from "@/systems/simulation/driver/Driver"
 import { CANOutputGroup } from "@/systems/simulation/wpilib_brain/SimOutput"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
@@ -13,6 +13,7 @@ import RoboRIOModal from "../RoboRIOModal"
 import ScrollView from "@/ui/components/ScrollView"
 import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
 import Label from "@/ui/components/Label"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()

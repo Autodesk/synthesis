@@ -3,7 +3,7 @@
  * make debugging signal data easier.
  */
 
-import { SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SimGeneric } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import {
     Box,
     Button,
@@ -23,6 +23,7 @@ import {
 import { useEffect, useReducer, useState } from "react"
 import { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 const TABLE_UPDATE_INTERVAL = 250
 

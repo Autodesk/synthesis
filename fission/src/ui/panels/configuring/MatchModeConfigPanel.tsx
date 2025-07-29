@@ -114,6 +114,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
 
     useEffect(() => {
+        console.log(panel)
         configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, {})
     }, [])
 

@@ -6,7 +6,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import { FaInfinity } from "react-icons/fa6"
 import * as THREE from "three"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { type AllianceStation, RobotSimMode, SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SimDriverStation } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
@@ -19,6 +19,7 @@ import {
 import Label from "@/ui/components/Label"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { PanelImplProps } from "@/ui/components/Panel"
+import { AllianceStation, RobotSimMode } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 type StagingProps = {
     state: "Staging"

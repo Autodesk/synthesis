@@ -26,7 +26,7 @@ import {
     SimConfig,
     type SimConfigData,
 } from "@/systems/simulation/SimConfigShared"
-import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 import World from "@/systems/World"
 import FlowControls from "@/ui/components/simulation/FlowControls"
 import FlowInfo from "@/ui/components/simulation/FlowInfo"

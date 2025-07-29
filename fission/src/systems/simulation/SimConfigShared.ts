@@ -18,13 +18,13 @@ import {
     SimCANEncoder,
     SimCANMotor,
     SimPWM,
-    SimType,
     getSimMap,
     receiverTypeMap,
     supplierTypeMap,
 } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import { random } from "@/util/Random"
 import WiringNode from "@/ui/panels/simulation/WiringNode"
+import { SimType } from "./wpilib_brain/WPILibTypes"
 
 export const NORA_TYPES_COLORS: { [k in NoraTypes]: string } = {
     [NoraTypes.NUMBER]: "#5f60ff",

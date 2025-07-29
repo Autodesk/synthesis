@@ -5,12 +5,13 @@ import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
 import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput"
 import type WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import { getSimMap } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import RoboRIOModal from "../RoboRIOModal"
 import Label from "@/ui/components/Label"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
 const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
