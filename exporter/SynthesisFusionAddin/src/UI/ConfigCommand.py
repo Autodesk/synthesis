@@ -361,7 +361,10 @@ def export(exporterOptions: moduleExporterOptions.ExporterOptions) -> None:
     exporterOptions.version = docVersion
     exporterOptions.materials = 0
 
-    Parser.Parser(exporterOptions).export()
+    try:
+        Parser.Parser(exporterOptions).export()
+    except:
+        return
     exporterOptions.writeToDesign()
 
     if exporterOptions.openSynthesisUponExport:
@@ -431,7 +434,10 @@ class ConfigureCommandExecuteHandler(PersistentEventHandler, adsk.core.CommandEv
         try:
             Parser.Parser(exporterOptions).export()
         except:
-            pass
+            jointConfigTab.reset()
+            gamepieceConfigTab.reset()
+
+            return
         exporterOptions.writeToDesign()
         jointConfigTab.reset()
         gamepieceConfigTab.reset()
