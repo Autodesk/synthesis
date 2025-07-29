@@ -107,6 +107,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                                         .filter(val => !isNaN(val))
                                 ) + 1
                             selectedScheme.inputs.push(AxisInput.unbound(`joint ${jointIndex}`))
+                            selectedScheme.customized = true
                             update()
                         }}
                     />
