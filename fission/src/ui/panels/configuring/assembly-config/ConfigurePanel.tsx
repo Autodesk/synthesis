@@ -284,7 +284,13 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     return (
         <>
-            <ToggleButtonGroup value={configurationType} exclusive onChange={(_e, v) => setConfigurationType(v)}>
+            <ToggleButtonGroup
+                value={configurationType}
+                exclusive
+                onChange={(_e, v) => {
+                    if (v !== null) setConfigurationType(v)
+                }}
+            >
                 {CONFIG_OPTS.map(opt => (
                     <ToggleButton key={opt} value={opt}>
                         {opt}
