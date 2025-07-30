@@ -16,12 +16,12 @@ const COLLISION_TIMEOUT = 500
 
 class MultiplayerSystem {
     private readonly client: Peer
-    private readonly connections: DataConnection[] = []
+    private readonly connections: Map<string, DataConnection> = new Map()
     readonly roomId: string
     readonly clientId: string
 
-    clientToInfoMap:Map<string, ClientInfo> = new Map()
-    clientToRobotMap: Map<string, number | null> = new Map() // clientId -> [displayName , sceneObjectKey]
+    private readonly clientToInfoMap:Map<string, ClientInfo> = new Map()
+    private readonly clientToRobotMap: Map<string, number | null> = new Map() // clientId -> sceneObjectKey
 
     readonly info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
@@ -34,7 +34,7 @@ class MultiplayerSystem {
     private constructor(roomId: string, clientId: string, displayName:string, isHost: boolean = false) {
         this.roomId = roomId
         this.clientId = clientId
-        this.info = { clientId: this.clientId, displayName: displayName, isHost }
+        this.info = { clientId: this.clientId, displayName: displayName, isHost, creationTime: Date.now() }
 
         this.client = new Peer(this.clientId, {
             host: window.location.hostname,
@@ -107,13 +107,13 @@ class MultiplayerSystem {
     }
 
     setupConnectionHandlers(conn: DataConnection) {
-        if (this.connections.includes(conn)) {
+        if (this.connections.has(conn.peer)) {
             console.warn("Setting up connection for", conn.peer, "again")
             return
         }
         conn.on("open", async () => {
             console.log("Connection opened", conn.peer)
-            this.connections.push(conn)
+            this.connections.set(conn.peer, conn)
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             await this.send(conn.peer, { type: "info", data: this.info })
         })
@@ -128,11 +128,14 @@ class MultiplayerSystem {
                 data: { sceneObjectKey: 0 },
             }) // TODO Get actual sceneObjectKey
 
-            this.connections.splice(
-                this.connections.findIndex(c => c == conn),
-                1
-            )
+            this.connections.delete(conn.peer)
             // TODO handle host transition
+
+            if (this._host == null) {
+                const newHost = this._peers.reduce((prev, current) => (this.clientToInfoMap.get(prev.peer)?.creationTime ?? Infinity) < (this.clientToInfoMap.get(current.peer)?.creationTime ?? Infinity) ? prev : current)
+                this.clientToInfoMap.get(newHost.peer)!.isHost = true // TODO: enforce that everybody agrees
+            }
+
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             console.log("Connection closed:", conn.peer)
         })
@@ -207,7 +210,7 @@ class MultiplayerSystem {
     }
 
     async send(peer: string, message: Message) {
-        const conn = this.connections.find(c => c.peer == peer)
+        const conn = this.connections.get(peer)
         if (!conn) {
             console.warn("Couldn't find peer: ", peer)
             return
@@ -216,7 +219,7 @@ class MultiplayerSystem {
     }
 
     async broadcast(message: Message) {
-        return await Promise.all(this.connections.map(connection => connection.send(message)))
+        return await Promise.all(this._peers.map((peer) => peer.send(message)))
     }
 
     getClientSceneObjectId(): number | null {
@@ -224,11 +227,18 @@ class MultiplayerSystem {
     }
 
     get peerIDs(): string[] {
-        return this.connections.map(c => c.peer)
+        return Array.from(this.connections.keys())
     }
 
-    get peers(): ClientInfo[] {
-        return this.peerIDs.map((peer) => (this.clientToInfoMap.get(peer) ?? {clientId:peer, displayName:peer, isHost:false}))
+    private get _peers() {
+        return [...this.connections.values()]
+    }
+    private get _host() {
+        return this._peers.find((conn) => this.clientToInfoMap.get(conn.peer)?.isHost)
+    }
+
+    get peerInfo(): ClientInfo[] {
+        return this.peerIDs.map((peerId) => (this.clientToInfoMap.get(peerId) ?? {clientId:peerId, displayName:peerId, isHost:false, creationTime:Infinity}))
     }
 
     get displayName():string {
@@ -237,7 +247,7 @@ class MultiplayerSystem {
 
     public destroy() {
         this.connections.forEach((conn) => conn.close())
-        this.connections.splice(0)
+        this.connections.clear()
         this.client.destroy()
     }
 }

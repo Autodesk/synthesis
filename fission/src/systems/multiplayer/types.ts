@@ -38,6 +38,7 @@ export type ClientInfo = {
     displayName: string
     clientId: string
     isHost: boolean
+    creationTime: number
 }
 
 // TODO: Figure out if InitMultiplayerObjectData is still necessary

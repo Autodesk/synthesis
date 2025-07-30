@@ -14,7 +14,7 @@ const MultiplayerHUD: React.FC = () => {
             setRoomCode(World.multiplayerSystem?.roomId ?? "")
         }))
         unsubscribers.push(MultiplayerStateEvent.addEventListener(MultiplayerStateEventType.PEER_CHANGE, () => {
-            setPeers(World.multiplayerSystem?.peers ?? [])
+            setPeers(World.multiplayerSystem?.peerInfo ?? [])
         }))
         return () => {
             unsubscribers.forEach((unsubscriber) => unsubscriber())
