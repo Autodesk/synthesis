@@ -13,11 +13,12 @@ import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./InputSchemeSelection"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
+import SimulationSystem from "@/systems/simulation/SimulationSystem"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { setSelectedScheme, setUnconfirmedImport, setConfigurationType } = useStateContext()
@@ -37,6 +38,10 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     const closeFinish = useCallback(() => {
         if (targetAssembly?.miraType === MiraType.ROBOT) {
+            targetAssembly.alliance = alliance
+            targetAssembly.station = station
+            SimulationSystem.addPerRobotScore(targetAssembly, 0)
+
             setConfigurationType("ROBOTS")
             const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
@@ -94,7 +99,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     <Box>
                         <Label size="md">Station: </Label>
                         {/** Set the station number */}
-                        <Stack gap={2}>
+                        <Stack gap={2} direction="row">
                             <Button
                                 onClick={() => setStation(1)}
                                 style={station === 1 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
