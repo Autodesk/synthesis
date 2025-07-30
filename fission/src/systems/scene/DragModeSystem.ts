@@ -112,6 +112,10 @@ class DragModeSystem extends WorldSystem {
         return this._enabled
     }
 
+    public get isTransitioning(): boolean {
+        return this._cameraTransition.isTransitioning
+    }
+
     public set enabled(enabled: boolean) {
         if (this._enabled === enabled) return
 

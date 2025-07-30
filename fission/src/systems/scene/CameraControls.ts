@@ -166,7 +166,7 @@ export class CustomOrbitControls extends CameraControls {
      * If not, automatically finds a suitable replacement.
      */
     private validateFocusProvider(): void {
-        if (!World.sceneRenderer?.sceneObjects) {
+        if (!World.sceneRenderer?.sceneObjects || World.dragModeSystem.isTransitioning) {
             return
         }
 
