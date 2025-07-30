@@ -24,7 +24,7 @@ class MultiplayerSystem {
     info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
 
-    public static async create(roomId: string, isHost:boolean): Promise<MultiplayerSystem> {
+    public static async create(roomId: string, isHost: boolean): Promise<MultiplayerSystem> {
         const clientId = await generateId(roomId)
         return new MultiplayerSystem(roomId, clientId, isHost)
     }
@@ -185,12 +185,12 @@ class MultiplayerSystem {
         })
     }
 
-    handleCollision(_data: CollisionData) {
+    handleCollision(data: CollisionData) {
         // TODO Expand on this logic
         if (this.lastSentCollisionTimestamp < COLLISION_TIMEOUT) return
 
-        // World.physicsSystem = data.physicsSystem
-        // World.sceneRenderer.sceneObjects = data.sceneObject
+        World.physicsSystem = data.physicsSystem
+        World.sceneRenderer.sceneObjects = data.sceneObjects
     }
 
     handleNewObject(data: InitObjectData) {
@@ -208,6 +208,10 @@ class MultiplayerSystem {
 
     async broadcast(message: Message) {
         return await Promise.all(this.connections.map(connection => connection.send(message)))
+    }
+
+    getClientSceneObjectId(): number | null {
+        return this.clientToRobotMap.get(this.clientId)?.[1] ?? null
     }
 
     getOtherPeerIds(): string[] {

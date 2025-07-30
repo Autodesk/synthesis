@@ -1472,6 +1472,47 @@ class PhysicsSystem extends WorldSystem {
     }
 
     /**
+     * Finds the MirabufSceneObject containing the mechanism containing the body referenced by the given id
+     */
+    private bodyIdToMiraSceneObject(id: Jolt.BodyID): MirabufSceneObject | null {
+        return (
+            [...World.sceneRenderer.sceneObjects]
+                .map(x => x[1])
+                .find(
+                    (x): x is MirabufSceneObject =>
+                        x instanceof MirabufSceneObject && [...x.mechanism.nodeToBody].map(n => n[1]).includes(id)
+                ) ?? null
+        )
+    }
+
+    /**
+     * In multiplayer, returns whether the given jolt body is on the client's robot
+     *
+     * In singleplayer returns false
+     */
+    private isClient(body: Jolt.Body): boolean {
+        return (
+            (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
+                this.bodyIdToMiraSceneObject(body.GetID())?.id === World.multiplayerSystem?.getClientSceneObjectId()) ??
+            false
+        )
+    }
+
+    /**
+     * Records the robot body as having touched another body
+     * This is used for tracking which bodies the client needs to send the state of to peers
+     */
+    private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body) {
+        if (other == null || robot == null) return
+        const otherId = other.GetID()
+
+        const robotSceneObject = this.bodyIdToMiraSceneObject(robot.GetID())
+        if (robotSceneObject != null) {
+            robotSceneObject.mechanism.touchedBodies.push(otherId)
+        }
+    }
+
+    /**
      * Creates and assigns Jolt contact listener that dispatches events.
      *
      * @param physSystem The physics system the contact listener will attach to
@@ -1492,8 +1533,14 @@ class PhysicsSystem extends WorldSystem {
                 manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
                 settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
             }
-            if (body1.GetObjectLayer() === LAYER_GENERAL_DYNAMIC && ROBOT_LAYERS.includes(body2.GetObjectLayer())) {
-            }
+
+            // Detect if a robot is touching a gp, then push to the robot's touched list
+            const [clientBody, otherBody] = this.isClient(body1)
+                ? [body1, body2]
+                : this.isClient(body2)
+                  ? [body2, body1]
+                  : [undefined, undefined]
+            this.recordOtherBodyCollision(clientBody, otherBody)
 
             this._physicsEventQueue.push(new OnContactAddedEvent(message))
         }
