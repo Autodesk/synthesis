@@ -66,8 +66,8 @@ class MatchMode {
             config.ignoreRotation,
             config.maxHeight,
             config.heightLimitPenalty,
-            config.sideExtensionPenalty,
-            config.sideMaxExtension
+            config.sideMaxExtension,
+            config.sideExtensionPenalty
         )
     }
 

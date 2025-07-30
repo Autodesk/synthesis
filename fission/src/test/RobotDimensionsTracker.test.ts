@@ -88,7 +88,10 @@ describe("RobotDimensionTracker", () => {
     beforeEach(() => {
         vi.clearAllMocks()
 
-        const tracker = RobotDimensionTracker as unknown as { _robotLastFramePenalty?: Map<number, boolean>, _robotSize?: Map<number, { width: number; depth: number }> }
+        const tracker = RobotDimensionTracker as unknown as {
+            _robotLastFramePenalty?: Map<number, boolean>
+            _robotSize?: Map<number, { width: number; depth: number }>
+        }
         tracker._robotLastFramePenalty?.clear()
         tracker._robotSize?.clear()
 
@@ -148,7 +151,7 @@ describe("RobotDimensionTracker", () => {
     })
 
     test("config values determine which dimension method is used", () => {
-        RobotDimensionTracker.setConfigValues(false, 2, 15, 15, 1.5)
+        RobotDimensionTracker.setConfigValues(false, 2, 15, 1.5, 15)
         RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
 
         expect(mockRobot1.getDimensions).toHaveBeenCalled()
@@ -156,7 +159,7 @@ describe("RobotDimensionTracker", () => {
     })
 
     test("should penalize robot if it exceeds max height", () => {
-        RobotDimensionTracker.setConfigValues(true, 3, 5, 5, 1.5)
+        RobotDimensionTracker.setConfigValues(true, 3, 5, 1.5, 5)
 
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 3.5, width: 1.0, depth: 1.0 })
@@ -172,11 +175,11 @@ describe("RobotDimensionTracker", () => {
     })
 
     test("should penalize robot if it exceeds side max extension (width)", () => {
-        RobotDimensionTracker.setConfigValues(true, 10, 5, 2, 0.5)
+        RobotDimensionTracker.setConfigValues(true, 10, 5, 0.5, 2)
 
         mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
-        
+
         mockRobot2.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
 
@@ -195,11 +198,11 @@ describe("RobotDimensionTracker", () => {
     })
 
     test("should penalize robot if it exceeds side max extension (depth)", () => {
-        RobotDimensionTracker.setConfigValues(true, 10, 5, 3, 0.3)
+        RobotDimensionTracker.setConfigValues(true, 10, 5, 0.3, 3)
 
         mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
-        
+
         mockRobot2.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
 
@@ -218,9 +221,9 @@ describe("RobotDimensionTracker", () => {
     })
 
     test("should not penalize a robot for side extension if initial dimensions were not recorded", () => {
-        RobotDimensionTracker.setConfigValues(false, 10, 5, 3, 0.3)
+        RobotDimensionTracker.setConfigValues(false, 10, 5, 0.3, 3)
 
-        mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })        
+        mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
         mockRobot2.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
 
         RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
@@ -229,7 +232,7 @@ describe("RobotDimensionTracker", () => {
     })
 
     test("should not penalize robot every frame", () => {
-        RobotDimensionTracker.setConfigValues(true, 3, 5, 5, 1.5)
+        RobotDimensionTracker.setConfigValues(true, 3, 5, 1.5, 5)
 
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 12, width: 1.0, depth: 1.0 })
 
@@ -240,7 +243,7 @@ describe("RobotDimensionTracker", () => {
     })
 
     test("should penalize multiple robots", () => {
-        RobotDimensionTracker.setConfigValues(true, 3.048, 5, 5, 1.5)
+        RobotDimensionTracker.setConfigValues(true, 3.048, 5, 1.5, 5)
 
         mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 12, width: 1.0, depth: 1.0 })
         mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 12, width: 1.0, depth: 1.0 })
@@ -251,7 +254,7 @@ describe("RobotDimensionTracker", () => {
     })
 
     test("should not penalize robot if it is not a robot", () => {
-        RobotDimensionTracker.setConfigValues(true, 3, 5, 5, 1.5)
+        RobotDimensionTracker.setConfigValues(true, 3, 5, 1.5, 5)
 
         mockNonRobot.getDimensions = vi.fn().mockReturnValue({ height: 12, width: 1.0, depth: 1.0 })
 

@@ -71,7 +71,6 @@ export interface MatchModeConfig {
      */
     heightLimitPenalty: number
 
-
     /**
      * Maximum allowed robot side extension in meters
      * User input is in feet but converted to meters during config processing.
@@ -272,12 +271,17 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             maxHeight:
                 typeof configObj.maxHeight === "number" ? convertFeetToMeters(configObj.maxHeight) : DEFAULT_MAX_HEIGHT,
             heightLimitPenalty:
-                typeof configObj.heightLimitPenalty === "number" ? configObj.heightLimitPenalty : DEFAULT_HEIGHT_LIMIT_PENALTY,
+                typeof configObj.heightLimitPenalty === "number"
+                    ? configObj.heightLimitPenalty
+                    : DEFAULT_HEIGHT_LIMIT_PENALTY,
             sideMaxExtension:
-                typeof configObj.sideMaxExtension === "number" ? convertFeetToMeters(configObj.sideMaxExtension) : DEFAULT_SIDE_MAX_EXTENSION,
+                typeof configObj.sideMaxExtension === "number"
+                    ? convertFeetToMeters(configObj.sideMaxExtension)
+                    : DEFAULT_SIDE_MAX_EXTENSION,
             sideExtensionPenalty:
-                typeof configObj.sideExtensionPenalty === "number" ? configObj.sideExtensionPenalty : DEFAULT_SIDE_EXTENSION_PENALTY,
-            
+                typeof configObj.sideExtensionPenalty === "number"
+                    ? configObj.sideExtensionPenalty
+                    : DEFAULT_SIDE_EXTENSION_PENALTY,
         }
 
         return normalizedConfig

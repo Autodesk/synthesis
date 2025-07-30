@@ -21,14 +21,14 @@ class RobotDimensionTracker {
         ignoreRotation: boolean,
         maxHeight: number,
         heightLimitPenalty: number,
-        sideExtensionPenalty: number,
-        sideMaxExtension: number
+        sideMaxExtension: number,
+        sideExtensionPenalty: number
     ) {
         this._ignoreRotation = ignoreRotation
         this._maxHeight = maxHeight
         this._heightLimitPenalty = heightLimitPenalty
-        this._sideExtensionPenalty = sideExtensionPenalty
         this._sideMaxExtension = sideMaxExtension
+        this._sideExtensionPenalty = sideExtensionPenalty
     }
 
     public static update(sceneRenderer: SceneRenderer): void {
