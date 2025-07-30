@@ -65,7 +65,7 @@ export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => 
     // FIXME: sliders show up as <span> so want to cancel drag on those
     // however still can drag on dropdown but menu elements are left behind
     return (
-        <Draggable cancel="span" positionOffset={getPositionOffset(props.position)}>
+        <Draggable cancel="span, input" positionOffset={getPositionOffset(props.position)}>
             <Card
                 sx={{
                     display: panel.props.configured ? "" : "none",

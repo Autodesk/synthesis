@@ -39,14 +39,15 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
     const DEFAULT_PANEL_PROPS = {
         ...DEFAULT_PROPS,
-        position: "center"
+        position: "center",
     } as PanelProps
 
     const openModal: OpenModalFn = useCallback(
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: Omit<ModalProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS,
+            props: Omit<ModalProps, "type" | "configured"> &
+                Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PROPS
         ) => {
             const id = uuidv4()
             const newModal = {
@@ -56,7 +57,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 props: {
                     ...DEFAULT_PROPS,
                     ...props,
-                }
+                },
             } as Modal<T>
             modal?.onClose?.(CloseType.Overwrite)
 
@@ -84,7 +85,8 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         <T,>(
             content: ReactElement,
             parent?: UIScreen<T>,
-            props: Omit<PanelProps, "type" | "configured"> & Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PANEL_PROPS
+            props: Omit<PanelProps, "type" | "configured"> &
+                Omit<UIScreenCallbacks<T>, "onBeforeAccept"> = DEFAULT_PANEL_PROPS
         ) => {
             const id = uuidv4()
             const panel = {
@@ -93,7 +95,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 content,
                 props: {
                     ...DEFAULT_PANEL_PROPS,
-                    ...props
+                    ...props,
                 },
             } as Panel<T>
 
