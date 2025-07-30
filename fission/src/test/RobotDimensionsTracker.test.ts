@@ -3,6 +3,8 @@ import RobotDimensionTracker from "@/systems/match_mode/RobotDimensionTracker"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import World from "@/systems/World"
+import SceneObject from "@/systems/scene/SceneObject"
 
 interface MockDimensions {
     width: number
@@ -11,20 +13,30 @@ interface MockDimensions {
 }
 
 interface MockRobotObject {
+    _id: number | null
+    id: number
     assemblyName: string
     miraType: MiraType
     getDimensions: () => MockDimensions
     getDimensionsWithoutRotation: () => MockDimensions
+    setup: () => void
+    update: () => void
+    dispose: () => void
 }
 
 interface MockNonRobotObject {
+    _id: number | null
+    id: number
     assemblyName: string
     miraType: MiraType
     getDimensions: () => MockDimensions
+    setup: () => void
+    update: () => void
+    dispose: () => void
 }
 
 interface MockSceneRenderer {
-    sceneObjects: Map<string, MockRobotObject | MockNonRobotObject>
+    sceneObjects: Map<number, MockRobotObject | MockNonRobotObject>
 }
 
 type TrackerUpdateParam = Parameters<typeof RobotDimensionTracker.update>[0]
@@ -59,6 +71,14 @@ vi.mock("@/systems/simulation/SimulationSystem", () => ({
     },
 }))
 
+vi.mock("@/systems/World", () => ({
+    default: {
+        sceneRenderer: {
+            sceneObjects: new Map(),
+        },
+    },
+}))
+
 describe("RobotDimensionTracker", () => {
     let mockSceneRenderer: MockSceneRenderer
     let mockRobot1: MockRobotObject
@@ -68,8 +88,9 @@ describe("RobotDimensionTracker", () => {
     beforeEach(() => {
         vi.clearAllMocks()
 
-        const tracker = RobotDimensionTracker as unknown as { _robotLastFramePenalty?: Map<number, boolean> }
+        const tracker = RobotDimensionTracker as unknown as { _robotLastFramePenalty?: Map<number, boolean>, _robotSize?: Map<number, { width: number; depth: number }> }
         tracker._robotLastFramePenalty?.clear()
+        tracker._robotSize?.clear()
 
         const robot1Base = Object.create(MirabufSceneObject.prototype)
         const robot2Base = Object.create(MirabufSceneObject.prototype)
@@ -99,18 +120,27 @@ describe("RobotDimensionTracker", () => {
         })
 
         mockNonRobot = {
+            _id: 3,
+            id: 3,
             assemblyName: "Field",
             miraType: MiraType.FIELD,
             getDimensions: vi.fn(() => ({ height: 5.0, width: 10.0, depth: 10.0 })),
+            setup: vi.fn(),
+            update: vi.fn(),
+            dispose: vi.fn(),
         }
 
         mockSceneRenderer = {
             sceneObjects: new Map([
-                ["robot1", mockRobot1],
-                ["robot2", mockRobot2],
-                ["field", mockNonRobot],
+                [1, mockRobot1],
+                [2, mockRobot2],
+                [3, mockNonRobot],
             ]),
         }
+
+        World.sceneRenderer.sceneObjects.set(1, mockRobot1 as unknown as SceneObject)
+        World.sceneRenderer.sceneObjects.set(2, mockRobot2 as unknown as SceneObject)
+        World.sceneRenderer.sceneObjects.set(3, mockNonRobot as unknown as SceneObject)
     })
 
     afterEach(() => {
@@ -139,6 +169,63 @@ describe("RobotDimensionTracker", () => {
             expect.any(Number),
             expect.any(String)
         )
+    })
+
+    test("should penalize robot if it exceeds side max extension (width)", () => {
+        RobotDimensionTracker.setConfigValues(true, 10, 5, 2, 0.5)
+
+        mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
+        mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
+        
+        mockRobot2.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
+        mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.0 })
+
+        RobotDimensionTracker.matchStart()
+
+        mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.7, depth: 1.0 })
+
+        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+
+        expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 2, expect.any(String))
+        expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
+            mockRobot1,
+            expect.any(Number),
+            expect.any(String)
+        )
+    })
+
+    test("should penalize robot if it exceeds side max extension (depth)", () => {
+        RobotDimensionTracker.setConfigValues(true, 10, 5, 3, 0.3)
+
+        mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
+        mockRobot1.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
+        
+        mockRobot2.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
+        mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
+
+        RobotDimensionTracker.matchStart()
+
+        mockRobot2.getDimensionsWithoutRotation = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.7 })
+
+        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+
+        expect(SimulationSystem.robotPenalty).toHaveBeenCalledWith(mockRobot2, 3, expect.any(String))
+        expect(SimulationSystem.robotPenalty).not.toHaveBeenCalledWith(
+            mockRobot1,
+            expect.any(Number),
+            expect.any(String)
+        )
+    })
+
+    test("should not penalize a robot for side extension if initial dimensions were not recorded", () => {
+        RobotDimensionTracker.setConfigValues(false, 10, 5, 3, 0.3)
+
+        mockRobot1.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })        
+        mockRobot2.getDimensions = vi.fn().mockReturnValue({ height: 2.0, width: 1.0, depth: 1.2 })
+
+        RobotDimensionTracker.update(mockSceneRenderer as unknown as TrackerUpdateParam)
+
+        expect(SimulationSystem.robotPenalty).not.toHaveBeenCalled()
     })
 
     test("should not penalize robot every frame", () => {

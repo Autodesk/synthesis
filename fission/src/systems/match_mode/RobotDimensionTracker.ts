@@ -49,7 +49,7 @@ class RobotDimensionTracker {
                 return
             }
 
-            const startingRobotSize = this._robotSize.get(robot.id) ?? { width: 0, depth: 0 }
+            const startingRobotSize = this._robotSize.get(robot.id) ?? { width: Infinity, depth: Infinity }
             if (
                 dimensions.width > startingRobotSize.width + this._sideMaxExtension + SIDE_BUFFER ||
                 dimensions.depth > startingRobotSize.depth + this._sideMaxExtension + SIDE_BUFFER
