@@ -2,18 +2,19 @@ import React, {useEffect, useState} from "react"
 import {Stack} from "@mui/system";
 import World from "@/systems/World.ts";
 import {MultiplayerStateEvent, MultiplayerStateEventType} from "@/systems/multiplayer/MultiplayerSystem.ts";
+import {ClientInfo} from "@/systems/multiplayer/types.ts";
 
 
 const MultiplayerHUD: React.FC = () => {
     const [roomCode, setRoomCode] = useState("")
-    const [peers, setPeers] = useState<string[]>([])
+    const [peers, setPeers] = useState<ClientInfo[]>([])
     useEffect(() => {
         const unsubscribers:(() => void)[] = []
         unsubscribers.push(MultiplayerStateEvent.addEventListener(MultiplayerStateEventType.JOIN_ROOM, () => {
             setRoomCode(World.multiplayerSystem?.roomId ?? "")
         }))
         unsubscribers.push(MultiplayerStateEvent.addEventListener(MultiplayerStateEventType.PEER_CHANGE, () => {
-            setPeers(World.multiplayerSystem?.peerIDs ?? [])
+            setPeers(World.multiplayerSystem?.peers ?? [])
         }))
         return () => {
             unsubscribers.forEach((unsubscriber) => unsubscriber())
@@ -25,7 +26,7 @@ const MultiplayerHUD: React.FC = () => {
             Room: {roomCode}
             </div>
             {peers.map((peer) => (
-                <div key={peer}>{peer}</div>
+                <div key={peer.clientId}>{peer.isHost&&"* "}{peer.displayName}</div>
             ))}
         </Stack>
     )

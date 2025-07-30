@@ -13,13 +13,15 @@ import type {
 
 const COLLISION_TIMEOUT = 500
 
+
 class MultiplayerSystem {
     private readonly client: Peer
     private readonly connections: DataConnection[] = []
     readonly roomId: string
     readonly clientId: string
 
-    clientToRobotMap: Map<string, [string, number | null]> = new Map() // clientId -> [displayName , sceneObjectKey]
+    clientToInfoMap:Map<string, ClientInfo> = new Map()
+    clientToRobotMap: Map<string, number | null> = new Map() // clientId -> [displayName , sceneObjectKey]
 
     readonly info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
@@ -110,7 +112,7 @@ class MultiplayerSystem {
             return
         }
         conn.on("open", async () => {
-            console.log("Connection opened")
+            console.log("Connection opened", conn.peer)
             this.connections.push(conn)
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             await this.send(conn.peer, { type: "info", data: this.info })
@@ -125,10 +127,12 @@ class MultiplayerSystem {
                 type: "robotLeft",
                 data: { sceneObjectKey: 0 },
             }) // TODO Get actual sceneObjectKey
+
             this.connections.splice(
                 this.connections.findIndex(c => c == conn),
                 1
             )
+            // TODO handle host transition
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             console.log("Connection closed:", conn.peer)
         })
@@ -160,7 +164,9 @@ class MultiplayerSystem {
     }
 
     handlePeerInfo(data: ClientInfo) {
-        this.clientToRobotMap.set(data.clientId, [data.displayName, null])
+        this.clientToRobotMap.set(data.clientId, null)
+        this.clientToInfoMap.set(data.clientId, data)
+        MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
     }
 
     handleWorldInitialization(data: InitData) {
@@ -214,11 +220,15 @@ class MultiplayerSystem {
     }
 
     getClientSceneObjectId(): number | null {
-        return this.clientToRobotMap.get(this.clientId)?.[1] ?? null
+        return this.clientToRobotMap.get(this.clientId) ?? null
     }
 
     get peerIDs(): string[] {
         return this.connections.map(c => c.peer)
+    }
+
+    get peers(): ClientInfo[] {
+        return this.peerIDs.map((peer) => (this.clientToInfoMap.get(peer) ?? {clientId:peer, displayName:peer, isHost:false}))
     }
 
     get displayName():string {
