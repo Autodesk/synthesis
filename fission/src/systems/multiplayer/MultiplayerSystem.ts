@@ -14,25 +14,25 @@ import type {
 const COLLISION_TIMEOUT = 500
 
 class MultiplayerSystem {
-    readonly client: Peer
+    private readonly client: Peer
+    private readonly connections: DataConnection[] = []
     readonly roomId: string
-    readonly connections: DataConnection[] = []
     readonly clientId: string
 
     clientToRobotMap: Map<string, [string, number | null]> = new Map() // clientId -> [displayName , sceneObjectKey]
 
-    info: ClientInfo
+    readonly info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
 
-    public static async create(roomId: string, isHost: boolean): Promise<MultiplayerSystem> {
+    public static async create(roomId: string, displayName:string, isHost:boolean): Promise<MultiplayerSystem> {
         const clientId = await generateId(roomId)
-        return new MultiplayerSystem(roomId, clientId, isHost)
+        return new MultiplayerSystem(roomId, clientId, displayName, isHost)
     }
 
-    private constructor(roomId: string, clientId: string, isHost: boolean = false) {
+    private constructor(roomId: string, clientId: string, displayName:string, isHost: boolean = false) {
         this.roomId = roomId
         this.clientId = clientId
-        this.info = { clientId: this.clientId, displayName: this.clientId, isHost }
+        this.info = { clientId: this.clientId, displayName: displayName, isHost }
 
         this.client = new Peer(this.clientId, {
             host: window.location.hostname,
@@ -82,6 +82,7 @@ class MultiplayerSystem {
                     console.log(`Initiating Connection: ${peer}`)
                 })
         )
+        MultiplayerStateEvent.dispatch(MultiplayerStateEventType.JOIN_ROOM)
     }
 
     // Called by the host, initializes the world with some defined set of objects, robots can be spawned in later
@@ -111,6 +112,7 @@ class MultiplayerSystem {
         conn.on("open", async () => {
             console.log("Connection opened")
             this.connections.push(conn)
+            MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             this.send(conn.peer, { type: "info", data: this.info })
         })
 
@@ -127,6 +129,7 @@ class MultiplayerSystem {
                 this.connections.findIndex(c => c == conn),
                 1
             )
+            MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
             console.log("Connection closed:", conn.peer)
         })
         conn.on("iceStateChanged", console.log)
@@ -214,8 +217,12 @@ class MultiplayerSystem {
         return this.clientToRobotMap.get(this.clientId)?.[1] ?? null
     }
 
-    getOtherPeerIds(): string[] {
+    get peerIDs(): string[] {
         return this.connections.map(c => c.peer)
+    }
+
+    get displayName():string {
+        return this.info.displayName
     }
 }
 
@@ -240,6 +247,32 @@ async function createSha256Hash(msg: string) {
         .slice(0, 8)
         .map(b => b.toString(16).padStart(2, "0"))
         .join("")
+}
+
+export enum MultiplayerStateEventType {
+    INIT,
+    JOIN_ROOM,
+    PEER_CHANGE
+}
+
+export class MultiplayerStateEvent extends Event {
+
+    private constructor(event:MultiplayerStateEventType) {
+        super(`MultiplayerStateChange${event}`);
+    }
+
+    public static dispatch(eventType:MultiplayerStateEventType) {
+        const event = new MultiplayerStateEvent(eventType)
+        window.dispatchEvent(event)
+    }
+
+    public static addEventListener(eventType:MultiplayerStateEventType, cb:EventListenerOrEventListenerObject) {
+        window.addEventListener(`MultiplayerStateChange${eventType}`, cb)
+        return () => {
+            window.removeEventListener(`MultiplayerStateChange${eventType}`, cb)
+        }
+    }
+
 }
 
 export default MultiplayerSystem

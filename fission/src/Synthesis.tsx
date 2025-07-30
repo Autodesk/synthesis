@@ -74,6 +74,7 @@ import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 import MultiplayerStartModal from "@/modals/MultiplayerStartModal.tsx";
 import {globalAddToast} from "@/components/GlobalUIControls.ts";
+import MultiplayerHUD from "@/components/MultiplayerHUD.tsx";
 
 const Synthesis: React.FC = () => {
     const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
@@ -93,7 +94,8 @@ const Synthesis: React.FC = () => {
     const modalElement = getActiveModalElement()
 
     const mainLoopHandle = useRef(0)
-    const startMainLoop = () => {
+    const startMainLoop = async () => {
+        await World.initWorld()
         if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
             setConsentPopupDisable(false)
         }
@@ -112,15 +114,15 @@ const Synthesis: React.FC = () => {
             <MultiplayerStartModal
                 key="multiplayer-start"
                 modalId="multiplayer-start"
-                startWorldCallback={async (room) => {
+                startWorldCallback={async (name, room) => {
                     const isHost = room == null
                     if (room == null) {
                         room = Math.random().toString(10).substring(2, 8)
                         globalAddToast("info", "Room code", room)
                     }
-                    const multiplayerSystem = await MultiplayerSystem.create(room, isHost)
-                    await World.initWorld(multiplayerSystem)
-                    startMainLoop()
+                    const multiplayerSystem = await MultiplayerSystem.create(room, name, isHost)
+                    World.setMultiplayerSystem(multiplayerSystem)
+                    await startMainLoop()
                 }}
             />
         ),
@@ -132,13 +134,11 @@ const Synthesis: React.FC = () => {
                 key="main-menu"
                 modalId="main-menu"
                 startSingleplayerCallback={async () => {
-                    await World.initWorld()
-                    startMainLoop()
+                    await startMainLoop()
 
                 }}
-                startMultiplayerCallback={async () => {
+                startMultiplayerCallback={() => {
                     openModal("multiplayer-lobby")
-
                 }}
             />
         ),
@@ -213,6 +213,7 @@ const Synthesis: React.FC = () => {
                             <SceneOverlay />
                             <TouchControls />
                             <ContextMenu />
+                            <MultiplayerHUD/>
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (

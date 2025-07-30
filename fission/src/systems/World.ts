@@ -77,15 +77,16 @@ class World {
         }
     }
 
-    public static async initWorld(multiplayerSystem?: MultiplayerSystem) {
+    public static setMultiplayerSystem(multiplayerSystem: MultiplayerSystem) {
+        World._multiplayerSystem = multiplayerSystem
+    }
+
+    public static async initWorld() {
         if (World._isAlive) return
 
         World._clock = new THREE.Clock()
         World._isAlive = true
 
-        if (multiplayerSystem) {
-            World._multiplayerSystem = multiplayerSystem
-        }
 
         World._sceneRenderer = new SceneRenderer()
         World._physicsSystem = new PhysicsSystem()
