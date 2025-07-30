@@ -1,10 +1,10 @@
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useEffect, useMemo } from "react"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
 import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import World from "@/systems/World"
 import { PAUSE_REF_ASSEMBLY_MOVE } from "@/systems/physics/PhysicsSystem"
+import World from "@/systems/World"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 
 const TransformAssemblyPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const targetAssembly = useMemo(() => {
@@ -12,10 +12,10 @@ const TransformAssemblyPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }, [])
 
     useEffect(() => {
-        World.PhysicsSystem.HoldPause(PAUSE_REF_ASSEMBLY_MOVE)
+        World.physicsSystem.holdPause(PAUSE_REF_ASSEMBLY_MOVE)
 
         return () => {
-            World.PhysicsSystem.ReleasePause(PAUSE_REF_ASSEMBLY_MOVE)
+            World.physicsSystem.releasePause(PAUSE_REF_ASSEMBLY_MOVE)
         }
     }, [])
 
@@ -26,7 +26,7 @@ const TransformAssemblyPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             openLocation={"right"}
             sidePadding={8}
             acceptEnabled={false}
-            icon={SynthesisIcons.Gamepad}
+            icon={SynthesisIcons.GAMEPAD}
             cancelEnabled={true}
             cancelName="Close"
         >

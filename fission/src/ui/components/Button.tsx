@@ -1,12 +1,11 @@
-import React, { ReactNode } from "react"
 import { Button as BaseButton } from "@mui/base/Button"
+import React, { ReactNode } from "react"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
 
 export enum ButtonSize {
-    Small,
-    Medium,
-    Large,
+    SMALL,
+    MEDIUM,
+    LARGE,
     XL,
 }
 
@@ -19,6 +18,7 @@ export type ButtonProps = {
     className?: string
     id?: string
     disabled?: boolean
+    label?: string
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -33,17 +33,17 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
     let sizeClassNames = sizeOverrideClass
 
-    if (!size) size = ButtonSize.Medium as ButtonSize
+    if (!size) size = ButtonSize.MEDIUM as ButtonSize
 
     if (!sizeClassNames) {
         switch (size) {
-            case ButtonSize.Small:
+            case ButtonSize.SMALL:
                 sizeClassNames = "w-fit h-fit px-4 py-1"
                 break
-            case ButtonSize.Medium:
+            case ButtonSize.MEDIUM:
                 sizeClassNames = "w-fit h-fit px-6 py-1.5"
                 break
-            case ButtonSize.Large:
+            case ButtonSize.LARGE:
                 sizeClassNames = "w-fit h-fit px-8 py-2"
                 break
             case ButtonSize.XL:
@@ -55,13 +55,13 @@ const Button: React.FC<ButtonProps> = ({
     return (
         <BaseButton
             onClick={onClick}
-            onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+            {...SoundPlayer.buttonSoundEffects()}
             className={`
                 ${colorOverrideClass || "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"}  
                 ${sizeClassNames} 
                 rounded-sm 
                 font-semibold 
-                cursor-pointer 
+                ${!disabled && "cursor-pointer"} 
                 duration-200 
                 border-none 
                 focus-visible:outline-0 

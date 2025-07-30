@@ -1,18 +1,18 @@
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 import React, { useMemo, useState } from "react"
-import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
-import World from "@/systems/World"
-import SliderDriver from "@/systems/simulation/driver/SliderDriver"
-import HingeDriver from "@/systems/simulation/driver/HingeDriver"
-import Driver from "@/systems/simulation/driver/Driver"
-import WheelDriver from "@/systems/simulation/driver/WheelDriver"
-import SubsystemRowInterface from "./SubsystemRowInterface"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
-import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
-import { DefaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
+import { defaultSequentialConfig, SequentialBehaviorPreferences } from "@/systems/preferences/PreferenceTypes"
 import GenericArmBehavior from "@/systems/simulation/behavior/synthesis/GenericArmBehavior"
+import SequenceableBehavior from "@/systems/simulation/behavior/synthesis/SequenceableBehavior"
+import Driver from "@/systems/simulation/driver/Driver"
+import HingeDriver from "@/systems/simulation/driver/HingeDriver"
+import SliderDriver from "@/systems/simulation/driver/SliderDriver"
+import WheelDriver from "@/systems/simulation/driver/WheelDriver"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import World from "@/systems/World"
+import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
+import { ConfigurationSavedEvent } from "../ConfigurationSavedEvent"
+import SubsystemRowInterface from "./SubsystemRowInterface"
 
 class ConfigModeSelectionOption extends SelectMenuOption {
     driver: Driver
@@ -54,12 +54,12 @@ const ConfigureSubsystemsInterface: React.FC<ConfigSubsystemProps> = ({ selected
             PreferencesSystem.getRobotPreferences(selectedRobot.assemblyName)?.sequentialConfig ??
             (selectedRobot.brain as SynthesisBrain).behaviors
                 .filter(b => b instanceof SequenceableBehavior)
-                .map(b => DefaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
+                .map(b => defaultSequentialConfig(b.jointIndex, b instanceof GenericArmBehavior ? "Arm" : "Elevator")),
         [selectedRobot.assemblyName, selectedRobot.brain]
     )
 
     const drivers = useMemo(() => {
-        return World.SimulationSystem.GetSimulationLayer(selectedRobot.mechanism)?.drivers
+        return World.simulationSystem.getSimulationLayer(selectedRobot.mechanism)?.drivers
     }, [selectedRobot])
 
     const getSubsystemOptions = () => {

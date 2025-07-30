@@ -1,6 +1,6 @@
-import Tooltip from "@/components/Tooltip"
 import { AnimatePresence, motion } from "framer-motion"
-import React, { ReactNode, createContext, useCallback, useContext, useState } from "react"
+import React, { createContext, ReactNode, useCallback, useContext, useState } from "react"
+import Tooltip from "@/components/Tooltip"
 
 export type TooltipControl = { control: string; description: string }
 export type TooltipType = "controls"
@@ -12,7 +12,8 @@ type TooltipControlContextType = {
     children?: ReactNode
 }
 
-const TooltipControlContext = createContext<TooltipControlContextType | null>(null)
+const TooltipControlContext: React.Context<TooltipControlContextType | null> =
+    createContext<TooltipControlContextType | null>(null)
 
 export const useTooltipControlContext = () => {
     const context = useContext(TooltipControlContext)

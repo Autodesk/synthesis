@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
+import * as THREE from "three"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import World from "@/systems/World"
-import { JoltVec3_JoltRVec3, ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
 import Checkbox from "@/ui/components/Checkbox"
 import Slider from "@/ui/components/Slider"
+import { convertJoltVec3ToJoltRVec3, convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import { SynthesisIcons } from "../components/StyledComponents"
 
 const RAY_MAX_LENGTH = 20.0
@@ -28,30 +29,32 @@ function affect(
     markRadius: number,
     markers: THREE.Mesh[]
 ) {
-    const origin = World.SceneRenderer.mainCamera.position
+    const origin = World.sceneRenderer.mainCamera.position
 
-    const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
+    const worldSpace = World.sceneRenderer.pixelToWorldSpace(e.clientX, e.clientY)
     const dir = worldSpace.sub(origin).normalize().multiplyScalar(RAY_MAX_LENGTH)
 
-    const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
+    const res = World.physicsSystem.rayCast(convertThreeVector3ToJoltVec3(origin), convertThreeVector3ToJoltVec3(dir))
 
     if (res) {
         if (mark) {
-            const ballMesh = World.SceneRenderer.CreateSphere(
+            const ballMesh = World.sceneRenderer.createSphere(
                 markRadius,
-                World.SceneRenderer.CreateToonMaterial(0xd6564d)
+                World.sceneRenderer.createToonMaterial(0xd6564d)
             )
-            World.SceneRenderer.scene.add(ballMesh)
+            World.sceneRenderer.scene.add(ballMesh)
             const hitPoint = res.point
             ballMesh.position.set(hitPoint.GetX(), hitPoint.GetY(), hitPoint.GetZ())
             markers.push(ballMesh)
         }
 
         if (punch) {
-            World.PhysicsSystem.GetBody(res.data.mBodyID).AddImpulse(
-                ThreeVector3_JoltVec3(dir.normalize().multiplyScalar(punchForce)),
-                JoltVec3_JoltRVec3(res.point)
-            )
+            World.physicsSystem
+                .getBody(res.data.mBodyID)
+                .AddImpulse(
+                    convertThreeVector3ToJoltVec3(dir.normalize().multiplyScalar(punchForce)),
+                    convertJoltVec3ToJoltRVec3(res.point)
+                )
         }
     }
 }
@@ -69,10 +72,10 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             affect(e, punch, mark, punchForce, markRadius, markers)
         }
 
-        World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
+        World.sceneRenderer.renderer.domElement.addEventListener("click", onClick)
 
         return () => {
-            World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
+            World.sceneRenderer.renderer.domElement.removeEventListener("click", onClick)
         }
     }, [mark, markRadius, punch, punchForce, markers])
 
@@ -80,7 +83,7 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => {
             markers.forEach(x => {
                 x.geometry.dispose()
-                World.SceneRenderer.scene.remove(x)
+                World.sceneRenderer.scene.remove(x)
             })
         }
     }, [markers])
@@ -89,7 +92,7 @@ const PokerPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         <Panel
             openLocation="bottom-right"
             name={"The Poker"}
-            icon={SynthesisIcons.OutlineDoubleRight}
+            icon={SynthesisIcons.OUTLINED_DOUBLE_RIGHT}
             panelId={panelId}
             acceptEnabled={false}
             cancelName="Close"

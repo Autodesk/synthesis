@@ -1,23 +1,23 @@
+import Jolt from "@azaleacolburn/jolt-physics"
 import React, { useCallback, useEffect, useRef, useState } from "react"
+import World from "@/systems/World"
+import { convertThreeVector3ToJoltVec3 } from "@/util/TypeConversions"
 import Button, { ButtonSize } from "./Button"
 import Stack, { StackDirection } from "./Stack"
-import World from "@/systems/World"
-import { ThreeVector3_JoltVec3 } from "@/util/TypeConversions"
-import Jolt from "@azaleacolburn/jolt-physics"
 import { LabelWithTooltip } from "./StyledComponents"
 
 // raycasting constants
 const RAY_MAX_LENGTH = 20.0
 
-function SelectNode(e: MouseEvent) {
-    const origin = World.SceneRenderer.mainCamera.position
+function selectNode(e: MouseEvent) {
+    const origin = World.sceneRenderer.mainCamera.position
 
-    const worldSpace = World.SceneRenderer.PixelToWorldSpace(e.clientX, e.clientY)
+    const worldSpace = World.sceneRenderer.pixelToWorldSpace(e.clientX, e.clientY)
     const dir = worldSpace.sub(origin).normalize().multiplyScalar(RAY_MAX_LENGTH)
 
-    const res = World.PhysicsSystem.RayCast(ThreeVector3_JoltVec3(origin), ThreeVector3_JoltVec3(dir))
+    const res = World.physicsSystem.rayCast(convertThreeVector3ToJoltVec3(origin), convertThreeVector3ToJoltVec3(dir))
 
-    if (res) return World.PhysicsSystem.GetBody(res.data.mBodyID)
+    if (res) return World.physicsSystem.getBody(res.data.mBodyID)
 
     return null
 }
@@ -46,30 +46,30 @@ const SelectButton: React.FC<SelectButtonProps> = ({ colorClass, size, value, pl
                 }
             }
         },
-        [setSelecting, onSelect]
+        [onSelect]
     )
 
     useEffect(() => {
         const onClick = (e: MouseEvent) => {
             if (selecting) {
-                const body = SelectNode(e)
+                const body = selectNode(e)
                 if (body) {
                     onReceiveSelection(body)
                 }
             }
         }
 
-        World.SceneRenderer.renderer.domElement.addEventListener("click", onClick)
+        World.sceneRenderer.renderer.domElement.addEventListener("click", onClick)
 
         return () => {
-            World.SceneRenderer.renderer.domElement.removeEventListener("click", onClick)
+            World.sceneRenderer.renderer.domElement.removeEventListener("click", onClick)
         }
     }, [selecting, onReceiveSelection])
 
     // should send selecting state when clicked and then receive string value to set selecting to false
 
     return (
-        <Stack direction={StackDirection.Vertical}>
+        <Stack direction={StackDirection.VERTICAL}>
             {LabelWithTooltip(
                 "Select parent node",
                 "Select the parent node for this object to follow. Click the button below, then click a part of the robot or field."

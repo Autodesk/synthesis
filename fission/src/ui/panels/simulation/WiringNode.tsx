@@ -1,9 +1,9 @@
 import { Connection, Edge, Handle, NodeProps, Position } from "@xyflow/react"
-import { handleInfoDisplayCompare, SimConfig, SimConfigData, HandleInfo, NORA_TYPES_COLORS } from "./SimConfigShared"
-import { useCallback, useMemo } from "react"
+import React, { useCallback, useMemo } from "react"
 import { CustomTooltip, DeleteButton, EditButton, RefreshButton } from "@/ui/components/StyledComponents"
+import { HandleInfo, handleInfoDisplayCompare, NORA_TYPES_COLORS, SimConfig, SimConfigData } from "./SimConfigShared"
 
-function WiringNode({ data, isConnectable }: NodeProps) {
+const WiringNode: React.FC<NodeProps> = ({ data, isConnectable }) => {
     const robotInput = data["input"] as HandleInfo[] | undefined
     const robotOutput = data["output"] as HandleInfo[] | undefined
     const onEdit = data["onEdit"] as (() => void) | undefined
@@ -15,7 +15,7 @@ function WiringNode({ data, isConnectable }: NodeProps) {
 
     const validateConnection = useCallback(
         (edge: Edge | Connection) => {
-            return SimConfig.ValidateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
+            return SimConfig.validateConnection(simConfig, edge.sourceHandle!, edge.targetHandle!)
         },
         [simConfig]
     )

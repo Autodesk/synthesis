@@ -1,8 +1,8 @@
 import React from "react"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
+import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { useTheme } from "@/ui/helpers/UseThemeHelpers"
-import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const DeleteThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { currentTheme, deleteTheme } = useTheme()
@@ -12,7 +12,7 @@ const DeleteThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={`Delete ${currentTheme}?`}
-            icon={SynthesisIcons.Xmark}
+            icon={SynthesisIcons.XMARK}
             modalId={modalId}
             onAccept={() => {
                 deleteTheme(currentTheme)

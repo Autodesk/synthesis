@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
-import Label, { LabelSize } from "./Label"
 import { FaHandPaper } from "react-icons/fa"
-import { Global_AddToast } from "./GlobalUIControls"
+import { globalAddToast } from "./GlobalUIControls"
+import Label, { LabelSize } from "./Label"
 
-export default function DragModeIndicator() {
+const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
 
     useEffect(() => {
@@ -20,7 +20,7 @@ export default function DragModeIndicator() {
 
     const handleClick = () => {
         window.dispatchEvent(new CustomEvent("disableDragMode"))
-        Global_AddToast?.("info", "Drag Mode", "Drag mode has been disabled")
+        globalAddToast("info", "Drag Mode", "Drag mode has been disabled")
     }
 
     return enabled ? (
@@ -29,9 +29,11 @@ export default function DragModeIndicator() {
             onClick={handleClick}
         >
             <FaHandPaper className="text-main-text self-center" />
-            <Label size={LabelSize.Small}>Drag Mode</Label>
+            <Label size={LabelSize.SMALL}>Drag Mode</Label>
         </div>
     ) : (
         <></>
     )
 }
+
+export default DragModeIndicator

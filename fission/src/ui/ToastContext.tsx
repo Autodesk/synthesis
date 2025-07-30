@@ -1,6 +1,6 @@
+import { AnimatePresence, motion } from "framer-motion"
 import React, { createContext, ReactNode, useCallback, useContext, useState } from "react"
 import Toast from "@/components/Toast"
-import { AnimatePresence, motion } from "framer-motion"
 
 export type ToastType = "info" | "warning" | "error"
 
@@ -17,7 +17,7 @@ type ToastContextType = {
     removeToast: (toastId: string) => void
 }
 
-const ToastContext = createContext<ToastContextType | null>(null)
+const ToastContext: React.Context<ToastContextType | null> = createContext<ToastContextType | null>(null)
 
 export const useToastContext = () => {
     const context = useContext(ToastContext)

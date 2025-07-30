@@ -11,16 +11,16 @@ const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [view, setView] = useState<ViewType>("Orbit")
 
     const controls: { [key in ViewType]: TooltipControl[] } = {
-        "Orbit": [
+        Orbit: [
             { control: "LMB + Drag", description: "Orbit Camera" },
             { control: "Scroll", description: "Zoom Camera" },
         ],
-        "Freecam": [
+        Freecam: [
             { control: "RMB + Drag", description: "Rotate Camera" },
             { control: "RMB + WASD", description: "Move Camera" },
             { control: "Scroll", description: "Zoom Camera" },
         ],
-        "Overview": [{ control: "None", description: "Cannot Move Camera" }],
+        Overview: [{ control: "None", description: "Cannot Move Camera" }],
         "Driver Station": [
             { control: "RMB + Drag", description: "Rotate Camera" },
             { control: "RMB + WASD", description: "Move Camera" },
@@ -31,7 +31,7 @@ const ViewModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name={"Camera View"}
-            icon={SynthesisIcons.MagnifyingGlass}
+            icon={SynthesisIcons.MAGNIFYING_GLASS}
             modalId={modalId}
             onAccept={() => showTooltip("controls", controls[view])}
         >

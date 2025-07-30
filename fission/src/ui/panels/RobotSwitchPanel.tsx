@@ -1,10 +1,10 @@
 import React, { useState } from "react"
+import Button from "@/components/Button"
 import Label, { LabelSize } from "@/components/Label"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
 import Stack, { StackDirection } from "@/components/Stack"
-import Button from "@/components/Button"
+import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import Checkbox from "@/components/Checkbox"
 import { SynthesisIcons } from "../components/StyledComponents"
 
 const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
@@ -14,27 +14,27 @@ const RobotSwitchPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sid
     return (
         <Panel
             name={"MultiBot"}
-            icon={SynthesisIcons.People}
+            icon={SynthesisIcons.PEOPLE}
             panelId={panelId}
             openLocation={openLocation}
             sidePadding={sidePadding}
         >
-            <Label size={LabelSize.Medium}>MultiBot</Label>
+            <Label size={LabelSize.MEDIUM}>MultiBot</Label>
             <form>
                 <fieldset>
                     {robots.map((name: string, i: number) => (
-                        <Checkbox
+                        // fixme: new checkbox
+                        <StatefulCheckbox
                             label={name}
-                            defaultState={i == selected}
+                            checked={i == selected}
                             className="whitespace-nowrap"
                             onClick={() => setSelected(i)}
-                            stateOverride={i == selected}
                             key={i}
                         />
                     ))}
                 </fieldset>
             </form>
-            <Stack direction={StackDirection.Horizontal}>
+            <Stack direction={StackDirection.HORIZONTAL}>
                 <Button value="Add" onClick={() => openModal("robots")} />
                 <Button value="Remove" onClick={() => setRobots(robots.filter(r => r !== robots[selected]))} />
             </Stack>

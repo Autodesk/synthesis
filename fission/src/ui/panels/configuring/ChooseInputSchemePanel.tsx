@@ -1,16 +1,16 @@
+import { useEffect, useMemo } from "react"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
-import InputSchemeManager from "@/systems/input/InputSchemeManager"
+import { MiraType } from "@/mirabuf/MirabufLoader"
+import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import InputSchemeManager, { InputSchemeUseType } from "@/systems/input/InputSchemeManager"
 import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { useEffect, useMemo } from "react"
 import { ConfigurationType, setSelectedConfigurationType } from "./assembly-config/ConfigurationType"
 import { setSelectedScheme } from "./assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
-import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
-import { MiraType } from "@/mirabuf/MirabufLoader"
 
 const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     const { closePanel, openPanel } = usePanelControlContext()
@@ -31,23 +31,26 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
         /** If the panel is closed before a scheme is selected, defaults to the top of the list */
         return () => {
-            const brainIndex = SynthesisBrain.GetBrainIndex(targetAssembly)
+            const brainIndex = SynthesisBrain.getBrainIndex(targetAssembly)
 
             if (brainIndex == undefined) return
             if (InputSystem.brainIndexSchemeMap.has(brainIndex)) return
 
-            const scheme = InputSchemeManager.availableInputSchemes[0]
+            // Find first available scheme
+            const scheme = InputSchemeManager.availableInputSchemesByBrain(brainIndex).find(
+                scheme => scheme.status == InputSchemeUseType.AVAILABLE
+            )?.scheme
 
-            InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
-
+            if (scheme) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            }
             setSelectedConfigurationType(ConfigurationType.INPUTS)
             setSelectedScheme(scheme)
         }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [closePanel, targetAssembly])
 
     const brainIndex = useMemo(() => {
-        return SynthesisBrain.GetBrainIndex(targetAssembly)
+        return SynthesisBrain.getBrainIndex(targetAssembly)
     }, [targetAssembly])
 
     return (
@@ -57,7 +60,7 @@ const ChooseInputSchemePanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             openLocation={"right"}
             sidePadding={8}
             acceptEnabled={false}
-            icon={SynthesisIcons.Gamepad}
+            icon={SynthesisIcons.GAMEPAD}
             cancelName="Close"
         >
             {/** A scroll view with buttons to select default and custom input schemes */}

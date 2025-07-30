@@ -6,8 +6,8 @@
  * in the 3D scene.
  */
 
-import { DOMUnitExpression } from "@/util/Units"
 import { useCallback, useEffect, useMemo, useReducer, useRef } from "react"
+import { DOMUnitExpression } from "@/util/Units"
 import { colorNameToVar } from "../helpers/UseThemeHelpers"
 
 const DEBUG_EDGE_CONTROL_LINES = false
@@ -121,7 +121,12 @@ class Junction {
     }
 }
 
-function EdgeComp({ from, to, graph, element }: { from: string; to: string; graph: Graph; element: Element }) {
+const EdgeComp: React.FC<{ from: string; to: string; graph: Graph; element: Element }> = ({
+    from,
+    to,
+    graph,
+    element,
+}) => {
     const [nodeFrom, nodeTo] = useMemo(() => [graph.nodes.get(from)!, graph.nodes.get(to)!], [from, graph, to])
 
     const [fromX, fromY] = [nodeFrom.x.evaluate(element), nodeFrom.y.evaluate(element)]
@@ -171,7 +176,7 @@ function EdgeComp({ from, to, graph, element }: { from: string; to: string; grap
     )
 }
 
-function JunctionComp({ junct, element }: { junct: Junction; element: Element }) {
+const JunctionComp: React.FC<{ junct: Junction; element: Element }> = ({ junct, element }) => {
     return (
         <>
             <path
@@ -188,7 +193,7 @@ function JunctionComp({ junct, element }: { junct: Junction; element: Element })
     )
 }
 
-function NodeComp({ node, graph, element }: { node: Node; graph: Graph; element: Element }) {
+const NodeComp: React.FC<{ node: Node; graph: Graph; element: Element }> = ({ node, graph, element }) => {
     const { label, direction } = node
     const x = node.x.evaluate(element)
     const y = node.y.evaluate(element)
@@ -309,7 +314,7 @@ class Module {
     }
 }
 
-function ModuleComp({ module, element }: { module: Module; element: Element }) {
+const ModuleComp: React.FC<{ module: Module; element: Element }> = ({ module, element }) => {
     const x = module.x.evaluate(element)
     const y = module.y.evaluate(element)
 
@@ -473,10 +478,10 @@ export class Graph {
     }
 }
 
-function GraphComp({ graph }: { graph: Graph }) {
+const GraphComp: React.FC<{ graph: Graph }> = ({ graph }) => {
     const svgRef = useRef<SVGSVGElement | null>(null)
 
-    const [renderHook, forceRenderer] = useReducer(x => !x, false)
+    const [_renderHook, forceRenderer] = useReducer(x => !x, false)
 
     useEffect(() => {
         const anim = () => {
@@ -497,23 +502,28 @@ function GraphComp({ graph }: { graph: Graph }) {
         return svgRef.current != null ? (
             <>
                 {graph.modules.map(x => (
-                    <ModuleComp module={x} element={svgRef.current!} />
+                    <ModuleComp key={x.id} module={x} element={svgRef.current!} />
                 ))}
                 {[...graph.edges.values()].map(x => (
-                    <EdgeComp from={x.from} to={x.to} graph={graph} element={svgRef.current!} />
+                    <EdgeComp
+                        key={x.from + "" + x.to}
+                        from={x.from}
+                        to={x.to}
+                        graph={graph}
+                        element={svgRef.current!}
+                    />
                 ))}
                 {[...graph.juncts.values()].map(x => (
-                    <JunctionComp junct={x} element={svgRef.current!} />
+                    <JunctionComp key={x.id} junct={x} element={svgRef.current!} />
                 ))}
                 {[...graph.nodes.values()].map(x => (
-                    <NodeComp node={x} graph={graph} element={svgRef.current!} />
+                    <NodeComp key={x.id} node={x} graph={graph} element={svgRef.current!} />
                 ))}
             </>
         ) : (
             <></>
         )
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [renderHook, graph])
+    }, [graph])
 
     return (
         <svg ref={svgRef} className="flex grow w-full">

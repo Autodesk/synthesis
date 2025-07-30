@@ -1,15 +1,15 @@
 import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import Label, { LabelSize } from "@/components/Label"
-import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
-import WPILibBrain, { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import World from "@/systems/World"
+import Input from "@/components/Input"
+import Label, { LabelSize } from "@/components/Label"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
 import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput"
+import WPILibBrain, { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import World from "@/systems/World"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -19,16 +19,16 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     let simLayer
     let brain: WPILibBrain
 
-    const miraObjs = [...World.SceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
+    const miraObjs = [...World.sceneRenderer.sceneObjects.entries()].filter(x => x[1] instanceof MirabufSceneObject)
     if (miraObjs.length > 0) {
         // TODO: make the object selectable
         const mechanism = (miraObjs[0][1] as MirabufSceneObject).mechanism
-        simLayer = World.SimulationSystem.GetSimulationLayer(mechanism)
+        simLayer = World.simulationSystem.getSimulationLayer(mechanism)
         stimuli = simLayer?.stimuli.filter(s => s instanceof EncoderStimulus) ?? []
         brain = simLayer?.brain as WPILibBrain
     }
 
-    const devices: [string, unknown][] = [...(getSimMap()?.get(SimType.CANEncoder)?.entries() ?? [])] // ugly
+    const devices: [string, unknown][] = [...(getSimMap()?.get(SimType.CAN_ENCODER)?.entries() ?? [])] // ugly
 
     const stimMap = new Map<string, EncoderStimulus>()
 
@@ -43,7 +43,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Create Device"
-            icon={SynthesisIcons.Add}
+            icon={SynthesisIcons.ADD}
             modalId={modalId}
             acceptName="Done"
             onAccept={() => {
@@ -54,7 +54,7 @@ const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 openModal("roborio")
             }}
         >
-            <Label size={LabelSize.Small}>Name</Label>
+            <Label size={LabelSize.SMALL}>Name</Label>
             <Input placeholder="..." className="w-full" onInput={setName} />
             <Dropdown label="CAN Encoders" options={devices.map(n => n[0])} onSelect={s => setSelectedDevice(s)} />
             <Dropdown

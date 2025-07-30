@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import Stack, { StackDirection } from "@/components/Stack"
 import { HiUser } from "react-icons/hi"
 import APS from "@/aps/APS"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
+import Stack, { StackDirection } from "@/components/Stack"
 
 const APSManagementModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const [userInfo, _] = useState(APS.userInfo)
@@ -16,7 +16,7 @@ const APSManagementModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
                 APS.logout()
             }}
         >
-            <Stack direction={StackDirection.Vertical} spacing={10}></Stack>
+            <Stack direction={StackDirection.VERTICAL} spacing={10}></Stack>
         </Modal>
     )
 }

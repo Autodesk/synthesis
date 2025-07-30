@@ -1,17 +1,17 @@
 import * as THREE from "three"
-import { mirabuf } from "../proto/mirabuf"
-import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 import World from "@/systems/World.ts"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData.ts"
+import { mirabuf } from "../proto/mirabuf"
+import MirabufParser, { ParseErrorSeverity } from "./MirabufParser.ts"
 
 type MirabufPartInstanceGUID = string
 
 const WIREFRAME = false
 
 export enum MaterialStyle {
-    Regular = 0,
-    Normals = 1,
-    Toon = 2,
+    REGULAR = 0,
+    NORMAL = 1,
+    TOON = 2,
 }
 
 export const matToString = (mat: THREE.Matrix4) => {
@@ -109,25 +109,25 @@ class MirabufInstance {
     }
 
     public constructor(parser: MirabufParser, materialStyle?: MaterialStyle, progressHandle?: ProgressHandle) {
-        if (parser.errors.some(x => x[0] >= ParseErrorSeverity.Unimportable))
+        if (parser.errors.some(x => x[0] >= ParseErrorSeverity.UNIMPORTABLE))
             throw new Error("Parser has significant errors...")
 
         this._mirabufParser = parser
         this._materials = new Map()
         this._meshes = new Map()
-        this._batches = new Array<THREE.BatchedMesh>()
+        this._batches = []
 
-        progressHandle?.Update("Loading materials...", 0.4)
-        this.LoadMaterials(materialStyle ?? MaterialStyle.Regular)
+        progressHandle?.update("Loading materials...", 0.4)
+        this.loadMaterials(materialStyle ?? MaterialStyle.REGULAR)
 
-        progressHandle?.Update("Creating meshes...", 0.5)
-        this.CreateMeshes()
+        progressHandle?.update("Creating meshes...", 0.5)
+        this.createMeshes()
     }
 
     /**
      * Parses all mirabuf appearances into ThreeJS and Jolt materials.
      */
-    private LoadMaterials(materialStyle: MaterialStyle) {
+    private loadMaterials(materialStyle: MaterialStyle) {
         Object.entries(this._mirabufParser.assembly.data!.materials!.appearances!).forEach(
             ([appearanceId, appearance]) => {
                 const { A, B, G, R } = appearance.albedo ?? {}
@@ -135,7 +135,7 @@ class MirabufInstance {
                     A && B && G && R ? [(A << 24) | (R << 16) | (G << 8) | B, A / 255.0] : [0xe32b50, 1.0]
 
                 const material =
-                    materialStyle === MaterialStyle.Regular
+                    materialStyle === MaterialStyle.REGULAR
                         ? new THREE.MeshStandardMaterial({
                               // No specular?
                               color: hex,
@@ -145,11 +145,11 @@ class MirabufInstance {
                               opacity: opacity,
                               transparent: opacity < 1.0,
                           })
-                        : materialStyle === MaterialStyle.Normals
+                        : materialStyle === MaterialStyle.NORMAL
                           ? new THREE.MeshNormalMaterial()
-                          : World.SceneRenderer.CreateToonMaterial(hex, 5)
+                          : World.sceneRenderer.createToonMaterial(hex, 5)
 
-                World.SceneRenderer.SetupMaterial(material)
+                World.sceneRenderer.setupMaterial(material)
                 this._materials.set(appearanceId, material)
             }
         )
@@ -158,7 +158,7 @@ class MirabufInstance {
     /**
      * Creates ThreeJS meshes from the parsed mirabuf file.
      */
-    private CreateMeshes() {
+    private createMeshes() {
         const assembly = this._mirabufParser.assembly
         const instances = assembly.data!.parts!.partInstances!
 
@@ -192,10 +192,10 @@ class MirabufInstance {
                     batchMap.set(material, materialBodyMap)
                 }
 
-                const partBodyGuid = this.GetPartBodyGuid(definition, body)
+                const partBodyGuid = this.getPartBodyGuid(definition, body)
                 let bodyInstances = materialBodyMap.get(partBodyGuid)
                 if (!bodyInstances) {
-                    bodyInstances = [body, new Array<mirabuf.IPartInstance>()]
+                    bodyInstances = [body, []]
                     materialBodyMap.set(partBodyGuid, bodyInstances)
                 }
                 bodyInstances[1].push(instance)
@@ -235,12 +235,12 @@ class MirabufInstance {
                     const geometry = new THREE.BufferGeometry()
                     transformGeometry(geometry, body.triangleMesh!.mesh!)
                     const geoId = batchedMesh.addGeometry(geometry)
-
-                    batchedMesh.setMatrixAt(geoId, mat)
+                    const instanceId = batchedMesh.addInstance(geoId)
+                    batchedMesh.setMatrixAt(instanceId, mat)
 
                     let bodies = this._meshes.get(instance.info!.GUID!)
                     if (!bodies) {
-                        bodies = new Array<[THREE.BatchedMesh, number]>()
+                        bodies = []
                         this._meshes.set(instance.info!.GUID!, bodies)
                     }
 
@@ -250,7 +250,7 @@ class MirabufInstance {
         })
     }
 
-    private GetPartBodyGuid(partDef: mirabuf.IPartDefinition, body: mirabuf.IPartDefinition) {
+    private getPartBodyGuid(partDef: mirabuf.IPartDefinition, body: mirabuf.IPartDefinition) {
         return `${partDef.info!.GUID!}_BODY_${body.info!.GUID!}`
     }
 
@@ -259,14 +259,14 @@ class MirabufInstance {
      *
      * @param scene
      */
-    public AddToScene(scene: THREE.Scene) {
+    public addToScene(scene: THREE.Scene) {
         this._batches.forEach(x => scene.add(x))
     }
 
     /**
      * Disposes of all ThreeJs scenes and materials.
      */
-    public Dispose(scene: THREE.Scene) {
+    public dispose(scene: THREE.Scene) {
         this._batches.forEach(x => {
             x.dispose()
             scene.remove(x)

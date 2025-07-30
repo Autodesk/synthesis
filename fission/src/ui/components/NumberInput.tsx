@@ -1,6 +1,6 @@
+import { Unstable_NumberInput as BaseNumberInput } from "@mui/base/Unstable_NumberInput"
 import React from "react"
 import Label, { LabelSize } from "./Label"
-import { Unstable_NumberInput as BaseNumberInput } from "@mui/base/Unstable_NumberInput"
 
 type InputProps = {
     placeholder: string
@@ -13,7 +13,7 @@ type InputProps = {
 const NumberInput: React.FC<InputProps> = ({ placeholder, defaultValue, label, onInput }) => {
     return (
         <>
-            {label && <Label size={LabelSize.Small}>{label}</Label>}
+            {label && <Label size={LabelSize.SMALL}>{label}</Label>}
             <BaseNumberInput
                 defaultValue={defaultValue}
                 placeholder={placeholder}

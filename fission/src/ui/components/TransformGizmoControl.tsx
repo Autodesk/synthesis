@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react"
-import TransformGizmoControlProps from "./TransformGizmoControlProps"
+import React, { useEffect, useState } from "react"
+import * as THREE from "three"
+import InputSystem from "@/systems/input/InputSystem"
 import GizmoSceneObject, { GizmoMode } from "@/systems/scene/GizmoSceneObject"
-import { ToggleButton, ToggleButtonGroup } from "./ToggleButtonGroup"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
 import Button, { ButtonSize } from "./Button"
-import InputSystem from "@/systems/input/InputSystem"
-import * as THREE from "three"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
-import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
+import { ToggleButton, ToggleButtonGroup } from "./ToggleButtonGroup"
+import TransformGizmoControlProps from "./TransformGizmoControlProps"
 
 /**
  * Creates GizmoSceneObject and gives you a toggle button group to control the modes of the gizmo.
@@ -18,7 +17,7 @@ import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
  * @param param0 Transform Gizmo Controls.
  * @returns TransformGizmoControl component.
  */
-function TransformGizmoControl({
+const TransformGizmoControl: React.FC<TransformGizmoControlProps> = ({
     defaultMesh,
     gizmoRef,
     size,
@@ -31,13 +30,13 @@ function TransformGizmoControl({
     postGizmoCreation,
     onAccept,
     onCancel,
-}: TransformGizmoControlProps) {
+}: TransformGizmoControlProps) => {
     const [mode, setMode] = useState<GizmoMode>(defaultMode)
     const [gizmo, setGizmo] = useState<GizmoSceneObject | undefined>(undefined)
 
     useEffect(() => {
         const gizmo = new GizmoSceneObject("translate", size, defaultMesh, parent, (gizmo: GizmoSceneObject) => {
-            parent?.PostGizmoCreation(gizmo)
+            parent?.postGizmoCreation(gizmo)
             postGizmoCreation?.(gizmo)
         })
 
@@ -46,7 +45,7 @@ function TransformGizmoControl({
         setGizmo(gizmo)
 
         return () => {
-            World.SceneRenderer.RemoveSceneObject(gizmo.id)
+            World.sceneRenderer.removeSceneObject(gizmo.id)
         }
     }, [gizmoRef, defaultMesh, size, parent, postGizmoCreation])
 
@@ -109,9 +108,9 @@ function TransformGizmoControl({
                     if (v == undefined) return
 
                     setMode(v)
-                    gizmo?.SetMode(v)
+                    gizmo?.setMode(v)
                 }}
-                onMouseDown={() => SoundPlayer.play(buttonPressSound)}
+                {...SoundPlayer.buttonSoundEffects()}
                 sx={{
                     ...(sx ?? {}),
                     alignSelf: "center",
@@ -127,10 +126,10 @@ function TransformGizmoControl({
             ) : (
                 <Button
                     value={"Reset Orientation"}
-                    size={ButtonSize.Small}
+                    size={ButtonSize.SMALL}
                     className="self-center"
                     onClick={() => {
-                        gizmo?.SetRotation(new THREE.Quaternion(0, 0, 0, 1))
+                        gizmo?.setRotation(new THREE.Quaternion(0, 0, 0, 1))
                     }}
                 />
             )}

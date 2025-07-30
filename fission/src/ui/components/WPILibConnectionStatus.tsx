@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react"
-import Label, { LabelSize } from "./Label"
-import { hasSimBrain, isConnected } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import React, { useEffect, useState } from "react"
 import { FaCheck, FaXmark } from "react-icons/fa6"
+import { hasSimBrain, isConnected } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import Label, { LabelSize } from "./Label"
 
-export default function WPILibConnectionStatus() {
+const WPILibConnectionStatus: React.FC = () => {
     const [status, setStatus] = useState<boolean>(false)
     const [enabled, setEnabled] = useState<boolean>(false)
 
@@ -22,9 +22,11 @@ export default function WPILibConnectionStatus() {
             ) : (
                 <FaXmark className="text-cancel-button self-center" />
             )}
-            <Label size={LabelSize.Small}>Code Connection</Label>
+            <Label size={LabelSize.SMALL}>Code Connection</Label>
         </div>
     ) : (
         <></>
     )
 }
+
+export default WPILibConnectionStatus

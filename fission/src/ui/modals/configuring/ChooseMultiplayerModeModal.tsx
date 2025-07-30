@@ -1,13 +1,13 @@
 import React from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Button from "@/components/Button"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const ChooseMultiplayerModeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Choose Mode"
-            icon={SynthesisIcons.Gear}
+            icon={SynthesisIcons.GEAR}
             modalId={modalId}
             cancelEnabled={false}
             acceptEnabled={false}

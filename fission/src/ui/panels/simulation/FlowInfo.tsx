@@ -1,7 +1,8 @@
 import { Panel as FlowPanel } from "@xyflow/react"
+import React from "react"
 import { CustomTooltip, RefreshButton } from "@/ui/components/StyledComponents"
 
-function FlowInfo({ reset }: { reset: () => void }) {
+const FlowInfo: React.FC<{ reset: () => void }> = ({ reset }) => {
     return (
         <FlowPanel position="top-center" className="flex flex-row gap-1">
             {CustomTooltip(

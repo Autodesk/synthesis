@@ -1,9 +1,9 @@
 import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import Input from "@/components/Input"
-import { useTheme } from "@/ui/helpers/UseThemeHelpers"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers"
 
 const NewThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()
@@ -13,7 +13,7 @@ const NewThemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="New Theme"
-            icon={SynthesisIcons.Add}
+            icon={SynthesisIcons.ADD}
             modalId={modalId}
             acceptBlocked={!themeName}
             onAccept={() => {

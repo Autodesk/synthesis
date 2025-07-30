@@ -1,8 +1,8 @@
 import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Dropdown from "@/components/Dropdown"
-import { TooltipControl, useTooltipControlContext } from "@/ui/TooltipContext"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { TooltipControl, useTooltipControlContext } from "@/ui/TooltipContext"
 
 type DrivetrainType = "None" | "Tank" | "Arcade" | "Swerve"
 
@@ -34,7 +34,7 @@ const DrivetrainModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Change Drivetrain"
-            icon={SynthesisIcons.Car}
+            icon={SynthesisIcons.CAR}
             modalId={modalId}
             onAccept={() => showTooltip("controls", controls[drivetrain])}
         >

@@ -1,45 +1,48 @@
-import { describe, test, expect, beforeEach, vi, afterEach } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 // Mock all the system dependencies before importing World
 vi.mock("@/systems/physics/PhysicsSystem", () => ({
     default: vi.fn(() => ({
-        Update: vi.fn(),
-        Destroy: vi.fn(),
+        update: vi.fn(),
+        destroy: vi.fn(),
     })),
+    getLastDeltaT: vi.fn(() => 0.016),
+    BodyAssociate: vi.fn(),
 }))
 
 vi.mock("@/systems/scene/SceneRenderer", () => ({
     default: vi.fn(() => ({
-        Update: vi.fn(),
-        Destroy: vi.fn(),
+        update: vi.fn(),
+        destroy: vi.fn(),
+        sceneObjects: new Map(),
     })),
 }))
 
 vi.mock("@/systems/simulation/SimulationSystem", () => ({
     default: vi.fn(() => ({
-        Update: vi.fn(),
-        Destroy: vi.fn(),
+        update: vi.fn(),
+        destroy: vi.fn(),
     })),
 }))
 
 vi.mock("@/systems/input/InputSystem", () => ({
     default: vi.fn(() => ({
-        Update: vi.fn(),
-        Destroy: vi.fn(),
+        update: vi.fn(),
+        destroy: vi.fn(),
     })),
 }))
 
 vi.mock("@/systems/analytics/AnalyticsSystem", () => ({
     default: vi.fn(() => ({
-        Update: vi.fn(),
-        Destroy: vi.fn(),
+        update: vi.fn(),
+        destroy: vi.fn(),
     })),
 }))
 
 vi.mock("@/systems/scene/DragModeSystem", () => ({
     default: vi.fn(() => ({
-        Update: vi.fn(),
-        Destroy: vi.fn(),
+        update: vi.fn(),
+        destroy: vi.fn(),
     })),
 }))
 
@@ -62,7 +65,7 @@ describe("World Tests", () => {
         vi.clearAllMocks()
         // Ensure World is not alive before each test
         if (World.isAlive) {
-            World.DestroyWorld()
+            World.destroyWorld()
         }
         World.resetAccumTimes()
     })
@@ -70,7 +73,7 @@ describe("World Tests", () => {
     afterEach(() => {
         // Clean up after each test
         if (World.isAlive) {
-            World.DestroyWorld()
+            World.destroyWorld()
         }
     })
 
@@ -96,25 +99,25 @@ describe("World Tests", () => {
 
     describe("Getters before initialization", () => {
         test("system getters should return undefined before initialization", () => {
-            expect(World.SceneRenderer).toBeUndefined()
-            expect(World.PhysicsSystem).toBeUndefined()
-            expect(World.SimulationSystem).toBeUndefined()
-            expect(World.InputSystem).toBeUndefined()
-            expect(World.AnalyticsSystem).toBeUndefined()
-            expect(World.DragModeSystem).toBeUndefined()
+            expect(World.sceneRenderer).toBeUndefined()
+            expect(World.physicsSystem).toBeUndefined()
+            expect(World.simulationSystem).toBeUndefined()
+            expect(World.inputSystem).toBeUndefined()
+            expect(World.analyticsSystem).toBeUndefined()
+            expect(World.dragModeSystem).toBeUndefined()
         })
     })
 
     describe("InitWorld", () => {
         test("InitWorld should initialize all systems and set isAlive to true", () => {
-            World.InitWorld()
+            World.initWorld()
 
             expect(World.isAlive).toBeTruthy()
-            expect(World.SceneRenderer).toBeDefined()
-            expect(World.PhysicsSystem).toBeDefined()
-            expect(World.SimulationSystem).toBeDefined()
-            expect(World.InputSystem).toBeDefined()
-            expect(World.DragModeSystem).toBeDefined()
+            expect(World.sceneRenderer).toBeDefined()
+            expect(World.physicsSystem).toBeDefined()
+            expect(World.simulationSystem).toBeDefined()
+            expect(World.inputSystem).toBeDefined()
+            expect(World.dragModeSystem).toBeDefined()
         })
 
         test("InitWorld should handle AnalyticsSystem initialization failure gracefully", async () => {
@@ -126,49 +129,49 @@ describe("World Tests", () => {
                 throw new Error("Analytics initialization failed")
             })
 
-            World.InitWorld()
+            World.initWorld()
 
             expect(World.isAlive).toBeTruthy()
-            expect(World.AnalyticsSystem).toBeUndefined()
+            expect(World.analyticsSystem).toBeUndefined()
         })
 
         test("InitWorld should not reinitialize if already alive", () => {
-            World.InitWorld()
-            const firstSceneRenderer = World.SceneRenderer
+            World.initWorld()
+            const firstSceneRenderer = World.sceneRenderer
 
-            World.InitWorld() // Call again
+            World.initWorld() // Call again
 
-            expect(World.SceneRenderer).toBe(firstSceneRenderer)
+            expect(World.sceneRenderer).toBe(firstSceneRenderer)
         })
     })
 
     describe("DestroyWorld", () => {
         test("DestroyWorld should destroy all systems and set isAlive to false", () => {
-            World.InitWorld()
-            const sceneRenderer = World.SceneRenderer
-            const physicsSystem = World.PhysicsSystem
-            const simulationSystem = World.SimulationSystem
-            const inputSystem = World.InputSystem
-            const dragModeSystem = World.DragModeSystem
+            World.initWorld()
+            const sceneRenderer = World.sceneRenderer
+            const physicsSystem = World.physicsSystem
+            const simulationSystem = World.simulationSystem
+            const inputSystem = World.inputSystem
+            const dragModeSystem = World.dragModeSystem
 
-            World.DestroyWorld()
+            World.destroyWorld()
 
             expect(World.isAlive).toBeFalsy()
-            expect(sceneRenderer.Destroy).toHaveBeenCalled()
-            expect(physicsSystem.Destroy).toHaveBeenCalled()
-            expect(simulationSystem.Destroy).toHaveBeenCalled()
-            expect(inputSystem.Destroy).toHaveBeenCalled()
-            expect(dragModeSystem.Destroy).toHaveBeenCalled()
+            expect(sceneRenderer.destroy).toHaveBeenCalled()
+            expect(physicsSystem.destroy).toHaveBeenCalled()
+            expect(simulationSystem.destroy).toHaveBeenCalled()
+            expect(inputSystem.destroy).toHaveBeenCalled()
+            expect(dragModeSystem.destroy).toHaveBeenCalled()
         })
 
         test("DestroyWorld should handle AnalyticsSystem destruction if it exists", () => {
-            World.InitWorld()
-            const analyticsSystem = World.AnalyticsSystem
+            World.initWorld()
+            const analyticsSystem = World.analyticsSystem
 
-            World.DestroyWorld()
+            World.destroyWorld()
 
             if (analyticsSystem) {
-                expect(analyticsSystem.Destroy).toHaveBeenCalled()
+                expect(analyticsSystem.destroy).toHaveBeenCalled()
             }
         })
 
@@ -176,7 +179,7 @@ describe("World Tests", () => {
             expect(World.isAlive).toBeFalsy()
 
             // This should not throw or cause issues
-            World.DestroyWorld()
+            World.destroyWorld()
 
             expect(World.isAlive).toBeFalsy()
         })
@@ -184,8 +187,8 @@ describe("World Tests", () => {
 
     describe("resetAccumTimes", () => {
         test("resetAccumTimes should reset all timing values to 0", () => {
-            World.InitWorld()
-            World.UpdateWorld() // This should accumulate some time
+            World.initWorld()
+            World.updateWorld() // This should accumulate some time
             expect(World.accumTimes.frames).not.toBe(0)
 
             World.resetAccumTimes()
@@ -202,39 +205,39 @@ describe("World Tests", () => {
 
     describe("UpdateWorld", () => {
         beforeEach(() => {
-            World.InitWorld()
+            World.initWorld()
         })
 
         test("UpdateWorld should update all systems", () => {
-            const sceneRenderer = World.SceneRenderer
-            const physicsSystem = World.PhysicsSystem
-            const simulationSystem = World.SimulationSystem
-            const inputSystem = World.InputSystem
-            const dragModeSystem = World.DragModeSystem
-            const analyticsSystem = World.AnalyticsSystem
+            const sceneRenderer = World.sceneRenderer
+            const physicsSystem = World.physicsSystem
+            const simulationSystem = World.simulationSystem
+            const inputSystem = World.inputSystem
+            const dragModeSystem = World.dragModeSystem
+            const analyticsSystem = World.analyticsSystem
 
-            World.UpdateWorld()
+            World.updateWorld()
 
-            expect(sceneRenderer.Update).toHaveBeenCalledWith(0.016)
-            expect(physicsSystem.Update).toHaveBeenCalledWith(0.016)
-            expect(simulationSystem.Update).toHaveBeenCalledWith(0.016)
-            expect(inputSystem.Update).toHaveBeenCalledWith(0.016)
-            expect(dragModeSystem.Update).toHaveBeenCalledWith(0.016)
+            expect(sceneRenderer.update).toHaveBeenCalledWith(0.016)
+            expect(physicsSystem.update).toHaveBeenCalledWith(0.016)
+            expect(simulationSystem.update).toHaveBeenCalledWith(0.016)
+            expect(inputSystem.update).toHaveBeenCalledWith(0.016)
+            expect(dragModeSystem.update).toHaveBeenCalledWith(0.016)
 
             if (analyticsSystem) {
-                expect(analyticsSystem.Update).toHaveBeenCalledWith(0.016)
+                expect(analyticsSystem.update).toHaveBeenCalledWith(0.016)
             }
         })
 
         test("UpdateWorld should update currentDeltaT", () => {
-            World.UpdateWorld()
+            World.updateWorld()
             expect(World.currentDeltaT).toBe(0.016)
         })
 
         test("UpdateWorld should increment frame count", () => {
             const initialFrames = World.accumTimes.frames
 
-            World.UpdateWorld()
+            World.updateWorld()
 
             expect(World.accumTimes.frames).toBe(initialFrames + 1)
         })
@@ -242,7 +245,7 @@ describe("World Tests", () => {
         test("UpdateWorld should accumulate timing data", () => {
             const initialAccumTimes = { ...World.accumTimes }
 
-            World.UpdateWorld()
+            World.updateWorld()
 
             const newAccumTimes = World.accumTimes
             expect(newAccumTimes.frames).toBeGreaterThan(initialAccumTimes.frames)
@@ -252,17 +255,17 @@ describe("World Tests", () => {
 
     describe("Getters after initialization", () => {
         beforeEach(() => {
-            World.InitWorld()
+            World.initWorld()
         })
 
         test("all system getters should return valid instances after initialization", () => {
-            expect(World.SceneRenderer).toBeDefined()
-            expect(World.PhysicsSystem).toBeDefined()
-            expect(World.SimulationSystem).toBeDefined()
-            expect(World.InputSystem).toBeDefined()
-            expect(World.DragModeSystem).toBeDefined()
+            expect(World.sceneRenderer).toBeDefined()
+            expect(World.physicsSystem).toBeDefined()
+            expect(World.simulationSystem).toBeDefined()
+            expect(World.inputSystem).toBeDefined()
+            expect(World.dragModeSystem).toBeDefined()
             // AnalyticsSystem might be undefined if initialization fails, so we check if it exists
-            const analyticsSystem = World.AnalyticsSystem
+            const analyticsSystem = World.analyticsSystem
             if (analyticsSystem) {
                 expect(analyticsSystem).toBeDefined()
             }
@@ -283,30 +286,30 @@ describe("World Tests", () => {
         test("complete lifecycle: init -> update -> destroy", () => {
             // Initialize
             expect(World.isAlive).toBeFalsy()
-            World.InitWorld()
+            World.initWorld()
             expect(World.isAlive).toBeTruthy()
 
             // Update a few times
-            World.UpdateWorld()
-            World.UpdateWorld()
+            World.updateWorld()
+            World.updateWorld()
             expect(World.accumTimes.frames).toBe(2)
 
             // Destroy
-            World.DestroyWorld()
+            World.destroyWorld()
             expect(World.isAlive).toBeFalsy()
         })
 
         test("multiple init/destroy cycles should work correctly", () => {
             // First cycle
-            World.InitWorld()
+            World.initWorld()
             expect(World.isAlive).toBeTruthy()
-            World.DestroyWorld()
+            World.destroyWorld()
             expect(World.isAlive).toBeFalsy()
 
             // Second cycle
-            World.InitWorld()
+            World.initWorld()
             expect(World.isAlive).toBeTruthy()
-            World.DestroyWorld()
+            World.destroyWorld()
             expect(World.isAlive).toBeFalsy()
         })
     })

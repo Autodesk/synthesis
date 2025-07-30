@@ -1,6 +1,6 @@
+import { Input as BaseInput } from "@mui/base/Input"
 import React from "react"
 import Label, { LabelSize } from "./Label"
-import { Input as BaseInput } from "@mui/base/Input"
 
 type InputProps = {
     placeholder: string
@@ -13,7 +13,7 @@ type InputProps = {
 const Input: React.FC<InputProps> = ({ placeholder, defaultValue, label, onInput, className }) => {
     return (
         <>
-            {label && <Label size={LabelSize.Small}>{label}</Label>}
+            {label && <Label size={LabelSize.SMALL}>{label}</Label>}
             <BaseInput
                 defaultValue={defaultValue}
                 placeholder={placeholder}

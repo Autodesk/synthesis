@@ -6,11 +6,11 @@ import InputSystem from "@/systems/input/InputSystem"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 import {
-    setSelectedConfigurationType,
     ConfigurationType,
+    setSelectedConfigurationType,
 } from "@/ui/panels/configuring/assembly-config/ConfigurationType"
+import { setSelectedScheme } from "@/ui/panels/configuring/assembly-config/interfaces/inputs/ConfigureInputsInterface"
 
 const AssignNewSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openPanel } = usePanelControlContext()
@@ -20,7 +20,7 @@ const AssignNewSchemeModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="New Input Scheme"
-            icon={SynthesisIcons.Xmark}
+            icon={SynthesisIcons.XMARK}
             modalId={modalId}
             onAccept={() => {
                 const scheme = InputSystem.brainIndexSchemeMap.get(SynthesisBrain.brainIndexMap.size - 1)

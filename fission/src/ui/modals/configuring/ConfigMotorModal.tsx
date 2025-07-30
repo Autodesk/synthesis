@@ -1,7 +1,7 @@
+import { useState } from "react"
+import Label, { LabelSize } from "@/components/Label"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Slider from "@/components/Slider"
-import Label, { LabelSize } from "@/components/Label"
-import { useState } from "react"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 type Motor = {
@@ -31,7 +31,7 @@ const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     return (
         <Modal
             name="Motor Configuration"
-            icon={SynthesisIcons.Gear}
+            icon={SynthesisIcons.GEAR}
             modalId={modalId}
             middleName="Session Save"
             middleEnabled={true}
@@ -50,16 +50,16 @@ const ConfigMotorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
             <table>
                 <tr className="text-left">
                     <th>
-                        <Label size={LabelSize.Medium}>Motor</Label>
+                        <Label size={LabelSize.MEDIUM}>Motor</Label>
                     </th>
                     <th>
-                        <Label size={LabelSize.Medium}>Target Velocity</Label>
+                        <Label size={LabelSize.MEDIUM}>Target Velocity</Label>
                     </th>
                 </tr>
                 {motors.map((m: Motor) => (
-                    <tr>
+                    <tr key={m.name}>
                         <td className="w-32">
-                            <Label size={LabelSize.Medium}>{m.name}</Label>
+                            <Label size={LabelSize.MEDIUM}>{m.name}</Label>
                         </td>
                         <td className="w-48">
                             <Slider value={m.defaultVelocity} min={m.minVelocity} max={m.maxVelocity} label={m.unit} />

@@ -3,8 +3,6 @@
  * make debugging signal data easier.
  */
 
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import {
     Box,
     Stack,
@@ -18,9 +16,11 @@ import {
     Typography,
 } from "@mui/material"
 import { useEffect, useReducer, useState } from "react"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
+import { SimGeneric, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import Button from "../components/Button"
 import Dropdown from "../components/Dropdown"
 import Input from "../components/Input"
-import Button from "../components/Button"
 import { SynthesisIcons } from "../components/StyledComponents"
 
 const TABLE_UPDATE_INTERVAL = 250
@@ -85,16 +85,16 @@ function generateTableBody() {
 function setGeneric(simType: SimType, device: string, field: string, value: string, valueType: ValueType) {
     switch (valueType) {
         case "number":
-            SimGeneric.Set(simType, device, field, parseFloat(value))
+            SimGeneric.set(simType, device, field, parseFloat(value))
             break
         case "object":
-            SimGeneric.Set(simType, device, field, JSON.parse(value))
+            SimGeneric.set(simType, device, field, JSON.parse(value))
             break
         case "boolean":
-            SimGeneric.Set(simType, device, field, parseInt(value)) // 1 or 0 (change to float if needed)
+            SimGeneric.set(simType, device, field, parseInt(value)) // 1 or 0 (change to float if needed)
             break
         default:
-            SimGeneric.Set(simType, device, field, parseFloat(value))
+            SimGeneric.set(simType, device, field, parseFloat(value))
             break
     }
 }
@@ -120,7 +120,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
 
     useEffect(() => {
         setSelectedDevice(undefined)
-    }, [selectedType])
+    }, [])
 
     useEffect(() => {
         const func = () => {
@@ -131,12 +131,12 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
         return () => {
             clearTimeout(id)
         }
-    }, [updateTable])
+    }, [])
 
     return (
         <Panel
             name={"WS View Panel"}
-            icon={SynthesisIcons.Connect}
+            icon={SynthesisIcons.CONNECT}
             panelId={panelId}
             openLocation="right"
             sidePadding={4}

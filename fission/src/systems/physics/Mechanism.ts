@@ -1,7 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
-import { LayerReserve } from "./PhysicsSystem"
 import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { mirabuf } from "@/proto/mirabuf"
+import { LayerReserve } from "./PhysicsSystem"
 
 export interface MechanismConstraint {
     parentBody: Jolt.BodyID
@@ -37,19 +37,19 @@ class Mechanism {
         this.layerReserve = layerReserve
     }
 
-    public AddConstraint(mechConstraint: MechanismConstraint) {
+    public addConstraint(mechConstraint: MechanismConstraint) {
         this.constraints.push(mechConstraint)
     }
 
-    public AddStepListener(listener: Jolt.PhysicsStepListener) {
+    public addStepListener(listener: Jolt.PhysicsStepListener) {
         this.stepListeners.push(listener)
     }
 
-    public GetBodyByNodeId(nodeId: string) {
+    public getBodyByNodeId(nodeId: string) {
         return this.nodeToBody.get(nodeId)
     }
 
-    public DisablePhysics() {}
+    public disablePhysics() {}
 }
 
 export default Mechanism

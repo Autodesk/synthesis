@@ -1,33 +1,83 @@
+import { KeyCode } from "@/systems/input/KeyboardTypes.ts"
+import MatchMode, { MatchModeType } from "@/systems/match_mode/MatchMode"
+import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
 import { TouchControlsAxes } from "@/ui/components/TouchControls"
 import Joystick from "../scene/Joystick"
 import WorldSystem from "../WorldSystem"
 import { InputScheme } from "./InputSchemeManager"
-import MatchMode, { MatchModeType } from "@/systems/MatchMode"
 
-export type ModifierState = {
+export type ModifierState = Readonly<{
     alt: boolean
     ctrl: boolean
     shift: boolean
     meta: boolean
+}>
+export const EMPTY_MODIFIER_STATE: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
+
+export type InputName = "arcadeDrive" | "arcadeTurn" | "tankLeft" | "tankRight" | "intake" | "eject" | `joint ${number}`
+
+const inputDriveTypeAssociations: Partial<Record<InputName, DriveType>> = {
+    arcadeDrive: DriveType.ARCADE,
+    arcadeTurn: DriveType.ARCADE,
+    tankLeft: DriveType.TANK,
+    tankRight: DriveType.TANK,
 }
-export const EmptyModifierState: ModifierState = { ctrl: false, alt: false, shift: false, meta: false }
+
+export type KeyDescriptor = (string & { __: "" }) | null // prevent strings from being assigned without explicit casting
+
+const LOG_GAMEPAD_EVENTS = false
 
 /** Represents any user input */
 abstract class Input {
-    public inputName: string
+    public inputName: InputName
 
-    /** @param {string} inputName - The name given to this input to identify it's function. */
-    constructor(inputName: string) {
+    /** @param {string} inputName - The name given to this input to identify its purpose. */
+    protected constructor(inputName: InputName) {
         this.inputName = inputName
     }
 
     // Returns the current value of the input. Range depends on input type
     abstract getValue(useGamepad: boolean, useTouchControls: boolean): number
+
+    abstract get keysUsed(): KeyDescriptor[]
+
+    protected describeKey(id: KeyCode, modifiers?: ModifierState): KeyDescriptor {
+        if (id == "") {
+            return null
+        }
+        if (!modifiers) {
+            return id as KeyDescriptor
+        }
+        for (const key in modifiers) {
+            if (modifiers[key as keyof ModifierState]) {
+                id += `_${key}`
+            }
+        }
+        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_${id}` as KeyDescriptor
+    }
+    protected describeGamepadBtn(button: number): KeyDescriptor {
+        if (button == -1) {
+            return null
+        }
+        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadBtn${button}` as KeyDescriptor
+    }
+    protected describeGamepadAxis(axis: number): KeyDescriptor {
+        if (axis == -1) {
+            return null
+        }
+        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_gamepadAxis${axis}` as KeyDescriptor
+    }
+    protected describeTouchAxis(axis: TouchControlsAxes): KeyDescriptor {
+        if (axis == TouchControlsAxes.NONE) {
+            return null
+        }
+        return `${inputDriveTypeAssociations[this.inputName] ?? ""}_touchAxis${axis.valueOf()}` as KeyDescriptor
+    }
 }
 
 /** Represents any user input that is a single true/false button. */
 class ButtonInput extends Input {
-    public keyCode: string
+    public keyCode: KeyCode
     public keyModifiers: ModifierState
 
     public gamepadButton: number
@@ -40,10 +90,10 @@ class ButtonInput extends Input {
      * @param {number} [gamepadButton] -  The gamepad button for this input if a gamepad is used.
      * @param {ModifierState} [keyModifiers] -  The key modifier state for the keyboard input.
      */
-    public constructor(inputName: string, keyCode?: string, gamepadButton?: number, keyModifiers?: ModifierState) {
+    public constructor(inputName: InputName, keyCode?: KeyCode, gamepadButton?: number, keyModifiers?: ModifierState) {
         super(inputName)
         this.keyCode = keyCode ?? ""
-        this.keyModifiers = keyModifiers ?? EmptyModifierState
+        this.keyModifiers = keyModifiers ?? EMPTY_MODIFIER_STATE
         this.gamepadButton = gamepadButton ?? -1
     }
 
@@ -53,7 +103,7 @@ class ButtonInput extends Input {
      */
     getValue(useGamepad: boolean): number {
         const matchModeType = MatchMode.getInstance().getMatchModeType()
-        if (matchModeType === MatchModeType.MatchEnded || matchModeType === MatchModeType.Autonomous) {
+        if (matchModeType === MatchModeType.MATCH_ENDED || matchModeType === MatchModeType.AUTONOMOUS) {
             return 0
         }
 
@@ -65,13 +115,27 @@ class ButtonInput extends Input {
         // Keyboard button input
         return InputSystem.isKeyPressed(this.keyCode, this.keyModifiers) ? 1 : 0
     }
+
+    get keysUsed(): KeyDescriptor[] {
+        return [this.describeKey(this.keyCode, this.keyModifiers), this.describeGamepadBtn(this.gamepadButton)]
+    }
+
+    static onGamepad(inputName: InputName, gamepadButton: number) {
+        return new ButtonInput(inputName, undefined, gamepadButton, undefined)
+    }
+    static onKeyboard(inputName: InputName, keyCode: KeyCode, keyModifiers?: ModifierState) {
+        return new ButtonInput(inputName, keyCode, undefined, keyModifiers)
+    }
+    static unbound(inputName: InputName) {
+        return new ButtonInput(inputName, undefined, undefined, undefined)
+    }
 }
 
 /** Represents any user input that is an axis between -1 and 1. Can be a gamepad axis, two gamepad buttons, or two keyboard buttons. */
 class AxisInput extends Input {
-    public posKeyCode: string
+    public posKeyCode: KeyCode
     public posKeyModifiers: ModifierState
-    public negKeyCode: string
+    public negKeyCode: KeyCode
     public negKeyModifiers: ModifierState
 
     public gamepadAxisNumber: number
@@ -96,9 +160,9 @@ class AxisInput extends Input {
      * @param {ModifierState} [negKeyModifiers] - The key modifier state for the negative keyboard input.
      */
     public constructor(
-        inputName: string,
-        posKeyCode?: string,
-        negKeyCode?: string,
+        inputName: InputName,
+        posKeyCode?: KeyCode,
+        negKeyCode?: KeyCode,
         gamepadAxisNumber?: number,
         joystickInverted?: boolean,
         useGamepadButtons?: boolean,
@@ -111,9 +175,9 @@ class AxisInput extends Input {
         super(inputName)
 
         this.posKeyCode = posKeyCode ?? ""
-        this.posKeyModifiers = posKeyModifiers ?? EmptyModifierState
+        this.posKeyModifiers = posKeyModifiers ?? EMPTY_MODIFIER_STATE
         this.negKeyCode = negKeyCode ?? ""
-        this.negKeyModifiers = negKeyModifiers ?? EmptyModifierState
+        this.negKeyModifiers = negKeyModifiers ?? EMPTY_MODIFIER_STATE
 
         this.gamepadAxisNumber = gamepadAxisNumber ?? -1
         this.touchControlAxis = touchControlAxis ?? TouchControlsAxes.NONE
@@ -123,6 +187,90 @@ class AxisInput extends Input {
         this.posGamepadButton = posGamepadButton ?? -1
         this.negGamepadButton = negGamepadButton ?? -1
     }
+    public static unbound(inputName: InputName) {
+        return new AxisInput(inputName)
+    }
+    public static onGamepadJoystick(inputName: InputName, gamepadAxisNumber: number, joystickInverted: boolean) {
+        return new AxisInput(
+            inputName,
+            undefined,
+            undefined,
+            gamepadAxisNumber,
+            joystickInverted,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined
+        )
+    }
+    public static onGamepadButtons(inputName: InputName, posGamepadButton: number, negGamepadButton: number) {
+        return new AxisInput(
+            inputName,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            true,
+            posGamepadButton,
+            negGamepadButton,
+            undefined,
+            undefined,
+            undefined
+        )
+    }
+    public static onKeyboard(
+        inputName: InputName,
+        posKeyCode: KeyCode,
+        negKeyCode: KeyCode,
+        posKeyModifiers?: ModifierState,
+        negKeyModifiers?: ModifierState
+    ) {
+        return new AxisInput(
+            inputName,
+            posKeyCode,
+            negKeyCode,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            posKeyModifiers,
+            negKeyModifiers
+        )
+    }
+    public static onKeyboardSingleKey(inputName: InputName, key: KeyCode, negKeyModifiers?: ModifierState) {
+        return new AxisInput(
+            inputName,
+            key,
+            key,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            negKeyModifiers
+        )
+    }
+    public static onTouchControl(inputName: InputName, touchControlAxis: TouchControlsAxes) {
+        return new AxisInput(
+            inputName,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            undefined,
+            touchControlAxis,
+            undefined,
+            undefined
+        )
+    }
 
     /**
      * @param useGamepad Looks at the gamepad if true and the keyboard if false.
@@ -131,7 +279,7 @@ class AxisInput extends Input {
      */
     getValue(useGamepad: boolean, useTouchControls: boolean): number {
         const matchModeType = MatchMode.getInstance().getMatchModeType()
-        if (matchModeType === MatchModeType.MatchEnded || matchModeType === MatchModeType.Autonomous) {
+        if (matchModeType === MatchModeType.MATCH_ENDED || matchModeType === MatchModeType.AUTONOMOUS) {
             return 0
         }
 
@@ -157,6 +305,17 @@ class AxisInput extends Input {
             (InputSystem.isKeyPressed(this.negKeyCode, this.negKeyModifiers) ? 1 : 0)
         )
     }
+
+    get keysUsed(): KeyDescriptor[] {
+        return [
+            this.describeKey(this.posKeyCode, this.posKeyModifiers),
+            this.describeKey(this.negKeyCode, this.negKeyModifiers),
+            this.describeGamepadBtn(this.posGamepadButton),
+            this.describeGamepadBtn(this.negGamepadButton),
+            this.describeGamepadAxis(this.gamepadAxisNumber),
+            this.describeTouchAxis(this.touchControlAxis),
+        ]
+    }
 }
 
 /**
@@ -167,13 +326,13 @@ class InputSystem extends WorldSystem {
     public static currentModifierState: ModifierState
 
     /** The keys currently being pressed. */
-    private static _keysPressed: { [key: string]: boolean } = {}
+    private static _keysPressed: Partial<Record<KeyCode, boolean>> = {}
 
     private static _gpIndex: number | null
     public static gamepad: Gamepad | null
 
-    private static leftJoystick: Joystick
-    private static rightJoystick: Joystick
+    private static _leftJoystick: Joystick
+    private static _rightJoystick: Joystick
 
     /** Maps a brain index to an input scheme. */
     public static brainIndexSchemeMap: Map<number, InputScheme> = new Map()
@@ -195,11 +354,11 @@ class InputSystem extends WorldSystem {
         window.addEventListener("gamepaddisconnected", this.gamepadDisconnected)
 
         window.addEventListener("touchcontrolsloaded", () => {
-            InputSystem.leftJoystick = new Joystick(
+            InputSystem._leftJoystick = new Joystick(
                 document.getElementById("joystick-base-left")!,
                 document.getElementById("joystick-stick-left")!
             )
-            InputSystem.rightJoystick = new Joystick(
+            InputSystem._rightJoystick = new Joystick(
                 document.getElementById("joystick-base-right")!,
                 document.getElementById("joystick-stick-right")!
             )
@@ -222,7 +381,7 @@ class InputSystem extends WorldSystem {
         )
     }
 
-    public Update(_: number): void {
+    public update(_: number): void {
         // Fetch current gamepad information
         if (InputSystem._gpIndex == null) InputSystem.gamepad = null
         else InputSystem.gamepad = navigator.getGamepads()[InputSystem._gpIndex]
@@ -238,7 +397,7 @@ class InputSystem extends WorldSystem {
         }
     }
 
-    public Destroy(): void {
+    public destroy(): void {
         document.removeEventListener("keydown", this.handleKeyDown)
         document.removeEventListener("keyup", this.handleKeyUp)
         window.removeEventListener("gamepadconnected", this.gamepadConnected)
@@ -247,35 +406,39 @@ class InputSystem extends WorldSystem {
 
     /** Called when any key is first pressed */
     private handleKeyDown(event: KeyboardEvent) {
-        InputSystem._keysPressed[event.code] = true
+        InputSystem._keysPressed[event.code as KeyCode] = true
     }
 
     /* Called when any key is released */
     private handleKeyUp(event: KeyboardEvent) {
-        InputSystem._keysPressed[event.code] = false
+        InputSystem._keysPressed[event.code as KeyCode] = false
     }
 
     /** Clears all stored key data when the user leaves the page. */
     private clearKeyData() {
-        for (const keyCode in InputSystem._keysPressed) delete InputSystem._keysPressed[keyCode]
+        for (const keyCode in InputSystem._keysPressed) delete InputSystem._keysPressed[keyCode as KeyCode]
     }
 
     /* Called once when a gamepad is first connected */
     private gamepadConnected(event: GamepadEvent) {
-        console.log(
-            "Gamepad connected at index %d: %s. %d buttons, %d axes.",
-            event.gamepad.index,
-            event.gamepad.id,
-            event.gamepad.buttons.length,
-            event.gamepad.axes.length
-        )
+        if (LOG_GAMEPAD_EVENTS) {
+            console.log(
+                "Gamepad connected at index %d: %s. %d buttons, %d axes.",
+                event.gamepad.index,
+                event.gamepad.id,
+                event.gamepad.buttons.length,
+                event.gamepad.axes.length
+            )
+        }
 
         InputSystem._gpIndex = event.gamepad.index
     }
 
     /* Called once when a gamepad is first disconnected */
     private gamepadDisconnected(event: GamepadEvent) {
-        console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
+        if (LOG_GAMEPAD_EVENTS) {
+            console.log("Gamepad disconnected from index %d: %s", event.gamepad.index, event.gamepad.id)
+        }
 
         InputSystem._gpIndex = null
     }
@@ -285,11 +448,11 @@ class InputSystem extends WorldSystem {
      * @param {ModifierState} modifiers - The target modifier state. Assumed to be no modifiers if undefined.
      * @returns {boolean} True if the key is pressed or false otherwise.
      */
-    public static isKeyPressed(key: string, modifiers?: ModifierState): boolean {
+    public static isKeyPressed(key: KeyCode, modifiers?: ModifierState): boolean {
         if (modifiers != null && !InputSystem.compareModifiers(InputSystem.currentModifierState, modifiers))
             return false
 
-        return !!InputSystem._keysPressed[key]
+        return Boolean(InputSystem._keysPressed[key])
     }
 
     /**
@@ -297,7 +460,7 @@ class InputSystem extends WorldSystem {
      * @param {number} brainIndex The robot brain index for this input. Used to map to a control scheme.
      * @returns {number} A number between -1 and 1 based on the current state of the input.
      */
-    public static getInput(inputName: string, brainIndex: number): number {
+    public static getInput(inputName: InputName, brainIndex: number): number {
         const targetScheme = InputSystem.brainIndexSchemeMap.get(brainIndex)
 
         const targetInput = targetScheme?.inputs.find(input => input.inputName == inputName) as Input
@@ -358,10 +521,10 @@ class InputSystem extends WorldSystem {
     public static getTouchControlsAxis(axisType: TouchControlsAxes): number {
         let value: number
 
-        if (axisType === TouchControlsAxes.LEFT_Y) value = -InputSystem.leftJoystick.y
-        else if (axisType === TouchControlsAxes.RIGHT_X) value = InputSystem.rightJoystick.x
-        else if (axisType === TouchControlsAxes.RIGHT_Y) value = -InputSystem.rightJoystick.y
-        else value = InputSystem.leftJoystick.x
+        if (axisType === TouchControlsAxes.LEFT_Y) value = -InputSystem._leftJoystick.y
+        else if (axisType === TouchControlsAxes.RIGHT_X) value = InputSystem._rightJoystick.x
+        else if (axisType === TouchControlsAxes.RIGHT_Y) value = -InputSystem._rightJoystick.y
+        else value = InputSystem._leftJoystick.x
 
         return value!
     }

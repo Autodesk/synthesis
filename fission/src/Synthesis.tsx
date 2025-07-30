@@ -1,25 +1,7 @@
-import Scene from "@/components/Scene.tsx"
 import { AnimatePresence } from "framer-motion"
-import { ReactElement, useCallback, useEffect, useRef, useState } from "react"
-import { ModalControlProvider } from "@/ui/ModalContext"
-import { useModalManager } from "@/ui/helpers/UseModalManager.tsx"
-import { PanelControlProvider } from "@/ui/PanelContext"
-import { usePanelManager } from "@/ui/helpers/UsePanelManager.tsx"
-import { useTheme } from "@/ui/helpers/UseThemeHelpers.tsx"
-import { ToastContainer, ToastProvider } from "@/ui/ToastContext"
-import {
-    TOOLTIP_DURATION,
-    TooltipControl,
-    TooltipControlProvider,
-    TooltipType,
-    useTooltipManager,
-} from "@/ui/TooltipContext"
+import React, { ReactElement, useCallback, useEffect, useRef, useState } from "react"
 import MainHUD from "@/components/MainHUD"
-import DownloadAssetsModal from "@/modals/DownloadAssetsModal"
-import ExitSynthesisModal from "@/modals/ExitSynthesisModal"
-import MatchResultsModal from "@/modals/MatchResultsModal"
-import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
-import ViewModal from "@/modals/ViewModal"
+import Scene from "@/components/Scene.tsx"
 import ConnectToMultiplayerModal from "@/modals/aether/ConnectToMultiplayerModal"
 import ServerHostingModal from "@/modals/aether/ServerHostingModal"
 import ChooseMultiplayerModeModal from "@/modals/configuring/ChooseMultiplayerModeModal"
@@ -28,51 +10,69 @@ import ConfigMotorModal from "@/modals/configuring/ConfigMotorModal"
 import DrivetrainModal from "@/modals/configuring/DrivetrainModal"
 import PracticeSettingsModal from "@/modals/configuring/PracticeSettingsModal"
 import RoboRIOModal from "@/modals/configuring/RoboRIOModal"
-import SettingsModal from "@/modals/configuring/SettingsModal"
+import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
 import RCConfigEncoderModal from "@/modals/configuring/rio-config/RCConfigEncoderModal"
+import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
 import RCCreateDeviceModal from "@/modals/configuring/rio-config/RCCreateDeviceModal"
+import SettingsModal from "@/modals/configuring/SettingsModal"
 import DeleteAllThemesModal from "@/modals/configuring/theme-editor/DeleteAllThemesModal"
 import DeleteThemeModal from "@/modals/configuring/theme-editor/DeleteThemeModal"
 import NewThemeModal from "@/modals/configuring/theme-editor/NewThemeModal"
 import ThemeEditorModal from "@/modals/configuring/theme-editor/ThemeEditorModal"
+import DownloadAssetsModal from "@/modals/DownloadAssetsModal"
+import ExitSynthesisModal from "@/modals/ExitSynthesisModal"
+import MainMenuModal from "@/modals/MainMenuModal"
+import MatchResultsModal from "@/modals/MatchResultsModal"
+import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
 import MatchModeModal from "@/modals/spawning/MatchModeModal"
+import UpdateAvailableModal from "@/modals/UpdateAvailableModal"
+import ViewModal from "@/modals/ViewModal"
+import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
+import PokerPanel from "@/panels/PokerPanel.tsx"
 import RobotSwitchPanel from "@/panels/RobotSwitchPanel"
 import SpawnLocationsPanel from "@/panels/SpawnLocationPanel"
-import ScoreboardPanel from "@/panels/information/ScoreboardPanel"
 import DriverStationPanel from "@/panels/simulation/DriverStationPanel"
-import PokerPanel from "@/panels/PokerPanel.tsx"
 import World from "@/systems/World.ts"
-import ImportLocalMirabufModal from "@/modals/mirabuf/ImportLocalMirabufModal.tsx"
+import { useModalManager } from "@/ui/helpers/UseModalManager.tsx"
+import { usePanelManager } from "@/ui/helpers/UsePanelManager.tsx"
+import { useTheme } from "@/ui/helpers/UseThemeHelpers.tsx"
+import { ModalControlProvider } from "@/ui/ModalContext"
+import { PanelControlProvider } from "@/ui/PanelContext"
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel.tsx"
-import Skybox from "./ui/components/Skybox.tsx"
-import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
+import { ToastContainer, ToastProvider } from "@/ui/ToastContext"
+import {
+    TOOLTIP_DURATION,
+    TooltipControl,
+    TooltipControlProvider,
+    TooltipType,
+    useTooltipManager,
+} from "@/ui/TooltipContext"
+import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
+import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
+import ContextMenu from "./ui/components/ContextMenu.tsx"
+import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
+import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
-
+import Skybox from "./ui/components/Skybox.tsx"
+import TouchControls from "./ui/components/TouchControls.tsx"
+import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
+import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
+import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
+import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
+import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
+import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
+import ChooseInputSchemePanel from "./ui/panels/configuring/ChooseInputSchemePanel.tsx"
+import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
+import MatchModeConfigPanel from "./ui/panels/configuring/MatchModeConfigPanel.tsx"
+import DebugPanel from "./ui/panels/DebugPanel.tsx"
+import DeveloperToolPanel from "./ui/panels/DeveloperToolPanel.tsx"
+import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
+import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
+import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 
-import RCConfigPWMGroupModal from "@/modals/configuring/rio-config/RCConfigPWMGroupModal.tsx"
-import RCConfigCANGroupModal from "@/modals/configuring/rio-config/RCConfigCANGroupModal.tsx"
-import DebugPanel from "./ui/panels/DebugPanel.tsx"
-import NewInputSchemeModal from "./ui/modals/configuring/theme-editor/NewInputSchemeModal.tsx"
-import AssignNewSchemeModal from "./ui/modals/configuring/theme-editor/AssignNewSchemeModal.tsx"
-import AnalyticsConsent from "./ui/components/AnalyticsConsent.tsx"
-import PreferencesSystem from "./systems/preferences/PreferencesSystem.ts"
-import APSManagementModal from "./ui/modals/APSManagementModal.tsx"
-import ConfigurePanel from "./ui/panels/configuring/assembly-config/ConfigurePanel.tsx"
-import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
-import CameraSelectionPanel from "./ui/panels/configuring/CameraSelectionPanel.tsx"
-import ContextMenu from "./ui/components/ContextMenu.tsx"
-import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
-import InitialConfigPanel from "./ui/panels/configuring/initial-config/InitialConfigPanel.tsx"
-import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
-import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
-import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
-import TouchControls from "./ui/components/TouchControls.tsx"
-import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
-import MainMenuModal from "@/modals/MainMenuModal"
-
-function Synthesis() {
+const Synthesis: React.FC = () => {
     const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
         useModalManager(initialModals)
     const { openPanel, closePanel, closeAllPanels, getActivePanelElements } = usePanelManager(initialPanels)
@@ -97,7 +97,7 @@ function Synthesis() {
                 key="main-menu"
                 modalId="main-menu"
                 startSingleplayerCallback={() => {
-                    World.InitWorld()
+                    World.initWorld()
 
                     if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
                         setConsentPopupDisable(false)
@@ -105,11 +105,11 @@ function Synthesis() {
 
                     const mainLoop = () => {
                         mainLoopHandle.current = requestAnimationFrame(mainLoop)
-                        World.UpdateWorld()
+                        World.updateWorld()
                     }
                     mainLoop()
 
-                    World.SceneRenderer.UpdateSkyboxColors(defaultTheme)
+                    World.sceneRenderer.updateSkyboxColors(defaultTheme)
                 }}
             />
         ),
@@ -127,12 +127,10 @@ function Synthesis() {
         return () => {
             // TODO: Teardown literally everything
             cancelAnimationFrame(mainLoopHandle.current)
-            World.DestroyWorld()
+            World.destroyWorld()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
-
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [])
+    }, [openModal])
 
     useEffect(() => {
         let scoreboardExists = false
@@ -247,11 +245,13 @@ const initialPanels: ReactElement[] = [
     <SpawnLocationsPanel key="spawn-locations" panelId="spawn-locations" />,
     <ScoreboardPanel key="scoreboard" panelId="scoreboard" openLocation="top" sidePadding={8} />,
     <ImportMirabufPanel key="import-mirabuf" panelId="import-mirabuf" />,
+    <MatchModeConfigPanel key="match-mode-config" panelId="match-mode-config" />,
     <PokerPanel key="poker" panelId="poker" />,
     <ChooseInputSchemePanel key="choose-scheme" panelId="choose-scheme" />,
     <WSViewPanel key="ws-view" panelId="ws-view" />,
     <DebugPanel key="debug" panelId="debug" />,
     <ConfigurePanel key="configure" panelId="configure" />,
+    <DeveloperToolPanel key="developer" panelId="developer" />,
     <WiringPanel key="wiring" panelId="wiring" />,
     <CameraSelectionPanel key="camera-select" panelId="camera-select" />,
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
