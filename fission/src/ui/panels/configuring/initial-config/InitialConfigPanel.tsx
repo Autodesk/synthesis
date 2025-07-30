@@ -55,14 +55,10 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         } else {
             setConfigurationType("FIELDS")
         }
-
-        if (panel) closePanel(panel.id, CloseType.Cancel)
     }, [closePanel, panel, targetAssembly])
 
     const closeDelete = useCallback(() => {
         if (targetAssembly) World.sceneRenderer.removeSceneObject(targetAssembly.id)
-
-        if (panel) closePanel(panel.id, CloseType.Cancel)
     }, [closePanel, panel, targetAssembly])
 
     const brainIndex = useMemo(() => {

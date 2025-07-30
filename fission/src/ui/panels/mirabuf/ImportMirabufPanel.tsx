@@ -439,7 +439,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 <ToggleButton value={MiraType.FIELD}>Fields</ToggleButton>
             </ToggleButtonGroup>
             <Accordion defaultExpanded>
-                <AccordionSummary expandIcon={<MdExpandMore />}>
+                <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
                     {viewType === MiraType.ROBOT ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {cachedRobotElements
@@ -459,7 +459,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 </AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary expandIcon={<MdExpandMore />}>
+                <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
                     <Stack
                         direction="row"
                         key={`remote-label-container`}
@@ -488,7 +488,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 <AccordionDetails>{hubElements}</AccordionDetails>
             </Accordion>
             <Accordion>
-                <AccordionSummary expandIcon={<MdExpandMore />}>
+                <AccordionSummary expandIcon={<MdExpandMore size={24} />}>
                     {viewType === MiraType.ROBOT ? (
                         <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                             {remoteRobotElements

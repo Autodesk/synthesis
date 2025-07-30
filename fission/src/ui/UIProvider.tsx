@@ -16,7 +16,7 @@ import {
     UIContext,
     type UIScreen,
     type UIScreenCallbacks,
-    UIScreenProps,
+    type UIScreenProps,
 } from "./helpers/UIProviderHelpers"
 import { UICallback } from "./UICallbacks"
 
