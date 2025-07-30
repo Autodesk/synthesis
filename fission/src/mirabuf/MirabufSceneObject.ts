@@ -44,7 +44,7 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import {BodyAssociate} from "@/systems/physics/BodyAssociate.ts";
+import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 
 const DEBUG_BODIES = false
 

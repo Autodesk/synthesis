@@ -72,9 +72,9 @@ import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
-import MultiplayerStartModal from "@/modals/MultiplayerStartModal.tsx";
-import {globalAddToast} from "@/components/GlobalUIControls.ts";
-import MultiplayerHUD from "@/components/MultiplayerHUD.tsx";
+import MultiplayerStartModal from "@/modals/MultiplayerStartModal.tsx"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
+import MultiplayerHUD from "@/components/MultiplayerHUD.tsx"
 
 const Synthesis: React.FC = () => {
     const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
@@ -213,7 +213,7 @@ const Synthesis: React.FC = () => {
                             <SceneOverlay />
                             <TouchControls />
                             <ContextMenu />
-                            <MultiplayerHUD/>
+                            <MultiplayerHUD />
                             <MainHUD key={"main-hud"} />
                             {panelElements.length > 0 && panelElements}
                             {modalElement && (
@@ -287,7 +287,6 @@ const initialPanels: ReactElement[] = [
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
     <AutoTestPanel key="auto-test" panelId="auto-test" />,
     <GraphicsSettings key="graphics-settings" panelId="graphics-settings" sidePadding={8} />,
-
 ]
 
 export default Synthesis

@@ -21,7 +21,7 @@ class Mechanism {
     public layerReserve?: LayerReserve
     public controllable: boolean
     public ghostBodies: Jolt.BodyID[] = []
-    public touchedBodies: Jolt.BodyID[] = []
+    public touchedBodies: [number, Mechanism][] = [] // [SceneObjectKey, Mechanism]
 
     public constructor(
         rootBody: string,

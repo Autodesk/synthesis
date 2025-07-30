@@ -39,6 +39,7 @@ import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import TaskStatus from "@/util/TaskStatus"
+import { Message } from "@/systems/multiplayer/types"
 
 interface ItemCardProps {
     id: string
@@ -103,6 +104,12 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                 createMirabuf(assembly, progressHandle, info.id).then(x => {
                     if (x) {
                         World.sceneRenderer.registerSceneObject(x)
+
+                        if (World.multiplayerSystem != null) {
+                            const message: Message = { type: "newObject", data: x }
+                            World.multiplayerSystem?.broadcast(message)
+                        }
+
                         progressHandle.done()
 
                         globalOpenPanel("initial-config")

@@ -1287,6 +1287,14 @@ class PhysicsSystem extends WorldSystem {
                 x => x instanceof OnContactAddedEvent && this.onSameLayer(x.message.body1, x.message.body2)
             )
 
+            const clientSceneObjectId = World.multiplayerSystem.getClientSceneObjectId()
+            if (clientSceneObjectId == null) {
+                console.error("Client Scene Object not found")
+                return
+            }
+            const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)! as MirabufSceneObject
+            const touchedBodies = clientSceneObject.mechanism.touchedBodies
+
             const message: Message =
                 interObjectCollisions.length > 0
                     ? {
@@ -1303,18 +1311,18 @@ class PhysicsSystem extends WorldSystem {
                       }
                     : {
                           type: "update",
-                          data: [...World.sceneRenderer.sceneObjects]
-                              .filter((x): x is [number, MirabufSceneObject] => x[1] instanceof MirabufSceneObject)
-                              .map(([sceneObjectKey, sceneObject]) => {
-                                  return {
-                                      sceneObjectKey,
-                                      mechanism: sceneObject.mechanism,
-                                      instance: sceneObject.mirabufInstance,
-                                  }
-                              }),
+                          data: touchedBodies.map(([sceneObjectKey, mechanism]) => {
+                              return {
+                                  sceneObjectKey,
+                                  mechanism,
+                              }
+                          }),
                       }
-
             World.multiplayerSystem?.broadcast(message)
+
+            if (clientSceneObjectId != null) {
+                clientSceneObject.mechanism.touchedBodies = []
+            }
         }
 
         this._physicsEventQueue.forEach(x => x.dispatch())
@@ -1474,7 +1482,8 @@ class PhysicsSystem extends WorldSystem {
     /**
      * Finds the MirabufSceneObject containing the mechanism containing the body referenced by the given id
      */
-    private bodyIdToMiraSceneObject(id: Jolt.BodyID): MirabufSceneObject | null {
+    private bodyToMiraSceneObject(body: Jolt.Body): MirabufSceneObject | null {
+        const id = body.GetID()
         return (
             [...World.sceneRenderer.sceneObjects]
                 .map(x => x[1])
@@ -1493,7 +1502,7 @@ class PhysicsSystem extends WorldSystem {
     private isClient(body: Jolt.Body): boolean {
         return (
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
-                this.bodyIdToMiraSceneObject(body.GetID())?.id === World.multiplayerSystem?.getClientSceneObjectId()) ??
+                this.bodyToMiraSceneObject(body)?.id === World.multiplayerSystem?.getClientSceneObjectId()) ??
             false
         )
     }
@@ -1504,12 +1513,12 @@ class PhysicsSystem extends WorldSystem {
      */
     private recordOtherBodyCollision(robot?: Jolt.Body, other?: Jolt.Body) {
         if (other == null || robot == null) return
-        const otherId = other.GetID()
 
-        const robotSceneObject = this.bodyIdToMiraSceneObject(robot.GetID())
-        if (robotSceneObject != null) {
-            robotSceneObject.mechanism.touchedBodies.push(otherId)
-        }
+        const robotSceneObject = this.bodyToMiraSceneObject(robot)
+        const otherSceneObject = this.bodyToMiraSceneObject(other)
+        if (robotSceneObject == null || otherSceneObject == null) return
+
+        robotSceneObject.mechanism.touchedBodies.push([otherSceneObject.id, otherSceneObject.mechanism])
     }
 
     /**

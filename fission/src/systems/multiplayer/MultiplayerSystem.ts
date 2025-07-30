@@ -2,14 +2,7 @@ import Peer, { DataConnection } from "peerjs"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
-import type {
-    ClientInfo,
-    CollisionData,
-    InitData,
-    InitObjectData,
-    Message,
-    UpdateObjectData as UpdateObjectData,
-} from "./types"
+import type { ClientInfo, CollisionData, InitData, Message, UpdateObjectData as UpdateObjectData } from "./types"
 
 const COLLISION_TIMEOUT = 500
 
@@ -89,17 +82,9 @@ class MultiplayerSystem {
 
     // Called by the host, initializes the world with some defined set of objects, robots can be spawned in later
     async initWorld(physicsSystem: PhysicsSystem) {
-        const sceneObjects: InitObjectData[] = [...World.sceneRenderer.sceneObjects.entries()]
-            .filter(
-                (sceneObjectPair): sceneObjectPair is [number, MirabufSceneObject] =>
-                    sceneObjectPair[1] instanceof MirabufSceneObject
-            )
-            .map(([key, sceneObject]) => {
-                return {
-                    key,
-                    sceneObject,
-                }
-            })
+        const sceneObjects: MirabufSceneObject[] = [...World.sceneRenderer.sceneObjects.values()].filter(
+            (sceneObject): sceneObject is MirabufSceneObject => sceneObject instanceof MirabufSceneObject
+        )
         await this.broadcast({
             type: "init",
             data: { physicsSystem, objects: sceneObjects },
@@ -176,12 +161,12 @@ class MultiplayerSystem {
         World.physicsSystem = data.physicsSystem
         World.sceneRenderer.sceneObjects = this.initObjectDataToSceneObjectMap(data.objects)
     }
-    initObjectDataToSceneObjectMap(objects: InitObjectData[]): Map<number, MirabufSceneObject> {
-        return new Map(objects.map(object => [object.key, object.sceneObject]))
+    initObjectDataToSceneObjectMap(objects: MirabufSceneObject[]): Map<number, MirabufSceneObject> {
+        return new Map(objects.map(object => [object.id, object]))
     }
 
     handlePeerUpdate(data: UpdateObjectData[]) {
-        data.forEach(({ sceneObjectKey, mechanism, instance }) => {
+        data.forEach(({ sceneObjectKey, mechanism }) => {
             const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
             if (sceneObject == null) {
                 console.error(
@@ -193,7 +178,6 @@ class MultiplayerSystem {
                 return
             }
             sceneObject.mechanism = mechanism
-            sceneObject.mirabufInstance = instance
         })
     }
 
@@ -205,8 +189,8 @@ class MultiplayerSystem {
         World.sceneRenderer.sceneObjects = data.sceneObjects
     }
 
-    handleNewObject(data: InitObjectData) {
-        World.sceneRenderer.sceneObjects.set(data.key, data.sceneObject)
+    handleNewObject(data: MirabufSceneObject) {
+        World.sceneRenderer.registerSceneObject(data)
     }
 
     async send(peer: string, message: Message) {
