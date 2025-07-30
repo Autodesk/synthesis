@@ -8,7 +8,7 @@ import type {
     InitData,
     InitObjectData,
     Message,
-    UpdateMultiplayerObjectData as UpdateObjectData,
+    UpdateObjectData as UpdateObjectData,
 } from "./types"
 
 const COLLISION_TIMEOUT = 500

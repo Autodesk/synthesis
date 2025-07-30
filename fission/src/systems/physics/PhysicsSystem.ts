@@ -27,6 +27,10 @@ import {
     PhysicsEvent,
 } from "./ContactEvents"
 import Mechanism from "./Mechanism"
+import Synthesis from "@/Synthesis"
+import World from "../World"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { Message } from "../multiplayer/types"
 
 export type JoltBodyIndexAndSequence = number
 
@@ -1278,8 +1282,47 @@ class PhysicsSystem extends WorldSystem {
 
         this._joltInterface.Step(lastDeltaT, substeps)
 
+        if (World.multiplayerSystem != null) {
+            const interObjectCollisions = this._physicsEventQueue.filter(
+                x => x instanceof OnContactAddedEvent && this.onSameLayer(x.message.body1, x.message.body2)
+            )
+
+            const message: Message =
+                interObjectCollisions.length > 0
+                    ? {
+                          type: "collision",
+                          data: {
+                              // TODO We might not need to send over the entire physicsSystem, we might be able to just send over a more complete list of scene objects
+                              physicsSystem: this,
+                              sceneObjects: new Map(
+                                  [...World.sceneRenderer.sceneObjects].filter(
+                                      (x): x is [number, MirabufSceneObject] => x[1] instanceof MirabufSceneObject
+                                  )
+                              ),
+                          },
+                      }
+                    : {
+                          type: "update",
+                          data: [...World.sceneRenderer.sceneObjects]
+                              .filter((x): x is [number, MirabufSceneObject] => x[1] instanceof MirabufSceneObject)
+                              .map(([sceneObjectKey, sceneObject]) => {
+                                  return {
+                                      sceneObjectKey,
+                                      mechanism: sceneObject.mechanism,
+                                      instance: sceneObject.mirabufInstance,
+                                  }
+                              }),
+                      }
+
+            World.multiplayerSystem?.broadcast(message)
+        }
+
         this._physicsEventQueue.forEach(x => x.dispatch())
         this._physicsEventQueue = []
+    }
+
+    private onSameLayer(body1: Jolt.BodyID, body2: Jolt.BodyID): boolean {
+        return this.getBody(body1).GetObjectLayer() === this.getBody(body2).GetObjectLayer()
     }
 
     /*
@@ -1448,6 +1491,8 @@ class PhysicsSystem extends WorldSystem {
                 body2: body2Id,
                 manifold: JOLT.wrapPointer(manifoldPtr, JOLT.ContactManifold) as Jolt.ContactManifold,
                 settings: JOLT.wrapPointer(settingsPtr, JOLT.ContactSettings) as Jolt.ContactSettings,
+            }
+            if (body1.GetObjectLayer() === LAYER_GENERAL_DYNAMIC && ROBOT_LAYERS.includes(body2.GetObjectLayer())) {
             }
 
             this._physicsEventQueue.push(new OnContactAddedEvent(message))

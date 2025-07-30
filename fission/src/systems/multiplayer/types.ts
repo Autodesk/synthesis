@@ -24,7 +24,7 @@ export type Message =
     // Represents the initial information given in thee lobby or smth
     | { type: "info"; data: ClientInfo }
     | { type: "init"; data: InitData }
-    | { type: "update"; data: UpdateMultiplayerObjectData[] }
+    | { type: "update"; data: UpdateObjectData[] }
     | { type: "collision"; data: CollisionData }
     | { type: "newObject"; data: InitObjectData }
     | { type: "robotLeft"; data: RobotLeftData }
@@ -43,7 +43,7 @@ export type InitData = {
     objects: InitObjectData[] // We need to send the entire scene object with rendering data and configuration (for fields and such)
 }
 
-export type UpdateMultiplayerObjectData = {
+export type UpdateObjectData = {
     sceneObjectKey: number
     mechanism: Mechanism
     instance: MirabufInstance
@@ -56,7 +56,7 @@ export type InitObjectData = {
 
 export type CollisionData = {
     physicsSystem: PhysicsSystem
-    sceneObject: Map<number, MirabufSceneObject>
+    sceneObjects: Map<number, MirabufSceneObject>
 }
 
 export type RobotLeftData = {

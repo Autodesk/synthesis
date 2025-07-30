@@ -16,11 +16,12 @@ export interface MechanismConstraint {
 class Mechanism {
     public rootBody: string
     public nodeToBody: Map<RigidNodeId, Jolt.BodyID>
-    public constraints: Array<MechanismConstraint>
-    public stepListeners: Array<Jolt.PhysicsStepListener>
-    public layerReserve: LayerReserve | undefined
+    public constraints: MechanismConstraint[] = []
+    public stepListeners: Jolt.PhysicsStepListener[] = []
+    public layerReserve?: LayerReserve
     public controllable: boolean
-    public ghostBodies: Array<Jolt.BodyID>
+    public ghostBodies: Jolt.BodyID[] = []
+    public touchedBodies: Jolt.BodyID[] = []
 
     public constructor(
         rootBody: string,
@@ -30,10 +31,7 @@ class Mechanism {
     ) {
         this.rootBody = rootBody
         this.nodeToBody = bodyMap
-        this.constraints = []
-        this.stepListeners = []
         this.controllable = controllable
-        this.ghostBodies = []
         this.layerReserve = layerReserve
     }
 

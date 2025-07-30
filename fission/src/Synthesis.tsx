@@ -112,7 +112,21 @@ const Synthesis: React.FC = () => {
 
                     World.sceneRenderer.updateSkyboxColors(defaultTheme)
                 }}
-                startMultiplayerCallback={async () => {}}
+                startMultiplayerCallback={async () => {
+                    World.initWorld(true)
+
+                    if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
+                        setConsentPopupDisable(false)
+                    }
+
+                    const mainLoop = () => {
+                        mainLoopHandle.current = requestAnimationFrame(mainLoop)
+                        World.updateWorld()
+                    }
+                    mainLoop()
+
+                    World.sceneRenderer.updateSkyboxColors(defaultTheme)
+                }}
             />
         ),
     })
