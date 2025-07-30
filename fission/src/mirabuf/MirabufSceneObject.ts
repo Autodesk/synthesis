@@ -3,7 +3,7 @@ import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import Mechanism from "@/systems/physics/Mechanism"
-import { BodyAssociate, LayerReserve } from "@/systems/physics/PhysicsSystem"
+import { LayerReserve } from "@/systems/physics/PhysicsSystem"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
     Alliance,
@@ -44,6 +44,7 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
+import {BodyAssociate} from "@/systems/physics/BodyAssociate.ts";
 
 const DEBUG_BODIES = false
 

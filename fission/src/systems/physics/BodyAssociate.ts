@@ -1,0 +1,13 @@
+import Jolt from "@azaleacolburn/jolt-physics"
+import { JoltBodyIndexAndSequence } from "@/systems/physics/PhysicsSystem.ts"
+
+/**
+ * An interface to create an association between a body and anything.
+ */
+export class BodyAssociate {
+    readonly associatedBody: JoltBodyIndexAndSequence
+
+    public constructor(bodyId: Jolt.BodyID) {
+        this.associatedBody = bodyId.GetIndexAndSequenceNumber()
+    }
+}

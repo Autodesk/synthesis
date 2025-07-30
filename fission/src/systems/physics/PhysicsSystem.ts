@@ -1,5 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import MirabufParser, { GAMEPIECE_SUFFIX, GROUNDED_JOINT_ID, RigidNodeReadOnly } from "../../mirabuf/MirabufParser"
 import { mirabuf } from "../../proto/mirabuf"
@@ -15,7 +17,9 @@ import {
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "../../util/TypeConversions"
+import { Message } from "../multiplayer/types"
 import PreferencesSystem from "../preferences/PreferencesSystem"
+import World from "../World"
 import WorldSystem from "../WorldSystem"
 import {
     CurrentContactData,
@@ -27,10 +31,6 @@ import {
     PhysicsEvent,
 } from "./ContactEvents"
 import Mechanism from "./Mechanism"
-import Synthesis from "@/Synthesis"
-import World from "../World"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { Message } from "../multiplayer/types"
 
 export type JoltBodyIndexAndSequence = number
 
@@ -1646,17 +1646,6 @@ export type RayCastHit = {
     data: Jolt.RayCastResult
     point: Jolt.Vec3
     ray: Jolt.RRayCast
-}
-
-/**
- * An interface to create an association between a body and anything.
- */
-export class BodyAssociate {
-    readonly associatedBody: JoltBodyIndexAndSequence
-
-    public constructor(bodyId: Jolt.BodyID) {
-        this.associatedBody = bodyId.GetIndexAndSequenceNumber()
-    }
 }
 
 export default PhysicsSystem

@@ -72,6 +72,8 @@ import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
 import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
+import MultiplayerStartModal from "@/modals/MultiplayerStartModal.tsx";
+import {globalAddToast} from "@/components/GlobalUIControls.ts";
 
 const Synthesis: React.FC = () => {
     const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
@@ -91,41 +93,52 @@ const Synthesis: React.FC = () => {
     const modalElement = getActiveModalElement()
 
     const mainLoopHandle = useRef(0)
+    const startMainLoop = () => {
+        if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
+            setConsentPopupDisable(false)
+        }
+
+        const mainLoop = () => {
+            mainLoopHandle.current = requestAnimationFrame(mainLoop)
+            World.updateWorld()
+        }
+        mainLoop()
+
+        World.sceneRenderer.updateSkyboxColors(defaultTheme)
+    }
+    registerModal("multiplayer-lobby", {
+        id: "multiplayer-lobby",
+        component: (
+            <MultiplayerStartModal
+                key="multiplayer-start"
+                modalId="multiplayer-start"
+                startWorldCallback={async (room) => {
+                    const isHost = room == null
+                    if (room == null) {
+                        room = Math.random().toString(10).substring(2, 8)
+                        globalAddToast("info", "Room code", room)
+                    }
+                    const multiplayerSystem = await MultiplayerSystem.create(room, isHost)
+                    await World.initWorld(multiplayerSystem)
+                    startMainLoop()
+                }}
+            />
+        ),
+    })
     registerModal("main-menu", {
         id: "main-menu",
         component: (
             <MainMenuModal
                 key="main-menu"
                 modalId="main-menu"
-                startSingleplayerCallback={() => {
-                    World.initWorld()
+                startSingleplayerCallback={async () => {
+                    await World.initWorld()
+                    startMainLoop()
 
-                    if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
-                        setConsentPopupDisable(false)
-                    }
-
-                    const mainLoop = () => {
-                        mainLoopHandle.current = requestAnimationFrame(mainLoop)
-                        World.updateWorld()
-                    }
-                    mainLoop()
-
-                    World.sceneRenderer.updateSkyboxColors(defaultTheme)
                 }}
                 startMultiplayerCallback={async () => {
-                    World.initWorld(true)
+                    openModal("multiplayer-lobby")
 
-                    if (!PreferencesSystem.getGlobalPreference("ReportAnalytics") && !import.meta.env.DEV) {
-                        setConsentPopupDisable(false)
-                    }
-
-                    const mainLoop = () => {
-                        mainLoopHandle.current = requestAnimationFrame(mainLoop)
-                        World.updateWorld()
-                    }
-                    mainLoop()
-
-                    World.sceneRenderer.updateSkyboxColors(defaultTheme)
                 }}
             />
         ),
@@ -138,18 +151,6 @@ const Synthesis: React.FC = () => {
             window.close()
             return
         }
-        const startMultiplayer = async () => {
-            const roomId = urlParams.get("roomId")
-            const client: MultiplayerSystem = await (roomId
-                ? MultiplayerSystem.create(roomId)
-                : MultiplayerSystem.createHost())
-
-            console.log({ room: client.roomId })
-            console.log(client)
-            window.multiplayer = client
-        }
-        startMultiplayer()
-
         openModal("main-menu")
         // Cleanup
         return () => {
@@ -285,6 +286,7 @@ const initialPanels: ReactElement[] = [
     <InitialConfigPanel key="initial-config" panelId="initial-config" />,
     <AutoTestPanel key="auto-test" panelId="auto-test" />,
     <GraphicsSettings key="graphics-settings" panelId="graphics-settings" sidePadding={8} />,
+
 ]
 
 export default Synthesis

@@ -77,23 +77,14 @@ class World {
         }
     }
 
-    public static async initWorld(isMultiplayer: boolean = false) {
+    public static async initWorld(multiplayerSystem?: MultiplayerSystem) {
         if (World._isAlive) return
 
         World._clock = new THREE.Clock()
         World._isAlive = true
 
-        if (isMultiplayer) {
-            const urlParams = new URLSearchParams(document.location.search)
-            if (urlParams.has("code")) {
-                window.opener.convertAuthToken(urlParams.get("code"))
-                window.close()
-                return
-            }
-            const roomId = urlParams.get("roomId")
-            World._multiplayerSystem = await (roomId
-                ? MultiplayerSystem.create(roomId)
-                : MultiplayerSystem.createHost())
+        if (multiplayerSystem) {
+            World._multiplayerSystem = multiplayerSystem
         }
 
         World._sceneRenderer = new SceneRenderer()

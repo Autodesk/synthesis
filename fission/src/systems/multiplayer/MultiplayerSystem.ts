@@ -23,17 +23,10 @@ class MultiplayerSystem {
 
     info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
-    connected: boolean = false
-    otherPeers: string[] = []
 
-    public static async create(roomId: string, isHost: boolean = false): Promise<MultiplayerSystem> {
+    public static async create(roomId: string, isHost:boolean): Promise<MultiplayerSystem> {
         const clientId = await generateId(roomId)
         return new MultiplayerSystem(roomId, clientId, isHost)
-    }
-
-    public static async createHost(): Promise<MultiplayerSystem> {
-        const room = Math.random().toString(10).substring(2, 9)
-        return this.create(room, true)
     }
 
     private constructor(roomId: string, clientId: string, isHost: boolean = false) {
@@ -192,12 +185,12 @@ class MultiplayerSystem {
         })
     }
 
-    handleCollision(data: CollisionData) {
+    handleCollision(_data: CollisionData) {
         // TODO Expand on this logic
         if (this.lastSentCollisionTimestamp < COLLISION_TIMEOUT) return
 
-        World.physicsSystem = data.physicsSystem
-        World.sceneRenderer.sceneObjects = data.sceneObject
+        // World.physicsSystem = data.physicsSystem
+        // World.sceneRenderer.sceneObjects = data.sceneObject
     }
 
     handleNewObject(data: InitObjectData) {
@@ -224,7 +217,7 @@ class MultiplayerSystem {
 
 const localStorageKey = "multiplayer_clientid"
 
-async function generateId(roomId?: string): Promise<string> {
+async function generateId(roomId: string): Promise<string> {
     let id =
         (import.meta.env.DEV ? new URLSearchParams(window.location.search).get("uid") : undefined) ??
         window.localStorage.getItem(localStorageKey)
@@ -232,10 +225,7 @@ async function generateId(roomId?: string): Promise<string> {
         id = `client_${Math.random().toString(36).substring(2, 9)}`
         window.localStorage.setItem(localStorageKey, id)
     }
-    if (roomId) {
-        return `${id}-${await createSha256Hash(roomId)}`
-    }
-    return id
+    return `${id}-${await createSha256Hash(roomId)}`
 }
 
 async function createSha256Hash(msg: string) {
