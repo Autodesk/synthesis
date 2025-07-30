@@ -2,12 +2,14 @@ import { useEffect, useState } from "react"
 import { FaHandPaper } from "react-icons/fa"
 import { globalAddToast } from "./GlobalUIControls"
 import Label from "./Label"
+import { Stack } from "@mui/material"
 
 const DragModeIndicator: React.FC = () => {
     const [enabled, setEnabled] = useState<boolean>(false)
 
     useEffect(() => {
         const handleDragModeToggle = (event: CustomEvent) => {
+            console.log("toggled")
             setEnabled(event.detail.enabled)
         }
 
@@ -24,13 +26,17 @@ const DragModeIndicator: React.FC = () => {
     }
 
     return enabled ? (
-        <div
-            className="select-none absolute left-1 bottom-1 py-2 px-4 rounded-lg bg-gradient-to-r from-interactive-element-left to-interactive-element-right flex flex-row gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+        <Stack
+            className="select-none absolute left-1 bottom-1 py-2 px-4 rounded-lg gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+            direction="row"
             onClick={handleClick}
+            sx={{
+                bgcolor: "background.default",
+            }}
         >
-            <FaHandPaper className="text-main-text self-center" />
+            <FaHandPaper className="self-center" />
             <Label size="sm">Drag Mode</Label>
-        </div>
+        </Stack>
     ) : (
         <></>
     )

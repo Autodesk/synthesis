@@ -28,7 +28,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             setSelectedScheme(scheme)
             openPanel(<ConfigurePanel />, modal)
         }
-        configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onBeforeAccept })
+        configureScreen(modal!, { title: "New Input Scheme" }, { onBeforeAccept })
     }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])
 
     return (

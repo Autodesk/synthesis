@@ -1,4 +1,6 @@
-import type { SnackbarMessage, VariantType } from "notistack"
+import { IconButton } from "@mui/material"
+import CloseIcon from '@mui/icons-material/Close'
+import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
 import type { ReactElement, ReactNode } from "react"
@@ -28,7 +30,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<unknown> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<unknown>[]>([])
 
-    const { enqueueSnackbar } = useSnackbar()
+    const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
     const DEFAULT_PROPS = {
         hideAccept: false,
@@ -151,6 +153,12 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         })
     }, [])
 
+    const snackbarAction = useCallback((snackbarId: SnackbarKey) => (
+        <IconButton onClick={() => closeSnackbar(snackbarId)}>
+            <CloseIcon />
+        </IconButton>
+    ), [])
+
     const addToast = useCallback(
         (variant: VariantType, ...contents: SnackbarMessage[]) => {
             enqueueSnackbar(
@@ -166,7 +174,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                         ))}
                     </>
                 ),
-                { variant }
+                { variant, action: snackbarAction }
             )
         },
         [enqueueSnackbar]

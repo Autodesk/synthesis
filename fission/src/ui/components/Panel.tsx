@@ -74,7 +74,7 @@ export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => 
                     p: 4,
                 }}
             >
-                {props.title && <CardHeader title={props.title} />}
+                {props.title && <CardHeader title={props.title} className="select-none" />}
                 <CardContent>
                     <div className="panel-contents">
                         {React.Children.map(children, child => {

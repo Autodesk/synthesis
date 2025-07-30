@@ -41,21 +41,20 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
                     p: 4,
                 }}
             >
-                {props.title && <CardHeader title={props.title} />}
+                {props.title && <CardHeader title={props.title} className="select-none" />}
                 <CardContent>
                     {React.Children.map(children, child => {
                         if (React.isValidElement(child)) return React.cloneElement(child, { modal, parent })
                     })}
                 </CardContent>
-                {((props.hideCancel !== undefined && !props.hideCancel) ||
-                    (props.hideAccept !== undefined && !props.hideAccept)) && (
+                {(props.hideCancel === false || props.hideAccept === false) && (
                     <CardActions>
-                        {props.hideCancel !== undefined && !props.hideCancel && (
+                        {props.hideCancel === false && (
                             <Button onClick={() => closeModal(CloseType.Cancel)} variant="outlined" color="secondary">
                                 {props.cancelText ?? "Cancel"}
                             </Button>
                         )}
-                        {props.hideAccept !== undefined && !props.hideAccept && (
+                        {props.hideAccept === false && (
                             <Button onClick={() => closeModal(CloseType.Accept)} variant="contained" color="primary">
                                 {props.acceptText ?? "Accept"}
                             </Button>

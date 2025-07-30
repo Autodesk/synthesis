@@ -18,6 +18,7 @@ import { StateProvider } from "./ui/StateProvider.tsx"
 import { ThemeProvider } from "./ui/ThemeProvider.tsx"
 import { UIProvider } from "./ui/UIProvider.tsx"
 import { globalOpenModal } from "./ui/components/GlobalUIControls.ts"
+import DragModeIndicator from "./ui/components/DragModeIndicator.tsx"
 
 function Synthesis() {
     const [consentPopupDisable, setConsentPopupDisable] = useState<boolean>(true)
@@ -82,7 +83,7 @@ function Synthesis() {
     return (
         <AnimatePresence key={"animate-presence"}>
             <ThemeProvider>
-                <SnackbarProvider maxSnack={5}>
+                <SnackbarProvider maxSnack={5} anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
                     <Skybox key={"skybox"} />
                     <StateProvider>
                         <UIProvider>
@@ -94,6 +95,7 @@ function Synthesis() {
                             <UIRenderer />
                             <ProgressNotifications key={"progress-notifications"} />
                             <WPILibConnectionStatus />
+                            <DragModeIndicator />
 
                             {!consentPopupDisable && (
                                 <AnalyticsConsent onClose={onDisableConsent} onConsent={onConsent} />

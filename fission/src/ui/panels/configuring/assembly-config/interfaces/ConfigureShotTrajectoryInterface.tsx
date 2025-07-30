@@ -249,7 +249,6 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
             {gizmoComponent}
             {Spacer(10)}
             <Button
-                value="Reset"
                 onClick={() => {
                     if (gizmoRef.current) {
                         const robotTransformation = convertJoltMat44ToThreeMatrix4(
@@ -262,7 +261,9 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
                     setSelectedNode(selectedRobot?.rootNodeId)
                     setEjectOrder(selectedRobot.ejectorPreferences?.ejectOrder ?? "FIFO")
                 }}
-            />
+            >
+                Reset
+            </Button>
         </>
     )
 }

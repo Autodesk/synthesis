@@ -55,6 +55,7 @@ const ContextMenu: React.FC = () => {
                     top: state.location[1],
                     padding: "1rem",
                     borderRadius: "0.5rem",
+                    bgcolor: "background.default",
                     // backgroundColor: colorNameToVar("Background"),
                     // color: colorNameToVar("InteractiveElementText"),
                 }}

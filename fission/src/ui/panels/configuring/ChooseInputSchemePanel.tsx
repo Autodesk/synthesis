@@ -12,7 +12,7 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { CloseType, useUIContext } from "../../helpers/UIProviderHelpers"
 import ConfigurePanel from "./assembly-config/ConfigurePanel"
 import InputSchemeSelection from "./initial-config/InputSchemeSelection"
-import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
+import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 
 const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { openModal, openPanel, closePanel, configureScreen } = useUIContext()
@@ -64,7 +64,7 @@ const ChooseInputSchemePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                     onCreateNew={() => {
-                        openModal(<AssignNewSchemeModal />)
+                        openModal(<NewInputSchemeModal />)
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                 />

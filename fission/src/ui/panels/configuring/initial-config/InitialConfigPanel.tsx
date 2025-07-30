@@ -11,7 +11,6 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import World from "@/systems/World"
 import type { PanelImplProps } from "@/ui/components/Panel"
 import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import AssignNewSchemeModal from "@/ui/modals/configuring/inputs/AssignNewSchemeModal"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import ConfigurePanel from "../assembly-config/ConfigurePanel"
@@ -19,6 +18,7 @@ import InputSchemeSelection from "./InputSchemeSelection"
 import type { Alliance, Station } from "@/systems/preferences/PreferenceTypes"
 import Label from "@/ui/components/Label"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
+import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 
 const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { setSelectedScheme, setUnconfirmedImport, setConfigurationType } = useStateContext()
@@ -138,7 +138,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     brainIndex={brainIndex}
                     onSelect={() => {}}
                     onEdit={() => openPanel(<ConfigurePanel />, panel)}
-                    onCreateNew={() => openModal(<AssignNewSchemeModal />, panel)}
+                    onCreateNew={() => openModal(<NewInputSchemeModal />, panel)}
                 />
             )}
         </Stack>
