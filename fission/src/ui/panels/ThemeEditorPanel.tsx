@@ -17,8 +17,13 @@ export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const [tempSecondary, setTempSecondary] = useState(secondaryColor)
 
     useEffect(() => {
-        configureScreen(panel!, { title: "Theme Editor" }, {})
-    }, [])
+        const onBeforeAccept = () => {
+            setPrimaryColor(tempPrimary)
+            setSecondaryColor(tempSecondary)
+        }
+
+        configureScreen(panel!, { title: "Theme Editor" }, { onBeforeAccept })
+    }, [tempPrimary, tempSecondary])
 
     return (
         <Stack gap={4}>
@@ -72,6 +77,15 @@ export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 }}
             >
                 Randomize
+            </Button>
+            <Button
+                onClick={() => {
+                    // I intentionally decided not to apply the reset in case that's not what the user wants
+                    setTempPrimary("#90caf9")
+                    setTempSecondary("#ce93d8")
+                }}
+            >
+                Reset
             </Button>
             <Button
                 onClick={() => {

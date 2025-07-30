@@ -51,12 +51,12 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
                     (props.hideAccept !== undefined && !props.hideAccept)) && (
                     <CardActions>
                         {props.hideCancel !== undefined && !props.hideCancel && (
-                            <Button onClick={() => closeModal(CloseType.Cancel)} variant="outlined" color="error">
+                            <Button onClick={() => closeModal(CloseType.Cancel)} variant="outlined" color="secondary">
                                 {props.cancelText ?? "Cancel"}
                             </Button>
                         )}
                         {props.hideAccept !== undefined && !props.hideAccept && (
-                            <Button onClick={() => closeModal(CloseType.Accept)} variant="contained" color="success">
+                            <Button onClick={() => closeModal(CloseType.Accept)} variant="contained" color="primary">
                                 {props.acceptText ?? "Accept"}
                             </Button>
                         )}
