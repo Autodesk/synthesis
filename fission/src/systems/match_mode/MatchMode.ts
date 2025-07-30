@@ -150,11 +150,11 @@ export default MatchMode
 export class UpdateTimeLeft extends Event {
     public static readonly EVENT_KEY = "UpdateTimeLeft"
 
-    public readonly autonomousTime: string
+    public readonly time: string
 
-    constructor(autonomousTime: number) {
+    constructor(time: number) {
         super(UpdateTimeLeft.EVENT_KEY)
-        this.autonomousTime = autonomousTime.toFixed(0)
+        this.time = time.toFixed(0)
     }
 
     public dispatch(): void {
