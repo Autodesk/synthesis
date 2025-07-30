@@ -71,8 +71,7 @@ import GraphicsSettings from "./ui/panels/GraphicsSettingsPanel.tsx"
 import AutoTestPanel from "./ui/panels/simulation/AutoTestPanel.tsx"
 import WiringPanel from "./ui/panels/simulation/WiringPanel.tsx"
 import WSViewPanel from "./ui/panels/WSViewPanel.tsx"
-import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts";
-import PeerConnection from "@/systems/multiplayer/MultiplayerSystem.ts";
+import MultiplayerSystem from "@/systems/multiplayer/MultiplayerSystem.ts"
 
 const Synthesis: React.FC = () => {
     const { openModal, closeModal, getActiveModalElement, registerModal, activeModalId } =
@@ -113,10 +112,7 @@ const Synthesis: React.FC = () => {
 
                     World.sceneRenderer.updateSkyboxColors(defaultTheme)
                 }}
-
-                startMultiplayerCallback={async () => {
-
-                }}
+                startMultiplayerCallback={async () => {}}
             />
         ),
     })
@@ -130,17 +126,13 @@ const Synthesis: React.FC = () => {
         }
         const startMultiplayer = async () => {
             const roomId = urlParams.get("roomId")
-            let client: PeerConnection
+            let client: MultiplayerSystem
             if (roomId) {
-                client = await MultiplayerSystem.create((peer, msg) => {
-                    console.log({peer, msg})
-                }, roomId)
+                client = await MultiplayerSystem.create(roomId)
             } else {
-                client = await MultiplayerSystem.createHost((peer, msg) => {
-                    console.log({peer, msg})
-                })
+                client = await MultiplayerSystem.createHost()
             }
-            console.log({room: client.roomId})
+            console.log({ room: client.roomId })
             console.log(client)
             window.multiplayer = client
         }

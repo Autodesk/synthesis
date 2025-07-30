@@ -114,6 +114,12 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     public set ejectorActive(a: boolean) {
         this._ejectorActive = a
     }
+    public set mechanism(a: Mechanism) {
+        this._mechanism = a
+    }
+    public set mirabufInstance(a: MirabufInstance) {
+        this.mirabufInstance = a
+    }
 
     get mirabufInstance() {
         return this._mirabufInstance
@@ -919,8 +925,6 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             objectCollidedWith.robotLastInContactWith = this
         }
     }
-
-    public getMultiplayerData(): MultiplayerObjectData {}
 }
 
 export async function createMirabuf(

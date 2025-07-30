@@ -53,6 +53,9 @@ class SceneRenderer extends WorldSystem {
     public get sceneObjects() {
         return this._sceneObjects
     }
+    public set sceneObjects(objects: Map<number, SceneObject>) {
+        this._sceneObjects = objects
+    }
 
     public get mainCamera() {
         return this._mainCamera
@@ -175,7 +178,9 @@ class SceneRenderer extends WorldSystem {
         this._composer.addPass(new RenderPass(this._scene, this._mainCamera))
 
         if (PreferencesSystem.getGraphicsPreferences().antiAliasing) {
-            const antiAliasEffect = new SMAAEffect({ edgeDetectionMode: EdgeDetectionMode.COLOR })
+            const antiAliasEffect = new SMAAEffect({
+                edgeDetectionMode: EdgeDetectionMode.COLOR,
+            })
             const antiAliasPass = new EffectPass(this._mainCamera, antiAliasEffect)
             this._composer.addPass(antiAliasPass)
         }

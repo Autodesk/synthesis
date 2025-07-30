@@ -7,6 +7,7 @@ import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
 import SimulationSystem from "./simulation/SimulationSystem"
 import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
+import MultiplayerSystem from "./multiplayer/MultiplayerSystem"
 
 class World {
     private static _isAlive: boolean = false
@@ -17,6 +18,7 @@ class World {
     private static _physicsSystem: PhysicsSystem
     private static _simulationSystem: SimulationSystem
     private static _inputSystem: InputSystem
+    private static _multiplayerSystem?: MultiplayerSystem
     private static _analyticsSystem: AnalyticsSystem | undefined = undefined
     private static _dragModeSystem: DragModeSystem
     private static _performanceMonitorSystem: PerformanceMonitoringSystem
@@ -50,11 +52,18 @@ class World {
     public static get inputSystem() {
         return World._inputSystem
     }
+    public static get multiplayerSystem() {
+        return World._multiplayerSystem
+    }
     public static get analyticsSystem() {
         return World._analyticsSystem
     }
     public static get dragModeSystem() {
         return World._dragModeSystem
+    }
+
+    public static set physicsSystem(system: PhysicsSystem) {
+        World.physicsSystem = system
     }
 
     public static resetAccumTimes() {
@@ -80,6 +89,7 @@ class World {
         World._inputSystem = new InputSystem()
         World._dragModeSystem = new DragModeSystem()
         World._performanceMonitorSystem = new PerformanceMonitoringSystem()
+
         try {
             World._analyticsSystem = new AnalyticsSystem()
         } catch (_) {
