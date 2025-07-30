@@ -113,7 +113,7 @@ class MultiplayerSystem {
             console.log("Connection opened")
             this.connections.push(conn)
             MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
-            this.send(conn.peer, { type: "info", data: this.info })
+            await this.send(conn.peer, { type: "info", data: this.info })
         })
 
         conn.on("data", (data: unknown) => {
@@ -223,6 +223,12 @@ class MultiplayerSystem {
 
     get displayName():string {
         return this.info.displayName
+    }
+
+    public destroy() {
+        this.connections.forEach((conn) => conn.close())
+        this.connections.splice(0)
+        this.client.destroy()
     }
 }
 

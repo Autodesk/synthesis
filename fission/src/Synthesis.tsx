@@ -135,7 +135,6 @@ const Synthesis: React.FC = () => {
                 modalId="main-menu"
                 startSingleplayerCallback={async () => {
                     await startMainLoop()
-
                 }}
                 startMultiplayerCallback={() => {
                     openModal("multiplayer-lobby")
@@ -157,6 +156,7 @@ const Synthesis: React.FC = () => {
             // TODO: Teardown literally everything
             cancelAnimationFrame(mainLoopHandle.current)
             World.destroyWorld()
+            World.multiplayerSystem?.destroy()
             // World.SceneRenderer.RemoveAllSceneObjects();
         }
     }, [openModal])

@@ -20,16 +20,19 @@ export type Metrics = {
     }
 }
 
-export type Message =
-    // Represents the initial information given in thee lobby or smth
-    | { type: "info"; data: ClientInfo }
-    | { type: "init"; data: InitData }
-    | { type: "update"; data: UpdateObjectData[] }
-    | { type: "collision"; data: CollisionData }
-    | { type: "newObject"; data: InitObjectData }
-    | { type: "robotLeft"; data: RobotLeftData }
-    | { type: "ping"; data: PingData }
-    | { type: "pong"; data: PingData }
+interface MessageType {
+    info:ClientInfo
+    init:InitData
+    update:UpdateObjectData[]
+    collision: CollisionData
+    newObject: InitObjectData
+    robotLeft:RobotLeftData
+    ping: PingData
+    pong:PingData
+}
+
+export type Message = {[K in keyof MessageType]: {type:K, data:MessageType[K]}}[keyof MessageType]
+
 
 export type ClientInfo = {
     displayName: string
