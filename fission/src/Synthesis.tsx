@@ -126,17 +126,15 @@ const Synthesis: React.FC = () => {
         }
         const startMultiplayer = async () => {
             const roomId = urlParams.get("roomId")
-            let client: MultiplayerSystem
-            if (roomId) {
-                client = await MultiplayerSystem.create(roomId)
-            } else {
-                client = await MultiplayerSystem.createHost()
-            }
+            const client: MultiplayerSystem = await (roomId
+                ? MultiplayerSystem.create(roomId)
+                : MultiplayerSystem.createHost())
+
             console.log({ room: client.roomId })
             console.log(client)
             window.multiplayer = client
         }
-        void startMultiplayer()
+        startMultiplayer()
 
         openModal("main-menu")
         // Cleanup

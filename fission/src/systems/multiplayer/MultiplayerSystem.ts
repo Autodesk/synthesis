@@ -19,6 +19,8 @@ class MultiplayerSystem {
     readonly connections: DataConnection[] = []
     readonly clientId: string
 
+    clientToRobotMap: Map<string, [string, number | null]> = new Map() // clientId -> [displayName , sceneObjectKey]
+
     info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
     connected: boolean = false
@@ -161,8 +163,18 @@ class MultiplayerSystem {
         }
     }
 
-    handlePeerInfo(data: ClientInfo) {}
-    handleWorldInitialization(data: InitData) {}
+    handlePeerInfo(data: ClientInfo) {
+        this.clientToRobotMap.set(data.clientId, [data.displayName, null])
+    }
+
+    handleWorldInitialization(data: InitData) {
+        World.physicsSystem = data.physicsSystem
+        World.sceneRenderer.sceneObjects = this.initObjectDataToSceneObjectMap(data.objects)
+    }
+    initObjectDataToSceneObjectMap(objects: InitObjectData[]): Map<number, MirabufSceneObject> {
+        return new Map(objects.map(object => [object.key, object.sceneObject]))
+    }
+
     handlePeerUpdate(data: UpdateObjectData[]) {
         data.forEach(({ sceneObjectKey, mechanism, instance }) => {
             const sceneObject = World.sceneRenderer.sceneObjects.get(sceneObjectKey)
@@ -181,6 +193,7 @@ class MultiplayerSystem {
     }
 
     handleCollision(data: CollisionData) {
+        // TODO Expand on this logic
         if (this.lastSentCollisionTimestamp < COLLISION_TIMEOUT) return
 
         World.physicsSystem = data.physicsSystem
