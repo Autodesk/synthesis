@@ -13,7 +13,7 @@ import {
 } from "@/systems/match_mode/MatchModeTypes"
 import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
-import { CloseType, OpenModalFn, useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { Stack } from "@mui/system"
 import Label from "@/ui/components/Label"
 import { convertFeetToMeters } from "@/util/UnitConversions"
@@ -64,7 +64,7 @@ export interface MatchModeConfig {
     heightPenalty: number
 }
 
-function matchConfigSelected(config: MatchModeConfig, openModal: OpenModalFn) {
+function matchConfigSelected(config: MatchModeConfig) {
     if (MatchMode.getInstance().isMatchEnabled()) {
         globalAddToast(
             "error",
@@ -76,7 +76,7 @@ function matchConfigSelected(config: MatchModeConfig, openModal: OpenModalFn) {
 
     MatchMode.getInstance().setMatchModeConfig(config)
 
-    MatchMode.getInstance().start(openModal)
+    MatchMode.getInstance().start()
 }
 
 interface ItemCardProps {
@@ -114,7 +114,6 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const [matchModeConfigs, setMatchModeConfigs] = useState<MatchModeConfig[]>([])
 
     useEffect(() => {
-        console.log(panel)
         configureScreen(panel!, { title: "Match Mode Config", hideAccept: true, cancelText: "Back" }, {})
     }, [])
 
@@ -146,7 +145,7 @@ const MatchModeConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         id={config.id}
                         name={config.name || config.id || "Unnamed Match Mode"}
                         primaryOnClick={() => {
-                            matchConfigSelected(config, openModal)
+                            matchConfigSelected(config)
                             closePanel(panel!.id, CloseType.Accept)
                         }}
                         secondaryOnClick={

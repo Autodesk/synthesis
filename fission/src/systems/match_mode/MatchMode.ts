@@ -4,7 +4,6 @@ import { SoundPlayer } from "../sound/SoundPlayer"
 import beep from "@/assets/sound-files/beep.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
-import type { OpenModalFn } from "@/ui/helpers/UIProviderHelpers"
 import MatchResultsModal from "@/ui/modals/MatchResultsModal"
 import React from "react"
 import RobotDimensionTracker from "./RobotDimensionTracker"
@@ -18,6 +17,7 @@ import {
     DEFAULT_TELEOP_TIME,
     MatchModeType,
 } from "./MatchModeTypes"
+import { globalOpenModal } from "@/ui/components/GlobalUIControls"
 
 class MatchMode {
     private static _instance: MatchMode
@@ -83,21 +83,21 @@ class MatchMode {
         }, 1000)
     }
 
-    autonomousModeStart(openModal: OpenModalFn) {
+    autonomousModeStart() {
         SoundPlayer.play(MatchStart)
         this.setMatchModeType(MatchModeType.AUTONOMOUS)
-        this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd(openModal))
+        this.startTimer(this._matchModeConfig.autonomousTime, () => this.autonomousModeEnd())
     }
 
-    autonomousModeEnd(openModal: OpenModalFn) {
+    autonomousModeEnd() {
         SoundPlayer.play(MatchEnd)
-        this.startTimer(3, () => this.teleopModeStart(openModal), false) // Delay between autonomous and teleop modes
+        this.startTimer(3, () => this.teleopModeStart(), false) // Delay between autonomous and teleop modes
     }
 
-    teleopModeStart(openModal: OpenModalFn) {
+    teleopModeStart() {
         SoundPlayer.play(MatchResume)
         this.setMatchModeType(MatchModeType.TELEOP)
-        this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded(openModal))
+        this.startTimer(this._matchModeConfig.teleopTime, () => this.matchEnded())
     }
 
     endgameStart() {
@@ -106,21 +106,20 @@ class MatchMode {
         this._endgame = true
     }
 
-    start(openModal: OpenModalFn) {
-        this.autonomousModeStart(openModal)
+    start() {
+        this.autonomousModeStart()
         SimulationSystem.resetScores()
     }
 
-    matchEnded(openModal: OpenModalFn) {
+    matchEnded() {
         SoundPlayer.play(MatchEnd)
         clearInterval(this._intervalId as number)
         this.setMatchModeType(MatchModeType.MATCH_ENDED)
-        if (openModal)
-            openModal(React.createElement(MatchResultsModal), undefined, {
-                allowClickAway: false,
-                hideCancel: true,
-                hideAccept: true,
-            })
+        globalOpenModal?.(React.createElement(MatchResultsModal), undefined, {
+            allowClickAway: false,
+            hideCancel: true,
+            hideAccept: true,
+        })
     }
 
     sandboxModeStart() {
