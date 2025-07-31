@@ -1,5 +1,5 @@
 import type { PaletteMode } from "@mui/material"
-import { createContext, ReactNode, useContext } from "react"
+import { createContext, type ReactNode, useContext } from "react"
 
 export interface ThemeProviderProps {
     children: ReactNode
@@ -13,6 +13,12 @@ export interface StoredTheme {
     secondary: {
         main: string
     }
+    blueAlliance: {
+        main: string
+    }
+    redAlliance: {
+        main: string
+    }
 }
 
 export const ThemeContext = createContext({
@@ -22,6 +28,10 @@ export const ThemeContext = createContext({
     setSecondaryColor: (_color: string) => {},
     primaryColor: "",
     secondaryColor: "",
+    blueAllianceColor: "",
+    setBlueAllianceColor: (_color: string) => {},
+    redAllianceColor: "",
+    setRedAllianceColor: (_color: string) => {},
 })
 
 export const useThemeContext = () => useContext(ThemeContext)

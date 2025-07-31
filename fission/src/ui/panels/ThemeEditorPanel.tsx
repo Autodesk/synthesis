@@ -9,12 +9,52 @@ import { useUIContext } from "../helpers/UIProviderHelpers"
 import { PanelImplProps } from "../components/Panel"
 import Checkbox from "../components/Checkbox"
 
+const ColorEditor: React.FC<{ label: string; color: string; setColor: (_c: string) => void }> = ({
+    label,
+    color,
+    setColor,
+}) => {
+    return (
+        <Stack direction="row" gap={2}>
+            <TextField
+                label={label}
+                variant="outlined"
+                defaultValue={color}
+                onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    setColor(event.target.value)
+                }}
+            />
+            <Box
+                sx={{
+                    height: 55,
+                    aspectRatio: 1,
+                    borderRadius: 1,
+                    bgcolor: `${color}`,
+                }}
+            />
+        </Stack>
+    )
+}
+
 export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { mode, setMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } = useThemeContext()
+    const {
+        mode,
+        setMode,
+        primaryColor,
+        secondaryColor,
+        blueAllianceColor,
+        redAllianceColor,
+        setPrimaryColor,
+        setSecondaryColor,
+        setBlueAllianceColor,
+        setRedAllianceColor,
+    } = useThemeContext()
     const { configureScreen } = useUIContext()
 
     const [tempPrimary, setTempPrimary] = useState(primaryColor)
     const [tempSecondary, setTempSecondary] = useState(secondaryColor)
+    const [tempBlue, setTempBlue] = useState(blueAllianceColor)
+    const [tempRed, setTempRed] = useState(redAllianceColor)
 
     useEffect(() => {
         const onBeforeAccept = () => {
@@ -28,42 +68,10 @@ export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     return (
         <Stack gap={4}>
             <Label size="md">Theme Editor</Label>
-            <Stack direction="row" gap={2}>
-                <TextField
-                    label="Primary Color"
-                    variant="outlined"
-                    defaultValue={tempPrimary}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setTempPrimary(event.target.value)
-                    }}
-                />
-                <Box
-                    sx={{
-                        height: 55,
-                        aspectRatio: 1,
-                        borderRadius: 1,
-                        bgcolor: `${tempPrimary}`,
-                    }}
-                />
-            </Stack>
-            <Stack direction="row" gap={2}>
-                <TextField
-                    label="Secondary Color"
-                    variant="outlined"
-                    defaultValue={tempSecondary}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                        setTempSecondary(event.target.value)
-                    }}
-                />
-                <Box
-                    sx={{
-                        height: 55,
-                        aspectRatio: 1,
-                        borderRadius: 1,
-                        bgcolor: `${tempSecondary}`,
-                    }}
-                />
-            </Stack>
+            <ColorEditor label="Primary Color" color={tempPrimary} setColor={setTempPrimary} />
+            <ColorEditor label="Secondary Color" color={tempSecondary} setColor={setTempSecondary} />
+            <ColorEditor label="Blue Alliance" color={tempBlue} setColor={setTempBlue} />
+            <ColorEditor label="Red Alliance" color={tempRed} setColor={setTempRed} />
             <Checkbox
                 label="Dark Mode"
                 checked={mode === "dark"}
@@ -83,6 +91,8 @@ export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     // I intentionally decided not to apply the reset in case that's not what the user wants
                     setTempPrimary("#90caf9")
                     setTempSecondary("#ce93d8")
+                    setTempBlue("#0066b3")
+                    setTempRed("#ed1c24")
                 }}
             >
                 Reset
@@ -91,6 +101,8 @@ export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 onClick={() => {
                     setPrimaryColor(tempPrimary)
                     setSecondaryColor(tempSecondary)
+                    setBlueAllianceColor(tempBlue)
+                    setRedAllianceColor(tempRed)
                 }}
             >
                 Apply
