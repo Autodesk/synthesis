@@ -3,9 +3,9 @@ import os
 import adsk.core
 
 from src import SUPPORT_PATH
+from src.lib.Util import makeDirectories
 from src.Logging import logFailure
 from src.Types import OString
-from src.lib.Util import makeDirectories
 
 
 @logFailure

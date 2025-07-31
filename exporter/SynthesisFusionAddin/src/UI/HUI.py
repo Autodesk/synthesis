@@ -3,8 +3,8 @@ from typing import Any, Callable
 import adsk.core
 
 from src import INTERNAL_ID, gm
-from src.Logging import logFailure
 from src.lib import Handlers, OsHelper
+from src.Logging import logFailure
 
 
 # no longer used

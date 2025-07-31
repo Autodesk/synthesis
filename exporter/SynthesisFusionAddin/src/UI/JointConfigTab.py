@@ -1,6 +1,7 @@
 import adsk.core
 import adsk.fusion
 
+from src.lib import IconPaths
 from src.Logging import logFailure
 from src.Types import (
     SELECTABLE_JOINT_TYPES,
@@ -10,7 +11,6 @@ from src.Types import (
     Wheel,
     WheelType,
 )
-from src.lib import IconPaths
 from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
     createTableInput,

@@ -1,6 +1,7 @@
 import adsk.core
 import adsk.fusion
 
+from src.lib.Util import convertMassUnitsFrom, convertMassUnitsTo, getFusionUnitSystem
 from src.Logging import logFailure
 from src.Parser.ExporterOptions import ExporterOptions
 from src.Parser.SynthesisParser.Utilities import guid_occurrence
@@ -10,7 +11,6 @@ from src.UI.CreateCommandInputsHelper import (
     createTableInput,
     createTextBoxInput,
 )
-from src.lib.Util import convertMassUnitsFrom, convertMassUnitsTo, getFusionUnitSystem
 
 
 class GamepieceConfigTab:
