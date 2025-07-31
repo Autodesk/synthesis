@@ -8,7 +8,7 @@ from src.UI.CreateCommandInputsHelper import createBooleanInput
 from src.UI.GamepieceConfigTab import GamepieceConfigTab
 from src.UI.JointConfigTab import JointConfigTab
 from src.UI.TaggingConfigTab import TaggingConfigTab
-from src.Util import (
+from src.lib.Util import (
     convertMassUnitsFrom,
     convertMassUnitsTo,
     designMassCalculation,

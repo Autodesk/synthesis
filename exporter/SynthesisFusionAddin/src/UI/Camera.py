@@ -5,7 +5,7 @@ import adsk.core
 from src import SUPPORT_PATH
 from src.Logging import logFailure
 from src.Types import OString
-from src.Util import makeDirectories
+from src.lib.Util import makeDirectories
 
 
 @logFailure

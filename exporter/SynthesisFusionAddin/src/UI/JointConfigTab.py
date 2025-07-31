@@ -10,7 +10,7 @@ from src.Types import (
     Wheel,
     WheelType,
 )
-from src.UI import IconPaths
+from src.lib import IconPaths
 from src.UI.CreateCommandInputsHelper import (
     createBooleanInput,
     createTableInput,

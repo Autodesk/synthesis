@@ -4,7 +4,7 @@ import adsk.core
 
 from src import INTERNAL_ID, gm
 from src.Logging import logFailure
-from src.UI import Handlers, OsHelper
+from src.lib import Handlers, OsHelper
 
 
 # no longer used

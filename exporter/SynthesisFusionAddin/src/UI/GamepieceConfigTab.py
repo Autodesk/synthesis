@@ -10,7 +10,7 @@ from src.UI.CreateCommandInputsHelper import (
     createTableInput,
     createTextBoxInput,
 )
-from src.Util import convertMassUnitsFrom, convertMassUnitsTo, getFusionUnitSystem
+from src.lib.Util import convertMassUnitsFrom, convertMassUnitsTo, getFusionUnitSystem
 
 
 class GamepieceConfigTab:
