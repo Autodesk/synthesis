@@ -253,7 +253,7 @@ export class SimConfig {
         return config
     }
 
-    public static RefreshRobotIO(config: SimConfigData) {
+    public static refreshRobotIO(config: SimConfigData) {
         SimConfig.AddRobotIONode(config)
         // TODO: Try to restore connections that remain valid after refresh
     }

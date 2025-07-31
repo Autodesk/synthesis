@@ -1,7 +1,7 @@
 import { Button, Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
-import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
+import Checkbox from "@/components/Checkbox.tsx"
 import Label from "../components/Label"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import { PanelImplProps } from "../components/Panel"
@@ -22,7 +22,7 @@ const RobotSwitchPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 <fieldset>
                     {robots.map((name: string, i: number) => (
                         // fixme: new checkbox
-                        <StatefulCheckbox
+                        <Checkbox
                             label={name}
                             checked={i == selected}
                             className="whitespace-nowrap"

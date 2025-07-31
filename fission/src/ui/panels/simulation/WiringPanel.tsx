@@ -1,4 +1,4 @@
-import { Button, Checkbox, Grid, Stack } from "@mui/material"
+import { Button, Grid, Stack } from "@mui/material"
 import {
     type Connection,
     type FinalConnectionState,
@@ -34,7 +34,7 @@ import { useUIContext } from "../../helpers/UIProviderHelpers"
 import WiringNode from "./WiringNode"
 import ScrollView from "@/ui/components/ScrollView"
 import type { PanelImplProps } from "@/ui/components/Panel"
-import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 
 type ConfigComponentProps = {
@@ -77,7 +77,7 @@ function generateGraph(
                 title = "Robot IO"
                 onEdit = () => setConfigState("robotIO")
                 onRefresh = () => {
-                    SimConfig.RefreshRobotIO(simConfig)
+                    SimConfig.refreshRobotIO(simConfig)
                     refreshGraph()
                 }
                 break
@@ -158,7 +158,7 @@ function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                     <Label size="sm">Output</Label>
                     <ScrollView>
                         {simOut.sort(handleInfoDisplayCompare).map(handle => (
-                            <StatefulCheckbox
+                            <Checkbox
                                 label={`${handle.displayName}`}
                                 key={handle.id}
                                 checked={handle.enabled}
@@ -173,7 +173,7 @@ function SimIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
                     <Label size="sm">Input</Label>
                     <ScrollView>
                         {simIn.sort(handleInfoDisplayCompare).map(handle => (
-                            <StatefulCheckbox
+                            <Checkbox
                                 label={`${handle.displayName}`}
                                 key={handle.id}
                                 checked={handle.enabled}
@@ -200,13 +200,13 @@ function RobotIoComponent({ setConfigState, simConfig }: ConfigComponentProps) {
         for (const [_k, v] of Object.entries(simConfig.handles)) {
             if (v.nodeId !== NODE_ID_ROBOT_IO) return []
 
-            /* label=`${v.displayName}` */
             const checkbox = (
                 <Checkbox
+                    label={v.displayName}
                     key={v.id}
-                    defaultChecked={v.enabled}
-                    onChange={(_, checked) => {
-                        v.enabled = checked
+                    checked={v.enabled}
+                    onClick={enabled => {
+                        v.enabled = enabled
                     }}
                 />
             )

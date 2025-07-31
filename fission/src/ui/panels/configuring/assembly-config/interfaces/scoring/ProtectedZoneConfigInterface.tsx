@@ -17,7 +17,18 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material"
+import {
+    Button,
+    Checkbox,
+    FormControl,
+    InputLabel,
+    ListItemText,
+    MenuItem,
+    OutlinedInput,
+    Select,
+    Stack,
+    TextField,
+} from "@mui/material"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { ContactType } from "@/mirabuf/ZoneTypes"
@@ -150,10 +161,10 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     }, [selectedField, selectedZone, name, alliance, points, contactType, activeDuring, selectedNode, saveAllZones])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -295,11 +306,14 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                         )
                     }}
                     value={activeDuring}
+                    input={<OutlinedInput label="Contact Type" />}
+                    renderValue={selected => selected.join(", ")}
                     multiple
                 >
                     {MATCH_MODE_OPTIONS.map(opt => (
                         <MenuItem key={opt} value={opt}>
-                            {opt}
+                            <Checkbox checked={activeDuring.includes(opt)} />
+                            <ListItemText primary={opt} />
                         </MenuItem>
                     ))}
                 </Select>
@@ -310,7 +324,6 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 <InputLabel id="contact-type-label">Contact Type</InputLabel>
                 <Select
                     labelId="contact-type-label"
-                    label="Contact Type"
                     onChange={e => {
                         setContactType(e.target.value as ContactType)
                     }}

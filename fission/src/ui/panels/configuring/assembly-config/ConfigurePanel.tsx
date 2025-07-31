@@ -140,6 +140,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
         const settings = configurePanelSettings
 
+        console.log(InputSchemeManager.allInputSchemes)
+
         if (settings) {
             setConfigMode(settings.configMode)
             if (settings.selectedAssembly) {

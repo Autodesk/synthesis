@@ -11,7 +11,6 @@ import ContextMenu from "./ui/components/ContextMenu.tsx"
 import GlobalUIComponent from "./ui/components/GlobalUIComponent.tsx"
 import ProgressNotifications from "./ui/components/ProgressNotification.tsx"
 import SceneOverlay from "./ui/components/SceneOverlay.tsx"
-import Skybox from "./ui/components/Skybox.tsx"
 import WPILibConnectionStatus from "./ui/components/WPILibConnectionStatus.tsx"
 import MainMenuModal from "./ui/modals/MainMenuModal.tsx"
 import { StateProvider } from "./ui/StateProvider.tsx"
@@ -73,7 +72,6 @@ function Synthesis() {
         <AnimatePresence key={"animate-presence"}>
             <ThemeProvider>
                 <SnackbarProvider maxSnack={5} anchorOrigin={{ horizontal: "right", vertical: "bottom" }}>
-                    <Skybox key={"skybox"} />
                     <StateProvider>
                         <UIProvider>
                             <GlobalUIComponent />

@@ -38,6 +38,7 @@ const SceneOverlay: React.FC = () => {
                     padding: "8px",
                     whiteSpace: "nowrap",
                     transform: "translate(-50%, -100%)",
+                    color: "white",
                 }}
             >
                 <Label size="md">{x.text()}</Label>

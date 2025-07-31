@@ -19,7 +19,7 @@ import {
 import { deltaFieldTransformsPhysicalProp as deltaFieldTransformsVisualProperties } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import { Button, TextField } from "@mui/material"
-import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Checkbox from "@/ui/components/Checkbox"
 
 /**
  * Saves ejector configuration to selected field.
@@ -151,10 +151,10 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     }, [selectedField, selectedZone, name, alliance, points, destroy, persistent, selectedNode, saveAllZones])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -289,11 +289,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 /> */}
 
             {/** When checked, points will stay even when a gamepiece leaves the zone */}
-            <StatefulCheckbox
-                label="Persistent Points"
-                checked={persistent}
-                onClick={checked => setPersistent(checked)}
-            />
+            <Checkbox label="Persistent Points" checked={persistent} onClick={checked => setPersistent(checked)} />
 
             {/** Switch between transform control modes */}
 

@@ -24,6 +24,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
 
             InputSchemeManager.addCustomScheme(scheme)
             InputSchemeManager.saveSchemes()
+            console.log(InputSchemeManager.allInputSchemes)
 
             setConfigurationType("INPUTS")
             setSelectedScheme(scheme)

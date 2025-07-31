@@ -120,10 +120,10 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     }, [selectedRobot, selectedNode, zoneSize, showZoneAlways, maxPieces, animationDuration])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -245,7 +245,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
     )
 
     return (
-        <>
+        <Stack direction="column">
             {/* Button for user to select the parent node */}
             <SelectButton
                 placeholder="Select parent node"
@@ -374,7 +374,7 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             >
                 Reset
             </Button>
-        </>
+        </Stack>
     )
 }
 

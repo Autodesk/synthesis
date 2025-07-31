@@ -7,7 +7,7 @@ import { GiPerspectiveDiceSixFacesOne } from "react-icons/gi"
 import Label from "../components/Label"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import { PanelImplProps } from "../components/Panel"
-import StatefulCheckbox from "../components/StatefulCheckbox"
+import Checkbox from "../components/Checkbox"
 
 export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { mode, setMode, primaryColor, secondaryColor, setPrimaryColor, setSecondaryColor } = useThemeContext()
@@ -64,7 +64,7 @@ export const ThemeEditorPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     }}
                 />
             </Stack>
-            <StatefulCheckbox
+            <Checkbox
                 label="Dark Mode"
                 checked={mode === "dark"}
                 onClick={checked => setMode(checked ? "dark" : "light")}

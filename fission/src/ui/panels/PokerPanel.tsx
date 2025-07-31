@@ -5,7 +5,7 @@ import { Stack } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import StatefulSlider from "../components/StatefulSlider"
-import StatefulCheckbox from "../components/StatefulCheckbox"
+import Checkbox from "../components/Checkbox"
 import { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 
@@ -99,7 +99,7 @@ const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
 
     return (
         <Stack>
-            <StatefulCheckbox label="Punch?" checked={punch} onClick={setPunch} />
+            <Checkbox label="Punch?" checked={punch} onClick={setPunch} />
             <StatefulSlider
                 label="Punch Force"
                 min={PUNCH_FORCE_MIN}
@@ -107,7 +107,7 @@ const PokerPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 defaultValue={punchForce}
                 onChange={x => setPunchForce(x as number)}
             />
-            <StatefulCheckbox label="Mark?" checked={mark} onClick={setMark} />
+            <Checkbox label="Mark?" checked={mark} onClick={setMark} />
             <StatefulSlider
                 label="Mark Radius"
                 min={MARK_RADIUS_MIN}

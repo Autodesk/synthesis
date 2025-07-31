@@ -33,7 +33,7 @@ type CheckboxProps = {
     tooltip?: string
 }
 
-const StatefulCheckbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabel, onClick, tooltip }) => {
+const Checkbox: React.FC<CheckboxProps> = ({ label, className, checked, hideLabel, onClick, tooltip }) => {
     return (
         <Stack direction="row" justifyContent="space-between" alignItems="center" textAlign="center">
             {hideLabel ? null : tooltip ? (
@@ -53,4 +53,4 @@ const StatefulCheckbox: React.FC<CheckboxProps> = ({ label, className, checked, 
     )
 }
 
-export default StatefulCheckbox
+export default Checkbox

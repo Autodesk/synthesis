@@ -11,7 +11,7 @@ import type { ModalImplProps } from "@/ui/components/Modal"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import RoboRIOModal from "../RoboRIOModal"
 import ScrollView from "@/ui/components/ScrollView"
-import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import { SimType } from "@/systems/simulation/wpilib_brain/WPILibTypes"
 
@@ -61,7 +61,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     <Label size="md">Ports</Label>
                     <ScrollView>
                         {devices.map(([p, _]) => (
-                            <StatefulCheckbox
+                            <Checkbox
                                 label={p.toString()}
                                 key={p}
                                 checked={false}
@@ -82,7 +82,7 @@ const RCConfigCANGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     <Label size="md">Signals</Label>
                     <ScrollView>
                         {drivers.map((driver, idx) => (
-                            <StatefulCheckbox
+                            <Checkbox
                                 label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
                                 key={`${driver.constructor.name}-${idx}`}
                                 checked={false}

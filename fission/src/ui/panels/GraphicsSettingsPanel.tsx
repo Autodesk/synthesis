@@ -6,7 +6,7 @@ import { useEffect, useState } from "react"
 import { PanelImplProps } from "../components/Panel"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import StatefulSlider from "../components/StatefulSlider"
-import StatefulCheckbox from "../components/StatefulCheckbox"
+import Checkbox from "../components/Checkbox"
 import Label from "../components/Label"
 
 const MIN_LIGHT_INTENSITY = 1
@@ -67,7 +67,7 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 }}
                 step={0.25}
             />
-            <StatefulCheckbox
+            <Checkbox
                 label="Fancy Shadows"
                 checked={fancyShadows}
                 onClick={checked => {
@@ -158,7 +158,7 @@ const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 </>
             )}
             <Label size="sm">Requires Browser Refresh</Label>
-            <StatefulCheckbox
+            <Checkbox
                 label="Anti-Aliasing"
                 checked={antiAliasing}
                 onClick={checked => {

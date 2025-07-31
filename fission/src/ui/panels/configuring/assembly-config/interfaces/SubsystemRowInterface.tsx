@@ -9,7 +9,7 @@ import SliderDriver from "@/systems/simulation/driver/SliderDriver"
 import WheelDriver from "@/systems/simulation/driver/WheelDriver"
 import World from "@/systems/World"
 import StatefulSlider from "@/ui/components/StatefulSlider"
-import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 
 type SubsystemRowProps = {
@@ -120,7 +120,7 @@ const SubsystemRowInterface: React.FC<SubsystemRowProps> = ({ robot, driver, seq
                             />
                         ))}
                     {sequentialBehavior && (
-                        <StatefulCheckbox
+                        <Checkbox
                             label="Invert Motor"
                             checked={sequentialBehavior.inverted}
                             onClick={checked => {

@@ -72,10 +72,10 @@ const ManageZonesInterface: React.FC<ScoringZonesProps> = ({ selectedField, init
     }, [zones, selectedField])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 

@@ -5,6 +5,7 @@ import { MdFitScreen, MdZoomInMap, MdZoomOutMap } from "react-icons/md"
 import { FaPlus } from "react-icons/fa6"
 import { Button } from "@mui/material"
 
+// This is required for the onClick types to work nicely with the react flow functions
 function FlowControlButton({ onClick, children }: PropsWithChildren<{ onClick?: () => void }>) {
     return <Button onClick={() => onClick?.()}>{children}</Button>
 }

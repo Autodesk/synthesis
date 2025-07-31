@@ -5,7 +5,7 @@ import InputSystem from "@/systems/input/InputSystem"
 import { EMPTY_MODIFIER_STATE, type ModifierState } from "@/systems/input/InputTypes"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 import type { KeyCode } from "@/systems/input/KeyboardTypes"
-import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 import ButtonInput from "@/systems/input/inputs/ButtonInput"
 import AxisInput from "@/systems/input/inputs/AxisInput"
@@ -308,7 +308,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                               JoystickAxisSelection()}
 
                         {/* // Button to switch between two buttons and a joystick axis */}
-                        <StatefulCheckbox
+                        <Checkbox
                             label="Use Gamepad Buttons"
                             checked={useGamepadButtons}
                             onClick={checked => {
@@ -317,7 +317,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                             }}
                         />
                         {/* // Button to invert the joystick axis */}
-                        <StatefulCheckbox
+                        <Checkbox
                             label="Invert Joystick"
                             checked={input.joystickInverted}
                             onClick={checked => {
@@ -335,7 +335,7 @@ const EditInputInterface: React.FC<EditInputProps> = ({ input, useGamepad, useTo
                     <div key={input.inputName}>
                         {TouchControlsAxisSelection()}
                         {/* // Button to invert the joystick axis */}
-                        <StatefulCheckbox
+                        <Checkbox
                             label="Invert Joystick"
                             checked={input.joystickInverted}
                             onClick={checked => {

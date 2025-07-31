@@ -69,10 +69,10 @@ const ManageZonesInterface: React.FC<ProtectedZonesProps> = ({ selectedField, in
     }, [zones, selectedField])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 

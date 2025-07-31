@@ -166,10 +166,10 @@ const SequentialBehaviorsInterface: React.FC<SequentialBehaviorProps> = ({ selec
     }, [behaviors, selectedRobot])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 

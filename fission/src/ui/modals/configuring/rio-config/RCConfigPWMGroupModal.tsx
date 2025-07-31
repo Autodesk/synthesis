@@ -12,7 +12,7 @@ import RoboRIOModal from "../RoboRIOModal"
 import { Stack, TextField } from "@mui/material"
 import { Box } from "@mui/system"
 import ScrollView from "@/ui/components/ScrollView"
-import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 
 const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
@@ -62,7 +62,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     <Label size="md">Ports</Label>
                     <ScrollView>
                         {devices.map(([p, _]) => (
-                            <StatefulCheckbox
+                            <Checkbox
                                 label={p}
                                 key={p}
                                 checked={false}
@@ -82,7 +82,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                     <Label size="md">Signals</Label>
                     <ScrollView>
                         {drivers.map((driver, idx) => (
-                            <StatefulCheckbox
+                            <Checkbox
                                 label={`${driver.constructor.name} ${driver.info?.name && "(" + driver.info!.name + ")"}`}
                                 key={`${driver.constructor.name}-${idx}`}
                                 checked={false}

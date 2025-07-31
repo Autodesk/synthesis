@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
+import Checkbox from "@/components/Checkbox.tsx"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import { Divider, Stack } from "@mui/material"
 import EditInputInterface from "./EditInputInterface"
@@ -21,10 +21,10 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     }, [])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 
@@ -51,7 +51,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
     return (
         <>
             {/** Toggle the input scheme between controller and keyboard mode */}
-            <StatefulCheckbox
+            <Checkbox
                 label="Use Controller"
                 checked={useGamepad}
                 onClick={val => {
@@ -64,7 +64,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                 }}
                 tooltip="Supported controllers: Xbox one, Xbox 360."
             />
-            <StatefulCheckbox
+            <Checkbox
                 label="Use Touch Controls"
                 checked={useTouchControls}
                 onClick={val => {

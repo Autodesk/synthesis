@@ -104,10 +104,10 @@ const ConfigureShotTrajectoryInterface: React.FC<ConfigEjectorProps> = ({ select
     }, [selectedRobot, selectedNode, ejectorVelocity, ejectOrder])
 
     useEffect(() => {
-        ConfigurationSavedEvent.Listen(saveEvent)
+        ConfigurationSavedEvent.listen(saveEvent)
 
         return () => {
-            ConfigurationSavedEvent.RemoveListener(saveEvent)
+            ConfigurationSavedEvent.removeListener(saveEvent)
         }
     }, [saveEvent])
 

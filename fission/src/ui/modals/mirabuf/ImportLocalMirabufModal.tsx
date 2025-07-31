@@ -9,7 +9,7 @@ import InitialConfigPanel from "@/ui/panels/configuring/initial-config/InitialCo
 import ImportMirabufPanel from "@/ui/panels/mirabuf/ImportMirabufPanel"
 import { CloseType, useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { Button, Stack, styled, ToggleButton, ToggleButtonGroup } from "@mui/material"
-import { type ChangeEvent, useEffect, useReducer, useState } from "react"
+import { type ChangeEvent, useEffect, useState } from "react"
 
 const VisuallyHiddenInput = styled("input")({
     clip: "rect(0 0 0 0)",

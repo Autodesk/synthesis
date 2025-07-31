@@ -5,7 +5,7 @@ import { ToggleButton, ToggleButtonGroup } from "@mui/material"
 import World from "@/systems/World"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import buttonPressSound from "@/assets/sound-files/ButtonPress.mp3"
-import StatefulCheckbox from "@/ui/components/StatefulCheckbox"
+import Checkbox from "@/ui/components/Checkbox"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { PanelImplProps } from "@/ui/components/Panel"
 
@@ -20,7 +20,7 @@ function OrbitSettings({ controls }: OrbitSettingsProps) {
         controls.locked = locked
     }, [controls, locked])
 
-    return <StatefulCheckbox label="Lock to Robot" checked={locked} onClick={setLocked} />
+    return <Checkbox label="Lock to Robot" checked={locked} onClick={setLocked} />
 }
 
 const CameraSelectionPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
