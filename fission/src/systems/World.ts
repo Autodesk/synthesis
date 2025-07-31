@@ -87,7 +87,6 @@ class World {
         World._clock = new THREE.Clock()
         World._isAlive = true
 
-
         World._sceneRenderer = new SceneRenderer()
         World._physicsSystem = new PhysicsSystem()
         World._simulationSystem = new SimulationSystem()

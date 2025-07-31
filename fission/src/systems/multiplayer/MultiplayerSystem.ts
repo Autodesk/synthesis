@@ -6,25 +6,24 @@ import type { ClientInfo, CollisionData, InitData, Message, UpdateObjectData as 
 
 const COLLISION_TIMEOUT = 500
 
-
 class MultiplayerSystem {
     private readonly client: Peer
     private readonly connections: Map<string, DataConnection> = new Map()
     readonly roomId: string
     readonly clientId: string
 
-    private readonly clientToInfoMap:Map<string, ClientInfo> = new Map()
+    private readonly clientToInfoMap: Map<string, ClientInfo> = new Map()
     private readonly clientToRobotMap: Map<string, number | null> = new Map() // clientId -> sceneObjectKey
 
     readonly info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
 
-    public static async create(roomId: string, displayName:string, isHost:boolean): Promise<MultiplayerSystem> {
+    public static async create(roomId: string, displayName: string, isHost: boolean): Promise<MultiplayerSystem> {
         const clientId = await generateId(roomId)
         return new MultiplayerSystem(roomId, clientId, displayName, isHost)
     }
 
-    private constructor(roomId: string, clientId: string, displayName:string, isHost: boolean = false) {
+    private constructor(roomId: string, clientId: string, displayName: string, isHost: boolean = false) {
         this.roomId = roomId
         this.clientId = clientId
         this.info = { clientId: this.clientId, displayName: displayName, isHost, creationTime: Date.now() }
@@ -117,7 +116,12 @@ class MultiplayerSystem {
             // TODO handle host transition
 
             if (this._host == null) {
-                const newHost = this._peers.reduce((prev, current) => (this.clientToInfoMap.get(prev.peer)?.creationTime ?? Infinity) < (this.clientToInfoMap.get(current.peer)?.creationTime ?? Infinity) ? prev : current)
+                const newHost = this._peers.reduce((prev, current) =>
+                    (this.clientToInfoMap.get(prev.peer)?.creationTime ?? Infinity) <
+                    (this.clientToInfoMap.get(current.peer)?.creationTime ?? Infinity)
+                        ? prev
+                        : current
+                )
                 this.clientToInfoMap.get(newHost.peer)!.isHost = true // TODO: enforce that everybody agrees
             }
 
@@ -203,7 +207,8 @@ class MultiplayerSystem {
     }
 
     async broadcast(message: Message) {
-        return await Promise.all(this._peers.map((peer) => peer.send(message)))
+        console.log(`New Message: ${message.type}`)
+        return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
     getClientSceneObjectId(): number | null {
@@ -218,19 +223,27 @@ class MultiplayerSystem {
         return [...this.connections.values()]
     }
     private get _host() {
-        return this._peers.find((conn) => this.clientToInfoMap.get(conn.peer)?.isHost)
+        return this._peers.find(conn => this.clientToInfoMap.get(conn.peer)?.isHost)
     }
 
     get peerInfo(): ClientInfo[] {
-        return this.peerIDs.map((peerId) => (this.clientToInfoMap.get(peerId) ?? {clientId:peerId, displayName:peerId, isHost:false, creationTime:Infinity}))
+        return this.peerIDs.map(
+            peerId =>
+                this.clientToInfoMap.get(peerId) ?? {
+                    clientId: peerId,
+                    displayName: peerId,
+                    isHost: false,
+                    creationTime: Infinity,
+                }
+        )
     }
 
-    get displayName():string {
+    get displayName(): string {
         return this.info.displayName
     }
 
     public destroy() {
-        this.connections.forEach((conn) => conn.close())
+        this.connections.forEach(conn => conn.close())
         this.connections.clear()
         this.client.destroy()
     }
@@ -262,27 +275,25 @@ async function createSha256Hash(msg: string) {
 export enum MultiplayerStateEventType {
     INIT,
     JOIN_ROOM,
-    PEER_CHANGE
+    PEER_CHANGE,
 }
 
 export class MultiplayerStateEvent extends Event {
-
-    private constructor(event:MultiplayerStateEventType) {
-        super(`MultiplayerStateChange${event}`);
+    private constructor(event: MultiplayerStateEventType) {
+        super(`MultiplayerStateChange${event}`)
     }
 
-    public static dispatch(eventType:MultiplayerStateEventType) {
+    public static dispatch(eventType: MultiplayerStateEventType) {
         const event = new MultiplayerStateEvent(eventType)
         window.dispatchEvent(event)
     }
 
-    public static addEventListener(eventType:MultiplayerStateEventType, cb:EventListenerOrEventListenerObject) {
+    public static addEventListener(eventType: MultiplayerStateEventType, cb: EventListenerOrEventListenerObject) {
         window.addEventListener(`MultiplayerStateChange${eventType}`, cb)
         return () => {
             window.removeEventListener(`MultiplayerStateChange${eventType}`, cb)
         }
     }
-
 }
 
 export default MultiplayerSystem

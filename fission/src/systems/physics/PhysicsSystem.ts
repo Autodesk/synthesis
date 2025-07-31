@@ -1288,40 +1288,42 @@ class PhysicsSystem extends WorldSystem {
             )
 
             const clientSceneObjectId = World.multiplayerSystem.getClientSceneObjectId()
-            if (clientSceneObjectId == null) {
-                console.error("Client Scene Object not found")
-                return
-            }
-            const clientSceneObject = World.sceneRenderer.sceneObjects.get(clientSceneObjectId)! as MirabufSceneObject
-            const touchedBodies = clientSceneObject.mechanism.touchedBodies
-
-            const message: Message =
-                interObjectCollisions.length > 0
-                    ? {
-                          type: "collision",
-                          data: {
-                              // TODO We might not need to send over the entire physicsSystem, we might be able to just send over a more complete list of scene objects
-                              physicsSystem: this,
-                              sceneObjects: new Map(
-                                  [...World.sceneRenderer.sceneObjects].filter(
-                                      (x): x is [number, MirabufSceneObject] => x[1] instanceof MirabufSceneObject
-                                  )
-                              ),
-                          },
-                      }
-                    : {
-                          type: "update",
-                          data: touchedBodies.map(([sceneObjectKey, mechanism]) => {
-                              return {
-                                  sceneObjectKey,
-                                  mechanism,
-                              }
-                          }),
-                      }
-            World.multiplayerSystem?.broadcast(message)
-
             if (clientSceneObjectId != null) {
-                clientSceneObject.mechanism.touchedBodies = []
+                // console.error("Client Scene Object not found")
+
+                const clientSceneObject = World.sceneRenderer.sceneObjects.get(
+                    clientSceneObjectId
+                )! as MirabufSceneObject
+                const touchedBodies = clientSceneObject.mechanism.touchedBodies
+
+                const message: Message =
+                    interObjectCollisions.length > 0
+                        ? {
+                              type: "collision",
+                              data: {
+                                  // TODO We might not need to send over the entire physicsSystem, we might be able to just send over a more complete list of scene objects
+                                  physicsSystem: this,
+                                  sceneObjects: new Map(
+                                      [...World.sceneRenderer.sceneObjects].filter(
+                                          (x): x is [number, MirabufSceneObject] => x[1] instanceof MirabufSceneObject
+                                      )
+                                  ),
+                              },
+                          }
+                        : {
+                              type: "update",
+                              data: touchedBodies.map(([sceneObjectKey, mechanism]) => {
+                                  return {
+                                      sceneObjectKey,
+                                      mechanism,
+                                  }
+                              }),
+                          }
+                World.multiplayerSystem?.broadcast(message)
+
+                if (clientSceneObjectId != null) {
+                    clientSceneObject.mechanism.touchedBodies = []
+                }
             }
         }
 
