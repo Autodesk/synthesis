@@ -77,7 +77,7 @@ class World {
         }
     }
 
-    public static setMultiplayerSystem(multiplayerSystem: MultiplayerSystem) {
+    public static setMultiplayerSystem(multiplayerSystem?: MultiplayerSystem) {
         World._multiplayerSystem = multiplayerSystem
     }
 

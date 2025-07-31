@@ -9,9 +9,11 @@ import type {
     InitData,
     InitObjectData,
     Message,
-    UpdateObjectData as UpdateObjectData,
+    UpdateObjectData,
 } from "./types"
 import { mirabuf } from "@/proto/mirabuf"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts";
+import {globalAddToast, globalOpenModal} from "@/components/GlobalUIControls.ts";
 
 const COLLISION_TIMEOUT = 500
 
@@ -50,43 +52,59 @@ class MultiplayerSystem {
 
         this._client.on("open", async (id: string) => {
             console.log(`Broker connection opened: ID - ${id}`)
-            await this.connectToRoom()
+            const peerCount = await this.connectToRoom()
+
+            if (peerCount == 0 && !isHost) {
+                globalAddToast("warning", `Could not find room`, this.roomId)
+                this.destroy()
+                World.setMultiplayerSystem(undefined)
+                MultiplayerStateEvent.dispatch(MultiplayerStateEventType.JOIN_ROOM)
+                globalOpenModal("multiplayer-lobby")
+            }
         })
 
         this._client.on("connection", async conn => {
             console.log("Receiving Connection: ", conn.peer)
-            if (conn.metadata.authHash != (await createSha256Hash(this.roomId + conn.peer + this.clientId))) {
+            if (conn.metadata.authHash != (await createSha256Hash({roomId:this.roomId, establishedClientId:this.clientId, newClientId:conn.peer}))) {
                 conn.close()
                 console.warn("Blocking unauthorized connection from " + conn.peer)
                 return
             }
             this.setupConnectionHandlers(conn)
         })
+        window.multiplayer = this
     }
 
     async connectToRoom() {
-        const roomHash = await createSha256Hash(this.roomId)
+        const roomHash = await createSha256Hash({roomId:this.roomId})
 
         const peersPromise = new Promise<string[]>(resolve => this._client.listAllPeers(resolve))
         const peers = await peersPromise
 
         console.log(`Peers: ${peers}`)
 
-        await Promise.all(
+        const peerCount = await Promise.all(
             peers
-                .filter(peer => peer !== this.clientId && peer.split("-")[1] == roomHash)
+                .filter((peer) => peer !== this.clientId)
                 .map(async peer => {
+                    const idParts = peer.split("-")
+                    if (idParts[1] != roomHash) return false
+                    if (idParts[2] == await createSha256Hash({roomId:this.roomId, establishedClientId:idParts[1]})) return false
+
                     const conn = this._client.connect(peer, {
                         metadata: {
-                            authHash: await createSha256Hash(this.roomId + this.clientId + peer),
+                            authHash: await createSha256Hash({roomId:this.roomId, establishedClientId:peer, newClientId:this.clientId}),
                         },
                     })
                     this.setupConnectionHandlers(conn)
 
                     console.log(`Initiating Connection: ${peer}`)
+                    return true
                 })
-        )
+        ).then((res) => res.filter((success) => success).length)
+
         MultiplayerStateEvent.dispatch(MultiplayerStateEventType.JOIN_ROOM)
+        return peerCount
     }
 
     // Called by the host, initializes the world with some defined set of objects, robots can be spawned in later
@@ -257,7 +275,7 @@ class MultiplayerSystem {
     }
 
     get peerIDs(): string[] {
-        return Array.from(this._connections.keys())
+        return [...this._connections.keys()]
     }
 
     private get _peers() {
@@ -290,22 +308,28 @@ class MultiplayerSystem {
     }
 }
 
-const localStorageKey = "multiplayer_clientid"
 
-async function generateId(roomId: string): Promise<string> {
-    // Commented out to so I can test on the same device
-    let id = null
-    // (import.meta.env.DEV ? new URLSearchParams(window.location.search).get("uid") : undefined) ??
-    // window.localStorage.getItem(localStorageKey)
-    if (id == null) {
+async function generateId(roomId: string, forceRegen:boolean=false): Promise<string> {
+    let id =
+        (import.meta.env.DEV && new URLSearchParams(window.location.search).get("randomId")) ? undefined :
+        PreferencesSystem.getGlobalPreference("MultiplayerClientID")
+    if (!id || forceRegen) {
         id = `client_${Math.random().toString(36).substring(2, 9)}`
-        window.localStorage.setItem(localStorageKey, id)
+        PreferencesSystem.setGlobalPreference("MultiplayerClientID", id)
+        PreferencesSystem.savePreferences()
     }
-    return `${id}-${await createSha256Hash(roomId)}`
+    PreferencesSystem.savePreferences()
+    return `${id}-${await createSha256Hash({roomId})}-${await createSha256Hash({roomId, establishedClientId:id})}`
 }
 
-async function createSha256Hash(msg: string) {
-    const msgBuffer = new TextEncoder().encode(msg)
+
+interface HashableData {
+    roomId?: string
+    establishedClientId?:string
+    newClientId?:string
+}
+async function createSha256Hash({roomId, establishedClientId, newClientId}: HashableData) {
+    const msgBuffer = new TextEncoder().encode(`${roomId}${establishedClientId}${newClientId}`)
     const hashBuffer = await crypto.subtle.digest("SHA-256", msgBuffer)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     return hashArray

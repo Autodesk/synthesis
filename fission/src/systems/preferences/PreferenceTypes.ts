@@ -26,6 +26,8 @@ export type GlobalPreferences = {
     MuteAllSound: boolean
     SFXVolume: number
     ShowCenterOfMassIndicators: boolean
+    MultiplayerUsername: string
+    MultiplayerClientID: string
 }
 
 export type GlobalPreference = keyof GlobalPreferences
@@ -66,6 +68,8 @@ export const defaultGlobalPreferences: GlobalPreferences = {
     MuteAllSound: false,
     SFXVolume: 25,
     ShowCenterOfMassIndicators: false,
+    MultiplayerClientID: "",
+    MultiplayerUsername: ""
 }
 
 export type GraphicsPreferences = {

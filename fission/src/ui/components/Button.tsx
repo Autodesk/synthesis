@@ -57,19 +57,20 @@ const Button: React.FC<ButtonProps> = ({
             onClick={onClick}
             {...SoundPlayer.buttonSoundEffects()}
             className={`
-                ${colorOverrideClass || "bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] active:bg-right"}  
+                ${colorOverrideClass || `bg-gradient-to-r from-interactive-element-left via-interactive-element-right to-interactive-element-left bg-[length:200%_100%] ${!disabled && "active:bg-right"}`}  
                 ${sizeClassNames} 
                 rounded-sm 
                 font-semibold 
-                ${!disabled && "cursor-pointer"} 
+                ${disabled ?"cursor-not-allowed": "cursor-pointer"} 
                 duration-200 
                 border-none 
                 focus-visible:outline-0 
                 focus:outline-0 
-                transform 
-                transition-transform 
-                hover:scale-[1.03] 
-                active:scale-[1.06] 
+                transform  
+                transition-all
+                // ${disabled && "brightness-"}
+                ${!disabled && "hover:scale-[1.03]"}
+                ${!disabled && "active:scale-[1.06]"}
                 ${className || ""}
             `}
             id={id}

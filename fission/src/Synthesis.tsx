@@ -112,14 +112,16 @@ const Synthesis: React.FC = () => {
         id: "multiplayer-lobby",
         component: (
             <MultiplayerStartModal
-                key="multiplayer-start"
-                modalId="multiplayer-start"
+                key="multiplayer-lobby"
+                modalId="multiplayer-lobby"
                 startWorldCallback={async (name, room) => {
                     const isHost = room == null
                     if (room == null) {
                         room = Math.random().toString(10).substring(2, 8)
                         globalAddToast("info", "Room code", room)
                     }
+                    PreferencesSystem.setGlobalPreference("MultiplayerUsername", name)
+                    PreferencesSystem.savePreferences()
                     const multiplayerSystem = await MultiplayerSystem.create(room, name, isHost)
                     World.setMultiplayerSystem(multiplayerSystem)
                     await startMainLoop()
