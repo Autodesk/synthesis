@@ -31,7 +31,6 @@ class RobotPositionTracker {
             rootTransform.decompose(rootPosition, rootRotation, rootScale)
 
             if (rootPosition.y < this._mapBoundaryY) {
-                console.log(`Robot fell off the map: ${robot.assemblyName}`)
                 SimulationSystem.robotPenalty(robot, this._offMapPenalty, "Robot fell off the map")
 
                 // TODO: Once driver station is implemented, we should reset the robot to the driver station position
