@@ -40,6 +40,7 @@ import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import TaskStatus from "@/util/TaskStatus"
 import { Message } from "@/systems/multiplayer/types"
+import { mirabuf } from "@/proto/mirabuf"
 
 interface ItemCardProps {
     id: string
@@ -106,8 +107,17 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         World.sceneRenderer.registerSceneObject(x)
 
                         if (World.multiplayerSystem != null) {
-                            const message: Message = { type: "newObject", data: x }
+                            const message: Message = {
+                                type: "newObject",
+                                data: {
+                                    sceneObjectKey: x.id,
+                                    // biome-ignore lint: We're using this for type safety
+                                    assembly: mirabuf.Assembly.encode(assembly).finish() as Uint8Array & { __: "" },
+                                },
+                            }
                             World.multiplayerSystem?.broadcast(message)
+
+                            World.multiplayerSystem.newClientSceneObject(x.id)
                         }
 
                         progressHandle.done()

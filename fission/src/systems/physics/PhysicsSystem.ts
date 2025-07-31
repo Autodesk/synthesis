@@ -1288,6 +1288,7 @@ class PhysicsSystem extends WorldSystem {
             )
 
             const clientSceneObjectId = World.multiplayerSystem.getClientSceneObjectId()
+            console.log(`ClientSceneObjectId: ${clientSceneObjectId}`)
             if (clientSceneObjectId != null) {
                 // console.error("Client Scene Object not found")
 
