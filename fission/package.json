@@ -23,10 +23,10 @@
     "style:fix": "bun run fmt:fix && bun run lint:fix",
     "assetpack": "git lfs pull && tar -xf public/assetpack.zip -C public/",
     "playwright:install": "bun x playwright install",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make",
-    "publish": "electron-forge publish"
+    "electron:start": "electron-forge start",
+    "electron:package": "electron-forge package",
+    "electron:make": "electron-forge make",
+    "electron:publish": "electron-forge publish"
   },
   "dependencies": {
     "@azaleacolburn/jolt-physics": "^0.31.2",
