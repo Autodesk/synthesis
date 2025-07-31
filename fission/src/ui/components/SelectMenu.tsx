@@ -166,6 +166,7 @@ const SelectMenu: React.FC<SelectMenuProps> = ({
                 </Stack>
             </Stack>
             <Divider />
+            {Spacer(10)}
 
             {selectedOption === undefined && (
                 <>

@@ -56,7 +56,7 @@ const Scoreboard: React.FC = () => {
                     <Stack
                         direction="column"
                         className="items-center justify-center w-20 h-20 rounded-lg"
-                        sx={{ background: "#ff0000" }}
+                        sx={{ background: "#ff0000", color: "#fff" }}
                     >
                         <Label size="sm">RED</Label>
                         <Label size="lg">{redScore}</Label>
@@ -64,7 +64,7 @@ const Scoreboard: React.FC = () => {
                     <Stack
                         direction="column"
                         className="items-center justify-center w-20 h-20 rounded-lg"
-                        sx={{ background: "#0000ff" }}
+                        sx={{ background: "#0000ff", color: "#fff" }}
                     >
                         <Label size="sm">BLUE</Label>
                         <Label size="lg">{blueScore}</Label>

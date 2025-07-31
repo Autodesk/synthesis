@@ -1,4 +1,4 @@
-import { MenuItem, Select } from "@mui/material"
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -50,18 +50,22 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     }, [])
 
     return (
-        <Select
-            label={"Type"}
-            onChange={e => {
-                setType(e.target.value as DeviceType)
-            }}
-        >
-            {["PWM", "CAN", "Encoder"].map(t => (
-                <MenuItem key={t} value={t}>
-                    {t}
-                </MenuItem>
-            ))}
-        </Select>
+        <FormControl fullWidth>
+            <InputLabel id="device-type">Type</InputLabel>
+            <Select
+                labelId="device-type"
+                label={"Type"}
+                onChange={e => {
+                    setType(e.target.value as DeviceType)
+                }}
+            >
+                {["PWM", "CAN", "Encoder"].map(t => (
+                    <MenuItem key={t} value={t}>
+                        {t}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
     )
 }
 

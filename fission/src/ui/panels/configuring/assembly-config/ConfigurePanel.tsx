@@ -222,6 +222,8 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         "Adjust position of robot relative to field."
                     ),
 
+                    new ConfigModeSelectionOption("Drivetrain", ConfigMode.DRIVETRAIN, "Sets the drivetrain type."),
+
                     new ConfigModeSelectionOption(
                         "Intake",
                         ConfigMode.INTAKE,
@@ -247,7 +249,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     ),
 
                     new ConfigModeSelectionOption(
-                        "Alliance",
+                        "Alliance / Station",
                         ConfigMode.ALLIANCE,
                         "Set the robot's alliance color for matches. (red or blue)"
                     ),

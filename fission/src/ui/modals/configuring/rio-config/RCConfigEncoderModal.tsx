@@ -1,4 +1,4 @@
-import { MenuItem, Select, TextField } from "@mui/material"
+import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -56,20 +56,34 @@ const RCConfigEncoderModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
         <>
             <Label size="sm">Name</Label>
             <TextField placeholder="..." className="w-full" onChange={e => setName(e.target.value)} />
-            <Select label="CAN Encoders" onChange={e => setSelectedDevice(e.target.value as string)}>
-                {devices.map(d => (
-                    <MenuItem key={`encoder-type-${d[0]}`} value={d[0]}>
-                        {d[0]}
-                    </MenuItem>
-                ))}
-            </Select>
-            <Select label="Stimuli" onChange={e => setSelectedStimulus(stimMap.get(e.target.value as string))}>
-                {[...stimMap.keys()].map(s => (
-                    <MenuItem key={`stim-type-${s}`} value={s}>
-                        {s}
-                    </MenuItem>
-                ))}
-            </Select>
+            <FormControl fullWidth>
+                <InputLabel id="can-encoders-label">CAN Encoders</InputLabel>
+                <Select
+                    labelId="can-encoders-label"
+                    label="CAN Encoders"
+                    onChange={e => setSelectedDevice(e.target.value as string)}
+                >
+                    {devices.map(d => (
+                        <MenuItem key={`encoder-type-${d[0]}`} value={d[0]}>
+                            {d[0]}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+            <FormControl fullWidth>
+                <InputLabel id="stimuli-label">Stimuli</InputLabel>
+                <Select
+                    labelId="stimuli-label"
+                    label="Stimuli"
+                    onChange={e => setSelectedStimulus(stimMap.get(e.target.value as string))}
+                >
+                    {[...stimMap.keys()].map(s => (
+                        <MenuItem key={`stim-type-${s}`} value={s}>
+                            {s}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
         </>
     )
 }

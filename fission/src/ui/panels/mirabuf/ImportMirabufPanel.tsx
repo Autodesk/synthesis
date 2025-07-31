@@ -515,7 +515,14 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
                 </AccordionDetails>
             </Accordion>
             <Box alignSelf={"center"}>
-                <Button onClick={() => openModal(<ImportLocalMirabufModal />)}>Import from File</Button>
+                <Button
+                    onClick={() => {
+                        openModal(<ImportLocalMirabufModal />)
+                        closePanel(panel!.id, CloseType.Overwrite)
+                    }}
+                >
+                    Import from File
+                </Button>
             </Box>
         </Stack>
     )

@@ -1,5 +1,5 @@
 import { IconButton } from "@mui/material"
-import CloseIcon from '@mui/icons-material/Close'
+import CloseIcon from "@mui/icons-material/Close"
 import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
@@ -39,6 +39,11 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         cancelText: "Cancel",
     } as UIScreenProps
 
+    const DEFAULT_MODAL_PROPS = {
+        ...DEFAULT_PROPS,
+        allowClickAway: true,
+    }
+
     const DEFAULT_PANEL_PROPS = {
         ...DEFAULT_PROPS,
         position: "center",
@@ -57,7 +62,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
                 parent,
                 content,
                 props: {
-                    ...DEFAULT_PROPS,
+                    ...DEFAULT_MODAL_PROPS,
                     ...props,
                 },
             } as Modal<T>
@@ -153,11 +158,14 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         })
     }, [])
 
-    const snackbarAction = useCallback((snackbarId: SnackbarKey) => (
-        <IconButton onClick={() => closeSnackbar(snackbarId)}>
-            <CloseIcon />
-        </IconButton>
-    ), [])
+    const snackbarAction = useCallback(
+        (snackbarId: SnackbarKey) => (
+            <IconButton onClick={() => closeSnackbar(snackbarId)}>
+                <CloseIcon />
+            </IconButton>
+        ),
+        []
+    )
 
     const addToast = useCallback(
         (variant: VariantType, ...contents: SnackbarMessage[]) => {

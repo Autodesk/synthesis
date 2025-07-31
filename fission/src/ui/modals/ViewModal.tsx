@@ -1,4 +1,4 @@
-import { MenuItem, Select } from "@mui/material"
+import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 import type React from "react"
 import { useEffect, useState } from "react"
 import type { ModalImplProps } from "../components/Modal"
@@ -19,19 +19,23 @@ const ViewModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     }, [modal, view])
 
     return (
-        <Select
-            value={view}
-            onChange={e => {
-                setView(e.target.value as ViewType)
-            }}
-            label={"Camera View"}
-        >
-            {["Orbit", "Freecam", "Overview", "Driver Station"].map(opt => (
-                <MenuItem key={opt} value={opt}>
-                    {opt}
-                </MenuItem>
-            ))}
-        </Select>
+        <FormControl fullWidth>
+            <InputLabel id="camera-view-label">Camera View</InputLabel>
+            <Select
+                value={view}
+                onChange={e => {
+                    setView(e.target.value as ViewType)
+                }}
+                labelId="camera-view-label"
+                label={"Camera View"}
+            >
+                {["Orbit", "Freecam", "Overview", "Driver Station"].map(opt => (
+                    <MenuItem key={opt} value={opt}>
+                        {opt}
+                    </MenuItem>
+                ))}
+            </Select>
+        </FormControl>
     )
 }
 

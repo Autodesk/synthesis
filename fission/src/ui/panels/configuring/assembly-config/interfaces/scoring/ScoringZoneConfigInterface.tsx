@@ -291,7 +291,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             {/** When checked, points will stay even when a gamepiece leaves the zone */}
             <StatefulCheckbox
                 label="Persistent Points"
-                checked={selectedZone.persistentPoints}
+                checked={persistent}
                 onClick={checked => setPersistent(checked)}
             />
 

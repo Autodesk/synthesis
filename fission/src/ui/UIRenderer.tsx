@@ -10,7 +10,7 @@ export const UIRenderer: React.FC = () => {
 
     return (
         <>
-            {PreferencesSystem.getGlobalPreference("RenderScoreboard") && (<Scoreboard />)}
+            {PreferencesSystem.getGlobalPreference("RenderScoreboard") && <Scoreboard />}
             <div id="panel-container" className="relative pointer-events-none w-[100vw] h-[100vh]">
                 {panels.map((p, _i) => (
                     <Panel key={`panel-${p.id}`} panel={p}>

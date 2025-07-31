@@ -18,11 +18,12 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
     const { closeModal } = useUIContext()
     const props = modal.props
     const [_, refresh] = useState(false)
+    console.log(props.configured)
 
     // biome-ignore lint/correctness/useExhaustiveDependencies: to refresh on configure
     useEffect(() => {
         refresh(x => !x)
-    }, [modal.props.configured])
+    }, [modal.props.configured, modal.props.hideAccept])
 
     return (
         <MUIModal
@@ -47,14 +48,14 @@ export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => 
                         if (React.isValidElement(child)) return React.cloneElement(child, { modal, parent })
                     })}
                 </CardContent>
-                {(props.hideCancel === false || props.hideAccept === false) && (
+                {(!props.hideCancel || !props.hideAccept) && (
                     <CardActions>
-                        {props.hideCancel === false && (
+                        {!props.hideCancel && (
                             <Button onClick={() => closeModal(CloseType.Cancel)} variant="outlined" color="secondary">
                                 {props.cancelText ?? "Cancel"}
                             </Button>
                         )}
-                        {props.hideAccept === false && (
+                        {!props.hideAccept && (
                             <Button onClick={() => closeModal(CloseType.Accept)} variant="contained" color="primary">
                                 {props.acceptText ?? "Accept"}
                             </Button>

@@ -59,17 +59,6 @@ function Synthesis() {
         }
     }, [])
 
-    // useEffect(() => {
-    // TODO:
-    // const scoreboardExists = false
-    // panelElements.forEach(x => {
-    //     if (x.key == "scoreboard") scoreboardExists = true
-    // })
-    // if (PreferencesSystem.getGlobalPreference("RenderScoreboard") && !scoreboardExists) {
-    //     openPanel("scoreboard")
-    // }
-    // });
-
     const onConsent = useCallback(() => {
         setConsentPopupDisable(true)
         PreferencesSystem.setGlobalPreference("ReportAnalytics", true)

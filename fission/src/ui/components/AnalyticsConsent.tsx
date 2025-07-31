@@ -1,5 +1,4 @@
 import { Box, Button } from "@mui/material"
-// import { colorNameToVar } from "../ThemeContext"
 import { AiOutlineClose } from "react-icons/ai"
 import Label from "./Label"
 
@@ -19,7 +18,7 @@ const AnalyticsConsent: React.FC<AnalyticsConsentProps> = ({ onConsent, onClose 
                 position: "fixed",
                 right: "0.5rem",
                 bottom: "0.5rem",
-                // backgroundColor: colorNameToVar("Background"),
+                bgcolor: "background.default",
                 padding: "1rem",
                 borderRadius: "0.5rem",
                 gap: "0.5rem",

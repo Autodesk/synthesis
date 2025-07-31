@@ -17,7 +17,7 @@ import {
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
-import { Button, MenuItem, Select, Stack, TextField } from "@mui/material"
+import { Button, FormControl, InputLabel, MenuItem, Select, Stack, TextField } from "@mui/material"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { MatchModeType } from "@/systems/match_mode/MatchModeTypes"
 import { ContactType } from "@/mirabuf/ZoneTypes"
@@ -281,40 +281,48 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
             />
 
             {/** Determines during what game state the protected zone is active */}
-            <Select
-                label="Active During"
-                onChange={e => {
-                    const {
-                        target: { value },
-                    } = e
-                    setActiveDuring(
-                        (typeof value === "string" ? (value as string).split(",") : value) as MatchModeType[]
-                    )
-                }}
-                value={activeDuring}
-                multiple
-            >
-                {MATCH_MODE_OPTIONS.map(opt => (
-                    <MenuItem key={opt} value={opt}>
-                        {opt}
-                    </MenuItem>
-                ))}
-            </Select>
+            <FormControl fullWidth>
+                <InputLabel id="active-during-label">Active During</InputLabel>
+                <Select
+                    labelId="active-during-label"
+                    label="Active During"
+                    onChange={e => {
+                        const {
+                            target: { value },
+                        } = e
+                        setActiveDuring(
+                            (typeof value === "string" ? (value as string).split(",") : value) as MatchModeType[]
+                        )
+                    }}
+                    value={activeDuring}
+                    multiple
+                >
+                    {MATCH_MODE_OPTIONS.map(opt => (
+                        <MenuItem key={opt} value={opt}>
+                            {opt}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
             {/** Determines what type of contact is required for the penalty to apply */}
-            <Select
-                label="Contact Type"
-                onChange={e => {
-                    setContactType(e.target.value as ContactType)
-                }}
-                value={contactType}
-            >
-                {CONTACT_TYPE_OPTIONS.map(opt => (
-                    <MenuItem key={opt} value={opt}>
-                        {opt}
-                    </MenuItem>
-                ))}
-            </Select>
+            <FormControl fullWidth>
+                <InputLabel id="contact-type-label">Contact Type</InputLabel>
+                <Select
+                    labelId="contact-type-label"
+                    label="Contact Type"
+                    onChange={e => {
+                        setContactType(e.target.value as ContactType)
+                    }}
+                    value={contactType}
+                >
+                    {CONTACT_TYPE_OPTIONS.map(opt => (
+                        <MenuItem key={opt} value={opt}>
+                            {opt}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
 
             {gizmoComponent}
         </Stack>

@@ -1,7 +1,7 @@
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import { DriveType } from "@/systems/simulation/behavior/Behavior.ts"
-import { MenuItem, Select } from "@mui/material"
+import { FormControl, FormControlLabel, InputLabel, MenuItem, Select } from "@mui/material"
 
 interface DrivetrainSelectionProps {
     selectedAssembly: MirabufSceneObject
@@ -10,22 +10,26 @@ interface DrivetrainSelectionProps {
 const DrivetrainSelectionInterface: React.FC<DrivetrainSelectionProps> = ({ selectedAssembly }) => {
     return (
         <>
-            <Select // TODO: disable/hide when wpilib brain selected
-                label="Drivetrain Type"
-                defaultValue={(selectedAssembly.brain as SynthesisBrain | undefined)?.driveType ?? DriveType.ARCADE}
-                onChange={e => {
-                    if (selectedAssembly.brain?.brainType == "synthesis") {
-                        const brain = selectedAssembly.brain as SynthesisBrain
-                        brain.configureDriveBehavior(e.target.value as DriveType)
-                    }
-                }}
-            >
-                {[DriveType.TANK, DriveType.ARCADE].map(dt => (
-                    <MenuItem key={`drivetrain-type-${dt}`} value={dt}>
-                        {dt}
-                    </MenuItem>
-                ))}
-            </Select>
+            <FormControl fullWidth>
+                <InputLabel id="drivetrain-type-label">Drivetrain Type</InputLabel>
+                <Select // TODO: disable/hide when wpilib brain selected
+                    labelId="drivetrain-type-label"
+                    label="Drivetrain Type"
+                    defaultValue={(selectedAssembly.brain as SynthesisBrain | undefined)?.driveType ?? DriveType.ARCADE}
+                    onChange={e => {
+                        if (selectedAssembly.brain?.brainType == "synthesis") {
+                            const brain = selectedAssembly.brain as SynthesisBrain
+                            brain.configureDriveBehavior(e.target.value as DriveType)
+                        }
+                    }}
+                >
+                    {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                        <MenuItem key={`drivetrain-type-${dt}`} value={dt}>
+                            {dt}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
         </>
     )
 }

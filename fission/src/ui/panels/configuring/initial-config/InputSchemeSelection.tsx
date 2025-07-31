@@ -1,4 +1,4 @@
-import { Box, Button, Divider, MenuItem, Select, Stack, Tooltip } from "@mui/material"
+import { Box, Button, Divider, FormControl, InputLabel, MenuItem, Select, Stack, Tooltip } from "@mui/material"
 import { ReactElement, useEffect, useReducer, useState } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSystem from "@/systems/input/InputSystem"
@@ -109,23 +109,26 @@ export default function InputSchemeSelection({ brainIndex, onSelect, onEdit, onC
             <>
                 {/** The label and divider at the top of the scroll view */}
                 <Divider />
-                <Select
-                    label="Drivetrain Type"
-                    value={robotDriveType}
-                    onChange={e => {
-                        const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
-                        if (brain) {
-                            brain.configureDriveBehavior(e.target.value as DriveType)
-                        }
-                        setRobotDriveType(e.target.value as DriveType)
-                    }}
-                >
-                    {[DriveType.TANK, DriveType.ARCADE].map(dt => (
-                        <MenuItem key={dt} value={dt}>
-                            {dt}
-                        </MenuItem>
-                    ))}
-                </Select>
+                <FormControl fullWidth>
+                    <InputLabel id="input-scheme-drivetrain-type-label">Drivetrain Type</InputLabel>
+                    <Select
+                        label="Drivetrain Type"
+                        value={robotDriveType}
+                        onChange={e => {
+                            const brain = SynthesisBrain.brainIndexMap.get(brainIndex)
+                            if (brain) {
+                                brain.configureDriveBehavior(e.target.value as DriveType)
+                            }
+                            setRobotDriveType(e.target.value as DriveType)
+                        }}
+                    >
+                        {[DriveType.TANK, DriveType.ARCADE].map(dt => (
+                            <MenuItem key={dt} value={dt}>
+                                {dt}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
                 <Divider />
                 <Label size="md" className="text-center mt-[4pt] mb-[2pt] mx-[5%]">
                     {`${availableSchemes?.length} Input Schemes`}
