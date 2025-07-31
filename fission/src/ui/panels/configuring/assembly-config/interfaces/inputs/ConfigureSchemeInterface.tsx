@@ -99,14 +99,15 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                     <Button
                         value={"Add Joint Control"}
                         onClick={() => {
-                            const jointIndex =
+                            const existingJointIndexes = selectedScheme.inputs
+                                .map(input => parseInt(input.inputName.replace("joint ", "")))
+                                .filter(val => !isNaN(val))
+                            const newJointIndex =
                                 Math.max(
                                     0,
-                                    ...selectedScheme.inputs
-                                        .map(input => parseInt(input.inputName.replace("joint ", "")))
-                                        .filter(val => !isNaN(val))
+                                    ...existingJointIndexes
                                 ) + 1
-                            selectedScheme.inputs.push(AxisInput.unbound(`joint ${jointIndex}`))
+                            selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
                             selectedScheme.customized = true
                             update()
                         }}
