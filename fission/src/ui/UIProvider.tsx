@@ -46,7 +46,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
 
     const DEFAULT_PANEL_PROPS = {
         ...DEFAULT_PROPS,
-        position: "center",
+        position: "right",
     } as PanelProps
 
     const openModal: OpenModalFn = useCallback(
