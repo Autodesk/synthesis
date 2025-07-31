@@ -292,7 +292,13 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 value={configurationType}
                 exclusive
                 onChange={(_e, v) => {
-                    if (v !== null) setConfigurationType(v)
+                    if (v !== null) {
+                        setConfigurationType(v)
+                    }
+
+                    setSelectedAssembly(undefined)
+                    new ConfigurationSavedEvent()
+                    setConfigMode(undefined)
                 }}
             >
                 {CONFIG_OPTS.map(opt => (
