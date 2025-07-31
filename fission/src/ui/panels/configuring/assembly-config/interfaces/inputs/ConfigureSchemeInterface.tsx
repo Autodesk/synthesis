@@ -102,11 +102,7 @@ const ConfigureSchemeInterface: React.FC<ConfigSchemeProps> = ({ selectedScheme 
                             const existingJointIndexes = selectedScheme.inputs
                                 .map(input => parseInt(input.inputName.replace("joint ", "")))
                                 .filter(val => !isNaN(val))
-                            const newJointIndex =
-                                Math.max(
-                                    0,
-                                    ...existingJointIndexes
-                                ) + 1
+                            const newJointIndex = Math.max(0, ...existingJointIndexes) + 1
                             selectedScheme.inputs.push(AxisInput.unbound(`joint ${newJointIndex}`))
                             selectedScheme.customized = true
                             update()
