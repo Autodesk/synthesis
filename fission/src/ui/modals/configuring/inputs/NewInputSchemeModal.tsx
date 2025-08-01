@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Select, TextField } from "@mui/material"
 import type React from "react"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useMemo } from "react"
 import DefaultInputs from "@/systems/input/DefaultInputs"
 import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { ModalImplProps } from "@/ui/components/Modal"
@@ -9,6 +9,10 @@ import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import { Stack } from "@mui/system"
+import InputSystem from "@/systems/input/InputSystem"
+import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
+import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
+import { MiraType } from "@/mirabuf/MirabufLoader"
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     const { openPanel, configureScreen } = useUIContext()
@@ -16,6 +20,15 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
     const [type, setType] = useState<DriveType>(DriveType.ARCADE)
+
+    const targetAssembly = useMemo(() => {
+        const assembly = getSpotlightAssembly()
+        return assembly?.miraType === MiraType.ROBOT ? assembly : undefined
+    }, [])
+
+    const brainIndex = useMemo(() => {
+        return targetAssembly ? SynthesisBrain.getBrainIndex(targetAssembly) : undefined
+    }, [targetAssembly])
 
     useEffect(() => {
         const onBeforeAccept = () => {
@@ -26,12 +39,25 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             InputSchemeManager.saveSchemes()
             console.log(InputSchemeManager.allInputSchemes)
 
+            if (brainIndex !== undefined) {
+                InputSystem.brainIndexSchemeMap.set(brainIndex, scheme)
+            }
+
             setConfigurationType("INPUTS")
             setSelectedScheme(scheme)
             openPanel(<ConfigurePanel />, modal)
         }
-        configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onBeforeAccept })
-    }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])
+
+        const onCancel = () => {
+            for (const [brainIndex, scheme] of InputSystem.brainIndexSchemeMap.entries()) {
+                if (!scheme.schemeName || scheme.schemeName.trim() === "") {
+                    InputSystem.brainIndexSchemeMap.delete(brainIndex)
+                }
+            }
+        }
+
+        configureScreen(modal!, { title: "New Input Scheme" }, { onBeforeAccept, onCancel })
+    }, [name, type, brainIndex, openPanel, modal, configureScreen])
 
     return (
         <>
