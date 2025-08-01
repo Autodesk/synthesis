@@ -1,6 +1,8 @@
 import { Vector3Tuple } from "three"
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import { InputScheme } from "../input/InputSchemeManager"
+import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
+import { MatchModeType } from "@/systems/match_mode/MatchMode"
 
 /** Names of all global preferences. */
 
@@ -161,7 +163,8 @@ export type ProtectedZonePreferences = {
     alliance: Alliance
     penaltyPoints: number
     parentNode: string | undefined
-    requireRobotContact: boolean
+    contactType: ContactType
+    activeDuring: MatchModeType[]
 
     deltaTransformation: number[]
 }
@@ -198,7 +201,11 @@ export function defaultRobotPreferences(): RobotPreferences {
 }
 
 export function defaultFieldPreferences(): FieldPreferences {
-    return { defaultSpawnLocation: [0, 1, 0], scoringZones: [], protectedZones: [] }
+    return {
+        defaultSpawnLocation: [0, 1, 0],
+        scoringZones: [],
+        protectedZones: [],
+    }
 }
 
 export function defaultMotorPreferences(name: string): MotorPreferences {

@@ -110,3 +110,6 @@ site-packages
 proto/proto_out
 
 .aps_auth
+
+
+src/Resources/**/*.png

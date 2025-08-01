@@ -491,6 +491,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     /** Updates the position of the nametag relative to the robots position */
     private updateNameTag() {
         if (this._nameTag && PreferencesSystem.getGlobalPreference("RenderSceneTags")) {
+            this._nameTag.color = this._alliance
             const boundingBox = this.computeBoundingBox()
             this._nameTag.position = World.sceneRenderer.worldToPixelSpace(
                 new THREE.Vector3(
@@ -630,6 +631,101 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         })
 
         return box
+    }
+
+    /**
+     * Gets the maximum dimensions (length, width, height) of the mirabuf object.
+     *
+     * @returns An object containing the width (x), height (y), and depth (z) dimensions in meters.
+     */
+    public getDimensions(): { width: number; height: number; depth: number } {
+        const boundingBox = this.computeBoundingBox()
+        const size = new THREE.Vector3()
+        boundingBox.getSize(size)
+
+        return {
+            width: size.x,
+            height: size.y,
+            depth: size.z,
+        }
+    }
+
+    /**
+     * Calculates the robot's dimensions as if it had no rotation applied.
+     *
+     * @returns the object containing the width (x), height (y), and depth (z) dimensions in meters.
+     */
+    public getDimensionsWithoutRotation(): { width: number; height: number; depth: number } {
+        const rootNodeId = this.getRootNodeId()
+        if (!rootNodeId) {
+            console.warn("No root node found for robot, using regular dimensions")
+            return this.getDimensions()
+        }
+
+        const rootBody = World.physicsSystem.getBody(rootNodeId)
+        const rootTransform = convertJoltMat44ToThreeMatrix4(rootBody.GetWorldTransform())
+
+        const rootPosition = new THREE.Vector3()
+        const rootRotation = new THREE.Quaternion()
+        const rootScale = new THREE.Vector3()
+        rootTransform.decompose(rootPosition, rootRotation, rootScale)
+
+        // Create inverse rotation matrix to "undo" the robot's rotation
+        const inverseRotation = new THREE.Matrix4().makeRotationFromQuaternion(rootRotation.clone().invert())
+
+        const unrotatedBox = new THREE.Box3()
+
+        this._mirabufInstance.parser.rigidNodes.forEach(rigidNode => {
+            const bodyId = this._mechanism.getBodyByNodeId(rigidNode.id)
+            if (!bodyId) return
+
+            const body = World.physicsSystem.getBody(bodyId)
+            const bodyTransform = convertJoltMat44ToThreeMatrix4(body.GetWorldTransform())
+
+            const shape = body.GetShape()
+            const scale = new JOLT.Vec3(1, 1, 1)
+            const triangleContext = new JOLT.ShapeGetTriangles(
+                shape,
+                JOLT.AABox.prototype.sBiggest(),
+                shape.GetCenterOfMass(),
+                JOLT.Quat.prototype.sIdentity(),
+                scale
+            )
+
+            try {
+                const vertices = new Float32Array(
+                    JOLT.HEAP32.buffer,
+                    triangleContext.GetVerticesData(),
+                    triangleContext.GetVerticesSize() / Float32Array.BYTES_PER_ELEMENT
+                )
+
+                for (let i = 0; i < vertices.length; i += 3) {
+                    const vertex = new THREE.Vector3(vertices[i], vertices[i + 1], vertices[i + 2])
+
+                    vertex.applyMatrix4(bodyTransform).applyMatrix4(inverseRotation)
+
+                    unrotatedBox.expandByPoint(vertex)
+                }
+            } finally {
+                JOLT.destroy(triangleContext)
+                JOLT.destroy(scale)
+            }
+        })
+
+        // Fallback if no vertices were processed
+        if (unrotatedBox.isEmpty()) {
+            console.warn("Could not process physics shapes, using regular dimensions")
+            return this.getDimensions()
+        }
+
+        const unrotatedSize = new THREE.Vector3()
+        unrotatedBox.getSize(unrotatedSize)
+
+        return {
+            width: unrotatedSize.x,
+            height: unrotatedSize.y,
+            depth: unrotatedSize.z,
+        }
     }
 
     /**
