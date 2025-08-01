@@ -89,6 +89,18 @@ self.addEventListener("message", e => {
             }
             break
         }
+        case "camera_frame": {
+            if (socketOpen()) {
+                // Send camera frame data through WebSocket
+                const frameMessage = {
+                    type: "CAMERA_FRAME",
+                    device: e.data.data.device,
+                    data: e.data.data
+                }
+                socket!.send(JSON.stringify(frameMessage))
+            }
+            break
+        }
         default: {
             console.warn(`Unrecognized command '${e.data.command}'`)
             break
