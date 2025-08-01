@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from "react"
+import { Divider, TextField } from "@mui/material"
+import { Stack } from "@mui/system"
+import React, { useEffect, useState } from "react"
 import Button from "@/components/Button.tsx"
+import { globalAddToast } from "@/components/GlobalUIControls.ts"
 import Modal, { ModalPropsImpl } from "@/components/Modal"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import { SynthesisIcons } from "../components/StyledComponents"
 import { useModalControlContext } from "../helpers/UseModalManager"
-import { Stack } from "@mui/system"
-import {Divider, TextField} from "@mui/material";
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts";
-import {globalAddToast} from "@/components/GlobalUIControls.ts";
 
 const MultiplayerStartModal: React.FC<
     ModalPropsImpl & {
@@ -16,7 +16,7 @@ const MultiplayerStartModal: React.FC<
     const { closeModal } = useModalControlContext()
     const [room, setRoom] = useState<string>("")
     const [name, setName] = useState<string>(PreferencesSystem.getGlobalPreference("MultiplayerUsername"))
-    let isValidName:boolean = name.length >= 3
+    let isValidName: boolean = name.length >= 3
 
     useEffect(() => {
         isValidName = name.length >= 3

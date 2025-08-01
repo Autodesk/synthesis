@@ -1287,13 +1287,17 @@ class PhysicsSystem extends WorldSystem {
                 x => x instanceof OnContactAddedEvent && this.onSameLayer(x.message.body1, x.message.body2)
             )
 
-            const clientSceneObjectId = World.multiplayerSystem.getClientSceneObjectId()
-            if (clientSceneObjectId != null) {
+            World.multiplayerSystem.getClientSceneObjectIds().forEach(clientSceneObjectId => {
                 // console.error("Client Scene Object not found")
 
                 const clientSceneObject = World.sceneRenderer.sceneObjects.get(
                     clientSceneObjectId
-                )! as MirabufSceneObject
+                ) as MirabufSceneObject
+
+                if (clientSceneObject == null) {
+                    console.warn("Could not find multiplayer robot") // happens when you delete
+                    return
+                }
                 const touchedBodies = clientSceneObject.mechanism.touchedBodies
 
                 const message: Message =
@@ -1341,7 +1345,7 @@ class PhysicsSystem extends WorldSystem {
                 if (clientSceneObjectId != null) {
                     clientSceneObject.mechanism.touchedBodies = []
                 }
-            }
+            })
         }
 
         this._physicsEventQueue.forEach(x => x.dispatch())
@@ -1521,7 +1525,9 @@ class PhysicsSystem extends WorldSystem {
     private isClient(body: Jolt.Body): boolean {
         return (
             (ROBOT_LAYERS.includes(body.GetObjectLayer()) &&
-                this.bodyToMiraSceneObject(body)?.id === World.multiplayerSystem?.getClientSceneObjectId()) ??
+                World.multiplayerSystem
+                    ?.getClientSceneObjectIds()
+                    .includes(this.bodyToMiraSceneObject(body)?.id as number)) ??
             false
         )
     }

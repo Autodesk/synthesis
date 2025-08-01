@@ -1,7 +1,6 @@
 /** biome-ignore-all lint/correctness/noUndeclaredVariables: In Progress */
 import Peer, { DataConnection } from "peerjs"
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
-import { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { ConfigurationSavedEvent } from "@/panels/configuring/assembly-config/ConfigurationSavedEvent.ts"
 import { mirabuf } from "@/proto/mirabuf"
@@ -30,7 +29,7 @@ class MultiplayerSystem {
 
     private readonly _clientToInfoMap: Map<string, ClientInfo> = new Map()
     // TODO Update this system to be one-to-many
-    private readonly _clientToRobotMap: Map<string, number | null> = new Map() // clientId -> sceneObjectKey
+    private readonly _clientToObjectMap: Map<string, number[]> = new Map() // clientId -> sceneObjectKey[]
 
     readonly info: ClientInfo
     lastSentCollisionTimestamp: number = Date.now()
@@ -84,7 +83,6 @@ class MultiplayerSystem {
             }
             this.setupConnectionHandlers(conn)
         })
-        window.multiplayer = this
 
         ConfigurationSavedEvent.listen(() => {
             ;[...World.sceneRenderer.sceneObjects.values()]
@@ -218,7 +216,7 @@ class MultiplayerSystem {
     }
 
     handlePeerInfo(data: ClientInfo) {
-        this._clientToRobotMap.set(data.clientId, null)
+        this._clientToObjectMap.set(data.clientId, [])
         this._clientToInfoMap.set(data.clientId, data)
         MultiplayerStateEvent.dispatch(MultiplayerStateEventType.PEER_CHANGE)
     }
@@ -263,6 +261,7 @@ class MultiplayerSystem {
                 return
             } else if (!(sceneObject instanceof MirabufSceneObject)) {
                 console.error(`Multiplayer SceneObject: ${sceneObjectKey} not MirabufSceneObject`)
+                console.log(sceneObject)
                 return
             }
 
@@ -294,12 +293,14 @@ class MultiplayerSystem {
         const object = await createMirabuf(assembly)
         if (object == null) return
 
-        object.id = data.sceneObjectKey
-        object.nameOverride = this._clientToInfoMap.get(peerId)?.displayName ?? peerId
+        object.nameOverride =
+            (this._clientToInfoMap.get(peerId)?.displayName ?? peerId) +
+            " " +
+            (this._clientToObjectMap.get(peerId)?.length ?? "0")
 
-        World.sceneRenderer.registerSceneObject(object)
+        World.sceneRenderer.registerSceneObject(object, data.sceneObjectKey)
 
-        this._clientToRobotMap.set(peerId, object.id)
+        this._clientToObjectMap.get(peerId)?.push(object.id) || this._clientToObjectMap.set(peerId, [object.id])
     }
 
     async handleMetadataUpdate(data: MetadataUpdateData) {
@@ -323,11 +324,16 @@ class MultiplayerSystem {
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
-    getClientSceneObjectId(): number | null {
-        return this._clientToRobotMap.get(this.clientId) ?? null
+    getClientSceneObjectIds(): number[] {
+        return this._clientToObjectMap.get(this.clientId) ?? []
     }
     newClientSceneObject(objectId: number) {
-        this._clientToRobotMap.set(this.clientId, objectId)
+        const list = this._clientToObjectMap.get(this.clientId)
+        if (list != null) {
+            list.push(objectId)
+        } else {
+            this._clientToObjectMap.set(this.clientId, [objectId])
+        }
     }
 
     get peerIDs(): string[] {

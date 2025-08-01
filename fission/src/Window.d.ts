@@ -1,5 +1,5 @@
 declare interface Window {
     convertAuthToken(code: string): void
     gtag: () => void
-    multiplayer:unknown // TODO: remove
+    world?: unknown // for development
 }

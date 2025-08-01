@@ -61,7 +61,7 @@ const Button: React.FC<ButtonProps> = ({
                 ${sizeClassNames} 
                 rounded-sm 
                 font-semibold 
-                ${disabled ?"cursor-not-allowed": "cursor-pointer"} 
+                ${disabled ? "cursor-not-allowed" : "cursor-pointer"} 
                 duration-200 
                 border-none 
                 focus-visible:outline-0 

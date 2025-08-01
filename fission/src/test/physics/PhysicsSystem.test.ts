@@ -1,9 +1,9 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { afterEach, assert, beforeEach, describe, expect, test } from "vitest"
+import { BodyAssociate } from "@/systems/physics/BodyAssociate"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem, { LayerReserve } from "../../systems/physics/PhysicsSystem"
-import { BodyAssociate } from "@/systems/physics/BodyAssociate"
 
 describe("Physics Sanity Checks", () => {
     let system: PhysicsSystem

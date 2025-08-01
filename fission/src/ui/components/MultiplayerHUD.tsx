@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react"
 import { Stack } from "@mui/system"
-import World from "@/systems/World.ts"
+import React, { useEffect, useState } from "react"
 import { MultiplayerStateEvent, MultiplayerStateEventType } from "@/systems/multiplayer/MultiplayerSystem.ts"
 import { ClientInfo } from "@/systems/multiplayer/types.ts"
+import World from "@/systems/World.ts"
 
 const MultiplayerHUD: React.FC = () => {
     const [roomCode, setRoomCode] = useState("")

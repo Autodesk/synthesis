@@ -352,8 +352,11 @@ class SceneRenderer extends WorldSystem {
         this.setupCSMMaterials()
     }
 
-    public registerSceneObject<T extends SceneObject>(obj: T): number {
-        const id = nextSceneObjectId++
+    public registerSceneObject<T extends SceneObject>(obj: T, idOverride?: number): number {
+        const id = idOverride ?? nextSceneObjectId++
+        if (nextSceneObjectId <= id) {
+            nextSceneObjectId = id + 1
+        }
         obj.id = id
         this._sceneObjects.set(id, obj)
         obj.setup()
