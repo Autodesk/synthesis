@@ -28,6 +28,7 @@ interface Messages {
     selectJoint: [Empty, FusionJoint]
     selectGamepiece: [Empty, FusionGamepiece[]]
     selectBody: [Empty, FusionBody]
+    designRules: [Empty, DesignRule[]]
     export: [ExporterConfig, Empty]
     save: [ExporterConfig, Empty]
     init: [Empty, InitResponse]
@@ -146,3 +147,28 @@ window.fusionJavaScriptHandler = {
         return "OK"
     },
 }
+
+export interface DesignRule {
+    name: string,
+    calculation: number,
+    max_value: number
+}
+export async function getDesignRules(): Promise<DesignRule[] | undefined> {
+    if (import.meta.env.DEV && typeof window.adsk === "undefined") {
+        return new Promise<DesignRule[]>(resolve => {
+            setTimeout(() => {
+                const token = Math.random().toString(36).substring(2, 15)
+                resolve([
+                    {
+                        name: token,
+                        calculation: parseFloat(token),
+                        max_value: parseFloat(token)
+                    }
+                ])
+            }, 2000)
+        })
+    }
+
+    return await sendData("designRules", {})
+}
+

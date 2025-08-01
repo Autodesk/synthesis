@@ -7,32 +7,55 @@ import {
     TableHead,
     TableRow,
 } from "@mui/material"
+import { useEffect, useState } from "react"
+import { type DesignRule, getDesignRules } from "../lib"
 
-interface DesignCheckTabProps { }
+interface DesignCheckTabProps {}
 
 function DesignCheckTab({}: DesignCheckTabProps) {
-    return (
-        <TableContainer component={Paper} elevation={6}>
-            <Table sx={{ minWidth: 650 }} aria-label="simple table" size={"small"}>
-                <TableHead>
-                    <TableRow>
-                        <TableCell sx={{ width: "28%" }} align="center">
-                            Component
-                        </TableCell>
-                        <TableCell sx={{ width: "28%" }} align="center">
-                            Calculation
-                        </TableCell>
-                        <TableCell sx={{ width: "40%" }} align="center">
-                            Is Valid
-                        </TableCell>
-                        <TableCell sx={{ width: "4%" }}></TableCell>
-                    </TableRow>
-                </TableHead>
-                <TableBody>
+    const [rules, setRules] = useState<DesignRule[]>([])
 
-                </TableBody>
-            </Table>
-        </TableContainer>
+    useEffect(() => {
+        getDesignRules().then(data => {
+            if (data) {
+                setRules(data)
+            }
+        })
+    }, [])
+
+    return (
+        <>
+            <TableContainer component={Paper} elevation={6}>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table" size={"small"}>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell sx={{ width: "28%" }} align="center">
+                                Component
+                            </TableCell>
+                            <TableCell sx={{ width: "28%" }} align="center">
+                                Calculation
+                            </TableCell>
+                            <TableCell sx={{ width: "40%" }} align="center">
+                                Is Valid
+                            </TableCell>
+                            <TableCell sx={{ width: "4%" }}></TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {rules.map(rule => (
+                            <TableRow key={rule.name} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                                <TableCell align="center">{rule.name}</TableCell>
+                                <TableCell align="center">{rule.calculation}</TableCell>
+                                <TableCell align="center">
+                                    {rule.calculation <= rule.max_value ? "Valid" : "Invalid"}
+                                </TableCell>
+                                <TableCell />
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>
+        </>
     )
 }
 

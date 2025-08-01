@@ -28,6 +28,7 @@ from src.Parser.SynthesisParser.Utilities import guid_occurrence
 from src.Types import SELECTABLE_JOINT_TYPES, ExportLocation, ExportMode
 from src.UI import FileDialogConfig
 from src.UI.Handlers import PersistentEventHandler
+from src.DesignRuleChecks import DesignRuleChecks
 from src.Util import convertMassUnitsTo, designMassCalculation
 
 generalConfigTab: GeneralConfigTab.GeneralConfigTab
@@ -299,6 +300,9 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
         elif html_args.action == "cancelSelection":
             gm.ui.terminateActiveCommand()
             html_args.returnData = "{}"
+
+        elif html_args.action == "designRules":
+            html_args.returnData = DesignRuleChecks().getDesignRules
         else:
             gm.ui.messageBox(f"Event {html_args.action} arrived<span>{json.dumps(data, indent=2)}</span>")
 

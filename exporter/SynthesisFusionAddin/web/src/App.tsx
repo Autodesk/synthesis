@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 
 import "./App.css"
-import { RestartAlt, Settings, SportsFootball, Texture } from "@mui/icons-material"
+import { RestartAlt, Settings, SportsFootball, Texture, CheckBox } from "@mui/icons-material"
 import DownloadIcon from "@mui/icons-material/Download"
 import PrecisionManufacturingIcon from "@mui/icons-material/PrecisionManufacturing"
 import SaveIcon from "@mui/icons-material/Save"
@@ -37,6 +37,7 @@ import GeneralConfigTab from "./ui/GeneralConfigTab.tsx"
 import GlobalAlert from "./ui/GlobalAlert.tsx"
 import JointsConfigTab from "./ui/JointsConfigTab.tsx"
 import MaterialTaggingTab, { type TaggedBody } from "./ui/MaterialTaggingTab.tsx"
+import DesignCheckTab from "./ui/DesignCheckTab.tsx"
 
 function TabPanel(props: { children?: React.ReactNode; value: number; index: number }) {
     const { children, value, index, ...other } = props
@@ -228,6 +229,7 @@ function App() {
                         />
 
                         <Tab icon={<Texture />} iconPosition={"start"} label="Materials" />
+                        <Tab icon={<CheckBox />} iconPosition={"start"} label="Design Check" />
 
                         {/*<Tab label="APS" />*/}
                     </Tabs>
@@ -258,6 +260,9 @@ function App() {
                     updateTags={updateTaggedBodies}
                     selection={{ isSelecting, setIsSelecting }}
                 />
+            </TabPanel>
+            <TabPanel value={activeTab} index={2}>
+                <DesignCheckTab />
             </TabPanel>
             <Container
                 sx={{

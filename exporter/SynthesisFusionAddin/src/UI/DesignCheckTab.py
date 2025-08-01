@@ -3,23 +3,17 @@ from typing import Any, Callable, Dict, List, TypedDict, cast
 import adsk.core
 import adsk.fusion
 
-from src import Logging, gm
+from src import Logging
 from src.UI import IconPaths
+from src.DesignRuleChecks import DesignRuleChecks
 
 logger = Logging.getLogger()
-
-
-class DesignRule(TypedDict):
-    name: str
-    calculation: Callable[[], float]
-    max_value: float
 
 
 class DesignCheckTab:
     designCheckTab: adsk.core.TabCommandInput
     designCheckTable: adsk.core.TableCommandInput
-    designRules: Dict[str, Any] = {}
-    design_rules: List[DesignRule]
+    designRuleChecks: DesignRuleChecks
 
     @Logging.logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs) -> None:
@@ -34,21 +28,9 @@ class DesignCheckTab:
             adsk.core.TablePresentationStyles.itemBorderTablePresentationStyle
         )
 
-        # Define and add design rules to the table
-        self.design_rules = [
-            {
-                "name": "Design Height",
-                "calculation": self.fusion_design_height,
-                "max_value": 106.0,  # cm
-            },
-            {
-                "name": "Design Perimeter",
-                "calculation": self.fusion_design_perimeter,
-                "max_value": 304.0,  # cm
-            },
-        ]
+        self.designRuleChecks = DesignRuleChecks()
 
-        for i, rule in enumerate(self.design_rules):
+        for i, rule in enumerate(self.designRuleChecks.getDesignRules()):
             calculation = rule["calculation"]
             max_value: float = rule["max_value"]
             value: float = calculation()
@@ -81,19 +63,3 @@ class DesignCheckTab:
     @property
     def isActive(self) -> bool:
         return self.designCheckTab.isActive or False
-
-    @Logging.logFailure
-    def fusion_design_height(self) -> float:
-        design = adsk.fusion.Design.cast(gm.app.activeProduct)
-        if design:
-            overall_bounding_box = design.rootComponent.orientedMinimumBoundingBox
-            return float(overall_bounding_box.width)
-        return 0.0
-
-    @Logging.logFailure
-    def fusion_design_perimeter(self) -> float:
-        design = adsk.fusion.Design.cast(gm.app.activeProduct)
-        if design:
-            overall_bounding_box = design.rootComponent.orientedMinimumBoundingBox
-            return float(2 * (overall_bounding_box.height + overall_bounding_box.length))
-        return 0.0
