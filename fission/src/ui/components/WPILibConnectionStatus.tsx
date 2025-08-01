@@ -17,7 +17,11 @@ const WPILibConnectionStatus: React.FC = () => {
     }, [])
 
     return enabled ? (
-        <Stack direction="row" sx={{ bgcolor: "background.default" }} className="select-none absolute right-1 top-1 py-2 px-4 rounded-lg gap-2">
+        <Stack
+            direction="row"
+            sx={{ bgcolor: "background.default" }}
+            className="select-none absolute right-1 top-1 py-2 px-4 rounded-lg gap-2"
+        >
             {status ? (
                 <FaCheck className="text-green-500 self-center" />
             ) : (

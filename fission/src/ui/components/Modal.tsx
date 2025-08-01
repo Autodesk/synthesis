@@ -1,5 +1,5 @@
 import { Button, Card, CardActions, CardContent, CardHeader, Modal as MUIModal } from "@mui/material"
-import React, { useEffect, useState, type ReactElement } from "react"
+import React, { type ReactElement } from "react"
 import type { Modal as ModalType, Panel as PanelType } from "../helpers/UIProviderHelpers"
 import { CloseType, useUIContext } from "../helpers/UIProviderHelpers"
 
@@ -16,14 +16,8 @@ interface ModalElementProps<T> {
 
 export const Modal = <T,>({ children, modal, parent }: ModalElementProps<T>) => {
     const { closeModal } = useUIContext()
-    const props = modal.props
-    const [_, refresh] = useState(false)
-    console.log(props.configured)
 
-    // biome-ignore lint/correctness/useExhaustiveDependencies: to refresh on configure
-    useEffect(() => {
-        refresh(x => !x)
-    }, [modal.props.configured, modal.props.hideAccept])
+    const props = modal.props
 
     return (
         <MUIModal

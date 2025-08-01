@@ -120,7 +120,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const { configurationType, setConfigurationType } = useStateContext()
 
-    const [configurePanelSettings, setConfigurePanelSettings] = useState<ConfigurePanelSettings | undefined>(undefined);
+    const [configurePanelSettings, setConfigurePanelSettings] = useState<ConfigurePanelSettings | undefined>(undefined)
 
     const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
     const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)

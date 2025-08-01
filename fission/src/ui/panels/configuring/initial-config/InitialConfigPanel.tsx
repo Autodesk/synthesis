@@ -102,19 +102,31 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         <Stack gap={2} direction="row">
                             <Button
                                 onClick={() => setStation(1)}
-                                sx={station === 1 ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" } : {}}
+                                sx={
+                                    station === 1
+                                        ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }
+                                        : {}
+                                }
                             >
                                 1
                             </Button>
                             <Button
                                 onClick={() => setStation(2)}
-                                sx={station === 2 ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" } : {}}
+                                sx={
+                                    station === 2
+                                        ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }
+                                        : {}
+                                }
                             >
                                 2
                             </Button>
                             <Button
                                 onClick={() => setStation(3)}
-                                sx={station === 3 ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" } : {}}
+                                sx={
+                                    station === 3
+                                        ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }
+                                        : {}
+                                }
                             >
                                 3
                             </Button>

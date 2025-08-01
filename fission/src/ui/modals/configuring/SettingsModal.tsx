@@ -38,11 +38,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
     }
 
     return (
-        <Stack
-            direction="column"
-            gap={2}
-            className="overflow-y-auto rounded-md p-2 max-h-[60vh] min-w-[20vw]"
-        >
+        <Stack direction="column" gap={2} className="overflow-y-auto rounded-md p-2 max-h-[60vh] min-w-[20vw]">
             <Stack alignSelf={"center"} direction="row" gap={2}>
                 <Button
                     onClick={() => {

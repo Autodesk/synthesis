@@ -4,7 +4,7 @@ import type { SnackbarKey, SnackbarMessage, VariantType } from "notistack"
 import { useSnackbar } from "notistack"
 import type React from "react"
 import type { ReactElement, ReactNode } from "react"
-import { useCallback, useState } from "react"
+import { useCallback, useReducer, useState } from "react"
 import { v4 as uuidv4 } from "uuid"
 import {
     CloseType,
@@ -29,6 +29,7 @@ export type UIProviderProps = {
 export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
     const [modal, setModal] = useState<Modal<unknown> | undefined>(undefined)
     const [panels, setPanels] = useState<Panel<unknown>[]>([])
+    const [_, refresh] = useReducer(x => !x, false)
 
     const { enqueueSnackbar, closeSnackbar } = useSnackbar()
 
@@ -188,7 +189,7 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         [enqueueSnackbar]
     )
 
-    const configureScreen: ConfigureScreenFn = (screen, props, callbacks) => {
+    const configureScreen: ConfigureScreenFn = useCallback((screen, props, callbacks) => {
         type PropKey = keyof typeof screen.props
         type PropValue = (typeof screen.props)[keyof typeof screen.props]
 
@@ -201,7 +202,9 @@ export const UIProvider: React.FC<UIProviderProps> = ({ children }) => {
         if (callbacks.onBeforeAccept) screen.onAccept.setDefaultFunc(callbacks.onBeforeAccept)
         if (callbacks.onCancel) screen.onCancel.setDefaultFunc(callbacks.onCancel)
         if (callbacks.onClose) screen.onClose.setDefaultFunc(callbacks.onClose)
-    }
+
+        refresh()
+    }, [])
 
     return (
         <UIContext.Provider
