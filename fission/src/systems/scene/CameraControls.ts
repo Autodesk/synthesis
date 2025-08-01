@@ -95,6 +95,7 @@ export class CustomOrbitControls extends CameraControls {
     private _focus: THREE.Matrix4
 
     private _focusProvider: MirabufSceneObject | undefined
+    private _isExplicitlyUnfocused: boolean = false
     public locked: boolean
 
     private _interactionHandler: ScreenInteractionHandler
@@ -108,9 +109,20 @@ export class CustomOrbitControls extends CameraControls {
 
     public set focusProvider(provider: MirabufSceneObject | undefined) {
         this._focusProvider = provider
+        if (provider !== undefined) {
+            this._isExplicitlyUnfocused = false
+        }
     }
     public get focusProvider() {
         return this._focusProvider
+    }
+
+    /**
+     * Explicitly unfocus the camera (user-initiated action)
+     */
+    public unfocus(): void {
+        this._focusProvider = undefined
+        this._isExplicitlyUnfocused = true
     }
 
     public get coords(): SphericalCoords {
@@ -174,7 +186,7 @@ export class CustomOrbitControls extends CameraControls {
      * If not, automatically finds a suitable replacement.
      */
     private validateFocusProvider(): void {
-        if (!World.sceneRenderer?.sceneObjects) {
+        if (!World.sceneRenderer?.sceneObjects || World.dragModeSystem.isTransitioning) {
             return
         }
 
@@ -184,8 +196,9 @@ export class CustomOrbitControls extends CameraControls {
         if (this._focusProvider) {
             if (!mirabufObjects.includes(this._focusProvider)) {
                 this._focusProvider = this.findFallbackFocus(mirabufObjects)
+                this._isExplicitlyUnfocused = false
             }
-        } else {
+        } else if (!this._isExplicitlyUnfocused) {
             this._focusProvider = this.findFallbackFocus(mirabufObjects)
         }
     }
