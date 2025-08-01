@@ -6,7 +6,7 @@ import { SimulationLayer } from "../SimulationSystem"
 import World from "@/systems/World"
 
 import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
-import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
+import { SimAccelInput, SimAnalogInput, SimCameraInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
 import { random } from "@/util/Random"
 import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
 import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
@@ -41,6 +41,7 @@ export enum SimType {
     CAN_ENCODER = "CANEncoder",
     GYRO = "Gyro",
     ACCELEROMETER = "Accel",
+    CAMERA = "Camera",
     DIO = "DIO",
     AI = "AI",
     AO = "AO",
@@ -70,6 +71,7 @@ export const supplierTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.CAN_ENCODER]: undefined,
     [SimType.GYRO]: undefined,
     [SimType.ACCELEROMETER]: undefined,
+    [SimType.CAMERA]: undefined,
     [SimType.DIO]: NoraTypes.NUMBER, // ?
     [SimType.AI]: undefined,
     [SimType.AO]: NoraTypes.NUMBER,
@@ -84,6 +86,7 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.CAN_ENCODER]: NoraTypes.NUMBER2,
     [SimType.GYRO]: NoraTypes.NUMBER3, // Wrong but its fine
     [SimType.ACCELEROMETER]: NoraTypes.NUMBER3,
+    [SimType.CAMERA]: undefined, 
     [SimType.DIO]: NoraTypes.NUMBER, // ?
     [SimType.AI]: NoraTypes.NUMBER,
     [SimType.AO]: undefined,
@@ -567,6 +570,8 @@ class WPILibBrain extends Brain {
     constructor(assembly: MirabufSceneObject) {
         super(assembly.mechanism, "wpilib")
 
+        console.log(`🧠 [WPILIBRAIN] Constructor called for assembly: ${assembly.assemblyName}`)
+
         this._assembly = assembly
 
         this._simLayer = World.simulationSystem.getSimulationLayer(this._mechanism)!
@@ -576,8 +581,11 @@ class WPILibBrain extends Brain {
             return
         }
 
+        console.log(`🧠 [WPILIBRAIN] SimulationLayer found, setting up devices...`)
+
         this.addSimInput(new SimGyroInput("Test Gyro[1]", this._mechanism))
         this.addSimInput(new SimAccelInput("ADXL362[4]", this._mechanism))
+        this.addSimInput(new SimCameraInput("USB Camera 0", assembly, 640, 480, 30))
         this.addSimInput(new SimDigitalInput("SYN DI[0]", () => random() > 0.5))
         this.addSimOutput(new SimDigitalOutput("SYN DO[1]"))
         this.addSimInput(new SimAnalogInput("SYN AI[0]", () => random() * 12))
@@ -597,7 +605,9 @@ class WPILibBrain extends Brain {
     }
 
     public addSimInput(input: SimInput) {
+        console.log(`➕ [WPILIBRAIN] Adding SimInput: ${input.constructor.name} for device "${input.device}"`)
         this._simInputs.push(input)
+        console.log(`📊 [WPILIBRAIN] Total inputs: ${this._simInputs.length}`)
     }
 
     public addSimFlow(flow: SimFlow): boolean {
@@ -632,6 +642,11 @@ class WPILibBrain extends Brain {
     }
 
     public update(deltaT: number): void {
+        // Add occasional logging to confirm update is being called
+        if (Math.random() < 0.005) { // ~0.5% chance per frame
+            console.log(`🔄 [WPILIBRAIN] update() called - ${this._simInputs.length} inputs, ${this._simOutputs.length} outputs`)
+        }
+        
         this._simOutputs.forEach(d => d.update(deltaT))
         this._simInputs.forEach(i => i.update(deltaT))
         this._simFlows.forEach(({ supplier, receiver }) => {
