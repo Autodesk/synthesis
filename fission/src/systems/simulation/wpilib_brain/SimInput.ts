@@ -1,11 +1,12 @@
 import World from "@/systems/World"
 import EncoderStimulus from "../stimulus/EncoderStimulus"
-import { SimCANEncoder, SimGyro, SimAccel, SimDIO, SimAI } from "./WPILibBrain"
+import { SimCANEncoder, SimGyro, SimAccel, SimDIO, SimAI, SimCamera, SimGeneric } from "./WPILibBrain"
 import Mechanism from "@/systems/physics/Mechanism"
 import Jolt from "@azaleacolburn/jolt-physics"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltQuatToThreeQuaternion, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
 import * as THREE from "three"
+import { SimCameraRenderer } from "./SimCameraRenderer"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 
 export abstract class SimInput {
@@ -260,7 +261,21 @@ export class SimCameraInput extends SimInput {
             const base64Frame = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
             
             console.log(`🚀 [SEND] Converting frame: ${arrayBuffer.byteLength} bytes → ${base64Frame.length} chars`)
-
+            
+            // Send frame through WebSocket protocol
+            const frameMessage = {
+                type: "CAMERA_FRAME",
+                device: this.device,
+                data: {
+                    frame: base64Frame,
+                    width: this._defaultWidth,
+                    height: this._defaultHeight,
+                    timestamp: Date.now()
+                }
+            }
+            
+            // Send through the existing WebSocket worker
+            const success = SimGeneric.sendCameraFrame(this.device, frameMessage.data)
             console.log(`📡 [SEND] WebSocket frame sent for ${this.device}: ${success ? 'SUCCESS' : 'FAILED'}`)
             
         } catch (error) {
