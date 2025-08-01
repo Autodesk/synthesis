@@ -1,11 +1,12 @@
-import SimulationSystem from "../simulation/SimulationSystem"
-import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
-import { SoundPlayer } from "../sound/SoundPlayer"
 import beep from "@/assets/sound-files/beep.wav"
 import MatchEnd from "@/assets/sound-files/MatchEnd.wav"
 import MatchResume from "@/assets/sound-files/MatchResume.wav"
-import RobotDimensionTracker from "./RobotDimensionTracker"
 import MatchStart from "@/assets/sound-files/MatchStart.wav"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs.ts"
+import { MatchModeConfig } from "@/ui/panels/configuring/MatchModeConfigPanel"
+import SimulationSystem from "../simulation/SimulationSystem"
+import { SoundPlayer } from "../sound/SoundPlayer"
+import RobotDimensionTracker from "./RobotDimensionTracker"
 
 export enum MatchModeType {
     SANDBOX = "Sandbox",
@@ -14,14 +15,6 @@ export enum MatchModeType {
     ENDGAME = "Endgame",
     MATCH_ENDED = "Match Ended",
 }
-
-// Default match mode timing values
-export const DEFAULT_AUTONOMOUS_TIME = 15
-export const DEFAULT_TELEOP_TIME = 135
-export const DEFAULT_ENDGAME_TIME = 20
-export const DEFAULT_IGNORE_ROTATION = true
-export const DEFAULT_MAX_HEIGHT = Infinity
-export const DEFAULT_HEIGHT_PENALTY = 2
 
 class MatchMode {
     private static _instance: MatchMode
@@ -37,17 +30,7 @@ class MatchMode {
     private _intervalId: number | null = null
 
     // Match Mode Config
-    private _matchModeConfig: MatchModeConfig = {
-        id: "default",
-        name: "Default",
-        isDefault: true,
-        autonomousTime: DEFAULT_AUTONOMOUS_TIME,
-        teleopTime: DEFAULT_TELEOP_TIME,
-        endgameTime: DEFAULT_ENDGAME_TIME,
-        ignoreRotation: DEFAULT_IGNORE_ROTATION,
-        maxHeight: DEFAULT_MAX_HEIGHT,
-        heightPenalty: DEFAULT_HEIGHT_PENALTY,
-    }
+    private _matchModeConfig: MatchModeConfig = DefaultMatchModeConfigs.fallbackValues()
 
     private constructor() {}
 

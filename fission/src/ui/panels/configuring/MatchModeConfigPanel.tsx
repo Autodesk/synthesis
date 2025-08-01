@@ -1,6 +1,10 @@
 import { Box } from "@mui/material"
 import React, { ChangeEvent, useEffect, useMemo, useRef, useState } from "react"
 import { LabelSize } from "@/components/Label"
+import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
+import MatchMode from "@/systems/match_mode/MatchMode"
+import Button from "@/ui/components/Button"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
 import {
     NegativeButton,
@@ -9,18 +13,6 @@ import {
     SectionLabel,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import MatchMode, {
-    DEFAULT_AUTONOMOUS_TIME,
-    DEFAULT_TELEOP_TIME,
-    DEFAULT_ENDGAME_TIME,
-    DEFAULT_IGNORE_ROTATION,
-    DEFAULT_MAX_HEIGHT,
-    DEFAULT_HEIGHT_PENALTY,
-} from "@/systems/match_mode/MatchMode"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import Button from "@/ui/components/Button"
-import DefaultMatchModeConfigs from "@/systems/match_mode/DefaultMatchModeConfigs"
-import { convertFeetToMeters } from "@/util/UnitConversions"
 import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 
@@ -58,7 +50,6 @@ export interface MatchModeConfig {
 
     /**
      * Maximum allowed robot height in meters (stored internally).
-     * User input is in feet but converted to meters during config processing.
      * Set to Infinity for no height limit. (default: Infinity)
      */
     maxHeight: number
@@ -69,6 +60,17 @@ export interface MatchModeConfig {
      */
     heightPenalty: number
 }
+
+const props: Readonly<{ id: keyof MatchModeConfig; expectedType: string; required: boolean }>[] = [
+    { id: "id", expectedType: "string", required: true },
+    { id: "name", expectedType: "string", required: true },
+    { id: "autonomousTime", expectedType: "number", required: false },
+    { id: "teleopTime", expectedType: "number", required: false },
+    { id: "endgameTime", expectedType: "number", required: false },
+    { id: "ignoreRotation", expectedType: "boolean", required: false },
+    { id: "maxHeight", expectedType: "number", required: false },
+    { id: "heightPenalty", expectedType: "number", required: false },
+]
 
 function matchConfigSelected(config: MatchModeConfig, openModal: (modalName: string) => void) {
     if (MatchMode.getInstance().isMatchEnabled()) {
@@ -188,27 +190,13 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
     }
 
     const validateAndNormalizeMatchModeConfig = (config: unknown): MatchModeConfig | null => {
-        let valid = true
-
         // Type guard to check if config is an object
         if (typeof config !== "object" || config === null) {
             console.error("Match mode config validation failed: config must be an object")
             globalAddToast("error", "Invalid Match Mode Config", "Configuration must be an object")
             return null
         }
-
         const configObj = config as Record<string, unknown>
-
-        const props: { id: string; expectedType: string; required: boolean }[] = [
-            { id: "id", expectedType: "string", required: true },
-            { id: "name", expectedType: "string", required: true },
-            { id: "autonomousTime", expectedType: "number", required: false },
-            { id: "teleopTime", expectedType: "number", required: false },
-            { id: "endgameTime", expectedType: "number", required: false },
-            { id: "ignoreRotation", expectedType: "boolean", required: false },
-            { id: "maxHeight", expectedType: "number", required: false },
-            { id: "heightPenalty", expectedType: "number", required: false },
-        ]
 
         const typeError = (id: string, expectedType?: string) => {
             const errorMessage = expectedType ? `must be a ${expectedType}` : "is required"
@@ -216,48 +204,38 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             globalAddToast("error", "Invalid Match Mode Config", `The '${id}' field ${errorMessage}`)
         }
 
-        for (const prop of props) {
-            if (configObj[prop.id] == undefined) {
-                if (prop.required) {
-                    typeError(prop.id)
-                    valid = false
-                }
-            } else if (typeof configObj[prop.id] != prop.expectedType) {
-                if (prop.required) {
-                    typeError(prop.id, prop.expectedType)
-                    valid = false
-                } else {
-                    globalAddToast(
-                        "warning",
-                        "Invalid Match Mode Config",
-                        `The '${prop.id}' field must be a ${prop.expectedType}, ignoring ${prop.id} field`
-                    )
+        function checkValidity(configObj: Record<string, unknown>): configObj is Partial<MatchModeConfig> {
+            for (const prop of props) {
+                if (configObj[prop.id] == undefined) {
+                    if (prop.required) {
+                        typeError(prop.id)
+                        return false
+                    }
+                } else if (typeof configObj[prop.id] != prop.expectedType) {
+                    if (prop.required) {
+                        typeError(prop.id, prop.expectedType)
+                        return false
+                    } else {
+                        globalAddToast(
+                            "warning",
+                            "Invalid Match Mode Config",
+                            `The '${prop.id}' field must be a ${prop.expectedType}, ignoring ${prop.id} field`
+                        )
+                    }
                 }
             }
+            return true
         }
 
-        if (!valid) {
+        if (!checkValidity(configObj)) {
             return null
         }
 
         // If validation passes, normalize the config with defaults for missing fields
-        const normalizedConfig: MatchModeConfig = {
-            id: configObj.id as string,
-            name: configObj.name as string,
-            isDefault: false, // User-uploaded configs are not default configs
-            autonomousTime:
-                typeof configObj.autonomousTime === "number" ? configObj.autonomousTime : DEFAULT_AUTONOMOUS_TIME,
-            teleopTime: typeof configObj.teleopTime === "number" ? configObj.teleopTime : DEFAULT_TELEOP_TIME,
-            endgameTime: typeof configObj.endgameTime === "number" ? configObj.endgameTime : DEFAULT_ENDGAME_TIME,
-            ignoreRotation:
-                typeof configObj.ignoreRotation === "boolean" ? configObj.ignoreRotation : DEFAULT_IGNORE_ROTATION,
-            maxHeight:
-                typeof configObj.maxHeight === "number" ? convertFeetToMeters(configObj.maxHeight) : DEFAULT_MAX_HEIGHT,
-            heightPenalty:
-                typeof configObj.heightPenalty === "number" ? configObj.heightPenalty : DEFAULT_HEIGHT_PENALTY,
+        return {
+            ...DefaultMatchModeConfigs.fallbackValues(),
+            ...configObj,
         }
-
-        return normalizedConfig
     }
 
     const handleFileUpload = async (file: File) => {
