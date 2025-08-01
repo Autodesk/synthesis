@@ -1,5 +1,5 @@
-import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import React, { useEffect, useState } from "react"
+import APS, { APS_USER_INFO_UPDATE_EVENT } from "@/aps/APS"
 import { SynthesisIcons } from "./StyledComponents"
 
 interface UserIconProps {

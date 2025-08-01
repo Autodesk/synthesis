@@ -1,6 +1,6 @@
-import SceneObject from "@/systems/scene/SceneObject"
-import MirabufSceneObject from "./MirabufSceneObject"
 import Jolt from "@azaleacolburn/jolt-physics"
+import * as THREE from "three"
+import SceneObject from "@/systems/scene/SceneObject"
 import World from "@/systems/World"
 import {
     convertArrayToThreeMatrix4,
@@ -10,7 +10,7 @@ import {
     convertThreeVector3ToJoltRVec3,
     convertThreeVector3ToJoltVec3,
 } from "@/util/TypeConversions"
-import * as THREE from "three"
+import MirabufSceneObject from "./MirabufSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 
 class EjectableSceneObject extends SceneObject {

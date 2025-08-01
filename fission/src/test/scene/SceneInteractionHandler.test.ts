@@ -1,4 +1,4 @@
-import { expect, test, vi, beforeEach, describe, afterEach } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import ScreenInteractionHandler, {
     PRIMARY_MOUSE_INTERACTION,
     SECONDARY_MOUSE_INTERACTION,

@@ -1,5 +1,5 @@
+import { Box } from "@mui/material"
 import React, { ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useState } from "react"
-import { LabelSize } from "@/components/Label"
 import {
     Data,
     getMirabufFiles,
@@ -8,6 +8,7 @@ import {
     MirabufFilesUpdateEvent,
     requestMirabufFiles,
 } from "@/aps/APSDataManagement"
+import { LabelSize } from "@/components/Label"
 import MirabufCachingService, {
     backUpFields,
     backUpRobots,
@@ -16,14 +17,15 @@ import MirabufCachingService, {
     MirabufRemoteInfo,
     MiraType,
 } from "@/mirabuf/MirabufLoader"
-import World from "@/systems/World"
-import { useTooltipControlContext } from "@/ui/TooltipContext"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
-import { Box } from "@mui/material"
-import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import TaskStatus from "@/util/TaskStatus"
+import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
+import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import World from "@/systems/World"
+import Button from "@/ui/components/Button"
+import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
+import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import {
     DeleteButton,
     PositiveButton,
@@ -32,13 +34,11 @@ import {
     SectionLabel,
     SynthesisIcons,
 } from "@/ui/components/StyledComponents"
-import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
-import Panel, { PanelPropsImpl } from "@/ui/components/Panel"
-import Button from "@/ui/components/Button"
-import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
-import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
-import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
-import { SoundPlayer } from "@/systems/sound/SoundPlayer"
+import { ToggleButton, ToggleButtonGroup } from "@/ui/components/ToggleButtonGroup"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import { useTooltipControlContext } from "@/ui/TooltipContext"
+import TaskStatus from "@/util/TaskStatus"
 
 interface ItemCardProps {
     id: string

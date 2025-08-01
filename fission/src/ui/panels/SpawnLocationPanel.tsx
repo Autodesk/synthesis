@@ -1,6 +1,6 @@
-import { useTooltipControlContext } from "@/ui/TooltipContext"
 import Button from "@/components/Button"
 import Panel, { PanelPropsImpl } from "@/components/Panel"
+import { useTooltipControlContext } from "@/ui/TooltipContext"
 
 const SpawnLocationsPanel: React.FC<PanelPropsImpl> = ({ panelId, openLocation, sidePadding }) => {
     const robotsPerAlliance = 3

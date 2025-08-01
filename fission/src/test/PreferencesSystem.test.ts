@@ -1,11 +1,13 @@
+import { describe, expect, test } from "vitest"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
 import {
-    MotorPreferences,
-    RobotPreferences,
     FieldPreferences,
     GraphicsPreferences,
+    MotorPreferences,
+    RobotPreferences,
 } from "@/systems/preferences/PreferenceTypes"
-import { test, describe, expect } from "vitest"
+import { MatchModeType } from "@/systems/match_mode/MatchMode"
+import { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
 
 describe("Preferences System Global Values", () => {
     test("Setting values", () => {
@@ -202,7 +204,8 @@ describe("Preference System Robot/Field", () => {
                     parentNode: undefined,
                     deltaTransformation: [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
                     penaltyPoints: 2,
-                    requireRobotContact: false,
+                    contactType: ContactType.ROBOT_ENTERS,
+                    activeDuring: [MatchModeType.AUTONOMOUS, MatchModeType.TELEOP],
                 },
             ],
         }

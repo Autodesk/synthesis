@@ -1,5 +1,5 @@
-import { render, fireEvent } from "@testing-library/react"
-import { assert, describe, expect, test, beforeEach } from "vitest"
+import { fireEvent, render } from "@testing-library/react"
+import { assert, beforeEach, describe, expect, test } from "vitest"
 import SelectMenu, { SelectMenuOption } from "@/ui/components/SelectMenu"
 
 enum ConfigMode {
@@ -38,13 +38,17 @@ describe("Select Menu", () => {
         container = render(
             <SelectMenu
                 options={robotModes}
-                onOptionSelected={o => (selectedOption = o as ConfigModeSelectionOption)}
+                onOptionSelected={o => {
+                    selectedOption = o as ConfigModeSelectionOption
+                }}
                 onDelete={o => {
                     itemDeleted = o as ConfigModeSelectionOption
                 }}
                 deleteCondition={o => o != robotModes[0]}
                 defaultHeaderText="Test Select Menu"
-                onAddClicked={() => (addClicked = true)}
+                onAddClicked={() => {
+                    addClicked = true
+                }}
             />
         ).container
     })

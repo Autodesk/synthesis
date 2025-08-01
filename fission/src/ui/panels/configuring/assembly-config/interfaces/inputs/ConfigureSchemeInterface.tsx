@@ -1,9 +1,9 @@
-import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
-import EditInputInterface from "./EditInputInterface"
 import React, { useCallback, useEffect, useRef, useState } from "react"
-import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import { SectionDivider } from "@/ui/components/StyledComponents"
 import StatefulCheckbox from "@/components/StatefulCheckbox.tsx"
+import InputSchemeManager, { InputScheme } from "@/systems/input/InputSchemeManager"
+import { SectionDivider } from "@/ui/components/StyledComponents"
+import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
+import EditInputInterface from "./EditInputInterface"
 
 interface ConfigSchemeProps {
     selectedScheme: InputScheme

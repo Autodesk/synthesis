@@ -1,6 +1,6 @@
 import React from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Label from "@/components/Label"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import { SynthesisIcons } from "../components/StyledComponents"
 
 const UpdateAvailableModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

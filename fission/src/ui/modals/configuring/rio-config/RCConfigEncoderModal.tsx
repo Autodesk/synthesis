@@ -1,15 +1,15 @@
 import React, { useState } from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import Label, { LabelSize } from "@/components/Label"
-import Input from "@/components/Input"
 import Dropdown from "@/components/Dropdown"
-import WPILibBrain, { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import World from "@/systems/World"
+import Input from "@/components/Input"
+import Label, { LabelSize } from "@/components/Label"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
 import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
 import EncoderStimulus from "@/systems/simulation/stimulus/EncoderStimulus"
 import { SimEncoderInput } from "@/systems/simulation/wpilib_brain/SimInput"
+import WPILibBrain, { getSimMap, SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import World from "@/systems/World"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 
 const RCConfigEncoderModal: React.FC<ModalPropsImpl> = ({ modalId }) => {
     const { openModal } = useModalControlContext()

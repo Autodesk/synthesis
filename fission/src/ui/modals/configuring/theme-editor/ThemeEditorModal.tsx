@@ -1,16 +1,16 @@
-import { useModalControlContext } from "@/ui/helpers/UseModalManager"
-import { useTheme } from "@/ui/helpers/UseThemeHelpers"
-import { ColorName, Theme } from "@/ui/helpers/UseThemeHelpers"
-import Button from "@/components/Button"
-import Dropdown from "@/components/Dropdown"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
-import Stack, { StackDirection } from "@/components/Stack"
-import { random } from "@/util/Random"
 import { extend as cdExtend, random as cdRandom, colord } from "colord"
 import a11yPlugin from "colord/plugins/a11y"
 import React, { useState } from "react"
 import { HexColorInput, RgbaColor, RgbaColorPicker } from "react-colorful"
+import Button from "@/components/Button"
+import Dropdown from "@/components/Dropdown"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
+import Stack, { StackDirection } from "@/components/Stack"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
+import { useModalControlContext } from "@/ui/helpers/UseModalManager"
+import { ColorName, Theme, useTheme } from "@/ui/helpers/UseThemeHelpers"
+import { random } from "@/util/Random"
+
 cdExtend([a11yPlugin])
 
 const ThemeEditorModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

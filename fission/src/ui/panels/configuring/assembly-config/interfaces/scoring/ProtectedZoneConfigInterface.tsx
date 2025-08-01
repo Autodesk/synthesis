@@ -1,27 +1,37 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react"
-import Input from "@/components/Input"
-import Button from "@/components/Button"
-import Checkbox from "@/components/Checkbox"
-import NumberInput from "@/components/NumberInput"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
-import SelectButton from "@/ui/components/SelectButton"
 import Jolt from "@azaleacolburn/jolt-physics"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
+import Button from "@/components/Button"
+import Input from "@/components/Input"
+import NumberInput from "@/components/NumberInput"
+import { RigidNodeId } from "@/mirabuf/MirabufParser"
+import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
+import ProtectedZoneSceneObject, { ContactType } from "@/mirabuf/ProtectedZoneSceneObject"
+import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem"
+import { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
+import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
 import World from "@/systems/World"
+import SelectButton from "@/ui/components/SelectButton"
+import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import {
     convertArrayToThreeMatrix4,
     convertJoltMat44ToThreeMatrix4,
     convertThreeMatrix4ToArray,
 } from "@/util/TypeConversions"
-import MirabufSceneObject, { RigidNodeAssociate } from "@/mirabuf/MirabufSceneObject"
-import { Alliance, ProtectedZonePreferences } from "@/systems/preferences/PreferenceTypes"
-import { RigidNodeId } from "@/mirabuf/MirabufParser"
 import { deltaFieldTransformsPhysicalProp } from "@/util/threejs/MeshCreation"
 import { ConfigurationSavedEvent } from "../../ConfigurationSavedEvent"
-import GizmoSceneObject from "@/systems/scene/GizmoSceneObject"
-import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
-import { PAUSE_REF_ASSEMBLY_CONFIG } from "@/systems/physics/PhysicsSystem"
-import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
+import Dropdown from "@/ui/components/Dropdown"
+import { MatchModeType } from "@/systems/match_mode/MatchMode"
+
+const MATCH_MODE_OPTIONS: MatchModeType[] = [
+    MatchModeType.SANDBOX,
+    MatchModeType.AUTONOMOUS,
+    MatchModeType.TELEOP,
+    MatchModeType.ENDGAME,
+]
+
+const CONTACT_TYPE_OPTIONS = Object.values(ContactType)
 
 /**
  * Saves ejector configuration to selected field.
@@ -45,6 +55,7 @@ import ProtectedZoneSceneObject from "@/mirabuf/ProtectedZoneSceneObject"
  * @param alliance protected zone alliance.
  * @param points Number of points to penalize.
  * @param requireRobotContact Do you need to contact a robot for the penalty to apply.
+ * @param activeDuring Array of match mode types during which the zone is active.
  * @param gizmo Reference to the transform gizmo object.
  * @param selectedNode Selected node that configuration is relative to.
  */
@@ -54,7 +65,8 @@ function save(
     name: string,
     alliance: Alliance,
     points: number,
-    requireRobotContact: boolean,
+    contactType: ContactType,
+    activeDuring: MatchModeType[],
     gizmo: GizmoSceneObject,
     selectedNode?: RigidNodeId
 ) {
@@ -89,7 +101,8 @@ function save(
     zone.alliance = alliance
     zone.parentNode = selectedNode
     zone.penaltyPoints = points
-    zone.requireRobotContact = requireRobotContact
+    zone.contactType = contactType
+    zone.activeDuring = activeDuring
 
     if (!field.fieldPreferences.protectedZones.includes(zone)) field.fieldPreferences.protectedZones.push(zone)
 
@@ -103,7 +116,6 @@ interface ZoneConfigProps {
 }
 
 const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selectedZone, saveAllZones }) => {
-    //Official FIRST hex
     // TODO: Do we want to eventually make these editable?
     const redMaterial = useMemo(() => {
         return ProtectedZoneSceneObject.redMaterial.clone() as THREE.MeshPhongMaterial
@@ -117,7 +129,8 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
     const [alliance, setAlliance] = useState<Alliance>(selectedZone.alliance)
     const [selectedNode, setSelectedNode] = useState<RigidNodeId | undefined>(selectedZone.parentNode)
     const [points, setPoints] = useState<number>(selectedZone.penaltyPoints)
-    const [requireRobotContact, setRequireRobotContact] = useState<boolean>(selectedZone.requireRobotContact)
+    const [contactType, setContactType] = useState<ContactType>(selectedZone.contactType || ContactType.ROBOT_ENTERS)
+    const [activeDuring, setActiveDuring] = useState<MatchModeType[]>(selectedZone.activeDuring)
 
     const gizmoRef = useRef<GizmoSceneObject | undefined>(undefined)
 
@@ -129,13 +142,14 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 name,
                 alliance,
                 points,
-                requireRobotContact,
+                contactType,
+                activeDuring,
                 gizmoRef.current,
                 selectedNode
             )
             saveAllZones()
         }
-    }, [selectedField, selectedZone, name, alliance, points, requireRobotContact, selectedNode, saveAllZones])
+    }, [selectedField, selectedZone, name, alliance, points, contactType, activeDuring, selectedNode, saveAllZones])
 
     useEffect(() => {
         ConfigurationSavedEvent.listen(saveEvent)
@@ -255,7 +269,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 onSelect={(body: Jolt.Body) => trySetSelectedNode(body.GetID())}
             />
 
-            {/** Set the point value */}
+            {/** Set the penalty value */}
             <NumberInput
                 label="Penalty Points"
                 placeholder="Zone penalty points"
@@ -263,21 +277,29 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                 onInput={v => setPoints(v || 1)}
             />
 
-            {/** When checked, the zone will destroy gamepieces it comes in contact with */}
-            {/** <Checkbox
-                    label="Destroy Gamepiece"
-                    defaultState={selectedZone.destroyGamepiece}
-                    onClick={setDestroy}
-                /> */}
-
-            {/** When checked, points will stay even when a gamepiece leaves the zone */}
-            <Checkbox
-                label="Require Robot Contact"
-                defaultState={selectedZone.requireRobotContact}
-                onClick={setRequireRobotContact}
+            {/** Determines during what game state the protected zone is active */}
+            <Dropdown
+                label="Active During"
+                options={MATCH_MODE_OPTIONS}
+                onSelect={(selectedOptions: string[]) => {
+                    setActiveDuring(selectedOptions as MatchModeType[])
+                }}
+                defaultValue={activeDuring}
+                maxWidth="15rem"
+                multiSelect={true}
+                textAlign="left"
             />
 
-            {/** Switch between transform control modes */}
+            {/** Determines what type of contact is required for the penalty to apply */}
+            <Dropdown
+                label="Contact Type"
+                options={CONTACT_TYPE_OPTIONS}
+                onSelect={(selectedOption: string) => {
+                    setContactType(selectedOption as ContactType)
+                }}
+                defaultValue={contactType}
+                textAlign="left"
+            />
 
             {gizmoComponent}
         </div>

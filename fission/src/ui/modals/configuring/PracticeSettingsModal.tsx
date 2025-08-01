@@ -1,9 +1,9 @@
 import React from "react"
-import Modal, { ModalPropsImpl } from "@/components/Modal"
 import Button from "@/components/Button"
-import Label, { LabelSize } from "@/components/Label"
-import Stack, { StackDirection } from "@/components/Stack"
 import Dropdown from "@/components/Dropdown"
+import Label, { LabelSize } from "@/components/Label"
+import Modal, { ModalPropsImpl } from "@/components/Modal"
+import Stack, { StackDirection } from "@/components/Stack"
 import { SynthesisIcons } from "@/ui/components/StyledComponents"
 
 const PracticeSettingsModal: React.FC<ModalPropsImpl> = ({ modalId }) => {

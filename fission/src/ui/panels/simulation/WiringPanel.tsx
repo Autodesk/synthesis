@@ -1,11 +1,8 @@
 import "@xyflow/react/dist/style.css"
-import Panel, { PanelPropsImpl } from "@/components/Panel"
-import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
-import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
 import {
     Connection,
-    Edge as FlowEdge,
     FinalConnectionState,
+    Edge as FlowEdge,
     Node as FlowNode,
     NodeProps,
     ReactFlow,
@@ -14,6 +11,22 @@ import {
     useNodesState,
     useReactFlow,
 } from "@xyflow/react"
+import React, { ComponentType, useCallback, useEffect, useMemo, useReducer, useState } from "react"
+import Panel, { PanelPropsImpl } from "@/components/Panel"
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import InputSystem from "@/systems/input/InputSystem"
+import { isNoraDeconstructable } from "@/systems/simulation/Nora"
+import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
+import World from "@/systems/World"
+import Button from "@/ui/components/Button"
+import Checkbox from "@/ui/components/Checkbox"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
+import Label, { LabelSize } from "@/ui/components/Label"
+import ScrollView from "@/ui/components/ScrollView"
+import { SectionDivider, SectionLabel, SynthesisIcons } from "@/ui/components/StyledComponents"
+import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
+import FlowControls from "./FlowControls"
+import FlowInfo from "./FlowInfo"
 import {
     ConfigState,
     HandleInfo,
@@ -24,20 +37,7 @@ import {
     SimConfig,
     SimConfigData,
 } from "./SimConfigShared"
-import Label, { LabelSize } from "@/ui/components/Label"
-import ScrollView from "@/ui/components/ScrollView"
-import Checkbox from "@/ui/components/Checkbox"
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import World from "@/systems/World"
-import Button from "@/ui/components/Button"
-import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
-import { globalAddToast } from "@/ui/components/GlobalUIControls"
-import FlowControls from "./FlowControls"
 import WiringNode from "./WiringNode"
-import { SimType } from "@/systems/simulation/wpilib_brain/WPILibBrain"
-import { isNoraDeconstructable } from "@/systems/simulation/Nora"
-import InputSystem from "@/systems/input/InputSystem"
-import FlowInfo from "./FlowInfo"
 
 type ConfigComponentProps = {
     setConfigState: (state: ConfigState) => void
