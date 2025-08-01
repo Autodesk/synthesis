@@ -1,6 +1,6 @@
 import type Jolt from "@azaleacolburn/jolt-physics"
-import { Switch } from "@mui/base/Switch"
 import { Button, Stack } from "@mui/material"
+import Checkbox from "@/ui/components/Checkbox"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import * as THREE from "three"
 import SelectButton from "@/components/SelectButton"
@@ -305,56 +305,11 @@ const ConfigureGamepiecePickupInterface: React.FC<ConfigPickupProps> = ({ select
             />
 
             {/* Checkbox for showing intake zone indicator at all times */}
-            <Stack direction="row" justifyContent={"space-between"} alignItems={"center"} textAlign={"center"}>
-                <Label size="sm" className="mr-12 whitespace-nowrap">
-                    Show intake zone indicator always
-                </Label>
-                <Switch
-                    checked={showZoneAlways}
-                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                        setShowZoneAlways(e.target.checked)
-                    }}
-                    slotProps={{
-                        root: {
-                            className: `
-                                group relative inline-block 
-                                w-[24px] h-[24px] m-2.5 
-                                cursor-pointer transform transition-transform 
-                                hover:scale-[1.03] active:scale-[1.06]
-                            `,
-                        },
-                        input: {
-                            className: `
-                                cursor-inherit absolute 
-                                w-full h-full top-0 left-0 
-                                opacity-0 z-10 border-none
-                            `,
-                        },
-                        track: ownerState => {
-                            const baseClasses = `
-                                absolute block w-full h-full 
-                                transition rounded-full 
-                                border border-solid outline-none 
-                                border-interactive-element-right 
-                                dark:border-interactive-element-right 
-                                group-[.base--focusVisible]:shadow-outline-switch 
-                                transform transition-transform 
-                                group-hover:scale-[1.03] group-active:scale-[1.06]
-                            `
-                            const backgroundClasses = ownerState.checked
-                                ? "bg-gradient-to-br from-interactive-element-left to-interactive-element-right"
-                                : "bg-background-secondary"
-
-                            return {
-                                className: `${baseClasses} ${backgroundClasses}`,
-                            }
-                        },
-                        thumb: {
-                            className: "display-none",
-                        },
-                    }}
-                />
-            </Stack>
+            <Checkbox
+                label="Show intake zone indicator always"
+                checked={showZoneAlways}
+                onClick={setShowZoneAlways}
+            />
             {gizmoComponent}
             {Spacer(10)}
             <Button
