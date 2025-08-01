@@ -64,6 +64,9 @@ dependencies {
 
     // KAUAI
     implementation "com.kauailabs.navx.frc:navx-frc-java:$KAUAI_Version"
+
+    // JSON processing
+    implementation 'org.json:json:20231013'
 }
 
 java {
