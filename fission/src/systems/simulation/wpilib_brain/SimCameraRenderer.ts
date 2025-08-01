@@ -95,10 +95,15 @@ export class SimCameraRenderer {
         return imageData
     }
 
-    public captureFrame():  {
+    public captureFrameAsJPEG(): Promise<Blob> {
         const imageData = this.renderFrame()
+        if (!imageData) return Promise.reject("No frame data")
 
-        return imageData
+        // Draw to canvas
+        this._ctx.putImageData(imageData, 0, 0)
+
+        // Convert to JPEG blob
+        return this._canvas.convertToBlob({ type: "image/jpeg", quality: 0.8 })
     }
 
     public setResolution(width: number, height: number) {
