@@ -12,6 +12,9 @@ public class Camera {
     private SimDouble m_width;
     private SimDouble m_height;
     private SimDouble m_fps;
+    private SimDouble m_brightness;
+    private SimDouble m_exposure;
+    private SimBoolean m_autoExposure;
 
     /**
      * Creates a Camera sim device in accordance with the WebSocket API Specification.
@@ -26,6 +29,9 @@ public class Camera {
         m_width = m_device.createDouble("width", Direction.kBidir, 320);
         m_height = m_device.createDouble("height", Direction.kBidir, 240);
         m_fps = m_device.createDouble("fps", Direction.kBidir, 30);
+        m_brightness = m_device.createDouble("brightness", Direction.kBidir, 50);
+        m_exposure = m_device.createDouble("exposure", Direction.kBidir, 50);
+        m_autoExposure = m_device.createBoolean("auto_exposure", Direction.kBidir, true);
     }
 
     /**
@@ -98,6 +104,60 @@ public class Camera {
      */
     public void setFPS(double fps) {
         m_fps.set(fps);
+    }
+
+    /**
+     * Get the camera brightness.
+     *
+     * @return brightness (0-100)
+     */
+    public double getBrightness() {
+        return m_brightness.get();
+    }
+
+    /**
+     * Set the camera brightness.
+     *
+     * @param brightness brightness (0-100)
+     */
+    public void setBrightness(double brightness) {
+        m_brightness.set(brightness);
+    }
+
+    /**
+     * Get the camera exposure.
+     *
+     * @return exposure value
+     */
+    public double getExposure() {
+        return m_exposure.get();
+    }
+
+    /**
+     * Set the camera exposure.
+     *
+     * @param exposure exposure value
+     */
+    public void setExposure(double exposure) {
+        m_exposure.set(exposure);
+    }
+
+    /**
+     * Get whether auto exposure is enabled.
+     *
+     * @return true if auto exposure is enabled
+     */
+    public boolean getAutoExposure() {
+        return m_autoExposure.get();
+    }
+
+    /**
+     * Set auto exposure mode.
+     *
+     * @param autoExposure true to enable auto exposure
+     */
+    public void setAutoExposure(boolean autoExposure) {
+        m_autoExposure.set(autoExposure);
     }
 }
 
