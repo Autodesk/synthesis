@@ -1263,7 +1263,7 @@ class PhysicsSystem extends WorldSystem {
         })
     }
 
-    public getBody(bodyId: Jolt.BodyID) {
+    public getBody(bodyId: Jolt.BodyID): Jolt.Body {
         return this._joltPhysSystem.GetBodyLockInterface().TryGetBody(bodyId)
     }
 
@@ -1288,7 +1288,6 @@ class PhysicsSystem extends WorldSystem {
             )
 
             const clientSceneObjectId = World.multiplayerSystem.getClientSceneObjectId()
-            console.log(`ClientSceneObjectId: ${clientSceneObjectId}`)
             if (clientSceneObjectId != null) {
                 // console.error("Client Scene Object not found")
 
@@ -1313,12 +1312,29 @@ class PhysicsSystem extends WorldSystem {
                           }
                         : {
                               type: "update",
-                              data: touchedBodies.map(([sceneObjectKey, mechanism]) => {
-                                  return {
-                                      sceneObjectKey,
-                                      mechanism,
-                                  }
-                              }),
+                              data: [
+                                  [clientSceneObject.id, clientSceneObject.mechanism] as [number, Mechanism],
+                                  ...touchedBodies,
+                              ]
+                                  .map(([sceneObjectKey, mechanism]) => {
+                                      const rootBodyId = mechanism.nodeToBody.get(mechanism.rootBody)
+                                      if (!rootBodyId) return
+                                      const rootBody = World.physicsSystem.getBody(rootBodyId)
+
+                                      const linearVelocity = rootBody.GetLinearVelocity()
+                                      const angularVelocity = rootBody.GetAngularVelocity()
+                                      const position = rootBody.GetPosition()
+                                      const rotation = rootBody.GetRotation()
+
+                                      return {
+                                          sceneObjectKey,
+                                          linearVelocityStr: `{"x": ${linearVelocity.GetX()}, "y": ${linearVelocity.GetY()}, "z": ${linearVelocity.GetZ()}}`,
+                                          angularVelocityStr: `{"x": ${angularVelocity.GetX()}, "y": ${angularVelocity.GetY()}, "z": ${angularVelocity.GetZ()}}`,
+                                          positionStr: `{"x": ${position.GetX()}, "y": ${position.GetY()}, "z": ${position.GetZ()}}`,
+                                          rotationStr: `{"x": ${rotation.GetX()}, "y": ${rotation.GetY()}, "z": ${rotation.GetZ()}, "w": ${rotation.GetW()}}`,
+                                      }
+                                  })
+                                  .filter(n => n != null),
                           }
                 World.multiplayerSystem?.broadcast(message)
 
