@@ -81,6 +81,14 @@ export class SimCameraRenderer {
 
         // Read pixels
         const pixels = new Uint8Array(this._renderTarget.width * this._renderTarget.height * 4)
+        renderer.readRenderTargetPixels(
+            this._renderTarget,
+            0,
+            0,
+            this._renderTarget.width,
+            this._renderTarget.height,
+            pixels
+        )
 
         // Restore original target
         renderer.setRenderTarget(originalTarget)
