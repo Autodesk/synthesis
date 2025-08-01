@@ -211,9 +211,7 @@ const MainHUD: React.FC = () => {
                     <MainHUDButton
                         value={"Configure Assets"}
                         icon={SynthesisIcons.WRENCH}
-                        onClick={() =>
-                            openPanel(ConfigurePanel, {})
-                        }
+                        onClick={() => openPanel(ConfigurePanel, {})}
                     />
                     <MainHUDButton
                         value={"General Settings"}
