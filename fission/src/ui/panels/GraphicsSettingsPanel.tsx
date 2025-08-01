@@ -20,7 +20,7 @@ const MAX_CASCADES = 8
 
 const MIN_SHADOW_MAP_SIZE = 1024
 
-const GraphicsSettingsPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const GraphicsSettingsPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [reload, setReload] = useState<boolean>(false)
     const [lightIntensity, setLightIntensity] = useState<number>(

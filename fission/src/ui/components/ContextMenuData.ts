@@ -1,14 +1,13 @@
 // DATA
 
-import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
-import { ConfigMode, ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
+import type { FunctionComponent } from "react"
 
 export interface ContextItem {
     name: string
-    configurationType?: ConfigurationType
-    configMode?: ConfigMode
-    selectedAssembly?: MirabufSceneObject
-    func: () => void
+    customProps?: Record<string, unknown>
+    screen?: FunctionComponent
+    type?: "panel" | "modal"
+    func?: () => void
 }
 
 export interface ContextData {

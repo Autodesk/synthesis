@@ -41,7 +41,7 @@ function isScoringZonePreferencesArray(val: unknown): val is ScoringZonePreferen
     )
 }
 
-const DeveloperToolPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const DeveloperToolPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [selectedKey, setSelectedKey] = useState<DevtoolKey | undefined>(undefined)
     const [jsonValue, setJsonValue] = useState<string>("")

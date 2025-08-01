@@ -359,7 +359,7 @@ function WiringComponent({ setConfigState, simConfig, reset }: ConfigComponentPr
     )
 }
 
-const WiringPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const WiringPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [configState, setConfigState] = useState<ConfigState>("wiring")
     const { addToast, configureScreen } = useUIContext()
     const [simConfig, setSimConfig] = useState<SimConfigData | undefined>(undefined)

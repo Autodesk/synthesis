@@ -6,7 +6,7 @@ import Label from "../components/Label"
 import { useUIContext } from "../helpers/UIProviderHelpers"
 import { PanelImplProps } from "../components/Panel"
 
-const RobotSwitchPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const RobotSwitchPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [robots, setRobots] = useState(["Dozer_v9_0", "Team 2471 (2018) v7_0"])
     const [selected, setSelected] = useState(0)

@@ -38,13 +38,17 @@ export interface ConfigurePanelSettings {
     selectedAssembly: MirabufSceneObject
 }
 
-interface ConfigInterfaceProps<T> {
-    panel: UIScreen<T>
+interface ConfigInterfaceProps<T, P> {
+    panel: UIScreen<T, P>
     configMode: ConfigMode
     assembly: MirabufSceneObject
 }
 
-const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMode, assembly }) => {
+const ConfigInterface: React.FC<ConfigInterfaceProps<void, ConfigurePanelCustomProps>> = ({
+    panel,
+    configMode,
+    assembly,
+}) => {
     const { openPanel, closePanel } = useUIContext()
 
     switch (configMode) {
@@ -63,7 +67,7 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
                     <Button
                         onClick={() => {
                             setSpotlightAssembly(assembly)
-                            openPanel(<ChooseInputSchemePanel />, panel)
+                            openPanel(ChooseInputSchemePanel, undefined, panel)
                             closePanel(panel.id, CloseType.Overwrite)
                         }}
                     >
@@ -116,15 +120,19 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
     }
 }
 
-const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
-    const { configureScreen } = useUIContext()
-    const { configurationType, setConfigurationType, configurePanelSettings, setConfigurePanelSettings } =
-        useStateContext()
+export interface ConfigurePanelCustomProps {
+    selectedAssembly?: MirabufSceneObject
+    configMode?: ConfigMode
+}
 
-    const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(
-        configurePanelSettings?.selectedAssembly
-    )
-    const [configMode, setConfigMode] = useState<ConfigMode | undefined>(configurePanelSettings?.configMode)
+const ConfigurePanel: React.FC<PanelImplProps<void, ConfigurePanelCustomProps>> = ({ panel }) => {
+    const { configureScreen } = useUIContext()
+    const { configurationType, setConfigurationType } = useStateContext()
+
+    const { configMode: initialConfigMode, selectedAssembly: initialSelectedAssembly } = panel!.props.custom
+
+    const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(initialSelectedAssembly)
+    const [configMode, setConfigMode] = useState<ConfigMode | undefined>(initialConfigMode)
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
     const originalRobotPrefs = useRef<RobotPreferences | null>(null)
@@ -136,23 +144,16 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
         const allSchemes: InputScheme[] = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
 
-        const settings = configurePanelSettings
+        if (selectedAssembly) {
+            const name = selectedAssembly.assemblyName
 
-        if (settings) {
-            setConfigMode(settings.configMode)
-            if (settings.selectedAssembly) {
-                setSelectedAssembly(settings.selectedAssembly)
+            const robotPrefs = PreferencesSystem.getRobotPreferences(name)
+            const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
+            const motorPrefs = PreferencesSystem.getMotorPreferences(name)
 
-                const name = settings.selectedAssembly.assemblyName
-
-                const robotPrefs = PreferencesSystem.getRobotPreferences(name)
-                const fieldPrefs = PreferencesSystem.getFieldPreferences(name)
-                const motorPrefs = PreferencesSystem.getMotorPreferences(name)
-
-                if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
-                if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
-                if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
-            }
+            if (robotPrefs) originalRobotPrefs.current = structuredClone(robotPrefs)
+            if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
+            if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
         }
     }, [])
 
@@ -195,14 +196,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             originalInputSchemes.current = null
         }
 
-        const onClose = () => {
-            setConfigurePanelSettings(undefined)
-        }
-
         configureScreen(
             panel!,
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
-            { onBeforeAccept, onCancel, onClose }
+            { onBeforeAccept, onCancel }
         )
     }, [configurationType, selectedAssembly, pendingDeletes])
 
@@ -314,7 +311,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         onAssemblySelected={a => {
                             if (configMode !== undefined) new ConfigurationSavedEvent()
                             setConfigMode(undefined)
-                            setSelectedAssembly(a)
+                            setSelectedAssembly(a as MirabufSceneObject)
                         }}
                         selectedAssembly={selectedAssembly}
                         onStageDelete={opt => {
@@ -326,6 +323,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     {selectedAssembly !== undefined && (
                         <ConfigModeSelection
                             modes={modes}
+                            configMode={configMode}
                             onModeSelected={mode => {
                                 if (configMode !== undefined) new ConfigurationSavedEvent()
                                 setConfigMode(mode)

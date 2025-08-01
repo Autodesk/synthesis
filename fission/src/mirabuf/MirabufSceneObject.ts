@@ -21,7 +21,7 @@ import SynthesisBrain from "@/systems/simulation/synthesis_brain/SynthesisBrain"
 import WPILibBrain from "@/systems/simulation/wpilib_brain/WPILibBrain"
 import World from "@/systems/World"
 import { ContextData, ContextSupplier } from "@/ui/components/ContextMenuData"
-import { globalAddToast, globalOpenPanel } from "@/ui/components/GlobalUIControls"
+import { globalAddToast } from "@/ui/components/GlobalUIControls"
 import { ProgressHandle } from "@/ui/components/ProgressNotificationData"
 import { SceneOverlayTag } from "@/ui/components/SceneOverlayEvents"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -36,7 +36,6 @@ import MirabufParser, { ParseErrorSeverity, type RigidNodeId, type RigidNodeRead
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
 import { SimConfigData } from "@/systems/simulation/SimConfigShared"
-import React from "react"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
 import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
@@ -825,30 +824,31 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
         data.items.push(
             {
                 name: "Move",
-                configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
-                configMode: ConfigMode.MOVE,
-                selectedAssembly: this,
-                func: () => {
-                    globalOpenPanel(React.createElement(ConfigurePanel))
+                customProps: {
+                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configMode: ConfigMode.MOVE,
+                    selectedAssembly: this,
                 },
+                screen: ConfigurePanel,
+                type: "panel",
             },
             {
                 name: "Configure",
-                configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
-                configMode: undefined,
-                selectedAssembly: this,
-                func: () => {
-                    globalOpenPanel(React.createElement(ConfigurePanel))
+                customProps: {
+                    configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                    configMode: undefined,
+                    selectedAssembly: this,
                 },
+                screen: ConfigurePanel,
+                type: "panel",
             }
         )
 
         if (this.brain?.brainType == "wpilib") {
             data.items.push({
                 name: "Auto Testing",
-                func: () => {
-                    globalOpenPanel(React.createElement(AutoTestPanel))
-                },
+                screen: AutoTestPanel,
+                type: "panel",
             })
         }
 

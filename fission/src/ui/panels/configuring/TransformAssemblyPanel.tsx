@@ -8,7 +8,7 @@ import TransformGizmoControl from "@/ui/components/TransformGizmoControl"
 import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { PanelImplProps } from "@/ui/components/Panel"
 
-const TransformAssemblyPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const TransformAssemblyPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const targetAssembly = useMemo(() => getSpotlightAssembly(), [])
 

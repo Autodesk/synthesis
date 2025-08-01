@@ -101,7 +101,7 @@ function setGeneric(simType: SimType, device: string, field: string, value: stri
     }
 }
 
-const WSViewPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const WSViewPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     // const [tb, setTb] = useState(generateTableBody())
     const { configureScreen } = useUIContext()
 

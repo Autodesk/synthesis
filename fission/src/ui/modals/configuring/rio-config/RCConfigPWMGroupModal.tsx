@@ -15,7 +15,7 @@ import ScrollView from "@/ui/components/ScrollView"
 import Checkbox from "@/ui/components/Checkbox"
 import Label from "@/ui/components/Label"
 
-const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const RCConfigPWMGroupModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
     const [name, setName] = useState<string>("")
     const [checkedPorts, setCheckedPorts] = useState<number[]>([])
@@ -47,7 +47,7 @@ const RCConfigPWMGroupModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             }
         }
         const onCancel = () => {
-            openModal(<RoboRIOModal />, modal)
+            openModal(RoboRIOModal, undefined, modal)
         }
 
         configureScreen(modal!, { title: "Create Device", acceptText: "Done" }, { onBeforeAccept, onCancel })

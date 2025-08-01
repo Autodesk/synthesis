@@ -14,7 +14,7 @@ import Label from "@/ui/components/Label"
 import { GlobalPreference, GlobalPreferences } from "@/systems/preferences/PreferenceTypes"
 import { ThemeEditorPanel } from "@/ui/panels/ThemeEditorPanel"
 
-const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const SettingsModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { closeModal, openPanel, configureScreen } = useUIContext()
     const [_, refresh] = useReducer(x => !x, false)
     const save = useCallback(() => {
@@ -42,7 +42,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             <Stack alignSelf={"center"} direction="row" gap={2}>
                 <Button
                     onClick={() => {
-                        openPanel(<GraphicsSettingsPanel />, modal)
+                        openPanel(GraphicsSettingsPanel, undefined, modal)
                         closeModal(CloseType.Overwrite)
                         save()
                     }}
@@ -51,7 +51,7 @@ const SettingsModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
                 </Button>
                 <Button
                     onClick={() => {
-                        openPanel(<ThemeEditorPanel />, modal)
+                        openPanel(ThemeEditorPanel, undefined, modal)
                         closeModal(CloseType.Overwrite)
                         save()
                     }}

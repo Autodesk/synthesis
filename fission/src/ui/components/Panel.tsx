@@ -9,16 +9,18 @@ import {
     useUIContext,
 } from "../helpers/UIProviderHelpers"
 
-export type PanelImplProps<T> = Partial<{
-    panel: PanelType<T>
-    parent?: PanelType<T> | ModalType<T>
+// biome-ignore-start lint/suspicious/noExplicitAny: need to be able to extend
+export type PanelImplProps<T, P> = Partial<{
+    panel: PanelType<T, P>
+    parent?: PanelType<any, any> | ModalType<any, any>
 }>
 
-interface PanelElementProps<T> {
-    children?: ReactElement<PanelImplProps<T>>
-    panel: PanelType<T>
-    parent?: PanelType<T> | ModalType<T>
+interface PanelElementProps<T, P> {
+    children?: ReactElement<PanelImplProps<any, any>>
+    panel: PanelType<T, P>
+    parent?: PanelType<any, any> | ModalType<any, any>
 }
+// biome-ignore-end lint/suspicious/noExplicitAny: need to be able to extend
 
 // TODO: I don't like this
 const HALF_W = "calc(50vw - 50%)"
@@ -50,7 +52,7 @@ const getPositionOffset = (position: PanelPosition) => {
     }
 }
 
-export const Panel = <T,>({ children, panel, parent }: PanelElementProps<T>) => {
+export const Panel = <T, P>({ children, panel, parent }: PanelElementProps<T, P>) => {
     const { closePanel } = useUIContext()
 
     const props = panel.props

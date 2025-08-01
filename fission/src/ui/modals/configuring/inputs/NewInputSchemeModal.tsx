@@ -10,7 +10,7 @@ import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import { Stack } from "@mui/system"
 
-const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const NewInputSchemeModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openPanel, configureScreen } = useUIContext()
     const { setSelectedScheme, setConfigurationType } = useStateContext()
 
@@ -28,7 +28,15 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
 
             setConfigurationType("INPUTS")
             setSelectedScheme(scheme)
-            openPanel(<ConfigurePanel />, modal)
+            openPanel(
+                ConfigurePanel,
+                {
+                    configMode: undefined,
+                    selectedAssembly: undefined,
+                },
+                modal,
+                { position: "left" }
+            )
         }
         configureScreen(modal!, { title: "New Input Scheme", hideCancel: true }, { onBeforeAccept })
     }, [name, setConfigurationType, setSelectedScheme, openPanel, modal])

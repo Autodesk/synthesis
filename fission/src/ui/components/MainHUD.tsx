@@ -205,23 +205,25 @@ const MainHUD: React.FC = () => {
                     value={"Spawn Asset"}
                     icon={SynthesisIcons.ADD}
                     larger={true}
-                    onClick={() => openPanel(<ImportMirabufPanel />)}
+                    onClick={() => openPanel(ImportMirabufPanel, undefined)}
                 />
                 <Stack direction="column" sx={{ borderRadius: "7px", padding: "4px" }} bgcolor="primary.main" gap={0.5}>
                     <MainHUDButton
                         value={"Configure Assets"}
                         icon={SynthesisIcons.WRENCH}
-                        onClick={() => openPanel(<ConfigurePanel />)}
+                        onClick={() =>
+                            openPanel(ConfigurePanel, {})
+                        }
                     />
                     <MainHUDButton
                         value={"General Settings"}
                         icon={SynthesisIcons.GEAR}
-                        onClick={() => openModal(<SettingsModal />, undefined, { allowClickAway: false })}
+                        onClick={() => openModal(SettingsModal, undefined, undefined, { allowClickAway: false })}
                     />
                     <MainHUDButton
                         value={"Developer Tool"}
                         icon={SynthesisIcons.CODE_SQUARE}
-                        onClick={() => openPanel(<DeveloperToolPanel />)}
+                        onClick={() => openPanel(DeveloperToolPanel, undefined)}
                     />
                     {/** Will be coming soonish...tm */}
                     {/* <MainHUDButton
@@ -233,7 +235,7 @@ const MainHUD: React.FC = () => {
                         value={"Debug Tools"}
                         icon={SynthesisIcons.BUG}
                         onClick={() => {
-                            openPanel(<DebugPanel />)
+                            openPanel(DebugPanel, undefined)
                         }}
                     />
                     {touchCompatibility && (
@@ -249,7 +251,7 @@ const MainHUD: React.FC = () => {
                         value={`Hi, ${userInfo.givenName}`}
                         icon={<UserIcon className="h-[20pt] m-[5pt] rounded-full" />}
                         larger={true}
-                        onClick={() => openModal(<APSManagementModal />)}
+                        onClick={() => openModal(APSManagementModal, undefined)}
                     />
                 ) : (
                     <MainHUDButton
@@ -265,7 +267,7 @@ const MainHUD: React.FC = () => {
                         icon={SynthesisIcons.GAMEPAD}
                         larger={true}
                         onClick={() => {
-                            openPanel(<MatchModeConfigPanel />)
+                            openPanel(MatchModeConfigPanel, undefined)
                             setIsOpen(false)
                         }}
                     />

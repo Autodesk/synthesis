@@ -112,7 +112,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                         World.sceneRenderer.registerSceneObject(x)
                         progressHandle.done()
 
-                        globalOpenPanel(<InitialConfigPanel />)
+                        globalOpenPanel(InitialConfigPanel, undefined)
                     } else {
                         progressHandle.fail()
                     }
@@ -130,7 +130,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
         })
 }
 
-const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) => {
+const ImportMirabufPanel: React.FC<PanelImplProps<void, void>> = ({ panel, parent }) => {
     const { addToast, closePanel, openModal, configureScreen } = useUIContext()
     const { unconfirmedImport, configurationType, setConfigurationType } = useStateContext()
 
@@ -517,7 +517,7 @@ const ImportMirabufPanel: React.FC<PanelImplProps<void>> = ({ panel, parent }) =
             <Box alignSelf={"center"}>
                 <Button
                     onClick={() => {
-                        openModal(<ImportLocalMirabufModal />)
+                        openModal(ImportLocalMirabufModal, undefined)
                         closePanel(panel!.id, CloseType.Overwrite)
                     }}
                 >

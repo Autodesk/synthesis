@@ -105,7 +105,7 @@ const ConfigureInputsInterface: React.FC = () => {
                         return val.scheme.customized
                     }}
                     onAddClicked={() => {
-                        openModal(<NewInputSchemeModal />)
+                        openModal(NewInputSchemeModal, undefined)
                     }}
                     defaultSelectedOption={selectedScheme ? schemeOptionMap.get(selectedScheme) : undefined}
                 />

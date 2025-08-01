@@ -23,7 +23,7 @@ function OrbitSettings({ controls }: OrbitSettingsProps) {
     return <Checkbox label="Lock to Robot" checked={locked} onClick={setLocked} />
 }
 
-const CameraSelectionPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const CameraSelectionPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
     const [cameraControlType, setCameraControlType] = useState<CameraControlsType>(
         World.sceneRenderer.currentCameraControls.controlsType

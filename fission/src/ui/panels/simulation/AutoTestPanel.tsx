@@ -303,7 +303,7 @@ function Staging({ assembly, setPlaying }: StagingProps) {
     )
 }
 
-const AutoTestPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const AutoTestPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const [activeProps, setActiveProps] = useState<StagingProps | PlayingProps | EndProps | undefined>(undefined)
     const { configureScreen } = useUIContext()
 

@@ -26,7 +26,7 @@ function toggleDragMode() {
     }
 }
 
-const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const DebugPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
     const { openPanel, configureScreen } = useUIContext()
 
     useEffect(() => {
@@ -63,7 +63,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 >
                     Toasts
                 </Button>
-                <Button onClick={() => openPanel(<PokerPanel />, panel)}>The Poker</Button>
+                <Button onClick={() => openPanel(PokerPanel, undefined, panel)}>The Poker</Button>
                 <Button onClick={toggleDragMode} className="w-full">
                     Toggle Drag Mode
                 </Button>
@@ -109,7 +109,7 @@ const DebugPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 </Button>
 
                 <Label size="sm">Code Simulation</Label>
-                <Button onClick={() => openPanel(<WsViewPanel />, panel)} className="w-full">
+                <Button onClick={() => openPanel(WsViewPanel, undefined, panel)} className="w-full">
                     WS Viewer
                 </Button>
             </Stack>

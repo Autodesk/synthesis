@@ -2,8 +2,8 @@ import { Button, Divider, Stack } from "@mui/material"
 import { useEffect, useState } from "react"
 import { type ContextData, ContextSupplierEvent } from "./ContextMenuData"
 import Label from "./Label"
-import { useStateContext } from "../helpers/StateProviderHelpers"
-// import { colorNameToVar } from "../ThemeContext"
+import { globalOpenModal, globalOpenPanel } from "./GlobalUIControls"
+import React from "react"
 
 interface ContextMenuStateData {
     data: ContextData
@@ -11,7 +11,6 @@ interface ContextMenuStateData {
 }
 
 const ContextMenu: React.FC = () => {
-    const { setConfigurationType, setConfigurePanelSettings } = useStateContext()
     const [state, setState] = useState<ContextMenuStateData | undefined>(undefined)
 
     useEffect(() => {
@@ -73,14 +72,14 @@ const ContextMenu: React.FC = () => {
                         className={"w-full text-sm"}
                         onClick={() => {
                             setState(undefined)
-                            if (x.selectedAssembly) {
-                                setConfigurePanelSettings({
-                                    configMode: x.configMode,
-                                    selectedAssembly: x.selectedAssembly,
-                                })
+                            if (x.screen) {
+                                if (x.type === "modal") {
+                                    globalOpenModal(x.screen, x.customProps)
+                                } else {
+                                    globalOpenPanel(x.screen, x.customProps)
+                                }
                             }
-                            if (x.configurationType) setConfigurationType(x.configurationType)
-                            x.func()
+                            x.func?.()
                         }}
                     >
                         {x.name}

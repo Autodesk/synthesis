@@ -13,7 +13,7 @@ import RCConfigPWMGroupModal from "./RCConfigPWMGroupModal"
 
 type DeviceType = "PWM" | "CAN" | "Encoder"
 
-const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
+const RCCreateDeviceModal: React.FC<ModalImplProps<void, void>> = ({ modal }) => {
     const { openModal, configureScreen } = useUIContext()
     const [type, setType] = useState<DeviceType>("PWM")
 
@@ -32,19 +32,19 @@ const RCCreateDeviceModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
             }
             switch (type) {
                 case "PWM":
-                    openModal(<RCConfigPWMGroupModal />, modal)
+                    openModal(RCConfigPWMGroupModal, undefined, modal)
                     break
                 case "CAN":
-                    openModal(<RCConfigCANGroupModal />, modal)
+                    openModal(RCConfigCANGroupModal, undefined, modal)
                     break
                 case "Encoder":
-                    openModal(<RCConfigEncoderModal />, modal)
+                    openModal(RCConfigEncoderModal, undefined, modal)
                     break
                 default:
                     break
             }
         }
-        const onCancel = () => openModal(<RoboRIOModal />, modal)
+        const onCancel = () => openModal(RoboRIOModal, undefined, modal)
 
         configureScreen(modal!, { title: "Create Device", acceptText: "Next" }, { onBeforeAccept, onCancel })
     }, [])

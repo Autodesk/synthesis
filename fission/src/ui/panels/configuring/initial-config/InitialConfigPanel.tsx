@@ -20,7 +20,8 @@ import Label from "@/ui/components/Label"
 import SimulationSystem from "@/systems/simulation/SimulationSystem"
 import NewInputSchemeModal from "@/ui/modals/configuring/inputs/NewInputSchemeModal"
 
-const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
+const InitialConfigPanel: React.FC<PanelImplProps<void, void>> = ({ panel }) => {
+    // TODO: can we pass these as custom props?
     const { setSelectedScheme, setUnconfirmedImport, setConfigurationType } = useStateContext()
     const { openModal, closePanel, openPanel, configureScreen } = useUIContext()
     const [alliance, setAlliance] = useState<Alliance>("red")
@@ -149,8 +150,8 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 <InputSchemeSelection
                     brainIndex={brainIndex}
                     onSelect={() => {}}
-                    onEdit={() => openPanel(<ConfigurePanel />, panel)}
-                    onCreateNew={() => openModal(<NewInputSchemeModal />, panel)}
+                    onEdit={() => openPanel(ConfigurePanel, {}, panel)}
+                    onCreateNew={() => openModal(NewInputSchemeModal, undefined, panel)}
                 />
             )}
         </Stack>
