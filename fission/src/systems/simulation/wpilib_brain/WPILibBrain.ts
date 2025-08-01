@@ -11,8 +11,6 @@ import { NoraNumber, NoraNumber2, NoraNumber3, NoraTypes } from "../Nora"
 import { SimulationLayer } from "../SimulationSystem"
 import SynthesisBrain from "../synthesis_brain/SynthesisBrain"
 import { SimFlow, SimReceiver, SimSupplier, validate } from "./SimDataFlow"
-import { SimAccelInput, SimAnalogInput, SimDigitalInput, SimGyroInput, SimInput } from "./SimInput"
-import { SimAnalogOutput, SimDigitalOutput, SimOutput } from "./SimOutput"
 import WPILibWSWorker from "./WPILibWSWorker?worker"
 
 const worker: Lazy<Worker> = new Lazy<Worker>(() => new WPILibWSWorker())
