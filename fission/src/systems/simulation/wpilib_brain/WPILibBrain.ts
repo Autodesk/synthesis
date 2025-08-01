@@ -222,6 +222,17 @@ export class SimGeneric {
         window.dispatchEvent(new SimMapUpdateEvent(true))
         return true
     }
+
+    public static sendCameraFrame(device: string, frameData: any): boolean {
+        worker.getValue().postMessage({
+            command: "camera_frame",
+            data: {
+                device: device,
+                ...frameData
+            },
+        })
+        return true
+    }
 }
 
 export class SimDriverStation {
