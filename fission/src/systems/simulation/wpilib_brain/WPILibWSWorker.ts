@@ -95,7 +95,7 @@ self.addEventListener("message", e => {
                 const frameMessage = {
                     type: "CAMERA_FRAME",
                     device: e.data.data.device,
-                    data: e.data.data
+                    data: e.data.data,
                 }
                 socket!.send(JSON.stringify(frameMessage))
             }

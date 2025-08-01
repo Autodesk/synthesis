@@ -84,7 +84,7 @@ export const receiverTypeMap: { [k in SimType]: NoraTypes | undefined } = {
     [SimType.CAN_ENCODER]: NoraTypes.NUMBER2,
     [SimType.GYRO]: NoraTypes.NUMBER3, // Wrong but its fine
     [SimType.ACCELEROMETER]: NoraTypes.NUMBER3,
-    [SimType.CAMERA]: undefined, 
+    [SimType.CAMERA]: undefined,
     [SimType.DIO]: NoraTypes.NUMBER, // ?
     [SimType.AI]: NoraTypes.NUMBER,
     [SimType.AO]: undefined,
@@ -226,7 +226,7 @@ export class SimGeneric {
             command: "camera_frame",
             data: {
                 device: device,
-                ...frameData
+                ...frameData,
             },
         })
         return true
@@ -465,7 +465,7 @@ export class SimCamera {
     public static getRequestedExposure(device: string): number {
         return SimGeneric.get(SimType.CAMERA, device, "<exposure", 50)
     }
-    
+
     public static getRequestedAutoExposure(device: string): boolean {
         return SimGeneric.get(SimType.CAMERA, device, "<auto_exposure", true)
     }
@@ -712,10 +712,13 @@ class WPILibBrain extends Brain {
 
     public update(deltaT: number): void {
         // Add occasional logging to confirm update is being called
-        if (Math.random() < 0.005) { // ~0.5% chance per frame
-            console.log(`🔄 [WPILIBRAIN] update() called - ${this._simInputs.length} inputs, ${this._simOutputs.length} outputs`)
+        if (Math.random() < 0.005) {
+            // ~0.5% chance per frame
+            console.log(
+                `🔄 [WPILIBRAIN] update() called - ${this._simInputs.length} inputs, ${this._simOutputs.length} outputs`
+            )
         }
-        
+
         this._simOutputs.forEach(d => d.update(deltaT))
         this._simInputs.forEach(i => i.update(deltaT))
         this._simFlows.forEach(({ supplier, receiver }) => {

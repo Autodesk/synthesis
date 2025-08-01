@@ -49,7 +49,7 @@ function generateTableBody() {
     //     SimType.CANEncoder,
     //     SimType.Gyro,
     //     SimType.Accel,
-    //     SimType.Camera, 
+    //     SimType.Camera,
     //     SimType.DIO,
     //     SimType.AI,
     //     SimType.AO,
