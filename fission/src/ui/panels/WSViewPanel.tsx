@@ -49,6 +49,7 @@ function generateTableBody() {
     //     SimType.CANEncoder,
     //     SimType.Gyro,
     //     SimType.Accel,
+    //     SimType.Camera, 
     //     SimType.DIO,
     //     SimType.AI,
     //     SimType.AO,
@@ -166,7 +167,7 @@ const WSViewPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             </TableContainer>
             <Stack>
                 <Dropdown
-                    options={["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro"]}
+                    options={["PWM", "SimDevice", "CANMotor", "CANEncoder", "Gyro", "Accel", "Camera"]}
                     onSelect={v => setSelectedType(v as unknown as SimType)}
                 />
                 {/* {deviceSelect} */}
