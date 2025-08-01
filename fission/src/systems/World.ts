@@ -7,7 +7,7 @@ import DragModeSystem from "./scene/DragModeSystem"
 import SceneRenderer from "./scene/SceneRenderer"
 import SimulationSystem from "./simulation/SimulationSystem"
 import RobotDimensionTracker from "./match_mode/RobotDimensionTracker"
-import RobotPositionTracker from "./match_mode/RobotPositionTracker"
+import RobotPositionTracker from "./simulation/RobotPositionTracker"
 
 class World {
     private static _isAlive: boolean = false
