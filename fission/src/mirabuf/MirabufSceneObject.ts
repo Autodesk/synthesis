@@ -36,6 +36,7 @@ import {
 import { SimConfigData } from "@/ui/panels/simulation/SimConfigShared"
 import JOLT from "@/util/loading/JoltSyncLoader"
 import { convertJoltMat44ToThreeMatrix4, convertJoltVec3ToThreeVector3 } from "@/util/TypeConversions"
+import type { MetadataUpdateData } from "../systems/multiplayer/types"
 import SceneObject from "../systems/scene/SceneObject"
 import EjectableSceneObject from "./EjectableSceneObject"
 import FieldMiraEditor from "./FieldMiraEditor"
@@ -103,6 +104,20 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
     private _collision?: (event: OnContactAddedEvent) => void
     private _cacheId?: string
+
+    public get multiplayerInfo(): MetadataUpdateData {
+        return {
+            sceneObjectKey: this.id,
+            alliance: this._alliance,
+            station: this._station,
+        }
+    }
+
+    public set multiplayerInfo(info: MetadataUpdateData) {
+        this._alliance = info.alliance
+        this._station = info.station
+        console.log({ info })
+    }
 
     public set nameOverride(name: string | undefined) {
         this._nameOverride = name

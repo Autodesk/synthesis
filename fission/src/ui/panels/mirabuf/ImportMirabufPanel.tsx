@@ -19,6 +19,8 @@ import MirabufCachingService, {
 } from "@/mirabuf/MirabufLoader"
 import { createMirabuf } from "@/mirabuf/MirabufSceneObject"
 import { mirabufPanelState } from "@/panels/mirabuf/MirabufState.tsx"
+import { mirabuf } from "@/proto/mirabuf"
+import { EncodedAssembly, Message } from "@/systems/multiplayer/types"
 import { PAUSE_REF_ASSEMBLY_SPAWNING } from "@/systems/physics/PhysicsSystem"
 import { SoundPlayer } from "@/systems/sound/SoundPlayer"
 import World from "@/systems/World"
@@ -39,8 +41,6 @@ import { useModalControlContext } from "@/ui/helpers/UseModalManager"
 import { usePanelControlContext } from "@/ui/helpers/UsePanelManager"
 import { useTooltipControlContext } from "@/ui/TooltipContext"
 import TaskStatus from "@/util/TaskStatus"
-import { Message } from "@/systems/multiplayer/types"
-import { mirabuf } from "@/proto/mirabuf"
 
 interface ItemCardProps {
     id: string
@@ -111,8 +111,7 @@ function spawnCachedMira(info: MirabufCacheInfo, type: MiraType, progressHandle?
                                 type: "newObject",
                                 data: {
                                     sceneObjectKey: x.id,
-                                    // biome-ignore lint: We're using this for type safety
-                                    assembly: mirabuf.Assembly.encode(assembly).finish() as Uint8Array & { __: "" },
+                                    assembly: mirabuf.Assembly.encode(assembly).finish() as EncodedAssembly,
                                 },
                             }
                             World.multiplayerSystem?.broadcast(message)

@@ -70,6 +70,8 @@ const InitialConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             }
 
             setSelectedScheme(scheme)
+
+            World.multiplayerSystem?.broadcast({ type: "metadataUpdate", data: targetAssembly.multiplayerInfo })
         } else {
             setSelectedConfigurationType(ConfigurationType.FIELD)
         }

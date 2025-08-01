@@ -1,7 +1,9 @@
 /** biome-ignore-all lint/correctness/noUndeclaredVariables: In Progress */
 import Peer, { DataConnection } from "peerjs"
 import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
+import { MiraType } from "@/mirabuf/MirabufLoader.ts"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { ConfigurationSavedEvent } from "@/panels/configuring/assembly-config/ConfigurationSavedEvent.ts"
 import { mirabuf } from "@/proto/mirabuf"
 import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
 import JOLT from "@/util/loading/JoltSyncLoader"
@@ -14,6 +16,7 @@ import type {
     InitData,
     InitObjectData,
     Message,
+    MetadataUpdateData,
     UpdateObjectData,
 } from "./types"
 
@@ -82,6 +85,14 @@ class MultiplayerSystem {
             this.setupConnectionHandlers(conn)
         })
         window.multiplayer = this
+
+        ConfigurationSavedEvent.listen(() => {
+            ;[...World.sceneRenderer.sceneObjects.values()]
+                .filter(obj => obj instanceof MirabufSceneObject)
+                .forEach(obj => {
+                    this.broadcast({ type: "metadataUpdate", data: obj.multiplayerInfo }).catch(console.error)
+                })
+        })
     }
 
     async connectToRoom() {
@@ -184,7 +195,7 @@ class MultiplayerSystem {
     }
 
     async handlePeerMessage(message: Message, peerId: string) {
-        console.log(`Received Message of Type: ${message.type}`)
+        // console.log(`Received Message of Type: ${message.type}`)
         switch (message.type) {
             case "info":
                 this.handlePeerInfo(message.data)
@@ -201,6 +212,8 @@ class MultiplayerSystem {
             case "newObject":
                 await this.handleNewObject(message.data, peerId)
                 break
+            case "metadataUpdate":
+                await this.handleMetadataUpdate(message.data)
         }
     }
 
@@ -283,9 +296,17 @@ class MultiplayerSystem {
 
         object.id = data.sceneObjectKey
         object.nameOverride = this._clientToInfoMap.get(peerId)?.displayName ?? peerId
+
         World.sceneRenderer.registerSceneObject(object)
 
         this._clientToRobotMap.set(peerId, object.id)
+    }
+
+    async handleMetadataUpdate(data: MetadataUpdateData) {
+        const sceneObject = World.sceneRenderer.sceneObjects.get(data.sceneObjectKey)
+        if (!sceneObject || !(sceneObject instanceof MirabufSceneObject)) return
+
+        sceneObject.multiplayerInfo = data
     }
 
     async send(peer: string, message: Message) {
@@ -298,7 +319,7 @@ class MultiplayerSystem {
     }
 
     async broadcast(message: Message) {
-        console.log(`New Message: ${message.type}`)
+        console.log(`Sending Message: ${message.type}`)
         return await Promise.all(this._peers.map(peer => peer.send(message)))
     }
 
