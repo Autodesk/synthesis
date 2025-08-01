@@ -1,4 +1,4 @@
-import { Stack } from "@mui/material"
+import { Box, Stack } from "@mui/material"
 import { useCallback, useEffect, useState } from "react"
 import { ConfigurationSavedEvent } from "@/events/ConfigurationSavedEvent"
 import type MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
@@ -31,10 +31,10 @@ const ScoringZoneRow: React.FC<ScoringZoneRowProps> = ({ zone, save, deleteZone,
     return (
         <Stack justifyContent={"space-between"} alignItems={"center"} gap={"1rem"}>
             <Stack direction="row" gap={8}>
-                <div
+                <Box
                     className={`w-12 h-12 rounded-lg`}
-                    style={{
-                        background: zone.alliance === "red" ? "#ff0000" : "#0000ff",
+                    sx={{
+                        bgcolor: zone.alliance === "red" ? "redAlliance.main" : "blueAlliance.main",
                     }}
                 />
                 <Stack direction="row" gap={4} className="w-max">

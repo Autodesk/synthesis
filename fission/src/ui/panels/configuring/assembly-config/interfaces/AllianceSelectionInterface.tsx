@@ -30,7 +30,7 @@ const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({
                         setAlliance(alliance == "blue" ? "red" : "blue")
                         saveSetAlliance(alliance == "blue" ? "red" : "blue", selectedAssembly)
                     }}
-                    style={{ background: alliance === "red" ? "#ff0000" : "#0000ff" }}
+                    sx={{ bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" }}
                 >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
             </Box>
             <div>
@@ -42,7 +42,7 @@ const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({
                             setStation(1)
                             saveSetStation(1, selectedAssembly)
                         }}
-                        style={station === 1 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                        sx={station === 1 ? { bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
                     >
                         1
                     </Button>
@@ -52,7 +52,7 @@ const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({
                             setStation(2)
                             saveSetStation(2, selectedAssembly)
                         }}
-                        style={station === 2 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                        sx={station === 2 ? { bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
                     >
                         2
                     </Button>
@@ -62,7 +62,7 @@ const AllianceSelectionInterface: React.FC<AllianceSelectionInterfaceProps> = ({
                             setStation(3)
                             saveSetStation(3, selectedAssembly)
                         }}
-                        style={station === 3 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                        sx={station === 3 ? { bgcolor: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
                     >
                         3
                     </Button>

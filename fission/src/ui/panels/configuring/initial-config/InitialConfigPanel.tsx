@@ -94,7 +94,7 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                     {/** Set the alliance color */}
                     <Button
                         onClick={() => setAlliance(alliance === "blue" ? "red" : "blue")}
-                        style={{ background: alliance === "red" ? "#ff0000" : "#0000ff" }}
+                        sx={{ bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }}
                     >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
                     <Box>
                         <Label size="md">Station: </Label>
@@ -102,19 +102,19 @@ const InitialConfigPanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         <Stack gap={2} direction="row">
                             <Button
                                 onClick={() => setStation(1)}
-                                style={station === 1 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                                sx={station === 1 ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" } : {}}
                             >
                                 1
                             </Button>
                             <Button
                                 onClick={() => setStation(2)}
-                                style={station === 2 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                                sx={station === 2 ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" } : {}}
                             >
                                 2
                             </Button>
                             <Button
                                 onClick={() => setStation(3)}
-                                style={station === 3 ? { background: alliance === "red" ? "#ff0000" : "#0000ff" } : {}}
+                                sx={station === 3 ? { bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" } : {}}
                             >
                                 3
                             </Button>

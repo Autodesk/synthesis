@@ -272,7 +272,7 @@ const ZoneConfigInterface: React.FC<ZoneConfigProps> = ({ selectedField, selecte
                     if (gizmoRef.current)
                         (gizmoRef.current.obj as THREE.Mesh).material = alliance === "blue" ? redMaterial : blueMaterial
                 }}
-                style={{ background: alliance === "red" ? "#ff0000" : "#0000ff" }}
+                sx={{ bgcolor: alliance === "red" ? "redAlliance.main" : "blueAlliance.main" }}
             >{`${alliance[0].toUpperCase() + alliance.substring(1)} Alliance`}</Button>
 
             {/** Select a parent node */}
