@@ -68,6 +68,9 @@ dependencies {
     // JSON processing
     implementation 'org.json:json:20231013'
 
+    // WebSocket server
+    implementation 'org.java-websocket:Java-WebSocket:1.5.4'
+
     // OpenCV (Note: WPILib includes OpenCV, but we need to make sure it's available)
     implementation "edu.wpi.first.thirdparty.frc2024.opencv:opencv-java:4.8.0-2"
 }
