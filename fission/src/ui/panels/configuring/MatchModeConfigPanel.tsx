@@ -231,11 +231,13 @@ const MatchModeConfigPanel: React.FC<PanelPropsImpl> = ({ panelId }) => {
             return null
         }
 
-        // If validation passes, normalize the config with defaults for missing fields
-        return {
+        // If validation passes, use the default values in any missing fields
+        const normalizedConfig = {
             ...DefaultMatchModeConfigs.fallbackValues(),
             ...configObj,
         }
+        normalizedConfig.isDefault = false
+        return normalizedConfig
     }
 
     const handleFileUpload = async (file: File) => {
