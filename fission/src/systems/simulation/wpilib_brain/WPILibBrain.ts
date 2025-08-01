@@ -402,6 +402,66 @@ export class SimAccel {
     }
 }
 
+export class SimCamera {
+    private constructor() {}
+
+    public static setConnected(device: string, connected: boolean): boolean {
+        return SimGeneric.set(SimType.CAMERA, device, ">connected", connected)
+    }
+
+    public static getConnected(device: string): boolean {
+        return SimGeneric.get(SimType.CAMERA, device, ">connected", false)
+    }
+
+    public static setResolutionWidth(device: string, width: number): boolean {
+        return SimGeneric.set(SimType.CAMERA, device, ">width", width)
+    }
+
+    public static setResolutionHeight(device: string, height: number): boolean {
+        return SimGeneric.set(SimType.CAMERA, device, ">height", height)
+    }
+
+    public static setFPS(device: string, fps: number): boolean {
+        return SimGeneric.set(SimType.CAMERA, device, ">fps", fps)
+    }
+
+    public static getRequestedWidth(device: string): number {
+        return SimGeneric.get(SimType.CAMERA, device, "<width", 320)
+    }
+
+    public static getRequestedHeight(device: string): number {
+        return SimGeneric.get(SimType.CAMERA, device, "<height", 240)
+    }
+
+    public static getRequestedFPS(device: string): number {
+        return SimGeneric.get(SimType.CAMERA, device, "<fps", 30)
+    }
+
+    public static setBrightness(device: string, brightness: number): boolean {
+        return SimGeneric.set(SimType.CAMERA, device, ">brightness", brightness)
+    }
+
+    public static setExposure(device: string, exposure: number): boolean {
+        return SimGeneric.set(SimType.CAMERA, device, ">exposure", exposure)
+    }
+
+    public static setAutoExposure(device: string, autoExposure: boolean): boolean {
+        return SimGeneric.set(SimType.CAMERA, device, ">auto_exposure", autoExposure)
+    }
+
+    public static getRequestedBrightness(device: string): number {
+        return SimGeneric.get(SimType.CAMERA, device, "<brightness", 50)
+    }
+
+    public static getRequestedExposure(device: string): number {
+        return SimGeneric.get(SimType.CAMERA, device, "<exposure", 50)
+    }
+    
+    public static getRequestedAutoExposure(device: string): boolean {
+        return SimGeneric.get(SimType.CAMERA, device, "<auto_exposure", true)
+    }
+}
+
 export class SimDIO {
     private constructor() {}
 
