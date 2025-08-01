@@ -1,6 +1,10 @@
-/** biome-ignore-all lint/correctness/noUndeclaredVariables: <explanation> */
+/** biome-ignore-all lint/correctness/noUndeclaredVariables: In Progress */
 import Peer, { DataConnection } from "peerjs"
+import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
 import MirabufSceneObject, { createMirabuf } from "@/mirabuf/MirabufSceneObject"
+import { mirabuf } from "@/proto/mirabuf"
+import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
+import JOLT from "@/util/loading/JoltSyncLoader"
 import PhysicsSystem from "../physics/PhysicsSystem"
 import World from "../World"
 import type {
@@ -12,10 +16,6 @@ import type {
     Message,
     UpdateObjectData,
 } from "./types"
-import { mirabuf } from "@/proto/mirabuf"
-import PreferencesSystem from "@/systems/preferences/PreferencesSystem.ts"
-import { globalAddToast, globalOpenModal } from "@/components/GlobalUIControls.ts"
-import JOLT from "@/util/loading/JoltSyncLoader"
 
 const COLLISION_TIMEOUT = 500
 
@@ -148,8 +148,8 @@ class MultiplayerSystem {
             await this.send(conn.peer, { type: "info", data: this.info })
         })
 
-        conn.on("data", (data: unknown) => {
-            this.handlePeerMessage(data as Message, conn.peer)
+        conn.on("data", async (data: unknown) => {
+            await this.handlePeerMessage(data as Message, conn.peer)
         })
 
         conn.on("close", () => {
@@ -159,10 +159,9 @@ class MultiplayerSystem {
                     data: { sceneObjectKey: 0 },
                 },
                 conn.peer
-            ) // TODO Get actual sceneObjectKey
+            ).catch(console.error) // TODO Get actual sceneObjectKey
 
             this._connections.delete(conn.peer)
-            // TODO handle host transition
 
             if (this._host == null) {
                 const newHost = this._peers.reduce((prev, current) =>
@@ -184,14 +183,14 @@ class MultiplayerSystem {
         })
     }
 
-    handlePeerMessage(message: Message, peerId: string) {
+    async handlePeerMessage(message: Message, peerId: string) {
         console.log(`Received Message of Type: ${message.type}`)
         switch (message.type) {
             case "info":
                 this.handlePeerInfo(message.data)
                 break
             case "init":
-                this.handleWorldInitialization(message.data)
+                await this.handleWorldInitialization(message.data)
                 break
             case "update":
                 this.handlePeerUpdate(message.data)
@@ -200,7 +199,7 @@ class MultiplayerSystem {
                 this.handleCollision(message.data)
                 break
             case "newObject":
-                this.handleNewObject(message.data, peerId)
+                await this.handleNewObject(message.data, peerId)
                 break
         }
     }
@@ -283,6 +282,7 @@ class MultiplayerSystem {
         if (object == null) return
 
         object.id = data.sceneObjectKey
+        object.nameOverride = this._clientToInfoMap.get(peerId)?.displayName ?? peerId
         World.sceneRenderer.registerSceneObject(object)
 
         this._clientToRobotMap.set(peerId, object.id)

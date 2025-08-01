@@ -1,6 +1,7 @@
 import Jolt from "@azaleacolburn/jolt-physics"
 import * as THREE from "three"
 import { mirabuf } from "@/proto/mirabuf"
+import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 import { OnContactAddedEvent } from "@/systems/physics/ContactEvents"
 import Mechanism from "@/systems/physics/Mechanism"
 import { LayerReserve } from "@/systems/physics/PhysicsSystem"
@@ -44,7 +45,6 @@ import { MiraType } from "./MirabufLoader"
 import MirabufParser, { ParseErrorSeverity, RigidNodeId, RigidNodeReadOnly } from "./MirabufParser"
 import ProtectedZoneSceneObject from "./ProtectedZoneSceneObject"
 import ScoringZoneSceneObject from "./ScoringZoneSceneObject"
-import { BodyAssociate } from "@/systems/physics/BodyAssociate.ts"
 
 const DEBUG_BODIES = false
 
@@ -92,6 +92,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _scoringZones: ScoringZoneSceneObject[] = []
     private _protectedZones: ProtectedZoneSceneObject[] = []
 
+    private _nameOverride?: string
     private _nameTag: SceneOverlayTag | undefined
     private _centerOfMassIndicator: THREE.Mesh | undefined
     private _intakeActive = false
@@ -103,6 +104,9 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _collision?: (event: OnContactAddedEvent) => void
     private _cacheId?: string
 
+    public set nameOverride(name: string | undefined) {
+        this._nameOverride = name
+    }
     public get intakeActive() {
         return this._intakeActive
     }
@@ -219,12 +223,14 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
 
         if (this.miraType === MiraType.ROBOT) {
             // creating nametag for robots
-            this._nameTag = new SceneOverlayTag(() =>
-                this._brain instanceof SynthesisBrain
-                    ? this._brain.inputSchemeName
-                    : this._brain instanceof WPILibBrain
-                      ? "Magic"
-                      : "Not Configured"
+            this._nameTag = new SceneOverlayTag(
+                () =>
+                    this._nameOverride ??
+                    (this._brain instanceof SynthesisBrain
+                        ? this._brain.inputSchemeName
+                        : this._brain instanceof WPILibBrain
+                          ? "Magic"
+                          : "Not Configured")
             )
 
             // Detects when something collides with the robot
