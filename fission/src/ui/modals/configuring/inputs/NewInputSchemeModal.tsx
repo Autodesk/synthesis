@@ -6,7 +6,7 @@ import InputSchemeManager from "@/systems/input/InputSchemeManager"
 import type { ModalImplProps } from "@/ui/components/Modal"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import { useStateContext } from "@/ui/helpers/StateProviderHelpers"
-import { useUIContext } from "@/ui/helpers/UIProviderHelpers"
+import { useUIContext, CloseType } from "@/ui/helpers/UIProviderHelpers"
 import { DriveType } from "@/systems/simulation/behavior/Behavior"
 import { Stack } from "@mui/system"
 import InputSystem from "@/systems/input/InputSystem"
@@ -15,7 +15,7 @@ import { getSpotlightAssembly } from "@/mirabuf/MirabufSceneObject"
 import { MiraType } from "@/mirabuf/MirabufLoader"
 
 const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
-    const { openPanel, configureScreen } = useUIContext()
+    const { openPanel, configureScreen, closeModal, addToast } = useUIContext()
     const { setSelectedScheme, setConfigurationType } = useStateContext()
 
     const [name, setName] = useState<string>(InputSchemeManager.randomAvailableName)
@@ -32,8 +32,22 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
 
     useEffect(() => {
         const onBeforeAccept = () => {
+            const trimmedName = name.trim()
+            if (trimmedName === "") {
+                closeModal(CloseType.Cancel)
+                addToast("error", "Name cannot be empty")
+                return
+            }
+
+            if (InputSchemeManager.allInputSchemes.map(s => s.schemeName).includes(trimmedName)) {
+                closeModal(CloseType.Cancel)
+                addToast("error", "Name already exists")
+                return
+            }
+
             const scheme = DefaultInputs.newBlankScheme(type)
-            scheme.schemeName = name
+
+            scheme.schemeName = trimmedName
 
             InputSchemeManager.addCustomScheme(scheme)
             InputSchemeManager.saveSchemes()
@@ -57,7 +71,7 @@ const NewInputSchemeModal: React.FC<ModalImplProps<void>> = ({ modal }) => {
         }
 
         configureScreen(modal!, { title: "New Input Scheme" }, { onBeforeAccept, onCancel })
-    }, [name, type, brainIndex, openPanel, modal, configureScreen])
+    }, [name, type, brainIndex, openPanel, modal, configureScreen, closeModal])
 
     return (
         <>
