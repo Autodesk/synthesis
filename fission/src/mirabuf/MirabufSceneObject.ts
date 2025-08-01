@@ -39,6 +39,7 @@ import { SimConfigData } from "@/systems/simulation/SimConfigShared"
 import React from "react"
 import ConfigurePanel from "@/ui/panels/configuring/assembly-config/ConfigurePanel"
 import AutoTestPanel from "@/ui/panels/simulation/AutoTestPanel"
+import { ConfigMode } from "@/ui/panels/configuring/assembly-config/ConfigTypes"
 
 const DEBUG_BODIES = false
 
@@ -63,39 +64,6 @@ export function setSpotlightAssembly(assembly: MirabufSceneObject) {
 export function getSpotlightAssembly(): MirabufSceneObject | undefined {
     return World.sceneRenderer.sceneObjects.get(spotlightAssembly ?? 0) as MirabufSceneObject
 }
-
-/**
- * Interface for UI actions that can be registered with MirabufSceneObject
- */
-interface UIActionHandlers {
-    openMovePanel?: (assembly: MirabufSceneObject) => void
-    openConfigurePanel?: (assembly: MirabufSceneObject) => void
-    openAutoTestPanel?: () => void
-}
-
-/**
- * Global registry for UI action handlers
- * This allows React components to register handlers with MirabufSceneObject
- */
-
-class UIActionRegistry {
-    private static handlers: UIActionHandlers = {}
-
-    public static registerHandlers(handlers: UIActionHandlers): void {
-        this.handlers = { ...this.handlers, ...handlers }
-    }
-
-    public static getHandlers(): UIActionHandlers {
-        return this.handlers
-    }
-
-    public static clearHandlers(): void {
-        this.handlers = {}
-    }
-}
-
-// Export the registry so UI components can use it
-export { UIActionRegistry }
 
 class MirabufSceneObject extends SceneObject implements ContextSupplier {
     private _assemblyName: string
@@ -854,29 +822,23 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             items: [],
         }
 
-        const uiHandlers = UIActionRegistry.getHandlers()
-
         data.items.push(
             {
                 name: "Move",
+                configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                configMode: ConfigMode.MOVE,
+                selectedAssembly: this,
                 func: () => {
-                    if (uiHandlers.openMovePanel) {
-                        uiHandlers.openMovePanel(this)
-                    } else {
-                        // Fallback to basic panel opening
-                        globalOpenPanel(React.createElement(ConfigurePanel))
-                    }
+                    globalOpenPanel(React.createElement(ConfigurePanel))
                 },
             },
             {
                 name: "Configure",
+                configurationType: this.miraType === MiraType.ROBOT ? "ROBOTS" : "FIELDS",
+                configMode: undefined,
+                selectedAssembly: this,
                 func: () => {
-                    if (uiHandlers.openConfigurePanel) {
-                        uiHandlers.openConfigurePanel(this)
-                    } else {
-                        // Fallback to basic panel opening
-                        globalOpenPanel(React.createElement(ConfigurePanel))
-                    }
+                    globalOpenPanel(React.createElement(ConfigurePanel))
                 },
             }
         )
@@ -885,12 +847,7 @@ class MirabufSceneObject extends SceneObject implements ContextSupplier {
             data.items.push({
                 name: "Auto Testing",
                 func: () => {
-                    if (uiHandlers.openAutoTestPanel) {
-                        uiHandlers.openAutoTestPanel()
-                    } else {
-                        // Fallback to basic panel opening
-                        globalOpenPanel(React.createElement(AutoTestPanel))
-                    }
+                    globalOpenPanel(React.createElement(AutoTestPanel))
                 },
             })
         }

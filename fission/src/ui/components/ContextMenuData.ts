@@ -1,7 +1,13 @@
 // DATA
 
+import MirabufSceneObject from "@/mirabuf/MirabufSceneObject"
+import { ConfigMode, ConfigurationType } from "../panels/configuring/assembly-config/ConfigTypes"
+
 export interface ContextItem {
     name: string
+    configurationType?: ConfigurationType
+    configMode?: ConfigMode
+    selectedAssembly?: MirabufSceneObject
     func: () => void
 }
 

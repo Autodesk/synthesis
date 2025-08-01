@@ -118,12 +118,13 @@ const ConfigInterface: React.FC<ConfigInterfaceProps<void>> = ({ panel, configMo
 
 const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const { configureScreen } = useUIContext()
-    const { configurationType, setConfigurationType } = useStateContext()
+    const { configurationType, setConfigurationType, configurePanelSettings, setConfigurePanelSettings } =
+        useStateContext()
 
-    const [configurePanelSettings, setConfigurePanelSettings] = useState<ConfigurePanelSettings | undefined>(undefined)
-
-    const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(undefined)
-    const [configMode, setConfigMode] = useState<ConfigMode | undefined>(undefined)
+    const [selectedAssembly, setSelectedAssembly] = useState<MirabufSceneObject | undefined>(
+        configurePanelSettings?.selectedAssembly
+    )
+    const [configMode, setConfigMode] = useState<ConfigMode | undefined>(configurePanelSettings?.configMode)
     const [pendingDeletes, setPendingDeletes] = useState<number[]>([])
 
     const originalRobotPrefs = useRef<RobotPreferences | null>(null)
@@ -132,16 +133,10 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
     const originalInputSchemes = useRef<InputScheme[] | null>(null)
 
     useEffect(() => {
-        console.log(pendingDeletes)
-    }, [pendingDeletes])
-
-    useEffect(() => {
         const allSchemes: InputScheme[] = PreferencesSystem.getGlobalPreference("InputSchemes") || []
         originalInputSchemes.current = structuredClone(allSchemes)
 
         const settings = configurePanelSettings
-
-        console.log(InputSchemeManager.allInputSchemes)
 
         if (settings) {
             setConfigMode(settings.configMode)
@@ -158,8 +153,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                 if (fieldPrefs) originalFieldPrefs.current = structuredClone(fieldPrefs)
                 if (motorPrefs) originalMotorPrefs.current = structuredClone(motorPrefs)
             }
-
-            setConfigurePanelSettings(undefined)
         }
     }, [])
 
@@ -202,12 +195,16 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             originalInputSchemes.current = null
         }
 
+        const onClose = () => {
+            setConfigurePanelSettings(undefined)
+        }
+
         configureScreen(
             panel!,
             { title: "Configure Assets", acceptText: "Save", cancelText: "Cancel" },
-            { onBeforeAccept, onCancel }
+            { onBeforeAccept, onCancel, onClose }
         )
-    }, [configurePanelSettings, configurationType, selectedAssembly, pendingDeletes])
+    }, [configurationType, selectedAssembly, pendingDeletes])
 
     const modes = useMemo(() => {
         switch (configurationType) {
@@ -285,7 +282,7 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
             default:
                 return []
         }
-    }, [configurationType])
+    }, [configurationType, selectedAssembly?.brain?.brainType])
 
     return (
         <>
@@ -322,7 +319,6 @@ const ConfigurePanel: React.FC<PanelImplProps<void>> = ({ panel }) => {
                         selectedAssembly={selectedAssembly}
                         onStageDelete={opt => {
                             const id = (opt as AssemblySelectionOption).assemblyObject.id
-                            console.log(id)
                             setPendingDeletes(prev => [...prev, id])
                         }}
                         pendingDeletes={pendingDeletes}
