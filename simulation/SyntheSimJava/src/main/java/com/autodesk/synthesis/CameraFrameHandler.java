@@ -44,9 +44,42 @@ public class CameraFrameHandler {
      */
     public void handleFrame(String deviceName, String base64Frame, int width, int height) {
         CvSource source = cameraSources.get(deviceName);
+        if (source == null) {
+            System.out.println("DEBUG: Camera not registered for " + deviceName);
+            return;
+        }
+        if (base64Frame == null || base64Frame.trim().isEmpty()) {
+            System.out.println("DEBUG: Skipping empty frame for " + deviceName);
+            return;
+        }
+
+        System.out.println("DEBUG: Received real 3D frame for " + deviceName + 
+                         " (" + width + "x" + height + ", " + base64Frame.length() + " chars)");
         
         try {
             byte[] frameData = Base64.getDecoder().decode(base64Frame);
+            
+            // Check if decoded data is empty
+            if (frameData.length == 0) {
+                System.out.println("INFO: Skipping frame with empty data for " + deviceName);
+                return;
+            }
+            
+            // Convert JPEG bytes to OpenCV Mat
+            MatOfByte matOfByte = new MatOfByte(frameData);
+            Mat frame = Imgcodecs.imdecode(matOfByte, Imgcodecs.IMREAD_COLOR);
+            
+            if (frame.empty()) {
+                System.err.println("WARNING: Failed to decode camera frame for " + deviceName);
+                return;
+            }
+            
+            // Ensure frame has correct dimensions
+            if (frame.rows() != height || frame.cols() != width) {
+                System.err.println("WARNING: Frame size mismatch for " + deviceName + 
+                                 ": expected " + width + "x" + height + 
+                                 ", got " + frame.cols() + "x" + frame.rows());
+            }
             
             // Feed frame to CvSource and automatically streams to dashboards
             source.putFrame(frame);
