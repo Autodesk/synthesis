@@ -18,12 +18,12 @@ class DesignRuleChecks:
         self.designRules = [
             {
                 "name": "Design Height",
-                "calculation": self.fusion_design_height,
+                "calculation": self.fusion_design_height(),
                 "max_value": 106.0,  # cm
             },
             {
                 "name": "Design Perimeter",
-                "calculation": self.fusion_design_perimeter,
+                "calculation": self.fusion_design_perimeter(),
                 "max_value": 304.0,  # cm
             },
         ]

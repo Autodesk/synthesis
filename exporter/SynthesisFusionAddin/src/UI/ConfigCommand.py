@@ -302,7 +302,7 @@ class IncomingHTMLMessageHandler(PersistentEventHandler, adsk.core.HTMLEventHand
             html_args.returnData = "{}"
 
         elif html_args.action == "designRules":
-            html_args.returnData = DesignRuleChecks().getDesignRules
+            html_args.returnData = json.dumps(DesignRuleChecks().getDesignRules)
         else:
             gm.ui.messageBox(f"Event {html_args.action} arrived<span>{json.dumps(data, indent=2)}</span>")
 

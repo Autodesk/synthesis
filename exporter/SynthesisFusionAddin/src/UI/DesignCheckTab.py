@@ -13,7 +13,6 @@ logger = Logging.getLogger()
 class DesignCheckTab:
     designCheckTab: adsk.core.TabCommandInput
     designCheckTable: adsk.core.TableCommandInput
-    designRuleChecks: DesignRuleChecks
 
     @Logging.logFailure
     def __init__(self, args: adsk.core.CommandCreatedEventArgs) -> None:
@@ -28,9 +27,8 @@ class DesignCheckTab:
             adsk.core.TablePresentationStyles.itemBorderTablePresentationStyle
         )
 
-        self.designRuleChecks = DesignRuleChecks()
 
-        for i, rule in enumerate(self.designRuleChecks.getDesignRules()):
+        for i, rule in enumerate(self.designRuleChecks().getDesignRules()):
             calculation = rule["calculation"]
             max_value: float = rule["max_value"]
             value: float = calculation()
