@@ -23,41 +23,48 @@ public class WebSocketMessageHandler {
      * @param messageJson JSON string containing the message
      */
     public void handleMessage(String messageJson) {
-        JSONObject message = new JSONObject(messageJson);
-        String type = message.getString("type");
+        try {
+            JSONObject message = new JSONObject(messageJson);
+            String type = message.getString("type");
             
-        System.out.println("DEBUG: Received WebSocket message type: " + type);
+            System.out.println("DEBUG: Received WebSocket message type: " + type);
             
-        switch (type) {
-            case "CAMERA_FRAME":
-                System.out.println("DEBUG: Processing camera frame message...");
-                handleCameraFrame(message);
-                break;
-            default:
-                // Handle other message types here
-                System.out.println("DEBUG: Unhandled message type: " + type);
-                break;
+            switch (type) {
+                case "CAMERA_FRAME":
+                    System.out.println("DEBUG: Processing camera frame message...");
+                    handleCameraFrame(message);
+                    break;
+                default:
+                    System.out.println("DEBUG: Unhandled message type: " + type);
+                    break;
             }
+        } catch (Exception e) {
+            System.err.println("ERROR: Error processing WebSocket message: " + e.getMessage());
+        }
     }
     
     /**
      * Handle camera frame message
      */
     private void handleCameraFrame(JSONObject message) {
-        String device = message.getString("device");
-        JSONObject data = message.getJSONObject("data");
+        try {
+            String device = message.getString("device");
+            JSONObject data = message.getJSONObject("data");
             
-        String frameData = data.getString("frame");
-        int width = data.getInt("width");
-        int height = data.getInt("height");
+            String frameData = data.getString("frame");
+            int width = data.getInt("width");
+            int height = data.getInt("height");
             
-        // Forward to camera frame handler
-        CameraFrameHandler.getInstance().handleFrame(device, frameData, width, height);
+            // Forward to camera frame handler
+            CameraFrameHandler.getInstance().handleFrame(device, frameData, width, height);
             
+        } catch (Exception e) {
+            System.err.println("ERROR: Error processing camera frame: " + e.getMessage());
+        }
     }
     
     /**
-     * Simulate receiving a camera frame (for testing)
+     * Simulate receiving a camera frame
      */
     public void simulateTestMessage() {
         String testMessage = """
